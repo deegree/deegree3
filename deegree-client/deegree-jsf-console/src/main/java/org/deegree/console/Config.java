@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -36,32 +36,25 @@
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.apache.commons.io.FileUtils.copyURLToFile;
-import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.Resource;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.console.webservices.WebServiceConfigManager;
-import org.deegree.services.OWS;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceStates.ResourceState;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 
 /**
@@ -77,79 +70,30 @@ public class Config implements Comparable<Config> {
 
     private static final Logger LOG = getLogger( Config.class );
 
-    private static final URL METADATA_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
+    protected String id;
 
-    private static final URL METADATA_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
-
-    private File location;
-
-    private String id;
+    private URL schemaURL;
 
     private String schemaAsText;
 
     private URL template;
 
-    private String content;
-
-    private ConfigManager manager;
-
     private String resourceOutcome;
 
-    private URL schemaURL;
+    private ResourceMetadata<?> metadata;
 
-    private ResourceManager resourceManager;
+    protected Workspace workspace;
 
-    private ResourceState<?> state;
-
-    private boolean requiresWSReload;
-
-    private boolean autoActivate;
-
-    public Config( File location, URL schemaURL, String resourceOutcome ) {
-        this.location = location;
-        this.schemaURL = schemaURL;
-        this.resourceOutcome = resourceOutcome;
-        this.requiresWSReload = true;
-        if ( schemaURL != null ) {
-            try {
-                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
-            } catch ( IOException e ) {
-                LOG.warn( "Schema not available: {}", schemaURL );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
-
-    public Config( File location, URL schemaURL, URL template, String resourceOutcome ) {
-        this.location = location;
-        this.schemaURL = schemaURL;
-        this.template = template;
-        this.resourceOutcome = resourceOutcome;
-        this.requiresWSReload = true;
-        if ( schemaURL != null ) {
-            try {
-                schemaAsText = IOUtils.toString( schemaURL.openStream(), "UTF-8" );
-            } catch ( IOException e ) {
-                LOG.warn( "Schema not available: {}", schemaURL );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
-    }
-
-    public Config( ResourceState<?> state, ConfigManager manager,
-                   org.deegree.commons.config.ResourceManager originalResourceManager, String resourceOutcome,
+    public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
                    boolean autoActivate ) {
-        this.state = state;
-        this.id = state.getId();
-        this.location = state.getConfigLocation();
-        this.resourceManager = originalResourceManager;
-        this.manager = manager;
+        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        if ( metadata != null ) {
+            this.id = metadata.getIdentifier().getId();
+        }
+        this.metadata = metadata;
         this.resourceOutcome = resourceOutcome;
-        this.autoActivate = autoActivate;
-
-        ResourceProvider provider = state.getProvider();
-        if ( provider != null && provider.getConfigSchema() != null ) {
-            schemaURL = provider.getConfigSchema();
+        if ( metadata != null && metadata.getProvider() instanceof AbstractResourceProvider<?> ) {
+            schemaURL = ( (AbstractResourceProvider<?>) metadata.getProvider() ).getSchema();
         }
         if ( schemaURL != null ) {
             try {
@@ -159,86 +103,51 @@ public class Config implements Comparable<Config> {
                 LOG.trace( "Stack trace:", e );
             }
         }
-    }
-
-    public String getCapabilitiesURL() {
-        OWS ows = ( (WebServicesConfiguration) resourceManager ).get( id );
-        String type = ows.getImplementationMetadata().getImplementedServiceName()[0];
-
-        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        StringBuffer sb = req.getRequestURL();
-
-        // HACK HACK HACK
-        int index = sb.indexOf( "/console" );
-        return sb.substring( 0, index ) + "/services/" + id + "?service=" + type + "&request=GetCapabilities";
-    }
-
-    public String getState() {
-        ResourceState<?> stateType = resourceManager.getState( id );
-        if ( stateType == null ) {
-            return "unknown";
-        }
-        return stateType.getType().name();
     }
 
     public void activate() {
         try {
-            resourceManager.activate( id );
-        } catch ( Throwable t ) {
+            workspace.getLocationHandler().activate( metadata.getLocation() );
+            workspace.add( metadata.getLocation() );
+            WorkspaceUtils.reinitializeChain( workspace, metadata.getIdentifier() );
+        } catch ( Exception t ) {
+            t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
-        }
-        state = resourceManager.getState( id );
-        WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
-        ws.setModified();
-        if ( state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
         }
     }
 
     public void deactivate() {
         try {
-            resourceManager.deactivate( id );
+            workspace.destroy( metadata.getIdentifier() );
+            workspace.getLocationHandler().deactivate( metadata.getLocation() );
+            List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
+            WorkspaceUtils.collectDependents( list, workspace.getDependencyGraph().getNode( metadata.getIdentifier() ) );
+            for ( ResourceMetadata<?> md : list ) {
+                workspace.getLocationHandler().deactivate( md.getLocation() );
+            }
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
                                                 null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        state = resourceManager.getState( id );
-        WorkspaceBean ws = (WorkspaceBean) FacesContext.getCurrentInstance().getExternalContext().getApplicationMap().get( "workspace" );
-        ws.setModified();
-        if ( state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
-    }
-
-    public String editMetadata()
-                            throws IOException {
-        File metadataLocation = new File( location.getParent(), new File( id ).getName() + "_metadata.xml" );
-        Config metadataConfig = new Config( metadataLocation, METADATA_SCHEMA_URL, METADATA_EXAMPLE_URL,
-                                            "/console/webservices/webservices" );
-        return metadataConfig.edit();
     }
 
     public String edit()
                             throws IOException {
-        if ( !location.exists() ) {
-            copyURLToFile( template, location );
-        }
-        this.content = readFileToString( location, "UTF-8" );
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "editConfig", this );
-        return "/console/generic/xmleditor?faces-redirect=true";
+        StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
+        sb.append( "&id=" ).append( id );
+        sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
+        sb.append( "&resourceProviderClass=" ).append( metadata.getIdentifier().getProvider().getCanonicalName() );
+        sb.append( "&nextView=" ).append( resourceOutcome );
+        return sb.toString();
     }
 
     public void delete() {
         try {
-            resourceManager.deleteResource( id );
+            workspace.getLocationHandler().delete( metadata.getLocation() );
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
                                                 null );
@@ -247,77 +156,20 @@ public class Config implements Comparable<Config> {
     }
 
     public void showErrors() {
-        ResourceState<?> state = manager.getCurrentResourceManager().getManager().getState( id );
+        String msg = "Initialization of resource with id '" + id + "' failed:";
 
-        String msg = "Initialization of resource with id '" + id + "' failed";
-
-        if ( state.getLastException() != null ) {
-            msg += ": " + state.getLastException().getMessage();
-        } else {
-            msg += ".";
+        for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
+            msg += error;
         }
+
         msg += " (The application server log may contain additional information.)";
+
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 
-    public String save() {
-
-        try {
-            XMLAdapter adapter = new XMLAdapter( new StringReader( content ), XMLAdapter.DEFAULT_URL );
-            File location = getLocation();
-            OutputStream os = new FileOutputStream( location );
-            adapter.getRootElement().serialize( os );
-            os.close();
-            content = null;
-            if ( autoActivate && resourceManager != null ) {
-                if ( state.getType() == StateType.deactivated ) {
-                    resourceManager.activate( id );
-                } else {
-                    resourceManager.deactivate( id );
-                    resourceManager.activate( id );
-                }
-            }
-        } catch ( Throwable t ) {
-            if ( resourceManager != null ) {
-                state = resourceManager.getState( id );
-            }
-            String msg = "Error adapting changes: " + t.getMessage();
-            if ( state.getLastException() != null ) {
-                msg = state.getLastException().getMessage();
-            }
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return resourceOutcome;
-        }
-        if ( resourceManager != null ) {
-            state = resourceManager.getState( id );
-        }
-        if ( state != null && state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
-
-        if ( requiresWSReload ) {
-            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-            ws.setModified();
-        }
-
-        return resourceOutcome;
-    }
-
     public int compareTo( Config o ) {
         return id.compareTo( o.id );
-    }
-
-    public File getLocation() {
-        return location;
-    }
-
-    public void setLocation( File location ) {
-        this.location = location;
     }
 
     public String getId() {
@@ -344,22 +196,6 @@ public class Config implements Comparable<Config> {
         this.template = template;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent( String content ) {
-        this.content = content;
-    }
-
-    public ConfigManager getManager() {
-        return manager;
-    }
-
-    public void setManager( ConfigManager manager ) {
-        this.manager = manager;
-    }
-
     public String getResourceOutcome() {
         return resourceOutcome;
     }
@@ -376,32 +212,9 @@ public class Config implements Comparable<Config> {
         this.schemaURL = schemaURL;
     }
 
-    public ResourceManager getResourceManager() {
-        return resourceManager;
-    }
-
-    public void setResourceManager( ResourceManager resourceManager ) {
-        this.resourceManager = resourceManager;
-    }
-
-    public boolean isRequiresWSReload() {
-        return requiresWSReload;
-    }
-
-    public void setRequiresWSReload( boolean requiresWSReload ) {
-        this.requiresWSReload = requiresWSReload;
-    }
-
-    public boolean isAutoActivate() {
-        return autoActivate;
-    }
-
-    public void setAutoActivate( boolean autoActivate ) {
-        this.autoActivate = autoActivate;
-    }
-
-    public void setState( ResourceState<?> state ) {
-        this.state = state;
+    public String getState() {
+        ResourceState state = workspace.getStates().getState( metadata.getIdentifier() );
+        return state == null ? "Deactivated" : state.toString();
     }
 
 }

@@ -35,61 +35,46 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.authentication.SecurityException;
-import org.deegree.services.controller.exception.ControllerInitException;
 import org.deegree.services.controller.exception.SOAPException;
 import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SOAPExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.SerializerProvider;
+import org.deegree.services.controller.exception.serializer.SerializerProviderInitializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
-import org.deegree.services.jaxb.metadata.AddressType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
-import org.deegree.services.jaxb.metadata.ServiceContactType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,12 +95,7 @@ public abstract class AbstractOWS implements OWS {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractOWS.class );
 
-    private ImplementationMetadata<?> implementationMetadata;
-
-    /** Common configuration (metadata) of parent {@link OGCFrontController}. */
-    protected DeegreeServicesMetadataType mainMetadataConf;
-
-    protected DeegreeServiceControllerType mainControllerConf;
+    protected ResourceMetadata<OWS> metadata;
 
     /**
      * Versions offered by the {@link AbstractOWS} instance (depends on configuration).
@@ -125,63 +105,20 @@ public abstract class AbstractOWS implements OWS {
      */
     protected SortedSet<Version> offeredVersions = new TreeSet<Version>();
 
-    protected DeegreeWorkspace workspace;
+    protected Workspace workspace;
 
-    private URL configURL;
+    private Object jaxbConfig;
 
-    protected ImplementationMetadata<?> serviceInfo;
-
-    private String configId;
-
-    protected AbstractOWS( URL configURL, ImplementationMetadata<?> serviceInfo ) {
-        this.configURL = configURL;
-        this.serviceInfo = serviceInfo;
-        try {
-            File f = new File( configURL.toURI() );
-            this.configId = f.getName().substring( 0, f.getName().length() - 4 );
-        } catch ( URISyntaxException e ) {
-            // then no configId will be available
-        }
+    protected AbstractOWS( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        this.metadata = metadata;
+        this.workspace = workspace;
+        this.jaxbConfig = jaxbConfig;
     }
-
-    private static List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
-
-        exceptionSerializers.clear();
-        Iterator<SerializerProvider> serializers = ServiceLoader.load( SerializerProvider.class,
-                                                                       workspace.getModuleClassLoader() ).iterator();
-        while ( serializers.hasNext() ) {
-            SerializerProvider p = serializers.next();
-            p.init( workspace );
-            exceptionSerializers.add( p );
-        }
-
-        WebServicesConfiguration ws = workspace.getSubsystemManager( WebServicesConfiguration.class );
-
-        // Copying to temporary input stream is necessary to avoid config file locks (on Windows)
-        // Only remove this if you know what you are doing! It may break the services-console!
-        byte[] bytes = null;
-        try {
-            bytes = FileUtils.readFileToByteArray( new File( configURL.toURI() ) );
-        } catch ( Throwable t ) {
-            LOG.error( t.getMessage(), t );
-            throw new ResourceInitException( t.getMessage() );
-        }
-
-        XMLAdapter adapter = new XMLAdapter( new ByteArrayInputStream( bytes ), configURL.toString() );
-        init( ws.getMetadataConfiguration(), ws.getMainConfiguration(), serviceInfo, adapter );
-    }
-
-    public ImplementationMetadata<?> getImplementationMetadata() {
-        return serviceInfo;
-    }
-
-    public String getId() {
-        return configId;
+    public void init() {
+        OwsGlobalConfigLoader loader = workspace.getInitializable( OwsGlobalConfigLoader.class );
+        init( loader.getMetadataConfig(), loader.getMainConfig(), jaxbConfig );
     }
 
     /**
@@ -191,36 +128,9 @@ public abstract class AbstractOWS implements OWS {
      * @param serviceInformation
      * @param controllerConfig
      *            controller configuration, must not be null
-     * @throws ControllerInitException
-     *             if the config version does not match one of the supported versions
      */
-    protected void init( DeegreeServicesMetadataType mainMetadataConf, DeegreeServiceControllerType mainControllerConf,
-                         ImplementationMetadata<?> serviceInformation, XMLAdapter controllerConfig )
-                            throws ResourceInitException {
-        this.mainMetadataConf = mainMetadataConf;
-        this.mainControllerConf = mainControllerConf;
-        this.implementationMetadata = serviceInformation;
-        String configVersion = controllerConfig.getRootElement().getAttributeValue( new QName( "configVersion" ) );
-        checkConfigVersion( controllerConfig.getSystemId(), configVersion );
-    }
-
-    /**
-     * Returns the names of all requests that are handled by this controller.
-     * 
-     * @return names of handled requests
-     */
-    public final Set<String> getHandledRequests() {
-        return implementationMetadata.getHandledRequests();
-    }
-
-    /**
-     * Returns all namespaces that are handled by this controller.
-     * 
-     * @return handled namespaces
-     */
-    public final Set<String> getHandledNamespaces() {
-        return implementationMetadata.getHandledNamespaces();
-    }
+    protected abstract void init( DeegreeServicesMetadataType mainMetadataConf,
+                                  DeegreeServiceControllerType mainControllerConf, Object controllerConfig );
 
     /**
      * @param requestedVersions
@@ -230,7 +140,7 @@ public abstract class AbstractOWS implements OWS {
                             throws ResourceInitException {
         for ( String requestedVersion : requestedVersions ) {
             Version version = Version.parseVersion( requestedVersion );
-            if ( !implementationMetadata.getImplementedVersions().contains( Version.parseVersion( requestedVersion ) ) ) {
+            if ( !( ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getImplementedVersions().contains( Version.parseVersion( requestedVersion ) ) ) ) {
                 String msg = "Version '" + requestedVersion + "' is not supported by the service implementation.";
                 throw new ResourceInitException( msg );
             }
@@ -389,14 +299,14 @@ public abstract class AbstractOWS implements OWS {
                             throws ResourceInitException {
 
         Version configVersion = Version.parseVersion( configVersionString );
-        if ( !implementationMetadata.getSupportedConfigVersions().contains( configVersion ) ) {
+        if ( !( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getSupportedConfigVersions().contains( configVersion ) ) {
             LOG.error( "" );
             LOG.error( "*** Configuration version mismatch ***", confFileURL );
             LOG.error( "" );
             StringBuilder msg = new StringBuilder( "File uses config version " ).append( configVersion );
             msg.append( ", but this deegree build only supports version(s): " );
             boolean separatorNeeded = false;
-            for ( Version supportedVersion : implementationMetadata.getSupportedConfigVersions() ) {
+            for ( Version supportedVersion : ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getSupportedConfigVersions() ) {
                 msg.append( supportedVersion );
                 if ( separatorNeeded ) {
                     msg.append( "," );
@@ -405,23 +315,6 @@ public abstract class AbstractOWS implements OWS {
             }
             msg.append( " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. " );
             throw new ResourceInitException( msg.toString() );
-        }
-    }
-
-    protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, OMElement element )
-                            throws ResourceInitException {
-        XMLAdapter adapter = new XMLAdapter( element );
-        return unmarshallConfig( jaxbPackage, schemaLocation, adapter );
-    }
-
-    protected Object unmarshallConfig( String jaxbPackage, String schemaLocation, XMLAdapter xmlAdapter )
-                            throws ResourceInitException {
-        try {
-            return JAXBUtils.unmarshall( jaxbPackage, schemaLocation, xmlAdapter, workspace );
-        } catch ( JAXBException e ) {
-            LOG.error( "Could not load service configuration: '{}'", e.getLinkedException().getMessage() );
-            throw new ResourceInitException( "Error parsing service configuration: "
-                                             + e.getLinkedException().getMessage(), e );
         }
     }
 
@@ -520,8 +413,10 @@ public abstract class AbstractOWS implements OWS {
                                OWSException exception, HttpResponseBuffer response )
                             throws ServletException {
 
-        ImplementationMetadata<?> md = getImplementationMetadata();
-        for ( SerializerProvider p : exceptionSerializers ) {
+        SerializerProviderInitializer spi = workspace.getInitializable( SerializerProviderInitializer.class );
+
+        ImplementationMetadata<?> md = ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata();
+        for ( SerializerProvider p : spi.getExceptionSerializers() ) {
             if ( p.matches( md ) ) {
                 serializer = p.getSerializer( md, serializer );
             }
@@ -610,134 +505,6 @@ public abstract class AbstractOWS implements OWS {
     }
 
     /**
-     * @param configuredServiceProvider
-     *            to be synchronized with the main configuration
-     * @return the configured service provider, with missing values filled from the main configuration.
-     */
-    protected ServiceProviderType synchronizeServiceProviderWithMainControllerConf( ServiceProviderType configuredServiceProvider ) {
-        ServiceProviderType mainProvider = mainMetadataConf.getServiceProvider();
-        ServiceProviderType result = configuredServiceProvider;
-        if ( configuredServiceProvider == null ) {
-            result = new ServiceProviderType();
-        }
-        if ( mainProvider != null ) {
-            result.setProviderName( syncStrings( result.getProviderName(), mainProvider.getProviderName() ) );
-            result.setProviderSite( syncStrings( result.getProviderSite(), mainProvider.getProviderSite() ) );
-            result.setServiceContact( syncContactTypes( result.getServiceContact(), mainProvider.getServiceContact() ) );
-        } else {
-            LOG.info( "Unable to synchronize the given service provider information with the global configuration (read from services_metadata.xml) because your global configuration file did not provide a ServiceProvider section. You can supply service provider information valid for all services (in this context) by adding a ServiceProvider section in the services_metadata.xml." );
-        }
-        return result;
-    }
-
-    /**
-     * @param serviceIdentification
-     *            to be synchronized with the configuration of the main controller.
-     * @return the service identification with all missing values filled in from the main controller service
-     *         identification.
-     */
-    protected ServiceIdentificationType synchronizeServiceIdentificationWithMainController( ServiceIdentificationType serviceIdentification ) {
-        ServiceIdentificationType mainID = mainMetadataConf.getServiceIdentification();
-        ServiceIdentificationType result = serviceIdentification;
-        if ( mainID != null ) {
-            if ( serviceIdentification == null ) {
-                result = new ServiceIdentificationType();
-            }
-            result.setFees( syncStrings( result.getFees(), mainID.getFees() ) );
-            if ( result.getAbstract().isEmpty() ) {
-                result.getAbstract().addAll( mainID.getAbstract() );
-            }
-            if ( result.getAccessConstraints().isEmpty() ) {
-                result.getAccessConstraints().addAll( mainID.getAccessConstraints() );
-            }
-            if ( result.getKeywords().isEmpty() ) {
-                result.getKeywords().addAll( mainID.getKeywords() );
-            }
-            if ( result.getTitle().isEmpty() ) {
-                result.getTitle().addAll( mainID.getTitle() );
-            }
-        } else {
-            LOG.info( "Unable to synchronize the given service identification information with the global configuration (read from services_metadata.xml) because your global configuration file did not provide a ServiceIdentification section. You can supply service identification information valid for all services (in this context) by adding a ServiceIdentification section in the services_metadata.xml." );
-        }
-        return result;
-
-    }
-
-    /**
-     * Synchronize the service contact information
-     * 
-     * @param localContact
-     * @param mainContact
-     * @return the merged service contact information
-     */
-    private ServiceContactType syncContactTypes( ServiceContactType localContact, ServiceContactType mainContact ) {
-        ServiceContactType result = localContact;
-        if ( mainContact != null ) {
-            if ( localContact == null ) {
-                result = new ServiceContactType();
-            }
-
-            // sync the addresses
-            result.setAddress( syncAddressTypes( result.getAddress(), mainContact.getAddress() ) );
-            result.setContactInstructions( syncStrings( result.getContactInstructions(),
-                                                        mainContact.getContactInstructions() ) );
-            result.setFacsimile( syncStrings( result.getFacsimile(), mainContact.getFacsimile() ) );
-            result.setHoursOfService( syncStrings( result.getHoursOfService(), mainContact.getHoursOfService() ) );
-            result.setOnlineResource( syncStrings( result.getOnlineResource(), mainContact.getOnlineResource() ) );
-            result.setPhone( syncStrings( result.getPhone(), mainContact.getPhone() ) );
-
-            // result.setIndividualName( syncStrings( result.getIndividualName(), mainContact.getIndividualName() ) );
-            // result.setPositionName( syncStrings( result.getPositionName(), mainContact.getPositionName() ) );
-            // result.setRole( syncStrings( result.getRole(), mainContact.getRole() ) );
-            // if ( result.getElectronicMailAddress().isEmpty() ) {
-            // result.getElectronicMailAddress().addAll( mainContact.getElectronicMailAddress() );
-            // }
-
-        }
-        return result;
-    }
-
-    /**
-     * Synchronize the address information.
-     * 
-     * @param localAddress
-     * @param mainAddress
-     * @return an address type with missing values filled in from the main address.
-     */
-    private AddressType syncAddressTypes( AddressType localAddress, AddressType mainAddress ) {
-        AddressType result = localAddress;
-        if ( mainAddress != null ) {
-            if ( localAddress == null ) {
-                result = new AddressType();
-            }
-            result.setAdministrativeArea( syncStrings( result.getAdministrativeArea(),
-                                                       mainAddress.getAdministrativeArea() ) );
-            result.setCity( syncStrings( result.getCity(), mainAddress.getCity() ) );
-            result.setCountry( syncStrings( result.getCountry(), mainAddress.getCountry() ) );
-            result.setPostalCode( syncStrings( result.getPostalCode(), mainAddress.getPostalCode() ) );
-            if ( result.getDeliveryPoint().isEmpty() ) {
-                result.getDeliveryPoint().addAll( mainAddress.getDeliveryPoint() );
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Simple method checking for a null or empty string.
-     * 
-     * @param localValue
-     * @param controllerValue
-     * @return the localvalue or the controller value if it was empty or null.
-     */
-    private String syncStrings( String localValue, String controllerValue ) {
-        boolean useController = ( localValue == null || "".equals( localValue.trim() ) );
-        if ( useController ) {
-            LOG.info( "Using main controller's value:" + controllerValue );
-        }
-        return useController ? controllerValue : localValue;
-    }
-
-    /**
      * Returns the {@link ExceptionSerializer} for the given request version.
      * 
      * @param requestVersion
@@ -748,4 +515,10 @@ public abstract class AbstractOWS implements OWS {
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new OWS110ExceptionReportSerializer( Version.parseVersion( "1.1.0" ) );
     }
+
+    @Override
+    public ResourceMetadata<OWS> getMetadata() {
+        return metadata;
+    }
+
 }

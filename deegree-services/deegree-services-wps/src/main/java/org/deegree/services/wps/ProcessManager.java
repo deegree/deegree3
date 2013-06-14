@@ -39,16 +39,13 @@ package org.deegree.services.wps;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * Manages the available {@link WPSProcess} instances and {@link ProcessProvider}s for the {@link WPService}
@@ -61,9 +58,14 @@ import org.deegree.services.wps.provider.ProcessProviderProvider;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
+public class ProcessManager extends DefaultResourceManager<ProcessProvider> {
 
-    private ProcessManagerMetadata metadata;
+    private Workspace workspace;
+
+    public ProcessManager() {
+        super( new DefaultResourceManagerMetadata<ProcessProvider>( ProcessProviderProvider.class, "processes",
+                                                                    "processes" ) );
+    }
 
     /**
      * Returns all available processes.
@@ -72,11 +74,12 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
      */
     public Map<CodeType, WPSProcess> getProcesses() {
         Map<CodeType, WPSProcess> processes = new HashMap<CodeType, WPSProcess>();
-        for ( ResourceState<ProcessProvider> state : getStates() ) {
-            if ( state.getResource() != null ) {
-                Map<CodeType, ? extends WPSProcess> idToProcess = state.getResource().getProcesses();
+        for ( ResourceIdentifier<ProcessProvider> rid : workspace.getResourcesOfType( ProcessProviderProvider.class ) ) {
+            ProcessProvider prov = workspace.getResource( rid.getProvider(), rid.getId() );
+            if ( prov != null ) {
+                Map<CodeType, ? extends WPSProcess> idToProcess = prov.getProcesses();
                 if ( idToProcess != null ) {
-                    processes.putAll( state.getResource().getProcesses() );
+                    processes.putAll( idToProcess );
                 }
             }
         }
@@ -92,35 +95,20 @@ public class ProcessManager extends AbstractResourceManager<ProcessProvider> {
      */
     public WPSProcess getProcess( CodeType id ) {
         WPSProcess process = null;
-        for ( ResourceState<ProcessProvider> state : getStates() ) {
-            if ( state.getResource() != null ) {
-                process = state.getResource().getProcess( id );
-                if ( process != null ) {
-                    break;
-                }
+        for ( ResourceIdentifier<ProcessProvider> rid : workspace.getResourcesOfType( ProcessProviderProvider.class ) ) {
+            ProcessProvider prov = workspace.getResource( rid.getProvider(), rid.getId() );
+            process = prov.getProcess( id );
+            if ( process != null ) {
+                break;
             }
         }
         return process;
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
-    }
-
-    public ResourceManagerMetadata<ProcessProvider> getMetadata() {
-        return metadata;
-    }
-
     @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        this.metadata = new ProcessManagerMetadata( workspace );
-    }
-
-    static class ProcessManagerMetadata extends DefaultResourceManagerMetadata<ProcessProvider> {
-        ProcessManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "processes", "processes", ProcessProviderProvider.class, workspace );
-        }
+    public void startup( Workspace workspace ) {
+        this.workspace = workspace;
+        super.startup( workspace );
     }
 
 }

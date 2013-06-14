@@ -110,6 +110,8 @@ import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.feature.stream.ThreadedFeatureInputStream;
 import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
+import org.deegree.services.OwsManager;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.security.SecurityConfiguration;
@@ -181,7 +183,7 @@ public class OGCFrontController extends HttpServlet {
 
     private transient SecurityConfiguration securityConfiguration;
 
-    private transient WebServicesConfiguration serviceConfiguration;
+    private transient OwsManager serviceConfiguration;
 
     private transient DeegreeWorkspace workspace;
 
@@ -232,7 +234,7 @@ public class OGCFrontController extends HttpServlet {
     /**
      * @return the service configuration
      */
-    public static WebServicesConfiguration getServiceConfiguration() {
+    public static OwsManager getServiceConfiguration() {
         return getInstance().serviceConfiguration;
     }
 
@@ -523,7 +525,8 @@ public class OGCFrontController extends HttpServlet {
 
     private HttpResponseBuffer createHttpResponseBuffer( HttpServletRequest request, HttpServletResponse response )
                             throws FileNotFoundException, IOException {
-        if ( serviceConfiguration.getRequestLogger() != null ) {
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        if ( loader.getRequestLogger() != null ) {
             response = createLoggingResponseWrapper( request, response );
         }
         return new HttpResponseBuffer( response );
@@ -531,11 +534,12 @@ public class OGCFrontController extends HttpServlet {
 
     private HttpServletResponse createLoggingResponseWrapper( HttpServletRequest request, HttpServletResponse response )
                             throws IOException, FileNotFoundException {
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
 
         Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
         boolean onlySuccessful = conf != null && conf;
 
-        if ( "POST".equals( request.getMethod() ) && serviceConfiguration.getRequestLogger() != null ) {
+        if ( "POST".equals( request.getMethod() ) && loader.getRequestLogger() != null ) {
             String dir = mainConfig.getRequestLogging().getOutputDirectory();
             File file;
             if ( dir == null ) {
@@ -549,10 +553,10 @@ public class OGCFrontController extends HttpServlet {
             }
             InputStream is = new LoggingInputStream( request.getInputStream(), new FileOutputStream( file ) );
             response = new LoggingHttpResponseWrapper( request.getRequestURL().toString(), response, file,
-                                                       onlySuccessful, serviceConfiguration.getRequestLogger(), is );
+                                                       onlySuccessful, loader.getRequestLogger(), is );
         } else {
             response = new LoggingHttpResponseWrapper( response, request.getQueryString(), onlySuccessful,
-                                                       serviceConfiguration.getRequestLogger(), null );
+                                                       loader.getRequestLogger(), null );
         }
         return response;
     }
@@ -564,7 +568,7 @@ public class OGCFrontController extends HttpServlet {
         if ( pathInfo != null ) {
             // remove start "/"
             String serviceId = pathInfo.substring( 1 );
-            ows = serviceConfiguration.get( serviceId );
+            ows = workspace.getNewWorkspace().getResource( OWSProvider.class, serviceId );
             if ( ows == null && serviceConfiguration.isSingleServiceConfigured() ) {
                 ows = serviceConfiguration.getSingleConfiguredService();
             }
@@ -595,7 +599,7 @@ public class OGCFrontController extends HttpServlet {
                 serviceId = pathInfo.substring( 1 );
             }
 
-            ows = serviceConfiguration.get( serviceId );
+            ows = workspace.getNewWorkspace().getResource( OWSProvider.class, serviceId );
             if ( ows == null && serviceConfiguration.isSingleServiceConfigured() ) {
                 ows = serviceConfiguration.getSingleConfiguredService();
             }
@@ -655,7 +659,8 @@ public class OGCFrontController extends HttpServlet {
             // Parse the request
             result = upload.parseRequest( request );
             LOG.debug( "The multipart request contains: " + result.size() + " items." );
-            if ( serviceConfiguration.getRequestLogger() != null ) { // TODO, this is not actually something of the
+            OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+            if ( loader.getRequestLogger() != null ) { // TODO, this is not actually something of the
                 // request logger, what is
                 // actually logged here?
                 for ( FileItem item : result ) {
@@ -781,7 +786,7 @@ public class OGCFrontController extends HttpServlet {
             // Once all services properly check their requests (WFS and SOS have this problem), this workaround can be
             // removed.
             if ( service == null
-                 && !( ows.getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
+                 && !( ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName()[0].equalsIgnoreCase( "WMS" ) ) ) {
                 OWSException ex = new OWSException( "The 'SERVICE' parameter is missing.", "MissingParameterValue",
                                                     "service" );
                 sendException( ows, ex, response, null );
@@ -1117,8 +1122,9 @@ public class OGCFrontController extends HttpServlet {
 
         workspace = getActiveWorkspace();
         workspace.initAll();
-        serviceConfiguration = workspace.getSubsystemManager( WebServicesConfiguration.class );
-        mainConfig = serviceConfiguration.getMainConfiguration();
+        serviceConfiguration = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
+        OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
+        mainConfig = loader.getMainConfig();
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
         }
@@ -1350,15 +1356,16 @@ public class OGCFrontController extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
+        destroyWorkspace();
         if ( mainConfig.isPreventClassloaderLeaks() == null || mainConfig.isPreventClassloaderLeaks() ) {
             plugClassLoaderLeaks();
         }
-        destroyWorkspace();
     }
 
     /**
      * Apply workarounds for classloader leaks, see eg. <a
-     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog post</a>.
+     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog
+     * post</a>.
      */
     private void plugClassLoaderLeaks() {
         // if the feature store manager does this, it breaks
@@ -1392,7 +1399,7 @@ public class OGCFrontController extends HttpServlet {
 
         // Batik
         try {
-            Class cls = Class.forName( "org.apache.batik.util.CleanerThread" );
+            Class<?> cls = Class.forName( "org.apache.batik.util.CleanerThread" );
             if ( cls != null ) {
                 Field field = cls.getDeclaredField( "thread" );
                 field.setAccessible( true );

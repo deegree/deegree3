@@ -1,0 +1,2 @@
+org.deegree.tile.tilematrixset.TileMatrixSetManager
+org.deegree.tile.persistence.TileStoreManager

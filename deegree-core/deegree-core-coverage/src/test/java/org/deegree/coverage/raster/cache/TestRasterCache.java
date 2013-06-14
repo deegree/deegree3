@@ -173,7 +173,7 @@ public class TestRasterCache {
                 mtc.addTile( raster );
             }
         }
-        return new TiledRaster( mtc );
+        return new TiledRaster( mtc, null );
     }
 
     /**
@@ -489,7 +489,7 @@ public class TestRasterCache {
                     for ( String exp : infoFile ) {
                         String line = b.readLine();
                         Assert.assertEquals( "Mismatch in line number: " + ( lnr++ ) + " of file: "
-                                             + f.getAbsolutePath() + ".", exp, line );
+                                                                     + f.getAbsolutePath() + ".", exp, line );
                     }
                     b.close();
                 } catch ( IOException e ) {

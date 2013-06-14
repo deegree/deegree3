@@ -130,7 +130,7 @@ public class SmoothingFilter implements DEMFilter {
                                                                                             outHeight ), null );
         RasterGeoReference rasterReference = currentRaster.getRasterReference().createRelocatedReference( envelope );
 
-        SimpleRaster out = new SimpleRaster( outData, envelope, rasterReference );
+        SimpleRaster out = new SimpleRaster( outData, envelope, rasterReference, null );
 
         int percentage = 0;
         int step = 10;

@@ -41,14 +41,14 @@ import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -57,7 +57,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WCSProvider implements OWSProvider {
+public class WCSProvider extends OWSProvider {
 
     protected static final ImplementationMetadata<WCSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WCSRequestType>() {
         {
@@ -70,12 +70,12 @@ public class WCSProvider implements OWSProvider {
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wcs";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return WCSProvider.class.getResource( "/META-INF/schemas/services/wcs/3.0.0/wcs_configuration.xsd" );
     }
 
@@ -85,19 +85,8 @@ public class WCSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        return new WCSController( configURL, getImplementationMetadata() );
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WcsMetadata( workspace, location, this );
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { CoverageBuilderManager.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
-
-    }
 }

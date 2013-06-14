@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
+import org.deegree.workspace.Resource;
 
 /**
  * The <code></code> class TODO add class documentation here.

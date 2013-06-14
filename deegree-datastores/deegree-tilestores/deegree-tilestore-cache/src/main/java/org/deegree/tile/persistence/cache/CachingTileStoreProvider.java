@@ -40,25 +40,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.cache;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-
-import java.io.File;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 
-import net.sf.ehcache.CacheManager;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
 import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
- * The <code>GeoTIFFTileStoreProvider</code> provides a <code>TileMatrixSet</code> out of a GeoTIFF file (tiled
- * BIGTIFF).
+ * SPI provider class for caching tile stores.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
@@ -66,73 +57,23 @@ import org.deegree.tile.persistence.TileStoreProvider;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class CachingTileStoreProvider implements TileStoreProvider {
+public class CachingTileStoreProvider extends TileStoreProvider {
 
     private static final URL SCHEMA = CachingTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/cache/3.2.0/cache.xsd" );
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public CachingTileStore create( URL configUrl )
-                            throws ResourceInitException {
-        try {
-            org.deegree.tile.persistence.cache.jaxb.CachingTileStore cfg;
-            cfg = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
-                                                                                         SCHEMA, configUrl, workspace );
-
-            TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-            TileStore ts = mgr.get( cfg.getTileStoreId() );
-            if ( ts == null ) {
-                throw new ResourceInitException( "The tile store with id " + cfg.getTileStoreId()
-                                                 + " is not available." );
-            }
-
-            String cache = cfg.getCacheConfiguration();
-            File f = new File( cache );
-            if ( !f.isAbsolute() ) {
-                f = new File( new File( configUrl.toURI() ).getParentFile(), cache );
-            }
-            CacheManager cmgr = new CacheManager( f.toURI().toURL() );
-
-            return new CachingTileStore( ts, cmgr, cfg.getCacheName() );
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Unable to create tile store.", e );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/datasource/tile/cache";
     }
 
     @Override
-    public URL getConfigSchema() {
-        return SCHEMA;
+    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
+        return new CachingTileStoreMetadata( workspace, location, this );
     }
 
     @Override
-    public List<File> getTileStoreDependencies( File config ) {
-        try {
-            org.deegree.tile.persistence.cache.jaxb.CachingTileStore p;
-            p = (org.deegree.tile.persistence.cache.jaxb.CachingTileStore) unmarshall( "org.deegree.tile.persistence.cache.jaxb",
-                                                                                       SCHEMA, config.toURI().toURL(),
-                                                                                       workspace );
-            return Collections.<File> singletonList( new File( config.getParentFile(), p.getTileStoreId() + ".xml" ) );
-        } catch ( Throwable e ) {
-            // ignore here, will be parsed again anyway
-        }
-        return Collections.<File> emptyList();
+    public URL getSchema() {
+        return SCHEMA;
     }
 
 }

@@ -48,7 +48,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -63,6 +62,7 @@ import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.input.ReferencedComplexInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.ParameterDescription;
+import org.deegree.workspace.Workspace;
 
 /**
  * A {@link JrxmlContentProvider} for image parameters
@@ -74,7 +74,7 @@ import org.deegree.services.wps.provider.jrxml.ParameterDescription;
  */
 public class ImageContentProvider extends AbstractJrxmlContentProvider {
 
-    public ImageContentProvider( DeegreeWorkspace workspace ) {
+    public ImageContentProvider( Workspace workspace ) {
         super( workspace );
     }
 

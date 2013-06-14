@@ -35,9 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -49,9 +50,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import junit.framework.Assert;
-
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.schema.RedirectingEntityResolver;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -65,13 +63,14 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.function.FunctionManager;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.spatial.Disjoint;
 import org.deegree.filter.spatial.Overlaps;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Polygon;
+import org.deegree.workspace.standard.DefaultWorkspace;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -95,7 +94,7 @@ public class Filter200XMLDecoderTest {
     @Before
     public void setUp()
                             throws Exception {
-        new FunctionManager().startup( DeegreeWorkspace.getInstance() );
+        new DefaultWorkspace( new File( "nix" ) ).initAll();
     }
 
     @Test
@@ -147,7 +146,6 @@ public class Filter200XMLDecoderTest {
             ValueReference valRef = (ValueReference) op.getParam1();
             Assert.assertEquals( "Geometry", valRef.getAsText() );
             Assert.assertEquals( new QName( "Geometry" ), valRef.getAsQName() );
-            @SuppressWarnings("unchecked")
             Envelope env = (Envelope) op.getGeometry();
             // Assert.assertEquals( "urn:fes:def:crs:EPSG::4326", env.getCoordinateSystem().getName() );
         }

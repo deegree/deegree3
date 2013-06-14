@@ -37,7 +37,9 @@
 package org.deegree.tools.rendering.manager;
 
 import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,12 +52,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
@@ -64,6 +64,9 @@ import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * The <code>PrototypeAssigner</code> is a tool to assign prototypes to existing buildings.
@@ -104,7 +107,7 @@ public class PrototypeAssigner {
 
     private static final String DEPTH = "depth";
 
-    private static DeegreeWorkspace workspace;
+    private static Workspace workspace;
 
     /**
      * Creates the commandline parser and adds the options.
@@ -123,7 +126,7 @@ public class PrototypeAssigner {
             printHelp( options );
         }
 
-        workspace = DeegreeWorkspace.getInstance();
+        workspace = new DefaultWorkspace( new File( "nix" ) );
 
         try {
             CommandLine line = parser.parse( options, args );
@@ -216,12 +219,11 @@ public class PrototypeAssigner {
     private static ModelBackend<?> getModelBackend( CommandLine line )
                             throws UnsupportedOperationException, DatasourceException {
         String id = "1";
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        if ( mgr.getState( id ) == null ) {
-            JDBCParams params = new DefaultJDBCParams( line.getOptionValue( DB_HOST ),
-                                                       line.getOptionValue( OPT_DB_USER ),
-                                                       line.getOptionValue( OPT_DB_PASS ), false );
-            mgr.addPool( id, params, workspace );
+        if ( workspace.getResource( ConnectionProviderProvider.class, id ) == null ) {
+            ResourceLocation<ConnectionProvider> loc = getSyntheticProvider( id, line.getOptionValue( DB_HOST ),
+                                                                             line.getOptionValue( OPT_DB_USER ),
+                                                                             line.getOptionValue( OPT_DB_PASS ) );
+            workspace.getLocationHandler().addExtraResource( loc );
         }
         return ModelBackend.getInstance( id, null );
     }

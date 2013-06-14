@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.4-pre1-SNAPSHOT</version>
+    <version>3.4-pre2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -35,6 +35,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-db</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.postgis</groupId>
       <artifactId>postgis-jdbc</artifactId>
     </dependency>
@@ -43,5 +48,6 @@
       <artifactId>postgresql</artifactId>
     </dependency>
   </dependencies>
+  
 </project>
 

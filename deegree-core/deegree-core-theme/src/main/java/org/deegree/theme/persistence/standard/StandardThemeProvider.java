@@ -40,95 +40,36 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.deegree.theme.Themes.aggregateSpatialMetadata;
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.LayerStoreManager;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
-import org.deegree.theme.persistence.standard.jaxb.ThemeType;
-import org.deegree.theme.persistence.standard.jaxb.Themes;
-import org.slf4j.Logger;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * Provider for standard themes.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
  */
-public class StandardThemeProvider implements ThemeProvider {
-
-    private static final Logger LOG = getLogger( StandardThemeProvider.class );
+public class StandardThemeProvider extends ThemeProvider {
 
     private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/3.2.0/themes.xsd" );
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public Theme create( URL configUrl )
-                            throws ResourceInitException {
-        String pkg = "org.deegree.theme.persistence.standard.jaxb";
-        try {
-            Themes cfg;
-            cfg = (Themes) unmarshall( pkg, SCHEMA_URL, configUrl, workspace );
-
-            List<String> storeIds = cfg.getLayerStoreId();
-            Map<String, LayerStore> stores = new LinkedHashMap<String, LayerStore>( storeIds.size() );
-            LayerStoreManager mgr = workspace.getSubsystemManager( LayerStoreManager.class );
-
-            for ( String id : storeIds ) {
-                LayerStore store = mgr.get( id );
-                if ( store == null ) {
-                    LOG.warn( "Layer store with id {} is not available.", id );
-                    continue;
-                }
-                stores.put( id, store );
-            }
-
-            ThemeType root = cfg.getTheme();
-            Theme theme;
-            if ( root == null ) {
-                theme = StandardThemeBuilder.buildAutoTheme( stores );
-            } else {
-                theme = StandardThemeBuilder.buildTheme( root, root.getLayer(), root.getTheme(), stores );
-            }
-            aggregateSpatialMetadata( theme );
-            return theme;
-        } catch ( Throwable e ) {
-            throw new ResourceInitException( "Could not parse theme configuration file.", e );
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/themes/standard";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<Theme> createFromLocation( Workspace workspace, ResourceLocation<Theme> location ) {
+        return new StandardThemeMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return SCHEMA_URL;
     }
 

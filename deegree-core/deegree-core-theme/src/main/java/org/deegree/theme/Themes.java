@@ -49,9 +49,6 @@ import org.deegree.layer.Layer;
  * Utility methods for using themes.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
  */
 public class Themes {
 
@@ -104,7 +101,7 @@ public class Themes {
 
     private static Envelope aggregateFromTheme( Theme t, Envelope env, List<ICRS> crs ) {
         aggregateSpatialMetadata( t );
-        SpatialMetadata smd = t.getMetadata().getSpatialMetadata();
+        SpatialMetadata smd = t.getLayerMetadata().getSpatialMetadata();
         if ( smd.getEnvelope() != null ) {
             if ( env == null ) {
                 env = smd.getEnvelope();
@@ -121,7 +118,7 @@ public class Themes {
     public static void aggregateSpatialMetadata( Theme theme ) {
         // TODO price question is, bottom up or top down inheritance? Possibly a combined approach is desirable (top
         // down inheritance for configured theme values, bottom up for envelopes from layers or so)
-        SpatialMetadata curSmd = theme.getMetadata().getSpatialMetadata();
+        SpatialMetadata curSmd = theme.getLayerMetadata().getSpatialMetadata();
         Envelope env = curSmd.getEnvelope();
         List<ICRS> crs = new ArrayList<ICRS>();
         if ( curSmd.getCoordinateSystems() != null ) {
@@ -133,7 +130,7 @@ public class Themes {
         for ( Layer l : theme.getLayers() ) {
             env = aggregateFromLayer( l, env, crs );
         }
-        theme.getMetadata().setSpatialMetadata( new SpatialMetadata( env, crs ) );
+        theme.getLayerMetadata().setSpatialMetadata( new SpatialMetadata( env, crs ) );
     }
 
 }

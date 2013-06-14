@@ -42,7 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -99,11 +98,6 @@ public class PostGISDialect implements SQLDialect {
 
     public PostGISDialect( boolean useLegacyPredicates ) {
         this.useLegacyPredicates = useLegacyPredicates;
-    }
-
-    @Override
-    public Type getDBType() {
-        return Type.PostgreSQL;
     }
 
     @Override

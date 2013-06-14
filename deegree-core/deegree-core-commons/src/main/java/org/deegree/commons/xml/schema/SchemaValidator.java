@@ -58,7 +58,7 @@ import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.apache.xerces.xs.LSInputList;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.commons.proxy.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
@@ -113,7 +113,7 @@ public class SchemaValidator {
      *            attribute is considered then)
      * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
      */
-    public static List<String> validate( InputStream source, String... schemaUris ) {
+    public static List<SchemaValidationEvent> validate( InputStream source, String... schemaUris ) {
         return validate( new XMLInputSource( null, null, null, source, null ), schemaUris );
     }
 
@@ -130,9 +130,9 @@ public class SchemaValidator {
      * @throws IOException
      * @throws MalformedURLException
      */
-    public static List<String> validate( String url, String... schemaUris )
+    public static List<SchemaValidationEvent> validate( String url, String... schemaUris )
                             throws MalformedURLException, IOException {
-        InputStream is = ProxyUtils.openURLConnection( new URL( url ), null, null ).getInputStream();
+        InputStream is = ProxySettings.openURLConnection( new URL( url ), null, null ).getInputStream();
         return validate( new XMLInputSource( null, null, null, is, null ), schemaUris );
     }
 
@@ -141,14 +141,15 @@ public class SchemaValidator {
      * <code>xsi:schemaLocation</code> attribute) and/or to explicitly specified schema references.
      * 
      * @param source
-     *            provides the document to be validated, must not be null
+     *            provides the document to be validated, must not be <code>null</code>
      * @param schemaUris
-     *            URIs of schema documents to be considered, can be null (only the <code>xsi:schemaLocation</code>
-     *            attribute is considered then)
-     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     *            URIs of schema documents to be considered, can be <code>null</code> (only the
+     *            <code>xsi:schemaLocation</code> attribute is considered then)
+     * @return list of validation events (errors/warnings) that occurred, never <code>null</code>, size of 0 means valid
+     *         document
      */
-    public static List<String> validate( XMLInputSource source, String... schemaUris ) {
-        final List<String> errors = new LinkedList<String>();
+    public static List<SchemaValidationEvent> validate( XMLInputSource source, String... schemaUris ) {
+        final List<SchemaValidationEvent> errors = new LinkedList<SchemaValidationEvent>();
 
         try {
             RedirectingEntityResolver resolver = new RedirectingEntityResolver();
@@ -164,37 +165,26 @@ public class SchemaValidator {
                 @Override
                 public void error( String domain, String key, XMLParseException e )
                                         throws XNIException {
-                    LOG.debug( "Encountered error: " + toString( e ) );
-                    errors.add( "Error: " + toString( e ) );
+                    errors.add( new SchemaValidationEvent( domain, key, e ) );
                 }
 
                 @SuppressWarnings("synthetic-access")
                 @Override
                 public void fatalError( String domain, String key, XMLParseException e )
                                         throws XNIException {
-                    LOG.debug( "Encountered fatal error: " + toString( e ) );
-                    errors.add( "Fatal error: " + toString( e ) );
+                    errors.add( new SchemaValidationEvent( domain, key, e ) );
                 }
 
                 @SuppressWarnings("synthetic-access")
                 @Override
                 public void warning( String domain, String key, XMLParseException e )
                                         throws XNIException {
-                    LOG.debug( "Encountered warning: " + toString( e ) );
-                    errors.add( "Warning: " + toString( e ) );
-                }
-
-                private String toString( XMLParseException e ) {
-                    String s = e.getLocalizedMessage();
-                    s += " (line: " + e.getLineNumber() + ", column: " + e.getColumnNumber();
-                    s += e.getExpandedSystemId() != null ? ", SystemID: '" + e.getExpandedSystemId() + "')" : ")";
-                    return s;
+                    errors.add( new SchemaValidationEvent( domain, key, e ) );
                 }
             } );
             parserConfig.parse( source );
         } catch ( Exception e ) {
-            LOG.debug( e.getMessage(), e );
-            errors.add( "Fatal error: " + e.getMessage() );
+            errors.add( new SchemaValidationEvent( e ) );
         }
         return errors;
     }

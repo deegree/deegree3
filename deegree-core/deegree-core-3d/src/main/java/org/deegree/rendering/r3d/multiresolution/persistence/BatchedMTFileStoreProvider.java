@@ -37,13 +37,9 @@ package org.deegree.rendering.r3d.multiresolution.persistence;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.rendering.r3d.jaxb.batchedmt.BatchedMTFileStoreConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -53,48 +49,25 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class BatchedMTFileStoreProvider implements BatchedMTStoreProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( BatchedMTFileStoreProvider.class );
+public class BatchedMTFileStoreProvider extends BatchedMTStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/batchedmt/file";
 
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.rendering.r3d.jaxb.batchedmt";
-
     private static final URL CONFIG_SCHEMA = BatchedMTFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/batchedmt/3.0.0/file.xsd" );
 
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NS;
     }
 
     @Override
-    public BatchedMTStore build( URL configURL, DeegreeWorkspace workspace ) {
-
-        BatchedMTStore bs = null;
-        try {
-            BatchedMTFileStoreConfig config = (BatchedMTFileStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               CONFIG_SCHEMA,
-                                                                                               configURL, workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
-
-            CRSManager.getCRSRef( config.getCrs() );
-            URL dir = resolver.resolve( config.getDirectory() );
-            int maxDirectMem = config.getMaxDirectMemory().intValue();
-            bs = new BatchedMTFileStore( dir, maxDirectMem );
-
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            String msg = "Error in BatchedMT store configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new IllegalArgumentException( msg, e );
-        }
-        return bs;
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
     }
 
     @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
+    public ResourceMetadata<BatchedMTStore> createFromLocation( Workspace workspace,
+                                                                ResourceLocation<BatchedMTStore> location ) {
+        return new BatchedMTFileStoreMetadata( workspace, location, this );
     }
+
 }

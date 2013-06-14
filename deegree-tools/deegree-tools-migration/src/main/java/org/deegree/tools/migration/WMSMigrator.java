@@ -38,7 +38,8 @@ package org.deegree.tools.migration;
 import java.io.File;
 
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * 
@@ -62,9 +63,10 @@ public class WMSMigrator {
             return;
         }
 
-        DeegreeWorkspace ws = null;
+        Workspace ws = null;
         try {
-            ws = DeegreeWorkspace.getInstance( null, wsloc );
+
+            ws = new DefaultWorkspace( wsloc );
             ws.initAll();
             new FeatureLayerExtractor( ws ).extract();
             new ThemeExtractor( ws ).transform();
@@ -73,7 +75,7 @@ public class WMSMigrator {
             e.printStackTrace();
         } finally {
             if ( ws != null ) {
-                ws.destroyAll();
+                ws.destroy();
             }
         }
     }

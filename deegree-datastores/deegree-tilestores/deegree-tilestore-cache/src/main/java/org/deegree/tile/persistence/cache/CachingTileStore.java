@@ -50,8 +50,6 @@ import java.util.Map;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
@@ -60,6 +58,8 @@ import org.deegree.tile.TileDataSet;
 import org.deegree.tile.Tiles;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * {@link TileStore} that acts as a caching proxy to another {@link TileStore}.
@@ -79,15 +79,18 @@ public class CachingTileStore implements TileStore {
 
     private Map<String, TileDataSet> tileMatrixSets;
 
-    public CachingTileStore( TileStore tileStore, CacheManager cacheManager, String cacheName ) {
+    private ResourceMetadata<TileStore> metadata;
+
+    public CachingTileStore( TileStore tileStore, CacheManager cacheManager, String cacheName,
+                             ResourceMetadata<TileStore> metadata ) {
         this.tileStore = tileStore;
         this.cacheManager = cacheManager;
+        this.metadata = metadata;
         this.cache = cacheManager.getCache( cacheName );
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         Collection<String> ids = tileStore.getTileDataSetIds();
         tileMatrixSets = new HashMap<String, TileDataSet>();
         for ( String id : ids ) {
@@ -166,4 +169,10 @@ public class CachingTileStore implements TileStore {
     public TileStoreTransaction acquireTransaction( String id ) {
         throw new UnsupportedOperationException( "CachingTileStore does not support transactions." );
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
 }

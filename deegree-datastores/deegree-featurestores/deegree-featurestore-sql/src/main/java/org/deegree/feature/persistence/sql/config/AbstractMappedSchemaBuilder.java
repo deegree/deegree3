@@ -80,6 +80,7 @@ import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.MappingExpression;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,7 @@ public abstract class AbstractMappedSchemaBuilder {
     private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
 
     public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect,
-                                         DeegreeWorkspace workspace )
+                                         Workspace workspace )
                             throws SQLException, FeatureStoreException {
         boolean deleteCascadingByDB = true;
         if ( config.getJoinTableDeletePropagation() != null ) {

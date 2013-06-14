@@ -39,9 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * 
@@ -54,13 +54,15 @@ public class MultipleLayerStore implements LayerStore {
 
     private Map<String, Layer> map;
 
-    public MultipleLayerStore( Map<String, Layer> map ) {
+    private ResourceMetadata<LayerStore> metadata;
+
+    public MultipleLayerStore( Map<String, Layer> map, ResourceMetadata<LayerStore> metadata ) {
         this.map = map;
+        this.metadata = metadata;
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to do
     }
 
@@ -79,6 +81,11 @@ public class MultipleLayerStore implements LayerStore {
     @Override
     public Layer get( String identifier ) {
         return map.get( identifier );
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 
 }

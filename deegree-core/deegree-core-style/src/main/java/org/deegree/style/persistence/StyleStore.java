@@ -42,8 +42,8 @@ package org.deegree.style.persistence;
 
 import java.util.List;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Resource;
 
 /**
  * Describes what a style store resource can do.

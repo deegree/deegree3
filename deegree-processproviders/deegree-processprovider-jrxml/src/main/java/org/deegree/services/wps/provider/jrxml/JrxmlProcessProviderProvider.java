@@ -35,30 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.jrxml;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.services.wps.provider.ProcessProviderProvider;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcess.Subreport;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.JrxmlProcesses;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.Metadata;
-import org.deegree.services.wps.provider.jrxml.jaxb.process.Metadata.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * A {@link ProcessProviderProvider} for processes encapuslating jrxml files.
@@ -68,86 +51,23 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class JrxmlProcessProviderProvider implements ProcessProviderProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( JrxmlProcessProviderProvider.class );
+public class JrxmlProcessProviderProvider extends ProcessProviderProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/processes/jrxml";
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public ProcessProvider create( URL configUrl )
-                            throws ResourceInitException {
-
-        LOG.info( "Configuring jrxml process provider using file '" + configUrl + "'." );
-
-        List<JrxmlProcessDescription> processes = new ArrayList<JrxmlProcessDescription>();
-        String jrxml = null;
-        try {
-            JAXBContext jc = JAXBContext.newInstance( "org.deegree.services.wps.provider.jrxml.jaxb.process",
-                                                      workspace.getModuleClassLoader() );
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            JrxmlProcesses config = (JrxmlProcesses) unmarshaller.unmarshal( configUrl );
-
-            XMLAdapter a = new XMLAdapter( configUrl );
-
-            List<JrxmlProcess> processList = config.getJrxmlProcess();
-            for ( JrxmlProcess jrxmlProcess : processList ) {
-                jrxml = jrxmlProcess.getJrxml();
-                org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle resourceBundle = jrxmlProcess.getResourceBundle();
-                URL template = null;
-                String description = null;
-                Map<String, ParameterDescription> paramDescription = new HashMap<String, ParameterDescription>();
-                if ( jrxmlProcess.getMetadata() != null ) {
-                    Metadata metadata = jrxmlProcess.getMetadata();
-                    if ( metadata.getTemplate() != null ) {
-                        template = a.resolve( metadata.getTemplate() );
-                    }
-                    description = metadata.getDescription();
-                    for ( Parameter p : metadata.getParameter() ) {
-                        paramDescription.put( p.getId(),
-                                              new ParameterDescription( p.getId(), p.getTitle(), p.getDescription() ) );
-                    }
-                }
-                Map<String, URL> subreports = new HashMap<String, URL>();
-                for ( Subreport subreport : jrxmlProcess.getSubreport() ) {
-                    subreports.put( subreport.getId(), a.resolve( subreport.getValue() ) );
-                }
-                processes.add( new JrxmlProcessDescription( jrxmlProcess.getId(), a.resolve( jrxml ), description,
-                                                            paramDescription, template, subreports, resourceBundle ) );
-            }
-
-        } catch ( JAXBException e ) {
-            String msg = "Could not parse configuration " + configUrl + ": " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new ResourceInitException( msg );
-        } catch ( MalformedURLException e ) {
-            String msg = "Could not resolve path to the jrxml file " + jrxml + ": " + e.getMessage();
-            LOG.debug( msg, e );
-            throw new ResourceInitException( msg );
-        }
-        return new JrxmlProcessProvider( processes );
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NS;
     }
 
     @Override
-    public URL getConfigSchema() {
+    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
+                                                                 ResourceLocation<ProcessProvider> location ) {
+        return new JrxmlProcessProviderMetadata( workspace, location, this );
+    }
+
+    @Override
+    public URL getSchema() {
         return JrxmlProcessProviderProvider.class.getResource( "META-INF/schemas/processes/jrxml/0.1.0/jrxmlProcess.xsd" );
     }
 

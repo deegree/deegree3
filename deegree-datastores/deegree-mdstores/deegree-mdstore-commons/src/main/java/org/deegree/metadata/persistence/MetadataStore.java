@@ -39,9 +39,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.workspace.Resource;
 
 /**
  * Base interface of the {@link MetadataRecord} persistence layer, provides access to stored {@link MetadataRecord}
@@ -49,9 +49,6 @@ import org.deegree.protocol.csw.MetadataStoreException;
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: lbuesching $
- * 
- * @version $Revision: 30912 $, $Date: 2011-05-25 08:59:06 +0200 (Mi, 25. Mai 2011) $
  */
 public interface MetadataStore<T extends MetadataRecord> extends Resource {
 

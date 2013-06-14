@@ -35,54 +35,55 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.postgis;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.deegree.commons.utils.JDBCUtils.close;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectProvider;
+import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for PostGIS-enabled PostgreSQL databases.
+ * {@link SqlDialectProvider} for PostGIS-enabled PostgreSQL databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31034 $, $Date: 2011-06-09 16:47:31 +0200 (Do, 09. Jun 2011) $
  */
-public class PostGISDialectProvider implements SQLDialectProvider {
+public class PostGISDialectProvider implements SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
 
     @Override
-    public Type getSupportedType() {
-        return PostgreSQL;
+    public boolean supportsConnection( Connection connection ) {
+        String url = null;
+        try {
+            url = connection.getMetaData().getURL();
+        } catch ( Exception e ) {
+            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return false;
+        }
+        return url.startsWith( "jdbc:postgresql:" );
     }
 
     @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public SQLDialect createDialect( Connection connection ) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         boolean useLegacyPredicates = false;
         try {
-            ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
-            if ( conn == null ) {
-                throw new ResourceInitException( "JDBC connection " + connId + " is not available." );
-            }
-            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
+            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( connection, LOG );
+        } catch ( Exception e ) {
+            LOG.trace( e.getMessage(), e );
+            throw new ResourceInitException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
         }

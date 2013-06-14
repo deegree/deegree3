@@ -35,10 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows.wmts;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.remoteows.RemoteOWS;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * {@link RemoteOWS} implementation for remote <a href="http://www.opengeospatial.org/standards/wmts">Web Map Tile
@@ -53,14 +52,19 @@ public class RemoteWMTS implements RemoteOWS {
 
     private final WMTSClient client;
 
+    private ResourceMetadata<RemoteOWS> metadata;
+
     /**
      * Creates a new {@link RemoteWMTS} instance.
      * 
      * @param client
      *            client to use for accessing the remote WMTS, must not be <code>null</code>
+     * @param metadata
+     *            resource metadata, must not be <code>null</code> if resource is managed
      */
-    public RemoteWMTS( WMTSClient client ) {
+    public RemoteWMTS( WMTSClient client, ResourceMetadata<RemoteOWS> metadata ) {
         this.client = client;
+        this.metadata = metadata;
     }
 
     /**
@@ -78,8 +82,13 @@ public class RemoteWMTS implements RemoteOWS {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to do
     }
+
+    @Override
+    public ResourceMetadata<RemoteOWS> getMetadata() {
+        return metadata;
+    }
+
 }

@@ -65,14 +65,13 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.codec.binary.Base64;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -142,24 +141,21 @@ public class PostgreSQLReader {
 
     private final HashMap<Styling<?>, Continuation<Styling<?>>> continuations = new HashMap<Styling<?>, Continuation<Styling<?>>>();
 
-    private String connid;
-
     private final String baseSystemId;
 
     private final String schema;
 
-    private DeegreeWorkspace workspace;
+    private ConnectionProvider connProvider;
 
     /**
      * @param connid
      * @param baseSystemId
      *            to resolve relative references in sld files
      */
-    public PostgreSQLReader( String connid, String schema, String baseSystemId, DeegreeWorkspace workspace ) {
-        this.connid = connid;
+    public PostgreSQLReader( ConnectionProvider connProvider, String schema, String baseSystemId ) {
+        this.connProvider = connProvider;
         this.schema = schema;
         this.baseSystemId = baseSystemId;
-        this.workspace = workspace;
     }
 
     private Pair<Graphic, Continuation<Styling<?>>> getGraphic( int id, Connection conn, Continuation<Styling<?>> contn )
@@ -843,8 +839,7 @@ public class PostgreSQLReader {
         ResultSet rs = null;
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connid );
+            conn = connProvider.getConnection();
             stmt = conn.prepareStatement( "select type, fk, minscale, maxscale, sld, name from " + schema
                                           + ".styles where id = ?" );
             stmt.setInt( 1, id );

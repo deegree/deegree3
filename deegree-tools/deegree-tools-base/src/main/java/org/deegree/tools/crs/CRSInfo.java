@@ -57,7 +57,6 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.io.deegree.CRSExporterBase;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.persistence.CRSStore;
 

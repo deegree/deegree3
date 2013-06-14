@@ -53,6 +53,7 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,13 +78,9 @@ public class ParseISOTest extends AbstractISOTest {
                             ResourceInitException {
         LOG.info( "START Test: test various elements for one metadataRecord " );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
+
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_10 );
         if ( ids != null ) {
             // test query

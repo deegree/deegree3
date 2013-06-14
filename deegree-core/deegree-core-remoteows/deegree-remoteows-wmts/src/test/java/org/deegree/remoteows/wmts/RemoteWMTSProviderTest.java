@@ -37,9 +37,17 @@ package org.deegree.remoteows.wmts;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.ResourceInitException;
+import org.deegree.remoteows.RemoteOWSProvider;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.WorkspaceUtils;
+import org.deegree.workspace.standard.DefaultWorkspace;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -52,20 +60,37 @@ import org.junit.Test;
  */
 public class RemoteWMTSProviderTest {
 
+    private DefaultWorkspace workspace;
+
+    @Before
+    public void setup()
+                            throws IOException {
+        File f = File.createTempFile( "workspace", "test" );
+        f.delete();
+        workspace = new DefaultWorkspace( f );
+        workspace.initAll();
+    }
+
+    @After
+    public void destroy() {
+        workspace.destroy();
+    }
+
     @Test
     public void testCreateFromLocalCapabilitiesUrl()
-                            throws ResourceInitException {
-        RemoteWMTSProvider provider = new RemoteWMTSProvider();
+                            throws ResourceInitException, IOException, URISyntaxException {
         URL configUrl = RemoteWMTSProviderTest.class.getResource( "example.xml" );
-        RemoteWMTS remoteWmts = provider.create( configUrl );
-        assertNotNull( remoteWmts );
+        File file = new File( configUrl.toURI() );
+        RemoteWMTS wmts = (RemoteWMTS) WorkspaceUtils.activateFromFile( workspace, RemoteOWSProvider.class, "example",
+                                                                        file );
+        assertNotNull( wmts );
     }
 
     @Test(expected = ResourceInitException.class)
     public void testCreateFromInvalidConfig()
-                            throws ResourceInitException {
-        RemoteWMTSProvider provider = new RemoteWMTSProvider();
+                            throws ResourceInitException, IOException, URISyntaxException {
         URL configUrl = RemoteWMTSProviderTest.class.getResource( "example.invalid" );
-        provider.create( configUrl );
+        File file = new File( configUrl.toURI() );
+        WorkspaceUtils.activateFromFile( workspace, RemoteOWSProvider.class, "example", file );
     }
 }

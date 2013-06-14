@@ -35,31 +35,42 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.mssql;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
+import java.sql.Connection;
+
+import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectProvider;
+import org.slf4j.Logger;
 
 /**
- * {@link SQLDialectProvider} for Microsoft SQL databases.
+ * {@link SqlDialectProvider} for Microsoft SQL databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: 295 $, $Date: 2011-06-09 16:48:47 +0200 (Do, 09 Jun 2011) $
  */
-public class MSSQLDialectProvider implements SQLDialectProvider {
+public class MSSQLDialectProvider implements SqlDialectProvider {
 
-    public Type getSupportedType() {
-        return MSSQL;
+    private static final Logger LOG = getLogger( MSSQLDialectProvider.class );
+
+    @Override
+    public boolean supportsConnection( Connection connection ) {
+        String url = null;
+        try {
+            url = connection.getMetaData().getURL();
+        } catch ( Exception e ) {
+            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return false;
+        }
+        return url.startsWith( "jdbc:sqlserver:" );
     }
 
     @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public SQLDialect createDialect( Connection connection ) {
         return new MSSQLDialect();
     }
+
 }

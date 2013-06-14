@@ -40,19 +40,14 @@ import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.remoteows.RemoteOWSStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
-import org.deegree.style.persistence.StyleStoreManager;
-import org.deegree.theme.persistence.ThemeManager;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -61,7 +56,7 @@ import org.deegree.theme.persistence.ThemeManager;
  * 
  * @version $Revision$, $Date$
  */
-public class WMSProvider implements OWSProvider {
+public class WMSProvider extends OWSProvider {
 
     protected static final ImplementationMetadata<WMSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WMSRequestType>() {
         {
@@ -69,19 +64,19 @@ public class WMSProvider implements OWSProvider {
             handledNamespaces = new String[] { "" }; // WMS uses null namespace for SLD GetMap Post requests
             handledRequests = WMSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ),
-                                                     Version.parseVersion( "3.2.0" ) };
+                                                     Version.parseVersion( "3.2.0" ), Version.parseVersion( "3.4.0" ) };
             serviceName = new String[] { "WMS" };
         }
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wms";
     }
 
     @Override
-    public URL getConfigSchema() {
-        return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/3.2.0/wms_configuration.xsd" );
+    public URL getSchema() {
+        return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/3.4.0/wms_configuration.xsd" );
     }
 
     @Override
@@ -90,20 +85,8 @@ public class WMSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        return new WMSController( configURL, getImplementationMetadata() );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSStoreManager.class, FeatureStoreManager.class, CoverageBuilderManager.class,
-                            MetadataStoreManager.class, StyleStoreManager.class, ThemeManager.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // nothing to do
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WmsMetadata( workspace, location, this );
     }
 
 }

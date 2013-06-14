@@ -538,7 +538,7 @@ public class RasterTreeGridifier {
             ByteBufferRasterData cellRasterData = RasterDataFactory.createRasterData( tileWidth, tileHeight,
                                                                                       BandType.RGB, DataType.BYTE,
                                                                                       InterleaveType.PIXEL, false );
-            SimpleRaster cellRaster = new SimpleRaster( cellRasterData, cellWorldEnvelope, cellRasterReference );
+            SimpleRaster cellRaster = new SimpleRaster( cellRasterData, cellWorldEnvelope, cellRasterReference, null );
 
             double croppedMinX = minX < cellMinX ? cellMinX : minX;
             double croppedMinY = minY < cellMinY ? cellMinY : minY;

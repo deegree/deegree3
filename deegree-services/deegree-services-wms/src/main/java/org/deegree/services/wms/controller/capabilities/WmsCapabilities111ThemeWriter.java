@@ -94,7 +94,7 @@ class WmsCapabilities111ThemeWriter {
     void writeTheme( XMLStreamWriter writer, Theme theme )
                             throws XMLStreamException {
         writer.writeStartElement( "Layer" );
-        LayerMetadata md = theme.getMetadata();
+        LayerMetadata md = theme.getLayerMetadata();
         // TODO think about a push approach instead of a pull approach
         LayerMetadata lmd = null;
         for ( org.deegree.layer.Layer l : Themes.getAllLayers( theme ) ) {

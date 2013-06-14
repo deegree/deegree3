@@ -35,21 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows.wms;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSProvider;
-import org.deegree.remoteows.wms_new.jaxb.AuthenticationType;
-import org.deegree.remoteows.wms_new.jaxb.HTTPBasicAuthenticationType;
-import org.slf4j.Logger;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link RemoteOWS} implementation for remote <a href="http://www.opengeospatial.org/standards/wms">Web Map
@@ -60,69 +52,23 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31451 $, $Date: 2011-08-08 08:13:46 +0200 (Mon, 08 Aug 2011) $
  */
-public class RemoteWMSProvider implements RemoteOWSProvider {
-
-    private static final Logger LOG = getLogger( RemoteWMSProvider.class );
-
-    private static final String CONFIG_JAXB_PACKAGE = "org.deegree.remoteows.wms_new.jaxb";
+public class RemoteWMSProvider extends RemoteOWSProvider {
 
     private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/remoteows/wms/3.1.0/remotewms.xsd" );
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/remoteows/wms";
     }
 
     @Override
-    public RemoteOWS create( URL config ) {
-        try {
-            org.deegree.remoteows.wms_new.jaxb.RemoteWMS cfg;
-            cfg = (org.deegree.remoteows.wms_new.jaxb.RemoteWMS) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                             config, workspace );
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( config.toString() );
-            URL capas = resolver.resolve( cfg.getCapabilitiesDocumentLocation().getLocation() );
-
-            int connTimeout = cfg.getConnectionTimeout() == null ? 5 : cfg.getConnectionTimeout();
-            int reqTimeout = cfg.getRequestTimeout() == null ? 60 : cfg.getRequestTimeout();
-
-            WMSClient client;
-
-            AuthenticationType type = cfg.getAuthentication() == null ? null : cfg.getAuthentication().getValue();
-            String user = null;
-            String pass = null;
-            if ( type instanceof HTTPBasicAuthenticationType ) {
-                HTTPBasicAuthenticationType basic = (HTTPBasicAuthenticationType) type;
-                user = basic.getUsername();
-                pass = basic.getPassword();
-            }
-            client = new WMSClient( capas, connTimeout, reqTimeout, user, pass );
-
-            return new org.deegree.remoteows.wms.RemoteWMS( client );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            LOG.warn( "Remote WMS store config at '{}' could not be parsed: {}", config, e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
-        }
-        return null;
+    public ResourceMetadata<RemoteOWS> createFromLocation( Workspace workspace, ResourceLocation<RemoteOWS> location ) {
+        return new RemoteWmsMetadata( workspace, location, this );
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return CONFIG_SCHEMA;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
     }
 
 }

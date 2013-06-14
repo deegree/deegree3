@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,23 +43,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.filter.function.FunctionManager;
-import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectManager;
-import org.slf4j.Logger;
+import org.deegree.sqldialect.postgis.PostGISDialect;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link MetadataStoreProvider} for the {@link ISOMetadataStore}.
@@ -71,37 +60,23 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 30800 $, $Date: 2011-05-12 16:49:44 +0200 (Do, 12. Mai 2011) $
  */
-public class ISOMetadataStoreProvider implements MetadataStoreProvider {
-
-    private static final Logger LOG = getLogger( ISOMetadataStoreProvider.class );
-
-    private DeegreeWorkspace workspace;
+public class ISOMetadataStoreProvider extends MetadataStoreProvider {
 
     @Override
-    public String getConfigNamespace() {
-        return "http://www.deegree.org/datasource/metadata/iso19115";
-    }
-
-    @Override
-    public URL getConfigSchema() {
-        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.2.0/iso19115.xsd" );
-    }
-
-    @Override
-    public String[] getCreateStatements( Type dbType )
+    public String[] getCreateStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
-        if ( dbType == Type.MSSQL ) {
+        if ( dbType.getClass().getSimpleName().equals( "MSSQLDialect" ) ) {
             URL script = ISOMetadataStoreProvider.class.getResource( "mssql/create.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "mssql/create_inspire.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType == Type.PostgreSQL ) {
+        } else if ( dbType instanceof PostGISDialect ) {
             URL script = ISOMetadataStoreProvider.class.getResource( "postgis/create.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "postgis/create_inspire.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType == Type.Oracle ) {
+        } else if ( dbType.getClass().getSimpleName().equals( "OracleDialect" ) ) {
             URL script = ISOMetadataStoreProvider.class.getResource( "oracle/create.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "oracle/create_inspire.sql" );
@@ -111,20 +86,20 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
     }
 
     @Override
-    public String[] getDropStatements( Type dbType )
+    public String[] getDropStatements( SQLDialect dbType )
                             throws UnsupportedEncodingException, IOException {
         List<String> creates = new ArrayList<String>();
-        if ( dbType == Type.MSSQL ) {
+        if ( dbType.getClass().getSimpleName().equals( "MSSQLDialect" ) ) {
             URL script = ISOMetadataStoreProvider.class.getResource( "mssql/drop_inspire.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "mssql/drop.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType == Type.PostgreSQL ) {
+        } else if ( dbType instanceof PostGISDialect ) {
             URL script = ISOMetadataStoreProvider.class.getResource( "postgis/drop_inspire.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "postgis/drop.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
-        } else if ( dbType == Type.Oracle ) {
+        } else if ( dbType.getClass().getSimpleName().equals( "OracleDialect" ) ) {
             URL script = ISOMetadataStoreProvider.class.getResource( "oracle/drop.sql" );
             creates.addAll( readStatements( new BufferedReader( new InputStreamReader( script.openStream(), "UTF-8" ) ) ) );
             script = ISOMetadataStoreProvider.class.getResource( "oracle/drop.sql" );
@@ -152,52 +127,19 @@ public class ISOMetadataStoreProvider implements MetadataStoreProvider {
         return stmts;
     }
 
-    public ISOMetadataStore create( URL configURL )
-                            throws ResourceInitException {
-        if ( configURL == null ) {
-            LOG.warn( Messages.getMessage( "WARN_NO_CONFIG" ) );
-        } else {
-            try {
-                JAXBContext jc;
-                if ( workspace == null ) {
-                    jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb" );
-                } else {
-                    jc = JAXBContext.newInstance( "org.deegree.metadata.persistence.iso19115.jaxb",
-                                                  workspace.getModuleClassLoader() );
-                }
-                Unmarshaller u = jc.createUnmarshaller();
-
-                ISOMetadataStoreConfig cfg = (ISOMetadataStoreConfig) u.unmarshal( configURL );
-
-                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-                Type connType = mgr.getType( cfg.getJDBCConnId() );
-                if ( connType == null ) {
-                    throw new ResourceInitException( "No JDBC connection with id '" + cfg.getJDBCConnId()
-                                                     + "' defined." );
-                }
-                LOG.debug( "Connection type is {}.", connType );
-
-                SQLDialectManager dialectMgr = workspace.getSubsystemManager( SQLDialectManager.class );
-                if ( dialectMgr == null ) {
-                    throw new ResourceInitException( "SQLDialectManager not found in workspace / classpath." );
-                }
-                SQLDialect dialect = dialectMgr.create( cfg.getJDBCConnId() );
-                return new ISOMetadataStore( cfg, dialect );
-            } catch ( JAXBException e ) {
-                String msg = Messages.getMessage( "ERROR_IN_CONFIG_FILE", configURL, e.getMessage() );
-                LOG.error( msg );
-                throw new ResourceInitException( msg, e );
-            }
-        }
-        return null;
+    @Override
+    public String getNamespace() {
+        return "http://www.deegree.org/datasource/metadata/iso19115";
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class, ConnectionManager.class, FunctionManager.class, SQLDialectManager.class };
+    @Override
+    public ResourceMetadata<MetadataStore<? extends MetadataRecord>> createFromLocation( Workspace workspace,
+                                                                                         ResourceLocation<MetadataStore<? extends MetadataRecord>> location ) {
+        return new IsoMetadataStoreMetadata( workspace, location, this );
     }
 
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
+    @Override
+    public URL getSchema() {
+        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.2.0/iso19115.xsd" );
     }
 }

@@ -40,18 +40,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata.provider;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
 import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
- * {@link ExtendedResourceProvider} for {@link OWSMetadataProvider}.
+ * {@link ResourceProvider} for {@link OWSMetadataProvider}.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-public interface OWSMetadataProviderProvider extends ExtendedResourceProvider<OWSMetadataProvider> {
+public abstract class OWSMetadataProviderProvider extends AbstractResourceProvider<OWSMetadataProvider> {
 
     // specifies type parameter
 

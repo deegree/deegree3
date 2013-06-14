@@ -35,28 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.db;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.jaxb.JAXBUtils;
-import org.deegree.rendering.r3d.jaxb.renderable.RenderableSQLStoreConfig;
-import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.rendering.r3d.persistence.RenderableStoreProvider;
-import org.deegree.services.wpvs.io.ModelBackend;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -66,82 +51,26 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class RenderableSQLStoreProvider implements RenderableStoreProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( RenderableSQLStoreProvider.class );
+public class RenderableSQLStoreProvider extends RenderableStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/renderable/sql";
-
-    private static final String CONFIG_JAXB_PACKAGE = RenderableSQLStoreConfig.class.getPackage().getName();
 
     private static final URL CONFIG_SCHEMA = RenderableSQLStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/3.0.0/sql.xsd" );
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NS;
     }
 
     @Override
-    public RenderableStore build( URL configURL, DeegreeWorkspace workspace ) {
-        RenderableStore rs = null;
-        try {
-            RenderableSQLStoreConfig config = (RenderableSQLStoreConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                               CONFIG_SCHEMA,
-                                                                                               configURL, workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
-            String connId = config.getJDBCConnId();
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            Connection connection = mgr.get( connId );
-            connection.close();
-
-            rs = new PostgisBackend( connId, ( config.isIsBillboard() ? ModelBackend.Type.TREE
-                                                                     : ModelBackend.Type.BUILDING ), workspace );
-            // instantiate the texture dir
-            List<String> tDirs = config.getTextureDirectory();
-            for ( String tDir : tDirs ) {
-                if ( tDir != null ) {
-                    File tD = resolveFile( tDir, resolver, false, null );
-                    TexturePool.addTexturesFromDirectory( tD );
-                }
-            }
-
-        } catch ( JAXBException e ) {
-            String msg = "Error in RenderableStore configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new IllegalArgumentException( msg, e );
-        } catch ( SQLException e ) {
-            LOG.error( e.getLocalizedMessage() );
-        }
-        return rs;
-    }
-
-    private File resolveFile( String fileName, XMLAdapter resolver, boolean required, String msg ) {
-        URI resolve = resolveURI( fileName, resolver );
-        if ( resolve == null ) {
-            if ( required ) {
-                throw new IllegalArgumentException( msg );
-            }
-            return null;
-        }
-        return new File( resolve );
-    }
-
-    private URI resolveURI( String fileName, XMLAdapter resolver ) {
-        URI resolve = null;
-        try {
-            URL url = resolver.resolve( fileName );
-            resolve = url.toURI();
-        } catch ( MalformedURLException e ) {
-            LOG.warn( "Error while resolving url for file: " + fileName + "." );
-        } catch ( URISyntaxException e ) {
-            LOG.warn( "Error while resolving url for file: " + fileName + "." );
-        }
-        return resolve;
-    }
-
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return CONFIG_SCHEMA;
     }
+
+    @Override
+    public ResourceMetadata<RenderableStore> createFromLocation( Workspace workspace,
+                                                                 ResourceLocation<RenderableStore> location ) {
+        return new SqlRenderableStoreMetadata( workspace, location, this );
+    }
+
 }

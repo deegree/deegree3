@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
-    <version>3.4-pre1-SNAPSHOT</version>
+    <version>3.4-pre2-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -36,6 +36,16 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-workspace</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-db</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-protocol-wfs</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -46,4 +56,3 @@
     </dependency>
   </dependencies>
 </project>
-

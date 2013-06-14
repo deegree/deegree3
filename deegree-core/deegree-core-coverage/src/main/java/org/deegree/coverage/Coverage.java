@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SampleResolution;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.Resource;
 
 /**
  * 

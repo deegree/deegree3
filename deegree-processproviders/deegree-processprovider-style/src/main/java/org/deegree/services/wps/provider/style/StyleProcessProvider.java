@@ -43,8 +43,6 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
@@ -56,6 +54,8 @@ import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
 import org.deegree.services.wps.GenericWPSProcess;
 import org.deegree.services.wps.WPSProcess;
 import org.deegree.services.wps.provider.ProcessProvider;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * TODO add class documentation here
@@ -73,7 +73,10 @@ public class StyleProcessProvider implements ProcessProvider {
 
     Map<CodeType, WPSProcess> idtoProcess = new HashMap<CodeType, WPSProcess>();
 
-    public StyleProcessProvider( String processId ) {
+    private ResourceMetadata<ProcessProvider> metadata;
+
+    public StyleProcessProvider( String processId, ResourceMetadata<ProcessProvider> metadata ) {
+        this.metadata = metadata;
         idtoProcess.put( new CodeType( processId ), new GenericWPSProcess( getDescription( processId ),
                                                                            new StyleProcesslet() ) );
     }
@@ -151,13 +154,18 @@ public class StyleProcessProvider implements ProcessProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-
+    public void init() {
+        // nothing to do
     }
 
     @Override
     public void destroy() {
-
+        // nothing to do
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
 }

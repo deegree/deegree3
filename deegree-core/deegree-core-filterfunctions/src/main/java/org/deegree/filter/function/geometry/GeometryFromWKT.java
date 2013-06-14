@@ -42,8 +42,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -54,6 +52,7 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.io.WKTReader;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.io.ParseException;
@@ -125,8 +124,7 @@ public class GeometryFromWKT implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

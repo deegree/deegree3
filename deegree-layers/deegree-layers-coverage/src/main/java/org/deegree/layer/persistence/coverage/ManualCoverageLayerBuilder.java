@@ -47,11 +47,9 @@ import static org.deegree.layer.persistence.coverage.LayerMetadataBuilder.buildL
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.Coverage;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.layer.Layer;
@@ -61,6 +59,8 @@ import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * Converts manual coverage layer config beans to layers.
@@ -72,23 +72,19 @@ import org.deegree.style.se.unevaluated.Style;
  */
 class ManualCoverageLayerBuilder {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    ManualCoverageLayerBuilder( DeegreeWorkspace workspace ) {
+    private ResourceMetadata<LayerStore> metadata;
+
+    ManualCoverageLayerBuilder( Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
         this.workspace = workspace;
+        this.metadata = metadata;
     }
 
-    LayerStore buildManual( CoverageLayers cfg )
-                            throws ResourceInitException {
+    LayerStore buildManual( CoverageLayers cfg ) {
         Map<String, Layer> map = new HashMap<String, Layer>();
 
-        CoverageBuilderManager mgr = workspace.getSubsystemManager( CoverageBuilderManager.class );
-        Coverage cov = mgr.get( cfg.getCoverageStoreId() );
-
-        if ( cov == null ) {
-            throw new ResourceInitException( "Coverage store with id '" + cfg.getCoverageStoreId()
-                                             + "' is not available." );
-        }
+        Coverage cov = workspace.getResource( CoverageProvider.class, cfg.getCoverageStoreId() );
 
         for ( CoverageLayerType lay : cfg.getCoverageLayer() ) {
             LayerMetadata md = buildLayerMetadata( lay, cov );
@@ -101,7 +97,7 @@ class ManualCoverageLayerBuilder {
             map.put( lay.getName(), l );
         }
 
-        return new MultipleLayerStore( map );
+        return new MultipleLayerStore( map, metadata );
     }
 
 }

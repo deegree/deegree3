@@ -33,7 +33,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.client.CSWClient;
@@ -121,8 +121,7 @@ public class Harvester {
                             throws Exception {
         DeegreeWorkspace dw = DeegreeWorkspace.getInstance( workspaceOpt );
         dw.initAll();
-        MetadataStoreManager manager = dw.getSubsystemManager( MetadataStoreManager.class );
-        final MetadataStore<?> metadataStore = manager.get( storeOpt );
+        final MetadataStore<?> metadataStore = dw.getNewWorkspace().getResource( MetadataStoreProvider.class, storeOpt );
 
         CSWHarvester harvester = new CSWHarvester() {
 

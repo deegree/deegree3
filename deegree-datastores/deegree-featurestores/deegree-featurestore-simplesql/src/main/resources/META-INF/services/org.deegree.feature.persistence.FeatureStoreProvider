@@ -1,2 +1,1 @@
-org.deegree.feature.persistence.simplesql.SimpleSQLFeatureStoreProvider
-
+org.deegree.feature.persistence.simplesql.SimpleSqlFeatureStoreProvider

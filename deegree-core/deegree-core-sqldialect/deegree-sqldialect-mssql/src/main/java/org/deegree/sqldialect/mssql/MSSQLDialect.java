@@ -42,7 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -78,11 +77,6 @@ import org.slf4j.LoggerFactory;
 public class MSSQLDialect implements SQLDialect {
 
     private static Logger LOG = LoggerFactory.getLogger( MSSQLDialect.class );
-
-    @Override
-    public Type getDBType() {
-        return Type.MSSQL;
-    }
 
     @Override
     public int getMaxColumnNameLength() {
@@ -202,4 +196,5 @@ public class MSSQLDialect implements SQLDialect {
         throw new UnsupportedOperationException(
                                                  "Using DB sequences for FIDs is currently not supported on Microsoft SQL Server." );
     }
+
 }

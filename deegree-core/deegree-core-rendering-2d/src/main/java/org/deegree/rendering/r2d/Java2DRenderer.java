@@ -178,7 +178,9 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
             return;
         }
-        geom = rendererContext.clipper.clipGeometry( geom );
+        if ( styling.stroke != null && styling.stroke.stroke != null ) {
+            geom = rendererContext.clipper.clipGeometry( geom );
+        }
         if ( geom instanceof Curve ) {
             Double line = rendererContext.geomHelper.fromCurve( (Curve) geom, false );
             rendererContext.strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
@@ -207,7 +209,9 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
         }
-        geom = rendererContext.clipper.clipGeometry( geom );
+        if ( styling.stroke != null && styling.stroke.stroke != null ) {
+            geom = rendererContext.clipper.clipGeometry( geom );
+        }
         if ( geom instanceof Envelope ) {
             geom = envelopeToPolygon( (Envelope) geom );
         }

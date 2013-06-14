@@ -44,21 +44,16 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.TimerTask;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.jaxb.wms.DirectStyleType;
-import org.deegree.services.jaxb.wms.SLDStyleType;
-import org.deegree.style.persistence.StyleStoreManager;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -85,19 +80,6 @@ public class StyleRegistry extends TimerTask {
     private HashSet<String> soleStyleFiles = new HashSet<String>();
 
     private HashSet<String> soleLegendFiles = new HashSet<String>();
-
-    private StyleStoreManager styleManager;
-
-    private StyleBuilder builder;
-
-    private SldStyleBuilder sldBuilder;
-
-    public StyleRegistry( DeegreeWorkspace workspace ) {
-        this.styleManager = workspace.getSubsystemManager( StyleStoreManager.class );
-        // please take note that the style builder instance modifies field values from this class!
-        builder = new StyleBuilder( styleManager, soleStyleFiles, soleLegendFiles, this, workspace );
-        sldBuilder = new SldStyleBuilder( styleManager, this, workspace );
-    }
 
     /**
      * @param layerName
@@ -271,24 +253,6 @@ public class StyleRegistry extends TimerTask {
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param layerName
-     * @param styles
-     * @param adapter
-     */
-    public void load( String layerName, List<DirectStyleType> styles, XMLAdapter adapter ) {
-        builder.parse( layerName, styles, adapter );
-    }
-
-    /**
-     * @param layerName
-     * @param styles
-     * @param adapter
-     */
-    public void load( String layerName, XMLAdapter adapter, List<SLDStyleType> styles ) {
-        sldBuilder.parse( layerName, adapter, styles );
     }
 
     /**

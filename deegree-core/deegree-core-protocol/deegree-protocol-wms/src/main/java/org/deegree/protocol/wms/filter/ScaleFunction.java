@@ -38,8 +38,6 @@ package org.deegree.protocol.wms.filter;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -49,6 +47,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -66,8 +65,7 @@ public class ScaleFunction implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

@@ -38,7 +38,7 @@
  Germany
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
 import static java.util.Collections.singleton;
@@ -48,9 +48,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -76,72 +74,91 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
  * 
  * @version $Revision: $, $Date: $
  */
- class QueryOptionsParser {
+class QueryOptionsParser {
 
-      static OperatorFilter parseFilter( URL configUrl )
-                             throws XMLStreamException, URISyntaxException {
+    static OperatorFilter parseFilter( int layerIndex, InputStream in )
+                            throws XMLStreamException {
 
-         File file = new File( configUrl.toURI() );
-         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( in ) );
 
-         if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "Filter" ) ) ) {
-             return null;
-         }
+        int idx = -1;
+        while ( idx != layerIndex ) {
+            moveReaderToFirstMatch( reader, new QName( "http://www.deegree.org/layers/feature", "FeatureLayer" ) );
+            reader.next();
+            ++idx;
+        }
 
-         OperatorFilter filter = null;
-         filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
-         reader.close();
-         return filter;
-     }
+        while ( !( reader.isEndElement() && reader.getLocalName().equals( "FeatureLayer" ) ) ) {
+            reader.next();
+            if ( reader.isStartElement() && reader.getLocalName().equals( "Filter" )
+                 && reader.getNamespaceURI().equals( OGCNS ) ) {
+                OperatorFilter filter = null;
+                filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
+                reader.close();
+                return filter;
+            }
+        }
 
-      static List<SortProperty> parseSortBy( URL configUrl )
-                             throws XMLStreamException, URISyntaxException {
+        reader.close();
+        return null;
+    }
 
-         File file = new File( configUrl.toURI() );
-         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( file ) );
+    static List<SortProperty> parseSortBy( int layerIndex, InputStream in )
+                            throws XMLStreamException {
 
-         if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "SortBy" ) ) ) {
-             return null;
-         }
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( in ) );
 
-         // ogc:SortBy
-         requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
+        int idx = -1;
+        while ( idx != layerIndex ) {
+            moveReaderToFirstMatch( reader, new QName( "http://www.deegree.org/layers/feature", "FeatureLayer" ) );
+            reader.next();
+            ++idx;
+        }
 
-         nextElement( reader );
-         List<SortProperty> sortCrits = new ArrayList<SortProperty>();
-         while ( reader.isStartElement() ) {
-             SortProperty prop = parseSortProperty( reader );
-             sortCrits.add( prop );
-             nextElement( reader );
-         }
-         reader.close();
-         return sortCrits;
-     }
+        while ( !( reader.isEndElement() && reader.getLocalName().equals( "FeatureLayer" ) ) ) {
+            reader.next();
+            if ( reader.isStartElement() && reader.getLocalName().equals( "SortBy" )
+                 && reader.getNamespaceURI().equals( OGCNS ) ) {
+                nextElement( reader );
+                List<SortProperty> sortCrits = new ArrayList<SortProperty>();
+                while ( reader.isStartElement() ) {
+                    SortProperty prop = parseSortProperty( reader );
+                    sortCrits.add( prop );
+                    nextElement( reader );
+                }
+                reader.close();
+                return sortCrits;
+            }
+        }
 
-     private static SortProperty parseSortProperty( XMLStreamReader reader )
-                             throws XMLStreamException {
+        reader.close();
+        return null;
+    }
 
-         requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
-         nextElement( reader );
+    private static SortProperty parseSortProperty( XMLStreamReader reader )
+                            throws XMLStreamException {
 
-         requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
+        requireStartElement( reader, singleton( new QName( OGCNS, "SortProperty" ) ) );
+        nextElement( reader );
 
-         String xpath = reader.getElementText().trim();
-         Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
-         NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
-         ValueReference propName = new ValueReference( xpath, nsContext );
-         nextElement( reader );
+        requireStartElement( reader, singleton( new QName( OGCNS, "PropertyName" ) ) );
 
-         boolean sortAscending = true;
-         if ( reader.isStartElement() ) {
-             requireStartElement( reader, singleton( new QName( OGCNS, "SortOrder" ) ) );
-             String s = reader.getElementText().trim();
-             sortAscending = "ASC".equals( s );
-             nextElement( reader );
-         }
+        String xpath = reader.getElementText().trim();
+        Set<String> prefixes = XPathUtils.extractPrefixes( xpath );
+        NamespaceBindings nsContext = new NamespaceBindings( reader.getNamespaceContext(), prefixes );
+        ValueReference propName = new ValueReference( xpath, nsContext );
+        nextElement( reader );
 
-         reader.require( END_ELEMENT, OGCNS, "SortProperty" );
-         return new SortProperty( propName, sortAscending );
-     }
+        boolean sortAscending = true;
+        if ( reader.isStartElement() ) {
+            requireStartElement( reader, singleton( new QName( OGCNS, "SortOrder" ) ) );
+            String s = reader.getElementText().trim();
+            sortAscending = "ASC".equals( s );
+            nextElement( reader );
+        }
+
+        reader.require( END_ELEMENT, OGCNS, "SortProperty" );
+        return new SortProperty( propName, sortAscending );
+    }
 
 }

@@ -50,7 +50,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -62,11 +61,13 @@ import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.tile.jaxb.TileLayerType;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
- * TODO add class documentation here
+ * Builds tile layers from jaxb beans.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -75,28 +76,27 @@ import org.slf4j.Logger;
  */
 class TileLayerBuilder {
 
-    private static final Logger LOG = getLogger( TileLayerProvider.class );
+    private static final Logger LOG = getLogger( TileLayerStoreProvider.class );
 
-    private TileStoreManager mgr;
+    private Workspace workspace;
 
-    TileLayerBuilder( TileStoreManager mgr ) {
-        this.mgr = mgr;
+    TileLayerBuilder( Workspace workspace ) {
+        this.workspace = workspace;
     }
 
-    TileLayer createLayer( TileLayerType cfg )
-                            throws ResourceInitException {
+    TileLayer createLayer( TileLayerType cfg ) {
         List<TileDataSet> datasets = new ArrayList<TileDataSet>();
         Envelope envelope = null;
         Set<ICRS> crsSet = new LinkedHashSet<ICRS>();
         for ( TileLayerType.TileDataSet tds : cfg.getTileDataSet() ) {
             String id = tds.getTileStoreId();
-            TileStore store = mgr.get( id );
-            if ( store == null ) {
-                LOG.warn( "Tile store with id {} was not available, skipping tile data set.", id );
-                continue;
-            }
+            TileStore store = workspace.getResource( TileStoreProvider.class, id );
 
             String tdsId = tds.getValue();
+
+            if ( store == null ) {
+                throw new ResourceInitException( "The tile store with id " + id + " was not available." );
+            }
 
             TileDataSet dataset = store.getTileDataSet( tdsId );
             if ( dataset == null ) {

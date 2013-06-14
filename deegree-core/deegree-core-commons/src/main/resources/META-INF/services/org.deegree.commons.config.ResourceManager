@@ -1,3 +1,0 @@
-org.deegree.commons.jdbc.ConnectionManager
-org.deegree.commons.jdbc.param.JDBCParamsManager
-org.deegree.commons.utils.ProxyUtils

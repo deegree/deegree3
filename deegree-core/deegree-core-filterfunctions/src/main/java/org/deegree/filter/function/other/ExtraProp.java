@@ -42,8 +42,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
@@ -53,6 +51,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
+import org.deegree.workspace.Workspace;
 
 /**
  * Expects one argument that refers to a property of {@link ExtraProps} and returns the value.
@@ -108,15 +107,15 @@ public class ExtraProp implements FunctionProvider {
             }
         };
     }
-    
+
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 
     @Override
     public void destroy() {
         // nothing to do
-    }    
+    }
+
 }

@@ -52,7 +52,6 @@ import java.util.List;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.jdbc.TransactionRow;
@@ -79,6 +78,7 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
 
 /**
@@ -362,7 +362,7 @@ class TransactionHelper extends SqlHelper {
         String bboxColumn = "bbox";
         String srid = null;
         // TODO: srid
-        if ( dialect.getDBType() == Type.Oracle ) {
+        if ( dialect.getClass().getSimpleName().equals( "OracleDialect" ) ) {
             srid = "4326";
         }
         GeometryParticleConverter converter = dialect.getGeometryConverter( bboxColumn, null, srid, true );
@@ -561,13 +561,13 @@ class TransactionHelper extends SqlHelper {
         int result = 0;
         String selectIDRows = null;
         // TODO: use SQLDialect
-        if ( dialect.getDBType() == Type.PostgreSQL ) {
+        if ( dialect instanceof PostGISDialect ) {
             selectIDRows = "SELECT " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC LIMIT 1";
         }
-        if ( dialect.getDBType() == Type.MSSQL ) {
+        if ( dialect.getClass().getSimpleName().equals( "MSSQLDialect" ) ) {
             selectIDRows = "SELECT TOP 1 " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC";
         }
-        if ( dialect.getDBType() == Type.Oracle ) {
+        if ( dialect.getClass().getSimpleName().equals( "OracleDialect" ) ) {
             String inner = "SELECT " + idColumn + " from " + databaseTable + " ORDER BY " + idColumn + " DESC";
             selectIDRows = "SELECT * FROM (" + inner + ") WHERE rownum = 1";
         }
