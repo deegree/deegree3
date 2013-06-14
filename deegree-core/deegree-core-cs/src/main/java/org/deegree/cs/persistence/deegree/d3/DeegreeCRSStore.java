@@ -195,27 +195,26 @@ public class DeegreeCRSStore extends AbstractCRSStore {
                 XMLStreamUtils.nextElement( reader );
                 /* instantiate the parsers */
                 String cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "ProjectionsFile" ),
-                                                         "projection-definitions.xml", true );
+                                                      "projection-definitions.xml", true );
                 URL url = XMLStreamUtils.resolve( cUrl, reader );
                 proj = new ProjectionParser( this, url );
 
                 cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "TransformationsFile" ),
-                                                  "transformation-definitions.xml", true );
+                                               "transformation-definitions.xml", true );
                 url = XMLStreamUtils.resolve( cUrl, reader );
                 trans = new TransformationParser( this, url, datumShift );
 
-                cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "PrimeMeridiansFile" ),
-                                                  "pm-definitions.xml", true );
+                cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "PrimeMeridiansFile" ), "pm-definitions.xml",
+                                               true );
                 url = XMLStreamUtils.resolve( cUrl, reader );
                 pm = new PrimemeridianParser( this, url );
 
                 cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "EllispoidsFile" ),
-                                                  "ellipsoid-definitions.xml", true );
+                                               "ellipsoid-definitions.xml", true );
                 url = XMLStreamUtils.resolve( cUrl, reader );
                 ellips = new EllipsoidParser( this, url );
 
-                cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "DatumsFile" ), "datum-definitions.xml",
-                                                  true );
+                cUrl = XMLStreamUtils.getText( reader, new QName( CRS_NS, "DatumsFile" ), "datum-definitions.xml", true );
                 url = XMLStreamUtils.resolve( cUrl, reader );
                 datums = new DatumParser( this, url );
 
@@ -251,17 +250,17 @@ public class DeegreeCRSStore extends AbstractCRSStore {
         Set<String> knownIds = new HashSet<String>();
         List<CRSCodeType[]> allCRSIDs = getAvailableCRSCodes();
         final int total = allCRSIDs.size();
-        int count = 0;
-        int percentage = (int) Math.round( total / 100.d );
-        int number = 0;
+        // int count = 0;
+        // int percentage = (int) Math.round( total / 100.d );
+        // int number = 0;
         LOG.info( "Trying to create a total of " + total + " coordinate systems." );
         for ( CRSCodeType[] crsID : allCRSIDs ) {
             if ( crsID != null ) {
                 String id = crsID[0].getOriginal();
                 if ( id != null && !"".equals( id.trim() ) ) {
-                    if ( count++ % percentage == 0 ) {
-                        System.out.println( ( number ) + ( ( number++ < 10 ) ? " " : "" ) + "% created" );
-                    }
+                    // if ( count++ % percentage == 0 ) {
+                    // System.out.println( ( number ) + ( ( number++ < 10 ) ? " " : "" ) + "% created" );
+                    // }
                     if ( !knownIds.contains( id.toLowerCase() ) ) {
                         allSystems.add( getCRSByCode( CRSCodeType.valueOf( id ) ) );
                         for ( CRSCodeType code : crsID ) {
