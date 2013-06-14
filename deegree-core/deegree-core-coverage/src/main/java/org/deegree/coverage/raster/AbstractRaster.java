@@ -38,12 +38,13 @@ package org.deegree.coverage.raster;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.interpolation.RasterInterpolater;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -51,6 +52,7 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -67,6 +69,8 @@ public abstract class AbstractRaster extends AbstractCoverage {
     private RasterGeoReference rasterReference = null;
 
     private ResolutionInfo resolutionInfo;
+
+    protected ResourceMetadata<Coverage> metadata;
 
     /**
      * Instantiate an AbstractRaster with no envelope.
@@ -392,6 +396,15 @@ public abstract class AbstractRaster extends AbstractCoverage {
     @Override
     public ResolutionInfo getResolutionInfo() {
         return this.resolutionInfo;
+    }
+
+    @Override
+    public ResourceMetadata<Coverage> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata( ResourceMetadata<Coverage> metadata ) {
+        this.metadata = metadata;
     }
 
 }

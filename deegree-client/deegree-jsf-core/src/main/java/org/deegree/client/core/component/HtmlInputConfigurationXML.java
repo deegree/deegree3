@@ -40,6 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -49,6 +50,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.ConverterException;
 
 import org.deegree.client.core.utils.MessageUtils;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.slf4j.Logger;
 
@@ -105,8 +107,11 @@ public class HtmlInputConfigurationXML extends HtmlInputTextarea {
             String[] schemas = null;
             if ( s != null && s.length() > 0 ) {
                 schemas = s.split( "," );
-                List<String> results;
-                results = SchemaValidator.validate( xml, schemas );
+                List<String> results = new ArrayList<String>();
+                List<SchemaValidationEvent> evts = SchemaValidator.validate( xml, schemas );
+                for ( SchemaValidationEvent evt : evts ) {
+                    results.add( evt.toString() );
+                }
                 if ( results.size() > 0 ) {
                     FacesMessage message = MessageUtils.getFacesMessage(
 

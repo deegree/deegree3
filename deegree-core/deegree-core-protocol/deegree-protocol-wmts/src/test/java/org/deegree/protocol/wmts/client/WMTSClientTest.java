@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wmts.client;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.URL;

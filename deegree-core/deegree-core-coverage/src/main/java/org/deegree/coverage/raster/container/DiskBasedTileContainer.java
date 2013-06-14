@@ -57,12 +57,12 @@ import java.util.List;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.QTree;
 import org.deegree.coverage.ResolutionInfo;
+import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.coverage.raster.utils.RasterBuilder.QTreeInfo;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
@@ -200,7 +200,7 @@ public class DiskBasedTileContainer implements TileContainer {
                 result.add( raster );
             } else {
                 try {
-                    result.add( raster = loadRasterFromFile( f, options ) );
+                    result.add( raster = loadRasterFromFile( f, options, null ) );
                     cache.put( f, new SoftReference<AbstractRaster>( raster ) );
                 } catch ( IOException e ) {
                     LOG.debug( "Raster file '{}' could not be loaded: '{}'.", f, e.getLocalizedMessage() );

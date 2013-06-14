@@ -122,6 +122,8 @@ import org.deegree.services.jaxb.sos.PublishedInformation;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter;
 import org.deegree.services.sos.capabilities.Capabilities100XMLAdapter.Sections;
 import org.deegree.services.sos.getobservation.Observation100XMLAdapter;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -661,5 +663,23 @@ public class SOSController extends AbstractOWS {
     @Override
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new SOS100ExceptionReportSerializer( httpCodeForExceptions );
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#getMetadata()
+     */
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.workspace.Resource#init()
+     */
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
     }
 }

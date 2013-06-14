@@ -67,6 +67,7 @@ import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
 import org.deegree.commons.xml.stax.TrimmingXMLStreamWriter;
@@ -450,7 +451,13 @@ public class GetRecordsHandler {
             e.printStackTrace();
         }
         InputStream is = new ByteArrayInputStream( s.toString().getBytes() );
-        return SchemaValidator.validate( is, "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd" );
+        List<SchemaValidationEvent> evts = SchemaValidator.validate( is,
+                                                                     "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd" );
+        List<String> list = new ArrayList<String>();
+        for ( SchemaValidationEvent evt : evts ) {
+            list.add( evt.toString() );
+        }
+        return list;
 
     }
 

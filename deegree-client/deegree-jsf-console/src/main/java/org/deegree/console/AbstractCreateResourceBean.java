@@ -39,13 +39,17 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
+import org.apache.commons.io.IOUtils;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 /**
  * JSF backing bean for views of type "Create new XYZ resource".
@@ -68,10 +72,12 @@ public abstract class AbstractCreateResourceBean {
 
     private final transient ResourceManagerMetadata metadata;
 
-    public AbstractCreateResourceBean( Class<? extends ResourceManager> resourceMgrClass ) {
-        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-        ResourceManager mgr = (ResourceManager) ws.getSubsystemManager( resourceMgrClass );
-        metadata = ResourceManagerMetadata.getMetadata( mgr );
+    private Workspace workspace;
+
+    public AbstractCreateResourceBean( Class<? extends ResourceManager<?>> resourceMgrClass ) {
+        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        ResourceManager<?> mgr = (ResourceManager<?>) workspace.getResourceManager( resourceMgrClass );
+        metadata = ResourceManagerMetadata.getMetadata( mgr, workspace );
         if ( !getTypes().isEmpty() ) {
             type = getTypes().get( 0 );
             changeType( null );
@@ -95,7 +101,7 @@ public abstract class AbstractCreateResourceBean {
     }
 
     public void changeType( AjaxBehaviorEvent event ) {
-        ResourceProvider provider = metadata.getProvider( type );
+        ResourceProvider<?> provider = metadata.getProvider( type );
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         configTemplates = new ArrayList<String>( md.getExamples().keySet() );
     }
@@ -117,18 +123,23 @@ public abstract class AbstractCreateResourceBean {
     }
 
     public String create() {
-        ResourceProvider provider = metadata.getProvider( type );
+        ResourceProvider<?> provider = metadata.getProvider( type );
         if ( provider == null ) {
             provider = metadata.getProviders().get( 0 );
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         URL templateURL = md.getExamples().get( configTemplate ).getContentLocation();
-        ResourceState<?> rs = null;
         try {
-            rs = metadata.getManager().createResource( id, templateURL.openStream() );
-            Config c = new Config( rs, metadata.getManager(), getOutcome(), true );
+            Class<?> pcls = metadata.getManager().getMetadata().getProviderClass();
+            DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( pcls, id );
+            ResourceLocation<?> loc = new IncorporealResourceLocation( IOUtils.toByteArray( templateURL ), ident );
+            workspace.add( loc );
+            ResourceMetadata<?> rmd = workspace.getResourceMetadata( ident.getProvider(), ident.getId() );
+            Config c = new Config( rmd, metadata.getManager(), getOutcome(), true );
+            c.setTemplate( templateURL );
             return c.edit();
-        } catch ( Throwable t ) {
+        } catch ( Exception t ) {
+            t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
         }
@@ -136,4 +147,5 @@ public abstract class AbstractCreateResourceBean {
     }
 
     protected abstract String getOutcome();
+
 }

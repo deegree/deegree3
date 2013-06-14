@@ -49,18 +49,15 @@ import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectProvider;
+import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SQLDialectProvider} for Oracle spatial databases.
+ * {@link SqlDialectProvider} for Oracle spatial databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
@@ -68,20 +65,26 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleDialectProvider implements SQLDialectProvider {
+public class OracleDialectProvider implements SqlDialectProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( OracleDialectProvider.class );
 
     @Override
-    public Type getSupportedType() {
-        return Type.Oracle;
+    public boolean supportsConnection( Connection connection ) {
+        String url = null;
+        try {
+            url = connection.getMetaData().getURL();
+        } catch ( Exception e ) {
+            LOG.debug( "Could not determine metadata/url of connection: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+            return false;
+        }
+        return url.startsWith( "jdbc:oracle:" );
     }
 
     @Override
-    public SQLDialect create( String connId, DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public SQLDialect createDialect( Connection conn ) {
         String schema = null;
-        Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
 
@@ -90,8 +93,6 @@ public class OracleDialectProvider implements SQLDialectProvider {
         int minor = 0;
 
         try {
-            ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connId );
             stmt = conn.createStatement();
 
             // this function / parameters exists since oracle version 8
@@ -116,8 +117,8 @@ public class OracleDialectProvider implements SQLDialectProvider {
 
             LOG.info( "Instantiating Oracle dialect for version {}.{}", major, minor );
         } catch ( SQLException se ) {
-            LOG.warn( "Failed loading default schema/database verion for connection {}", connId );
-            LOG.debug( se.getMessage(), se );
+            LOG.warn( "Failed loading default schema/database version for connection." );
+            LOG.trace( se.getMessage(), se );
             throw new ResourceInitException( se.getMessage(), se );
         } finally {
             JDBCUtils.close( rs, stmt, conn, null );
@@ -125,4 +126,5 @@ public class OracleDialectProvider implements SQLDialectProvider {
 
         return new OracleDialect( schema, major, minor );
     }
+
 }

@@ -39,13 +39,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
+import org.deegree.workspace.Workspace;
 
 /**
  * TODO add class documentation here
@@ -55,7 +55,7 @@ import org.deegree.services.controller.OGCFrontController;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractResourceManagerBean<T extends ResourceManager> {
+public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> {
 
     private String newConfigType;
 
@@ -65,14 +65,16 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager> {
 
     private String newConfigId;
 
-    protected final ResourceManager resourceManager;
+    protected final ResourceManager<?> resourceManager;
 
     private final ResourceManagerMetadata metadata;
 
+    private Workspace workspace;
+
     protected AbstractResourceManagerBean( Class<T> mgrClass ) {
-        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-        resourceManager = ws.getSubsystemManager( mgrClass );
-        metadata = ResourceManagerMetadata.getMetadata( resourceManager );
+        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        resourceManager = workspace.getResourceManager( mgrClass );
+        metadata = ResourceManagerMetadata.getMetadata( resourceManager, workspace );
     }
 
     public ResourceManagerMetadata getMetadata() {
@@ -81,8 +83,8 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager> {
 
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
-        for ( ResourceState<?> state : resourceManager.getStates() ) {
-            configs.add( new Config( state, resourceManager, null, true ) );
+        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
+            configs.add( new Config( md, resourceManager, getStartView(), true ) );
         }
         Collections.sort( configs );
         return configs;
@@ -118,11 +120,16 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager> {
 
     public void setNewConfigType( String newConfigType ) {
         this.newConfigType = newConfigType;
-        ResourceProvider provider = metadata.getProvider( newConfigType );
+        ResourceProvider<?> provider = metadata.getProvider( newConfigType );
         if ( provider == null ) {
             provider = metadata.getProviders().get( 0 );
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         newConfigTypeTemplates = new LinkedList<String>( md.getExamples().keySet() );
     }
+
+    public String getStartView() {
+        return null;
+    }
+
 }

@@ -44,7 +44,6 @@ import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -61,14 +60,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -80,6 +77,8 @@ import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.protocol.wcs.WCSConstants.WCSRequestType;
 import org.deegree.protocol.wcs.WCServiceException;
 import org.deegree.protocol.wcs.capabilities.GetCapabilities100KVPAdapter;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -88,6 +87,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wcs.DeegreeWCS;
 import org.deegree.services.jaxb.wcs.PublishedInformation;
 import org.deegree.services.jaxb.wcs.PublishedInformation.AllowedOperations;
 import org.deegree.services.wcs.capabilities.Capabilities100XMLAdapter;
@@ -103,6 +103,9 @@ import org.deegree.services.wcs.getcoverage.GetCoverage100KVPAdapter;
 import org.deegree.services.wcs.getcoverage.GetCoverage100XMLAdapter;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.services.wcs.model.CoverageResult;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,39 +134,41 @@ public class WCSController extends AbstractOWS {
 
     private ServiceProviderType provider;
 
-    private URL configUrl;
+    private DeegreeServiceControllerType mainControllerConf;
+
+    private DeegreeServicesMetadataType mainMetadataConf;
 
     private static final String CONFIG_PRE = "dwcs";
 
     private static final String CONFIG_NS = "http://www.deegree.org/services/wcs";
 
-    private final static String PUBLISHED_SCHEMA_FILE = "/META-INF/schemas/wcs/3.0.0/wcs_published_information.xsd";
-
-    public WCSController( URL configURL, ImplementationMetadata serviceInfo ) {
-        super( configURL, serviceInfo );
-        this.configUrl = configURL;
+    public WCSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+        super( metadata, workspace, jaxbConfig );
     }
 
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConf,
-                      ImplementationMetadata<?> md, XMLAdapter controllerConf )
-                            throws ResourceInitException {
+                      Object controllerConf ) {
 
         LOG.info( "Initializing WCS." );
-        super.init( serviceMetadata, mainConf, IMPLEMENTATION_METADATA, controllerConf );
         UPDATE_SEQUENCE++;
+
+        DeegreeWCS cfg = (DeegreeWCS) controllerConf;
 
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( WCSConstants.WCS_100_PRE, WCS_100_NS );
         nsContext.addNamespace( WCSConstants.WCS_110_PRE, WCSConstants.WCS_110_NS );
         nsContext.addNamespace( CONFIG_PRE, CONFIG_NS );
 
-        this.wcsService = new WCServiceBuilder( workspace, configUrl ).buildService();
+        this.wcsService = new WCServiceBuilder( workspace, getMetadata() ).buildService();
 
-        PublishedInformation publishedInformation = parsePublishedInformation( controllerConf, nsContext );
-        syncWithMainController( publishedInformation );
+        PublishedInformation publishedInformation = cfg.getPublishedInformation();
+        parsePublishedInformation( publishedInformation, nsContext );
+        syncWithMainController( publishedInformation, serviceMetadata );
 
         validateAndSetOfferedVersions( publishedInformation.getSupportedVersions().getVersion() );
+        mainControllerConf = mainConf;
+        mainMetadataConf = serviceMetadata;
     }
 
     /**
@@ -172,7 +177,8 @@ public class WCSController extends AbstractOWS {
      * 
      * @param publishedInformation
      */
-    private void syncWithMainController( PublishedInformation publishedInformation ) {
+    private void syncWithMainController( PublishedInformation publishedInformation,
+                                         DeegreeServicesMetadataType mainMetadataConf ) {
         identification = mainMetadataConf.getServiceIdentification();
         provider = mainMetadataConf.getServiceProvider();
     }
@@ -182,30 +188,21 @@ public class WCSController extends AbstractOWS {
         // *Kaaboooom!*
     }
 
-    private PublishedInformation parsePublishedInformation( XMLAdapter controllerConf, NamespaceBindings nsContext )
+    private void parsePublishedInformation( PublishedInformation pubInf, NamespaceBindings nsContext )
                             throws ResourceInitException {
-
-        PublishedInformation pubInf = null;
-        XPath xp = new XPath( CONFIG_PRE + ":PublishedInformation", nsContext );
-        OMElement elem = controllerConf.getElement( controllerConf.getRootElement(), xp );
-        if ( elem != null ) {
-            pubInf = (PublishedInformation) unmarshallConfig( "org.deegree.services.jaxb.wcs", PUBLISHED_SCHEMA_FILE,
-                                                              elem );
-            if ( pubInf != null ) {
-                // mandatory
-                allowedOperations.add( WCSRequestType.GetCapabilities.name() );
-                AllowedOperations configuredOperations = pubInf.getAllowedOperations();
-                if ( configuredOperations != null ) {
-                    // if ( configuredOperations.getDescribeCoverage() != null ) {
-                    // if
-                    // }
-                    LOG.info( "WCS specification implies support for all three operations." );
-                }
-                allowedOperations.add( WCSRequestType.DescribeCoverage.name() );
-                allowedOperations.add( WCSRequestType.GetCoverage.name() );
+        if ( pubInf != null ) {
+            // mandatory
+            allowedOperations.add( WCSRequestType.GetCapabilities.name() );
+            AllowedOperations configuredOperations = pubInf.getAllowedOperations();
+            if ( configuredOperations != null ) {
+                // if ( configuredOperations.getDescribeCoverage() != null ) {
+                // if
+                // }
+                LOG.info( "WCS specification implies support for all three operations." );
             }
+            allowedOperations.add( WCSRequestType.DescribeCoverage.name() );
+            allowedOperations.add( WCSRequestType.GetCoverage.name() );
         }
-        return pubInf;
     }
 
     @Override
@@ -501,18 +498,20 @@ public class WCSController extends AbstractOWS {
     private void checkRequiredKeys( Map<String, String> param )
                             throws OWSException {
         try {
+            ImplementationMetadata<?> imd = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+
             String service = KVPUtils.getRequired( param, "SERVICE" );
             if ( !"WCS".equalsIgnoreCase( service ) ) {
                 throw new OWSException( "SERVICE " + service + " is not supported",
                                         OWSException.INVALID_PARAMETER_VALUE, "SERVICE" );
             }
             String request = KVPUtils.getRequired( param, "REQUEST" );
-            if ( !getHandledRequests().contains( request ) ) {
+            if ( !imd.getHandledRequests().contains( request ) ) {
                 throw new OWSException( "REQUEST " + request + " is not supported",
                                         OWSException.OPERATION_NOT_SUPPORTED, "REQUEST" );
             }
             String version;
-            if ( ( (ImplementationMetadata) serviceInfo ).getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
+            if ( imd.getRequestTypeByName( request ) != WCSRequestType.GetCapabilities ) {
                 // no version required
                 version = KVPUtils.getRequired( param, "VERSION" );
                 if ( version != null && !offeredVersions.contains( Version.parseVersion( version ) ) ) {
@@ -545,4 +544,5 @@ public class WCSController extends AbstractOWS {
     public XMLExceptionSerializer getExceptionSerializer( Version requestVersion ) {
         return new WCS100ServiceExceptionReportSerializer();
     }
+
 }

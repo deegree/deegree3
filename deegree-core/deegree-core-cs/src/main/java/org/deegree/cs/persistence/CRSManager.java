@@ -52,13 +52,6 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.config.AbstractBasicResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.config.ResourceProvider;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
@@ -74,6 +67,10 @@ import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
+import org.deegree.workspace.Destroyable;
+import org.deegree.workspace.Initializable;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +82,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CRSManager extends AbstractBasicResourceManager implements ResourceManager {
+public class CRSManager implements Initializable, Destroyable {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSManager.class );
 
@@ -98,7 +95,7 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     private static Map<String, TransformationFactory> idToTransF = new HashMap<String, TransformationFactory>();
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     private static boolean defaultInitialized = false;
 
@@ -125,32 +122,21 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         }
     }
 
-    public void startup( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    @Override
+    public void init( Workspace workspace ) {
         this.workspace = workspace;
         initDefault();
-        init( new File( workspace.getLocation(), "crs" ) );
+        init( new File( ( (DefaultWorkspace) workspace ).getLocation(), "crs" ) );
     }
 
-    public void shutdown() {
-        destroy();
-    }
-
-    /**
-     * cleares the stored configuration
-     */
-    public static void destroy() {
+    @Override
+    public void destroy( Workspace workspace ) {
         LOG.info( "Clear CRS store and transformation map" );
         idToCRSStore.clear();
         idToTransF.clear();
         storeIds.clear();
         defaultInitialized = false;
         new CRSManager().initDefault();
-    }
-
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
     }
 
     /**
@@ -314,22 +300,6 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
 
     public static Collection<String> getCrsStoreIds() {
         return idToCRSStore.keySet();
-    }
-
-    public ResourceManagerMetadata getMetadata() {
-        return new ResourceManagerMetadata() {
-            public String getName() {
-                return "crs stores";
-            }
-
-            public String getPath() {
-                return "datasources/crs/";
-            }
-
-            public List<ResourceProvider> getResourceProviders() {
-                return new LinkedList<ResourceProvider>( nsToProvider.values() );
-            }
-        };
     }
 
     /*********************************************/
@@ -779,23 +749,6 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
         return null;
     }
 
-    @Override
-    public ResourceState activate( String id ) {
-        return null;
-    }
-
-    @Override
-    public ResourceState deactivate( String id ) {
-        return null;
-    }
-
-    @Override
-    protected ResourceProvider getProvider( URL file ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     protected void remove( String id ) {
         if ( id != null ) {
             storeIds.remove( id );

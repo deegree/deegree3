@@ -52,4 +52,5 @@ public class CreateRemoteOwsBean extends AbstractCreateResourceBean {
     protected String getOutcome() {
         return "/console/connection/ows/index";
     }
+
 }

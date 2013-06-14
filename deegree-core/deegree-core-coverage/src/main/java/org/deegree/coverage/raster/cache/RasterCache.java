@@ -546,7 +546,7 @@ public class RasterCache {
                                                                                           data.getRasterDataInfo(),
                                                                                           data, true );
 
-                    result = new SimpleRaster( rasterData, data.getEnvelope(), data.getGeoReference() );
+                    result = new SimpleRaster( rasterData, data.getEnvelope(), data.getGeoReference(), null );
                 }
             }
         }

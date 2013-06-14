@@ -46,11 +46,11 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.config.Resource;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.services.OWS;
+import org.deegree.workspace.Resource;
 
 /**
  * Implementations provide metadata that {@link OWS} instances can use in their <code>GetCapabilities</code> responses.

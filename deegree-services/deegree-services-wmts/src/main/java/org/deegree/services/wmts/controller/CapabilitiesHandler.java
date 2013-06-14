@@ -49,17 +49,16 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.metadata.OWSMetadataProvider;
-import org.deegree.services.metadata.OWSMetadataProviderManager;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wmts.controller.capabilities.WMTSCapabilitiesWriter;
 import org.deegree.theme.Theme;
+import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for handling capabilities requests.
@@ -82,21 +81,17 @@ class CapabilitiesHandler {
 
     private FeatureInfoManager mgr;
 
-    CapabilitiesHandler( DeegreeServicesMetadataType mainMetadataConf, DeegreeWorkspace workspace,
-                         String metadataUrlTemplate, String wmtsId, List<Theme> themes, FeatureInfoManager mgr ) {
+    CapabilitiesHandler( DeegreeServicesMetadataType mainMetadataConf, Workspace workspace, String metadataUrlTemplate,
+                         String wmtsId, List<Theme> themes, FeatureInfoManager mgr ) {
         this.themes = themes;
         this.mgr = mgr;
         identification = convertFromJAXB( mainMetadataConf.getServiceIdentification() );
         provider = convertFromJAXB( mainMetadataConf.getServiceProvider() );
 
-        OWSMetadataProviderManager mmgr = workspace.getSubsystemManager( OWSMetadataProviderManager.class );
-        ResourceState<OWSMetadataProvider> state = mmgr.getState( wmtsId );
-        if ( state != null ) {
-            OWSMetadataProvider metadata = state.getResource();
-            if ( metadata != null ) {
-                identification = metadata.getServiceIdentification();
-                provider = metadata.getServiceProvider();
-            }
+        OWSMetadataProvider metadata = workspace.getResource( OWSMetadataProviderProvider.class, wmtsId + "_metadata" );
+        if ( metadata != null ) {
+            identification = metadata.getServiceIdentification();
+            provider = metadata.getServiceProvider();
         }
 
         this.metadataUrlTemplate = metadataUrlTemplate;

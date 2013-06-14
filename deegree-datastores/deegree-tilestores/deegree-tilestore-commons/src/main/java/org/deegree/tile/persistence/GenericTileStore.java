@@ -37,12 +37,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Generic implementation of {@link TileStore}.
@@ -57,14 +56,19 @@ public class GenericTileStore implements TileStore {
 
     private final Map<String, TileDataSet> tileDataSets;
 
+    private ResourceMetadata<TileStore> metadata;
+
     /**
      * Creates a new {@link GenericTileStore} instance.
      * 
      * @param tileDataSets
      *            the tile data sets to serve, must not be <code>null</code>
+     * @param metadata
+     *            resource metadata, must not be <code>null</code>
      */
-    public GenericTileStore( Map<String, TileDataSet> tileDataSets ) {
+    public GenericTileStore( Map<String, TileDataSet> tileDataSets, ResourceMetadata<TileStore> metadata ) {
         this.tileDataSets = tileDataSets;
+        this.metadata = metadata;
     }
 
     @Override
@@ -73,8 +77,7 @@ public class GenericTileStore implements TileStore {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to init
     }
 
@@ -106,4 +109,10 @@ public class GenericTileStore implements TileStore {
     public TileStoreTransaction acquireTransaction( String id ) {
         throw new UnsupportedOperationException( "Transactions are not supported by this tile store." );
     }
+
+    @Override
+    public ResourceMetadata<TileStore> getMetadata() {
+        return metadata;
+    }
+
 }

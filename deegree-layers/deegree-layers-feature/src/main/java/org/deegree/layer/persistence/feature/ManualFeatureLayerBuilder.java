@@ -44,7 +44,6 @@ package org.deegree.layer.persistence.feature;
 import static org.deegree.layer.config.ConfigUtils.parseStyles;
 
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +52,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -61,10 +59,13 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayerType;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayers;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * Builds feature layers that are manually configured.
@@ -78,15 +79,16 @@ class ManualFeatureLayerBuilder {
 
     private FeatureLayers lays;
 
-    private URL configUrl;
+    private ResourceMetadata<LayerStore> metadata;
 
     private FeatureStore store;
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    ManualFeatureLayerBuilder( FeatureLayers lays, URL configUrl, FeatureStore store, DeegreeWorkspace workspace ) {
+    ManualFeatureLayerBuilder( FeatureLayers lays, ResourceMetadata<LayerStore> metadata, FeatureStore store,
+                               Workspace workspace ) {
         this.lays = lays;
-        this.configUrl = configUrl;
+        this.metadata = metadata;
         this.store = store;
         this.workspace = workspace;
     }
@@ -94,13 +96,15 @@ class ManualFeatureLayerBuilder {
     MultipleLayerStore buildFeatureLayers()
                             throws XMLStreamException, URISyntaxException, FeatureStoreException {
         Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+        int index = -1;
         for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
+            ++index;
             QName featureType = lay.getFeatureType();
 
             // these methods do not use the dom elements but reparse the configuration file using StAX due to bugs
             // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
-            OperatorFilter filter = QueryOptionsParser.parseFilter( configUrl );
-            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( configUrl );
+            OperatorFilter filter = QueryOptionsParser.parseFilter( index, metadata.getLocation().getAsStream() );
+            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( index, metadata.getLocation().getAsStream() );
             List<SortProperty> sortByFeatureInfo = sortBy;
             if ( sortBy != null && lay.getSortBy().isReverseFeatureInfo() ) {
                 sortByFeatureInfo = new ArrayList<SortProperty>();
@@ -117,7 +121,7 @@ class ManualFeatureLayerBuilder {
             Layer l = new FeatureLayer( md, store, featureType, filter, sortBy, sortByFeatureInfo );
             map.put( lay.getName(), l );
         }
-        return new MultipleLayerStore( map );
+        return new MultipleLayerStore( map, metadata );
     }
 
 }

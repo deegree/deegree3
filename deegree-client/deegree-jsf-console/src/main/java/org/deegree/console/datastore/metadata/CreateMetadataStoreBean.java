@@ -52,4 +52,5 @@ public class CreateMetadataStoreBean extends AbstractCreateResourceBean {
     protected String getOutcome() {
         return "/console/datastore/metadata/index";
     }
+
 }

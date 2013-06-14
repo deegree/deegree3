@@ -40,15 +40,14 @@ import static org.deegree.protocol.wpvs.WPVSConstants.WPVS_NS;
 
 import java.net.URL;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
-import org.deegree.rendering.r3d.multiresolution.persistence.BatchedMTStoreManager;
-import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.controller.ImplementationMetadata;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -57,7 +56,7 @@ import org.deegree.services.controller.ImplementationMetadata;
  * 
  * @version $Revision$, $Date$
  */
-public class WPVSProvider implements OWSProvider {
+public class WPVSProvider extends OWSProvider {
 
     protected static final ImplementationMetadata<WPVSRequestType> IMPLEMENTATION_METADATA = new ImplementationMetadata<WPVSRequestType>() {
         {
@@ -70,12 +69,12 @@ public class WPVSProvider implements OWSProvider {
     };
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return "http://www.deegree.org/services/wpvs";
     }
 
     @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return WPVSProvider.class.getResource( "/META-INF/schemas/services/wpvs/3.0.0/wpvs_configuration.xsd" );
     }
 
@@ -85,19 +84,8 @@ public class WPVSProvider implements OWSProvider {
     }
 
     @Override
-    public OWS create( URL configURL ) {
-        return new WPVSController( configURL, getImplementationMetadata() );
+    public ResourceMetadata<OWS> createFromLocation( Workspace workspace, ResourceLocation<OWS> location ) {
+        return new WpvsMetadata( workspace, location, this );
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RenderableStoreManager.class, BatchedMTStoreManager.class };
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
-        // TODO Auto-generated method stub
-
-    }
 }

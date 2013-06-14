@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import org.deegree.commons.config.ExtendedResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * 
@@ -44,7 +44,7 @@ import org.deegree.commons.config.ExtendedResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface RemoteOWSProvider extends ExtendedResourceProvider<RemoteOWS> {
+public abstract class RemoteOWSProvider extends AbstractResourceProvider<RemoteOWS> {
 
     // specifies type parameter
 

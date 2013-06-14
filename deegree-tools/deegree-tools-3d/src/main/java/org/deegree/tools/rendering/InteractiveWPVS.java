@@ -70,16 +70,13 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.deegree.commons.annotations.Tool;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
@@ -95,7 +92,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManage
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.OWS;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OwsManager;
 import org.deegree.services.exception.ServiceInitException;
 import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
@@ -107,6 +104,10 @@ import org.deegree.services.wpvs.controller.WPVSController;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.controller.getview.GetViewKVPAdapter;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +144,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
 
     private final static double zFar = 300000.0;
 
-    private static DeegreeWorkspace workspace;
+    private static Workspace workspace;
 
     private final GLU glu = new GLU();
 
@@ -215,7 +216,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
      * @throws UnsupportedOperationException
      * @throws ServiceInitException
      */
-    private InteractiveWPVS( DeegreeWorkspace workspace, ViewParams params, float zScale ) throws IOException,
+    private InteractiveWPVS( Workspace workspace, ViewParams params, float zScale ) throws IOException,
                             UnsupportedOperationException, ServiceInitException {
 
         this.zScale = zScale;
@@ -228,7 +229,7 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         lodAnalyzerFrame.setSize( 600, 600 );
         lodAnalyzerFrame.setLocationByPlatform( true );
 
-        WebServicesConfiguration wsConfig = workspace.getSubsystemManager( WebServicesConfiguration.class );
+        OwsManager wsConfig = workspace.getResourceManager( OwsManager.class );
         List<OWS> wpvsControllers = wsConfig.getByOWSClass( WPVSController.class );
         if ( wpvsControllers.isEmpty() ) {
             throw new ServiceInitException( "No active WPVS found in workspace." );
@@ -927,16 +928,16 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
         }
 
         // TODO adapt to workspace concept
-        workspace = DeegreeWorkspace.getInstance( null, baseDir );
+        workspace = new DefaultWorkspace( baseDir );
 
         String dbURL = line.getOptionValue( OPT_WPVS_DB_CONNECTION );
         if ( dbURL != null && !"".equals( dbURL ) ) {
             String user = line.getOptionValue( OPT_WPVS_DB_USER );
             String pass = line.getOptionValue( OPT_WPVS_DB_PASS );
             String id = line.getOptionValue( OPT_WPVS_DB_ID );
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            JDBCParams params = new DefaultJDBCParams( dbURL, user, pass, false );
-            mgr.addPool( id, params, workspace );
+            ResourceLocation<ConnectionProvider> loc = ConnectionProviderUtils.getSyntheticProvider( id, dbURL, user,
+                                                                                                     pass );
+            workspace.getLocationHandler().addExtraResource( loc );
         }
 
         File dsDir = new File( baseDir, "/datasources/" );
@@ -952,10 +953,10 @@ public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyLis
             return null;
         }
 
-        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ) == null ) {
+        if ( workspace.getResourceManager( OwsManager.class ) == null ) {
             throw new FileNotFoundException( "No web service configurations were found in the workspace." );
         }
-        if ( workspace.getSubsystemManager( WebServicesConfiguration.class ).getByOWSClass( WPVSController.class ) == null ) {
+        if ( workspace.getResourceManager( OwsManager.class ).getByOWSClass( WPVSController.class ) == null ) {
             throw new FileNotFoundException( "No WPVS configuration was found in the workspace." );
         }
 

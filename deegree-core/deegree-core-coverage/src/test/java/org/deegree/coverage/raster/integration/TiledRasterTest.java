@@ -87,7 +87,7 @@ public class TiledRasterTest extends CenterOuterTest {
                 mtc.addTile( raster );
             }
         }
-        return new TiledRaster( mtc );
+        return new TiledRaster( mtc, null );
     }
 
     @Override

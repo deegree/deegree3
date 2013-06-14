@@ -42,8 +42,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
@@ -54,6 +52,7 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
+import org.deegree.workspace.Workspace;
 
 /**
  * Expects two arguments corresponding to two single values.
@@ -142,15 +141,14 @@ public class IMod implements FunctionProvider {
             }
         };
     }
-    
+
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 
     @Override
     public void destroy() {
         // nothing to do
-    }     
+    }
 }

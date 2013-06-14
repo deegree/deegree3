@@ -42,10 +42,10 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.config.ResourceState;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
 import org.deegree.metadata.persistence.MetadataStoreManager;
+import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
@@ -60,10 +60,16 @@ public class MetadataStoreManagerBean extends AbstractResourceManagerBean<Metada
     @Override
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
-        for ( ResourceState<?> state : resourceManager.getStates() ) {
-            configs.add( new MetadataStoreConfig( state, resourceManager ) );
+        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
+            configs.add( new MetadataStoreConfig( md, resourceManager ) );
         }
         Collections.sort( configs );
         return configs;
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/datastore/metadata/index";
+    }
+
 }

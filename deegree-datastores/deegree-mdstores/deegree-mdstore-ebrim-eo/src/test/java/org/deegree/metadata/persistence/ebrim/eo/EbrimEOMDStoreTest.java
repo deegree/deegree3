@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.ebrim.eo;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.deegree.metadata.persistence.ebrim.eo.Helper.getConnection;
 import static org.deegree.metadata.persistence.ebrim.eo.Helper.setUpTables;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -51,9 +51,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -71,17 +68,17 @@ import org.deegree.metadata.ebrim.RegistryPackage;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.MetadataStoreManager;
-import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStore;
-import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStoreTransaction;
+import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
-
 
 /**
  * TODO add class documentation here
@@ -99,7 +96,7 @@ public class EbrimEOMDStoreTest {
 
     private EbrimEOMDStore store = null;
 
-    private DeegreeWorkspace ws;
+    private Workspace ws;
 
     private static final NamespaceBindings ns = CommonNamespaces.getNamespaceContext();
 
@@ -116,15 +113,15 @@ public class EbrimEOMDStoreTest {
     public void setUp()
                             throws Exception {
         File wsDir = new File( EbrimEOMDStore.class.getResource( "eotest" ).toURI() );
-        ws = DeegreeWorkspace.getInstance( "eotest", wsDir );
+        ws = new DefaultWorkspace( wsDir );
         ws.initAll();
-        store = (EbrimEOMDStore) ws.getSubsystemManager( MetadataStoreManager.class ).get( MDSTORE_ID );
+        store = (EbrimEOMDStore) ws.getResource( MetadataStoreProvider.class, MDSTORE_ID );
     }
 
     @After
     public void tearDown()
                             throws Exception {
-        ws.destroyAll();
+        ws.destroy();
     }
 
     @Test

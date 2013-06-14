@@ -41,12 +41,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r3d.persistence.RenderableStore;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.postgis.Geometry;
 import org.postgis.LinearRing;
 import org.postgis.PGbox3d;
@@ -69,8 +70,9 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
      *            pointing to the configured database connection.
      * @param type
      */
-    public PostgisBackend( String connectionID, Type type, DeegreeWorkspace workspace ) {
-        super( connectionID, type, workspace );
+    public PostgisBackend( String connectionID, Type type, Workspace workspace,
+                           ResourceMetadata<RenderableStore> metadata ) {
+        super( connectionID, type, workspace, metadata );
     }
 
     @Override
@@ -209,8 +211,8 @@ public class PostgisBackend extends DBBackend<PGgeometry> {
         // nothing to init
     }
 
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to init
     }
+
 }

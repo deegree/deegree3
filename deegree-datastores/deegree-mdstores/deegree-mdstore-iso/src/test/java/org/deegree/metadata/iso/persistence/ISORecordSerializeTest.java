@@ -70,6 +70,7 @@ import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
@@ -92,13 +93,8 @@ public class ISORecordSerializeTest extends AbstractISOTest {
                             MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testNamespaces" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12 );
         resultSet = store.getRecordById( ids, null );
@@ -113,10 +109,10 @@ public class ISORecordSerializeTest extends AbstractISOTest {
         }
         StringBuilder streamExpected = new StringBuilder();
         streamExpected.append( "=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
-        streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
         streamExpected.append( "srv=http://www.isotc211.org/2005/srv" ).append( ' ' );
         streamExpected.append( "gml=http://www.opengis.net/gml" ).append( ' ' );
+        streamExpected.append( "gmd=http://www.isotc211.org/2005/gmd" ).append( ' ' );
+        streamExpected.append( "gco=http://www.isotc211.org/2005/gco" ).append( ' ' );
         streamExpected.append( "gts=http://www.isotc211.org/2005/gts" ).append( ' ' );
         streamExpected.append( "xsi=http://www.w3.org/2001/XMLSchema-instance" ).append( ' ' );
 

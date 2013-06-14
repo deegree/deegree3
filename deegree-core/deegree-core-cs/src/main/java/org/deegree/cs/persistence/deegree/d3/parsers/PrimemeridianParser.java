@@ -38,6 +38,7 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -115,7 +116,7 @@ public class PrimemeridianParser extends DefinitionParser {
      */
     protected PrimeMeridian parsePrimeMeridian( XMLStreamReader reader )
                             throws XMLStreamException {
-        if ( reader == null || !super.moveReaderToNextIdentifiable( reader, PM_ELEMENT ) ) {
+        if ( reader == null || !moveReaderToFirstMatch( reader, PM_ELEMENT ) ) {
             LOG.debug( "Could not get prime meridian no more definitions found." );
             return null;
         }

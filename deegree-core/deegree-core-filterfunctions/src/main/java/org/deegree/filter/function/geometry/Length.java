@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
@@ -56,6 +54,7 @@ import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -106,8 +105,7 @@ public class Length implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

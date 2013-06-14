@@ -39,18 +39,18 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.persistence.CRSStoreProvider;
 import org.deegree.cs.persistence.proj4.jaxb.PROJ4CRSStoreConfig;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -82,11 +82,13 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
     }
 
     @Override
-    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
+    public CRSStore getCRSStore( URL configURL, Workspace workspace )
                             throws CRSStoreException {
         try {
-            PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                           configURL, workspace );
+            PROJ4CRSStoreConfig config = (PROJ4CRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                           CONFIG_SCHEMA,
+                                                                           new DURL( configURL.toExternalForm() ).openStream(),
+                                                                           workspace );
 
             PROJ4CRSStore crsStore = new PROJ4CRSStore( DSTransform.fromSchema( config ) );
             ProjFileResource resource = null;
@@ -101,11 +103,12 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
             String msg = "Error in proj4 crs store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
-        } catch ( MalformedURLException e ) {
+        } catch ( Exception e ) {
             String msg = "Error in file declaraition inproj4 crs store configuration file '" + configURL + "': "
                          + e.getMessage();
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
         }
     }
+
 }

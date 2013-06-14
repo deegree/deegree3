@@ -42,24 +42,23 @@ package org.deegree.theme;
 
 import java.util.List;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.workspace.Resource;
 
 /**
  * A node in a theme tree.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
  * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
+ * @since 3.4
  */
 public interface Theme extends Resource {
 
     /**
      * @return the metadata (description, spatial) for this theme
      */
-    LayerMetadata getMetadata();
+    LayerMetadata getLayerMetadata();
 
     /**
      * @return all direct child layers of this theme

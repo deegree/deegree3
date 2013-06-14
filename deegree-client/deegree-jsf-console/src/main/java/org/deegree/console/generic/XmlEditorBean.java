@@ -35,32 +35,38 @@
 package org.deegree.console.generic;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.deegree.commons.config.ResourceState.StateType.deactivated;
-import static org.deegree.commons.xml.XMLAdapter.DEFAULT_URL;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static javax.faces.application.FacesMessage.SEVERITY_WARN;
+import static javax.faces.context.FacesContext.getCurrentInstance;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.Resource;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.console.workspace.WorkspaceBean;
+import org.apache.xerces.xni.parser.XMLParseException;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
+import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
+import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultWorkspace;
+import org.slf4j.Logger;
 
 @ManagedBean
 @ViewScoped
@@ -68,21 +74,21 @@ public class XmlEditorBean implements Serializable {
 
     private static final long serialVersionUID = -2345424266499294734L;
 
+    private static final Logger LOG = getLogger( XmlEditorBean.class );
+
     private String id;
 
     private String fileName;
 
     private String schemaUrl;
 
-    private String resourceManagerClass;
-
     private String nextView;
 
     private String content;
 
-    private ResourceManager resourceManager;
-
     private String schemaAsText;
+
+    private String resourceProviderClass;
 
     public String getFileName() {
         return fileName;
@@ -101,12 +107,24 @@ public class XmlEditorBean implements Serializable {
     }
 
     public String getSchemaUrl() {
+        if ( schemaUrl == null ) {
+            try {
+                Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+                Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+                ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+                if ( md.getProvider() instanceof AbstractResourceProvider ) {
+                    setSchemaUrl( ( (AbstractResourceProvider) md.getProvider() ).getSchema().toExternalForm() );
+                }
+            } catch ( Exception e ) {
+                // ignore
+            }
+        }
         return schemaUrl;
     }
 
     public void setSchemaUrl( String schemaUrl ) {
         this.schemaUrl = schemaUrl;
-        if ( schemaUrl != null ) {
+        if ( schemaUrl != null && !schemaUrl.isEmpty() ) {
             try {
                 schemaAsText = IOUtils.toString( new URL( schemaUrl ).openStream(), "UTF-8" );
             } catch ( IOException e ) {
@@ -123,25 +141,19 @@ public class XmlEditorBean implements Serializable {
         this.nextView = nextView;
     }
 
-    public String getResourceManagerClass() {
-        return resourceManagerClass;
-    }
-
-    public void setResourceManagerClass( String resourceManagerClass )
-                            throws ClassNotFoundException {
-        this.resourceManagerClass = resourceManagerClass;
-        if ( resourceManagerClass != null && !resourceManagerClass.isEmpty() ) {
-            DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
-            @SuppressWarnings("unchecked")
-            Class<? extends ResourceManager> cl = (Class<? extends ResourceManager>) ws.getModuleClassLoader().loadClass( resourceManagerClass );
-            this.resourceManager = (ResourceManager) ws.getSubsystemManager( cl );
-        }
-    }
-
     public String getContent()
-                            throws IOException {
+                            throws IOException, ClassNotFoundException {
         if ( content == null ) {
-            content = FileUtils.readFileToString( new File( fileName ) );
+            if ( resourceProviderClass == null ) {
+                content = FileUtils.readFileToString( new File( fileName ) );
+                return content;
+            }
+            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+            if ( md != null ) {
+                content = IOUtils.toString( md.getLocation().getAsStream() );
+            }
         }
         return content;
     }
@@ -163,53 +175,138 @@ public class XmlEditorBean implements Serializable {
     }
 
     public String save() {
-        try {
-            XMLAdapter adapter = new XMLAdapter( new StringReader( content ), DEFAULT_URL );
-            OutputStream os = new FileOutputStream( fileName );
-            adapter.getRootElement().serialize( os );
-            os.close();
-        } catch ( Exception e ) {
-            String msg = "Error saving XML configuration file: " + e.getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
+        if ( checkValidity() ) {
+            activate();
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Saved configuration.", null );
+            getCurrentInstance().addMessage( null, fm );
             return nextView;
         }
-        if ( resourceManager != null ) {
-            activate();
-        }
-        return nextView;
+        return null;
     }
 
-    private void activate() {
-        ResourceState<? extends Resource> state = resourceManager.getState( id );
+    public String saveAndApply() {
+        if ( checkValidity() ) {
+            activate();
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Saved configuration.", null );
+            getCurrentInstance().addMessage( null, fm );
+            return nextView;
+        }
+        return null;
+    }
 
+    public String getResourceProviderClass() {
+        return resourceProviderClass;
+    }
+
+    public void setResourceProviderClass( String providerClass ) {
+        this.resourceProviderClass = providerClass;
+    }
+
+    private void saveFile() {
         try {
-            if ( state.getType() == deactivated ) {
-                resourceManager.activate( id );
+            if ( resourceProviderClass == null ) {
+                FileUtils.write( new File( fileName ), content );
+                return;
+            }
+
+            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+
+            workspace.destroy( md.getIdentifier() );
+
+            md.getLocation().setContent( IOUtils.toInputStream( content ) );
+            // special handling because of non-identity between id and filename:
+            if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
+                if ( workspace instanceof DefaultWorkspace ) {
+                    File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
+                    file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
+                    FileUtils.write( file, content );
+                } else {
+                    LOG.warn( "Could not persist metadata configuration." );
+                }
             } else {
-                resourceManager.deactivate( id );
-                resourceManager.activate( id );
+                workspace.getLocationHandler().persist( md.getLocation() );
             }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            String msg = "Error applying resource configuration changes: " + e.getMessage();
-            state = resourceManager.getState( id );
-            if ( state != null && state.getLastException() != null ) {
-                msg = state.getLastException().getMessage();
-            }
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
+
+            workspace.getLocationHandler().activate( md.getLocation() );
+            WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
+        } catch ( Exception t ) {
+            t.printStackTrace();
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
         }
-        state = resourceManager.getState( id );
-        if ( state != null && state.getLastException() != null ) {
-            String msg = state.getLastException().getMessage();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-        }
+    }
 
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        WorkspaceBean ws = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-        ws.setModified();
+    private void activate() {
+        try {
+            if ( resourceProviderClass == null ) {
+                FileUtils.write( new File( fileName ), content );
+                return;
+            }
+
+            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+
+            workspace.destroy( md.getIdentifier() );
+
+            md.getLocation().setContent( IOUtils.toInputStream( content ) );
+            // special handling because of non-identity between id and filename:
+            if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
+                if ( workspace instanceof DefaultWorkspace ) {
+                    File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
+                    file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
+                    FileUtils.write( file, content );
+                } else {
+                    LOG.warn( "Could not persist metadata configuration." );
+                }
+            } else {
+                workspace.getLocationHandler().persist( md.getLocation() );
+            }
+
+            workspace.getLocationHandler().activate( md.getLocation() );
+            WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
+        } catch ( Exception t ) {
+            t.printStackTrace();
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
+            return;
+        }
+    }
+
+    public boolean checkValidity() {
+        try {
+            InputStream xml = new ByteArrayInputStream( content.getBytes( "UTF-8" ) );
+            String[] schemas = new String[] { schemaUrl };
+            List<SchemaValidationEvent> events = SchemaValidator.validate( xml, schemas );
+            if ( !events.isEmpty() ) {
+                for ( SchemaValidationEvent event : events ) {
+                    String msg = toString( event );
+                    FacesMessage fm = new FacesMessage( SEVERITY_WARN, msg, null );
+                    getCurrentInstance().addMessage( null, fm );
+                }
+                return false;
+            }
+        } catch ( UnsupportedEncodingException e ) {
+            LOG.error( "UTF-8 is not supported!" );
+            return true;
+        }
+        return true;
+    }
+
+    private String toString( SchemaValidationEvent event ) {
+        XMLParseException e = event.getException();
+        return "<a href=\"javascript:jumpTo(" + e.getLineNumber() + "," + e.getColumnNumber() + ")\">Error near line " + e.getLineNumber()
+               + ", column " + e.getColumnNumber() + "</a>: " + e.getLocalizedMessage();
+    }
+
+    public String validate() {
+        if ( checkValidity() ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Document is valid.", null );
+            getCurrentInstance().addMessage( null, fm );
+        }
+        return null;
     }
 }

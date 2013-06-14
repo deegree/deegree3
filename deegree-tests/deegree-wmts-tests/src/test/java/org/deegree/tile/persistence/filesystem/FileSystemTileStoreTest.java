@@ -51,13 +51,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.TileStoreTransaction;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +73,7 @@ import org.junit.Test;
  */
 public class FileSystemTileStoreTest {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
     @Before
     public void setup()
@@ -81,21 +82,20 @@ public class FileSystemTileStoreTest {
         File dir = new File( new File( u.toURI() ).getParentFile(),
                              "../../../../../../../src/main/webapp/WEB-INF/workspace" );
         dir = dir.getCanonicalFile();
-        workspace = DeegreeWorkspace.getInstance( "deegree-wmts-tests", dir );
+        workspace = new DefaultWorkspace( dir );
         workspace.initAll();
     }
 
     @After
     public void shutdown() {
-        workspace.destroyAll();
+        workspace.destroy();
     }
 
     @Test
     public void testTileStoreCopy()
                             throws InterruptedException {
-        TileStoreManager mgr = workspace.getSubsystemManager( TileStoreManager.class );
-        TileStore src = mgr.get( "pyramid" );
-        TileStore dest = mgr.get( "filesystem" );
+        TileStore src = workspace.getResource( TileStoreProvider.class, "pyramid" );
+        TileStore dest = workspace.getResource( TileStoreProvider.class, "filesystem" );
 
         TileStoreTransaction ta = dest.acquireTransaction( "filesystem" );
 

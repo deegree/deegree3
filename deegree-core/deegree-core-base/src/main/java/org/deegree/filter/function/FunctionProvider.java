@@ -37,10 +37,10 @@ package org.deegree.filter.function;
 
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.filter.Expression;
 import org.deegree.filter.expression.Function;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.Workspace;
 
 /**
  * Implementations of this class provide {@link Function} implementations.
@@ -60,7 +60,7 @@ public interface FunctionProvider {
      * @throws ResourceInitException
      *             if the initialization fails
      */
-    public void init( DeegreeWorkspace ws )
+    public void init( Workspace ws )
                             throws ResourceInitException;
 
     /**
@@ -97,4 +97,5 @@ public interface FunctionProvider {
      * @return the new function instance, never <code>null</code>
      */
     public Function create( List<Expression> params );
+
 }

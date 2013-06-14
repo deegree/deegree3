@@ -205,6 +205,11 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
-    </dependency>
+    </dependency> 
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+      <version>3.5</version>
+    </dependency>    
   </dependencies>
 </project>

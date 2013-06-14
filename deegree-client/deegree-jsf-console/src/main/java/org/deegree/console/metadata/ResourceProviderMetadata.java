@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.workspace.ResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,7 @@ public class ResourceProviderMetadata {
 
     private static final Map<String, ResourceProviderMetadata> rpClassNameToMd = new HashMap<String, ResourceProviderMetadata>();
 
-    private ResourceProviderMetadata( ResourceProvider rp ) {
+    private ResourceProviderMetadata( ResourceProvider<?> rp ) {
         String className = rp.getClass().getName();
         name = rp.getClass().getSimpleName();
         URL url = rp.getClass().getResource( "/META-INF/console/resourceprovider/" + className );
@@ -113,7 +113,7 @@ public class ResourceProviderMetadata {
         }
     }
 
-    public static synchronized ResourceProviderMetadata getMetadata( ResourceProvider rp ) {
+    public static synchronized ResourceProviderMetadata getMetadata( ResourceProvider<?> rp ) {
         if ( !rpClassNameToMd.containsKey( rp.getClass().getName() ) ) {
             rpClassNameToMd.put( rp.getClass().getName(), new ResourceProviderMetadata( rp ) );
         }

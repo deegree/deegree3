@@ -59,7 +59,6 @@ import org.deegree.commons.tools.CommandUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.io.deegree.CRSExporterBase;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
 import org.deegree.cs.persistence.gml.GMLCRSStore;

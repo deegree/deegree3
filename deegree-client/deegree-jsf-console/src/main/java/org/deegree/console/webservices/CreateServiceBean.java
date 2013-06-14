@@ -31,7 +31,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
-import org.deegree.services.controller.WebServicesConfiguration;
+import org.deegree.services.OwsManager;
 
 /**
  * JSF backing bean for "Create new webservice" view.
@@ -45,7 +45,7 @@ import org.deegree.services.controller.WebServicesConfiguration;
 public class CreateServiceBean extends AbstractCreateResourceBean {
 
     public CreateServiceBean() {
-        super( WebServicesConfiguration.class );
+        super( OwsManager.class );
     }
 
     @Override

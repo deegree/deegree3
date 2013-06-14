@@ -37,11 +37,11 @@ package org.deegree.rendering.r3d.persistence;
 
 import java.util.List;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.RenderablePrototype;
+import org.deegree.workspace.Resource;
 
 /**
  * The <code></code> class TODO add class documentation here.

@@ -49,8 +49,6 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,11 +57,13 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.TileDataSet;
+import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.geotiff.jaxb.GeoTIFFTileStoreJAXB;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -78,20 +78,20 @@ class GeoTiffTileDataSetMapBuilder {
 
     private static final Logger LOG = getLogger( GeoTiffTileDataSetMapBuilder.class );
 
-    private URL configUrl;
-
     private GeoTIFFTileStoreJAXB cfg;
 
     private GeoTiffTileDataSetBuilder builder;
 
-    GeoTiffTileDataSetMapBuilder( DeegreeWorkspace workspace, URL configUrl, GeoTIFFTileStoreJAXB cfg ) {
-        this.configUrl = configUrl;
+    private ResourceLocation<TileStore> location;
+
+    GeoTiffTileDataSetMapBuilder( Workspace workspace, ResourceLocation<TileStore> location, GeoTIFFTileStoreJAXB cfg ) {
+        this.location = location;
         this.cfg = cfg;
         builder = new GeoTiffTileDataSetBuilder( workspace );
     }
 
     Map<String, TileDataSet> buildTileDataSetMap()
-                            throws ResourceInitException, IOException, URISyntaxException {
+                            throws IOException {
         Iterator<ImageReader> readers = getImageReadersBySuffix( "tiff" );
         ImageReader reader = null;
         while ( readers.hasNext() && !( reader instanceof TIFFImageReader ) ) {
@@ -109,7 +109,7 @@ class GeoTiffTileDataSetMapBuilder {
                 id = new File( tds.getFile() ).getName();
             }
 
-            File file = new File( configUrl.toURI().resolve( tds.getFile() ) );
+            File file = location.resolveToFile( tds.getFile() );
 
             if ( !file.exists() ) {
                 LOG.warn( "The file {} does not exist, skipping.", file );
@@ -128,7 +128,7 @@ class GeoTiffTileDataSetMapBuilder {
 
             LOG.debug( "Envelope from GeoTIFF was {}.", envelope );
 
-            map.put( id, builder.buildTileDataSet( tds, configUrl, envelope ) );
+            map.put( id, builder.buildTileDataSet( tds, location, envelope ) );
         }
         return map;
     }

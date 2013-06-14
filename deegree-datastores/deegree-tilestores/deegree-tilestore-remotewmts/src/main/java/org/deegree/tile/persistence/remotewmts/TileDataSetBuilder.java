@@ -60,7 +60,8 @@ import org.deegree.tile.persistence.remotewmts.jaxb.ParameterUseType;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB.TileDataSet.RequestParams;
 import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB.TileDataSet.RequestParams.Parameter;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
+import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
+import org.deegree.workspace.Workspace;
 
 /**
  * Builds a tile data set from jaxb.
@@ -74,11 +75,11 @@ class TileDataSetBuilder {
 
     private WMTSClient client;
 
-    private TileMatrixSetManager tileMatrixSetManager;
+    private Workspace workspace;
 
-    TileDataSetBuilder( WMTSClient client, TileMatrixSetManager tileMatrixSetManager ) {
+    TileDataSetBuilder( WMTSClient client, Workspace workspace ) {
         this.client = client;
-        this.tileMatrixSetManager = tileMatrixSetManager;
+        this.workspace = workspace;
     }
 
     Map<String, TileDataSet> buildTileDataSetMap( RemoteWMTSTileStoreJAXB config )
@@ -138,7 +139,7 @@ class TileDataSetBuilder {
             tileMatrixSetId = requestTileMatrixSetId;
         }
 
-        TileMatrixSet tileMatrixSet = tileMatrixSetManager.get( tileMatrixSetId );
+        TileMatrixSet tileMatrixSet = workspace.getResource( TileMatrixSetProvider.class, tileMatrixSetId );
         if ( tileMatrixSet == null ) {
             String msg = "No local TileMatrixSet definition with identifier '" + tileMatrixSetId + "' available.";
             throw new ResourceInitException( msg );

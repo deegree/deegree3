@@ -41,15 +41,16 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * {@link MetadataStore} implementation for accessing ISO 19115 records kept in memory.
@@ -67,16 +68,21 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
 
     private final File insertDirectory;
 
+    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
+
     /**
      * 
      * @param recordDirectories
      *            never <code>null</code> but may be empty when no directories exists
      * @param transactionalDirectory
      *            directory to store inserted records, can be <code>null</code> if transactions are not allowed
-     * @throws IOException 
+     * @throws IOException
      */
-    public ISOMemoryMetadataStore( List<File> recordDirectories, File transactionalDirectory ) throws IOException {
+    public ISOMemoryMetadataStore( List<File> recordDirectories, File transactionalDirectory,
+                                   ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata )
+                            throws IOException {
         this.insertDirectory = transactionalDirectory;
+        this.metadata = metadata;
         storedIsoRecords = new StoredISORecords( recordDirectories );
     }
 
@@ -86,8 +92,7 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
     }
 
     @Override
-    public void init( DeegreeWorkspace deegreeWorkspace )
-                            throws ResourceInitException {
+    public void init() {
         // nothing to do
     }
 
@@ -151,6 +156,11 @@ public class ISOMemoryMetadataStore implements MetadataStore<ISORecord> {
      */
     public void releaseTransaction() {
         activeTransaction = null;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 
 }

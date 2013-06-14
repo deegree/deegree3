@@ -41,7 +41,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -66,13 +65,6 @@ import org.deegree.sqldialect.filter.UnmappableException;
  * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
 public interface SQLDialect {
-
-    /**
-     * Returns the {@link Type} of JDBC connection that this dialect can handle.
-     * 
-     * @return the db type, never <code>null</code>
-     */
-    Type getDBType();
 
     /**
      * Returns the maximum number of characters allowed for column names.

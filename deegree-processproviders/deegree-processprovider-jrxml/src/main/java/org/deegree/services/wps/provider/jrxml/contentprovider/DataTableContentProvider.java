@@ -61,7 +61,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -78,6 +77,7 @@ import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.provider.jrxml.JrxmlUtils;
 import org.deegree.services.wps.provider.jrxml.ParameterDescription;
+import org.deegree.workspace.Workspace;
 import org.jaxen.dom.DOMXPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,11 +118,11 @@ public class DataTableContentProvider extends AbstractJrxmlContentProvider {
         nsContext = JrxmlUtils.nsContext.addNamespace( "tbl", SCHEMA );
     }
 
-    public DataTableContentProvider( DeegreeWorkspace workspace ) {
+    public DataTableContentProvider( Workspace workspace ) {
         super( workspace );
     }
 
-    public DataTableContentProvider( DeegreeWorkspace workspace, String datasourceParameterName ) {
+    public DataTableContentProvider( Workspace workspace, String datasourceParameterName ) {
         super( workspace );
         if ( datasourceParameterName != null )
             this.datasourceParameterName = datasourceParameterName;

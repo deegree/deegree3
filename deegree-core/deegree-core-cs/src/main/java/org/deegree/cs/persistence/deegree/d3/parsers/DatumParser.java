@@ -38,6 +38,7 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -121,7 +122,7 @@ public class DatumParser extends DefinitionParser {
      */
     protected GeodeticDatum parseDatum( XMLStreamReader reader )
                             throws XMLStreamException {
-        if ( reader == null || !super.moveReaderToNextIdentifiable( reader, DATUM_ELEM ) ) {
+        if ( reader == null || !moveReaderToFirstMatch( reader, DATUM_ELEM ) ) {
             LOG.debug( "Could not get datum, no more definitions left." );
             return null;
         }
@@ -138,8 +139,8 @@ public class DatumParser extends DefinitionParser {
         IEllipsoid ellipsoid = new EllipsoidRef( store.getResolver( RESOURCETYPE.ELLIPSOID ), '#' + ellipsID, null );
 
         // get the primemeridian if any.
-        String pMeridianID = XMLStreamUtils.getText( getConfigReader(), new QName( CRS_NS, "UsedPrimeMeridian" ),
-                                                        null, true );
+        String pMeridianID = XMLStreamUtils.getText( getConfigReader(), new QName( CRS_NS, "UsedPrimeMeridian" ), null,
+                                                     true );
         IPrimeMeridian pMeridian = null;
         if ( pMeridianID != null && pMeridianID.trim().length() > 0 ) {
             pMeridian = new PrimeMeridianRef( store.getResolver( RESOURCETYPE.PM ), '#' + pMeridianID, null );

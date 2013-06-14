@@ -57,16 +57,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.param.DefaultJDBCParams;
-import org.deegree.commons.jdbc.param.JDBCParams;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.legacy.LegacyConnectionProvider;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -82,8 +80,6 @@ import org.slf4j.Logger;
  */
 class DbfIndexImporter {
 
-    private String connid;
-
     private static final Logger LOG = getLogger( DbfIndexImporter.class );
 
     private DBFReader dbf;
@@ -98,13 +94,11 @@ class DbfIndexImporter {
 
     private Map<String, Mapping> fieldMap;
 
-    private DeegreeWorkspace workspace;
+    private LegacyConnectionProvider connProvider;
 
-    DbfIndexImporter( String connid, DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
-                      List<Mapping> mappings, DeegreeWorkspace workspace ) {
-        this.connid = connid;
+    DbfIndexImporter( DBFReader dbf, File file, Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes,
+                      List<Mapping> mappings ) {
         this.dbf = dbf;
-        this.workspace = workspace;
         this.file = file.getAbsoluteFile();
         this.envelopes = envelopes;
         this.mappings = mappings;
@@ -272,8 +266,7 @@ class DbfIndexImporter {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connid );
+            conn = connProvider.getConnection();
             stmt = conn.prepareStatement( create.toString() );
             stmt.executeUpdate();
             stmt.close();
@@ -296,7 +289,7 @@ class DbfIndexImporter {
         }
     }
 
-    void createIndex()
+    ConnectionProvider createIndex()
                             throws IOException {
         LOG.debug( "Creating h2 db index..." );
 
@@ -309,19 +302,17 @@ class DbfIndexImporter {
 
         File dbfile = new File( file.toString().substring( 0, file.toString().lastIndexOf( '.' ) ) );
 
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        JDBCParams params = new DefaultJDBCParams( "jdbc:h2:" + dbfile, "SA", "", false );
-
-        mgr.addPool( connid = file.getName(), params, workspace );
+        connProvider = new LegacyConnectionProvider( "jdbc:h2:" + dbfile, "SA", "", false, null );
 
         if ( new File( dbfile.toString() + ".h2.db" ).exists() ) {
             // TODO proper check for database consistency
-            return;
+            return connProvider;
         }
 
         importDbf( create );
 
         LOG.debug( "Done creating h2 db index." );
+        return connProvider;
     }
 
 }

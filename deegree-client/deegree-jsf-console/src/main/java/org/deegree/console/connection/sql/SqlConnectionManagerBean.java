@@ -42,28 +42,30 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.jdbc.param.JDBCParamsManager;
 import org.deegree.console.AbstractResourceManagerBean;
 import org.deegree.console.Config;
+import org.deegree.db.ConnectionProviderManager;
+import org.deegree.workspace.ResourceMetadata;
 
 @ManagedBean
 @ViewScoped
-public class SqlConnectionManagerBean extends AbstractResourceManagerBean<JDBCParamsManager> implements Serializable {
+public class SqlConnectionManagerBean extends AbstractResourceManagerBean<ConnectionProviderManager> implements
+                                                                                                    Serializable {
 
     private static final long serialVersionUID = 2946865645336970064L;
 
     public SqlConnectionManagerBean() {
-        super( JDBCParamsManager.class );
+        super( ConnectionProviderManager.class );
     }
 
     @Override
     public List<Config> getConfigs() {
         List<Config> configs = new ArrayList<Config>();
-        for ( ResourceState<?> state : resourceManager.getStates() ) {
+        for ( ResourceMetadata<?> state : resourceManager.getResourceMetadata() ) {
             configs.add( new Config( state, resourceManager, "/console/connection/sql/index", true ) );
         }
         Collections.sort( configs );
         return configs;
     }
+
 }

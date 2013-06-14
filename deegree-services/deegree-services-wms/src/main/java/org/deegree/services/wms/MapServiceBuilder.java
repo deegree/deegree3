@@ -52,6 +52,7 @@ import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.services.jaxb.wms.LayerOptionsType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
