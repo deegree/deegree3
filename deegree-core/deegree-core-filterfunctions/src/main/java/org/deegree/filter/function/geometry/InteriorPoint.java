@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -56,6 +54,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.primitive.DefaultSurface;
+import org.deegree.workspace.Workspace;
 
 /**
  * 
@@ -110,8 +109,7 @@ public class InteriorPoint implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

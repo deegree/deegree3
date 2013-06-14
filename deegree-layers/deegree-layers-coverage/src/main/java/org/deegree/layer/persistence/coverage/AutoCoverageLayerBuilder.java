@@ -45,12 +45,10 @@ import static org.deegree.layer.persistence.coverage.CoverageFeatureTypeBuilder.
 
 import java.util.Collections;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.coverage.Coverage;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.geometry.metadata.SpatialMetadata;
@@ -60,8 +58,10 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.SingleLayerStore;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers.AutoLayers;
 import org.deegree.style.persistence.StyleStore;
-import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.style.persistence.StyleStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * Responsible for creating coverage layers from jaxb beans, AutoLayers variant.
@@ -73,26 +73,20 @@ import org.deegree.style.se.unevaluated.Style;
  */
 class AutoCoverageLayerBuilder {
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
 
-    AutoCoverageLayerBuilder( DeegreeWorkspace workspace ) {
+    private ResourceMetadata<LayerStore> metadata;
+
+    AutoCoverageLayerBuilder( Workspace workspace, ResourceMetadata<LayerStore> metadata ) {
         this.workspace = workspace;
+        this.metadata = metadata;
     }
 
-    LayerStore createFromAutoLayers( AutoLayers cfg )
-                            throws ResourceInitException {
+    LayerStore createFromAutoLayers( AutoLayers cfg ) {
         String cid = cfg.getCoverageStoreId();
         String sid = cfg.getStyleStoreId();
-        CoverageBuilderManager mgr = workspace.getSubsystemManager( CoverageBuilderManager.class );
-        StyleStoreManager smgr = workspace.getSubsystemManager( StyleStoreManager.class );
-        Coverage cov = mgr.get( cid );
-        StyleStore sstore = smgr.get( sid );
-        if ( cov == null ) {
-            throw new ResourceInitException( "Coverage store with id " + cid + " is not available." );
-        }
-        if ( sid != null && sstore == null ) {
-            throw new ResourceInitException( "Style store with id " + sid + " is not available." );
-        }
+        Coverage cov = workspace.getResource( CoverageProvider.class, cid );
+        StyleStore sstore = workspace.getResource( StyleStoreProvider.class, sid );
 
         SpatialMetadata smd = new SpatialMetadata( cov.getEnvelope(),
                                                    Collections.singletonList( cov.getCoordinateSystem() ) );
@@ -110,7 +104,7 @@ class AutoCoverageLayerBuilder {
 
         Layer l = new CoverageLayer( md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
                                      cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null );
-        return new SingleLayerStore( l );
+        return new SingleLayerStore( l, metadata );
     }
 
 }

@@ -39,8 +39,8 @@ import java.io.File;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * TODO add class documentation here
@@ -55,7 +55,7 @@ public class WSDL {
     private final File wsdlFile;
 
     public WSDL( String wsPath ) {
-        DeegreeWorkspace ws = OGCFrontController.getServiceWorkspace();
+        DefaultWorkspace ws = (DefaultWorkspace) OGCFrontController.getServiceWorkspace().getNewWorkspace();
         wsdlFile = new File( ws.getLocation(), wsPath );
     }
 

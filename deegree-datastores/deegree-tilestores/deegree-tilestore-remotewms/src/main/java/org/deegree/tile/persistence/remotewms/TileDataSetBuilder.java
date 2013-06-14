@@ -63,7 +63,8 @@ import org.deegree.tile.persistence.remotewms.jaxb.ParameterUseType;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileDataSet.RequestParams;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileDataSet.RequestParams.Parameter;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
+import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
+import org.deegree.workspace.Workspace;
 
 /**
  * Builds tile data sets from jaxb config beans.
@@ -79,12 +80,12 @@ class TileDataSetBuilder {
 
     private final RemoteWMS wms;
 
-    private final TileMatrixSetManager tmsMgr;
+    private final Workspace workspace;
 
-    TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, TileMatrixSetManager tmsMgr ) {
+    TileDataSetBuilder( RemoteWMSTileStoreJAXB config, RemoteWMS wms, Workspace workspace ) {
         this.config = config;
         this.wms = wms;
-        this.tmsMgr = tmsMgr;
+        this.workspace = workspace;
     }
 
     Map<String, TileDataSet> extractTileDataSets()
@@ -93,7 +94,7 @@ class TileDataSetBuilder {
         for ( RemoteWMSTileStoreJAXB.TileDataSet cfg : config.getTileDataSet() ) {
             String id = cfg.getIdentifier();
             String tmsId = cfg.getTileMatrixSetId();
-            TileMatrixSet tms = tmsMgr.get( tmsId );
+            TileMatrixSet tms = workspace.getResource( TileMatrixSetProvider.class, tmsId );
             if ( tms == null ) {
                 throw new ResourceInitException( "The tile matrix set with id " + tmsId + " was not available." );
             }

@@ -52,4 +52,5 @@ public class CreateLayerBean extends AbstractCreateResourceBean {
     protected String getOutcome() {
         return "/console/layer/layer/index";
     }
+
 }

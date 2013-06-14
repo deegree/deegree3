@@ -55,7 +55,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
@@ -66,6 +65,7 @@ import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.provider.jrxml.ParameterDescription;
 import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
 import org.deegree.services.wps.provider.jrxml.jaxb.process.ResourceBundle;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +100,7 @@ public class SubreportContentProvider extends AbstractJrxmlContentProvider {
      * @param url
      * @param processDescription
      */
-    public SubreportContentProvider( DeegreeWorkspace workspace, String parameterName, URL url,
-                                     ResourceBundle resourceBundle ) {
+    public SubreportContentProvider( Workspace workspace, String parameterName, URL url, ResourceBundle resourceBundle ) {
         super( workspace );
         this.parameterPrefix = parameterName;
         this.subreportJrxml = url;

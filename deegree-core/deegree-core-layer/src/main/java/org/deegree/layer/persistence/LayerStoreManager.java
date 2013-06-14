@@ -1,10 +1,12 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ This file is part of deegree
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -20,60 +22,25 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
- Occam Labs Schmitz & Schneider GbR
- Godesberger Allee 139, 53175 Bonn
- Germany
- http://www.occamlabs.de/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.style.persistence.StyleStoreManager;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
- * @author stranger
+ * The resource manager for layers.
  * 
+ * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * 
+ * @since 3.4
  */
-public class LayerStoreManager extends AbstractResourceManager<LayerStore> {
+public class LayerStoreManager extends DefaultResourceManager<LayerStore> {
 
-    private LayerManagerMetadata metadata;
-
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        metadata = new LayerManagerMetadata( workspace );
-    }
-
-    static class LayerManagerMetadata extends DefaultResourceManagerMetadata<LayerStore> {
-        LayerManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "layers", "layers/", LayerStoreProvider.class, workspace );
-        }
-    }
-
-    @Override
-    public ResourceManagerMetadata<LayerStore> getMetadata() {
-        return metadata;
-    }
-
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { StyleStoreManager.class };
+    public LayerStoreManager() {
+        super( new DefaultResourceManagerMetadata<LayerStore>( LayerStoreProvider.class, "layers", "layers" ) );
     }
 
 }

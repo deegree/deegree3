@@ -44,12 +44,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Map.Entry;
 
-import org.deegree.commons.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +130,7 @@ public class FileAlterationMonitor {
     public void start() {
         synchronized ( this ) {
             if ( timer != null ) {
-                throw new RuntimeException( Messages.getMessage( "UTILS_FAM_ALREADY_STARTED" ) );
+                throw new RuntimeException( "File alteration monitor has already been started." );
             }
             LOG.debug( "Starting worker thread." );
             timer = new Timer();
@@ -148,7 +147,7 @@ public class FileAlterationMonitor {
     public void stop() {
         synchronized ( this ) {
             if ( timer == null ) {
-                throw new RuntimeException( Messages.getMessage( "UTILS_FAM_NOT_STARTED" ) );
+                throw new RuntimeException( "File alteration monitor has not been started." );
             }
             LOG.debug( "Stopping worker thread." );
             timer.cancel();

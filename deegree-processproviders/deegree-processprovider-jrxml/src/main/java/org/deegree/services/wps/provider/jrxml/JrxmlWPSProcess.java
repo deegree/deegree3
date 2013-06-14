@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -55,6 +54,7 @@ import org.deegree.services.wps.provider.jrxml.contentprovider.OtherContentProvi
 import org.deegree.services.wps.provider.jrxml.contentprovider.PropertiesContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.SubreportContentProvider;
 import org.deegree.services.wps.provider.jrxml.contentprovider.map.MapContentProvider;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ public class JrxmlWPSProcess extends AbstractJrxmlWPSProcess {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace ) {
+    public void init( Workspace workspace ) {
         contentProviders.add( new DataTableContentProvider( workspace ) );
         contentProviders.add( new MapContentProvider( workspace ) );
         if ( processDescription.getResourceBundle() != null ) {

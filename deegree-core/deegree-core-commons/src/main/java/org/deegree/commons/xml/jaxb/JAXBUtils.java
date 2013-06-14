@@ -37,6 +37,7 @@ package org.deegree.commons.xml.jaxb;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
@@ -51,6 +52,7 @@ import javax.xml.validation.SchemaFactory;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -66,6 +68,7 @@ public class JAXBUtils {
 
     private final static SchemaFactory sf = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
 
+    @Deprecated
     public static Object unmarshall( String jaxbPackage, URL schemaLocation, URL url, DeegreeWorkspace workspace )
                             throws JAXBException {
         Object o = null;
@@ -81,6 +84,26 @@ public class JAXBUtils {
             throw e;
         } catch ( Throwable e ) {
             LOG.error( "Error in configuration file '{}': {}", url, e.getLocalizedMessage() );
+            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
+        }
+        return o;
+    }
+
+    public static Object unmarshall( String jaxbPackage, URL schemaLocation, InputStream input, Workspace workspace )
+                            throws JAXBException {
+        Object o = null;
+        Unmarshaller u = getUnmarshaller( jaxbPackage, schemaLocation, workspace );
+        try {
+            o = u.unmarshal( input );
+        } catch ( JAXBException e ) {
+            LOG.error( "Error in configuration file" );
+            // whyever they use the linked exception here...
+            // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
+            LOG.error( "Error: " + e.getLinkedException().getMessage() );
+            LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
+            throw e;
+        } catch ( Throwable e ) {
+            LOG.error( "Error in configuration file: {}", e.getLocalizedMessage() );
             LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
         }
         return o;
@@ -155,6 +178,49 @@ public class JAXBUtils {
     }
 
     /**
+     * Creates a JAXB {@link Unmarshaller} which is instantiated with the given classpath (as well as the common
+     * configuration classpath). If the given schemalocation is not <code>null</code>, the unmarshaller will validate
+     * against the schema file loaded from the given location.
+     * 
+     * @param jaxbPackage
+     *            used for instantiating the unmarshaller
+     * @param schemaLocation
+     *            if not <code>null</code> this method will try to load the schema from location and set the validation
+     *            in the unmarshaller. This location could be:
+     *            "/META-INF/schemas/[SERVICE_NAME]/[VERSION]/[SERVICE_NAME]_service_configuration.xsd"
+     * @return an unmarshaller which can be used to unmarshall a document with jaxb
+     * @throws JAXBException
+     *             if the {@link Unmarshaller} could not be created.
+     */
+    private static Unmarshaller getUnmarshaller( String jaxbPackage, URL schemaLocation, Workspace workspace )
+                            throws JAXBException {
+
+        JAXBContext jc = null;
+        try {
+            if ( workspace == null ) {
+                jc = JAXBContext.newInstance( jaxbPackage );
+            } else {
+                jc = JAXBContext.newInstance( jaxbPackage, workspace.getModuleClassLoader() );
+            }
+        } catch ( JAXBException e ) {
+            LOG.error( "Unable to instantiate JAXBContext for package '{}'", jaxbPackage );
+            throw e;
+        }
+
+        Unmarshaller u = jc.createUnmarshaller();
+        if ( schemaLocation != null ) {
+            Schema configSchema = getSchemaForUrl( schemaLocation );
+            if ( configSchema != null ) {
+                u.setSchema( configSchema );
+            } else {
+                LOG.warn( "Not performing schema validation, because the schema could not be loaded from '{}'.",
+                          schemaLocation );
+            }
+        }
+        return u;
+    }
+
+    /**
      * Tries to load a schema file from the given location, which might be useful for the validation of configuration
      * files with JAXB.
      * 
@@ -172,9 +238,13 @@ public class JAXBUtils {
                 URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" );
                 StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream(),
                                                       descUrl.toExternalForm() );
-                StreamSource spat = new StreamSource( new DURL( spatUrl.toExternalForm() ).openStream(),
-                                                      spatUrl.toExternalForm() );
-                result = sf.newSchema( new Source[] { origSchema, desc, spat } );
+                if ( spatUrl != null ) {
+                    StreamSource spat = new StreamSource( new DURL( spatUrl.toExternalForm() ).openStream(),
+                                                          spatUrl.toExternalForm() );
+                    result = sf.newSchema( new Source[] { origSchema, desc, spat } );
+                } else {
+                    result = sf.newSchema( new Source[] { origSchema, desc } );
+                }
             } catch ( Throwable e ) {
                 LOG.error( "No schema could be loaded from file: " + schemaFile + " because: "
                            + e.getLocalizedMessage() );

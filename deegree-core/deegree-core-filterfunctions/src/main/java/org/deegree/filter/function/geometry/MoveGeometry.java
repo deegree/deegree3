@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -55,6 +53,7 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -129,8 +128,7 @@ public class MoveGeometry implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

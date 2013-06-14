@@ -53,6 +53,7 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**

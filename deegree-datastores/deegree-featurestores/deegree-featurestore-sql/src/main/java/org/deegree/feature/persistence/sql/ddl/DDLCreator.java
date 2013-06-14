@@ -56,6 +56,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.postgis.PostGISDialect;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
@@ -232,17 +233,16 @@ public abstract class DDLCreator {
 
     // TODO get rid of this (DDLCreator should be the only needed implementation)
     public static DDLCreator newInstance( MappedAppSchema appSchema, SQLDialect dialect ) {
-        switch ( dialect.getDBType() ) {
-        case PostgreSQL: {
+        if ( dialect instanceof PostGISDialect ) {
             return new PostGISDDLCreator( appSchema, dialect );
         }
-        case MSSQL: {
-            return new MSSQLDDLCreator( appSchema, dialect );
-        }
-        case Oracle: {
+        if ( dialect.getClass().getSimpleName().equals( "OracleDialect" ) ) {
             return new OracleDDLCreator( appSchema, dialect );
         }
+        if ( dialect.getClass().getSimpleName().equals( "MSSQLDialect" ) ) {
+            return new MSSQLDDLCreator( appSchema, dialect );
         }
-        throw new IllegalArgumentException( "Nod DDLCreator for DB type '" + dialect.getDBType() + "' available." );
+        throw new IllegalArgumentException( "Nod DDLCreator for DB type '" + dialect.getClass().getSimpleName()
+                                            + "' available." );
     }
 }

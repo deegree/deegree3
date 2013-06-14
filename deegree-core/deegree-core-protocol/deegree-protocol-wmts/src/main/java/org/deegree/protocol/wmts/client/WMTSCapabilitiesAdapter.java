@@ -352,7 +352,7 @@ public class WMTSCapabilitiesAdapter extends OWSCommon110CapabilitiesAdapter {
         }
 
         SpatialMetadata spatialMetadata = createSpatialMetadata( crs, boundingBox, matrices );
-        return new TileMatrixSet( identifier, wellKnownScaleSet, matrices, spatialMetadata );
+        return new TileMatrixSet( identifier, wellKnownScaleSet, matrices, spatialMetadata, null );
     }
 
     private void enforceCrs( ICRS crs, Envelope boundingBox ) {

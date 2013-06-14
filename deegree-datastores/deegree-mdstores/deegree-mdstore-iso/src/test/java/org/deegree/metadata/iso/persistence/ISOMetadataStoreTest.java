@@ -36,7 +36,6 @@
 package org.deegree.metadata.iso.persistence;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import junit.framework.Assert;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRSUtils;
@@ -51,6 +50,8 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.persistence.MetadataQuery;
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -70,13 +71,8 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
     public void testBBoxFilter()
                             throws Exception {
         LOG.info( "START Test: testInsert" );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
         GeometryFactory gf = new GeometryFactory();
@@ -91,13 +87,8 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
     public void testKeywordFilter()
                             throws Exception {
         LOG.info( "START Test: testInsert" );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
         Literal<PrimitiveValue> lit1 = new Literal<PrimitiveValue>( "Hessen Wasser Analyser" );
@@ -116,13 +107,8 @@ public class ISOMetadataStoreTest extends AbstractISOTest {
     public void testEqualKeywordFilter()
                             throws Exception {
         LOG.info( "START Test: testInsert" );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10 );
         Literal<PrimitiveValue> lit2 = new Literal<PrimitiveValue>( "SPOT 5" );

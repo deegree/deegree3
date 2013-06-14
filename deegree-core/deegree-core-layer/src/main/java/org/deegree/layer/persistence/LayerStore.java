@@ -37,8 +37,8 @@ package org.deegree.layer.persistence;
 
 import java.util.List;
 
-import org.deegree.commons.config.Resource;
 import org.deegree.layer.Layer;
+import org.deegree.workspace.Resource;
 
 /**
  * 

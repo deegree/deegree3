@@ -23,6 +23,7 @@ Here's an example output::
    GET /config/download[/path]                                  - download currently running workspace or file in workspace
    GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace
    GET /config/restart                                          - restart currently running workspace
+   GET /config/restart[/path]                                   - restarts all resources connected to the specified one
    GET /config/restart/wsname                                   - restart with workspace <wsname>
    GET /config/listworkspaces                                   - list available workspace names
    GET /config/list[/path]                                      - list currently running workspace or directory in workspace
@@ -61,7 +62,7 @@ _____________________
 Restarting
 _____________________
 
-You can restart the currently running workspace using ``http://localhost:8080/deegree-webservices/config/restart``, or start another workspace using ``http://localhost:8080/deegree-webservices/config/restart/anotherworkspace``.
+You can restart the currently running workspace using ``http://localhost:8080/deegree-webservices/config/restart``, or start another workspace using ``http://localhost:8080/deegree-webservices/config/restart/anotherworkspace``. To restart all resources connected a specific one use eg. ``http://localhost:8080/deegree-webservices/config/restart/datasources/feature/inspire``.
 
 ____________________
 Listing

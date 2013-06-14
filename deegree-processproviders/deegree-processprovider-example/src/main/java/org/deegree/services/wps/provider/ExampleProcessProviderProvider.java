@@ -36,17 +36,10 @@
 package org.deegree.services.wps.provider;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link ProcessProviderProvider} for the {@link ExampleProcessProvider}.
@@ -56,54 +49,23 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class ExampleProcessProviderProvider implements ProcessProviderProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( ExampleProcessProviderProvider.class );
+public class ExampleProcessProviderProvider extends ProcessProviderProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/processes/example";
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NAMESPACE;
     }
 
     @Override
-    public ProcessProvider create( URL configURL ) {
-
-        LOG.info( "Configuring example process provider using file '" + configURL + "'." );
-
-        Map<String, String> processIdToReturnValue = new HashMap<String, String>();
-
-        try {
-            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
-            while ( xmlStream.getEventType() != XMLStreamConstants.END_DOCUMENT ) {
-                if ( xmlStream.isStartElement() && "Process".equals( xmlStream.getLocalName() ) ) {
-                    String processId = xmlStream.getAttributeValue( null, "id" );
-                    String returnValue = xmlStream.getElementText();
-                    processIdToReturnValue.put( processId, returnValue );
-                } else {
-                    xmlStream.next();
-                }
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            throw new RuntimeException( "Error parsing example process provider configuration '" + configURL + "': "
-                                        + e.getMessage() );
-        }
-
-        return new ExampleProcessProvider( processIdToReturnValue );
+    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
+                                                                 ResourceLocation<ProcessProvider> location ) {
+        return new ExampleProcessProviderMetadata( workspace, location, this );
     }
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] {};
-    }
-
-    public void init( DeegreeWorkspace workspace ) {
-        // this.workspace = workspace;
-    }
-
-    public URL getConfigSchema() {
-        return null;
+    @Override
+    public URL getSchema() {
+        return null; // hope that works with new workspace...
     }
 }

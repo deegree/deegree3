@@ -40,30 +40,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewmts;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.remoteows.RemoteOWS;
-import org.deegree.remoteows.RemoteOWSManager;
-import org.deegree.remoteows.wmts.RemoteWMTS;
-import org.deegree.tile.TileDataSet;
-import org.deegree.tile.persistence.GenericTileStore;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
-import org.deegree.tile.persistence.remotewmts.jaxb.RemoteWMTSTileStoreJAXB;
-import org.deegree.tile.tilematrixset.TileMatrixSetManager;
-import org.slf4j.Logger;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link TileStoreProvider} for remote WMTS.
@@ -73,80 +56,24 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$
  */
-public class RemoteWMTSTileStoreProvider implements TileStoreProvider {
-
-    private static final Logger LOG = getLogger( RemoteWMTSTileStoreProvider.class );
+public class RemoteWMTSTileStoreProvider extends TileStoreProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/remotewmts";
 
     private static final URL CONFIG_SCHEMA = RemoteWMTSTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/remotewmts/3.2.0/remotewmts.xsd" );
 
-    private static final String JAXB_PACKAGE = "org.deegree.tile.persistence.remotewmts.jaxb";
-
-    private DeegreeWorkspace workspace;
-
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public TileStore create( URL configUrl )
-                            throws ResourceInitException {
-        try {
-            RemoteWMTSTileStoreJAXB config = unmarshallConfig( configUrl );
-            RemoteWMTS wmts = getRemoteWmts( config.getRemoteWMTSId() );
-            TileMatrixSetManager tileMatrixSetManager = workspace.getSubsystemManager( TileMatrixSetManager.class );
-            TileDataSetBuilder builder = new TileDataSetBuilder( wmts.getClient(), tileMatrixSetManager );
-            Map<String, TileDataSet> map = builder.buildTileDataSetMap( config );
-            return new GenericTileStore( map );
-        } catch ( ResourceInitException e ) {
-            throw e;
-        } catch ( Throwable e ) {
-            String msg = "Unable to create RemoteWMTSTileStore: " + e.getMessage();
-            LOG.error( msg, e );
-            throw new ResourceInitException( msg, e );
-        }
-    }
-
-    private RemoteWMTSTileStoreJAXB unmarshallConfig( URL configUrl )
-                            throws JAXBException {
-        return (RemoteWMTSTileStoreJAXB) unmarshall( JAXB_PACKAGE, CONFIG_SCHEMA, configUrl, workspace );
-    }
-
-    private RemoteWMTS getRemoteWmts( String remoteWmtsId )
-                            throws ResourceInitException {
-        RemoteOWSManager owsMgr = workspace.getSubsystemManager( RemoteOWSManager.class );
-        RemoteOWS wmts = owsMgr.get( remoteWmtsId );
-        if ( wmts == null ) {
-            throw new ResourceInitException( "No remote WMTS with id " + remoteWmtsId + " available." );
-        }
-        if ( !( wmts instanceof RemoteWMTS ) ) {
-            String msg = "The remote WMTS id " + remoteWmtsId + " must correspond to a WMTS instance (was "
-                         + wmts.getClass().getSimpleName() + ")";
-            throw new ResourceInitException( msg );
-        }
-        return (RemoteWMTS) wmts;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { RemoteOWSManager.class };
-    }
-
-    @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NAMESPACE;
     }
 
     @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
+    public ResourceMetadata<TileStore> createFromLocation( Workspace workspace, ResourceLocation<TileStore> location ) {
+        return new RemoteWmtsTileStoreMetadata( workspace, location, this );
     }
 
     @Override
-    public List<File> getTileStoreDependencies( File config ) {
-        return Collections.<File> emptyList();
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
     }
 }

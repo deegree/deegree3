@@ -169,7 +169,7 @@ public class RasterTransformer extends Transformer {
             WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcCRS, srcREnv, dstREnv );
             warpTransform( warp, interpolation, dstData );
 
-            return new SimpleRaster( dstData, dstEnvelope, dstREnv );
+            return new SimpleRaster( dstData, dstEnvelope, dstREnv, null );
         }
     }
 

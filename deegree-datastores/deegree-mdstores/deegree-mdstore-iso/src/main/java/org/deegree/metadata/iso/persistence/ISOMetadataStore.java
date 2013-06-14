@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
-import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
@@ -45,13 +43,13 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPath;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
@@ -81,6 +79,9 @@ import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -100,8 +101,6 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private ISOMetadataStoreConfig config;
 
-    private Type connectionType;
-
     private final List<RecordInspector<ISORecord>> inspectorChain = new ArrayList<RecordInspector<ISORecord>>();
 
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
@@ -111,7 +110,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private final List<Queryable> queryables = new ArrayList<Queryable>();
 
-    private DeegreeWorkspace workspace;
+    private Workspace workspace;
+
+    private ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata;
 
     /**
      * Creates a new {@link ISOMetadataStore} instance from the given JAXB configuration object.
@@ -120,8 +121,12 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
      * @param dialect
      * @throws ResourceInitException
      */
-    public ISOMetadataStore( ISOMetadataStoreConfig config, SQLDialect dialect ) throws ResourceInitException {
+    public ISOMetadataStore( ISOMetadataStoreConfig config, SQLDialect dialect,
+                             ResourceMetadata<MetadataStore<? extends MetadataRecord>> metadata, Workspace workspace )
+                            throws ResourceInitException {
         this.dialect = dialect;
+        this.metadata = metadata;
+        this.workspace = workspace;
         this.connectionId = config.getJDBCConnId();
         this.config = config;
 
@@ -190,27 +195,9 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
         }
     }
 
-    /**
-     * @return the db type, null, if unknown
-     */
-    public Type getDBType() {
-        if ( connectionType == null ) {
-            DeegreeWorkspace dw = DeegreeWorkspace.getInstance();
-            ConnectionManager mgr = dw.getSubsystemManager( ConnectionManager.class );
-            this.connectionType = mgr.getType( connectionId );
-        }
-        return connectionType;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.record.persistence.RecordStore#destroy()
-     */
     @Override
     public void destroy() {
-        LOG.debug( "destroy" );
-
+        // nothing to do
     }
 
     /**
@@ -224,23 +211,8 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
-        LOG.debug( "init" );
-        ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-        connectionType = mgr.getType( connectionId );
-        if ( connectionType == PostgreSQL ) {
-            Connection conn = null;
-            try {
-                conn = getConnection();
-            } catch ( Throwable e ) {
-                LOG.debug( e.getMessage(), e );
-                throw new ResourceInitException( e.getMessage(), e );
-            } finally {
-                close( conn );
-            }
-        }
+    public void init() {
+        // nothing to do
     }
 
     @Override
@@ -311,10 +283,11 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                             throws MetadataStoreException {
         Connection conn = null;
         try {
-            ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-            conn = mgr.get( connectionId );
+            ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connectionId );
+            conn = prov.getConnection();
             conn.setAutoCommit( false );
         } catch ( Throwable e ) {
+            e.printStackTrace();
             throw new MetadataStoreException( e.getMessage() );
         }
         return conn;
@@ -327,5 +300,10 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     public List<Queryable> getQueryables() {
         return queryables;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
     }
 }

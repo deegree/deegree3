@@ -7,8 +7,6 @@ import static org.deegree.filter.function.ParameterType.GEOMETRY;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Expression;
@@ -21,6 +19,7 @@ import org.deegree.filter.utils.FilterUtils;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.workspace.Workspace;
 
 /**
  * Returns no value in case the argument expression evaluates to no value, or multiple values, or the value can not be
@@ -80,8 +79,7 @@ public class IsPoint implements FunctionProvider {
     }
 
     @Override
-    public void init( DeegreeWorkspace ws )
-                            throws ResourceInitException {
+    public void init( Workspace ws ) {
         // nothing to do
     }
 

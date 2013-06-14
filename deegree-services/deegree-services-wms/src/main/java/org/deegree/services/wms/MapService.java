@@ -53,10 +53,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
@@ -78,7 +76,8 @@ import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.ImageUtils;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
-import org.deegree.theme.persistence.ThemeManager;
+import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -121,8 +120,7 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, XMLAdapter adapter, DeegreeWorkspace workspace )
-                            throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace ) throws MalformedURLException {
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -130,23 +128,22 @@ public class MapService {
         defaultLayerOptions = builder.buildMapOptions();
 
         if ( conf != null && conf.getThemeId() != null && !conf.getThemeId().isEmpty() ) {
-            ThemeManager mgr = workspace.getSubsystemManager( ThemeManager.class );
             themes = new ArrayList<Theme>();
             newLayers = new HashMap<String, org.deegree.layer.Layer>();
             themeMap = new HashMap<String, Theme>();
             for ( String id : conf.getThemeId() ) {
-                Theme thm = mgr.get( id );
+                Theme thm = workspace.getResource( ThemeProvider.class, id );
                 if ( thm == null ) {
                     LOG.warn( "Theme with id {} was not available.", id );
                 } else {
                     themes.add( thm );
-                    themeMap.put( thm.getMetadata().getName(), thm );
+                    themeMap.put( thm.getLayerMetadata().getName(), thm );
 
                     for ( org.deegree.layer.Layer l : Themes.getAllLayers( thm ) ) {
                         newLayers.put( l.getMetadata().getName(), l );
                     }
                     for ( Theme theme : Themes.getAllThemes( thm ) ) {
-                        themeMap.put( theme.getMetadata().getName(), theme );
+                        themeMap.put( theme.getLayerMetadata().getName(), theme );
                     }
                 }
             }

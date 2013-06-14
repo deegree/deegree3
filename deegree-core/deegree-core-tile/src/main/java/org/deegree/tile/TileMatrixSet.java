@@ -43,10 +43,9 @@ package org.deegree.tile;
 
 import java.util.List;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.Resource;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Metadata describing the structure of a {@link TileDataSet}.
@@ -66,6 +65,8 @@ public class TileMatrixSet implements Resource {
 
     private final SpatialMetadata spatialMetadata;
 
+    private ResourceMetadata<TileMatrixSet> metadata;
+
     /**
      * Creates a new {@link TileMatrixSet} instance.
      * 
@@ -77,13 +78,16 @@ public class TileMatrixSet implements Resource {
      *            the {@link TileMatrix}es this matrix set consists of, must not be <code>null</code>
      * @param spatialMetadat
      *            the spatial metadata (envelope, CRS) of the tile matrix set, must not be <code>null</code>
+     * @param metadata
+     *            the resource metadata object for this resource, must not be <code>null</code>
      */
     public TileMatrixSet( String identifier, String wknScaleSet, List<TileMatrix> matrices,
-                          SpatialMetadata spatialMetadata ) {
+                          SpatialMetadata spatialMetadata, ResourceMetadata<TileMatrixSet> metadata ) {
         this.identifier = identifier;
         this.wknScaleSet = wknScaleSet;
         this.matrices = matrices;
         this.spatialMetadata = spatialMetadata;
+        this.metadata = metadata;
     }
 
     /**
@@ -119,13 +123,17 @@ public class TileMatrixSet implements Resource {
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
+    public void destroy() {
         // nothing to do
     }
 
     @Override
-    public void destroy() {
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
         // nothing to do
     }
 }

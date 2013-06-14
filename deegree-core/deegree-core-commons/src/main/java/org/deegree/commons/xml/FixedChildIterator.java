@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.i18n.Messages;
 
 /**
  * This is a child element iterator that expects a fixed number of child elements. It will throw an
@@ -77,13 +76,15 @@ public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMEleme
             throw new NoSuchElementException( "requested to much elements." );
         }
         if ( !itr.hasNext() ) {
-            String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChildren );
+            String msg = "Element '" + parent.getQName() + "' requires exactly " + expectedChildren
+                         + " child element(s).";
             throw new XMLParsingException( msg );
         }
         OMElement result = (OMElement) itr.next();
         i++;
         if ( i == expectedChildren && itr.hasNext() ) { // more than expected
-            String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChildren );
+            String msg = "Element '" + parent.getQName() + "' requires exactly " + expectedChildren
+                         + " child element(s).";
             throw new XMLParsingException( msg );
         }
         return result;

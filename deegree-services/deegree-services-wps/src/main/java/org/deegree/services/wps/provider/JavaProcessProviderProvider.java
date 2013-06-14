@@ -35,18 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.utils.ProxyUtils;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * {@link ProcessProviderProvider} for the {@link JavaProcessProvider}.
@@ -56,65 +49,25 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class JavaProcessProviderProvider implements ProcessProviderProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( JavaProcessProviderProvider.class );
-
-    private static final String JAXB_CONFIG_PACKAGE = "org.deegree.process.jaxb.java";
+public class JavaProcessProviderProvider extends ProcessProviderProvider {
 
     private static final URL JAXB_CONFIG_SCHEMA = JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/3.0.0/java.xsd" );
 
     private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
 
-    private DeegreeWorkspace workspace;
-
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NS;
     }
 
     @Override
-    public ProcessProvider create( URL configURL ) {
-
-        ProcessProvider manager = null;
-
-        LOG.info( "Loading process definition from file '" + configURL + "'." );
-        //
-        try {
-            ProcessDefinition processDef = (ProcessDefinition) unmarshall( JAXB_CONFIG_PACKAGE, JAXB_CONFIG_SCHEMA,
-                                                                           configURL, workspace );
-            // checkConfigVersion( definitionFile, processDef.getConfigVersion() );
-
-            // processDefinitions.add( processDef );
-            //
-            // String wsdlFile = definitionFile.substring( 0, definitionFile.lastIndexOf( ".xml" ) ) + ".wsdl";
-            // LOG.debug( "Checking for process WSDL file: '" + wsdlFile + "'" );
-            // File f = new File( processesDir, wsdlFile );
-            // if ( f.exists() ) {
-            // CodeType processId = new CodeType( processDef.getIdentifier().getValue(),
-            // processDef.getIdentifier().getCodeSpace() );
-            // LOG.info( "Found process WSDL file." );
-            // processIdToWSDL.put( processId, f );
-            // }
-            manager = new JavaProcessProvider( processDef );
-        } catch ( JAXBException e ) {
-            e.printStackTrace();
-        }
-        return manager;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
+    public ResourceMetadata<ProcessProvider> createFromLocation( Workspace workspace,
+                                                                 ResourceLocation<ProcessProvider> location ) {
+        return new JavaProcessProviderMetadata( workspace, location, this );
     }
 
     @Override
-    public void init( DeegreeWorkspace workspace ) {
-        this.workspace = workspace;
-    }
-
-    @Override
-    public URL getConfigSchema() {
+    public URL getSchema() {
         return JAXB_CONFIG_SCHEMA;
     }
 }

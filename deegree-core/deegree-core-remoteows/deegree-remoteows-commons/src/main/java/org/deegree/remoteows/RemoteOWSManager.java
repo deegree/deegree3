@@ -35,12 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.remoteows;
 
-import org.deegree.commons.config.AbstractResourceManager;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.DefaultResourceManagerMetadata;
-import org.deegree.commons.config.ResourceManager;
-import org.deegree.commons.config.ResourceManagerMetadata;
-import org.deegree.commons.utils.ProxyUtils;
+import org.deegree.workspace.standard.DefaultResourceManager;
+import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
 /**
  * 
@@ -49,30 +45,11 @@ import org.deegree.commons.utils.ProxyUtils;
  * 
  * @version $Revision$, $Date$
  */
-public class RemoteOWSManager extends AbstractResourceManager<RemoteOWS> {
+public class RemoteOWSManager extends DefaultResourceManager<RemoteOWS> {
 
-    private RemoteOWSManagerMetadata metadata;
-
-    @Override
-    public void initMetadata( DeegreeWorkspace workspace ) {
-        this.metadata = new RemoteOWSManagerMetadata( workspace );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends ResourceManager>[] getDependencies() {
-        return new Class[] { ProxyUtils.class };
-    }
-
-    @Override
-    public ResourceManagerMetadata<RemoteOWS> getMetadata() {
-        return metadata;
-    }
-
-    static class RemoteOWSManagerMetadata extends DefaultResourceManagerMetadata<RemoteOWS> {
-        RemoteOWSManagerMetadata( DeegreeWorkspace workspace ) {
-            super( "remote OWS stores", "datasources/remoteows", RemoteOWSProvider.class, workspace );
-        }
+    public RemoteOWSManager() {
+        super( new DefaultResourceManagerMetadata<RemoteOWS>( RemoteOWSProvider.class, "remote OWS stores",
+                                                              "datasources/remoteows/" ) );
     }
 
 }

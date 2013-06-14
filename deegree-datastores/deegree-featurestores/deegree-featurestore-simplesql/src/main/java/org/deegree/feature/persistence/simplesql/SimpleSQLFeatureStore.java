@@ -50,10 +50,6 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -65,6 +61,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.persistence.FeatureStore;
@@ -84,7 +81,6 @@ import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.utils.DBUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -93,6 +89,9 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
+import org.deegree.sqldialect.postgis.PostGISDialect;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.io.ParseException;
@@ -117,8 +116,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private boolean available = false;
 
-    private String connId;
-
     ICRS crs;
 
     private AppSchema schema;
@@ -135,9 +132,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private Pair<Long, Envelope> cachedEnvelope = new Pair<Long, Envelope>();
 
-    private DeegreeWorkspace workspace;
-
     static int currentid = 0;
+
+    private ResourceMetadata<FeatureStore> metadata;
+
+    private ConnectionProvider connProvider;
 
     /**
      * @param connId
@@ -148,10 +147,13 @@ public class SimpleSQLFeatureStore implements FeatureStore {
      * @param ftPrefix
      * @param bbox
      * @param lods
+     * @param metadata
      */
-    public SimpleSQLFeatureStore( String connId, String crs, String sql, String ftLocalName, String ftNamespace,
-                                  String ftPrefix, String bbox, List<Pair<Integer, String>> lods ) {
-        this.connId = connId;
+    public SimpleSQLFeatureStore( ConnectionProvider connProvider, String crs, String sql, String ftLocalName,
+                                  String ftNamespace, String ftPrefix, String bbox, List<Pair<Integer, String>> lods,
+                                  ResourceMetadata<FeatureStore> metadata ) {
+        this.connProvider = connProvider;
+        this.metadata = metadata;
 
         sql = sql.trim();
         if ( sql.endsWith( ";" ) ) {
@@ -188,10 +190,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         throw new FeatureStoreException( "Transactions are not implemented for the simple SQL datastore." );
     }
 
-    public void destroy() {
-        // nothing to do
-    }
-
     @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
@@ -208,7 +206,7 @@ public class SimpleSQLFeatureStore implements FeatureStore {
             PreparedStatement stmt = null;
             Connection conn = null;
             try {
-                conn = workspace.getSubsystemManager( ConnectionManager.class ).get( connId );
+                conn = connProvider.getConnection();
                 stmt = conn.prepareStatement( bbox );
                 LOG.debug( "Getting bbox with query '{}'.", stmt );
                 stmt.execute();
@@ -267,18 +265,6 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         return featureType;
     }
 
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-        this.workspace = workspace;
-        featureType = DBUtils.determineFeatureType( ftName, connId, lods.values().iterator().next(), workspace );
-        if ( featureType == null ) {
-            available = false;
-        } else {
-            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
-            available = true;
-        }
-    }
-
     @Override
     public boolean isAvailable() {
         return available;
@@ -318,11 +304,9 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     }
                 }
 
-                ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
-                conn = mgr.get( connId );
-                Type connType = mgr.getType( connId );
+                conn = connProvider.getConnection();
 
-                if ( q.getMaxFeatures() > 0 && connType == Type.PostgreSQL ) {
+                if ( q.getMaxFeatures() > 0 && connProvider.getDialect() instanceof PostGISDialect ) {
                     sql += " limit " + q.getMaxFeatures();
                 }
 
@@ -344,7 +328,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
                     return null;
                 }
                 stmt.setString( 1, WKTWriter.write( bbox ) );
-                LOG.debug( "Statement to fetch features was '{}'.", connType == Type.Oracle ? sql : stmt );
+                LOG.debug( "Statement to fetch features was '{}'.",
+                           connProvider.getClass().getSimpleName().equals( "OracleDialect" ) ? sql : stmt );
                 stmt.execute();
 
                 set = new IteratorFeatureInputStream(
@@ -423,4 +408,26 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public ICRS getStorageCRS() {
         return crs;
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        featureType = DbFeatureUtils.determineFeatureType( ftName, connProvider, lods.values().iterator().next() );
+        if ( featureType == null ) {
+            available = false;
+        } else {
+            schema = new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
+            available = true;
+        }
+    }
+
+    @Override
+    public void destroy() {
+        // unused
+    }
+
 }

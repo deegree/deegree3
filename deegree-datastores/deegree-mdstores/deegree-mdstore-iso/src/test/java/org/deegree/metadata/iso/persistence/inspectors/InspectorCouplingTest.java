@@ -39,14 +39,12 @@ import java.util.List;
 
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.iso.persistence.AbstractISOTest;
-import org.deegree.metadata.iso.persistence.ISOMetadataStore;
-import org.deegree.metadata.iso.persistence.ISOMetadataStoreProvider;
 import org.deegree.metadata.iso.persistence.TstConstants;
 import org.deegree.metadata.iso.persistence.TstUtils;
 import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,13 +65,10 @@ public class InspectorCouplingTest extends AbstractISOTest {
     public void testCouplingConsistencyErrorFALSE()
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_ACCEPT );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+
+        initStore( TstConstants.configURL_COUPLING_ACCEPT );
+        Assume.assumeNotNull( store );
+
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
@@ -91,13 +86,10 @@ public class InspectorCouplingTest extends AbstractISOTest {
     public void testCouplingConsistencyErrorFALSE_NO_CONSISTENCY()
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the the coupled service metadata will be inserted without any coupling but no exception will be thrown. " );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_ACCEPT );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+
+        initStore( TstConstants.configURL_COUPLING_ACCEPT );
+        Assume.assumeNotNull( store );
+
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
 
         resultSet = store.getRecordById( ids, null );
@@ -114,13 +106,10 @@ public class InspectorCouplingTest extends AbstractISOTest {
     public void testCouplingConsistencyErrorTRUE_NO_Exception()
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if the the coupling of data and service metadata is correct and no exception will be thrown. " );
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_Ex_AWARE );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+
+        initStore( TstConstants.configURL_COUPLING_Ex_AWARE );
+        Assume.assumeNotNull( store );
+
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_12, TstConstants.tst_12_2,
                                                     TstConstants.tst_13 );
 
@@ -134,20 +123,13 @@ public class InspectorCouplingTest extends AbstractISOTest {
 
     }
 
-    
     // strictness when testing for coupling was set more relaxed
-//    @Test(expected = MetadataInspectorException.class)
+    // @Test(expected = MetadataInspectorException.class)
     public void testCouplingConsistencyErrorTRUE_WITH_Exception()
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: test if an exception will be thrown if there is an insert of the service metadata. " );
-        MetadataStoreTransaction ta = null;
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL_COUPLING_Ex_AWARE );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            throw new MetadataInspectorException( "skipping test (needs configuration)" );
-        }
+        initStore( TstConstants.configURL_COUPLING_Ex_AWARE );
+        Assume.assumeNotNull( store );
         TstUtils.insertMetadata( store, TstConstants.tst_11, TstConstants.tst_13 );
 
     }

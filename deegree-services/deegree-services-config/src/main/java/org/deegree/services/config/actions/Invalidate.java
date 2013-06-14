@@ -55,7 +55,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tile.persistence.TileStore;
-import org.deegree.tile.persistence.TileStoreManager;
+import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.cache.CachingTileStore;
 
 /**
@@ -90,8 +90,7 @@ public class Invalidate {
             bbox = new GeometryFactory().createEnvelope( ds[0], ds[1], ds[2], ds[3], null );
         }
 
-        TileStoreManager mgr = p.first.getSubsystemManager( TileStoreManager.class );
-        TileStore ts = mgr.get( id );
+        TileStore ts = p.first.getNewWorkspace().getResource( TileStoreProvider.class, id );
         if ( ts == null ) {
             resp.setStatus( 404 );
             IOUtils.write( "No such tile store.\n", resp.getOutputStream() );

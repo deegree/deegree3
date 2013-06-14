@@ -62,8 +62,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -106,6 +104,9 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
 /**
@@ -158,7 +159,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private final List<Mapping> mappings;
 
-    private DeegreeWorkspace workspace;
+    private ResourceMetadata<FeatureStore> metadata;
 
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
@@ -183,11 +184,12 @@ public class ShapeFeatureStore implements FeatureStore {
      */
     public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace, String localFtName,
                               String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache,
-                              List<Mapping> mappings ) {
+                              List<Mapping> mappings, ResourceMetadata<FeatureStore> metadata ) {
         this.shpName = shpName;
         this.crs = crs;
         this.encoding = encoding;
         this.mappings = mappings;
+        this.metadata = metadata;
 
         localFtName = localFtName == null ? new File( shpName ).getName() : localFtName;
         if ( localFtName.endsWith( ".shp" ) ) {
@@ -210,97 +212,6 @@ public class ShapeFeatureStore implements FeatureStore {
         } else {
             this.cache = new SimpleFeatureStoreCache();
         }
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace )
-                            throws ResourceInitException {
-
-        this.workspace = workspace;
-        if ( shpName.toLowerCase().endsWith( ".shp" ) ) {
-            shpName = shpName.substring( 0, shpName.length() - 4 );
-        }
-
-        LOG.debug( "Loading shape file '{}'", shpName );
-
-        if ( crs == null ) {
-            File prj = new File( shpName + ".PRJ" );
-            if ( !prj.exists() ) {
-                prj = new File( shpName + ".prj" );
-            }
-            if ( prj.exists() ) {
-                try {
-                    try {
-                        crs = new WKTParser( prj ).parseCoordinateSystem();
-                    } catch ( IOException e ) {
-                        String msg = "The shape datastore for '" + shpName
-                                     + "' could not be initialized, because no CRS was defined.";
-                        throw new ResourceInitException( msg );
-                    } catch ( Exception e1 ) {
-                        getCRSFromFile( prj );
-                        if ( crs == null ) {
-                            return;
-                        }
-                    }
-                } catch ( WKTParsingException e ) {
-                    getCRSFromFile( prj );
-                    if ( crs == null ) {
-                        return;
-                    }
-                }
-            } else {
-                LOG.debug( "No crs configured, and no .prj found, assuming CRS:84 (WGS84 in x/y axis order)." );
-                crs = CRSManager.getCRSRef( "CRS:84" );
-            }
-        }
-
-        try {
-            transformer = new GeometryTransformer( crs );
-        } catch ( IllegalArgumentException e ) {
-            LOG.error( "Unknown error", e );
-            // } catch ( UnknownCRSException e ) {
-            // LOG.error( "Unknown error", e );
-        }
-
-        shpFile = new File( shpName + ".SHP" );
-        if ( !shpFile.exists() ) {
-            shpFile = new File( shpName + ".shp" );
-        }
-        shpLastModified = shpFile.lastModified();
-        dbfFile = new File( shpName + ".DBF" );
-        if ( !dbfFile.exists() ) {
-            dbfFile = new File( shpName + ".dbf" );
-        }
-        dbfLastModified = dbfFile.lastModified();
-
-        try {
-            shp = getSHP( false );
-        } catch ( IOException e ) {
-            String msg = "The shape datastore for '" + shpName
-                         + "' could not be initialized, because the .shp could not be loaded.";
-            throw new ResourceInitException( msg );
-        }
-
-        String namespace = ftName.getNamespaceURI();
-
-        try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType(),
-                                 mappings );
-
-            if ( generateAlphanumericIndexes ) {
-                // set up index
-                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings, workspace );
-            }
-
-            ft = dbf.getFeatureType();
-        } catch ( IOException e ) {
-            LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
-            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry",
-                                                                                 ftName.getPrefix() ), 0, 1, null,
-                                                                      null, shp.getGeometryType(), DIM_2_OR_3, BOTH );
-            ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
-        }
-        schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
     }
 
     private void getCRSFromFile( File prj ) {
@@ -398,7 +309,7 @@ public class ShapeFeatureStore implements FeatureStore {
                                          mappings );
                     if ( generateAlphanumericIndexes ) {
                         // set up index
-                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings, workspace );
+                        dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
                     }
                     ft = dbf.getFeatureType();
                     schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
@@ -733,5 +644,98 @@ public class ShapeFeatureStore implements FeatureStore {
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        if ( shpName.toLowerCase().endsWith( ".shp" ) ) {
+            shpName = shpName.substring( 0, shpName.length() - 4 );
+        }
+
+        LOG.debug( "Loading shape file '{}'", shpName );
+
+        if ( crs == null ) {
+            File prj = new File( shpName + ".PRJ" );
+            if ( !prj.exists() ) {
+                prj = new File( shpName + ".prj" );
+            }
+            if ( prj.exists() ) {
+                try {
+                    try {
+                        crs = new WKTParser( prj ).parseCoordinateSystem();
+                    } catch ( IOException e ) {
+                        String msg = "The shape datastore for '" + shpName
+                                     + "' could not be initialized, because no CRS was defined.";
+                        throw new ResourceInitException( msg );
+                    } catch ( Exception e1 ) {
+                        getCRSFromFile( prj );
+                        if ( crs == null ) {
+                            return;
+                        }
+                    }
+                } catch ( WKTParsingException e ) {
+                    getCRSFromFile( prj );
+                    if ( crs == null ) {
+                        return;
+                    }
+                }
+            } else {
+                LOG.debug( "No crs configured, and no .prj found, assuming CRS:84 (WGS84 in x/y axis order)." );
+                crs = CRSManager.getCRSRef( "CRS:84" );
+            }
+        }
+
+        try {
+            transformer = new GeometryTransformer( crs );
+        } catch ( IllegalArgumentException e ) {
+            LOG.error( "Unknown error", e );
+            // } catch ( UnknownCRSException e ) {
+            // LOG.error( "Unknown error", e );
+        }
+
+        shpFile = new File( shpName + ".SHP" );
+        if ( !shpFile.exists() ) {
+            shpFile = new File( shpName + ".shp" );
+        }
+        shpLastModified = shpFile.lastModified();
+        dbfFile = new File( shpName + ".DBF" );
+        if ( !dbfFile.exists() ) {
+            dbfFile = new File( shpName + ".dbf" );
+        }
+        dbfLastModified = dbfFile.lastModified();
+
+        try {
+            shp = getSHP( false );
+        } catch ( IOException e ) {
+            String msg = "The shape datastore for '" + shpName
+                         + "' could not be initialized, because the .shp could not be loaded.";
+            throw new ResourceInitException( msg );
+        }
+
+        String namespace = ftName.getNamespaceURI();
+
+        try {
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, ftName, shp.getGeometryType(),
+                                 mappings );
+
+            if ( generateAlphanumericIndexes ) {
+                // set up index
+                dbfIndex = new DBFIndex( dbf, dbfFile, shp.readEnvelopes(), mappings );
+            }
+
+            ft = dbf.getFeatureType();
+        } catch ( IOException e ) {
+            LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", shpName );
+            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( namespace, "geometry",
+                                                                                 ftName.getPrefix() ), 0, 1, null,
+                                                                      null, shp.getGeometryType(), DIM_2_OR_3, BOTH );
+            ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
+        }
+        schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
     }
 }

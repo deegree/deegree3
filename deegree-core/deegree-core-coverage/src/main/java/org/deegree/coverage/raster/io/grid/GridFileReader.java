@@ -216,7 +216,7 @@ public class GridFileReader extends GridReader {
             }
         }
 
-        return new TiledRaster( mtc );
+        return new TiledRaster( mtc, null );
     }
 
     @Override

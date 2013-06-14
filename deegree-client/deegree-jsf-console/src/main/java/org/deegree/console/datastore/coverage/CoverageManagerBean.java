@@ -40,15 +40,21 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractResourceManagerBean;
-import org.deegree.coverage.persistence.CoverageBuilderManager;
+import org.deegree.coverage.persistence.CoverageManager;
 
 @ManagedBean
 @ViewScoped
-public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageBuilderManager> implements Serializable {
+public class CoverageManagerBean extends AbstractResourceManagerBean<CoverageManager> implements Serializable {
 
     private static final long serialVersionUID = 8213393417005100905L;
 
     public CoverageManagerBean() {
-        super( CoverageBuilderManager.class );
+        super( CoverageManager.class );
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/datastore/coverage/index";
+    }
+
 }

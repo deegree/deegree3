@@ -40,9 +40,9 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
@@ -57,6 +57,8 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * {@link FeatureStore} implementation that keeps the feature instances in memory.
@@ -83,6 +85,8 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private StoredFeatures storedFeatures;
 
+    private MemoryFeatureStoreMetadata metadata;
+
     /**
      * Creates a new {@link MemoryFeatureStore} instance for the given {@link AppSchema}.
      * 
@@ -90,23 +94,21 @@ public class MemoryFeatureStore implements FeatureStore {
      *            application schema, must not be <code>null</code>
      * @param storageCRS
      *            crs used for stored geometries, may be <code>null</code> (no transformation on inserts)
+     * @param metadata
      * @throws FeatureStoreException
      */
-    MemoryFeatureStore( AppSchema schema, ICRS storageCRS, DeegreeWorkspace workspace ) throws FeatureStoreException {
+    MemoryFeatureStore( AppSchema schema, ICRS storageCRS, MemoryFeatureStoreMetadata metadata,
+                        ConnectionProvider lockConnection ) throws FeatureStoreException {
         this.schema = schema;
         this.storageCRS = storageCRS;
+        this.metadata = metadata;
         this.storedFeatures = new StoredFeatures( schema, storageCRS, null );
         // TODO
-        lockManager = new DefaultLockManager( this, "LOCK_DB", workspace );
+        lockManager = new DefaultLockManager( this, lockConnection );
     }
 
     @Override
     public void destroy() {
-        // nothing to do
-    }
-
-    @Override
-    public void init( DeegreeWorkspace workspace ) {
         // nothing to do
     }
 
@@ -278,5 +280,15 @@ public class MemoryFeatureStore implements FeatureStore {
      */
     public ICRS getStorageCRS() {
         return storageCRS;
+    }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        // nothing to do
     }
 }

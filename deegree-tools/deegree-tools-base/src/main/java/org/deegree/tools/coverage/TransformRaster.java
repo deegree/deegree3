@@ -150,7 +150,7 @@ public class TransformRaster {
                     tileContainer.addTile( RasterFactory.loadRasterFromFile( f, options ) );
                 }
             }
-            AbstractRaster srcRaster = new TiledRaster( tileContainer );
+            AbstractRaster srcRaster = new TiledRaster( tileContainer, null );
             RasterTransformer transf = new RasterTransformer( dstCRS );
             srcRaster.setCoordinateSystem( CRSManager.getCRSRef( srcCRS ) );
             AbstractRaster result = transf.transform( srcRaster, type );

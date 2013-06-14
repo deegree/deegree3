@@ -57,7 +57,6 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.featureinfo.serializing.FeatureInfoGmlWriter;
@@ -66,6 +65,7 @@ import org.deegree.featureinfo.serializing.XsltFeatureInfoSerializer;
 import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -108,7 +108,7 @@ public class FeatureInfoManager {
         supportedFeatureInfoFormats.put( format, file );
     }
 
-    public void addOrReplaceXsltFormat( String format, URL xsltUrl, GMLVersion version, DeegreeWorkspace workspace ) {
+    public void addOrReplaceXsltFormat( String format, URL xsltUrl, GMLVersion version, Workspace workspace ) {
         defaultGMLGFIFormats.remove( format );
         XsltFeatureInfoSerializer xslt = new XsltFeatureInfoSerializer( version, xsltUrl, workspace );
         featureInfoSerializers.put( format, xslt );
@@ -144,7 +144,7 @@ public class FeatureInfoManager {
         } else if ( format.equalsIgnoreCase( "text/html" ) ) {
             runTemplate( params.getOutputStream(), null, params.getFeatureCollection(), params.isWithGeometries() );
         } else {
-            throw new IOException( "FeatureInfo format '" + format + "' is unknown." );   
+            throw new IOException( "FeatureInfo format '" + format + "' is unknown." );
         }
     }
 

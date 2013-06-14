@@ -44,8 +44,6 @@ import java.nio.ByteBuffer;
 
 import javax.media.opengl.GL;
 
-import org.deegree.commons.i18n.Messages;
-
 import com.sun.opengl.util.BufferUtil;
 
 /**
@@ -136,7 +134,8 @@ public class JOGLUtils {
         if ( textureId >= 0 && textureId <= glTextureUnitIds.length - 1 ) {
             return glTextureUnitIds[textureId];
         }
-        throw new IllegalArgumentException( Messages.getMessage( "JOGL_INVALID_TEXTURE_UNIT", textureId ) );
+        throw new IllegalArgumentException( "Invalid texture unit (=" + textureId
+                                            + ") specified. OpenGL defines TEXTURE0...TEXTURE31." );
     }
 
     /**
@@ -171,17 +170,13 @@ public class JOGLUtils {
         float[] mv = new float[16];
         gl.glGetFloatv( GL_MATRIX_TYPE, mv, 0 );
         StringBuilder sb = new StringBuilder();
-        sb.append( mv[0] ).append( ",\t" ).append( mv[4] ).append( ",\t" ).append( mv[8] ).append( ",\t" ).append(
-                                                                                                                   mv[12] );
+        sb.append( mv[0] ).append( ",\t" ).append( mv[4] ).append( ",\t" ).append( mv[8] ).append( ",\t" ).append( mv[12] );
         sb.append( "\n" );
-        sb.append( mv[1] ).append( ",\t" ).append( mv[5] ).append( ",\t" ).append( mv[9] ).append( ",\t" ).append(
-                                                                                                                   mv[13] );
+        sb.append( mv[1] ).append( ",\t" ).append( mv[5] ).append( ",\t" ).append( mv[9] ).append( ",\t" ).append( mv[13] );
         sb.append( "\n" );
-        sb.append( mv[2] ).append( ",\t" ).append( mv[6] ).append( ",\t" ).append( mv[10] ).append( ",\t" ).append(
-                                                                                                                    mv[14] );
+        sb.append( mv[2] ).append( ",\t" ).append( mv[6] ).append( ",\t" ).append( mv[10] ).append( ",\t" ).append( mv[14] );
         sb.append( "\n" );
-        sb.append( mv[3] ).append( ",\t\t" ).append( mv[7] ).append( ",\t\t" ).append( mv[11] ).append( ",\t\t" ).append(
-                                                                                                                          mv[15] );
+        sb.append( mv[3] ).append( ",\t\t" ).append( mv[7] ).append( ",\t\t" ).append( mv[11] ).append( ",\t\t" ).append( mv[15] );
         sb.append( "\n" );
         return sb.toString();
 

@@ -1,0 +1,2 @@
+org.deegree.coverage.persistence.pyramid.PyramidCoverageProvider
+org.deegree.coverage.persistence.DefaultCoverageProvider

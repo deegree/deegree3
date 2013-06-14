@@ -46,6 +46,7 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.workspace.ResourceMetadata;
 
 /**
  * Interpolates a given raster to a given width .
@@ -101,7 +102,8 @@ public class RasterInterpolater {
         WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcREnv, dstREnv );
         warpTransform( warp, interpolation, dstData );
 
-        return new SimpleRaster( dstData, sourceRaster.getEnvelope(), dstREnv );
+        return new SimpleRaster( dstData, sourceRaster.getEnvelope(), dstREnv,
+                                 (ResourceMetadata) sourceRaster.getMetadata() );
     }
 
     /**

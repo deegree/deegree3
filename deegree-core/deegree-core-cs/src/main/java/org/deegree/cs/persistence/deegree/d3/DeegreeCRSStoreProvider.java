@@ -45,13 +45,14 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.CRSStoreException;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.persistence.CRSStoreProvider;
 import org.deegree.cs.persistence.deegree.d3.jaxb.DeegreeCRSStoreConfig;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -89,12 +90,14 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
     }
 
     @Override
-    public CRSStore getCRSStore( URL configURL, DeegreeWorkspace workspace )
+    public CRSStore getCRSStore( URL configURL, Workspace workspace )
                             throws CRSStoreException {
         DeegreeCRSStore crsStore = null;
         try {
-            DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                                                               configURL, workspace );
+            DeegreeCRSStoreConfig config = (DeegreeCRSStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                               CONFIG_SCHEMA,
+                                                                               new DURL( configURL.toExternalForm() ).openStream(),
+                                                                               workspace );
             XMLAdapter adapter = new XMLAdapter();
             adapter.setSystemId( configURL.toString() );
 
@@ -114,11 +117,12 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
                          + e.getMessage();
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
-        } catch ( Throwable e ) {
+        } catch ( Exception e ) {
             String msg = "Error when loading crs store configuration file '" + configURL + "': " + e.getMessage();
             LOG.error( msg );
             throw new CRSStoreException( msg, e );
         }
         return crsStore;
     }
+
 }

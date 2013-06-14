@@ -35,10 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.persistence;
 
-import java.net.URL;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceProvider;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -48,16 +45,8 @@ import org.deegree.commons.config.ResourceProvider;
  * 
  * @version $Revision$, $Date$
  */
-public interface BatchedMTStoreProvider extends ResourceProvider {
+public abstract class BatchedMTStoreProvider extends AbstractResourceProvider<BatchedMTStore> {
 
-    /**
-     * Creates a new {@link BatchedMTStore} instance from the given configuration document.
-     * 
-     * @param configURL
-     *            location of the configuration document, must not be <code>null</code>
-     * @return new feature store instance, configured, not initialized yet
-     * @throws IllegalArgumentException
-     *             if the configuration contains an error or creation fails
-     */
-    public BatchedMTStore build( URL configURL, DeegreeWorkspace workspace );
+    // specifies type parameter
+
 }

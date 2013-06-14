@@ -46,8 +46,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.tom.gml.GMLObject;
-import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
@@ -104,7 +104,7 @@ public class GMLInputFactory {
     public static GMLStreamReader createGMLStreamReader( GMLVersion version, URL url )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
-        URLConnection conn = ProxyUtils.openURLConnection( url );
+        URLConnection conn = ProxySettings.openURLConnection( url );
         InputStream is = conn.getInputStream();
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
         // skip START_DOCUMENT event

@@ -79,10 +79,11 @@ public class TileLayerPerformanceTest {
         String base = "http://localhost:" + System.getProperty( "portnumber" );
         base += "/deegree-wms-tiling-tests/services";
         WMSClient client = new WMSClient( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );
-        String crs = client.getCoordinateSystems( "performance" ).getFirst();
 
-        // skip test if performance layer has no native coordinate system added
-        Assume.assumeTrue( !"EPSG:31467".equals( crs ) );
+        // skip test if layer is not available, then we probably don't have the huge file available
+        Assume.assumeTrue( client.hasLayer( "performance" ) );
+
+        String crs = client.getCoordinateSystems( "performance" ).getFirst();
 
         Envelope envelope = client.getBoundingBox( crs, "performance" );
         double minx = envelope.getMin().get0();

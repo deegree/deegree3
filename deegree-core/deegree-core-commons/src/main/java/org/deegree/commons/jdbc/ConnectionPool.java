@@ -59,7 +59,7 @@ import org.slf4j.Logger;
  * @version $Revision: $, $Date: $
  */
 @LoggingNotes(debug = "logs information about pool usage")
-class ConnectionPool {
+public class ConnectionPool {
 
     private static final Logger LOG = getLogger( ConnectionPool.class );
 
@@ -67,7 +67,7 @@ class ConnectionPool {
 
     private final PoolingDataSource ds;
 
-    private final GenericObjectPool pool;
+    private final GenericObjectPool<Connection> pool;
 
     /**
      * Creates a new {@link ConnectionPool} instance.
@@ -80,11 +80,11 @@ class ConnectionPool {
      * @param minIdle
      * @param maxActive
      */
-    ConnectionPool( String id, String connectURI, String user, String password, boolean readOnly, int minIdle,
+    public ConnectionPool( String id, String connectURI, String user, String password, boolean readOnly, int minIdle,
                     int maxActive ) {
 
         this.id = id;
-        pool = new GenericObjectPool( null );
+        pool = new GenericObjectPool<Connection>( null );
         pool.setMinIdle( minIdle );
         pool.setMaxActive( maxActive );
 
@@ -104,7 +104,7 @@ class ConnectionPool {
      * @return a connection from the pool
      * @throws SQLException
      */
-    Connection getConnection()
+    public Connection getConnection()
                             throws SQLException {
         LOG.debug( "For connection id '{}': active connections: {}, idle connections: {}",
                    new Object[] { id, pool.getNumActive(), pool.getNumIdle() } );
@@ -114,12 +114,12 @@ class ConnectionPool {
     /**
      * @throws Exception
      */
-    void destroy()
+    public void destroy()
                             throws Exception {
         pool.close();
     }
 
-    void invalidate( DelegatingConnection conn )
+    public void invalidate( DelegatingConnection conn )
                             throws Exception {
         conn.getDelegate().close();
         pool.invalidateObject( conn );

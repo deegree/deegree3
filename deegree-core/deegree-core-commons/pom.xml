@@ -40,7 +40,7 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-core-annotations</artifactId>
+      <artifactId>deegree-core-workspace</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

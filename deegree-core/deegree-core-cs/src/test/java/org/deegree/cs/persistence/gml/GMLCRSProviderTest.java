@@ -40,8 +40,6 @@ import java.net.URISyntaxException;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.IAxis;
@@ -58,8 +56,6 @@ import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -77,21 +73,6 @@ public class GMLCRSProviderTest extends TestCase {
 
     private static final String CONFIG_FILE = "gml-store.xml";
 
-    private DeegreeWorkspace workspace;
-
-    @Override
-    @Before
-    public void setUp()
-                            throws ResourceInitException {
-        workspace = DeegreeWorkspace.getInstance();
-        workspace.initAll();
-    }
-
-    @After
-    public void shutDown() {
-        workspace.destroyAll();
-    }
-
     /**
      * Tries to create the configuration
      * 
@@ -100,7 +81,7 @@ public class GMLCRSProviderTest extends TestCase {
     @Test
     public void testCreatingConfiguration()
                             throws Exception {
-        CRSStore crsStore = workspace.getSubsystemManager( CRSManager.class ).create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
+        CRSStore crsStore = new CRSManager().create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
         assertTrue( crsStore != null );
         assertTrue( crsStore instanceof GMLCRSStore );
     }
@@ -113,7 +94,7 @@ public class GMLCRSProviderTest extends TestCase {
     @Test
     public void testCRSByID()
                             throws Exception {
-        CRSStore gmlStore = workspace.getSubsystemManager( CRSManager.class ).create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
+        CRSStore gmlStore = new CRSManager().create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
         // for (String id : gProvider.getCRSByID(""))) {
         // LOG.debug ("id: " + id);
         // }
@@ -197,7 +178,7 @@ public class GMLCRSProviderTest extends TestCase {
      */
     public void testCache()
                             throws Exception {
-        CRSStore gmlStore = workspace.getSubsystemManager( CRSManager.class ).create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
+        CRSStore gmlStore = new CRSManager().create( GMLCRSProviderTest.class.getResource( CONFIG_FILE ) );
 
         ICRS testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
         testCRS_31467( testCRS, gmlStore );
@@ -205,4 +186,5 @@ public class GMLCRSProviderTest extends TestCase {
         testCRS = gmlStore.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
         testCRS_31467( testCRS, gmlStore );
     }
+
 }

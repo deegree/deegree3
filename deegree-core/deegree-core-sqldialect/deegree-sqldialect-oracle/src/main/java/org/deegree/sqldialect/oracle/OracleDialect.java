@@ -51,7 +51,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -99,11 +98,6 @@ public class OracleDialect implements SQLDialect {
         this.schema = schema;
         this.versionMajor = major;
         this.versionMinor = minor;
-    }
-
-    @Override
-    public Type getDBType() {
-        return Type.Oracle;
     }
 
     @Override
@@ -272,4 +266,5 @@ public class OracleDialect implements SQLDialect {
     public String getSelectSequenceNextVal( String sequence ) {
         return "SELECT " + sequence + ".NEXTVAL from DUAL";
     }
+
 }

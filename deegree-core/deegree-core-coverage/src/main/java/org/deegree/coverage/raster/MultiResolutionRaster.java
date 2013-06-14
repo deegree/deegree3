@@ -46,10 +46,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +73,13 @@ public class MultiResolutionRaster extends AbstractCoverage {
 
     private ResolutionInfo resolutionInfo;
 
+    private ResourceMetadata<Coverage> metadata;
+
     /**
      * Create an empty multi resolution raster.
      */
-    public MultiResolutionRaster() {
+    public MultiResolutionRaster( ResourceMetadata<Coverage> metadata ) {
+        this.metadata = metadata;
         this.resolutionInfo = new ResolutionInfo();
     }
 
@@ -97,8 +103,8 @@ public class MultiResolutionRaster extends AbstractCoverage {
                 }
             };
             Collections.sort( resolutions, comp );
-        } else{
-            LOG.error( "Could not add raster to multiresolution raster because null.");
+        } else {
+            LOG.error( "Could not add raster to multiresolution raster because null." );
         }
     }
 
@@ -188,4 +194,15 @@ public class MultiResolutionRaster extends AbstractCoverage {
     public ResolutionInfo getResolutionInfo() {
         return this.resolutionInfo;
     }
+
+    @Override
+    public ResourceMetadata<? extends Resource> getMetadata() {
+        return metadata;
+    }
+
+    @Override
+    public void init() {
+        // nothing to do
+    }
+
 }

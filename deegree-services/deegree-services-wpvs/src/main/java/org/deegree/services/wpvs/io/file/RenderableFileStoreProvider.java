@@ -35,26 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.file;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.rendering.r3d.jaxb.renderable.RenderableFileStoreConfig;
-import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.rendering.r3d.persistence.RenderableStoreProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -64,95 +51,26 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class RenderableFileStoreProvider implements RenderableStoreProvider {
-
-    private static final Logger LOG = LoggerFactory.getLogger( RenderableFileStoreProvider.class );
+public class RenderableFileStoreProvider extends RenderableStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/renderable/file";
-
-    private static final String CONFIG_JAXB_PACKAGE = RenderableFileStoreConfig.class.getPackage().getName();
 
     private static final URL CONFIG_SCHEMA = RenderableFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/3.0.0/file.xsd" );
 
     @Override
-    public String getConfigNamespace() {
+    public String getNamespace() {
         return CONFIG_NS;
     }
 
     @Override
-    public RenderableStore build( URL configURL, DeegreeWorkspace workspace ) {
-        RenderableStore rs = null;
-        try {
-            RenderableFileStoreConfig config = (RenderableFileStoreConfig) unmarshall( CONFIG_JAXB_PACKAGE,
-                                                                                       CONFIG_SCHEMA, configURL,
-                                                                                       workspace );
-
-            XMLAdapter resolver = new XMLAdapter();
-            resolver.setSystemId( configURL.toString() );
-            String entityFileName = config.getEntityFile();
-            if ( entityFileName == null ) {
-                throw new IllegalArgumentException( "Entityfile must be set to a valid billboard/entity backend file." );
-            }
-
-            File entityFile = resolveFile( entityFileName, resolver, true,
-                                           "Entityfile must be set to a valid billboard/entity backend file." );
-            if ( config.isIsBillboard() ) {
-                rs = new FileBackend( entityFile );
-            } else {
-                String prototypeFileName = config.getPrototypeFile();
-                File prototypeFile = null;
-                if ( prototypeFileName != null ) {
-                    prototypeFile = resolveFile( prototypeFileName, resolver, false, null );
-                }
-                rs = new FileBackend( entityFile, prototypeFile );
-            }
-
-            // instantiate the texture dir
-            List<String> tDirs = config.getTextureDirectory();
-            for ( String tDir : tDirs ) {
-                if ( tDir != null ) {
-                    File tD = resolveFile( tDir, resolver, false, null );
-                    TexturePool.addTexturesFromDirectory( tD );
-                }
-            }
-
-        } catch ( JAXBException e ) {
-            String msg = "Error in RenderableStore configuration file '" + configURL + "': " + e.getMessage();
-            LOG.error( msg );
-            throw new IllegalArgumentException( msg, e );
-        } catch ( IOException e ) {
-            throw new IllegalArgumentException( "Could not instantiate a File backend for file: " + configURL
-                                                + ", because: " + e.getLocalizedMessage(), e );
-        }
-        return rs;
-    }
-
-    private File resolveFile( String fileName, XMLAdapter resolver, boolean required, String msg ) {
-        URI resolve = resolveURI( fileName, resolver );
-        if ( resolve == null ) {
-            if ( required ) {
-                throw new IllegalArgumentException( msg );
-            }
-            return null;
-        }
-        return new File( resolve );
-    }
-
-    private static URI resolveURI( String fileName, XMLAdapter resolver ) {
-        URI resolve = null;
-        try {
-            URL url = resolver.resolve( fileName );
-            resolve = url.toURI();
-        } catch ( MalformedURLException e ) {
-            LOG.warn( "Error while resolving url for file: " + fileName + "." );
-        } catch ( URISyntaxException e ) {
-            LOG.warn( "Error while resolving url for file: " + fileName + "." );
-        }
-        return resolve;
+    public URL getSchema() {
+        return CONFIG_SCHEMA;
     }
 
     @Override
-    public URL getConfigSchema() {
-        return CONFIG_SCHEMA;
+    public ResourceMetadata<RenderableStore> createFromLocation( Workspace workspace,
+                                                                 ResourceLocation<RenderableStore> location ) {
+        return new FileRenderableStoreMetadata( workspace, location, this );
     }
+
 }

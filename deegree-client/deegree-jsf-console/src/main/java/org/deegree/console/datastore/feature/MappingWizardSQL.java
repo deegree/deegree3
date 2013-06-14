@@ -35,9 +35,9 @@
 package org.deegree.console.datastore.feature;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.commons.io.FileUtils.readFileToByteArray;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -58,17 +58,17 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.io.IOUtils;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.config.ResourceState;
-import org.deegree.commons.config.ResourceState.StateType;
-import org.deegree.commons.jdbc.ConnectionManager;
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.console.Config;
 import org.deegree.console.workspace.WorkspaceBean;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
@@ -78,8 +78,16 @@ import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SQLDialectManager;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.WorkspaceUtils;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultWorkspace;
+import org.deegree.workspace.standard.IncorporealResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,13 +128,10 @@ public class MappingWizardSQL {
 
     private Integer tableNameLength = 16;
 
-
-    public String getFeatureStoreId()
-                            throws ClassNotFoundException, SecurityException, NoSuchMethodException,
-                            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    public String getFeatureStoreId() {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-//        return mgr.getNewConfigId();
-        throw new UnsupportedOperationException("FIX ME");
+        // return mgr.getNewConfigId();
+        throw new UnsupportedOperationException( "FIX ME" );
     }
 
     private DeegreeWorkspace getWorkspace() {
@@ -136,18 +141,15 @@ public class MappingWizardSQL {
     }
 
     public SortedSet<String> getAvailableJdbcConns() {
-        ConnectionManager mgr = getWorkspace().getSubsystemManager( ConnectionManager.class );
-        SortedSet<String> conns = new TreeSet<String>();
-        for ( ResourceState<?> rs : mgr.getStates() ) {
-            // TODO remove this hack
-            if ( rs.getId().equals( "LOCK_DB" ) ) {
+        List<ResourceIdentifier<ConnectionProvider>> list = getWorkspace().getNewWorkspace().getResourcesOfType( ConnectionProviderProvider.class );
+        TreeSet<String> set = new TreeSet<String>();
+        for ( ResourceIdentifier<ConnectionProvider> id : list ) {
+            if ( id.getId().equals( "LOCK_DB" ) ) {
                 continue;
             }
-            if ( rs.getType().equals( StateType.init_ok ) ) {
-                conns.add( rs.getId() );
-            }
+            set.add( id.getId() );
         }
-        return conns;
+        return set;
     }
 
     public String getSelectedJdbcConn() {
@@ -156,19 +158,15 @@ public class MappingWizardSQL {
 
     public void setSelectedJdbcConn( String jdbcId ) {
         this.jdbcId = jdbcId;
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
-        SQLDialectManager dialectMgr = ws.getSubsystemManager( SQLDialectManager.class );
-        if ( dialectMgr != null ) {
-            try {
-                SQLDialect dialect = dialectMgr.create( jdbcId );
-                columnNameLength = dialect.getMaxColumnNameLength();
-                tableNameLength = dialect.getMaxTableNameLength();
-            } catch ( Throwable t ) {
-                FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "SQLDialect error: " + t.getMessage(), null );
-                FacesContext.getCurrentInstance().addMessage( null, fm );
-            }
+        Workspace ws = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        ConnectionProvider prov = ws.getResource( ConnectionProviderProvider.class, jdbcId );
+        try {
+            SQLDialect dialect = prov.getDialect();
+            columnNameLength = dialect.getMaxColumnNameLength();
+            tableNameLength = dialect.getMaxTableNameLength();
+        } catch ( Throwable t ) {
+            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "SQLDialect error: " + t.getMessage(), null );
+            FacesContext.getCurrentInstance().addMessage( null, fm );
         }
     }
 
@@ -182,9 +180,8 @@ public class MappingWizardSQL {
 
     public File getAppSchemaDirectory()
                             throws IOException {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        File appSchemaDirectory = new File( ws.getLocation(), "appschemas" );
+        Workspace ws = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        File appSchemaDirectory = new File( ( (DefaultWorkspace) ws ).getLocation(), "appschemas" );
         return appSchemaDirectory;
     }
 
@@ -285,7 +282,7 @@ public class MappingWizardSQL {
 
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
+            Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
 
             CRSRef storageCrs = CRSManager.getCRSRef( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
@@ -313,11 +310,18 @@ public class MappingWizardSQL {
 
             // let the resource manager do the dirty work
             try {
-                FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
-//                this.resourceState = fsMgr.createResource( getFeatureStoreId(), new FileInputStream( tmpConfigFile ) );
-//                Config c = new Config( this.resourceState, fsMgr, "/console/featurestore/sql/wizard4", false );
-//                return c.edit();
-                return null;
+                FeatureStoreManager fsMgr = ws.getResourceManager( FeatureStoreManager.class );
+                ResourceIdentifier<FeatureStore> id = new DefaultResourceIdentifier<FeatureStore>(
+                                                                                                   FeatureStoreProvider.class,
+                                                                                                   getFeatureStoreId() );
+                ResourceLocation<FeatureStore> loc = new IncorporealResourceLocation<FeatureStore>(
+                                                                                                    readFileToByteArray( tmpConfigFile ),
+                                                                                                    id );
+                ws.add( loc );
+                ResourceMetadata<FeatureStore> md = ws.getResourceMetadata( FeatureStoreProvider.class,
+                                                                            getFeatureStoreId() );
+                Config c = new Config( md, fsMgr, "/console/featurestore/sql/wizard4", false );
+                return c.edit();
             } catch ( Throwable t ) {
                 LOG.error( t.getMessage(), t );
                 FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to create config: " + t.getMessage(), null );
@@ -333,16 +337,18 @@ public class MappingWizardSQL {
         }
     }
 
-    public String createTables() {
+    public String createTables()
+                            throws ClassNotFoundException, SecurityException, NoSuchMethodException,
+                            IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        DeegreeWorkspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace();
-        FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
-//        resourceState = fsMgr.activate( resourceState.getId() );
-//        SQLFeatureStore store = (SQLFeatureStore) resourceState.getResource();
-//        String[] createStmts = DDLCreator.newInstance( store.getSchema(), store.getDialect() ).getDDL();
-//        resourceState = fsMgr.deactivate( resourceState.getId() );
-//        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5", ws );
-//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
+        Workspace ws = ( (WorkspaceBean) ctx.getApplicationMap().get( "workspace" ) ).getActiveWorkspace().getNewWorkspace();
+        FeatureStore fs = ws.init( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
+                                                                                getFeatureStoreId() ), null );
+        SQLFeatureStore store = (SQLFeatureStore) fs;
+
+        String[] createStmts = DDLCreator.newInstance( store.getSchema(), store.getDialect() ).getDDL();
+        SQLExecution execution = new SQLExecution( jdbcId, createStmts, "/console/featurestore/sql/wizard5", ws );
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "execution", execution );
         return "/console/generic/sql.jsf?faces-redirect=true";
     }
 
@@ -366,10 +372,10 @@ public class MappingWizardSQL {
         try {
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             WorkspaceBean workspaceBean = (WorkspaceBean) ctx.getApplicationMap().get( "workspace" );
-            DeegreeWorkspace ws = workspaceBean.getActiveWorkspace();
-            FeatureStoreManager fsMgr = ws.getSubsystemManager( FeatureStoreManager.class );
-            fsMgr.activate( getFeatureStoreId() );
-            workspaceBean.setModified();
+            Workspace ws = workspaceBean.getActiveWorkspace().getNewWorkspace();
+            WorkspaceUtils.reinitializeChain( ws,
+                                              new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
+                                                                                           getFeatureStoreId() ) );
         } catch ( Throwable t ) {
             t.printStackTrace();
             String msg = "Error activating new feature store";
@@ -379,4 +385,5 @@ public class MappingWizardSQL {
         }
         return "/console/featurestore/buttons";
     }
+
 }

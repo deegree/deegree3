@@ -83,6 +83,7 @@ import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.jaxen.JaxenException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -104,14 +105,12 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
                             MetadataInspectorException, ResourceInitException, URISyntaxException {
         LOG.info( "START Test: testInsert" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
+
         String test_folder = TestProperties.getProperty( "test_folder" );
+
+        Assume.assumeTrue( test_folder != null );
 
         File folder = new File( test_folder );
         File[] fileArray = folder.listFiles();
@@ -155,13 +154,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
                             MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testDelete" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_9, TstConstants.tst_10, TstConstants.tst_1 );
 
@@ -342,6 +336,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
     public void testUpdateOMElementRemove()
                             throws FactoryConfigurationError, MetadataStoreException, MetadataInspectorException,
                             ResourceInitException {
+        
+
         String idToUpdate = prepareUpdate();
         if ( idToUpdate == null ) {
             return;
@@ -367,6 +363,7 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         MetadataRecord m = resultSet.getRecord();
         assertNotNull( m );
 
+
         OMElement updatedNode = ( (ISORecord) m ).getNodeFromXPath( new XPath( xPath, nsContext ) );
         assertNotNull( updatedNode );
 
@@ -375,6 +372,9 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
         UpdateOperation update = new UpdateOperation( null, null, null, constraint, recordProperties );
         mst.performUpdate( update );
         mst.commit();
+        
+        resultSet.close();
+        
 
         // get record which should be updated
         resultSet = store.getRecords( query );
@@ -519,13 +519,8 @@ public class ISOMetadatStoreTransactionTest extends AbstractISOTest {
                             throws MetadataStoreException, MetadataInspectorException, ResourceInitException {
         LOG.info( "START Test: testUpdate" );
 
-        if ( jdbcURL != null && jdbcUser != null && jdbcPass != null ) {
-            store = (ISOMetadataStore) new ISOMetadataStoreProvider().create( TstConstants.configURL );
-        }
-        if ( store == null ) {
-            LOG.warn( "Skipping test (needs configuration)." );
-            return null;
-        }
+        initStore( TstConstants.configURL );
+        Assume.assumeNotNull( store );
 
         List<String> ids = TstUtils.insertMetadata( store, TstConstants.tst_9 );
         LOG.info( "Inserted records with ids: " + ids + ". Now: update " + ids );

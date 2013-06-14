@@ -63,6 +63,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.coverage.Coverage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.cache.ByteBufferPool;
@@ -75,13 +76,14 @@ import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.geometry.Envelope;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +115,7 @@ public class RasterFactory {
     public static AbstractRaster loadRasterFromFile( File filename )
                             throws IOException {
         RasterIOOptions options = RasterIOOptions.forFile( filename );
-        return loadRasterFromFile( filename, options );
+        return loadRasterFromFile( filename, options, null );
     }
 
     /**
@@ -125,14 +127,22 @@ public class RasterFactory {
      * @return the loaded raster as an AbstractRaster
      * @throws IOException
      */
-    public static AbstractRaster loadRasterFromFile( File filename, RasterIOOptions options )
+    public static AbstractRaster loadRasterFromFile( File filename, RasterIOOptions options,
+                                                     ResourceMetadata<Coverage> metadata )
                             throws IOException {
         RasterReader reader = getRasterReader( filename, options );
         if ( reader == null ) {
             log.error( "couldn't find raster reader for " + filename );
             throw new IOException( "couldn't find raster reader" );
         }
-        return reader.load( filename, options );
+        AbstractRaster cov = reader.load( filename, options );
+        cov.setMetadata( metadata );
+        return cov;
+    }
+
+    public static AbstractRaster loadRasterFromFile( File filename, RasterIOOptions options )
+                            throws IOException {
+        return loadRasterFromFile( filename, options, null );
     }
 
     /**
@@ -318,7 +328,7 @@ public class RasterFactory {
         }
         ByteBufferRasterData rasterDataFromImage = rasterDataFromImage( image, opts, null );
 
-        return new SimpleRaster( rasterDataFromImage, envelope, ref );
+        return new SimpleRaster( rasterDataFromImage, envelope, ref, null );
 
     }
 
@@ -877,7 +887,7 @@ public class RasterFactory {
             // data = new PixelInterleavedRasterData( rasterRect, rasterRect.width, rasterRect.height, reader, rdi );
             // break;
             // }
-            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference );
+            result = new SimpleRaster( data, worldEnvelope, rasterGeoReference, null );
         }
         return result;
     }
