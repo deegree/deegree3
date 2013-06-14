@@ -47,6 +47,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
+import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -76,7 +78,7 @@ public class MetadataSchemaValidationInspector<T extends MetadataRecord> impleme
      * @return a list of error-strings, or empty list if there is no validation needed.
      * @throws MetadataStoreException
      */
-    private List<String> validate( OMElement elem )
+    private List<SchemaValidationEvent> validate( OMElement elem )
                             throws MetadataInspectorException {
         InputStream is = null;
         try {
@@ -89,21 +91,21 @@ public class MetadataSchemaValidationInspector<T extends MetadataRecord> impleme
         }
 
         if ( new QName( "http://www.isotc211.org/2005/gmd", "MD_Metadata" ).equals( elem.getQName() ) ) {
-            return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL_GMD, SCHEMA_URL_SRV );
+            return SchemaValidator.validate( is, SCHEMA_URL_GMD, SCHEMA_URL_SRV );
         }
         // DublinCore
-        return org.deegree.commons.xml.schema.SchemaValidator.validate( is, SCHEMA_URL );
+        return SchemaValidator.validate( is, SCHEMA_URL );
     }
 
     @Override
     public T inspect( T record, Connection conn, SQLDialect dialect )
                             throws MetadataInspectorException {
-        List<String> errors = validate( record.getAsOMElement() );
+        List<SchemaValidationEvent> errors = validate( record.getAsOMElement() );
         if ( errors.isEmpty() ) {
             return record;
         } else {
             StringBuilder sb = new StringBuilder();
-            for ( String error : errors ) {
+            for ( SchemaValidationEvent error : errors ) {
                 sb.append( error );
                 sb.append( "\n" );
             }

@@ -41,6 +41,7 @@ import java.io.Reader;
 import java.util.List;
 
 import org.apache.xerces.xni.parser.XMLInputSource;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,17 +72,17 @@ public class XMLAssert {
      */
     public static void assertValidity( Reader reader, String... schemaLocations ) {
         XMLInputSource source = new XMLInputSource( null, null, null, reader, null );
-        List<String> messages = SchemaValidator.validate( source, schemaLocations );
-        if ( messages.size() > 0 ) {
-            fail( messages.get( 0 ) );
+        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
+        if ( events.size() > 0 ) {
+            fail( events.get( 0 ).toString() );
         }
         if ( LOG.isErrorEnabled() ) {
-            for ( String msg : messages ) {
-                LOG.error( msg );
+            for ( SchemaValidationEvent event : events ) {
+                LOG.error( event.toString() );
             }
         }
-    }    
-    
+    }
+
     /**
      * Asserts that the specified XML document is valid with respect to the schemas that it references (using
      * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
@@ -92,13 +93,13 @@ public class XMLAssert {
      *            optional locations of schema documents to be considered in the validation
      */
     public static void assertValidity( XMLInputSource source, String... schemaLocations ) {
-        List<String> messages = SchemaValidator.validate( source, schemaLocations );
-        if ( messages.size() > 0 ) {
-            fail( messages.get( 0 ) );
+        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
+        if ( events.size() > 0 ) {
+            fail( events.get( 0 ).toString() );
         }
         if ( LOG.isErrorEnabled() ) {
-            for ( String msg : messages ) {
-                LOG.error( msg );
+            for ( SchemaValidationEvent event : events ) {
+                LOG.error( event.toString() );
             }
         }
     }
