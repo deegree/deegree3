@@ -91,6 +91,7 @@ class WmtsRequestDispatcher {
         switch ( req ) {
         case GetCapabilities:
             try {
+                response.setContentType( "application/xml" );
                 capabilitiesHandler.handleGetCapabilities( map, response.getXMLWriter() );
             } catch ( Throwable e ) {
                 LOG.trace( "Stack trace:", e );
