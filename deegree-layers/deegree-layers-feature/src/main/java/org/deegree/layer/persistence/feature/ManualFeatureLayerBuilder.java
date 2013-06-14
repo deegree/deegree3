@@ -96,13 +96,15 @@ class ManualFeatureLayerBuilder {
     MultipleLayerStore buildFeatureLayers()
                             throws XMLStreamException, URISyntaxException, FeatureStoreException {
         Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+        int index = -1;
         for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
+            ++index;
             QName featureType = lay.getFeatureType();
 
             // these methods do not use the dom elements but reparse the configuration file using StAX due to bugs
             // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
-            OperatorFilter filter = QueryOptionsParser.parseFilter( metadata.getLocation().getAsStream() );
-            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( metadata.getLocation().getAsStream() );
+            OperatorFilter filter = QueryOptionsParser.parseFilter( index, metadata.getLocation().getAsStream() );
+            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( index, metadata.getLocation().getAsStream() );
             List<SortProperty> sortByFeatureInfo = sortBy;
             if ( sortBy != null && lay.getSortBy().isReverseFeatureInfo() ) {
                 sortByFeatureInfo = new ArrayList<SortProperty>();

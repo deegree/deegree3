@@ -76,42 +76,63 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
  */
 class QueryOptionsParser {
 
-    static OperatorFilter parseFilter( InputStream in )
+    static OperatorFilter parseFilter( int layerIndex, InputStream in )
                             throws XMLStreamException {
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( in ) );
 
-        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "Filter" ) ) ) {
-            return null;
+        int idx = -1;
+        while ( idx != layerIndex ) {
+            moveReaderToFirstMatch( reader, new QName( "http://www.deegree.org/layers/feature", "FeatureLayer" ) );
+            reader.next();
+            ++idx;
         }
 
-        OperatorFilter filter = null;
-        filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
+        while ( !( reader.isEndElement() && reader.getLocalName().equals( "FeatureLayer" ) ) ) {
+            reader.next();
+            if ( reader.isStartElement() && reader.getLocalName().equals( "Filter" )
+                 && reader.getNamespaceURI().equals( OGCNS ) ) {
+                OperatorFilter filter = null;
+                filter = (OperatorFilter) Filter110XMLDecoder.parse( reader );
+                reader.close();
+                return filter;
+            }
+        }
+
         reader.close();
-        return filter;
+        return null;
     }
 
-    static List<SortProperty> parseSortBy( InputStream in )
+    static List<SortProperty> parseSortBy( int layerIndex, InputStream in )
                             throws XMLStreamException {
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader( new StreamSource( in ) );
 
-        if ( !moveReaderToFirstMatch( reader, new QName( OGCNS, "SortBy" ) ) ) {
-            return null;
+        int idx = -1;
+        while ( idx != layerIndex ) {
+            moveReaderToFirstMatch( reader, new QName( "http://www.deegree.org/layers/feature", "FeatureLayer" ) );
+            reader.next();
+            ++idx;
         }
 
-        // ogc:SortBy
-        requireStartElement( reader, singleton( new QName( OGCNS, "SortBy" ) ) );
-
-        nextElement( reader );
-        List<SortProperty> sortCrits = new ArrayList<SortProperty>();
-        while ( reader.isStartElement() ) {
-            SortProperty prop = parseSortProperty( reader );
-            sortCrits.add( prop );
-            nextElement( reader );
+        while ( !( reader.isEndElement() && reader.getLocalName().equals( "FeatureLayer" ) ) ) {
+            reader.next();
+            if ( reader.isStartElement() && reader.getLocalName().equals( "SortBy" )
+                 && reader.getNamespaceURI().equals( OGCNS ) ) {
+                nextElement( reader );
+                List<SortProperty> sortCrits = new ArrayList<SortProperty>();
+                while ( reader.isStartElement() ) {
+                    SortProperty prop = parseSortProperty( reader );
+                    sortCrits.add( prop );
+                    nextElement( reader );
+                }
+                reader.close();
+                return sortCrits;
+            }
         }
+
         reader.close();
-        return sortCrits;
+        return null;
     }
 
     private static SortProperty parseSortProperty( XMLStreamReader reader )
