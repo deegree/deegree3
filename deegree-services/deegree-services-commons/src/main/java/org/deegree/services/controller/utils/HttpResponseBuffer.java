@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,6 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.services.controller.Credentials;
@@ -267,7 +269,11 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
                         messages = SchemaValidator.validateSchema( buffer.getInputStream() );
                     } else {
                         LOG.info( "Validating generated XML output (instance document)." );
-                        messages = SchemaValidator.validate( buffer.getInputStream() );
+                        messages = new ArrayList<String>();
+                        List<SchemaValidationEvent> evts = SchemaValidator.validate( buffer.getInputStream() );
+                        for ( SchemaValidationEvent evt : evts ) {
+                            messages.add( evt.toString() );
+                        }
                     }
                 } catch ( Exception e ) {
                     messages = Collections.singletonList( e.getLocalizedMessage() );
