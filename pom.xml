@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.2.0.b17-jrcportal</version>
+  <version>3.2.0.b18-jrcportal-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -12,7 +12,7 @@
     <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
     <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
     <url>https://github.com/lat-lon/deegree3.git</url>
-    <tag>deegree-3.2.0.b17-jrcportal</tag>
+    <tag>HEAD</tag>
   </scm>
   
   <repositories>
