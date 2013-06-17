@@ -347,11 +347,10 @@ public final class RecordPropertyParser extends XMLAdapter {
         Date dateSpecificationDate = null;
 
         try {
-            if ( specificationDateString != null ) {
+            if ( specificationDateString != null && !"".equals( specificationDateString ) ) {
                 dateSpecificationDate = parseDate( specificationDateString );
             }
         } catch ( Exception e ) {
-
             String msg = Messages.getMessage( "ERROR_PARSING", specificationDateString, e.getMessage() );
             LOG.debug( msg );
             throw new IllegalArgumentException( msg );
