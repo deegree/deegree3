@@ -49,7 +49,7 @@ import org.deegree.metadata.MetadataRecordFactory;
 import org.junit.Test;
 
 /**
- * Basic tests for usage of {@link MetadataRecordFactory}.
+ * Basic tests for usage of {@link RecordPropertyParser}.
  * 
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
