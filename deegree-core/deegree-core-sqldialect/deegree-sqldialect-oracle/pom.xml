@@ -15,44 +15,6 @@
 		<version>3.2.0.b17-jrcportal-SNAPSHOT</version>
 	</parent>
 
-	<repositories>
-		<repository>
-			<id>deegree-repo</id>
-			<url>http://repo.deegree.org/content/groups/public</url>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>latlon-repo</id>
-			<url>http://artefacts.lat-lon/repo</url>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>deegree-restricted</id>
-			<url>http://repo.deegree.org/content/repositories/private3rdparty/</url>
-		</repository>
-	</repositories>
-
-	<distributionManagement>
-		<repository>
-			<id>latlon-releases</id>
-			<url>http://artefacts.lat-lon/libs-release-local</url>
-		</repository>
-		<snapshotRepository>
-			<id>latlon-snapshots</id>
-			<url>http://artefacts.lat-lon/libs-snapshot-local</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<profiles>
 		<profile>
 			<id>oracle</id>
