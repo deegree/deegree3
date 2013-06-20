@@ -197,12 +197,12 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
             rs = preparedStatement.executeQuery();
             return new ISOMetadataResultSet( rs, conn, preparedStatement );
         } catch ( SQLException e ) {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
+            JDBCUtils.close( rs, preparedStatement, conn, LOG );
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } catch ( Throwable t ) {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
+            JDBCUtils.close( rs, preparedStatement, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
@@ -288,7 +288,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
             }
             rs = stmt.executeQuery();
         } catch ( Throwable t ) {
-            JDBCUtils.close( rs, stmt, null, LOG );
+            JDBCUtils.close( rs, stmt, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
