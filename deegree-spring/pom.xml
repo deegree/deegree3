@@ -6,4 +6,31 @@
     <version>3.4-pre3-SNAPSHOT</version>
   </parent>
   <artifactId>deegree-spring</artifactId>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.springframework</groupId>
+  		<artifactId>spring-context</artifactId>
+  		<version>3.2.3.RELEASE</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.deegree</groupId>
+  		<artifactId>deegree-core-workspace</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.deegree</groupId>
+  		<artifactId>deegree-core-commons</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+  </dependencies>
 </project>
