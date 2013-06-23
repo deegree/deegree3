@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
+import static org.deegree.metadata.iso.persistence.sql.SqlUtils.joinIsWritten;
+import static org.deegree.metadata.iso.persistence.sql.SqlUtils.repairAliasesInWhereClause;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
@@ -114,29 +118,37 @@ abstract class AbstractSqlHelper {
         return getDatasetIDs;
     }
 
-    protected void getPSBody( AbstractWhereBuilder builder, StringBuilder getDatasetIDs ) {
+    protected void getPSBody( AbstractWhereBuilder builder, StringBuilder sql ) {
 
         String rootTableAlias = builder.getAliasManager().getRootTableAlias();
-        getDatasetIDs.append( " FROM " );
-        getDatasetIDs.append( mainTable );
-        getDatasetIDs.append( " " );
-        getDatasetIDs.append( rootTableAlias );
+        sql.append( " FROM " );
+        sql.append( mainTable );
+        sql.append( " " );
+        sql.append( rootTableAlias );
+
+        List<Join> usedJoins = new ArrayList<Join>();
+        List<Join> redundantJoins = new ArrayList<Join>();
 
         for ( PropertyNameMapping mappedPropName : builder.getMappedPropertyNames() ) {
             for ( Join join : mappedPropName.getJoins() ) {
-                getDatasetIDs.append( " LEFT OUTER JOIN " );
-                getDatasetIDs.append( join.getToTable() );
-                getDatasetIDs.append( ' ' );
-                getDatasetIDs.append( join.getToTableAlias() );
-                getDatasetIDs.append( " ON " );
-                getDatasetIDs.append( join.getSQLJoinCondition() );
+                if ( !joinIsWritten( join, usedJoins ) ) {
+                    sql.append( " LEFT OUTER JOIN " );
+                    sql.append( join.getToTable() );
+                    sql.append( ' ' );
+                    sql.append( join.getToTableAlias() );
+                    sql.append( " ON " );
+                    sql.append( join.getSQLJoinCondition() );
+                    usedJoins.add( join );
+                } else {
+                    redundantJoins.add( join );
+                }
             }
         }
-
         if ( builder.getWhere() != null ) {
-            getDatasetIDs.append( " WHERE " );
-            getDatasetIDs.append( builder.getWhere().getSQL() );
+            sql.append( " WHERE " );
+            String repairedWhereClause = repairAliasesInWhereClause( builder, usedJoins, redundantJoins );
+            sql.append( repairedWhereClause );
         }
-
     }
+
 }
