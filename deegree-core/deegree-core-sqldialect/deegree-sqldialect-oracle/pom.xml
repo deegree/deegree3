@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.deegree</groupId>
 		<artifactId>deegree-core-sqldialect</artifactId>
-		<version>3.2.0.b18-jrcportal</version>
+		<version>3.2.0.b19-jrcportal-SNAPSHOT</version>
 	</parent>
 
 	<profiles>
