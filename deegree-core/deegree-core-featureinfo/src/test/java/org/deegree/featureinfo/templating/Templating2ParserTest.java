@@ -52,6 +52,7 @@ import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -139,10 +140,10 @@ public class Templating2ParserTest {
         File file = new File( Templating2ParserTest.class.getResource( "forcepropertyeval.gfi" ).toURI() );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         FeatureCollection col = new GenericFeatureCollection();
-        Feature f = new GenericFeature(null, null, new ArrayList(), null );
-        col.add(f);
+        Feature f = new GenericFeature( null, null, new ArrayList<Property>(), null );
+        col.add( f );
         TemplatingUtils.runTemplate( bos, file.toString(), col, false );
-System.out.println(new String(bos.toByteArray()));
+        Assert.assertTrue( new String( bos.toByteArray() ).contains( "<li>\ntest\n</li>" ) );
     }
 
     private static Templating2Parser getParser( String name )
