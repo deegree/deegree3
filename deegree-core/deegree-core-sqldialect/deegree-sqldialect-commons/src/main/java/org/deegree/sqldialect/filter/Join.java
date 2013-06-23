@@ -136,4 +136,11 @@ public class Join {
         }
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return "Join [fromTable=" + fromTable + ", fromTableAlias=" + fromTableAlias + ", fromColumns=" + fromColumns
+               + ", toTable=" + toTable + ", toTableAlias=" + toTableAlias + ", toColumns=" + toColumns + "]";
+    }
+
 }
