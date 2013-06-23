@@ -41,18 +41,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.templating;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Map;
-
-import junit.framework.Assert;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeature;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.featureinfo.templating.lang.Definition;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -117,6 +123,27 @@ public class Templating2ParserTest {
         Map<String, Definition> defs = parser.definitions();
         Assert.assertEquals( 4, defs.size() );
         Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
+    public void testForceProperty()
+                            throws IOException, RecognitionException {
+        Templating2Parser parser = getParser( "forceproperty.gfi" );
+        Map<String, Definition> defs = parser.definitions();
+        Assert.assertEquals( 6, defs.size() );
+        Assert.assertEquals( 0, parser.getNumberOfSyntaxErrors() );
+    }
+
+    @Test
+    public void testForcePropertyEval()
+                            throws URISyntaxException, IOException {
+        File file = new File( Templating2ParserTest.class.getResource( "forcepropertyeval.gfi" ).toURI() );
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FeatureCollection col = new GenericFeatureCollection();
+        Feature f = new GenericFeature( null, null, new ArrayList<Property>(), null );
+        col.add( f );
+        TemplatingUtils.runTemplate( bos, file.toString(), col, false );
+        Assert.assertTrue( new String( bos.toByteArray() ).contains( "<li>\ntest\n</li>" ) );
     }
 
     private static Templating2Parser getParser( String name )

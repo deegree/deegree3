@@ -33,6 +33,7 @@ templatebody[TemplateDefinition def]:
   templatebodytext { $def.body.add($templatebodytext.text); }
   | featurecall { $def.body.add($featurecall.call); }
   | propertycall { $def.body.add($propertycall.call); }
+  | forcepropertycall { $def.body.add($forcepropertycall.call); }
   | name { $def.body.add($name.name); }
   | value { $def.body.add($value.value); }
   | odd { $def.body.add($odd.even); }
@@ -80,7 +81,13 @@ propertycall returns [PropertyTemplateCall call]
 @init {
     List<String> patterns = new ArrayList<String>();
 }:
-  PropertyCallStart templateselector[patterns] Colon ID TagClose { $call = new PropertyTemplateCall($ID.text, patterns, $templateselector.negate); };
+  PropertyCallStart templateselector[patterns] Colon ID TagClose { $call = new PropertyTemplateCall($ID.text, patterns, $templateselector.negate, false); };
+
+forcepropertycall returns [PropertyTemplateCall call]
+@init {
+    List<String> patterns = new ArrayList<String>();
+}:
+  ForcePropertyCallStart templateselector[patterns] Colon ID TagClose { $call = new PropertyTemplateCall($ID.text, patterns, $templateselector.negate, true); };
 
 templateselector[List<String> patterns] returns [Boolean negate]:
   Not WS* BracketLeft templatepatterns[patterns] BracketRight { $negate = true; }

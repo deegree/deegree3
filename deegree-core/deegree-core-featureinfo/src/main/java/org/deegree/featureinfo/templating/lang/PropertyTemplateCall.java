@@ -39,14 +39,20 @@ import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.featureinfo.templating.lang.Util.getMatchingObjects;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.property.SimpleProperty;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 
@@ -70,15 +76,18 @@ public class PropertyTemplateCall {
 
     private final boolean negate;
 
+    private boolean force;
+
     /**
      * @param name
      * @param patterns
      * @param negate
      */
-    public PropertyTemplateCall( String name, List<String> patterns, boolean negate ) {
+    public PropertyTemplateCall( String name, List<String> patterns, boolean negate, boolean force ) {
         this.name = name;
         this.patterns = patterns;
         this.negate = negate;
+        this.force = force;
     }
 
     private void eval( StringBuilder sb, TemplateDefinition t, Object obj, HashMap<String, Object> defs,
@@ -167,7 +176,16 @@ public class PropertyTemplateCall {
         List<Property> inputProps = ( (Feature) obj ).getProperties();
         Property[] propArray = inputProps.toArray( new Property[inputProps.size()] );
 
-        List<Property> props = getMatchingObjects( propArray, patterns, negate, geometries );
+        List<Property> props;
+        if ( !force ) {
+            props = getMatchingObjects( propArray, patterns, negate, geometries );
+        } else {
+            props = new ArrayList<Property>();
+            for ( String p : patterns ) {
+                SimplePropertyType tp = new SimplePropertyType( new QName( p ), 0, 0, BaseType.STRING, null, null );
+                props.add( new SimpleProperty( tp, "" ) );
+            }
+        }
 
         LOG.debug( "Property template call '{}' matches objects '{}'.", name, props );
 
