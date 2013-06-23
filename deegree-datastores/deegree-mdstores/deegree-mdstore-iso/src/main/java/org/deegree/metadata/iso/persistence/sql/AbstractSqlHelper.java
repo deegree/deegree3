@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
+import static org.deegree.metadata.iso.persistence.sql.SqlUtils.joinIsWritten;
+import static org.deegree.metadata.iso.persistence.sql.SqlUtils.repairAliasesInWhereClause;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,65 +151,4 @@ abstract class AbstractSqlHelper {
         }
     }
 
-    private String repairAliasesInWhereClause( AbstractWhereBuilder builder, List<Join> usedJoins,
-                                               List<Join> redundantJoins ) {
-        String whereClause = builder.getWhere().getSQL().toString();
-        for ( Join redundantJoin : redundantJoins ) {
-            Join usedJoin = getEquivalentJoin( redundantJoin, usedJoins );
-            String usedAlias = usedJoin.getToTableAlias();
-            String redundantAlias = redundantJoin.getToTableAlias();
-            whereClause = whereClause.replace( redundantAlias, usedAlias );
-        }
-        return whereClause;
-    }
-
-    private Join getEquivalentJoin( Join duplicatedJoin, List<Join> usedJoins ) {
-        for ( Join join : usedJoins ) {
-            if ( joinsAreEqual( duplicatedJoin, join ) ) {
-                return join;
-            }
-        }
-        return duplicatedJoin;
-    }
-
-    private boolean joinIsWritten( Join join, List<Join> writtenJoins ) {
-        for ( Join other : writtenJoins ) {
-            if ( joinsAreEqual( join, other ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean joinsAreEqual( Join join, Join other ) {
-        List<String> fromColumns = join.getFromColumns();
-        List<String> otherFromColumns = other.getFromColumns();
-        if ( fromColumns == null ) {
-            if ( otherFromColumns != null )
-                return false;
-        } else if ( !fromColumns.equals( otherFromColumns ) )
-            return false;
-        String fromTable = join.getFromTable();
-        String otherFromTable = other.getFromTable();
-        if ( fromTable == null ) {
-            if ( otherFromTable != null )
-                return false;
-        } else if ( !fromTable.equals( otherFromTable ) )
-            return false;
-        List<String> toColumns = join.getToColumns();
-        List<String> otherToColumns = other.getToColumns();
-        if ( toColumns == null ) {
-            if ( otherToColumns != null )
-                return false;
-        } else if ( !toColumns.equals( otherToColumns ) )
-            return false;
-        String toTable = join.getToTable();
-        String otherToTable = other.getToTable();
-        if ( toTable == null ) {
-            if ( otherToTable != null )
-                return false;
-        } else if ( !toTable.equals( otherToTable ) )
-            return false;
-        return true;
-    }
 }
