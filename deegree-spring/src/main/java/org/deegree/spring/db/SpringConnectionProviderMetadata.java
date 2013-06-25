@@ -45,6 +45,6 @@ public class SpringConnectionProviderMetadata extends AbstractResourceMetadata<C
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
 
-        return new SpringConnectionProviderBuilder( this, workspace, config );
+        return new SpringConnectionProviderBuilder( workspace, this, config );
     }
 }
