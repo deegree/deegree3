@@ -46,5 +46,10 @@
   		<artifactId>deegree-core-db</artifactId>
   		<version>${project.version}</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.deegree</groupId>
+  		<artifactId>deegree-services-commons</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
   </dependencies>
 </project>
