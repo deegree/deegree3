@@ -4,7 +4,7 @@ import org.deegree.spring.ApplicationContextHolder;
 import org.deegree.spring.bootstrap.jaxb.BootstrapApplicationContextHolderConfig;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -24,7 +24,7 @@ public class BootstrapApplicationContextHolderBuilder implements ResourceBuilder
     @Override
     public ApplicationContextHolder build() {
         try {
-            final ApplicationContext context;
+            final ConfigurableApplicationContext context;
             final String contextClass = config.getContextClass();
             if ( contextClass != null ) {
                 context = new AnnotationConfigApplicationContext( Class.forName( contextClass ) );
