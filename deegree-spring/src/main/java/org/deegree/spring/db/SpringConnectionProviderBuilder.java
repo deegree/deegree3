@@ -5,7 +5,7 @@ import javax.sql.DataSource;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.spring.AbstractSpringResourceBuilder;
 import org.deegree.spring.db.jaxb.SpringConnectionProviderConfig;
-import org.deegree.sqldialect.postgis.PostGISDialect;
+import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.Workspace;
 
 import org.slf4j.Logger;
@@ -32,6 +32,7 @@ public class SpringConnectionProviderBuilder extends AbstractSpringResourceBuild
         LOG.debug( "Building SpringConnectionProvider" );
 
         final DataSource dataSource = getBean( DataSource.class, config.getDataSourceName(), "dataSource" );
-        return new SpringConnectionProvider( metadata, dataSource, new PostGISDialect( false ) );
+        final SQLDialect dialect = getBean( SQLDialect.class, config.getSQLDialectName() );
+        return new SpringConnectionProvider( metadata, dataSource, dialect );
     }
 }

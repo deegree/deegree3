@@ -25,6 +25,14 @@ public abstract class AbstractSpringResourceBuilder<T extends Resource> implemen
         this.applicationContextHolderId = applicationContextHolderId;
     }
 
+    protected <B> B getBean( final Class<B> clazz ) {
+        return getBean( clazz, null );
+    }
+
+    protected <B> B getBean( final Class<B> clazz, final String beanName ) {
+        return getBean( clazz, beanName, null );
+    }
+
     protected <B> B getBean( final Class<B> clazz, final String beanName, final String conventionalBeanName ) {
         final String className = clazz.getCanonicalName();
 

@@ -21,6 +21,7 @@
 			<sequence>
 				<element name="ApplicationContextHolder" type="string" />
 				<element name="DataSourceName" type="string" minOccurs="0"/>
+				<element name="SQLDialectName" type="string" minOccurs="0"/>
 			</sequence>
 		</complexType>
 	</element>
