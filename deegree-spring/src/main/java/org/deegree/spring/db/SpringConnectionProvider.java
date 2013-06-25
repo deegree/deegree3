@@ -10,12 +10,15 @@ import org.deegree.sqldialect.SQLDialect;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 public class SpringConnectionProvider implements ConnectionProvider {
-    
+
     private final SpringConnectionProviderMetadata metadata;
+
     private final DataSource dataSource;
+
     private final SQLDialect dialect;
-    
-    public SpringConnectionProvider( final SpringConnectionProviderMetadata metadata, final DataSource dataSource, final SQLDialect dialect ) {
+
+    public SpringConnectionProvider( final SpringConnectionProviderMetadata metadata, final DataSource dataSource,
+                                     final SQLDialect dialect ) {
         this.metadata = metadata;
         this.dataSource = dataSource;
         this.dialect = dialect;
@@ -27,7 +30,7 @@ public class SpringConnectionProvider implements ConnectionProvider {
     }
 
     @Override
-    public void init() {     
+    public void init() {
 
     }
 
@@ -42,7 +45,7 @@ public class SpringConnectionProvider implements ConnectionProvider {
     }
 
     @Override
-    public SQLDialect getDialect() {        
+    public SQLDialect getDialect() {
         return dialect;
     }
 

@@ -8,8 +8,9 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 
 public class SpringConnectionProviderProvider extends ConnectionProviderProvider {
-    
+
     private static final String CONFIG_NS = "http://www.deegree.org/spring/db";
+
     static final URL CONFIG_SCHEMA = SpringConnectionProviderProvider.class.getResource( "/META-INF/schemas/spring/3.4.0/db.xsd" );
 
     @Override
@@ -19,7 +20,7 @@ public class SpringConnectionProviderProvider extends ConnectionProviderProvider
 
     @Override
     public SpringConnectionProviderMetadata createFromLocation( Workspace workspace,
-                                                                    ResourceLocation<ConnectionProvider> location ) {
+                                                                ResourceLocation<ConnectionProvider> location ) {
         return new SpringConnectionProviderMetadata( workspace, location, this );
     }
 

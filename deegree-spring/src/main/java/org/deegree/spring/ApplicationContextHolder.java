@@ -6,11 +6,13 @@ import org.deegree.workspace.ResourceMetadata;
 import org.springframework.context.ApplicationContext;
 
 public class ApplicationContextHolder implements Resource {
-    
+
     private final ResourceMetadata<ApplicationContextHolder> metadata;
+
     private final ApplicationContext applicationContext;
-    
-    public ApplicationContextHolder( final ResourceMetadata<ApplicationContextHolder> metadata, final ApplicationContext applicationContext ) {
+
+    public ApplicationContextHolder( final ResourceMetadata<ApplicationContextHolder> metadata,
+                                     final ApplicationContext applicationContext ) {
         this.metadata = metadata;
         this.applicationContext = applicationContext;
     }
@@ -22,14 +24,14 @@ public class ApplicationContextHolder implements Resource {
 
     @Override
     public void init() {
-        
+
     }
 
     @Override
     public void destroy() {
-        
+
     }
-    
+
     public ApplicationContext getApplicationContext() {
         return applicationContext;
     }

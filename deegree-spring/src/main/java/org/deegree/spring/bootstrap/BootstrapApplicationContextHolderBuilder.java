@@ -11,13 +11,14 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 public class BootstrapApplicationContextHolderBuilder implements ResourceBuilder<ApplicationContextHolder> {
 
     private final BootstrapApplicationContextHolderMetadata metadata;
-    private final BootstrapApplicationContextHolderConfig config;    
+
+    private final BootstrapApplicationContextHolderConfig config;
 
     public BootstrapApplicationContextHolderBuilder( BootstrapApplicationContextHolderMetadata metadata,
                                                      BootstrapApplicationContextHolderConfig config ) {
-        
+
         this.metadata = metadata;
-        this.config = config;        
+        this.config = config;
     }
 
     @Override
@@ -25,20 +26,21 @@ public class BootstrapApplicationContextHolderBuilder implements ResourceBuilder
         try {
             final ApplicationContext context;
             final String contextClass = config.getContextClass();
-            if ( contextClass != null) {
-                context = new AnnotationConfigApplicationContext ( Class.forName( contextClass ) );
+            if ( contextClass != null ) {
+                context = new AnnotationConfigApplicationContext( Class.forName( contextClass ) );
             } else {
                 final String contextConfigLocation = config.getContextConfigLocation();
-                if ( contextConfigLocation == null) {
-                    throw new ResourceInitException ( "Both ContextClass and ContextConfigLocation are missing from BootstrapApplicationContextHolderConfig" );
+                if ( contextConfigLocation == null ) {
+                    throw new ResourceInitException(
+                                                     "Both ContextClass and ContextConfigLocation are missing from BootstrapApplicationContextHolderConfig" );
                 }
-                
-                context = new GenericXmlApplicationContext ( contextConfigLocation );
+
+                context = new GenericXmlApplicationContext( contextConfigLocation );
             }
-            
-            return new ApplicationContextHolder ( metadata, context );
+
+            return new ApplicationContextHolder( metadata, context );
         } catch ( Exception e ) {
-            throw new ResourceInitException ( "Couldn't build BootstrapApplicationContextHolder", e );
+            throw new ResourceInitException( "Couldn't build BootstrapApplicationContextHolder", e );
         }
     }
 

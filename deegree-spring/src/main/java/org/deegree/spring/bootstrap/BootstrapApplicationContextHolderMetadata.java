@@ -16,11 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BootstrapApplicationContextHolderMetadata extends AbstractResourceMetadata<ApplicationContextHolder> {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger( BootstrapApplicationContextHolderMetadata.class );
-    
+
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.spring.bootstrap.jaxb";
-    
+
     public BootstrapApplicationContextHolderMetadata( Workspace workspace,
                                                       ResourceLocation<ApplicationContextHolder> location,
                                                       AbstractResourceProvider<ApplicationContextHolder> provider ) {
@@ -30,17 +30,16 @@ public class BootstrapApplicationContextHolderMetadata extends AbstractResourceM
     @Override
     public ResourceBuilder<ApplicationContextHolder> prepare() {
         BootstrapApplicationContextHolderConfig config;
-        
+
         try {
-            config = (BootstrapApplicationContextHolderConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA,
-                                  location.getAsStream(), workspace );
+            config = (BootstrapApplicationContextHolderConfig) JAXBUtils.unmarshall( CONFIG_JAXB_PACKAGE,
+                                                                                     CONFIG_SCHEMA,
+                                                                                     location.getAsStream(), workspace );
         } catch ( Exception e ) {
             LOG.trace( "Stack trace:", e );
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
-        
+
         return new BootstrapApplicationContextHolderBuilder( this, config );
     }
 }
-
-

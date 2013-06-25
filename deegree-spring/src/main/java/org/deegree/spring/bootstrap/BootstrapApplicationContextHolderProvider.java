@@ -10,8 +10,9 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 public class BootstrapApplicationContextHolderProvider extends ApplicationContextHolderProvider {
-    
-    private static final String CONFIG_NS = "http://www.deegree.org/spring/bootstrap";    
+
+    private static final String CONFIG_NS = "http://www.deegree.org/spring/bootstrap";
+
     static final URL CONFIG_SCHEMA = BootstrapApplicationContextHolderProvider.class.getResource( "/META-INF/schemas/spring/3.4.0/bootstrap.xsd" );
 
     @Override
@@ -22,7 +23,7 @@ public class BootstrapApplicationContextHolderProvider extends ApplicationContex
     @Override
     public ResourceMetadata<ApplicationContextHolder> createFromLocation( Workspace workspace,
                                                                           ResourceLocation<ApplicationContextHolder> location ) {
-        return new BootstrapApplicationContextHolderMetadata ( workspace, location, this );
+        return new BootstrapApplicationContextHolderMetadata( workspace, location, this );
     }
 
     @Override
