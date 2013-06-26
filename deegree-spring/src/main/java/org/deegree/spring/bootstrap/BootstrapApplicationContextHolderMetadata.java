@@ -40,6 +40,6 @@ public class BootstrapApplicationContextHolderMetadata extends AbstractResourceM
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
 
-        return new BootstrapApplicationContextHolderBuilder( this, config );
+        return new BootstrapApplicationContextHolderBuilder( workspace.getModuleClassLoader(), this, config );
     }
 }
