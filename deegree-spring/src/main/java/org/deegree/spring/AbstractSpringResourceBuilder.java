@@ -52,11 +52,16 @@ public abstract class AbstractSpringResourceBuilder<T extends Resource> implemen
             }
         } else {
             final Map<String, B> beans = applicationContext.getBeansOfType( clazz );
-            if ( beans.size() == 1 ) {
+            switch ( beans.size() ) {
+            case 0:
+                throw new ResourceInitException( "No beans of type " + className
+                                                 + " found in ApplicationContext." );
+            case 1:
                 bean = beans.values().iterator().next();
 
                 LOG.info( "Single {} bean fetched from ApplicationContext.", className );
-            } else {
+                break;
+            default:
                 if ( conventionalBeanName != null ) {
                     if ( beans.containsKey( conventionalBeanName ) ) {
                         bean = beans.get( conventionalBeanName );
@@ -64,13 +69,13 @@ public abstract class AbstractSpringResourceBuilder<T extends Resource> implemen
                         LOG.info( "Multiple {} beans found in ApplicationContext, bean named '{}' selected.",
                                   className, conventionalBeanName );
                     } else {
-                        throw new ResourceInitException( "Multiple beans with type " + className
+                        throw new ResourceInitException( "Multiple beans of type " + className
                                                          + " are found in ApplicationContext, none of them are named '"
                                                          + conventionalBeanName
                                                          + "'. Suggestion: add bean name to configuration." );
                     }
                 } else {
-                    throw new ResourceInitException( "Multiple beans with type " + className
+                    throw new ResourceInitException( "Multiple beans of type " + className
                                                      + " are found in ApplicationContext." );
                 }
             }
