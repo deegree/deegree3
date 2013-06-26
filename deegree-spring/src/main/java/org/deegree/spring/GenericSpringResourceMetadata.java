@@ -14,6 +14,7 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
 public class GenericSpringResourceMetadata<T extends Resource> extends AbstractResourceMetadata<T> {
 
@@ -42,6 +43,11 @@ public class GenericSpringResourceMetadata<T extends Resource> extends AbstractR
                                                                                   location.getAsStream(), workspace );
             if ( element.getDeclaredType().equals( SingleBeanRef.class ) ) {
                 config = (SingleBeanRef) element.getValue();
+
+                final String applicationContextHolder = config.getApplicationContextHolder();
+                dependencies.add( new DefaultResourceIdentifier<ApplicationContextHolder>(
+                                                                                           ApplicationContextHolderProvider.class,
+                                                                                           applicationContextHolder ) );
             } else {
                 throw new ResourceInitException( "Wrong configuration object passed to GenericSpringResourceMetadata." );
             }
