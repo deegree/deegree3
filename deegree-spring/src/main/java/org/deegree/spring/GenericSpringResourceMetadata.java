@@ -49,6 +49,6 @@ public class GenericSpringResourceMetadata<T extends Resource> extends AbstractR
             throw new ResourceInitException( "Couldn't construct GenericSpringResourceBuilder.", e );
         }
 
-        return new GenericSpringResourceBuilder<T>( workspace, config, clazz );
+        return new GenericSpringResourceBuilder<T>( workspace, config, clazz, this );
     }
 }
