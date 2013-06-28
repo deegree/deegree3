@@ -242,13 +242,15 @@ public class DefaultWorkspace implements Workspace {
                     if ( fs[i].isFile() ) {
                         try {
                             URL url = fs[i].toURI().toURL();
-                            urls.add( url );
-                            ModuleInfo moduleInfo = ModuleInfo.extractModuleInfo( url );
-                            if ( moduleInfo != null ) {
-                                LOG.info( " - " + moduleInfo );
-                                wsModules.add( moduleInfo );
-                            } else {
-                                LOG.info( " - " + fs[i] + " (non-deegree)" );
+                            if ( url.getFile().endsWith( ".jar" ) ) {
+                                urls.add( url );
+                                ModuleInfo moduleInfo = ModuleInfo.extractModuleInfo( url );
+                                if ( moduleInfo != null ) {
+                                    LOG.info( " - " + moduleInfo );
+                                    wsModules.add( moduleInfo );
+                                } else {
+                                    LOG.info( " - " + fs[i] + " (non-deegree)" );
+                                }
                             }
                         } catch ( Exception e ) {
                             LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
