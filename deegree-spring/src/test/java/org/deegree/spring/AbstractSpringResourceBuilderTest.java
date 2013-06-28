@@ -1,13 +1,13 @@
 package org.deegree.spring;
 
-import org.deegree.workspace.Resource;
+import org.deegree.spring.TestContext.ContentBean;
+import org.deegree.spring.TestContext.NoBean;
+import org.deegree.spring.TestContext.SingleBean;
+
 import org.deegree.workspace.ResourceInitException;
-import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,69 +20,7 @@ import static org.mockito.Mockito.when;
 
 public class AbstractSpringResourceBuilderTest {
 
-    static abstract class TestResource implements Resource {
-
-        @Override
-        public void destroy() {
-
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public ResourceMetadata<? extends Resource> getMetadata() {
-            return mock( ResourceMetadata.class );
-        }
-
-        @Override
-        public void init() {
-
-        }
-    }
-
-    static class NoBean extends TestResource {
-    }
-
-    static class SingleBean extends TestResource {
-    }
-
-    static class ContentBean extends TestResource {
-
-        final String content;
-
-        ContentBean( final String content ) {
-            this.content = content;
-        }
-
-        String getContent() {
-            return content;
-        }
-    }
-
-    @Configuration
-    static class Config {
-
-        @Bean
-        public SingleBean singleBean() {
-            return new SingleBean();
-        }
-
-        @Bean
-        public ContentBean contentBean0() {
-            return new ContentBean( "contentBean0" );
-        }
-
-        @Bean
-        public ContentBean contentBean1() {
-            return new ContentBean( "contentBean1" );
-        }
-
-        @Bean
-        public ContentBean contentBean() {
-            return new ContentBean( "contentBean" );
-        }
-    }
-
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext( Config.class );
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext( TestContext.class );
 
     ApplicationContextHolder contextHolder = new ApplicationContextHolder( null, context );
 
