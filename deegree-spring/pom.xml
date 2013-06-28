@@ -6,6 +6,7 @@
     <version>3.4-pre3-SNAPSHOT</version>
   </parent>
   <artifactId>deegree-spring</artifactId>
+  <description>deegree Spring framework integration module</description>
   
   <build>
     <plugins>
@@ -17,6 +18,7 @@
   </build>
   
   <properties>
+    <deegree.module.status>ok</deegree.module.status>  
   	<spring.version>3.2.3.RELEASE</spring.version>
   </properties>
   
