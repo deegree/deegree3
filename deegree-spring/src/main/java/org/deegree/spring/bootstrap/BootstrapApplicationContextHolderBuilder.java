@@ -51,6 +51,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+/** 
+ * The BootstrapApplicationContextHolderBuilder bootstraps a
+ * Spring {@link org.springframework.context.ApplicationContext} and
+ * wraps it in an {@link org.deegree.spring.ApplicationContextHolder}
+ * 
+ * This builder is the deegree workspace equivalent of Spring classes like
+ * {@link org.springframework.web.servlet.FrameworkServlet}, 
+ * {@link org.springframework.web.context.ContextLoaderListener} or
+ * other Spring classes that construct a root
+ * {@link org.springframework.context.ApplicationContext}.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class BootstrapApplicationContextHolderBuilder implements ResourceBuilder<ApplicationContextHolder> {
     
     private static final Logger LOG = LoggerFactory.getLogger( BootstrapApplicationContextHolderBuilder.class );

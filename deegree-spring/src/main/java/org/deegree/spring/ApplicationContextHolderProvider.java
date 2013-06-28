@@ -42,6 +42,16 @@ package org.deegree.spring;
 
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
+/**
+ * An ApplicationContextHolderProvider is responsible for constructing 
+ * an {@link ApplicationContextHolder} containing an
+ * {@link org.springframework.context.ApplicationContext}.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public abstract class ApplicationContextHolderProvider extends AbstractResourceProvider<ApplicationContextHolder> {
 
 }

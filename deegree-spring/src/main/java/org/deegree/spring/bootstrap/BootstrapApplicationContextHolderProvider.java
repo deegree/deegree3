@@ -49,6 +49,17 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
+/** 
+ * BootstrapApplicationContextHolderProvider provides a
+ * {@link org.deegree.spring.bootstrap.BootstrapApplicationContextHolderMetadata} object
+ * which is subsequently used to construct a 
+ * {@link org.deegree.spring.bootstrap.BootstrapApplicationContextHolderBuilder}.  
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class BootstrapApplicationContextHolderProvider extends ApplicationContextHolderProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/spring/bootstrap";

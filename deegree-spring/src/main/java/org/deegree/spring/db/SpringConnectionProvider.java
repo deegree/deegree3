@@ -49,6 +49,20 @@ import org.deegree.sqldialect.SQLDialect;
 
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+/**
+ * A SpringConnectionProvider provides a {@link java.sql.Connection} from a
+ * {@link javax.sql.DataSource} available as bean within the configured 
+ * application context using 
+ * {@link org.springframework.jdbc.datasource.DataSourceUtils}. 
+ * 
+ * The {@link org.deegree.sqldialect.SQLDialect} is also
+ * expected to be available as bean.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class SpringConnectionProvider implements ConnectionProvider {
 
     private final SpringConnectionProviderMetadata metadata;

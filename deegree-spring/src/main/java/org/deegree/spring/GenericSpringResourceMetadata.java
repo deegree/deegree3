@@ -56,6 +56,18 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
+/**
+ * A GenericSpringResourceMetadata is to be used as the 
+ * {@link org.deegree.workspace.ResourceMetadata} for resources
+ * provided by {@link org.deegree.spring.GenericSpringResourceBuilder}.
+ * It registers the configured 
+ * {@link org.deegree.spring.ApplicationContextHolder} as dependency.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class GenericSpringResourceMetadata<T extends Resource> extends AbstractResourceMetadata<T> {
 
     private final String configJaxbPackage;

@@ -55,6 +55,16 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** 
+ * BootstrapApplicationContextHolderMetadata is used as
+ * {@link org.deegree.workspace.ResourceMetadata} by 
+ * {@link org.deegree.spring.bootstrap.BootstrapApplicationContextHolderProvider}.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class BootstrapApplicationContextHolderMetadata extends AbstractResourceMetadata<ApplicationContextHolder> {
 
     private static final Logger LOG = LoggerFactory.getLogger( BootstrapApplicationContextHolderMetadata.class );

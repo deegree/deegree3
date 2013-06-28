@@ -47,6 +47,17 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 
+/** 
+ * SpringConnectionProviderProvider provides a
+ * {@link org.deegree.spring.db.SpringConnectionProviderMetadata} object
+ * which is subsequently used to construct a 
+ * {@link org.deegree.spring.db.SpringConnectionProviderBuilder}.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class SpringConnectionProviderProvider extends ConnectionProviderProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/spring/db";

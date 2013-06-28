@@ -46,6 +46,15 @@ import org.deegree.workspace.ResourceMetadata;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * The ApplicationContextHolder is a deegree {@link org.deegree.workspace.Resource}
+ * that contains a Spring {@link org.springframework.context.ApplicationContext}.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class ApplicationContextHolder implements Resource {
 
     private final ResourceMetadata<ApplicationContextHolder> metadata;

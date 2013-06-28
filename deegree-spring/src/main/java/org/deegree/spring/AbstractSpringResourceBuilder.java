@@ -52,6 +52,17 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.context.ApplicationContext;
 
+/**
+ * The AbstractSpringResourceBuilder can be extended in order to create a 
+ * {@link org.deegree.workspace.ResourceBuilder} that fetches beans from 
+ * the {@link org.springframework.context.ApplicationContext} contained in 
+ * the specified {@link org.deegree.spring.ApplicationContextHolder}. 
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public abstract class AbstractSpringResourceBuilder<T extends Resource> implements ResourceBuilder<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractSpringResourceBuilder.class );
@@ -60,19 +71,53 @@ public abstract class AbstractSpringResourceBuilder<T extends Resource> implemen
 
     private final String applicationContextHolderId;
 
+    /**
+     * Creates an AbstractSpringResourceBuilder for a given workspace and application context holder.
+     * 
+     * @param workspace A reference to the current workspace.
+     * @param applicationContextHolderId The resource identifier of the application context holder.
+     */
     public AbstractSpringResourceBuilder( final Workspace workspace, final String applicationContextHolderId ) {
         this.workspace = workspace;
         this.applicationContextHolderId = applicationContextHolderId;
     }
 
+    /**
+     * Get a bean for a given type.
+     * 
+     * @param clazz The type of bean to fetch.
+     * @throws org.deegree.workspace.ResourceInitException if there is not 
+     * exactly one single bean of given type. 
+     * @return A bean.
+     */
     protected <B> B getBean( final Class<B> clazz ) {
         return getBean( clazz, null );
     }
 
+    /**
+     * Get a bean for a given name and type.
+     * 
+     * @param clazz The type of bean to fetch.
+     * @param beanName The name of the bean. Allowed to be null.
+     * @throws org.deegree.workspace.ResourceInitException if the requested
+     * bean does not exist.
+     * @return A bean.
+     */
     protected <B> B getBean( final Class<B> clazz, final String beanName ) {
         return getBean( clazz, beanName, null );
     }
 
+    /**
+     * Get a bean for a given name and type. 
+     * 
+     * @param clazz The type of bean to fetch.
+     * @param beanName The name of the bean. Allowed to be null.
+     * @param conventionalBeanName The conventional Spring name of this type of bean. 
+     * Allowed to be null. Only used in case beanName is null.
+     * @throws org.deegree.workspace.ResourceInitException if the requested
+     * bean does not exist.
+     * @return A bean.
+     */
     protected <B> B getBean( final Class<B> clazz, final String beanName, final String conventionalBeanName ) {
         final String className = clazz.getCanonicalName();
 
@@ -106,11 +151,11 @@ public abstract class AbstractSpringResourceBuilder<T extends Resource> implemen
                     if ( beans.containsKey( conventionalBeanName ) ) {
                         bean = beans.get( conventionalBeanName );
 
-                        LOG.info( "Multiple {} beans found in ApplicationContext, bean named '{}' selected.",
+                        LOG.info( "Multiple {} beans found in ApplicationContext, bean named '{}' selected by convention.",
                                   className, conventionalBeanName );
                     } else {
                         throw new ResourceInitException( "Multiple beans of type " + className
-                                                         + " are found in ApplicationContext, none of them are named '"
+                                                         + " are found in ApplicationContext, none of bares the conventional name '"
                                                          + conventionalBeanName
                                                          + "'. Suggestion: add bean name to configuration." );
                     }

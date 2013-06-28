@@ -51,6 +51,15 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SpringConnectionProviderBuilder is used to build a 
+ * @{link org.deegree.spring.db.SpringConnectionProvider}.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class SpringConnectionProviderBuilder extends AbstractSpringResourceBuilder<ConnectionProvider> {
 
     private static final Logger LOG = LoggerFactory.getLogger( SpringConnectionProviderBuilder.class );

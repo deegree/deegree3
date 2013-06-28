@@ -57,6 +57,18 @@ import org.deegree.spring.db.jaxb.SpringConnectionProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SpringConnectionProviderMetadata is used as the 
+ * {@link org.deegree.workspace.ResourceMetadata} by the
+ * {@link org.deegree.spring.db.SpringConnectionProviderProvider}
+ * It registers the configured 
+ * {@link org.deegree.spring.ApplicationContextHolder} as dependency.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class SpringConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
     private static final Logger LOG = LoggerFactory.getLogger( SpringConnectionProviderMetadata.class );

@@ -49,6 +49,16 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 
+/** 
+ * SpringOWSMetadataProviderProvider enables a bean implementing
+ * {@link org.deegree.services.metadata.OWSMetadataProvider}
+ * to be used within a deegree workspace.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class SpringOWSMetadataProviderProvider extends OWSMetadataProviderProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/spring/metadata";

@@ -40,9 +40,23 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
 
+/**
+ * Identifies the field where {@link org.deegree.spring.GenericSpringResourceBuilder} should 
+ * inject the reference to {@link org.deegree.spring.GenericSpringResourceMetadata}. 
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+@Documented
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InjectMetadata {
 

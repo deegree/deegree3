@@ -43,6 +43,16 @@ package org.deegree.spring;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 
+/**
+ * The ApplicationContextHolderManager manages the
+ * {@link org.deegree.spring.ApplicationContextHolder} resources within 
+ * a deegree workspace.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class ApplicationContextHolderManager extends DefaultResourceManager<ApplicationContextHolder> {
 
     public ApplicationContextHolderManager() {

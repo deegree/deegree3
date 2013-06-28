@@ -52,6 +52,15 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A GenericSpringResourceBuilder can be used to provide a single bean 
+ * as deegree workspace resource.
+ * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
 public class GenericSpringResourceBuilder<T extends Resource> extends AbstractSpringResourceBuilder<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger( GenericSpringResourceBuilder.class );
@@ -62,6 +71,14 @@ public class GenericSpringResourceBuilder<T extends Resource> extends AbstractSp
 
     private final GenericSpringResourceMetadata<T> metadata;
 
+    /**
+     * Creates a GenericSpringResourceBuilder for a given workspace bean reference.
+     * 
+     * @param workspace A reference to the current workspace.
+     * @param singleBeanRef A configuration snippet containing the reference to the bean.
+     * @param clazz The type of the bean.
+     * @param metadata The metadata to be associated with the bean.
+     */
     public GenericSpringResourceBuilder( final Workspace workspace, final SingleBeanRef singleBeanRef,
                                          final Class<T> clazz, final GenericSpringResourceMetadata<T> metadata ) {
         super( workspace, singleBeanRef.getApplicationContextHolder() );
@@ -76,6 +93,7 @@ public class GenericSpringResourceBuilder<T extends Resource> extends AbstractSp
         final T t = getBean( clazz, beanName );
 
         try {
+            // Wire the the metadata in the bean.
             for ( Field f : t.getClass().getDeclaredFields() ) {
                 if ( f.getAnnotation( InjectMetadata.class ) != null ) {
                     f.setAccessible( true );
