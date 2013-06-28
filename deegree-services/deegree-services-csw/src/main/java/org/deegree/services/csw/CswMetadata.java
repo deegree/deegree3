@@ -32,7 +32,10 @@ import org.deegree.metadata.persistence.MetadataStoreManager;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.services.OWS;
 import org.deegree.services.jaxb.csw.DeegreeCSW;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
@@ -68,6 +71,14 @@ public class CswMetadata extends AbstractResourceMetadata<OWS> {
             } else {
                 for ( ResourceMetadata<?> md : workspace.getResourceManager( MetadataStoreManager.class ).getResourceMetadata() ) {
                     softDependencies.add( md.getIdentifier() );
+                }
+            }
+            
+            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
+                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
+                    softDependencies.add( mdId );
                 }
             }
 

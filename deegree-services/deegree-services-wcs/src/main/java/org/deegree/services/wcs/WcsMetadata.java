@@ -32,9 +32,13 @@ import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageProvider;
 import org.deegree.services.OWS;
 import org.deegree.services.jaxb.wcs.DeegreeWCS;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
@@ -62,6 +66,14 @@ public class WcsMetadata extends AbstractResourceMetadata<OWS> {
             for ( org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage cov : cfg.getServiceConfiguration().getCoverage() ) {
                 String id = cov.getCoverageStoreId();
                 dependencies.add( new DefaultResourceIdentifier<Coverage>( CoverageProvider.class, id ) );
+            }
+            
+            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
+                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
+                    softDependencies.add( mdId );
+                }
             }
 
             return new WcsBuilder( this, workspace, cfg );
