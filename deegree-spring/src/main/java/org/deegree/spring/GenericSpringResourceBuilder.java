@@ -37,7 +37,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.spring;
 
 import java.lang.reflect.Field;
@@ -53,8 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A GenericSpringResourceBuilder can be used to provide a single bean 
- * as deegree workspace resource.
+ * A GenericSpringResourceBuilder can be used to provide a single bean as deegree workspace resource.
  * 
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
  * @author last edited by: $Author$
@@ -74,10 +73,14 @@ public class GenericSpringResourceBuilder<T extends Resource> extends AbstractSp
     /**
      * Creates a GenericSpringResourceBuilder for a given workspace bean reference.
      * 
-     * @param workspace A reference to the current workspace.
-     * @param singleBeanRef A configuration snippet containing the reference to the bean.
-     * @param clazz The type of the bean.
-     * @param metadata The metadata to be associated with the bean.
+     * @param workspace
+     *            A reference to the current workspace.
+     * @param singleBeanRef
+     *            A configuration snippet containing the reference to the bean.
+     * @param clazz
+     *            The type of the bean.
+     * @param metadata
+     *            The metadata to be associated with the bean.
      */
     public GenericSpringResourceBuilder( final Workspace workspace, final SingleBeanRef singleBeanRef,
                                          final Class<T> clazz, final GenericSpringResourceMetadata<T> metadata ) {
@@ -88,18 +91,27 @@ public class GenericSpringResourceBuilder<T extends Resource> extends AbstractSp
         this.metadata = metadata;
     }
 
+    private void wireMetadata( Class<?> clazz, Object o )
+                            throws IllegalArgumentException, IllegalAccessException {
+
+        for ( Field f : clazz.getDeclaredFields() ) {
+            if ( f.getAnnotation( InjectMetadata.class ) != null ) {
+                f.setAccessible( true );
+                f.set( o, metadata );
+            }
+        }
+
+        if ( !clazz.equals( Object.class ) ) {
+            wireMetadata( clazz.getSuperclass(), o );
+        }
+    }
+
     @Override
     public T build() {
         final T t = getBean( clazz, beanName );
 
         try {
-            // Wire the the metadata in the bean.
-            for ( Field f : t.getClass().getDeclaredFields() ) {
-                if ( f.getAnnotation( InjectMetadata.class ) != null ) {
-                    f.setAccessible( true );
-                    f.set( t, metadata );
-                }
-            }
+            wireMetadata( t.getClass(), t );
         } catch ( Exception e ) {
             LOG.debug( "Couldn't inject metadata.", e );
             throw new ResourceInitException( "Couldn't inject metadata.", e );

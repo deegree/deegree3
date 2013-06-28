@@ -40,8 +40,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring;
 
-import java.net.URL;
-
 import javax.xml.bind.JAXBElement;
 
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -72,17 +70,14 @@ public class GenericSpringResourceMetadata<T extends Resource> extends AbstractR
 
     private final String configJaxbPackage;
 
-    private final URL configSchema;
-
     private final Class<T> clazz;
 
     public GenericSpringResourceMetadata( final Workspace workspace, final ResourceLocation<T> location,
                                           final AbstractResourceProvider<T> provider, final String configJaxbPackage,
-                                          final URL configSchema, final Class<T> clazz ) {
+                                          final Class<T> clazz ) {
         super( workspace, location, provider );
 
-        this.configJaxbPackage = configJaxbPackage;
-        this.configSchema = configSchema;
+        this.configJaxbPackage = configJaxbPackage;        
         this.clazz = clazz;
     }
 
@@ -91,7 +86,7 @@ public class GenericSpringResourceMetadata<T extends Resource> extends AbstractR
         final SingleBeanRef config;
 
         try {
-            final JAXBElement<?> element = (JAXBElement<?>) JAXBUtils.unmarshall( configJaxbPackage, configSchema,
+            final JAXBElement<?> element = (JAXBElement<?>) JAXBUtils.unmarshall( configJaxbPackage, provider.getSchema(),
                                                                                   location.getAsStream(), workspace );
             if ( element.getDeclaredType().equals( SingleBeanRef.class ) ) {
                 config = (SingleBeanRef) element.getValue();

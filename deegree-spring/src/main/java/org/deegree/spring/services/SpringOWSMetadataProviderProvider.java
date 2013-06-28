@@ -76,8 +76,7 @@ public class SpringOWSMetadataProviderProvider extends OWSMetadataProviderProvid
     public ResourceMetadata<OWSMetadataProvider> createFromLocation( Workspace workspace,
                                                                      ResourceLocation<OWSMetadataProvider> location ) {
 
-        return new GenericSpringResourceMetadata<OWSMetadataProvider>( workspace, location, this, CONFIG_JAXB_PACKAGE,
-                                                                       CONFIG_SCHEMA, OWSMetadataProvider.class );
+        return new GenericSpringResourceMetadata<OWSMetadataProvider>( workspace, location, this, CONFIG_JAXB_PACKAGE, OWSMetadataProvider.class );
     }
 
     @Override
