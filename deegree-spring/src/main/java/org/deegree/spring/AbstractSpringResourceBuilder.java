@@ -155,7 +155,7 @@ public abstract class AbstractSpringResourceBuilder<T extends Resource> implemen
                                   className, conventionalBeanName );
                     } else {
                         throw new ResourceInitException( "Multiple beans of type " + className
-                                                         + " are found in ApplicationContext, none of bares the conventional name '"
+                                                         + " are found in ApplicationContext, none of them bares the conventional name '"
                                                          + conventionalBeanName
                                                          + "'. Suggestion: add bean name to configuration." );
                     }
