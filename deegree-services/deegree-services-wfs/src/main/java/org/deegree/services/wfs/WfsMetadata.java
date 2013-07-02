@@ -38,7 +38,10 @@ import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.OwsManager;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
@@ -88,6 +91,14 @@ public class WfsMetadata extends AbstractResourceMetadata<OWS> {
                     if ( name.equalsIgnoreCase( "CSW" ) ) {
                         softDependencies.add( md.getIdentifier() );
                     }
+                }
+            }
+
+            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
+                ResourceIdentifier<OWSMetadataProvider> id = md.getIdentifier();
+                if ( id.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
+                    softDependencies.add( id );
                 }
             }
 
