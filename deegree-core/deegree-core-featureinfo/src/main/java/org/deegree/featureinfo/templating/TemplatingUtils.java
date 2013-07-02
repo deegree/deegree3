@@ -92,13 +92,14 @@ public class TemplatingUtils {
             HashMap<String, Object> defs = (HashMap) parser.definitions();
 
             StringBuilder sb = new StringBuilder();
-            new PropertyTemplateCall( "start", singletonList( "*" ), false ).eval( sb, defs, col, geometries );
+            new PropertyTemplateCall( "start", singletonList( "*" ), false, false ).eval( sb, defs, col, geometries );
             out.println( sb.toString() );
-        } catch ( Throwable e ) {
+        } catch ( Exception e ) {
+            e.printStackTrace();
             if ( fiFile == null ) {
                 LOG.error( "Could not load internal template for GFI response." );
             } else {
-                LOG.error( "Could not load template '{}' for GFI response.", fiFile );
+                LOG.error( "Could not load template '{}' for GFI response: " + e.getLocalizedMessage(), fiFile );
             }
             LOG.trace( "Stack trace:", e );
         } finally {

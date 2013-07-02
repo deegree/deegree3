@@ -47,9 +47,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import junit.framework.Assert;
-
 import org.deegree.feature.FeatureCollection;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

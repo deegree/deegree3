@@ -82,7 +82,7 @@ public class OddEven {
             new FeatureTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
         }
         if ( obj instanceof Property ) {
-            new PropertyTemplateCall( name, singletonList( "*" ), false ).eval( sb, defs, obj, geometries );
+            new PropertyTemplateCall( name, singletonList( "*" ), false, false ).eval( sb, defs, obj, geometries );
         }
     }
 

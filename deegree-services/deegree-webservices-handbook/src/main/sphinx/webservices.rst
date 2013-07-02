@@ -478,47 +478,50 @@ Templating special constructs
 
 This section shows all available special constructs. The selectors are explained in the table below. The validity describes in which context the construct can be used (and where the description applies). The validity can be one of *top level* (which means it's the definition of something), *featurecollection* (the ``start`` template), *feature* (a template on feature level), *property* (a template on property level) or *map* (a map definition).
 
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| Construct                     | Validity          | Description                                                                                     |
-+===============================+===================+=================================================================================================+
-| <?template *name*>            | top level         | defines a template with name *name*                                                             |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?map *name*>                 | top level         | defines a map with name *name*                                                                  |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?feature *selector*:*name*>  | featurecollection | calls the template with name *name* for features matching the selector *selector*               |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?property *selector*:*name*> | feature           | calls the template with name *name* for properties matching the selector *selector*             |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?name>                       | feature           | evaluates to the feature type name                                                              |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?name>                       | property          | evaluates to the property name                                                                  |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?name:map *name*>            | feature           | uses the map *name* to map the feature type name to a value                                     |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?name:map *name*>            | property          | uses the map *name* to map the property name to a value                                         |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?value>                      | property          | evaluates to the property's value                                                               |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?value:map *name*>           | property          | uses the map *name* to map the property's value to another value                                |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?index>                      | feature           | evaluates to the index of the feature (in the list of matches from the previous template call)  |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?index>                      | property          | evaluates to the index of the property (in the list of matches from the previous template call) |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?gmlid>                      | feature           | evaluates to the feature's gml:id                                                               |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?odd:*name*>                 | feature           | calls the *name* template if the index of the current feature is odd                            |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?odd:*name*>                 | property          | calls the *name* template if the index of the current property is odd                           |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?even:*name*>                | feature           | calls the *name* template if the index of the current feature is even                           |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?even:*name*>                | property          | calls the *name* template if the index of the current property is even                          |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link:*prefix*:>             | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
-| <?link:*prefix*:*text*>       | property          | the text of the link will be *text* instead of the link address                                 |
-+-------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| Construct                          | Validity          | Description                                                                                     |
++====================================+===================+=================================================================================================+
+| <?template *name*>                 | top level         | defines a template with name *name*                                                             |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?map *name*>                      | top level         | defines a map with name *name*                                                                  |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?feature *selector*:*name*>       | featurecollection | calls the template with name *name* for features matching the selector *selector*               |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?property *selector*:*name*>      | feature           | calls the template with name *name* for properties matching the selector *selector*             |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?forceproperty *selector*:*name*> | feature           | calls the template with name *name* for properties matching the selector *selector*.            |
+|                                    |                   | Matches also properties that are not actually contained in the feature.                         |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name>                            | feature           | evaluates to the feature type name                                                              |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name>                            | property          | evaluates to the property name                                                                  |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name:map *name*>                 | feature           | uses the map *name* to map the feature type name to a value                                     |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?name:map *name*>                 | property          | uses the map *name* to map the property name to a value                                         |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?value>                           | property          | evaluates to the property's value                                                               |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?value:map *name*>                | property          | uses the map *name* to map the property's value to another value                                |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?index>                           | feature           | evaluates to the index of the feature (in the list of matches from the previous template call)  |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?index>                           | property          | evaluates to the index of the property (in the list of matches from the previous template call) |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?gmlid>                           | feature           | evaluates to the feature's gml:id                                                               |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?odd:*name*>                      | feature           | calls the *name* template if the index of the current feature is odd                            |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?odd:*name*>                      | property          | calls the *name* template if the index of the current property is odd                           |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?even:*name*>                     | feature           | calls the *name* template if the index of the current feature is even                           |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?even:*name*>                     | property          | calls the *name* template if the index of the current property is even                          |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?link:*prefix*:>                  | property          | if the value of the property is not an absolute link, the prefix is prepended                   |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
+| <?link:*prefix*:*text*>            | property          | the text of the link will be *text* instead of the link address                                 |
++------------------------------------+-------------------+-------------------------------------------------------------------------------------------------+
 
 The selector for properties and features is a kind of pattern matching on the object's name.
 

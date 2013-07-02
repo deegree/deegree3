@@ -1,0 +1,17 @@
+<?template start>
+<html>
+  <head>
+    <title>force property test</title>
+  </head>
+  <body>
+  <ol>
+  <?feature *:featuretmpl>
+  </ol>
+  </body>
+</html>
+
+<?template featuretmpl>
+<li><?forceproperty test:propertytmpl></li>
+
+<?template propertytmpl>
+<?name>
