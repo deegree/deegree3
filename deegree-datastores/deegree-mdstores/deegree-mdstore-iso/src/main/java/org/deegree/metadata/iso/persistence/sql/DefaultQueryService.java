@@ -78,6 +78,8 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     private static final int DEFAULT_FETCH_SIZE = 100;
 
+    private static final int QUERY_TIMEOUT_MS = 300000;
+
     public DefaultQueryService( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
@@ -177,7 +179,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
 
             String sql = outerSelect.toString();
             LOG.trace( sql );
-            preparedStatement = conn.prepareStatement( sql );
+            preparedStatement = createPreparedStatement( conn, sql );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
@@ -233,7 +235,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
             String sql = getDatasetIDs.toString();
             LOG.trace( sql );
 
-            preparedStatement = conn.prepareStatement( sql );
+            preparedStatement = createPreparedStatement( conn, sql );
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
@@ -275,7 +277,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
 
             String sql = select.toString();
             LOG.trace( sql );
-            stmt = conn.prepareStatement( sql );
+            stmt = createPreparedStatement( conn, sql );
             stmt.setFetchSize( DEFAULT_FETCH_SIZE );
             LOG.debug( "select RecordById statement: " + stmt );
 
@@ -305,4 +307,12 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
         return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
                                         (OperatorFilter) query.getFilter(), query.getSorting(), false );
     }
+
+    protected PreparedStatement createPreparedStatement( Connection conn, String sql )
+                            throws SQLException {
+        PreparedStatement preparedStatement = conn.prepareStatement( sql );
+        preparedStatement.setQueryTimeout( QUERY_TIMEOUT_MS );
+        return preparedStatement;
+    }
+
 }
