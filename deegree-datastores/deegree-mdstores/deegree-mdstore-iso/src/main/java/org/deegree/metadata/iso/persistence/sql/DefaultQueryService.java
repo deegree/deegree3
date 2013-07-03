@@ -44,8 +44,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
@@ -78,6 +80,8 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     private static final int DEFAULT_FETCH_SIZE = 100;
 
+    private static final int QUERY_TIMEOUT_MS = 300000;
+
     public DefaultQueryService( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
@@ -85,6 +89,8 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
     @Override
     public ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
                             throws MetadataStoreException {
+        List<TypedObjectNode> arguments = new ArrayList<TypedObjectNode>();
+        String sql = null;
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -175,31 +181,32 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
                 outerSelect.append( sortCols );
             }
 
-            String sql = outerSelect.toString();
-            LOG.trace( sql );
-            preparedStatement = conn.prepareStatement( sql );
+            sql = outerSelect.toString();
+            preparedStatement = createPreparedStatement( conn, sql );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
                     o.setArgument( preparedStatement, i++ );
+                    arguments.add( o.getValue() );
                 }
             }
 
             if ( builder.getOrderBy() != null ) {
                 for ( SQLArgument o : builder.getOrderBy().getArguments() ) {
                     o.setArgument( preparedStatement, i++ );
+                    arguments.add( o.getValue() );
                 }
             }
-            LOG.debug( preparedStatement.toString() );
+            logSqlAndArguments( preparedStatement, sql, arguments );
 
             preparedStatement.setFetchSize( DEFAULT_FETCH_SIZE );
             rs = preparedStatement.executeQuery();
             return new ISOMetadataResultSet( rs, conn, preparedStatement );
         } catch ( SQLException e ) {
             JDBCUtils.close( rs, preparedStatement, conn, LOG );
+            logSqlExceptionWithSqlAndArguments( e, sql, arguments );
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
-            LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } catch ( Throwable t ) {
             JDBCUtils.close( rs, preparedStatement, conn, LOG );
@@ -218,6 +225,8 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
                             throws MetadataStoreException, FilterEvaluationException, UnmappableException {
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
+        List<TypedObjectNode> arguments = new ArrayList<TypedObjectNode>();
+        String sql = null;
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query, conn );
             LOG.debug( "new Counting" );
@@ -230,24 +239,24 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
             getDatasetIDs.append( "))" );
             getPSBody( builder, getDatasetIDs );
 
-            String sql = getDatasetIDs.toString();
-            LOG.trace( sql );
+            sql = getDatasetIDs.toString();
 
-            preparedStatement = conn.prepareStatement( sql );
+            preparedStatement = createPreparedStatement( conn, sql );
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
                     o.setArgument( preparedStatement, i++ );
+                    arguments.add( o.getValue() );
                 }
             }
-            LOG.debug( preparedStatement.toString() );
+            logSqlAndArguments( preparedStatement, sql, arguments );
             rs = preparedStatement.executeQuery();
             rs.next();
             LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
             return rs.getInt( 1 );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
-            LOG.debug( msg );
+            logSqlExceptionWithSqlAndArguments( e, sql, arguments );
             throw new MetadataStoreException( msg );
         } finally {
             JDBCUtils.close( rs, preparedStatement, conn, LOG );
@@ -274,11 +283,10 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
             }
 
             String sql = select.toString();
-            LOG.trace( sql );
-            stmt = conn.prepareStatement( sql );
+            stmt = createPreparedStatement( conn, sql );
             stmt.setFetchSize( DEFAULT_FETCH_SIZE );
             LOG.debug( "select RecordById statement: " + stmt );
-
+            LOG.trace( sql );
             int i = 1;
             for ( String identifier : idList ) {
                 stmt.setString( i, identifier );
@@ -305,4 +313,45 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
         return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
                                         (OperatorFilter) query.getFilter(), query.getSorting(), false );
     }
+
+    protected PreparedStatement createPreparedStatement( Connection conn, String sql )
+                            throws SQLException {
+        PreparedStatement preparedStatement = conn.prepareStatement( sql );
+        preparedStatement.setQueryTimeout( QUERY_TIMEOUT_MS );
+        return preparedStatement;
+    }
+
+    protected void logSqlAndArguments( PreparedStatement preparedStatement, String sql, List<TypedObjectNode> arguments ) {
+        if ( LOG.isDebugEnabled() ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Performing SQL statement: \n" );
+            sb.append( "   " ).append( sql ).append( "\n" );
+            sb.append( "with argumens: \n" );
+            appendArguments( arguments, sb );
+            LOG.debug( sb.toString() );
+        }
+        if ( LOG.isTraceEnabled() )
+            LOG.trace( preparedStatement.toString() );
+    }
+
+    private void logSqlExceptionWithSqlAndArguments( SQLException e, String sql, List<TypedObjectNode> arguments ) {
+        if ( LOG.isErrorEnabled() ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Error while performing the SQL statement: \n" );
+            sb.append( "   " ).append( sql ).append( "\n" );
+            sb.append( "with arguments \n" );
+            appendArguments( arguments, sb );
+            sb.append( "error message: " );
+            sb.append( e.getMessage() );
+            LOG.error( sb.toString() );
+        }
+    }
+
+    private void appendArguments( List<TypedObjectNode> arguments, StringBuilder sb ) {
+        for ( TypedObjectNode argument : arguments ) {
+            String argumentValue = argument != null ? argument.toString() : "NULL";
+            sb.append( "   - " ).append( argumentValue ).append( "\n" );
+        }
+    }
+
 }
