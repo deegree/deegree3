@@ -39,7 +39,6 @@ import static org.deegree.commons.utils.JavaUtils.generateToString;
 import static org.deegree.featureinfo.templating.lang.Util.getMatchingObjects;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -176,14 +175,20 @@ public class PropertyTemplateCall {
         List<Property> inputProps = ( (Feature) obj ).getProperties();
         Property[] propArray = inputProps.toArray( new Property[inputProps.size()] );
 
-        List<Property> props;
-        if ( !force ) {
-            props = getMatchingObjects( propArray, patterns, negate, geometries );
-        } else {
-            props = new ArrayList<Property>();
+        List<Property> props = getMatchingObjects( propArray, patterns, negate, geometries );
+        if ( force ) {
+            HashSet<QName> names = new HashSet<QName>();
+            for ( Property p : props ) {
+                names.add( p.getName() );
+            }
+            int idx = 0;
             for ( String p : patterns ) {
-                SimplePropertyType tp = new SimplePropertyType( new QName( p ), 0, 0, BaseType.STRING, null, null );
-                props.add( new SimpleProperty( tp, "" ) );
+                QName nm = new QName( p );
+                if ( !names.contains( nm ) ) {
+                    SimplePropertyType tp = new SimplePropertyType( nm, 0, 0, BaseType.STRING, null, null );
+                    props.add( idx, new SimpleProperty( tp, "" ) );
+                }
+                ++idx;
             }
         }
 
