@@ -1,0 +1,4 @@
+<rim:Association xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"
+	xmlns="http://www.isotc211.org/2005/gmd" associationType="urn:x-ogc:specification:csw-ebrim:AssociationType:EO:AcquiredBy"
+	sourceObject="urn:ogc:def:EOP:RE00:MSI_IMG_3A:5397721:eo" targetObject="urn:ogc:def:EOP:RE00:MSI_IMG_3A:5397721:eoap"
+	id="AcquiredBy_5397721" />
