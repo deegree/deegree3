@@ -62,14 +62,14 @@ public class Association extends RegistryObject {
      * @return the sourceObject
      */
     public String getSourceObject() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@targetObject", ns ) );
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@sourceObject", ns ) );
     }
 
     /**
      * @return the targetObject
      */
     public String getTargetObject() {
-        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@sourceObject", ns ) );
+        return adapter.getRequiredNodeAsString( adapter.getRootElement(), new XPath( "@targetObject", ns ) );
     }
 
     /**
