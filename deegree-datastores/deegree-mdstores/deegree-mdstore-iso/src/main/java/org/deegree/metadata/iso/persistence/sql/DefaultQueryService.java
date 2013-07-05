@@ -80,7 +80,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
     private static final int DEFAULT_FETCH_SIZE = 100;
 
-    private static final int QUERY_TIMEOUT_MS = 300000;
+    private static final int QUERY_TIMEOUT_SECONDS = 300;
 
     public DefaultQueryService( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
@@ -317,7 +317,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
     protected PreparedStatement createPreparedStatement( Connection conn, String sql )
                             throws SQLException {
         PreparedStatement preparedStatement = conn.prepareStatement( sql );
-        preparedStatement.setQueryTimeout( QUERY_TIMEOUT_MS );
+        preparedStatement.setQueryTimeout( QUERY_TIMEOUT_SECONDS );
         return preparedStatement;
     }
 
