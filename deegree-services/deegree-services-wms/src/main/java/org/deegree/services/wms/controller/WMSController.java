@@ -159,6 +159,8 @@ public class WMSController extends AbstractOWS {
 
     private FeatureInfoManager featureInfoManager;
 
+    private OWSMetadataProvider metadataProvider;
+
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
         featureInfoManager = new FeatureInfoManager( true );
@@ -236,10 +238,6 @@ public class WMSController extends AbstractOWS {
             // }
             // }
 
-            // TODO assign overwritten metadata here
-            // identification = pi.getServiceIdentification() == null ? identification :
-            // pi.getServiceIdentification();
-            // provider = pi.getServiceProvider() == null ? provider : pi.getServiceProvider();
             final org.deegree.services.jaxb.wms.DeegreeWMS.SupportedVersions versions = conf.getSupportedVersions();
             if ( versions == null ) {
                 ArrayList<String> vs = new ArrayList<String>();
@@ -269,6 +267,9 @@ public class WMSController extends AbstractOWS {
 
             // after the service knows what layers are available:
             handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
+
+            String configId = getMetadata().getIdentifier().getId();
+            metadataProvider = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getMessage(), e );
         }
@@ -583,17 +584,14 @@ public class WMSController extends AbstractOWS {
         String getUrl = OGCFrontController.getHttpGetURL();
         String postUrl = OGCFrontController.getHttpPostURL();
 
-        // override service metadata if available from manager
-        String configId = getMetadata().getIdentifier().getId();
-        OWSMetadataProvider metadata = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
-
-        controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                      identification, provider, map, this, metadata );
-
-        if ( metadata != null ) {
-            identification = metadata.getServiceIdentification();
-            provider = metadata.getServiceProvider();
-            extendedCaps = metadata.getExtendedCapabilities();
+        if ( metadataProvider != null ) {
+            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                          metadataProvider.getServiceIdentification(),
+                                                          metadataProvider.getServiceProvider(), map, this,
+                                                          metadataProvider );
+        } else {
+            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                          identification, provider, map, this, null );
         }
 
         response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
@@ -650,7 +648,13 @@ public class WMSController extends AbstractOWS {
     }
 
     public List<OMElement> getExtendedCapabilities( String version ) {
-        List<OMElement> list = extendedCaps.get( version );
+        List<OMElement> list;
+        if ( metadataProvider != null ) {
+            list = metadataProvider.getExtendedCapabilities().get( version );
+        } else {
+            list = extendedCaps.get( version );
+        }
+
         if ( list == null ) {
             list = extendedCaps.get( "default" );
         }
