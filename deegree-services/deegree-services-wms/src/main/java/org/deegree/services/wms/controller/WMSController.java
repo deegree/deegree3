@@ -648,13 +648,14 @@ public class WMSController extends AbstractOWS {
     }
 
     public List<OMElement> getExtendedCapabilities( String version ) {
-        List<OMElement> list;
+        Map<String, List<OMElement>> extendedCaps;
         if ( metadataProvider != null ) {
-            list = metadataProvider.getExtendedCapabilities().get( version );
+            extendedCaps = metadataProvider.getExtendedCapabilities();
         } else {
-            list = extendedCaps.get( version );
+            extendedCaps = this.extendedCaps;
         }
 
+        List<OMElement> list = extendedCaps.get( version );
         if ( list == null ) {
             list = extendedCaps.get( "default" );
         }
