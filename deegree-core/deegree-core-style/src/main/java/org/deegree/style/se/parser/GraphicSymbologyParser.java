@@ -394,7 +394,12 @@ class GraphicSymbologyParser {
                                 return;
                             }
                             try {
-                                BufferedImage i = ImageIO.read( resolve( file, in ) );
+                                BufferedImage i;
+                                if ( context.location != null ) {
+                                    i = ImageIO.read( context.location.resolve( file ) );
+                                } else {
+                                    i = ImageIO.read( resolve( file, in ) );
+                                }
                                 base.add( i );
                                 cache.put( file, i );
                             } catch ( MalformedURLException e ) {
@@ -434,7 +439,12 @@ class GraphicSymbologyParser {
 
             String strUrl = null;
             try {
-                URL url = resolve( str, in );
+                URL url;
+                if ( context.location != null ) {
+                    url = context.location.resolveToUrl( str );
+                } else {
+                    url = resolve( str, in );
+                }
                 strUrl = url.toExternalForm();
                 LOG.debug( "Loading from URL '{}'", url );
                 in.nextTag();

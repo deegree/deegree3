@@ -43,6 +43,7 @@ import org.deegree.style.se.unevaluated.Style;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.standard.DefaultResourceLocation;
 
 /**
  * This class is responsible for building SLD style stores.
@@ -65,8 +66,9 @@ public class SldStyleStoreBuilder implements ResourceBuilder<StyleStore> {
         XMLStreamReader reader = null;
         try {
             in = metadata.getLocation().getAsStream();
+            DefaultResourceLocation<StyleStore> loc = (DefaultResourceLocation<StyleStore>) metadata.getLocation();
             XMLInputFactory fac = XMLInputFactory.newInstance();
-            reader = fac.createXMLStreamReader( in );
+            reader = fac.createXMLStreamReader( loc.getFile().toString(), in );
             Map<String, LinkedList<Style>> map = getStyles( reader );
             return new SLDStyleStore( map, metadata );
         } catch ( Exception e ) {
