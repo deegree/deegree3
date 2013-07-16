@@ -42,7 +42,6 @@ import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
-import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.slf4j.Logger;
 
 /**
