@@ -35,10 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.ReferenceResolver;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
+import org.slf4j.Logger;
 
 /**
  * Represents a reference to a {@link CRSResource}, which is usually expressed using an <code>xlink:href</code>
@@ -50,6 +55,8 @@ import org.deegree.cs.CRSResource;
  * @version $Revision: $, $Date: $
  */
 public abstract class CRSResourceRef<T extends CRSResource> extends Reference<T> implements CRSResource {
+
+    private static final Logger LOG = getLogger( CRSResourceRef.class );
 
     /**
      * @param resolver
@@ -158,5 +165,17 @@ public abstract class CRSResourceRef<T extends CRSResource> extends Reference<T>
             return this.getURI().equals( ( (CRSResourceRef<?>) obj ).getURI() );
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        try {
+            if ( getReferencedObject() != null ) {
+                return getReferencedObject().hashCode();
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.debug( "CRSResource reference could not be resolved: {}", e.getLocalizedMessage() );
+        }
+        return getURI().hashCode();
     }
 }
