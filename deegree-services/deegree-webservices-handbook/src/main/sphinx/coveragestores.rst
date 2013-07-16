@@ -98,9 +98,10 @@ The following example shows, how to configure a coverage pyramid:
 .. code-block:: xml
 
   <Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid http://schemas.deegree.org/datasource/coverage/raster/3.1.0/pyramid.xsd" configVersion="3.1.0">
-    <PyramidFile>data/example.tif</PyramidFile>
-    <CRS>EPSG:4326</CRS>
+      <PyramidFile>data/example.tif</PyramidFile>
+      <CRS>EPSG:4326</CRS>
   </Pyramid>
 
 * A Pyramid contains a PyramidFile parameter with the path to the pyramid as its value.
 * A Pyramid contains a CRS parameter describing the source CRS of the pyramid as EPSG code.
+=======
