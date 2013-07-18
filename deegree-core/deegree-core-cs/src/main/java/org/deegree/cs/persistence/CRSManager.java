@@ -39,6 +39,7 @@ import static java.lang.System.currentTimeMillis;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,8 +51,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.config.AbstractBasicResourceManager;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
@@ -220,14 +223,20 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
     public synchronized CRSStore create( URL configURL )
                             throws CRSStoreException {
         String namespace = null;
+        XMLStreamReader xmlReader = null;
+        InputStream urlStream = null;
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            urlStream = configURL.openStream();
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( urlStream );
             XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = Messages.get( "CRSManager.CREATING_STORE_FAILED", configURL );
             LOG.error( msg );
             throw new CRSStoreException( msg );
+        } finally {
+            closeQuietly( xmlReader );
+            IOUtils.closeQuietly( urlStream );
         }
         LOG.debug( "Config namespace: '" + namespace + "'" );
         CRSStoreProvider provider = getProviders().get( namespace );
@@ -237,6 +246,16 @@ public class CRSManager extends AbstractBasicResourceManager implements Resource
             throw new CRSStoreException( msg );
         }
         return provider.getCRSStore( configURL, workspace );
+    }
+
+    private void closeQuietly( XMLStreamReader xmlReader ) {
+        if ( xmlReader != null ) {
+            try {
+                xmlReader.close();
+            } catch ( XMLStreamException e ) {
+                LOG.info( "XMLStreamReader could not be closed: {}", e.getMessage() );
+            }
+        }
     }
 
     /**
