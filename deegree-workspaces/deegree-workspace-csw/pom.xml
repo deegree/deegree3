@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.2.0.b22-jrcportal-SNAPSHOT</version>
+    <version>3.2.0.b38-jrcportal</version>
   </parent>
 
   <repositories>
