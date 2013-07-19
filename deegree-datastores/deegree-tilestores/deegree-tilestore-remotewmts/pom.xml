@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tilestores</artifactId>
-    <version>3.2.0.b38-jrcportal</version>
+    <version>3.2.0.b39-jrcportal-SNAPSHOT</version>
   </parent>
 
   <repositories>
