@@ -159,11 +159,29 @@ public abstract class CRSResourceRef<T extends CRSResource> extends Reference<T>
     }
 
     @Override
-    public boolean equals( Object obj ) {
-        if ( obj instanceof CRSResourceRef && this.getURI() != null ) {
-            return this.getURI().equals( ( (CRSResourceRef<?>) obj ).getURI() );
+    public boolean equals( java.lang.Object obj ) {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+
+        T referencedObject = getReferencedObject();
+        try {
+            if ( referencedObject != null ) {
+                return referencedObject.equals( obj );
+            }
+        } catch ( ReferenceResolvingException e ) {
+            LOG.debug( "CRSResource reference could not be resolved: {}", e.getLocalizedMessage() );
         }
-        return false;
+        if ( obj instanceof Reference<?> ) {
+            Reference<?> other = (Reference<?>) obj;
+            if ( getURI() == null ) {
+                if ( other.getURI() != null )
+                    return false;
+            } else if ( !getURI().equals( other.getURI() ) )
+                return false;
+        }
+        return getURI().equals( obj );
     }
 
     @Override
