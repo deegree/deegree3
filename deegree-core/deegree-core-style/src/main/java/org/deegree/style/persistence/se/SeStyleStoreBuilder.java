@@ -65,7 +65,8 @@ public class SeStyleStoreBuilder implements ResourceBuilder<StyleStore> {
             in = metadata.getLocation().getAsStream();
             XMLInputFactory fac = XMLInputFactory.newInstance();
             reader = fac.createXMLStreamReader( in );
-            Style style = SymbologyParser.INSTANCE.parse( reader );
+            SymbologyParser parser = new SymbologyParser( metadata.getLocation() );
+            Style style = parser.parse( reader );
             return new SEStyleStore( style, metadata );
         } catch ( Exception e ) {
             throw new ResourceInitException( "Could not read SE style file.", e );
