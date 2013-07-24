@@ -92,9 +92,10 @@ public class TileLayer extends AbstractLayer {
 
         String tds = coordinateSystems.get( crs );
         if ( tds == null ) {
-            LOG.debug( "Tile layer {} does not offer the coordinate system {}.", getMetadata().getName(),
-                       crs.getAlias() );
-            return null;
+            String msg = "Tile layer " + getMetadata().getName() + " does not offer the coordinate system "
+                         + crs.getAlias();
+            LOG.debug( msg );
+            throw new OWSException( msg, OWSException.INVALID_CRS );
         }
         TileDataSet data = tileDataSets.get( tds );
 
