@@ -85,7 +85,7 @@ public class WFSConstants {
 
     public static final String GML32_SCHEMA_URL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
 
-    public static final String URN_OGC_QUERY_PREFIX = "urn:ogc:def:storedQuery:OGC-WFS::";
+    public static final String URN_OGC_QUERY_PREFIX = "urn:ogc:def:query:OGC-WFS::";
 
     public static final String QUERY_ID_GET_FEATURE_BY_ID = URN_OGC_QUERY_PREFIX + "GetFeatureById";
 }
