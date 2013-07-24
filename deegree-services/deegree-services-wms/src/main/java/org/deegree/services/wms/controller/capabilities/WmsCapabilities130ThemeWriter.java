@@ -153,14 +153,21 @@ class WmsCapabilities130ThemeWriter {
 
     private static void writeKeywords( XMLStreamWriter writer, LayerMetadata md, LayerMetadata lmd )
                             throws XMLStreamException {
-        List<Pair<List<LanguageString>, CodeType>> kws = md.getDescription().getKeywords();
-        if ( lmd != null && ( kws == null || kws.isEmpty() || kws.get( 0 ).first.isEmpty() ) ) {
-            kws = lmd.getDescription().getKeywords();
+        List<Pair<List<LanguageString>, CodeType>> kwsl = md.getDescription().getKeywords();
+        if ( lmd != null && ( kwsl == null || kwsl.isEmpty() || kwsl.get( 0 ).first.isEmpty() ) ) {
+            kwsl = lmd.getDescription().getKeywords();
         }
-        if ( kws != null && !kws.isEmpty() && !kws.get( 0 ).first.isEmpty() ) {
+        if ( kwsl != null && !kwsl.isEmpty() && !kwsl.get( 0 ).first.isEmpty() ) {
             writer.writeStartElement( WMSNS, "KeywordList" );
-            for ( LanguageString ls : kws.get( 0 ).first ) {
-                writeElement( writer, WMSNS, "Keyword", ls.getString() );
+
+            for ( Pair<List<LanguageString>, CodeType> kws : kwsl ) {
+                String vocabulary = null;
+                if ( kws.second != null ) {
+                    vocabulary = kws.second.getCodeSpace();
+                }
+                for ( LanguageString ls : kws.first ) {
+                    writeElement( writer, WMSNS, "Keyword", ls.getString(), null, null, "vocabulary", vocabulary );
+                }
             }
             writer.writeEndElement();
         }
