@@ -1,6 +1,0 @@
-<RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/remotewms http://schemas.deegree.org/layers/remotewms/3.2.0/remotewms.xsd" configVersion="3.2.0">
-  
-  <RemoteWMSId>esri2</RemoteWMSId>
-  
-   
-</RemoteWMSLayers>
