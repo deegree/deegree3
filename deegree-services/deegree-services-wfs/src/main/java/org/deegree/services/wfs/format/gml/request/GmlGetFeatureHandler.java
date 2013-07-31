@@ -653,6 +653,8 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                         break;
                     }
                 }
+            } catch (RuntimeException e){
+                throw new OWSException(e.getLocalizedMessage(), OPERATION_PROCESSING_FAILED);
             } finally {
                 LOG.debug( "Closing FeatureResultSet (cached)" );
                 rs.close();
