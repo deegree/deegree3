@@ -713,18 +713,17 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
             for ( OMElement operatesOnElem : operatesOn ) {
                 String operatesOnStringUuIdAttribute = operatesOnElem.getAttributeValue( new QName( "uuidref" ) );
-                String operatesOnString = "";
                 if ( operatesOnStringUuIdAttribute != null && !operatesOnStringUuIdAttribute.equals( "" ) ) {
                     operatesOnList.add( operatesOnStringUuIdAttribute );
                 } else {
-                    operatesOnString = getNodeAsString( operatesOnElem,
-                                                        new XPath(
-                                                                   "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
-                                                                   nsContextParseII ), null );
+                    String operatesOnString = getNodeAsString( operatesOnElem,
+                                                               new XPath(
+                                                                          "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                          nsContextParseII ), null );
                     if ( operatesOnString != null ) {
                         operatesOnString = operatesOnString.trim();
+                        operatesOnList.add( operatesOnString );
                     }
-                    operatesOnList.add( operatesOnString );
                 }
             }
             List<OMElement> operatesOnCoupledResources = getElements( sv_serviceIdentification,
