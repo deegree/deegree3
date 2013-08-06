@@ -38,6 +38,7 @@ package org.deegree.services.wfs.format.gml.request;
 import static java.math.BigInteger.ZERO;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPTION_NOT_SUPPORTED;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
@@ -53,6 +54,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -92,6 +94,7 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
+import org.deegree.protocol.wfs.query.StoredQuery;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.wfs.WebFeatureService;
@@ -184,7 +187,9 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         QName memberElementName = determineFeatureMemberElement( request.getVersion() );
 
         QName responseContainerEl = options.getResponseContainerEl();
-
+        
+        boolean isGetFeatureById = isGetFeatureByIdRequest(request);
+        
         // open "wfs:FeatureCollection" element
         if ( request.getVersion().equals( VERSION_100 ) ) {
             if ( responseContainerEl != null ) {
@@ -213,7 +218,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                 }
                 xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             }
-        } else if ( request.getVersion().equals( VERSION_200 ) ) {
+        } else if ( request.getVersion().equals( VERSION_200 ) && ( ! isGetFeatureById ) ) {
             xmlStream.setPrefix( "wfs", WFS_200_NS );
             xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
             xmlStream.writeNamespace( "wfs", WFS_200_NS );
@@ -222,15 +227,17 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                 xmlStream.writeAttribute( "lockId", lock.getId() );
             }
         }
-
-        // ensure that namespace for feature member elements is bound
-        writeNamespaceIfNotBound( xmlStream, memberElementName.getPrefix(), memberElementName.getNamespaceURI() );
-
-        // ensure that namespace for gml (e.g. geometry elements) is bound
-        writeNamespaceIfNotBound( xmlStream, "gml", gmlVersion.getNamespace() );
-
-        if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
-            xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
+        
+        if ( ! isGetFeatureById  ) {
+            // ensure that namespace for feature member elements is bound
+            writeNamespaceIfNotBound( xmlStream, memberElementName.getPrefix(), memberElementName.getNamespaceURI() );
+    
+            // ensure that namespace for gml (e.g. geometry elements) is bound
+            writeNamespaceIfNotBound( xmlStream, "gml", gmlVersion.getNamespace() );
+        
+            if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
+                xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
+            }
         }
 
         int returnMaxFeatures = options.getQueryMaxFeatures();
@@ -243,7 +250,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( request.getPresentationParams().getStartIndex() != null ) {
             startIndex = request.getPresentationParams().getStartIndex().intValue();
         }
-
+       
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setProjections( analyzer.getProjections() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
@@ -259,7 +266,9 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                                                    resolveOptions );
         gmlStream.setReferenceResolveStrategy( additionalObjects );
 
-        if ( options.isDisableStreaming() ) {
+        if ( isGetFeatureById ) {
+            writeSingleFeatureMember(gmlStream, analyzer, resolveOptions);
+        } else if ( options.isDisableStreaming() ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
                                        startIndex, memberElementName, lock );
         } else {
@@ -267,22 +276,24 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                        startIndex, memberElementName, lock );
         }
 
-        if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
-            if ( request.getVersion().equals( VERSION_200 ) ) {
-                xmlStream.writeStartElement( "wfs", "additionalObjects", WFS_200_NS );
-                xmlStream.writeStartElement( "wfs", "SimpleFeatureCollection", WFS_200_NS );
-            } else {
-                xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+        if (! isGetFeatureById ) {
+            if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
+                if ( request.getVersion().equals( VERSION_200 ) ) {
+                    xmlStream.writeStartElement( "wfs", "additionalObjects", WFS_200_NS );
+                    xmlStream.writeStartElement( "wfs", "SimpleFeatureCollection", WFS_200_NS );
+                } else {
+                    xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+                }
+                writeAdditionalObjects( gmlStream, additionalObjects, memberElementName );
+                if ( request.getVersion().equals( VERSION_200 ) ) {
+                    xmlStream.writeEndElement();
+                    xmlStream.writeEndElement();
+                }
             }
-            writeAdditionalObjects( gmlStream, additionalObjects, memberElementName );
-            if ( request.getVersion().equals( VERSION_200 ) ) {
-                xmlStream.writeEndElement();
-                xmlStream.writeEndElement();
-            }
+            
+            // close container element
+            xmlStream.writeEndElement();
         }
-
-        // close container element
-        xmlStream.writeEndElement();
         xmlStream.flush();
 
         // append buffered parts of the stream
@@ -481,7 +492,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                 rs.close();
             }
         }
-
+        
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
@@ -609,4 +620,52 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         return lock;
     }
 
+    private boolean isGetFeatureByIdRequest(GetFeature request) {
+        if ( request.getQueries().size() == 1 ) {
+            if ( request.getQueries().get( 0 ) instanceof StoredQuery) {
+                StoredQuery getFeatureByIdQuery = (StoredQuery)request.getQueries().get( 0 );
+                if ( getFeatureByIdQuery.getId().equals( GET_FEATURE_BY_ID ) ) {
+                    LOG.debug("processing " + GET_FEATURE_BY_ID + " request");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void writeSingleFeatureMember(GMLStreamWriter gmlStream, QueryAnalyzer analyzer, GmlXlinkOptions resolveState) 
+            throws XMLStreamException, UnknownCRSException, 
+                TransformationException, FeatureStoreException,
+                FilterEvaluationException, OWSException {
+        
+        FeatureCollection allFeatures = new GenericFeatureCollection();
+        Set<String> fids = new HashSet<String>();
+        
+        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
+            FeatureStore fs = fsToQueries.getKey();
+            Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
+            FeatureInputStream rs = fs.query( queries );
+            try {
+                for ( Feature feature : rs ) {
+                    if ( !fids.contains( feature.getId() ) ) {
+                        allFeatures.add( feature );
+                        fids.add( feature.getId() );
+                        break;
+                    }
+                }
+            } catch (RuntimeException e){
+                throw new OWSException(e.getLocalizedMessage(), OPERATION_PROCESSING_FAILED);
+            } finally {
+                LOG.debug( "Closing FeatureResultSet (cached)" );
+                rs.close();
+            }
+        }
+        if ( fids.isEmpty() ) {
+            throw new OWSException("feature not found", OPERATION_PROCESSING_FAILED);
+        }
+        for ( Feature member : allFeatures ) {
+            gmlStream.getFeatureWriter().export( member, resolveState );
+            break;
+        }
+    }
 }
