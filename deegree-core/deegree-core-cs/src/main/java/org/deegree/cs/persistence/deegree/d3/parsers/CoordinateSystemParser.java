@@ -144,13 +144,13 @@ public class CoordinateSystemParser extends DefinitionParser {
                 if ( result != null ) {
                     getStore().addIdToCache( result, false );
                 }
-                while ( result != null && !result.hasId( tmpCRSId, false, true ) ) {
+                while ( result != null ) {
                     result = parseCoordinateSystem( configReader );
                     if ( result != null ) {
                         getStore().addIdToCache( result, false );
                     }
                 }
-
+                return getStore().getCachedIdentifiable( CRS.class, tmpCRSId );
             } catch ( XMLStreamException e ) {
                 throw new CRSConfigurationException( e );
             }
@@ -385,7 +385,8 @@ public class CoordinateSystemParser extends DefinitionParser {
         try {
             usedCRS = getRequiredText( reader, new QName( CRS_NS, "UsedCRS" ), true );
         } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "usedCRS",
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
+                                                                      "usedCRS",
                                                                       ( ( reader == null ) ? "null"
                                                                                           : reader.getLocalName() ),
                                                                       e.getMessage() ), e );
@@ -407,8 +408,8 @@ public class CoordinateSystemParser extends DefinitionParser {
                                                                       e.getLocalizedMessage() ), e );
         }
 
-        double defaultHeight = XMLStreamUtils.getElementTextAsDouble( reader, new QName( CRS_NS, "DefaultHeight" ),
-                                                                         0, true );
+        double defaultHeight = XMLStreamUtils.getElementTextAsDouble( reader, new QName( CRS_NS, "DefaultHeight" ), 0,
+                                                                      true );
         // adding to cache will be done in AbstractCRSProvider.
         return new CompoundCRS( heightAxis, usedCoordinateSystem, defaultHeight, id );
     }

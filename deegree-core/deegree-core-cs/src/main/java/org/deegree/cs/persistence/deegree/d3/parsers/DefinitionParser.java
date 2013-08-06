@@ -39,7 +39,6 @@
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getSimpleUnboundedAsStrings;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -271,20 +270,6 @@ public abstract class DefinitionParser {
      */
     public DeegreeCRSStore getStore() {
         return store;
-    }
-
-    /**
-     * Forwards the stream
-     * 
-     * @param reader
-     *            to forward
-     * @param elementName
-     * @return true if the stream is pointing to an element with the given qname.
-     * @throws XMLStreamException
-     */
-    public boolean moveReaderToNextIdentifiable( XMLStreamReader reader, QName elementName )
-                            throws XMLStreamException {
-        return moveReaderToFirstMatch( reader, elementName );
     }
 
     /**
