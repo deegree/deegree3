@@ -1,4 +1,4 @@
-<StoredQueryDefinition id="urn:x-inspire:storedQuery:GetAddressesForStreet"
+<StoredQueryDefinition id="urn:x-inspire:query:GetAddressesForStreet"
   xmlns="http://www.opengis.net/wfs/2.0"
   xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
   xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0">

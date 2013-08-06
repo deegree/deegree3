@@ -36,6 +36,7 @@
 package org.deegree.services.ows;
 
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.io.IOException;
@@ -83,6 +84,8 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
         response.setContentType( "application/xml" );
         if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
             response.setStatus( 500 );
+        } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
+            response.setStatus( 403 );
         } else {
             response.setStatus( 400 );
         }

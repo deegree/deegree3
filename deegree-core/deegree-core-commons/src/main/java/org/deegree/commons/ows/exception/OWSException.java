@@ -60,7 +60,12 @@ public class OWSException extends Exception {
      * a required parameter is missing
      */
     public static final String MISSING_PARAMETER_VALUE = "MissingParameterValue";
-
+    
+    /**
+     * Server processing failed
+     */
+    public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
+            
     /**
      * the parameter value is invalid
      */
