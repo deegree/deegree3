@@ -207,7 +207,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private IDGenMode idGenMode;
 
-    private boolean disableBuffering;
+    private boolean disableBuffering = true;
 
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
 
