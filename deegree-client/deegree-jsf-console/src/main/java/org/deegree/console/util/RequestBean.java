@@ -315,8 +315,14 @@ public class RequestBean implements Serializable {
 
     public void addRequest() {
         String subdir = new File( selectedRequest ).getParentFile().getParentFile().getName();
+        File saveRequest;
+        try {
+            saveRequest = new File( saveRequestName );
+        } catch (Exception e) {
+            return;
+        }
         File file = new File( requestsBaseDir, selectedService + separator + selectedReqProfile + separator + subdir
-                                               + separator + "xml" + separator + saveRequestName + ".xml" );
+                                               + separator + "xml" + separator + saveRequest.getName() + ".xml" );
         FileOutputStream out = null;
         try {
             out = new FileOutputStream( file );
