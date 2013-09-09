@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.3.4</version>
+  <version>3.3.5-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -12,7 +12,7 @@
     <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
     <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
     <url>https://github.com/deegree/deegree3.git</url>
-    <tag>deegree-3.3.4</tag>
+    <tag>deegree-3.3.0</tag>
   </scm>
 
   <repositories>
