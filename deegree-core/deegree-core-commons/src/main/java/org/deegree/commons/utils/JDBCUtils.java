@@ -158,7 +158,7 @@ public final class JDBCUtils {
     }
 
     public static String determinePostGISVersion( Connection conn, Logger log ) {
-        String version = "1.0";
+        String version = null;
         Statement stmt = null;
         ResultSet rs = null;
         try {
@@ -169,7 +169,7 @@ public final class JDBCUtils {
             version = postGISVersion.split( " " )[0];
             log.debug( "PostGIS version: {}", version );
         } catch ( Throwable t ) {
-            log.warn( "Could not determine PostGIS version: {} -- defaulting to 1.0.0", t.getMessage() );
+            log.warn( "Could not determine PostGIS version." );
         }
         return version;
     }
@@ -244,8 +244,8 @@ public final class JDBCUtils {
         }
     }
 
-    public static void rollbackQuietly(Connection conn) {
-        if (conn != null) {
+    public static void rollbackQuietly( Connection conn ) {
+        if ( conn != null ) {
             try {
                 conn.rollback();
             } catch ( SQLException e ) {
