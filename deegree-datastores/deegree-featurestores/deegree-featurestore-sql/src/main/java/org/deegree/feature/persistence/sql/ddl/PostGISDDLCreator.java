@@ -107,8 +107,8 @@ public class PostGISDDLCreator extends DDLCreator {
         ddl.add( "COMMENT ON TABLE " + blobTable + " IS 'All objects (features and geometries)'" );
         ddl.add( "SELECT ADDGEOMETRYCOLUMN('" + blobTableSchema.toLowerCase() + "', '"
                  + blobTable.getTable().toLowerCase() + "','gml_bounded_by','" + undefinedSrid + "','GEOMETRY',2)" );
-        ddl.add( "ALTER TABLE " + blobTable + " ADD CONSTRAINT gml_objects_geochk CHECK (isvalid(gml_bounded_by))" );
-        ddl.add( "CREATE INDEX gml_objects_sidx ON " + blobTable + "  USING GIST (gml_bounded_by GIST_GEOMETRY_OPS)" );
+        ddl.add( "ALTER TABLE " + blobTable + " ADD CONSTRAINT gml_objects_geochk CHECK (ST_IsValid(gml_bounded_by))" );
+        ddl.add( "CREATE INDEX gml_objects_sidx ON " + blobTable + "  USING GIST (gml_bounded_by)" );
         // ddl.add( "CREATE TABLE gml_names (gml_object_id integer REFERENCES gml_objects,"
         // + "name text NOT NULL,codespace text,prop_idx smallint NOT NULL)" );
         return ddl;
