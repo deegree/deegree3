@@ -243,6 +243,6 @@ public abstract class DDLCreator {
             return new OracleDDLCreator( appSchema, dialect );
         }
         }
-        throw new IllegalArgumentException( "Nod DDLCreator for DB type '" + dialect.getDBType() + "' available." );
+        throw new IllegalArgumentException( "No DDLCreator for DB type '" + dialect.getDBType() + "' available." );
     }
 }
