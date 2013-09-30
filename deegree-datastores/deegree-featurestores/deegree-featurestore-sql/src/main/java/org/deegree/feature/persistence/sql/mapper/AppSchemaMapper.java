@@ -93,7 +93,6 @@ import org.deegree.feature.types.property.CodePropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
@@ -631,10 +630,6 @@ public class AppSchemaMapper {
         ValueReference path = new ValueReference( ".", null );
         if ( opt instanceof GeometryPropertyType ) {
             GeometryType gt = GeometryType.GEOMETRY;
-            // TODO
-            CoordinateDimension dim = CoordinateDimension.DIM_2;
-            // TODO
-            String srid = "-1";
             MappingContext elMC = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
             particles.add( new GeometryMapping( path, true, new DBField( elMC.getColumn() ), gt, geometryParams, null ) );
         } else if ( opt instanceof FeaturePropertyType ) {
