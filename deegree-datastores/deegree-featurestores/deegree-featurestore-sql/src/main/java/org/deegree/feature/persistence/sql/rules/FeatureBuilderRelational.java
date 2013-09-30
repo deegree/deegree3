@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.jaxen.saxpath.Axis.CHILD;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -255,14 +256,15 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
                     ValueReference propName = mapping.getPath();
-                    if ( propName.getAsQName() != null ) {
-                        PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName() );
+                    QName childEl = getChildElementStepAsQName( propName );
+                    if ( childEl != null ) {
+                        PropertyType pt = ft.getPropertyDeclaration( childEl );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
                         addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
-                        // TODO more complex mappings, e.g. "propname[1]"
                         LOG.warn( "Omitting mapping '" + mapping
-                                  + "'. Only simple property names (QNames) are currently supported here." );
+                                  + "'. Only single child element steps (optionally with number predicate)"
+                                  + " are currently supported." );
                     }
                 }
                 feature = ft.newFeature( gmlId, props, null );
@@ -283,6 +285,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         String s = propName.getAsText();
         s = s.replace( "/", "_" );
         s = s.replace( ":", "_" );
+        s = s.replace( "[", "_" );
+        s = s.replace( "]", "_" );
         s = s.toUpperCase();
         return s;
     }
@@ -377,11 +381,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
-//            if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
-                String col = converter.getSelectSnippet( tableAlias );
-                int colIndex = colToRsIdx.get( col );
-                particle = converter.toParticle( rs, colIndex );
-//            }
+            // if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
+            String col = converter.getSelectSnippet( tableAlias );
+            int colIndex = colToRsIdx.get( col );
+            particle = converter.toParticle( rs, colIndex );
+            // }
         } else if ( mapping instanceof ConstantMapping<?> ) {
             particle = ( (ConstantMapping<?>) mapping ).getValue();
         } else if ( mapping instanceof CompoundMapping ) {
@@ -708,6 +712,30 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return new Pair<ResultSet, LinkedHashMap<String, Integer>>( rs2, rsToIdx );
     }
 
+    private QName getChildElementStepAsQName( ValueReference ref ) {
+        QName qName = null;
+        Expr xpath = ref.getAsXPath();
+        if ( xpath instanceof LocationPath ) {
+            LocationPath lpath = (LocationPath) xpath;
+            if ( lpath.getSteps().size() == 1 ) {
+                if ( lpath.getSteps().get( 0 ) instanceof NameStep ) {
+                    NameStep step = (NameStep) lpath.getSteps().get( 0 );
+                    if ( isChildElementStepWithoutPredicateOrWithNumberPredicate( step ) ) {
+                        String prefix = step.getPrefix();
+                        if ( prefix.isEmpty() ) {
+                            qName = new QName( step.getLocalName() );
+                        } else {
+                            String ns = ref.getNsContext().translateNamespacePrefixToUri( prefix );
+                            qName = new QName( ns, step.getLocalName(), prefix );
+                        }
+                        LOG.debug( "QName: " + qName );
+                    }
+                }
+            }
+        }
+        return qName;
+    }
+
     private QName getQName( NameStep step ) {
         String prefix = step.getPrefix();
         QName qName;
@@ -718,5 +746,20 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             qName = new QName( ns, step.getLocalName(), prefix );
         }
         return qName;
+    }
+
+    private boolean isChildElementStepWithoutPredicateOrWithNumberPredicate( NameStep step ) {
+        if ( step.getAxis() == CHILD && !step.getLocalName().equals( "*" ) ) {
+            if ( step.getPredicates().isEmpty() ) {
+                return true;
+            } else if ( step.getPredicates().size() == 1 ) {
+                Predicate predicate = (Predicate) step.getPredicates().get( 0 );
+                Expr expr = predicate.getExpr();
+                if ( expr instanceof NumberExpr ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
