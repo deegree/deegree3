@@ -75,18 +75,18 @@ public class PostGISDialectProvider implements SQLDialectProvider {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
-        boolean useLegacyPredicates = false;
+        String version = null;
         try {
             ConnectionManager mgr = ws.getSubsystemManager( ConnectionManager.class );
             conn = mgr.get( connId );
             if ( conn == null ) {
                 throw new ResourceInitException( "JDBC connection " + connId + " is not available." );
             }
-            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( conn, LOG );
+            version = JDBCUtils.determinePostGISVersion( conn, LOG );
         } finally {
             close( rs, stmt, conn, LOG );
         }
-        return new PostGISDialect( useLegacyPredicates );
+        return new PostGISDialect( version );
     }
 
 }

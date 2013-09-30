@@ -95,10 +95,38 @@ public class PostGISDialect implements SQLDialect {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialect.class );
 
+    private final String undefinedSrid;
+
     private final boolean useLegacyPredicates;
 
-    public PostGISDialect( boolean useLegacyPredicates ) {
-        this.useLegacyPredicates = useLegacyPredicates;
+    /**
+     * Creates a new {@link PostGISDialect} instance.
+     * 
+     * @param version
+     *            version string, as returned by "SELECT postgis_version()", can be <code>null</code> (unknown)
+     */
+    public PostGISDialect( String version ) {
+        this.undefinedSrid = getUndefinedSrid( version );
+        this.useLegacyPredicates = determineUseLegacyPredicates( version );
+    }
+
+    private String getUndefinedSrid( String version ) {
+        if ( version == null || version.startsWith( "0." ) || version.startsWith( "1." ) ) {
+            LOG.debug( "PostGIS version is " + version + " -- SRID identifier for undefined: -1" );
+            return "-1";
+        }
+        LOG.debug( "PostGIS version is " + version + " -- SRID identifier for undefined: 0" );
+        return "0";
+    }
+
+    private boolean determineUseLegacyPredicates( String version ) {
+        if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
+             || version.startsWith( "1.2" ) ) {
+            LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
+            return true;
+        }
+        LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
+        return false;
     }
 
     @Override
@@ -155,7 +183,7 @@ public class PostGISDialect implements SQLDialect {
 
     @Override
     public String getUndefinedSrid() {
-        return "-1";
+        return undefinedSrid;
     }
 
     @Override
