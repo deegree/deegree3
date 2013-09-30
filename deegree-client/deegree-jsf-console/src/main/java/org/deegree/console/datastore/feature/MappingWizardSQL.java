@@ -36,6 +36,7 @@ package org.deegree.console.datastore.feature;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,7 +77,6 @@ import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.sqldialect.SQLDialect;
@@ -121,7 +121,6 @@ public class MappingWizardSQL {
 
     private String storageCrs = "EPSG:4326";
 
-    // TODO
     private String storageSrid = "-1";
 
     private Integer columnNameLength = 16;
@@ -164,6 +163,7 @@ public class MappingWizardSQL {
             SQLDialect dialect = prov.getDialect();
             columnNameLength = dialect.getMaxColumnNameLength();
             tableNameLength = dialect.getMaxTableNameLength();
+            storageSrid = dialect.getUndefinedSrid();
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "SQLDialect error: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
@@ -287,8 +287,7 @@ public class MappingWizardSQL {
             CRSRef storageCrs = CRSManager.getCRSRef( this.storageCrs );
             boolean createBlobMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "blob" );
             boolean createRelationalMapping = storageMode.equals( "hybrid" ) || storageMode.equals( "relational" );
-            GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, storageSrid,
-                                                                              CoordinateDimension.DIM_2 );
+            GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, storageSrid, DIM_2 );
             AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
                                                           geometryParams,
                                                           Math.min( tableNameLength, columnNameLength ), true, false );

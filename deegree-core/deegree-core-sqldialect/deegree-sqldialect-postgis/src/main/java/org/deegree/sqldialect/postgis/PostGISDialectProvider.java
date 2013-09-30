@@ -78,16 +78,16 @@ public class PostGISDialectProvider implements SqlDialectProvider {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
-        boolean useLegacyPredicates = false;
+        String version = null;
         try {
-            useLegacyPredicates = JDBCUtils.useLegayPostGISPredicates( connection, LOG );
+            version = JDBCUtils.determinePostGISVersion( conn, LOG );
         } catch ( Exception e ) {
             LOG.trace( e.getMessage(), e );
             throw new ResourceInitException( e.getMessage(), e );
         } finally {
             close( rs, stmt, conn, LOG );
         }
-        return new PostGISDialect( useLegacyPredicates );
+        return new PostGISDialect( version );
     }
 
 }
