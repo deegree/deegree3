@@ -307,6 +307,9 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 writeAttributeWithNS( XSINS, "nil", "true" );
                 endEmptyElement();
+            } else if ( value == null ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                endEmptyElement();
             } else {
                 Geometry gValue = (Geometry) value;
                 if ( !exportSf && gValue.getId() != null && referenceExportStrategy.isObjectExported( gValue.getId() ) ) {
