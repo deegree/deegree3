@@ -313,7 +313,6 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-
         HttpResponseBuffer responseBuffer = createHttpResponseBuffer( request, response );
 
         try {
@@ -1487,6 +1486,11 @@ public class OGCFrontController extends HttpServlet {
      */
     private void sendException( OWS ows, OWSException e, HttpResponseBuffer res, Version requestVersion )
                             throws ServletException {
+        String userAgent = null;
+        if ( OGCFrontController.getContext() != null ) {
+            userAgent = OGCFrontController.getContext().getUserAgent();
+        }
+
         if ( ows == null ) {
             Collection<List<OWS>> values = serviceConfiguration.getAll().values();
             if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
@@ -1522,6 +1526,10 @@ public class OGCFrontController extends HttpServlet {
                 }
                 res.setExceptionSent();
             }
+        }
+
+        if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {
+            res.setContentType( "application/xml" );
         }
     }
 }
