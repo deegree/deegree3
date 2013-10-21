@@ -68244,5 +68244,49 @@
                         <crs:AxisOrientation>up</crs:AxisOrientation>
                 </crs:HeightAxis>
                 <crs:DefaultHeight>0.0</crs:DefaultHeight>
-        </crs:CompoundCRS>       
+        </crs:CompoundCRS>
+        <crs:GeographicCRS>
+                <crs:Id>epsg:4761</crs:Id>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4761</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::4761</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::4761</crs:Id>
+                <crs:Name>HTRS96</crs:Name>
+                <crs:Version>2013-10-18T17:47</crs:Version>
+                <crs:Description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:Description>
+                <crs:AreaOfUse>-180.0,-90.0,180.0,90.0</crs:AreaOfUse>
+                <crs:AreaOfUse>Not specified.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>longitude</crs:Name>
+                        <crs:Units>degree</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>latitude</crs:Name>
+                        <crs:Units>degree</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedDatum>epsg:6761</crs:UsedDatum>
+        </crs:GeographicCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>epsg:3765</crs:Id>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3765</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3765</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3765</crs:Id>
+                <crs:Name>HTRS96 / Croatia TM</crs:Name>
+                <crs:Version>2013-10-18T17:47</crs:Version>
+                <crs:AreaOfUse>13.01,41.62,19.43,46.54</crs:AreaOfUse>
+                <crs:AreaOfUse>Croatia - onshore and offshore.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>epsg:4761</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:19851</crs:UsedProjection>
+        </crs:ProjectedCRS>                       
 </crs:CRSDefinitions>
