@@ -120,8 +120,8 @@ public class PostGISDialect implements SQLDialect {
     }
 
     private boolean determineUseLegacyPredicates( String version ) {
-        if ( version.startsWith( "0." ) || version.startsWith( "1.0" ) || version.startsWith( "1.1" )
-             || version.startsWith( "1.2" ) ) {
+        if ( version == null || version.startsWith( "0." ) || version.startsWith( "1.0" )
+            || version.startsWith( "1.1" ) || version.startsWith( "1.2" ) ) {
             LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
             return true;
         }
