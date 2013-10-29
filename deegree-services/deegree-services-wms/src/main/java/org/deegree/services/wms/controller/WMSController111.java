@@ -53,6 +53,7 @@ import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.protocol.wms.Utils;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
@@ -119,6 +120,12 @@ public class WMSController111 extends WMSControllerBase {
                                 WMSController controller, OWSMetadataProvider metadata )
                             throws IOException {
         response.setContentType( "application/vnd.ogc.wms_xml" );
+        String userAgent = OGCFrontController.getContext().getUserAgent();
+
+        if ( userAgent.toLowerCase().contains( "mozilla" ) ) {
+            response.setContentType( "application/xml" );
+        }
+
         response.addHeader( "Content-Disposition", "inline; filename=\"capabilities.xml\"" );
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();

@@ -52,6 +52,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.Utils;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
@@ -124,6 +125,12 @@ public class WMSController130 extends WMSControllerBase {
                                 WMSController controller, OWSMetadataProvider metadata )
                             throws IOException {
         response.setContentType( "text/xml" );
+        String userAgent = OGCFrontController.getContext().getUserAgent();
+
+        if ( userAgent.toLowerCase().contains( "mozilla" ) ) {
+            response.setContentType( "application/xml" );
+        }
+
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();
             new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );

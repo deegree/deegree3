@@ -70,6 +70,8 @@ public class RequestContext {
 
     private final String requestedEndpointUrl;
 
+    private final String userAgent;
+
     /**
      * @param request
      *            request for which the context will be created, must not be <code>null</code>
@@ -88,6 +90,7 @@ public class RequestContext {
         pathInfo = request.getPathInfo();
         requestedEndpointUrl = request.getRequestURL().toString();
         webappBaseUrl = deriveWebappBaseUrl( requestedEndpointUrl, request );
+        userAgent = request.getHeader( "user-agent" );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Request URL: " + requestedEndpointUrl );
             LOG.debug( "Webapp base URL (derived from request): " + webappBaseUrl );
@@ -151,6 +154,13 @@ public class RequestContext {
      */
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    /**
+     * @return the request's 'User-Agent' header, can be <code>null</code>
+     */
+    public String getUserAgent() {
+        return userAgent;
     }
 
     @Override
