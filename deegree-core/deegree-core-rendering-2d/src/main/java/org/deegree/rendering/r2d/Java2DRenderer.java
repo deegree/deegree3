@@ -84,7 +84,7 @@ public class Java2DRenderer implements Renderer {
 
     private int width;
 
-    RendererContext rendererContext;
+    public RendererContext rendererContext;
 
     /**
      * @param graphics
