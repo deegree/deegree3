@@ -103,14 +103,14 @@ public class WfsXlinkStrategy implements GmlXlinkStrategy {
 
         String uri = ref.getURI();
         LOG.debug( "Encountered reference to object {}.", uri );
-        if ( isNonIdBasedUri( uri ) ) {
+        if ( !isGmlIdBasedUri( uri ) ) {
             LOG.debug( "Reference to object {} considered non-rewritable.", uri );
             return uri;
         }
 
         if ( localReferencesPossible ) {
             LOG.debug( "Exporting potential forward reference to object {} which may or may not be exported later.",
-                       ref.getId() );
+                       ref.getURI() );
             try {
                 xmlStream.activateBuffering();
             } catch ( XMLStreamException e ) {
@@ -122,18 +122,8 @@ public class WfsXlinkStrategy implements GmlXlinkStrategy {
         return remoteXlinkTemplate.replace( "{}", ref.getId() );
     }
 
-    private boolean isNonIdBasedUri( String uri ) {
-        if ( uri.startsWith( "urn" ) ) {
-            return true;
-        }
-        // hacks for CITE WFS 1.1.0
-        if ( uri.startsWith( "http://vancouver1.demo.galdosinc.com" ) ) {
-            return true;
-        }
-        if ( uri.startsWith( "ftp://vancouver1.demo.galdosinc.com" ) ) {
-            return true;
-        }
-        return false;
+    private boolean isGmlIdBasedUri( String uri ) {
+        return uri.startsWith( "#" );
     }
 
     public Collection<GMLReference<?>> getAdditionalRefs() {
