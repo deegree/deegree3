@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.3.3-SNAPSHOT</version>
+    <version>3.3.7-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -55,6 +55,10 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+	  <groupId>batik</groupId>
+	  <artifactId>batik-codec</artifactId>
+	</dependency>
   </dependencies>
 
 </project>
