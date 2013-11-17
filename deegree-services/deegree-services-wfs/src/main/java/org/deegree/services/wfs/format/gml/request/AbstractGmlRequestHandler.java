@@ -72,6 +72,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -144,21 +145,57 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeAdditionalObjects( GMLStreamWriter gmlStream, WfsXlinkStrategy additionalObjects,
-                                           QName featureMemberEl )
+                                           QName featureMemberEl, Version requestVersion )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         Collection<GMLReference<?>> nextLevelObjects = additionalObjects.getAdditionalRefs();
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
-
+        boolean wroteStartSection = false;
         while ( !nextLevelObjects.isEmpty() ) {
             Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = additionalObjects.getResolveStates();
             additionalObjects.clear();
             for ( GMLReference<?> ref : nextLevelObjects ) {
-                GmlXlinkOptions resolveState = refToResolveState.get( ref );
-                Feature feature = (Feature) ref;
-                writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
+                if ( isResolvable( ref ) ) {
+                    GmlXlinkOptions resolveState = refToResolveState.get( ref );
+                    Feature feature = (Feature) ref;
+                    if ( !wroteStartSection ) {
+                        writeAdditionalObjectsStart( xmlStream, requestVersion );
+                        wroteStartSection = true;
+                    }
+                    writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
+                }
             }
             nextLevelObjects = additionalObjects.getAdditionalRefs();
+        }
+        if ( wroteStartSection ) {
+            writeAdditionalObjectsEnd( xmlStream, requestVersion );
+        }
+    }
+
+    private void writeAdditionalObjectsStart( XMLStreamWriter xmlStream, Version requestVersion )
+                            throws XMLStreamException {
+        if ( requestVersion.equals( VERSION_200 ) ) {
+            xmlStream.writeStartElement( "wfs", "additionalObjects", WFS_200_NS );
+            xmlStream.writeStartElement( "wfs", "SimpleFeatureCollection", WFS_200_NS );
+        } else {
+            xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+        }
+    }
+
+    private void writeAdditionalObjectsEnd( XMLStreamWriter xmlStream, Version requestVersion )
+                            throws XMLStreamException {
+        if ( requestVersion.equals( VERSION_200 ) ) {
+            xmlStream.writeEndElement();
+            xmlStream.writeEndElement();
+        }
+    }
+
+    private boolean isResolvable( GMLReference<?> ref ) {
+        try {
+            ref.getReferencedObject();
+            return true;
+        } catch ( ReferenceResolvingException e ) {
+            return false;
         }
     }
 
