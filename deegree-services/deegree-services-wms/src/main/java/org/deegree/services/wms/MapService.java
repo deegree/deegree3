@@ -99,10 +99,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>MapService</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 @LoggingNotes(error = "logs errors when querying feature stores/evaluating filter encoding expressions", trace = "logs stack traces", warn = "logs problems when loading layers, also invalid values for vendor specific parameters such as ANTIALIAS, QUALITY etc.", debug = "logs if layers are skipped because of scale constraints, and info about feature store queries")
@@ -111,14 +111,14 @@ public class MapService {
     private static final Logger LOG = getLogger( MapService.class );
 
     /**
-     * 
+     *
      */
     public HashMap<String, Layer> layers;
 
     private Layer root;
 
     /**
-     * 
+     *
      */
     public StyleRegistry registry;
 
@@ -126,7 +126,7 @@ public class MapService {
 
     MapOptions defaultLayerOptions;
 
-    private LinkedList<LayerUpdater> dynamics = new LinkedList<LayerUpdater>();
+    private final LinkedList<LayerUpdater> dynamics = new LinkedList<LayerUpdater>();
 
     /**
      * The current update sequence.
@@ -141,9 +141,9 @@ public class MapService {
 
     HashMap<String, Theme> themeMap;
 
-    private GetLegendHandler getLegendHandler;
+    private final GetLegendHandler getLegendHandler;
 
-    private OldStyleMapService oldStyleMapService;
+    private final OldStyleMapService oldStyleMapService;
 
     /**
      * @param conf
@@ -346,7 +346,9 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                list.add( l.mapQuery( query, headers ) );
+                if ( l.getMetadata().getStyles().containsKey( query.getStyle().getName() ) ) {
+                    list.add( l.mapQuery( query, headers ) );
+                }
             }
         }
         Iterator<MapOptions> optIter = mapOptions.iterator();
@@ -419,7 +421,7 @@ public class MapService {
         List<OperatorFilter> filters = gfi.getFilters();
         Iterator<OperatorFilter> filterItr = filters == null ? null : filters.iterator();
         while ( layerItr.hasNext() ) {
-            LayerRef lr = layerItr.next();
+            layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
 
