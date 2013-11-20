@@ -69,25 +69,25 @@ import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
 
 /**
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class FeatureLayer extends AbstractLayer {
 
     private static final Logger LOG = getLogger( FeatureLayer.class );
 
-    private FeatureStore featureStore;
+    private final FeatureStore featureStore;
 
-    private OperatorFilter filter;
+    private final OperatorFilter filter;
 
     private final QName featureType;
 
     SortProperty[] sortBy, sortByFeatureInfo;
 
-    private DimensionFilterBuilder dimFilterBuilder;
+    private final DimensionFilterBuilder dimFilterBuilder;
 
     public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
                          List<SortProperty> sortBy, List<SortProperty> sortByFeatureInfo ) {
@@ -107,14 +107,9 @@ public class FeatureLayer extends AbstractLayer {
     @Override
     public FeatureLayerData mapQuery( final LayerQuery query, List<String> headers )
                             throws OWSException {
-        StyleRef ref = query.getStyle();
-        if ( !ref.isResolved() ) {
-            ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
-        }
-        Style style = ref.getStyle();
-
+        Style style = resolveStyleRef( query.getStyle() );
         if ( style == null ) {
-            throw new OWSException( "The style " + ref.getName() + " is not defined for layer "
+            throw new OWSException( "The style " + query.getStyle().getName() + " is not defined for layer "
                                     + getMetadata().getName() + ".", "StyleNotDefined", "styles" );
         }
         style = style.filter( query.getScale() );
