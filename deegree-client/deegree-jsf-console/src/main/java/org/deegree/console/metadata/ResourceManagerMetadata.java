@@ -91,7 +91,8 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
         }
 
         String className = mgr.getClass().getName();
-        URL url = ResourceManagerMetadata.class.getResource( "/META-INF/console/resourcemanager/" + className );
+        String metadataUrl = "/META-INF/console/resourcemanager/" + className;
+        URL url = ResourceManagerMetadata.class.getResource( metadataUrl );
         if ( url != null ) {
             LOG.debug( "Loading resource manager metadata from '" + url + "'" );
             Properties props = new Properties();
@@ -112,6 +113,8 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
             } finally {
                 IOUtils.closeQuietly( is );
             }
+        } else {
+            throw new RuntimeException ("Internal error: File '" + metadataUrl + "' missing on classpath.");
         }
         this.mgr = mgr;
     }
