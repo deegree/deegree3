@@ -73,11 +73,11 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
 
     private static Logger LOG = LoggerFactory.getLogger( DefaultResourceManager.class );
 
-    private ResourceManagerMetadata<T> metadata;
+    private final ResourceManagerMetadata<T> metadata;
 
-    protected Map<ResourceIdentifier<T>, ResourceMetadata<T>> metadataMap;
+    protected final Map<ResourceIdentifier<T>, ResourceMetadata<T>> metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
 
-    private Map<String, ResourceProvider<T>> nsToProvider;
+    private final Map<String, ResourceProvider<T>> nsToProvider = new HashMap<String, ResourceProvider<T>>();
 
     private Workspace workspace;
 
@@ -154,10 +154,13 @@ public class DefaultResourceManager<T extends Resource> implements ResourceManag
     }
 
     @Override
+    public void remove( ResourceMetadata<?> md ) {
+        metadataMap.remove( md.getIdentifier() );
+    }
+
+    @Override
     public void startup( Workspace workspace ) {
         this.workspace = workspace;
-        nsToProvider = new HashMap<String, ResourceProvider<T>>();
-        metadataMap = new HashMap<ResourceIdentifier<T>, ResourceMetadata<T>>();
 
         // load providers
         Iterator<? extends ResourceProvider<T>> iter = ServiceLoader.load( metadata.getProviderClass(),

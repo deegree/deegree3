@@ -1,10 +1,12 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
+ This file is part of deegree
  Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -20,19 +22,9 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
@@ -48,7 +40,6 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceStates.ResourceState;
@@ -58,13 +49,12 @@ import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 
 /**
- * Wraps information on a {@link Resource} and its configuration file.
+ * JSF bean that wraps a {@link ResourceMetadata} and actions.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @since 3.4
  */
 public class Config implements Comparable<Config> {
 
@@ -80,7 +70,7 @@ public class Config implements Comparable<Config> {
 
     private String resourceOutcome;
 
-    private ResourceMetadata<?> metadata;
+    private final ResourceMetadata<?> metadata;
 
     protected Workspace workspace;
 
@@ -149,9 +139,13 @@ public class Config implements Comparable<Config> {
         try {
             workspace.getLocationHandler().delete( metadata.getLocation() );
         } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
-                                                null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
+            JsfTools.indicateException( "Deleting resource file", t );
+            return;
+        }
+        try {
+            workspace.destroy( metadata.getIdentifier() );
+        } catch ( Throwable t ) {
+            JsfTools.indicateException( "Destroying resource", t );
         }
     }
 
@@ -164,6 +158,7 @@ public class Config implements Comparable<Config> {
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 
+    @Override
     public int compareTo( Config o ) {
         return id.compareTo( o.id );
     }

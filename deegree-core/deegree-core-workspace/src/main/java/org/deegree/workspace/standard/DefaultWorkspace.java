@@ -519,7 +519,14 @@ public class DefaultWorkspace implements Workspace {
             LOG.info( "Shutting down {}.", id );
             res.destroy();
         }
-        states.setState( id, Scanned );
+        states.setState( id, null );
+        for ( ResourceManager<?> mgr : getResourceManagers() ) {
+            for ( ResourceMetadata<?> md : mgr.getResourceMetadata() ) {
+                if ( md.getIdentifier() == id ) {
+                    mgr.remove (md);
+                }
+            }
+        }
         resources.remove( id );
         errors.clear( id );
     }
