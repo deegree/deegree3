@@ -38,7 +38,7 @@ import org.deegree.feature.persistence.FeatureStoreManager;
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
- * @since 3.3
+ * @since 3.4
  */
 @ManagedBean
 @RequestScoped
