@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-e by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -70,10 +69,9 @@ import org.slf4j.Logger;
  * deegree resources.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
- * @version $Revision$, $Date$
+ * @since 3.4
  */
 public class DeegreeWorkspace {
 
@@ -305,14 +303,6 @@ public class DeegreeWorkspace {
      */
     public File getLocation() {
         return dir;
-    }
-
-    /**
-     * @param c
-     * @return null, if no such manager was loaded
-     */
-    public <T extends ResourceManager> T getSubsystemManager( Class<T> c ) {
-        return (T) managerMap.get( c );
     }
 
     private void searchDeps( List<Class<? extends ResourceManager>> list, ResourceManager m ) {
