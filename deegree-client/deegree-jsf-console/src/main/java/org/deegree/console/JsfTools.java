@@ -39,6 +39,9 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Static utility methods for JSF stuff.
  * 
@@ -47,6 +50,8 @@ import javax.faces.context.FacesContext;
  * @since 3.4
  */
 public class JsfTools {
+
+    private static Logger LOG = LoggerFactory.getLogger( JsfTools.class );
 
     /**
      * Provides information on a failed action to the user.
@@ -60,6 +65,7 @@ public class JsfTools {
         String msg = failedAction + " failed: " + cause.getMessage() + "(" + cause.getClass() + ")";
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
+        LOG.error( msg, cause );
     }
 
     /**
@@ -74,6 +80,7 @@ public class JsfTools {
         String msg = failedAction + " failed: " + cause;
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
+        LOG.error( cause );
     }
 
 }
