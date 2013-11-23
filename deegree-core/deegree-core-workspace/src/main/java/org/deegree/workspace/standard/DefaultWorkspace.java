@@ -146,7 +146,9 @@ public class DefaultWorkspace implements Workspace {
             for ( ResourceIdentifier<? extends Resource> dep : md.getDependencies() ) {
                 if ( states.getState( dep ) != Initialized ) {
                     states.setState( md.getIdentifier(), Error );
-                    LOG.error( "Dependency {} for resource {} failed to initialize.", dep, md );
+                    String msg = "Dependent resource " + dep + " failed to initialize.";
+                    LOG.error( msg );
+                    errors.registerError( md.getIdentifier(), msg );
                     continue outer;
                 }
             }
