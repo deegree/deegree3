@@ -75,6 +75,28 @@ To find out what index you need to access, have a look at this post_ on the mail
 
 .. _post: http://osgeo-org.1560.n6.nabble.com/SE-Styling-MarkIndex-glyph-index-tt5022210.html#a5026571
 
+-------------------
+Label AutoPlacement
+-------------------
+
+deegree has an option for SE LabelPlacement to automatically place labels on the map.
+To enable AutoPlacement, you can simply set the "auto" attribute to "true".
+
+.. code-block:: xml
+
+    <LabelPlacement>
+      <PointPlacement auto="true">
+        <Displacement>
+          <DisplacementX>0</DisplacementX>
+          <DisplacementY>0</DisplacementY>
+        </Displacement>
+        <Rotation>0</Rotation>
+      </PointPlacement>
+    </LabelPlacement> 
+
+.. tip::
+  AutoPlacement for labels only works for PointPlacement. AutoPlacement for LinePlacement is not implemented yet.
+
 __________________________
 Filter encoding extensions
 __________________________
