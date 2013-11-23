@@ -156,14 +156,10 @@ public class Config implements Comparable<Config> {
     }
 
     public void showErrors() {
-        String msg = "Initialization of resource with id '" + id + "' failed:";
-
+        String msg = "Initialization of resource '" + id + "' failed: ";
         for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
             msg += error;
         }
-
-        msg += " (The application server log may contain additional information.)";
-
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }
