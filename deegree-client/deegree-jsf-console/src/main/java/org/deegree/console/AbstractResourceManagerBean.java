@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.console.datastore.feature.FeatureStoreConfig;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.services.controller.OGCFrontController;
@@ -130,6 +131,17 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
 
     public String getStartView() {
         return null;
+    }
+
+    public boolean getHasErrors () {
+        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
+            FeatureStoreConfig config = new FeatureStoreConfig( md, resourceManager );
+            String state = config.getState();
+            if ( "Error".equals( state )) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
