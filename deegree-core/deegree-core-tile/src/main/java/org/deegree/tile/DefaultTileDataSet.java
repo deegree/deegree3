@@ -98,14 +98,11 @@ public class DefaultTileDataSet implements TileDataSet {
         // select correct matrix
         Iterator<TileDataLevel> iter = levels.values().iterator();
         TileDataLevel matrix = iter.next();
-        TileDataLevel next = matrix;
-        while ( next.getMetadata().getResolution() <= resolution && iter.hasNext() ) {
-            matrix = next;
-            next = iter.next();
+        while ( matrix.getMetadata().getResolution() > resolution && iter.hasNext() ) {
+            matrix = iter.next();
         }
-        if ( next.getMetadata().getResolution() <= resolution ) {
-            matrix = next;
-        }
+        if ( iter.hasNext() )
+            matrix = iter.next();
 
         final long[] idxs = Tiles.getTileIndexRange( matrix, envelope );
 
