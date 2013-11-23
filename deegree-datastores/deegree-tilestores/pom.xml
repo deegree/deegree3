@@ -31,7 +31,7 @@
     <module>deegree-tilestore-geotiff</module>
     <module>deegree-tilestore-remotewms</module>
     <module>deegree-tilestore-remotewmts</module>
+    <module>deegree-tilestore-layer</module>
   </modules>
 
 </project>
-
