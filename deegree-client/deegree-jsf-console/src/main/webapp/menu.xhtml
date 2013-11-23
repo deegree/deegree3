@@ -20,37 +20,37 @@
       <h:outputText styleClass="menutopic" value="webservices" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="services" target="/console/webservices/index" />
+      <dgc:menuitem displayname="services" target="/console/webservices/index" hasErrors="#{servicesBean.hasErrors}" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="data stores" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="coverage" target="/console/datastore/coverage/index" />
-      <dgc:menuitem displayname="feature" target="/console/datastore/feature/index" />
-      <dgc:menuitem displayname="metadata" target="/console/datastore/metadata/index" />
-      <dgc:menuitem displayname="tile" target="/console/datastore/tile/index" />
+      <dgc:menuitem displayname="coverage" target="/console/datastore/coverage/index" hasErrors="#{coverageManagerBean.hasErrors}" />
+      <dgc:menuitem displayname="feature" target="/console/datastore/feature/index" hasErrors="#{featureStoreManagerBean.hasErrors}" />
+      <dgc:menuitem displayname="metadata" target="/console/datastore/metadata/index" hasErrors="#{metadataStoreManagerBean.hasErrors}" />
+      <dgc:menuitem displayname="tile" target="/console/datastore/tile/index" hasErrors="#{tileStoreManagerBean.hasErrors}" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="map layers" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="layers" target="/console/layer/layer/index" />
-      <dgc:menuitem displayname="styles" target="/console/layer/style/index" />
-      <dgc:menuitem displayname="themes" target="/console/layer/theme/index" />
+      <dgc:menuitem displayname="layers" target="/console/layer/layer/index" hasErrors="#{layerManagerBean.hasErrors}" />
+      <dgc:menuitem displayname="styles" target="/console/layer/style/index" hasErrors="#{styleManagerBean.hasErrors}" />
+      <dgc:menuitem displayname="themes" target="/console/layer/theme/index" hasErrors="#{themeManagerBean.hasErrors}" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="connections" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="databases" target="/console/connection/sql/index" />
-      <dgc:menuitem displayname="remote services" target="/console/connection/ows/index" />
+      <dgc:menuitem displayname="databases" target="/console/connection/sql/index" hasErrors="#{sqlConnectionManagerBean.hasErrors}" />
+      <dgc:menuitem displayname="remote services" target="/console/connection/ows/index" hasErrors="#{remoteOwsManagerBean.hasErrors}" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <h:outputText styleClass="menutopic" value="processes" />
     </h:panelGroup>
     <h:panelGroup layout="block">
-      <dgc:menuitem displayname="provider" target="/console/process/index" />
+      <dgc:menuitem displayname="provider" target="/console/process/index" hasErrors="#{processManagerBean.hasErrors}" />
     </h:panelGroup>
   </h:panelGroup>
 </h:panelGroup>
