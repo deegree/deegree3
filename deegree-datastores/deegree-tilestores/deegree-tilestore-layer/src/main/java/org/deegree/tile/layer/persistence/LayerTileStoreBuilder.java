@@ -28,7 +28,6 @@
 package org.deegree.tile.layer.persistence;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +89,6 @@ public class LayerTileStoreBuilder implements ResourceBuilder<TileStore> {
                     LayerTileDataLevel lev = new LayerTileDataLevel( tm, lay );
                     levels.add( lev );
                 }
-
-                Collections.reverse( levels );
 
                 DefaultTileDataSet set = new DefaultTileDataSet( levels, tms, "image/png" );
                 map.put( id, set );
