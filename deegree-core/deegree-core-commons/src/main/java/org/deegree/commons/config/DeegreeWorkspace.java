@@ -102,9 +102,9 @@ public class DeegreeWorkspace {
 
     private final File dir;
 
-    private List<ResourceManager> managers = new ArrayList<ResourceManager>();
+    private final List<ResourceManager> managers = new ArrayList<ResourceManager>();
 
-    private Map<Class<? extends ResourceManager>, ResourceManager> managerMap;
+    private final Map<Class<? extends ResourceManager>, ResourceManager> managerMap = new HashMap<Class<? extends ResourceManager>, ResourceManager>();
 
     private DefaultWorkspace workspace;
 
@@ -143,7 +143,6 @@ public class DeegreeWorkspace {
         Iterator<ResourceManager> iter = ServiceLoader.load( ResourceManager.class, getModuleClassLoader() ).iterator();
 
         Map<ResourceManager, List<Class<? extends ResourceManager>>> map = new HashMap<ResourceManager, List<Class<? extends ResourceManager>>>();
-        managerMap = new HashMap<Class<? extends ResourceManager>, ResourceManager>();
 
         // first, collect all manager instances
         while ( iter.hasNext() ) {
