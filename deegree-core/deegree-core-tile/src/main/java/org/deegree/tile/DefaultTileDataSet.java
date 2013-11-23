@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
@@ -96,13 +97,18 @@ public class DefaultTileDataSet implements TileDataSet {
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         // select correct matrix
-        Iterator<TileDataLevel> iter = levels.values().iterator();
+        List<TileDataLevel> levels = new ArrayList<TileDataLevel>();
+        TreeMap<Double, TileDataLevel> map = new TreeMap<Double, TileDataLevel>();
+        for ( TileDataLevel l : this.levels.values() ) {
+            map.put( l.getMetadata().getResolution(), l );
+        }
+        levels.addAll( map.values() );
+        Collections.reverse( levels );
+        Iterator<TileDataLevel> iter = levels.iterator();
         TileDataLevel matrix = iter.next();
         while ( matrix.getMetadata().getResolution() > resolution && iter.hasNext() ) {
             matrix = iter.next();
         }
-        if ( iter.hasNext() )
-            matrix = iter.next();
 
         final long[] idxs = Tiles.getTileIndexRange( matrix, envelope );
 
