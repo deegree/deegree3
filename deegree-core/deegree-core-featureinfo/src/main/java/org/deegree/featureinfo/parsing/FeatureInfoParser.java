@@ -234,7 +234,7 @@ public class FeatureInfoParser {
                     props.add( tp );
                     nextElement( reader );
                 }
-                GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
+                GenericFeatureType ft = new GenericFeatureType( new QName( singleFeatureTagName ), props, false );
                 col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, null ) );
                 nextElement( reader );
             }
