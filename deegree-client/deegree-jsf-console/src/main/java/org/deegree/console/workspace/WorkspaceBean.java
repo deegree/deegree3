@@ -40,7 +40,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.console.JsfTools.indicateException;
+import static org.deegree.console.JsfUtils.indicateException;
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 import java.io.File;

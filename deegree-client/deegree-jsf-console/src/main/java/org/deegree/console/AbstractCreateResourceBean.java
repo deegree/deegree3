@@ -27,6 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import static org.deegree.console.JsfUtils.getWorkspace;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,12 +43,10 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.apache.commons.io.IOUtils;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
-import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
-import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.deegree.workspace.standard.DefaultWorkspace;
@@ -70,17 +70,18 @@ public abstract class AbstractCreateResourceBean {
 
     private List<String> configTemplates;
 
-    private final transient ResourceManagerMetadata metadata;
+    private transient ResourceManagerMetadata metadata;
 
-    private final Workspace workspace;
+    private File resourceDir;
 
-    private final File resourceDir;
+    protected AbstractCreateResourceBean() {
+        // required by JSF
+    }
 
-    public AbstractCreateResourceBean( Class<? extends ResourceManager<?>> resourceMgrClass ) {
-        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-        ResourceManager<?> mgr = workspace.getResourceManager( resourceMgrClass );
-        metadata = ResourceManagerMetadata.getMetadata( mgr, workspace );
-        File wsDir = ( (DefaultWorkspace) workspace ).getLocation();
+    protected AbstractCreateResourceBean( Class<? extends ResourceManager<?>> resourceMgrClass ) {
+        ResourceManager<?> mgr = getWorkspace().getResourceManager( resourceMgrClass );
+        metadata = ResourceManagerMetadata.getMetadata( mgr, getWorkspace() );
+        File wsDir = ( (DefaultWorkspace) getWorkspace() ).getLocation();
         resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
         if ( !getTypes().isEmpty() ) {
             type = getTypes().get( 0 );
@@ -144,13 +145,13 @@ public abstract class AbstractCreateResourceBean {
             IOUtils.copy( templateURL.openStream(), os );
             os.close();
             ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
-            workspace.add( loc );
-            ResourceMetadata<?> rmd = workspace.getResourceMetadata( ident.getProvider(), ident.getId() );
+            getWorkspace().add( loc );
+            ResourceMetadata<?> rmd = getWorkspace().getResourceMetadata( ident.getProvider(), ident.getId() );
             Config c = new Config( rmd, metadata.getManager(), getOutcome(), true );
             c.setTemplate( templateURL );
             return c.edit();
         } catch ( Exception t ) {
-            JsfTools.indicateException( "Creating resource", t );
+            JsfUtils.indicateException( "Creating resource", t );
         }
         return getOutcome();
     }

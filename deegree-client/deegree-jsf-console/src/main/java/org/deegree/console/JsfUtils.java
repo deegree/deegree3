@@ -39,6 +39,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +51,18 @@ import org.slf4j.LoggerFactory;
  * 
  * @since 3.4
  */
-public class JsfTools {
+public class JsfUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( JsfTools.class );
+    private static Logger LOG = LoggerFactory.getLogger( JsfUtils.class );
+
+    /**
+     * Returns the active {@link Workspace}.
+     * 
+     * @return active workspace, never <code>null</code>
+     */
+    public static Workspace getWorkspace() {
+        return OGCFrontController.getServiceWorkspace().getNewWorkspace();
+    }
 
     /**
      * Provides information on a failed action to the user.

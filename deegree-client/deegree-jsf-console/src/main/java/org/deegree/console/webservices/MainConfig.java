@@ -29,6 +29,7 @@ package org.deegree.console.webservices;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
@@ -42,11 +43,17 @@ import org.deegree.console.Config;
  * 
  * @since 3.4
  */
-public class MainConfig extends Config {
+public class MainConfig extends Config implements Serializable {
+
+    private static final long serialVersionUID = -8185523546919352171L;
 
     private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
 
     private String file;
+
+    public MainConfig() {
+        super( null, null, "/console/webservices/index", false );
+    }
 
     public MainConfig( String file ) {
         super( null, null, "/console/webservices/index", false );

@@ -33,7 +33,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.console.JsfTools;
+import org.deegree.console.JsfUtils;
 
 /**
  * JSF backing bean for creating a new workspace folder.
@@ -53,7 +53,7 @@ public class CreateWorkspaceBean {
         File targetWorkspace = new File( workspaceRoot, workspaceName );
         boolean success = targetWorkspace.mkdir();
         if ( !success ) {
-            JsfTools.indicateException( "Creation of workspace", "Workspace identifier already exists." );
+            JsfUtils.indicateException( "Creation of workspace", "Workspace identifier already exists." );
         }
     }
 

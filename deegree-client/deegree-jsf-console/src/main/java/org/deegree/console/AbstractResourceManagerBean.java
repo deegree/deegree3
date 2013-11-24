@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -56,7 +57,9 @@ import org.deegree.workspace.Workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> {
+public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> implements Serializable {
+
+    private static final long serialVersionUID = -7795125766411006135L;
 
     private String newConfigType;
 
@@ -66,11 +69,15 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
 
     private String newConfigId;
 
-    protected final ResourceManager<?> resourceManager;
+    private transient ResourceManagerMetadata metadata;
 
-    private final ResourceManagerMetadata metadata;
+    protected transient ResourceManager<?> resourceManager;
 
-    private final Workspace workspace;
+    private transient Workspace workspace;
+
+    protected AbstractResourceManagerBean() {
+        // default constructor required
+    }
 
     protected AbstractResourceManagerBean( Class<T> mgrClass ) {
         workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
@@ -133,11 +140,11 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
         return null;
     }
 
-    public boolean getHasErrors () {
+    public boolean getHasErrors() {
         for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
             FeatureStoreConfig config = new FeatureStoreConfig( md, resourceManager );
             String state = config.getState();
-            if ( "Error".equals( state )) {
+            if ( "Error".equals( state ) ) {
                 return true;
             }
         }
