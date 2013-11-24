@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -191,6 +192,10 @@ public class FeatureInfoParser {
 
         String ftName = reader.getLocalName();
         String singleFeatureTagName = ftName.split( "_" )[0] + "_feature";
+        if ( StringUtils.count(ftName, "_") > 1 ) {
+            int splitIndex = ftName.lastIndexOf( "_" );
+            singleFeatureTagName = ftName.substring(0, splitIndex) + "_feature";               
+        }
 
         while ( reader.isStartElement() && reader.getLocalName().equals( ftName ) ) {
 
