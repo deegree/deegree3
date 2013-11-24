@@ -192,9 +192,9 @@ public class FeatureInfoParser {
 
         String ftName = reader.getLocalName();
         String singleFeatureTagName = ftName.split( "_" )[0] + "_feature";
-        if ( StringUtils.count(ftName, "_") > 1 ) {
+        if ( StringUtils.count( ftName, "_" ) > 1 ) {
             int splitIndex = ftName.lastIndexOf( "_" );
-            singleFeatureTagName = ftName.substring(0, splitIndex) + "_feature";               
+            singleFeatureTagName = ftName.substring( 0, splitIndex ) + "_feature";
         }
 
         while ( reader.isStartElement() && reader.getLocalName().equals( ftName ) ) {
