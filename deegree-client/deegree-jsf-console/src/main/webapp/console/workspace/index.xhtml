@@ -51,6 +51,25 @@
         </table>
 
         <br /> <br />
+        <h:outputText styleClass="titel" value="Import an official workspace" />
+        <table style="margin: 10px 0px; font-size: small" border="0">
+          <ui:repeat var="workspaceName" value="#{workspace.remoteWorkspaces}">
+            <h:form>
+              <tr align="left">
+                <td><h:outputText value="#{workspaceName}" /></td>
+                <td><h:commandButton styleClass="buttonEdit" label="#{workspaceName}" value="Import"
+                    onclick="show();" action="#{workspace.downloadWorkspace}">
+                    <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
+                  </h:commandButton></td>
+              </tr>
+            </h:form>
+          </ui:repeat>
+        </table>
+        <h:panelGroup rendered="#{empty workspace.remoteWorkspaces}">
+          <h:outputText styleClass="error" value="Unable to fetch list of workspaces. Are your proxy settings correct?" />
+        </h:panelGroup>
+
+        <br /> <br />
         <h:outputText styleClass="titel" value="Create a new workspace" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <h:form>
@@ -80,25 +99,6 @@
             </tr>
           </table>
         </h:form>
-
-        <br /> <br />
-        <h:outputText styleClass="titel" value="Import an official workspace" />
-        <table style="margin: 10px 0px; font-size: small" border="0">
-          <ui:repeat var="workspaceName" value="#{workspace.remoteWorkspaces}">
-            <h:form>
-              <tr align="left">
-                <td><h:outputText value="#{workspaceName}" /></td>
-                <td><h:commandButton styleClass="buttonEdit" label="#{workspaceName}" value="Import"
-                    onclick="show();" action="#{workspace.downloadWorkspace}">
-                    <f:setPropertyActionListener target="#{actionParams.param1}" value="#{workspaceName}" />
-                  </h:commandButton></td>
-              </tr>
-            </h:form>
-          </ui:repeat>
-        </table>
-        <h:panelGroup rendered="#{empty workspace.remoteWorkspaces}">
-          <h:outputText styleClass="error" value="Unable to fetch list of workspaces. Are your proxy settings correct?" />
-        </h:panelGroup>
 
       </fieldset>
     </h:panelGroup>
