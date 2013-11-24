@@ -29,6 +29,7 @@ package org.deegree.console;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,9 @@ public abstract class AbstractCreateResourceBean {
         try {
             Class<?> pcls = metadata.getManager().getMetadata().getProviderClass();
             DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( pcls, id );
+            if ( !resourceDir.mkdirs() ) {
+                throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
+            }
             File resourceFile = new File( resourceDir, id + ".xml" );
             FileOutputStream os = new FileOutputStream( resourceFile );
             IOUtils.copy( templateURL.openStream(), os );
