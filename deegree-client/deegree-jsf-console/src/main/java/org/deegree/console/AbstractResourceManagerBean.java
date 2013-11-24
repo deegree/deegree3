@@ -70,7 +70,7 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
 
     private final ResourceManagerMetadata metadata;
 
-    private Workspace workspace;
+    private final Workspace workspace;
 
     protected AbstractResourceManagerBean( Class<T> mgrClass ) {
         workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
