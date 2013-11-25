@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import org.deegree.commons.modules.ModuleInfo;
+import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;

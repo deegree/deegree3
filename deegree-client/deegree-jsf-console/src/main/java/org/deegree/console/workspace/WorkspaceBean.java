@@ -63,7 +63,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.modules.ModuleInfo;
+import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;
