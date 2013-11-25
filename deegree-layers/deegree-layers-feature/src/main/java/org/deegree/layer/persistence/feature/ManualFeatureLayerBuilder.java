@@ -68,21 +68,21 @@ import org.deegree.style.se.unevaluated.Style;
 
 /**
  * Builds feature layers that are manually configured.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 class ManualFeatureLayerBuilder {
 
-    private FeatureLayers lays;
+    private final FeatureLayers lays;
 
-    private URL configUrl;
+    private final URL configUrl;
 
-    private FeatureStore store;
+    private final FeatureStore store;
 
-    private DeegreeWorkspace workspace;
+    private final DeegreeWorkspace workspace;
 
     ManualFeatureLayerBuilder( FeatureLayers lays, URL configUrl, FeatureStore store, DeegreeWorkspace workspace ) {
         this.lays = lays;
@@ -94,13 +94,14 @@ class ManualFeatureLayerBuilder {
     MultipleLayerStore buildFeatureLayers()
                             throws XMLStreamException, URISyntaxException, FeatureStoreException {
         Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+        int index = 0;
         for ( FeatureLayerType lay : lays.getFeatureLayer() ) {
             QName featureType = lay.getFeatureType();
 
             // these methods do not use the dom elements but reparse the configuration file using StAX due to bugs
             // in jaxb/woodstox when using multiple jaxb:dom bindings and DOMSources for XMLStreamReaders
-            OperatorFilter filter = QueryOptionsParser.parseFilter( configUrl );
-            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( configUrl );
+            OperatorFilter filter = QueryOptionsParser.parseFilter( index, configUrl );
+            List<SortProperty> sortBy = QueryOptionsParser.parseSortBy( index, configUrl );
             List<SortProperty> sortByFeatureInfo = sortBy;
             if ( sortBy != null && lay.getSortBy().isReverseFeatureInfo() ) {
                 sortByFeatureInfo = new ArrayList<SortProperty>();
@@ -116,6 +117,7 @@ class ManualFeatureLayerBuilder {
             md.setLegendStyles( p.second );
             Layer l = new FeatureLayer( md, store, featureType, filter, sortBy, sortByFeatureInfo );
             map.put( lay.getName(), l );
+            index++;
         }
         return new MultipleLayerStore( map );
     }
