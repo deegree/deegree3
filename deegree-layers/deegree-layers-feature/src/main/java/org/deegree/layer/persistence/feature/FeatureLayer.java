@@ -170,7 +170,7 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter() );
 
-        final Envelope clickBox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
+        final Envelope clickBox = query.calcClickBox( query.getLayerRadius() );
 
         filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
 

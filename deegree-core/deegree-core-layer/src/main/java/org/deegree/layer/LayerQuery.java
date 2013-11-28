@@ -79,6 +79,8 @@ public class LayerQuery {
 
     private Envelope queryBox;
 
+    private int layerRadius;
+
     /**
      * @param envelope
      * @param width
@@ -90,6 +92,7 @@ public class LayerQuery {
      * @param pixelSize
      *            must be in meter, not mm
      * @param options
+     * @param layerRadius
      */
     public LayerQuery( Envelope envelope, int width, int height, StyleRef style, OperatorFilter filter,
                        Map<String, String> parameters, Map<String, List<?>> dimensions, double pixelSize,
@@ -109,7 +112,7 @@ public class LayerQuery {
 
     public LayerQuery( Envelope envelope, int width, int height, int x, int y, int featureCount, OperatorFilter filter,
                        StyleRef style, Map<String, String> parameters, Map<String, List<?>> dimensions,
-                       MapOptionsMaps options, Envelope queryBox ) {
+                       MapOptionsMaps options, Envelope queryBox, int layerRadius ) {
         this.envelope = envelope;
         this.width = width;
         this.height = height;
@@ -122,6 +125,7 @@ public class LayerQuery {
         this.dimensions = dimensions;
         this.options = options;
         this.queryBox = queryBox;
+        this.layerRadius = layerRadius;
         this.scale = RenderHelper.calcScaleWMS130( width, height, envelope, envelope.getCoordinateSystem(),
                                                    DEFAULT_PIXEL_SIZE );
         this.resolution = Utils.calcResolution( envelope, width, height );
@@ -181,6 +185,10 @@ public class LayerQuery {
 
     public MapOptionsMaps getRenderingOptions() {
         return options;
+    }
+    
+    public int getLayerRadius() {
+        return layerRadius;
     }
 
     public Envelope calcClickBox( int radius ) {
