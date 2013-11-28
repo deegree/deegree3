@@ -1437,7 +1437,7 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private String fixColumnNameIfStartingWithDigit( String column ) {
+    protected static String fixColumnNameIfStartingWithDigit( String column ) {
         int indexOfLastDot = column.lastIndexOf( "." );
         String pre = column.substring( 0, indexOfLastDot + 1 );
         String columnName = column.substring( indexOfLastDot + 1 );
