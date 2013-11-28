@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4-pre9-SNAPSHOT</version>
+  <version>3.4-cds-pre9-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -17,8 +17,8 @@
 
   <repositories>
     <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <id>idgis-repo</id>
+      <url>https://jenkins.occamlabs.de/nexus/content/groups/idgis/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -30,12 +30,12 @@
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <id>idgis-releases</id>
+      <url>https://jenkins.occamlabs.de/nexus/content/repositories/idgis-releases/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>idgis-snapshots</id>
+      <url>https://jenkins.occamlabs.de/nexus/content/repositories/idgis-snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
