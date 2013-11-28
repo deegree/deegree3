@@ -189,8 +189,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 }
                 moduleInfo = new ModuleInfo( buildArtifactId, pomVersion, buildRev, buildDate, buildBy );
             } finally {
-                closeQuietly( buildInfoStream );
-                closeQuietly( classLoader );
+                buildInfoStream.close();
             }
         }
         return moduleInfo;
