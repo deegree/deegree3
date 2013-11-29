@@ -115,6 +115,8 @@ public class MapService {
 
     private GetLegendHandler getLegendHandler;
 
+    private int r;
+
     /**
      * @param conf
      * @param adapter
@@ -237,6 +239,11 @@ public class MapService {
             insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
                                   defaultLayerOptions );
             mapOptions.add( options.get( l.getMetadata().getName() ) );
+            if ( l.getMetadata().getMapOptions() != null && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
+                r = l.getMetadata().getMapOptions().getFeatureInfoRadius();
+            } else {
+                r = defaultLayerOptions.getFeatureInfoRadius();
+            }
         }
 
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
@@ -297,7 +304,7 @@ public class MapService {
 
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(), r );
             queries.add( query );
         }
         return queries;
