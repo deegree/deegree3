@@ -39,6 +39,8 @@ import static java.lang.Boolean.TRUE;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
+import static org.deegree.feature.persistence.sql.jaxb.NullEscalationType.AUTO;
+import static org.deegree.feature.persistence.sql.jaxb.NullEscalationType.FALSE;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 
@@ -88,6 +90,7 @@ import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FeatureParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
+import org.deegree.feature.persistence.sql.jaxb.NullEscalationType;
 import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
@@ -151,7 +154,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, StorageCRS storageCRS,
                                    List<NamespaceHint> nsHints, BLOBMapping blobConf,
                                    List<FeatureTypeMappingJAXB> ftMappingConfs, boolean deleteCascadingByDB )
-                            throws FeatureStoreException {
+                                                           throws FeatureStoreException {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
 
@@ -207,7 +210,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                             String oldPrefix = nsBindings.getPrefix( nsUri );
                             if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
                                 LOG.debug( "Multiple prefices for namespace '" + nsUri + "': " + prefix + " / "
-                                           + oldPrefix );
+                                                        + oldPrefix );
                             } else {
                                 nsBindings.addNamespace( prefix, nsUri );
                             }
@@ -258,6 +261,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
      * 
      * @return mapped application schema, never <code>null</code>
      */
+    @Override
     public MappedAppSchema getMappedSchema() {
         FeatureType[] fts = gmlSchema.getFeatureTypes();
         org.deegree.feature.persistence.sql.FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new org.deegree.feature.persistence.sql.FeatureTypeMapping[ftNameToMapping.size()] );
@@ -308,7 +312,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private Pair<BlobMapping, BBoxTableMapping> buildBlobMapping( BLOBMapping blobMappingConf, GMLVersion gmlVersion ) {
         String ftTable = blobMappingConf.getFeatureTypeTable() == null ? FEATURE_TYPE_TABLE
-                                                                      : blobMappingConf.getFeatureTypeTable();
+                                                                       : blobMappingConf.getFeatureTypeTable();
         BBoxTableMapping bboxMapping = new BBoxTableMapping( ftTable, geometryParams.getCrs() );
         String blobTable = blobMappingConf.getBlobTable() == null ? GML_OBJECTS_TABLE : blobMappingConf.getBlobTable();
         BlobMapping blobMapping = new BlobMapping( blobTable, geometryParams.getCrs(), new BlobCodec( gmlVersion, NONE ) );
@@ -376,7 +380,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             return buildMapping( currentTable, elDecl, (ComplexParticleJAXB) value );
         }
         throw new RuntimeException( "Internal error. Unhandled particle mapping JAXB bean '"
-                                    + value.getClass().getName() + "'." );
+                                + value.getClass().getName() + "'." );
     }
 
     private Mapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -401,7 +405,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         if ( me instanceof DBField ) {
             List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
             LOG.debug( "Targeted primitive type: " + pt );
-            return new PrimitiveMapping( path, pt.second, me, pt.first, joinedTable, config.getCustomConverter() );
+            boolean escalateVoid = determineParticleVoidability( pt.second, config.getNullEscalation() );
+            return new PrimitiveMapping( path, escalateVoid, me, pt.first, joinedTable, config.getCustomConverter() );
         } else if ( me instanceof StringConst ) {
             String s = me.toString();
             s = s.substring( 1, s.length() - 1 );
@@ -423,8 +428,9 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         if ( pt instanceof GeometryPropertyType ) {
             type = ( (GeometryPropertyType) pt ).getGeometryType();
         }
+        boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new GeometryMapping( path, elDecl.second, me, type, geometryParams, joinedTable );
+        return new GeometryMapping( path, escalateVoid, me, type, geometryParams, joinedTable );
     }
 
     private FeatureMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -439,15 +445,16 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         // TODO rework this
         FeaturePropertyType pt = (FeaturePropertyType) gmlSchema.getGMLSchema().getGMLPropertyDecl( elDecl.first,
                                                                                                     ptName, 0, 1, null );
+        boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new FeatureMapping( path, elDecl.second, hrefMe, pt.getFTName(), joinedTable );
+        return new FeatureMapping( path, escalateVoid, hrefMe, pt.getFTName(), joinedTable );
     }
 
     private CompoundMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
                                           ComplexParticleJAXB config ) {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
-
+        boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         if ( joinedTable != null ) {
             currentTable = joinedTable.get( joinedTable.size() - 1 ).getToTable();
@@ -461,6 +468,17 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                 particles.add( particle );
             }
         }
-        return new CompoundMapping( path, elDecl.second, particles, joinedTable, elDecl.first );
+
+        return new CompoundMapping( path, escalateVoid, particles, joinedTable, elDecl.first );
+    }
+
+    private boolean determineParticleVoidability( boolean fromSchema, NullEscalationType config ) {
+        if (config == null || config == AUTO ) {
+            return fromSchema;
+        }
+        if (config == FALSE) {
+            return true;
+        }
+        return false;
     }
 }

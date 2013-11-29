@@ -36,12 +36,12 @@
 package org.deegree.sqldialect.postgis;
 
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.utils.JDBCUtils.determinePostGISVersion;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceInitException;
@@ -61,7 +61,7 @@ public class PostGISDialectProvider implements SqlDialectProvider {
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
 
     @Override
-    public boolean supportsConnection( Connection connection ) {
+    public boolean supportsConnection( final Connection connection ) {
         String url = null;
         try {
             url = connection.getMetaData().getURL();
@@ -74,18 +74,17 @@ public class PostGISDialectProvider implements SqlDialectProvider {
     }
 
     @Override
-    public SQLDialect createDialect( Connection connection ) {
-        Connection conn = null;
+    public SQLDialect createDialect( final Connection conn ) {
         Statement stmt = null;
         ResultSet rs = null;
         String version = null;
         try {
-            version = JDBCUtils.determinePostGISVersion( conn, LOG );
+            version = determinePostGISVersion( conn, LOG );
         } catch ( Exception e ) {
             LOG.trace( e.getMessage(), e );
             throw new ResourceInitException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            close( rs, stmt, null, LOG );
         }
         return new PostGISDialect( version );
     }
