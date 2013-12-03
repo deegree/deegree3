@@ -757,6 +757,11 @@
       </dependency>
       <dependency>
         <groupId>batik</groupId>
+        <artifactId>batik-codec</artifactId>
+        <version>1.7</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
         <artifactId>batik-xml</artifactId>
         <version>1.7</version>
       </dependency>
