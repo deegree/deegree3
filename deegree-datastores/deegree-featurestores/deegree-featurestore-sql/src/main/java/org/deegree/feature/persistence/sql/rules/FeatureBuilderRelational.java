@@ -37,6 +37,8 @@ package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.jaxen.saxpath.Axis.CHILD;
 
 import java.sql.Connection;
@@ -522,7 +524,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             }
                         }
                     }
-                    nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
+                    nilAttrs.put( new QName( XSINS, "nil", XSI_PREFIX ), new PrimitiveValue( TRUE ) );
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
                 }
             } else {
