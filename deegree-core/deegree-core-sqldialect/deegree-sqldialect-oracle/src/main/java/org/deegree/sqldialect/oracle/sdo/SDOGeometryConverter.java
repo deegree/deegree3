@@ -77,6 +77,8 @@ import org.deegree.geometry.standard.points.PointsArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
+
 /**
  * Convert between Oracle JDBC STRUCT and deegree Geometry
  * 
@@ -97,7 +99,7 @@ public class SDOGeometryConverter {
         GEOMETRY, POINT, CURVE, POLYGON
     }
 
-    private class GeomHolder {
+    protected static class GeomHolder {
         public final int gtype;
 
         @SuppressWarnings("unused")
@@ -210,7 +212,7 @@ public class SDOGeometryConverter {
         }
     }
 
-    private class Triplet {
+    protected static class Triplet {
         public int a_off;
 
         public int b_typ;
@@ -882,7 +884,7 @@ public class SDOGeometryConverter {
         return SDOGTypeTT.POLYGON;
     }
 
-    private int buildPrimitive( List<Triplet> info, List<Point> pnts, GeometricPrimitive geom ) {
+    protected int buildPrimitive( List<Triplet> info, List<Point> pnts, GeometricPrimitive geom ) {
         PrimitiveType typ = geom.getPrimitiveType();
         int gtyp;
 
@@ -942,7 +944,7 @@ public class SDOGeometryConverter {
                 throw new InvalidParameterValueException();
             }
 
-            List<CurveSegment> eseg = pp.getExteriorRing().getCurveSegments();
+            List<CurveSegment> eseg = forceOrientation( pp.getExteriorRing(), true ).getCurveSegments();
             // handle exterior
             if ( isSimple ) {
                 buildCurveSegmentSimple( info, pnts, eseg.get( 0 ), true );
@@ -955,7 +957,7 @@ public class SDOGeometryConverter {
 
             for ( Ring rint : pp.getInteriorRings() ) {
                 // handle interior
-                List<CurveSegment> iseg = rint.getCurveSegments();
+                List<CurveSegment> iseg = forceOrientation( rint, false ).getCurveSegments();
 
                 if ( isSimple ) {
                     buildCurveSegmentSimple( info, pnts, iseg.get( 0 ), false );
