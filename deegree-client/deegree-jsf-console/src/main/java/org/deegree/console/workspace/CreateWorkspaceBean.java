@@ -25,31 +25,43 @@
  e-mail: info@deegree.org
  website: http://www.deegree.org/
 ----------------------------------------------------------------------------*/
-package org.deegree.console.datastore.feature;
+package org.deegree.console.workspace;
+
+import java.io.File;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
-import org.deegree.console.AbstractCreateResourceBean;
-import org.deegree.feature.persistence.FeatureStoreManager;
+import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.console.JsfUtils;
 
 /**
- * JSF backing bean for "Create new feature store" view.
+ * JSF backing bean for creating a new workspace folder.
  * 
- * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * 
  * @since 3.4
  */
 @ManagedBean
 @RequestScoped
-public class CreateFeatureStoreBean extends AbstractCreateResourceBean {
+public class CreateWorkspaceBean {
 
-    public CreateFeatureStoreBean() {
-        super( FeatureStoreManager.class );
+    private String workspaceName;
+
+    public void createWorkspaceFolder() {
+        String workspaceRoot = DeegreeWorkspace.getWorkspaceRoot();
+        File targetWorkspace = new File( workspaceRoot, workspaceName );
+        boolean success = targetWorkspace.mkdir();
+        if ( !success ) {
+            JsfUtils.indicateException( "Creation of workspace", "Workspace identifier already exists." );
+        }
     }
 
-    @Override
-    protected String getOutcome() {
-        return "/console/datastore/feature/index";
+    public String getWorkspaceName() {
+        return workspaceName;
+    }
+
+    public void setWorkspaceName( String workspaceName ) {
+        this.workspaceName = workspaceName;
     }
 }

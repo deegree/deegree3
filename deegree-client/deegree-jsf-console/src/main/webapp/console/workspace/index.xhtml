@@ -18,6 +18,16 @@
         </table>
 
         <br /> <br />
+        <h:outputText styleClass="titel" value="Active workspace" />
+        <table style="margin: 10px 0px; font-size: small" border="0">
+          <h:form>
+            <tr align="left">
+              <td><h:outputText value="#{workspace.activeWorkspace.name}" /></td>
+            </tr>
+          </h:form>
+        </table>
+ 
+        <br /> <br />
         <h:outputText styleClass="titel" value="Available workspaces" />
         <table style="margin: 10px 0px; font-size: small" border="0">
           <ui:repeat var="workspaceName" value="#{workspace.workspaceList}">
@@ -58,6 +68,22 @@
         <h:panelGroup rendered="#{empty workspace.remoteWorkspaces}">
           <h:outputText styleClass="error" value="Unable to fetch list of workspaces. Are your proxy settings correct?" />
         </h:panelGroup>
+
+        <br /> <br />
+        <h:outputText styleClass="titel" value="Create a new workspace" />
+        <table style="margin: 10px 0px; font-size: small" border="0">
+          <h:form>
+            <tr>
+              <td><h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+                <h:inputText styleClass="liste" id="newFSBt" value="#{createWorkspaceBean.workspaceName}" size="16" required="true"
+                requiredMessage="#{labels.resource_name_req}" /></td>
+            </tr>
+            <tr>
+              <td><h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+                action="#{createWorkspaceBean.createWorkspaceFolder}" /></td>
+            </tr>
+          </h:form>
+        </table>
 
         <br /> <br />
         <h:outputText styleClass="titel" value="Upload workspace" />

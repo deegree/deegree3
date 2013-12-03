@@ -1,10 +1,12 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
- This file is part of deegree, http://deegree.org/
+ This file is part of deegree
  Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+ and others
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -20,25 +22,17 @@
 
  Contact information:
 
- lat/lon GmbH
- Aennchenstr. 19, 53177 Bonn
- Germany
- http://lat-lon.de/
-
- Department of Geography, University of Bonn
- Prof. Dr. Klaus Greve
- Postfach 1147, 53001 Bonn
- Germany
- http://www.geographie.uni-bonn.de/deegree/
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+ website: http://www.deegree.org/
+----------------------------------------------------------------------------*/
 package org.deegree.console;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.deegree.console.JsfUtils.getWorkspace;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,26 +41,24 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceStates.ResourceState;
-import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
 
 /**
- * Wraps information on a {@link Resource} and its configuration file.
+ * JSF bean that wraps a {@link ResourceMetadata} and actions.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @since 3.4
  */
-public class Config implements Comparable<Config> {
+public class Config implements Comparable<Config>, Serializable {
+
+    private static final long serialVersionUID = -175529275940063759L;
 
     private static final Logger LOG = getLogger( Config.class );
 
@@ -80,13 +72,14 @@ public class Config implements Comparable<Config> {
 
     private String resourceOutcome;
 
-    private ResourceMetadata<?> metadata;
+    private transient ResourceMetadata<?> metadata;
 
-    protected Workspace workspace;
+    public Config() {
+        // constructor required by JSF
+    }
 
     public Config( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager, String resourceOutcome,
                    boolean autoActivate ) {
-        workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
         if ( metadata != null ) {
             this.id = metadata.getIdentifier().getId();
         }
@@ -107,9 +100,9 @@ public class Config implements Comparable<Config> {
 
     public void activate() {
         try {
-            workspace.getLocationHandler().activate( metadata.getLocation() );
-            workspace.add( metadata.getLocation() );
-            WorkspaceUtils.reinitializeChain( workspace, metadata.getIdentifier() );
+            getWorkspace().getLocationHandler().activate( metadata.getLocation() );
+            getWorkspace().add( metadata.getLocation() );
+            WorkspaceUtils.reinitializeChain( getWorkspace(), metadata.getIdentifier() );
         } catch ( Exception t ) {
             t.printStackTrace();
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
@@ -120,12 +113,12 @@ public class Config implements Comparable<Config> {
 
     public void deactivate() {
         try {
-            workspace.destroy( metadata.getIdentifier() );
-            workspace.getLocationHandler().deactivate( metadata.getLocation() );
+            getWorkspace().destroy( metadata.getIdentifier() );
+            getWorkspace().getLocationHandler().deactivate( metadata.getLocation() );
             List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
-            WorkspaceUtils.collectDependents( list, workspace.getDependencyGraph().getNode( metadata.getIdentifier() ) );
+            WorkspaceUtils.collectDependents( list, getWorkspace().getDependencyGraph().getNode( metadata.getIdentifier() ) );
             for ( ResourceMetadata<?> md : list ) {
-                workspace.getLocationHandler().deactivate( md.getLocation() );
+                getWorkspace().getLocationHandler().deactivate( md.getLocation() );
             }
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
@@ -147,27 +140,28 @@ public class Config implements Comparable<Config> {
 
     public void delete() {
         try {
-            workspace.getLocationHandler().delete( metadata.getLocation() );
+            getWorkspace().getLocationHandler().delete( metadata.getLocation() );
         } catch ( Throwable t ) {
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
-                                                null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
+            JsfUtils.indicateException( "Deleting resource file", t );
+            return;
+        }
+        try {
+            getWorkspace().destroy( metadata.getIdentifier() );
+        } catch ( Throwable t ) {
+            JsfUtils.indicateException( "Destroying resource", t );
         }
     }
 
     public void showErrors() {
-        String msg = "Initialization of resource with id '" + id + "' failed:";
-
-        for ( String error : workspace.getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
+        String msg = "Initialization of resource '" + id + "' failed: ";
+        for ( String error : getWorkspace().getErrorHandler().getErrors( metadata.getIdentifier() ) ) {
             msg += error;
         }
-
-        msg += " (The application server log may contain additional information.)";
-
         FacesMessage fm = new FacesMessage( SEVERITY_ERROR, msg, null );
         FacesContext.getCurrentInstance().addMessage( null, fm );
     }
 
+    @Override
     public int compareTo( Config o ) {
         return id.compareTo( o.id );
     }
@@ -213,7 +207,7 @@ public class Config implements Comparable<Config> {
     }
 
     public String getState() {
-        ResourceState state = workspace.getStates().getState( metadata.getIdentifier() );
+        ResourceState state = getWorkspace().getStates().getState( metadata.getIdentifier() );
         return state == null ? "Deactivated" : state.toString();
     }
 
