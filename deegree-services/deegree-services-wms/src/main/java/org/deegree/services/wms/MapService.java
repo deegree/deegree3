@@ -230,7 +230,8 @@ public class MapService {
             ctx.applyOptions( optIter.next() );
             d.render( ctx );
         }
-
+        ctx.optimizeAndDrawLabels();
+        
         ScaleFunction.getCurrentScaleValue().remove();
     }
 

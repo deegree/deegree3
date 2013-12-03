@@ -778,6 +778,9 @@ public class SymbologyParser {
                     in.nextTag();
 
                     if ( in.getLocalName().equalsIgnoreCase( "PointPlacement" ) ) {
+                        String cssName = in.getAttributeValue( null, "auto" );
+                        baseOrEvaluated.auto = ( cssName != null && cssName.equalsIgnoreCase( "true" ) ); 
+                        
                         while ( !( in.isEndElement() && in.getLocalName().equals( "PointPlacement" ) ) ) {
                             in.nextTag();
                             if ( in.getLocalName().equals( "AnchorPoint" ) ) {
