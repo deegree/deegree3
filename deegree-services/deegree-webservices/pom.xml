@@ -188,11 +188,6 @@
       <artifactId>deegree-jsf-console</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-spring</artifactId>
-      <version>${project.version}</version>
-    </dependency>    
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -210,11 +205,6 @@
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
     </dependency>
-  <dependency>
-    <artifactId>cds-deegree-extension</artifactId>
-    <groupId>nl.ipo.cds</groupId>
-    <version>1.1.6-SNAPSHOT</version>
-  </dependency>   
   </dependencies>
 
 </project>
