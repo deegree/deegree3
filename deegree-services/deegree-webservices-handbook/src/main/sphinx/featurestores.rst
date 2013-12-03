@@ -271,7 +271,7 @@ SQL feature store
 
 The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational mapping, it additionally offers so-called BLOB mapping which stores any kind of rich feature using a fixed and very simple database schema. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and ideally suited for mapping rich GML application schemas. It currently supports the following databases:
 
-* PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0)
+* PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0, 2.1)
 * Oracle Spatial (10g, 11g)
 * Microsoft SQL Server (2008, 2012)
 
@@ -326,7 +326,7 @@ This configuration snippet defines a SQL feature store resource with the followi
 Overview of configuration options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.2.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected:
+The SQL feature store configuration format is defined by schema file http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd. The following table lists all available configuration options (the complex ones contain nested options themselves). When specifying them, their order must be respected:
 
 .. table:: Options for ``SQL feature store`` resource configuration files
 
@@ -340,6 +340,8 @@ The SQL feature store configuration format is defined by schema file http://sche
 | ``<StorageCRS>``                 | 0..1        | Complex | CRS of stored geometries                                                     |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<GMLSchema>``                  | 0..n        | String  | Path/URL to GML application schema files/dirs to read feature types from     |
++----------------------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<NullEscalation>``             | 0..1        | Boolean | Controls the handling of NULL values on reconstruction from the DB           |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<BLOBMapping>``                | 0..1        | Complex | Activates a special mapping mode that uses BLOBs for storing features        |
 +----------------------------------+-------------+---------+------------------------------------------------------------------------------+
@@ -552,7 +554,7 @@ Manually creating a mapping for a rich GML application schema may appear to be a
 * Use the **Reload** link in the services console to activate changes. 
 * After changing the configuration file, make sure that the status of the feature store stays green (in the console). If an exclamation mark occurs, you have an error in your configuration. Check the error message and fix it.
 * Check the results of your change (see below)
-* Once you're satisfied, move on the next property (or feature type)
+* Once you're satisfied, move on to the next property (or feature type)
 
 Set up a WFS configuration, so you can use WFS GetFeature-requests to check whether your feature mapping works as expected. You can use your web browser for that. After each configuration change, perform a GetFeature-request to see the effect. Suitable WFS requests depend on the WFS version, the GML version and the name of the feature type. Here are some examples:
 
@@ -644,9 +646,9 @@ Let's move on to the mapping of property ``ad:component``. This property can occ
    .. literalinclude:: xml/sqlfeaturestore_schemadriven5.xml
       :language: xml
 
-As in the mapping of ``ad:position``, a ``<Join>`` is used to change the table context. The table that stores the information for ``ad:component`` properties is ``ad_address_ad_component``. The ``<Feature>`` declares that we want to map a feature-valued node and it's ``<Href>`` sub-element defines that column ``href`` stores the value for the ``xlink:href``.
+As in the mapping of ``ad:position``, a ``<Join>`` is used to change the table context. The table that stores the information for ``ad:component`` properties is ``ad_address_ad_component``. The ``<Feature>`` declares that we want to map a feature-valued node and it's ``<Href>`` sub-element defines that column ``href`` stores the value of the ``xlink:href`` attribute.
 
-Here is an overview on all options for ``<Complex>`` elements:
+Here is an overview of all options for ``<Complex>`` elements:
 
 .. table:: Options for ``<Complex>``
 
@@ -752,6 +754,38 @@ If this is not the case, use the ``AutoKeyColumn`` options to define the columns
 In this example snippet, the primary key for table ``B`` is stored in column ``pk1`` and values for this column are generated using the UUID generator. There's another change in the table context from B to C. Rows in table C have a key stored in column ``parentfk`` that corresponds to the ``B.pk1``. On insert, values generated for ``B.pk1`` will be propagated and stored for new rows in this table as well. The following table lists the options for ``<AutoKeyColumn>`` elements.
 
 Inside a ``<AutoKeyColumn>``, you may use the same key generators that are available for feature id generation (see above).
+
+.. _anchor-null-handling:
+
+"""""""""""""""""""""""
+Handling of NULL values
+"""""""""""""""""""""""
+
+By default, a ``NULL`` value in a mapped database column means that just the mapped particle is omitted from the reconstructed feature. However, if the corresponding element/attribute or text node is required according to the GML application schema, this will lead to invalid feature instances. In order to deal with this, the global option ``<NullEscalation>`` should be set to ``true`` after the mapping configuration has been finished.
+
+.. topic:: SQL feature store: Activating NULL value escalation
+
+   .. literalinclude:: xml/sqlfeaturestore_nullescalation1.xml
+      :language: xml
+
+If this option is turned on and a ``NULL`` value is found in a mapped column, the following strategy is applied:
+
+* If the corresponding particle is not required according to the GML application schema, just this particle is omitted.
+* If the container element of the particle is nillable according to the GML application schema, the ``xsi:nil`` attribute of the element is set to ``true``.
+* In all other cases, the ``NULL`` is escalated to the container element using the same strategy (until the feature level has been reached).
+
+This works well most of the times, but sometimes, it can be handy to override this behaviour. For that, each ``<Primitive>``, ``<Complex>``, ``<Geometry>`` or ``<Feature>`` configuration element supports the optional attribute ``nullEscalation``. The following config snippet demonstrates a custom ``NULL`` escalation for element ``gml:endPosition``. By default, the content of this element is required, but by setting it to ``false``, ``NULL`` escalation can be manually switched off for this very particle.
+
+.. topic:: SQL feature store: Customizing NULL value escalation
+
+   .. literalinclude:: xml/sqlfeaturestore_nullescalation2.xml
+      :language: xml
+
+The following values are supported for attribute ``nullEscalation`` on ``<Primitive>``, ``<Complex>``, ``<Geometry>`` or ``<Feature>`` elements:
+
+* ``auto``: Handling of NULL values is derived from the GML application schema. Same as omitting the ``nullEscalation`` attribute.
+* ``true``: ``NULL`` values are escalated to the container element.
+* ``false``: ``NULL`` values are not escalated to the container element.
 
 .. _anchor-blob-mode:
 
@@ -893,7 +927,7 @@ This snippet defines the feature id mapping and the id generation behaviour for 
 Evaluation of query filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The SQL feature store always tries to map filter conditions (e.g. from WFS ``GetFeature`` requests or when accessed by the WMS) to SQL-WHERE conditions. However, this is not always possible. Sometimes a filter uses an expression that just can not be mapped to an equivalent SQL-WHERE clause. For example when using :ref:`anchor-blob-mode` and the filter is not based on a feature id or a spatial constraint.
+The SQL feature store always tries to map filter conditions (e.g. from WFS ``GetFeature`` requests or when accessed by the WMS) to SQL-WHERE conditions. However, this is not possible in all cases. Sometimes a filter uses an expression that does not have an equivalent SQL-WHERE clause. For example when using :ref:`anchor-blob-mode` and the filter is not based on a feature id or a spatial constraint.
 
 In such cases, the SQL feature store falls back to in-memory filtering. It will reconstruct feature by feature from the database and evaluate the filter in memory. If the filter matches, it will be included in the result feature stream. If not, it is skipped.
 

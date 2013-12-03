@@ -3,7 +3,7 @@
   xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
   <JDBCConnId>inspire</JDBCConnId>
-  <StorageCRS srid="-1" dim="2D">EPSG:4258</StorageCRS>
+  <StorageCRS srid="0" dim="2D">EPSG:4258</StorageCRS>
   <GMLSchema>../../appschemas/inspire/annex1/Addresses.xsd</GMLSchema>
   <GMLSchema>../../appschemas/inspire/annex1/AdministrativeUnits.xsd</GMLSchema>
   <GMLSchema>../../appschemas/inspire/annex1/CadastralParcels.xsd</GMLSchema>
@@ -85,4 +85,3 @@
   </FeatureTypeMapping>
   
 </SQLFeatureStore>
-
