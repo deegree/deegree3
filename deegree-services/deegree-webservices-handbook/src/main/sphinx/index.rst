@@ -22,9 +22,9 @@ deegree Webservices
    layers
    themes
    renderstyles
+   filterencoding
    serverconnections
    processproviders
    crs
    restapi
    javamodules
-
