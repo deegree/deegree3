@@ -99,10 +99,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>MapService</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 @LoggingNotes(error = "logs errors when querying feature stores/evaluating filter encoding expressions", trace = "logs stack traces", warn = "logs problems when loading layers, also invalid values for vendor specific parameters such as ANTIALIAS, QUALITY etc.", debug = "logs if layers are skipped because of scale constraints, and info about feature store queries")
@@ -144,8 +144,6 @@ public class MapService {
     private final GetLegendHandler getLegendHandler;
 
     private final OldStyleMapService oldStyleMapService;
-
-    private int r;
 
     /**
      * @param conf
@@ -369,11 +367,6 @@ public class MapService {
             insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
                                   defaultLayerOptions );
             mapOptions.add( options.get( l.getMetadata().getName() ) );
-            if ( l.getMetadata().getMapOptions() != null && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
-                r = l.getMetadata().getMapOptions().getFeatureInfoRadius();
-            } else {
-                r = defaultLayerOptions.getFeatureInfoRadius();
-            }
         }
 
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
@@ -428,13 +421,21 @@ public class MapService {
         List<OperatorFilter> filters = gfi.getFilters();
         Iterator<OperatorFilter> filterItr = filters == null ? null : filters.iterator();
         while ( layerItr.hasNext() ) {
-            layerItr.next();
+            LayerRef lr = layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-
+            int layerRadius = 0;
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                if ( l.getMetadata().getMapOptions() != null
+                     && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
+                    layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
+                } else {
+                    layerRadius = defaultLayerOptions.getFeatureInfoRadius();
+                }
+            }
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(), r );
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(), layerRadius );
             queries.add( query );
         }
         return queries;
