@@ -39,19 +39,21 @@ package org.deegree.layer;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.style.StyleRef;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * <code>Layer</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 @LoggingNotes(warn = "logs information about dimension handling")
 public abstract class AbstractLayer implements Layer {
 
-    private LayerMetadata metadata;
+    private final LayerMetadata metadata;
 
     public static final Mapper<String, Layer> LAYER_NAME = new Mapper<String, Layer>() {
         @Override
@@ -69,6 +71,10 @@ public abstract class AbstractLayer implements Layer {
 
     protected AbstractLayer( LayerMetadata md ) {
         this.metadata = md;
+    }
+
+    protected Style resolveStyleRef( StyleRef ref ) {
+        return metadata.getStyles().get( ref.getName() );
     }
 
     @Override
