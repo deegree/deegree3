@@ -220,9 +220,7 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                if ( l.getMetadata().getStyles().containsKey( query.getStyle().getName() ) ) {
-                    list.add( l.mapQuery( query, headers ) );
-                }
+                list.add( l.mapQuery( query, headers ) );
             }
         }
         Iterator<MapOptions> optIter = mapOptions.iterator();

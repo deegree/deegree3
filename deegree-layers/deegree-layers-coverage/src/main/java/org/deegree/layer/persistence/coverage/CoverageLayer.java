@@ -56,10 +56,10 @@ import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class CoverageLayer extends AbstractLayer {
@@ -70,7 +70,7 @@ public class CoverageLayer extends AbstractLayer {
 
     private final MultiResolutionRaster multiraster;
 
-    private final CoverageDimensionHandler dimensionHandler;
+    private CoverageDimensionHandler dimensionHandler;
 
     public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
         super( md );
@@ -84,8 +84,14 @@ public class CoverageLayer extends AbstractLayer {
                             throws OWSException {
         try {
             Envelope bbox = query.getEnvelope();
+
             RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
-            Style style = resolveStyleRef( query.getStyle() );
+
+            StyleRef ref = query.getStyle();
+            if ( !ref.isResolved() ) {
+                ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
+            }
+            Style style = ref.getStyle();
             // handle SLD/SE scale settings
             style = style == null ? null : style.filter( query.getScale() );
 
