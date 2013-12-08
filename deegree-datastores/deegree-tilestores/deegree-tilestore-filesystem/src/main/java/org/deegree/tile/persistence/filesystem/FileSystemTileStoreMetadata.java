@@ -32,7 +32,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
+import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
+import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB.TileDataSet.TileDataSetBase;
 import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
@@ -71,6 +73,11 @@ public class FileSystemTileStoreMetadata extends AbstractResourceMetadata<TileSt
             for ( FileSystemTileStoreJAXB.TileDataSet tds : config.getTileDataSet() ) {
                 String tmsId = tds.getTileMatrixSetId();
                 dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class, tmsId ) );
+                TileDataSetBase base = tds.getTileDataSetBase();
+                if ( base != null ) {
+                    dependencies.add( new DefaultResourceIdentifier<TileStore>( TileStoreProvider.class,
+                                                                                base.getTileStoreId() ) );
+                }
             }
 
             return new FileSystemTileStoreBuilder( config, this, workspace );

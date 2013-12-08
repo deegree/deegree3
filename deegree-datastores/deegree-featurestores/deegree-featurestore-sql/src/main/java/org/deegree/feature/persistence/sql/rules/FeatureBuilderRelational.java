@@ -37,6 +37,8 @@ package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.jaxen.saxpath.Axis.CHILD;
 
 import java.sql.Connection;
@@ -74,7 +76,6 @@ import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.feature.persistence.sql.jaxb.VoidEscalationPolicyType;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
@@ -126,7 +127,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
 
-    private VoidEscalationPolicyType escalationPolicy;
+    private final boolean nullEscalation;
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
@@ -143,13 +144,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      *            the void escalation policy, must not be <code>null</code>
      */
     public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
-                                     String ftTableAlias, VoidEscalationPolicyType escalationPolicy ) {
+                                     String ftTableAlias, boolean nullEscalation ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
         this.conn = conn;
         this.tableAlias = ftTableAlias;
-        this.escalationPolicy = escalationPolicy;
+        this.nullEscalation = nullEscalation;
         this.nsBindings = new NamespaceBindings();
         for ( String prefix : fs.getNamespaceContext().keySet() ) {
             String ns = fs.getNamespaceContext().get( prefix );
@@ -246,7 +247,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             gmlId += rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
             for ( int i = 1; i < fidColumns.size(); i++ ) {
                 gmlId += ftMapping.getFidMapping().getDelimiter()
-                         + rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
+                                        + rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
             }
             if ( fs.getCache() != null ) {
                 feature = (Feature) fs.getCache().get( gmlId );
@@ -293,7 +294,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
                                 String idPrefix )
-                            throws SQLException {
+                                                        throws SQLException {
 
         List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx, idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
@@ -319,7 +320,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
                                                   LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
-                            throws SQLException {
+                                                                          throws SQLException {
 
         if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
@@ -352,7 +353,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx,
                                            String idPrefix )
-                            throws SQLException {
+                                                                   throws SQLException {
 
         LOG.debug( "Trying to build particle with path {}.", mapping.getPath() );
 
@@ -408,7 +409,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             found = true;
                         }
                     }
-                    if ( !found && escalationPolicy.equals( VoidEscalationPolicyType.ALWAYS ) ) {
+                    if ( !found && this.nullEscalation ) {
                         escalateVoid = true;
                     }
                 }
@@ -463,10 +464,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                     // TODO
                                     XSElementDeclaration childType = null;
                                     GenericXMLElement child = new GenericXMLElement(
-                                                                                     name,
-                                                                                     childType,
-                                                                                     Collections.<QName, PrimitiveValue> emptyMap(),
-                                                                                     Collections.singletonList( particleValue ) );
+                                                                                    name,
+                                                                                    childType,
+                                                                                    Collections.<QName, PrimitiveValue> emptyMap(),
+                                                                                    Collections.singletonList( particleValue ) );
                                     children.add( child );
                                 } else if ( particleValue != null ) {
                                     children.add( particleValue );
@@ -474,7 +475,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             }
                         } else {
                             LOG.warn( "Unhandled axis type '" + step.getAxis() + "' for path: '"
-                                      + particleMapping.getPath() + "'" );
+                                                    + particleMapping.getPath() + "'" );
                         }
                     } else {
                         // TODO handle other steps as self()
@@ -484,7 +485,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     }
                 } else {
                     LOG.warn( "Unhandled mapping type '" + particleMapping.getClass() + "' for path: '"
-                              + particleMapping.getPath() + "'" );
+                                            + particleMapping.getPath() + "'" );
                 }
             }
 
@@ -523,7 +524,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             }
                         }
                     }
-                    nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
+                    nilAttrs.put( new QName( XSINS, "nil", XSI_PREFIX ), new PrimitiveValue( TRUE ) );
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
                 }
             } else {
@@ -593,34 +594,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return geom;
     }
 
-    private Map<QName, PrimitiveValue> getNilledAttributes( XSElementDeclaration elDecl,
-                                                            Map<QName, PrimitiveValue> attrs ) {
-        // required attributes must still be present even if element is nilled...
-        Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
-        if ( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) {
-            XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-            XSObjectList attrUses = complexType.getAttributeUses();
-            for ( int i = 0; i < attrUses.getLength(); i++ ) {
-                XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
-                if ( attrUse.getRequired() ) {
-                    QName attrName = null;
-                    XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-                    if ( attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty() ) {
-                        attrName = new QName( attrDecl.getName() );
-                    } else {
-                        attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-                    }
-                    PrimitiveValue attrValue = attrs.get( attrName );
-                    if ( attrValue != null ) {
-                        nilAttrs.put( attrName, attrValue );
-                    }
-                }
-            }
-        }
-        nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
-        return nilAttrs;
-    }
-
     private QName getName( ValueReference path ) {
         if ( path.getAsQName() != null ) {
             return path.getAsQName();
@@ -642,7 +615,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                                                                 Mapping mapping,
                                                                                 ResultSet rs,
                                                                                 LinkedHashMap<String, Integer> colToRsIdx )
-                            throws SQLException {
+                                                                                                        throws SQLException {
 
         LinkedHashMap<String, Integer> rsToIdx = getSubsequentSelectColumns( mapping );
 

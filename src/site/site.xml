@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="deegree web services">
+<skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.3.0</version>
+  </skin>
+  <body>
+
+    <links>
+      <item name="Home" href="http://www.deegree.org/"/>
+      <item name="User Documentation" href="http://www.deegree.org/Documentation"/>
+      <item name="Source Code Repository" href="https://github.com/deegree/deegree3"/>
+    </links>
+
+    <breadcrumbs>
+        <item name="Home" href="/index.html"/>
+        <item name="Parent" href="../index.html"/>
+    </breadcrumbs>  
+    
+    <menu name="Home" inherit="top">
+      <item name="Home" href="/index.html"/>
+    </menu>
+    
+    <menu ref="modules" inherit="top"/>
+    <menu ref="reports" inherit="top"/>
+  
+  </body>
+</project>

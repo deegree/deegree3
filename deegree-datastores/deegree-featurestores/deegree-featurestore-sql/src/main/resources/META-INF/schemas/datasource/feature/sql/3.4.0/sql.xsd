@@ -11,8 +11,8 @@
   </annotation>
   <element name="SQLFeatureStore">
     <annotation>
-      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS or Oracle
-        Spatial)
+      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS, Oracle
+        Spatial or MS SQL Server)
       </documentation>
       <appinfo>
         <jaxb:class name="SQLFeatureStoreJAXB" />
@@ -41,10 +41,10 @@
             </restriction>
           </simpleType>
         </element>
-        <element name="VoidEscalationPolicy" minOccurs="0" type="sqlfs:VoidEscalationPolicyType" default="NONE" />
-        <element name="CustomReferenceResolver" minOccurs="0" maxOccurs="unbounded" type="string" />
         <element ref="sqlfs:StorageCRS" minOccurs="0" />
         <element name="GMLSchema" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element name="NullEscalation" minOccurs="0" type="boolean" default="true" />        
+        <element name="CustomReferenceResolver" minOccurs="0" maxOccurs="unbounded" type="string" />
         <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <attribute name="prefix" type="string" use="required" />
@@ -79,6 +79,7 @@
       <attribute name="configVersion" use="required">
         <simpleType>
           <restriction base="string">
+            <enumeration value="3.4.0" />
             <enumeration value="3.2.0" />
             <enumeration value="3.1.0" />
           </restriction>
@@ -86,12 +87,6 @@
       </attribute>
     </complexType>
   </element>
-  <simpleType name="VoidEscalationPolicyType">
-  	<restriction base="string">
-      <enumeration value="NONE" />
-      <enumeration value="ALWAYS" />
-	</restriction>
-  </simpleType>
   <!-- === Feature id mapping and id generators === -->
   <element name="FIDMapping">
     <annotation>
@@ -186,7 +181,19 @@
         <documentation>(Relative) XPath targeted by this mapping.</documentation>
       </annotation>
     </attribute>
+    <attribute name="nullEscalation" type="sqlfs:NullEscalationType">
+      <annotation>
+        <documentation>Defines whether NULL values for this particle lead to voiding of the parent particle.</documentation>
+      </annotation>
+    </attribute>    
   </complexType>
+  <simpleType name="NullEscalationType">
+    <restriction base="string">
+      <enumeration value="true" />
+      <enumeration value="false" />
+      <enumeration value="auto" />
+  </restriction>
+  </simpleType>  
   <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>

@@ -30,6 +30,15 @@
                   <documentation>Uses the name of the layer directory by default</documentation>
                 </annotation>
               </element>
+              <element name="TileDataSetBase" minOccurs="0">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="tileStoreId" type="string" use="required" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
               <element name="TileMatrixSetId" type="string" />
               <element name="TileCacheDiskLayout">
                 <annotation>
@@ -46,8 +55,15 @@
           </complexType>
         </element>
       </sequence>
-      <attribute name="configVersion" use="required" fixed="3.2.0" />
+      <attribute name="configVersion" use="required" type="t:ConfigVersionType" />
     </complexType>
   </element>
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="3.2.0" />
+      <enumeration value="3.4.0" />
+    </restriction>
+  </simpleType>
 
 </schema>

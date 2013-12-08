@@ -89,6 +89,13 @@ public class FileSystemTileStoreBuilder implements ResourceBuilder<TileStore> {
                     baseDir = metadata.getLocation().resolveToFile( lay.getLayerDirectory() );
                 }
 
+                String baseStore = null;
+                String baseDataSet = null;
+                if ( tds.getTileDataSetBase() != null ) {
+                    baseStore = tds.getTileDataSetBase().getTileStoreId();
+                    baseDataSet = tds.getTileDataSetBase().getValue();
+                }
+
                 TileCacheDiskLayout layout = new TileCacheDiskLayout( baseDir, lay.getFileType() );
 
                 TileMatrixSet tms = workspace.getResource( TileMatrixSetProvider.class, tmsId );
@@ -96,7 +103,7 @@ public class FileSystemTileStoreBuilder implements ResourceBuilder<TileStore> {
                 List<TileDataLevel> list = new ArrayList<TileDataLevel>( tms.getTileMatrices().size() );
 
                 for ( TileMatrix tm : tms.getTileMatrices() ) {
-                    list.add( new FileSystemTileDataLevel( tm, layout ) );
+                    list.add( new FileSystemTileDataLevel( tm, layout, baseStore, baseDataSet, workspace, metadata, id ) );
                 }
 
                 String format = "image/" + layout.getFileType();

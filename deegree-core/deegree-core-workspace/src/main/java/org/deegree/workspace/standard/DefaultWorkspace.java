@@ -94,7 +94,7 @@ public class DefaultWorkspace implements Workspace {
 
     private static final Logger LOG = getLogger( DefaultWorkspace.class );
 
-    private File directory;
+    private final File directory;
 
     private ClassLoader moduleClassLoader;
 
@@ -106,11 +106,11 @@ public class DefaultWorkspace implements Workspace {
 
     private Map<ResourceIdentifier<? extends Resource>, Resource> resources;
 
-    private Map<Class<? extends Initializable>, Initializable> initializables = new HashMap<Class<? extends Initializable>, Initializable>();
+    private final Map<Class<? extends Initializable>, Initializable> initializables = new HashMap<Class<? extends Initializable>, Initializable>();
 
     private ResourceGraph graph;
 
-    private ErrorHandler errors = new ErrorHandler();
+    private final ErrorHandler errors = new ErrorHandler();
 
     private LocationHandler locationHandler;
 
@@ -146,7 +146,9 @@ public class DefaultWorkspace implements Workspace {
             for ( ResourceIdentifier<? extends Resource> dep : md.getDependencies() ) {
                 if ( states.getState( dep ) != Initialized ) {
                     states.setState( md.getIdentifier(), Error );
-                    LOG.error( "Dependency {} for resource {} failed to initialize.", dep, md );
+                    String msg = "Dependent resource " + dep + " failed to initialize.";
+                    LOG.error( msg );
+                    errors.registerError( md.getIdentifier(), msg );
                     continue outer;
                 }
             }
@@ -274,7 +276,7 @@ public class DefaultWorkspace implements Workspace {
 
     @Override
     public <T extends Resource> ResourceMetadata<T> getResourceMetadata( Class<? extends ResourceProvider<T>> providerClass,
-                                                                         String id ) {
+                                                                               String id ) {
         return (ResourceMetadata<T>) resourceMetadata.get( new DefaultResourceIdentifier<T>( providerClass, id ) );
     }
 
@@ -393,7 +395,7 @@ public class DefaultWorkspace implements Workspace {
                 LOG.error( msg );
                 LOG.trace( "Stack trace:", ex );
                 throw new ResourceInitException( "Unable to build resource " + metadata.getIdentifier() + ": "
-                                                 + ex.getLocalizedMessage(), ex );
+                                        + ex.getLocalizedMessage(), ex );
             }
         }
         return getResource( id.getProvider(), id.getId() );
@@ -517,9 +519,21 @@ public class DefaultWorkspace implements Workspace {
             LOG.info( "Shutting down {}.", id );
             res.destroy();
         }
-        states.setState( id, Scanned );
+        states.setState( id, null );
+        removeMetadataFromResourceManager( id );
         resources.remove( id );
         errors.clear( id );
+    }
+
+    private void removeMetadataFromResourceManager( ResourceIdentifier<?> id ) {
+        for ( ResourceManager<?> mgr : getResourceManagers() ) {
+            for ( ResourceMetadata<?> md : mgr.getResourceMetadata() ) {
+                if ( md.getIdentifier() == id ) {
+                    mgr.remove (md);
+                    return;
+                }
+            }
+        }
     }
 
     @Override

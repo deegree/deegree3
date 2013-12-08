@@ -67,21 +67,24 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
 
     private String startView = "/console/jsf/resources";
 
-    private ResourceManager<?> mgr;
+    private final ResourceManager<?> mgr;
 
-    private Map<String, ResourceProvider<?>> nameToProvider = new HashMap<String, ResourceProvider<?>>();
+    private final Map<String, ResourceProvider<?>> nameToProvider = new HashMap<String, ResourceProvider<?>>();
 
     private List<ResourceProvider<?>> providers = new ArrayList<ResourceProvider<?>>();
 
-    private List<String> providerNames = new ArrayList<String>();
+    private final List<String> providerNames = new ArrayList<String>();
 
-    private Workspace workspace;
-    
+    private final Workspace workspace;
+
     private ResourceManagerMetadata( ResourceManager<?> mgr, Workspace workspace ) {
         this.workspace = workspace;
         if ( mgr.getMetadata() != null ) {
             for ( ResourceProvider<?> provider : mgr.getProviders() ) {
                 ResourceProviderMetadata providerMd = ResourceProviderMetadata.getMetadata( provider );
+                if ( "LockDbProviderProvider".equals( providerMd.getName() ) ) {
+                    continue;
+                }
                 providers.add( provider );
                 providerNames.add( providerMd.getName() );
                 nameToProvider.put( providerMd.getName(), provider );
@@ -91,7 +94,8 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
         }
 
         String className = mgr.getClass().getName();
-        URL url = ResourceManagerMetadata.class.getResource( "/META-INF/console/resourcemanager/" + className );
+        String metadataUrl = "/META-INF/console/resourcemanager/" + className;
+        URL url = ResourceManagerMetadata.class.getResource( metadataUrl );
         if ( url != null ) {
             LOG.debug( "Loading resource manager metadata from '" + url + "'" );
             Properties props = new Properties();
@@ -112,6 +116,8 @@ public class ResourceManagerMetadata implements Comparable<ResourceManagerMetada
             } finally {
                 IOUtils.closeQuietly( is );
             }
+        } else {
+            throw new RuntimeException( "Internal error: File '" + metadataUrl + "' missing on classpath." );
         }
         this.mgr = mgr;
     }

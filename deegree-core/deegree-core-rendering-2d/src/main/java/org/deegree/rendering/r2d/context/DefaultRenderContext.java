@@ -60,7 +60,9 @@ import java.io.OutputStream;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.Java2DLabelRenderer;
 import org.deegree.rendering.r2d.Java2DTileRenderer;
+import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
 import org.deegree.style.utils.ImageUtils;
 
 /**
@@ -79,6 +81,8 @@ public class DefaultRenderContext implements RenderContext {
     private Java2DRenderer renderer;
 
     private Java2DTextRenderer textRenderer;
+    
+    private Java2DLabelRenderer labelRenderer;
 
     private Java2DRasterRenderer rasterRenderer;
 
@@ -96,6 +100,7 @@ public class DefaultRenderContext implements RenderContext {
         renderer = new Java2DRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(),
                                        info.getPixelSize() * 1000 );
         textRenderer = new Java2DTextRenderer( renderer );
+        labelRenderer = new Java2DLabelRenderer( renderer, textRenderer );
         rasterRenderer = new Java2DRasterRenderer( graphics );
         tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope() );
     }
@@ -111,6 +116,11 @@ public class DefaultRenderContext implements RenderContext {
     }
 
     @Override
+    public Java2DLabelRenderer getLabelRenderer() {
+        return labelRenderer;
+    }
+
+    @Override
     public Java2DRasterRenderer getRasterRenderer() {
         return rasterRenderer;
     }
@@ -123,6 +133,20 @@ public class DefaultRenderContext implements RenderContext {
     @Override
     public void setOutput( OutputStream out ) {
         this.out = out;
+    }
+    
+    /**
+     * To be called after all Renderings are done, to render and maybe optimize the labels.
+     */
+    @Override
+    public void optimizeAndDrawLabels() {
+        //Optimize Label Placement here, if pointplacement set to auto=true
+        try{
+            new AutoLabelPlacement(labelRenderer.getLabels(), renderer );
+        } catch ( Throwable e ) {
+            e.printStackTrace();
+        }
+        labelRenderer.render( );
     }
 
     @Override
