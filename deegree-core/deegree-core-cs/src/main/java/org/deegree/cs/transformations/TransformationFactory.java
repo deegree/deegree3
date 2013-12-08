@@ -154,10 +154,7 @@ public class TransformationFactory {
          *         transformation.
          */
         public boolean isPreferred( Transformation transform ) {
-            if ( transform != null ) {
-                return name().equalsIgnoreCase( transform.getImplementationName() );
-            }
-            return false;
+            return transform != null && name().equalsIgnoreCase( transform.getImplementationName() );
         }
     }
 
@@ -191,7 +188,6 @@ public class TransformationFactory {
      * @param targetCRS
      *            Output coordinate system.
      * @return A coordinate transformation from <code>sourceCRS</code> to <code>targetCRS</code>.
-     * @throws TransformationException
      * @throws TransformationException
      *             if no transformation path has been found.
      * @throws IllegalArgumentException
@@ -455,9 +451,7 @@ public class TransformationFactory {
     private Transformation getRequiredTransformation( List<Transformation> requiredTransformations, ICRS sourceCRS,
                                                       ICRS targetCRS ) {
         if ( requiredTransformations != null && !requiredTransformations.isEmpty() ) {
-            Iterator<Transformation> it = requiredTransformations.iterator();
-            while ( it.hasNext() ) {
-                Transformation t = it.next();
+            for ( Transformation t : requiredTransformations ) {
                 if ( t != null ) {
                     boolean matches = ( sourceCRS != null ) ? sourceCRS.equals( t.getSourceCRS() )
                                                            : t.getSourceCRS() == null;
@@ -483,7 +477,7 @@ public class TransformationFactory {
 
     private Transformation createFromCompound( ICompoundCRS sourceCRS, ICRS targetCRS )
                             throws TransformationException {
-        ICompoundCRS target = null;
+        ICompoundCRS target;
         if ( targetCRS.getType() != COMPOUND ) {
             target = new CompoundCRS( sourceCRS.getHeightAxis(), targetCRS, sourceCRS.getDefaultHeight(),
                                       new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( targetCRS.getCode()
@@ -659,7 +653,7 @@ public class TransformationFactory {
             }
         }
         if ( result == null ) {
-            IGeocentricCRS sourceGeocentric = null;
+            IGeocentricCRS sourceGeocentric;
             if ( sourceType == GEOCENTRIC ) {
                 sourceGeocentric = (IGeocentricCRS) resolve( sourceCRS.getUnderlyingCRS() );
             } else {
@@ -668,7 +662,7 @@ public class TransformationFactory {
                                                       CRSCodeType.valueOf( "tmp_" + sourceCRS.getCode() + "_geocentric" ),
                                                       sourceCRS.getName() + "_Geocentric" );
             }
-            IGeocentricCRS targetGeocentric = null;
+            IGeocentricCRS targetGeocentric;
             if ( targetType == GEOCENTRIC ) {
                 targetGeocentric = (IGeocentricCRS) resolve( targetCRS.getUnderlyingCRS() );
             } else {
@@ -832,9 +826,9 @@ public class TransformationFactory {
             name = targetCRS.getName() + "_Geocentric";
             final IGeocentricCRS targetGCS = new GeocentricCRS( targetDatum, targetCRS.getCode(), name );
 
-            Transformation step1 = null;
-            Transformation step2 = null;
-            Transformation step3 = null;
+            Transformation step1;
+            Transformation step2;
+            Transformation step3;
             // geographic->geocentric
             step1 = createTransformation( sourceCRS, sourceGCS );
             // transformation found in configuration
@@ -870,9 +864,9 @@ public class TransformationFactory {
                          * If the two geographic coordinate systems use different ellipsoid, convert from the source to
                          * target ellipsoid through the geocentric coordinate system.
                          */
-                        Transformation step1 = null;
-                        Transformation step2 = null;
-                        Transformation step3 = null;
+                        Transformation step1;
+                        Transformation step2;
+                        Transformation step3;
                         // use the WGS84 Geocentric transform if no toWGS84
                         // parameters are given and the datums
                         // ellipsoid is actually a sphere.
@@ -952,9 +946,8 @@ public class TransformationFactory {
 
             final Transformation geo2geo = createTransformation( sourceCRS, stepGeoCS );
             if ( LOG.isDebugEnabled() ) {
-                StringBuilder sb = new StringBuilder(
-                                                      "Resulting axis alignment between target geographic and target projected is:" );
-                LOG.debug( sb.toString() );
+                String message = "Resulting axis alignment between target geographic and target projected is:";
+                LOG.debug( message );
             }
             final Transformation projection = new ProjectionTransform( targetCRS );
             result = concatenate( geo2geo, projection );

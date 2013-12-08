@@ -252,11 +252,9 @@ public class PROJ4CRSStore extends AbstractCRSStore {
         String[] descriptions = new String[] { description };
         // projectedID will also hold the id of the geo-crs if it is a top level one.
         GeodeticDatum datum = createDatum( params, tmpProjectedID );
-        GeographicCRS result = new GeographicCRS( datum,
-                                                  new Axis[] { new Axis( Unit.RADIAN, "longitude", Axis.AO_EAST ),
-                                                              new Axis( Unit.RADIAN, "latitude", Axis.AO_NORTH ) },
-                                                  codes, names, versions, descriptions, areasOfUse );
-        return result;
+        return new GeographicCRS( datum, new Axis[] { new Axis( Unit.RADIAN, "longitude", Axis.AO_EAST ),
+                                                     new Axis( Unit.RADIAN, "latitude", Axis.AO_NORTH ) }, codes,
+                                  names, versions, descriptions, areasOfUse );
     }
 
     /**
@@ -271,7 +269,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
     private GeodeticDatum createDatum( Map<String, String> params, String identifier )
                             throws CRSConfigurationException {
 
-        GeodeticDatum result = null;
+        GeodeticDatum result;
         String tmpValue = params.remove( "datum" );
         if ( tmpValue != null && !"".equals( tmpValue.trim() ) ) {
             // removing the defined ellipsoid.
@@ -420,7 +418,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
     private Ellipsoid createEllipsoid( Map<String, String> params )
                             throws CRSConfigurationException {
 
-        Ellipsoid result = null;
+        Ellipsoid result;
         double semiMajorAxis = Double.NaN;
         double eccentricitySquared = Double.NaN;
         double eccentricity = Double.NaN;
@@ -536,8 +534,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             // }
             if ( Double.isNaN( semiMajorAxis ) ) {
                 throw new CRSConfigurationException(
-                                                     Messages.getMessage(
-                                                                          "CRS_CONFIG_PROJ4_ELLIPSOID_WITHOUT_SEMIMAJOR",
+                                                     Messages.getMessage( "CRS_CONFIG_PROJ4_ELLIPSOID_WITHOUT_SEMIMAJOR",
                                                                           params.get( EPSG_PRE + "identifier" ) ) );
             }
             String id = "ELLIPSOID_" + ellipsCount++;
@@ -587,7 +584,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             String[] datumAOU = null;
             Helmert confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84,
                                             CRSCodeType.valueOf( "Created by proj4 CRSProvider" ) );
-            Ellipsoid ellipsoid = null;
+            Ellipsoid ellipsoid;
             if ( "GGRS87".equalsIgnoreCase( datumName ) ) {
                 String[] ids = getPredefinedIDs( "1272" );
                 CRSCodeType[] codes = new CRSCodeType[ids.length];
@@ -1098,7 +1095,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
                             throws CRSConfigurationException {
         if ( ellipsoidName != null && !"".equals( ellipsoidName.trim() ) ) {
             ellipsoidName = ellipsoidName.trim();
-            double semiMajorAxis = 0;
+            double semiMajorAxis;
             double semiMinorAxis = Double.NaN;
             double inverseFlattening = 1;
             String id = ellipsoidName;
@@ -1324,7 +1321,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
                                          CRSCodeType.valueOf( OPENGIS_URL + id ),
                                          CRSCodeType.valueOf( OPENGIS_URN + id ) };
             }
-            Ellipsoid ellips = null;
+            Ellipsoid ellips;
             if ( Double.isNaN( semiMinorAxis ) ) {
                 ellips = new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening, ids, new String[] { name }, null,
                                         null, null );
@@ -1347,7 +1344,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
      * @return a
      */
     private double parseAngleFormat( String text, boolean toDegrees ) {
-        double d = 0, m = 0, s = 0;
+        double d, m = 0, s = 0;
         double result;
         boolean negate = false;
         int length = text.length();
@@ -1370,7 +1367,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
         if ( i != -1 ) {
             String dd = text.substring( 0, i );
             String mmss = text.substring( i + 1 );
-            d = Double.valueOf( dd ).doubleValue();
+            d = Double.valueOf( dd );
             i = mmss.indexOf( 'm' );
             if ( i == -1 ) {
                 i = mmss.indexOf( '\'' );
@@ -1378,14 +1375,14 @@ public class PROJ4CRSStore extends AbstractCRSStore {
             if ( i != -1 ) {
                 if ( i != 0 ) {
                     String mm = mmss.substring( 0, i );
-                    m = Double.valueOf( mm ).doubleValue();
+                    m = Double.valueOf( mm );
                 }
                 if ( mmss.endsWith( "s" ) || mmss.endsWith( "\"" ) ) {
                     mmss = mmss.substring( 0, mmss.length() - 1 );
                 }
                 if ( i != mmss.length() - 1 ) {
                     String ss = mmss.substring( i + 1 );
-                    s = Double.valueOf( ss ).doubleValue();
+                    s = Double.valueOf( ss );
                 }
                 if ( m < 0 || m > 59 ) {
                     throw new NumberFormatException( "Minutes must be between 0 and 59" );
@@ -1394,7 +1391,7 @@ public class PROJ4CRSStore extends AbstractCRSStore {
                     throw new NumberFormatException( "Seconds must be between 0 and 59" );
                 }
             } else if ( i != 0 ) {
-                m = Double.valueOf( mmss ).doubleValue();
+                m = Double.valueOf( mmss );
             }
             if ( toDegrees ) {
                 result = dmsToDeg( d, m, s );

@@ -509,8 +509,7 @@ public class CRSIdentifiable implements CRSResource {
                     newAreas = new String[areasOfUse.length + 1];
                     System.arraycopy( areasOfUse, 0, newAreas, 1, areasOfUse.length );
                 }
-                StringBuilder sb = new StringBuilder( bbox[0] + "," + bbox[1] + "," + bbox[2] + "," + bbox[3] );
-                newAreas[0] = sb.toString();
+                newAreas[0] = bbox[0] + "," + bbox[1] + "," + bbox[2] + "," + bbox[3];
                 areasOfUse = newAreas;
             }
         }

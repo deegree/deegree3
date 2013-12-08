@@ -179,7 +179,7 @@ public class CoordinateTransformer extends Transformer {
                 }
                 String successString = "Success";
                 if ( errorMessages != null ) {
-                    String tmp = errorMessages.get( Integer.valueOf( i ) );
+                    String tmp = errorMessages.get( i );
                     if ( tmp != null && !"".equals( tmp.trim() ) ) {
                         successString = tmp;
                     }

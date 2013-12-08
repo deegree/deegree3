@@ -140,7 +140,7 @@ public abstract class Transformation extends CRSIdentifiable {
      * @return a following string "_SRC_fromValue_DEST_toValue".
      */
     public static String createFromTo( String source, String dest ) {
-        return new StringBuilder( "_SRC_" ).append( source ).append( "_DEST_" ).append( dest ).toString();
+        return "_SRC_" + source + "_DEST_" + dest;
     }
 
     /**
