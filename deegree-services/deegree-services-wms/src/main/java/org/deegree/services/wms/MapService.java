@@ -100,10 +100,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>MapService</code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 @LoggingNotes(error = "logs errors when querying feature stores/evaluating filter encoding expressions", trace = "logs stack traces", warn = "logs problems when loading layers, also invalid values for vendor specific parameters such as ANTIALIAS, QUALITY etc.", debug = "logs if layers are skipped because of scale constraints, and info about feature store queries")
@@ -341,7 +341,7 @@ public class MapService {
 
         ScaleFunction.getCurrentScaleValue().set( scale );
 
-        List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );        
+        List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );
         Iterator<MapOptions> optIter = mapOptions.iterator();
         for ( LayerData d : layerDataList ) {
             ctx.applyOptions( optIter.next() );
@@ -359,13 +359,13 @@ public class MapService {
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
             List<org.deegree.layer.Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
-            assertStyleValidForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
+            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
                      || layer.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                if ( hasStyle( layer, query.getStyle() ) ) {
+                if ( layer.isStyleApplicable( query.getStyle() ) ) {
                     layerDataList.add( layer.mapQuery( query, headers ) );
                 }
             }
@@ -373,19 +373,16 @@ public class MapService {
         return layerDataList;
     }
 
-    private void assertStyleValidForAtLeastOneLayer( List<org.deegree.layer.Layer> layers, StyleRef style, String name )
+    private void assertStyleApplicableForAtLeastOneLayer( List<org.deegree.layer.Layer> layers, StyleRef style,
+                                                          String name )
                             throws OWSException {
         for ( org.deegree.layer.Layer layer : layers ) {
-            if ( hasStyle( layer, style ) ) {
+            if ( layer.isStyleApplicable( style ) ) {
                 return;
             }
         }
         throw new OWSException( "Style " + style.getName() + " is not defined for layer " + name + ".",
                                 "StyleNotDefined", "styles" );
-    }
-
-    private boolean hasStyle( org.deegree.layer.Layer layer, StyleRef style ) {
-        return layer.getMetadata().getStyles().containsKey( style.getName() );
     }
 
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
