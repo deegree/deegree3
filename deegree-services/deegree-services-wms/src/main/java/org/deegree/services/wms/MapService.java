@@ -115,7 +115,7 @@ public class MapService {
 
     HashMap<String, Theme> themeMap;
 
-    private GetLegendHandler getLegendHandler;
+    private final GetLegendHandler getLegendHandler;
 
     private int r;
 
@@ -224,20 +224,21 @@ public class MapService {
         ScaleFunction.getCurrentScaleValue().remove();
     }
 
-    private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers,
-                                                double scale, ListIterator<LayerQuery> queryIter )
-                            throws OWSException {
+    private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
+                                                                  List<String> headers, double scale,
+                                                                  ListIterator<LayerQuery> queryIter )
+                                                                                          throws OWSException {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
             List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
-            assertStyleValidForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
+            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
-                     || layer.getMetadata().getScaleDenominators().second < scale ) {
+                                        || layer.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                if ( hasStyle( layer, query.getStyle() ) ) {
+                if ( isStyleApplicable( layer, query.getStyle() ) ) {
                     layerDataList.add( layer.mapQuery( query, headers ) );
                 }
             }
@@ -245,10 +246,10 @@ public class MapService {
         return layerDataList;
     }
 
-    private void assertStyleValidForAtLeastOneLayer( List<Layer> layers, StyleRef style, String name )
+    private void assertStyleApplicableForAtLeastOneLayer( List<Layer> layers, StyleRef style, String name )
                             throws OWSException {
         for ( Layer layer : layers ) {
-            if ( hasStyle( layer, style ) ) {
+            if ( isStyleApplicable( layer, style ) ) {
                 return;
             }
         }
@@ -256,8 +257,15 @@ public class MapService {
                                 "StyleNotDefined", "styles" );
     }
 
-    private boolean hasStyle( Layer layer, StyleRef style ) {
+    private boolean isStyleApplicable( Layer layer, StyleRef style ) {
+        if ( isStyleSelfContained( style ) ) {
+            return true;
+        }
         return layer.getMetadata().getStyles().containsKey( style.getName() );
+    }
+
+    private boolean isStyleSelfContained( StyleRef style ) {
+        return style.getStyle() != null;
     }
 
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
@@ -293,7 +301,7 @@ public class MapService {
             LayerQuery query = queryIter.next();
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 if ( l.getMetadata().getScaleDenominators().first > scale
-                     || l.getMetadata().getScaleDenominators().second < scale ) {
+                                        || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
                 list.add( l.infoQuery( query, headers ) );
