@@ -238,7 +238,7 @@ public class MapService {
                                         || layer.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                if ( isStyleApplicable( layer, query.getStyle() ) ) {
+                if ( layer.isStyleApplicable( query.getStyle() ) ) {
                     layerDataList.add( layer.mapQuery( query, headers ) );
                 }
             }
@@ -249,23 +249,12 @@ public class MapService {
     private void assertStyleApplicableForAtLeastOneLayer( List<Layer> layers, StyleRef style, String name )
                             throws OWSException {
         for ( Layer layer : layers ) {
-            if ( isStyleApplicable( layer, style ) ) {
+            if ( layer.isStyleApplicable( style ) ) {
                 return;
             }
         }
         throw new OWSException( "Style " + style.getName() + " is not defined for layer " + name + ".",
                                 "StyleNotDefined", "styles" );
-    }
-
-    private boolean isStyleApplicable( Layer layer, StyleRef style ) {
-        if ( isStyleSelfContained( style ) ) {
-            return true;
-        }
-        return layer.getMetadata().getStyles().containsKey( style.getName() );
-    }
-
-    private boolean isStyleSelfContained( StyleRef style ) {
-        return style.getStyle() != null;
     }
 
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,

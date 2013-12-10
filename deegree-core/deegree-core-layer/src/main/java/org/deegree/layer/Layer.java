@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.style.StyleRef;
 
 /**
  * <code>Layer</code>
@@ -83,4 +84,12 @@ public interface Layer {
      */
     void destroy();
 
+    /**
+     * Returns whether the given {@link StyleRef} can be applied when rendering this layer.
+     * 
+     * @param style
+     *            style, must not be <code>null</code>
+     * @return <code>true</code>, if the style can be applied, <code>false</code> otherwise
+     */
+    boolean isStyleApplicable( StyleRef style );
 }

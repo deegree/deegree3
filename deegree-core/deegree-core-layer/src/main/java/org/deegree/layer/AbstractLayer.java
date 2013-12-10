@@ -91,4 +91,8 @@ public abstract class AbstractLayer implements Layer {
         // nothing to do
     }
 
+    @Override
+    public boolean isStyleApplicable( StyleRef style ) {
+        return resolveStyleRef( style ) != null;
+    }
 }
