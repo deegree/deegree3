@@ -55,17 +55,15 @@ import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.style.StyleRef;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataSet;
 import org.slf4j.Logger;
 
 /**
- * <code>TileLayer</code>
+ * A layer implementation based on a list of tile data sets.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class TileLayer extends AbstractLayer {
@@ -73,10 +71,10 @@ public class TileLayer extends AbstractLayer {
     private static final Logger LOG = getLogger( TileLayer.class );
 
     // maps tile matrix set ids to tile data sets
-    private Map<String, TileDataSet> tileDataSets = new LinkedHashMap<String, TileDataSet>();
+    private final Map<String, TileDataSet> tileDataSets = new LinkedHashMap<String, TileDataSet>();
 
     // maps crs to tile matrix set ids
-    private Map<ICRS, String> coordinateSystems = new LinkedHashMap<ICRS, String>();
+    private final Map<ICRS, String> coordinateSystems = new LinkedHashMap<ICRS, String>();
 
     public TileLayer( LayerMetadata md, List<TileDataSet> datasets ) {
         super( md );
@@ -95,9 +93,10 @@ public class TileLayer extends AbstractLayer {
 
         String tds = coordinateSystems.get( crs );
         if ( tds == null ) {
-            LOG.debug( "Tile layer {} does not offer the coordinate system {}.", getMetadata().getName(),
-                       crs.getAlias() );
-            return null;
+            String msg = "Tile layer " + getMetadata().getName() + " does not offer the coordinate system "
+                                    + crs.getAlias();
+            LOG.debug( msg );
+            throw new OWSException( msg, OWSException.INVALID_CRS );
         }
         TileDataSet data = tileDataSets.get( tds );
 
@@ -125,4 +124,8 @@ public class TileLayer extends AbstractLayer {
         return tileDataSets.values();
     }
 
+    @Override
+    public boolean isStyleApplicable( StyleRef style ) {
+        return true;
+    }
 }
