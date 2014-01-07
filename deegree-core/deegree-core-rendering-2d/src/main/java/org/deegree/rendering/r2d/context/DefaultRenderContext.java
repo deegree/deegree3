@@ -61,6 +61,9 @@ import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.rendering.r2d.Java2DTileRenderer;
+import org.deegree.rendering.r2d.context.MapOptions.Antialias;
+import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
+import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.style.utils.ImageUtils;
 
 /**
@@ -152,14 +155,8 @@ public class DefaultRenderContext implements RenderContext {
     }
 
     @Override
-    public void applyOptions( MapOptions options ) {
-        applyQuality( options );
-        applyInterpolation( options );
-        applyAntialias( options );
-    }
-
-    private void applyAntialias( MapOptions options ) {
-        switch ( options.getAntialias() ) {
+    public void applyAntialias( Antialias antialias ) {
+        switch ( antialias ) {
         case IMAGE:
             graphics.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
             graphics.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_OFF );
@@ -178,24 +175,10 @@ public class DefaultRenderContext implements RenderContext {
             break;
         }
     }
-
-    private void applyInterpolation( MapOptions options ) {
-        switch ( options.getInterpolation() ) {
-        case BICUBIC:
-            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
-            break;
-        case BILINEAR:
-            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
-            break;
-        case NEARESTNEIGHBOR:
-        case NEARESTNEIGHBOUR:
-            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-            break;
-        }
-    }
-
-    private void applyQuality( MapOptions options ) {
-        switch ( options.getQuality() ) {
+    
+    @Override
+    public void applyQuality( Quality quality ) {
+        switch ( quality ) {
         case HIGH:
             graphics.setRenderingHint( KEY_RENDERING, VALUE_RENDER_QUALITY );
             break;
@@ -208,4 +191,19 @@ public class DefaultRenderContext implements RenderContext {
         }
     }
 
+    @Override
+    public void applyInterpolation( Interpolation interpolation ) {
+        switch ( interpolation ) {
+        case BICUBIC:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC );
+            break;
+        case BILINEAR:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR );
+            break;
+        case NEARESTNEIGHBOR:
+        case NEARESTNEIGHBOUR:
+            graphics.setRenderingHint( KEY_INTERPOLATION, VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+            break;
+        }
+    }
 }

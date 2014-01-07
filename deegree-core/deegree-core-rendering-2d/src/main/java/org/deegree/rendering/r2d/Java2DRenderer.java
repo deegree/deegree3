@@ -181,6 +181,9 @@ public class Java2DRenderer implements Renderer {
         geom = rendererContext.clipper.clipGeometry( geom );
         if ( geom instanceof Curve ) {
             Double line = rendererContext.geomHelper.fromCurve( (Curve) geom, false );
+            rendererContext.strokeRenderer.uomStrokeWidth = styling.uomStroke;
+            rendererContext.strokeRenderer.uomPerpendicularOffset = styling.uomPerpendicular;
+            rendererContext.strokeRenderer.uomGap = styling.uomGp;
             rendererContext.strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
                                                         styling.perpendicularOffsetType );
         } else if ( geom instanceof Surface ) {

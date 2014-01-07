@@ -83,6 +83,12 @@ class Java2DStrokeRenderer {
 
     private Java2DFillRenderer fillRenderer;
 
+    UOM uomStrokeWidth;
+
+    UOM uomPerpendicularOffset;
+
+    UOM uomGap;
+
     Java2DStrokeRenderer( Graphics2D graphics, UomCalculator uomCalculator, Java2DFillRenderer fillRenderer ) {
         this.graphics = graphics;
         this.uomCalculator = uomCalculator;
@@ -116,10 +122,10 @@ class Java2DStrokeRenderer {
             Shape shape = getShapeFromSvg( stroke.stroke.imageURL,
                                            uomCalculator.considerUOM( stroke.stroke.size, uom ), stroke.stroke.rotation );
             graphics.setStroke( new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap
-                                                                                   + stroke.stroke.size, uom ),
+                                                                                   + stroke.stroke.size, uomGap ),
                                                  stroke.positionPercentage, stroke.strokeInitialGap ) );
         } else if ( stroke.stroke.mark != null ) {
-            double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
+            double poff = uomCalculator.considerUOM( perpendicularOffset, uomPerpendicularOffset );
             Shape transed = object;
             if ( !isZero( poff ) ) {
                 transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
@@ -130,7 +136,7 @@ class Java2DStrokeRenderer {
             if ( sz <= 0 ) {
                 sz = 6;
             }
-            ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap + sz, uom ),
+            ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap + sz, uomGap ),
                                              stroke.positionPercentage, stroke.strokeInitialGap );
             transed = s.createStrokedShape( transed );
             if ( stroke.stroke.mark.fill != null ) {
@@ -161,9 +167,10 @@ class Java2DStrokeRenderer {
             }
         }
 
-        BasicStroke bs = new BasicStroke( (float) uomCalculator.considerUOM( stroke.width, uom ), linecap, linejoin,
-                                          miterLimit, dasharray, dashoffset );
-        double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
+        BasicStroke bs = new BasicStroke( (float) uomCalculator.considerUOM( stroke.width, uomStrokeWidth ), linecap,
+                                          linejoin, miterLimit, dasharray, dashoffset );
+
+        double poff = uomCalculator.considerUOM( perpendicularOffset, uomPerpendicularOffset );
         if ( !isZero( poff ) ) {
             graphics.setStroke( new OffsetStroke( poff, bs, type ) );
         } else {

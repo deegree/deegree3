@@ -103,6 +103,9 @@ class PolygonRenderer {
                 fillRenderer.applyFill( styling.fill, styling.uom );
                 graphics.fill( polygon );
                 for ( Double d : lines ) {
+                    strokeRenderer.uomStrokeWidth = styling.uomStroke;
+                    strokeRenderer.uomPerpendicularOffset = styling.uomPerpendicular;
+                    strokeRenderer.uomGap = styling.uomGp;
                     strokeRenderer.applyStroke( styling.stroke, styling.uom, d, styling.perpendicularOffset,
                                                 styling.perpendicularOffsetType );
                 }
@@ -134,6 +137,9 @@ class PolygonRenderer {
                     if ( curve.getCoordinateSystem() == null ) {
                         curve.setCoordinateSystem( surface.getCoordinateSystem() );
                     }
+                    strokeRenderer.uomStrokeWidth = styling.uomStroke;
+                    strokeRenderer.uomPerpendicularOffset = styling.uomPerpendicular;
+                    strokeRenderer.uomGap = styling.uomGp;
                     renderer.render( styling, curve );
                 }
             } else {

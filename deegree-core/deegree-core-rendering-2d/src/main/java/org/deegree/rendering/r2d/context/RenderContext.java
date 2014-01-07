@@ -43,6 +43,9 @@ import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.TileRenderer;
+import org.deegree.rendering.r2d.context.MapOptions.Antialias;
+import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
+import org.deegree.rendering.r2d.context.MapOptions.Quality;
 
 /**
  * 
@@ -67,7 +70,10 @@ public interface RenderContext {
 
     boolean close()
                             throws IOException;
-
-    void applyOptions( MapOptions options );
-
+    
+    void applyAntialias( Antialias antialias );
+    
+    void applyQuality( Quality quality );
+    
+    void applyInterpolation( Interpolation interpolation );
 }

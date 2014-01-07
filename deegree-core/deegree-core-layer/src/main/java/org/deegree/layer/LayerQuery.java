@@ -204,15 +204,4 @@ public class LayerQuery {
                                                  envelope.getMax().get1() - ( y - r2 ) * dh },
                                    envelope.getCoordinateSystem() );
     }
-
-    // public Envelope calcClickBox( int radius ) {
-    // TODO again: re-implement this properly
-    // TODO implement all this per layer also if more than one layer is requested
-    // if ( layers.size() == 1 && service.getDefaultFeatureInfoRadius().get( layers.getFirst() ) != null ) {
-    // radius = service.getDefaultFeatureInfoRadius().get( layers.getFirst() );
-    // }
-    // radius = parameters.get( "RADIUS" ) == null ? radius : parseInt( parameters.get( "RADIUS" ) );
-    // return calcClickBox( radius );
-    // }
-
 }
