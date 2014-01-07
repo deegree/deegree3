@@ -139,6 +139,14 @@ public class SymbologyParser {
 
     private SymbologyParserContext context = new SymbologyParserContext( this );
 
+    private boolean pixelPerpendicularToken;
+
+    private boolean pixelTextPerpendicularToken;
+
+    private boolean pixelTextDisplacementXToken;
+
+    private boolean pixelTextDisplacementYToken;
+
     /**
      * Constructs one which does not collect source snippets.
      */
@@ -481,6 +489,9 @@ public class SymbologyParser {
         Common common = new Common( in.getLocation() );
         LineStyling baseOrEvaluated = new LineStyling();
         baseOrEvaluated.uom = uom;
+        baseOrEvaluated.uomStroke = uom;
+        baseOrEvaluated.uomPerpendicular = uom;
+        baseOrEvaluated.uomGp = uom;
         Continuation<LineStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "LineSymbolizer" ) ) ) {
@@ -489,6 +500,17 @@ public class SymbologyParser {
             parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
+                if ( context.strokeParser.getPixelStrokeToken() == true ) {
+                    baseOrEvaluated.uomStroke = Pixel;
+                } else {
+                    baseOrEvaluated.uomStroke = uom;
+                }
+                if ( context.strokeParser.getPixelGapToken() == true ) {
+                    baseOrEvaluated.uomGp = Pixel;
+                } else {
+                    baseOrEvaluated.uomGp = uom;
+                }
+
                 final Pair<Stroke, Continuation<Stroke>> pair = context.strokeParser.parseStroke( in );
 
                 if ( pair != null ) {
@@ -504,11 +526,23 @@ public class SymbologyParser {
                     }
                 }
             } else if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                if ( this.getPixelPerpendicularToken() == true ) {
+                    baseOrEvaluated.uomPerpendicular = Pixel;
+                } else {
+                    baseOrEvaluated.uomPerpendicular = uom;
+                }
                 baseOrEvaluated.perpendicularOffsetType = getPerpendicularOffsetType( in );
                 contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<LineStyling>() {
                     @Override
                     public void update( LineStyling obj, String val ) {
-                        obj.perpendicularOffset = Double.parseDouble( val );
+                        if ( val.endsWith( "px" ) ) {
+                            String valpx = val.substring( 0, val.length() - 2 );
+                            pixelPerpendicularToken = true;
+                            obj.perpendicularOffset = Double.parseDouble( valpx );
+                        } else {
+                            pixelPerpendicularToken = false;
+                            obj.perpendicularOffset = Double.parseDouble( val );
+                        }
                     }
                 }, contn ).second;
             } else if ( in.isStartElement() ) {
@@ -541,6 +575,9 @@ public class SymbologyParser {
         Common common = new Common( in.getLocation() );
         PolygonStyling baseOrEvaluated = new PolygonStyling();
         baseOrEvaluated.uom = uom;
+        baseOrEvaluated.uomStroke = uom;
+        baseOrEvaluated.uomPerpendicular = uom;
+        baseOrEvaluated.uomGp = uom;
         Continuation<PolygonStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "PolygonSymbolizer" ) ) ) {
@@ -549,6 +586,17 @@ public class SymbologyParser {
             parseCommon( common, in );
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
+                if ( context.strokeParser.getPixelStrokeToken() == true ) {
+                    baseOrEvaluated.uomStroke = Pixel;
+                } else {
+                    baseOrEvaluated.uomStroke = uom;
+                }
+                if ( context.strokeParser.getPixelGapToken() == true ) {
+                    baseOrEvaluated.uomGp = Pixel;
+                } else {
+                    baseOrEvaluated.uomGp = uom;
+                }
+
                 final Pair<Stroke, Continuation<Stroke>> pair = context.strokeParser.parseStroke( in );
 
                 if ( pair != null ) {
@@ -579,11 +627,23 @@ public class SymbologyParser {
                     }
                 }
             } else if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                if ( this.getPixelPerpendicularToken() == true ) {
+                    baseOrEvaluated.uomPerpendicular = Pixel;
+                } else {
+                    baseOrEvaluated.uomPerpendicular = uom;
+                }
                 baseOrEvaluated.perpendicularOffsetType = getPerpendicularOffsetType( in );
                 contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<PolygonStyling>() {
                     @Override
                     public void update( PolygonStyling obj, String val ) {
-                        obj.perpendicularOffset = Double.parseDouble( val );
+                        if ( val.endsWith( "px" ) ) {
+                            String valpx = val.substring( 0, val.length() - 2 );
+                            pixelPerpendicularToken = true;
+                            obj.perpendicularOffset = Double.parseDouble( valpx );
+                        } else {
+                            pixelPerpendicularToken = false;
+                            obj.perpendicularOffset = Double.parseDouble( val );
+                        }
                     }
                 }, contn ).second;
             } else if ( in.getLocalName().equals( "Displacement" ) ) {
@@ -739,10 +799,28 @@ public class SymbologyParser {
         Continuation<StringBuffer> label = null;
         String xmlText = null;
 
+        if ( this.getPixelTextPerpendicularToken() == true ) {
+            baseOrEvaluated.uomPerpendicularOffsetText = Pixel;
+        } else {
+            baseOrEvaluated.uomPerpendicularOffsetText = uom;
+        }
+
         while ( !( in.isEndElement() && in.getLocalName().equals( "TextSymbolizer" ) ) ) {
             in.nextTag();
 
             parseCommon( common, in );
+
+            if ( this.getPixelTextDisplacementXToken() == true ) {
+                baseOrEvaluated.uomDisplacementX = Pixel;
+            } else {
+                baseOrEvaluated.uomDisplacementX = uom;
+            }
+
+            if ( this.getPixelTextDisplacementYToken() == true ) {
+                baseOrEvaluated.uomDisplacementY = Pixel;
+            } else {
+                baseOrEvaluated.uomDisplacementY = uom;
+            }
 
             if ( in.getLocalName().equals( "Label" ) ) {
                 Pair<String, Continuation<StringBuffer>> res = updateOrContinue( in, "Label", new StringBuffer(),
@@ -797,7 +875,15 @@ public class SymbologyParser {
                                                                   new Updater<TextStyling>() {
                                                                       @Override
                                                                       public void update( TextStyling obj, String val ) {
-                                                                          obj.displacementX = Double.parseDouble( val );
+                                                                          if ( val.endsWith( "px" ) ) {
+                                                                              String valpx = val.substring( 0,
+                                                                                                            val.length() - 2 );
+                                                                              pixelTextDisplacementXToken = true;
+                                                                              obj.displacementX = Double.parseDouble( valpx );
+                                                                          } else {
+                                                                              pixelTextDisplacementXToken = false;
+                                                                              obj.displacementX = Double.parseDouble( val );
+                                                                          }
                                                                       }
                                                                   }, contn ).second;
                                     } else if ( in.getLocalName().equals( "DisplacementY" ) ) {
@@ -805,7 +891,15 @@ public class SymbologyParser {
                                                                   new Updater<TextStyling>() {
                                                                       @Override
                                                                       public void update( TextStyling obj, String val ) {
-                                                                          obj.displacementY = Double.parseDouble( val );
+                                                                          if ( val.endsWith( "px" ) ) {
+                                                                              String valpx = val.substring( 0,
+                                                                                                            val.length() - 2 );
+                                                                              pixelTextDisplacementYToken = true;
+                                                                              obj.displacementY = Double.parseDouble( valpx );
+                                                                          } else {
+                                                                              pixelTextDisplacementYToken = false;
+                                                                              obj.displacementY = Double.parseDouble( val );
+                                                                          }
                                                                       }
                                                                   }, contn ).second;
                                     } else if ( in.isStartElement() ) {
@@ -1046,8 +1140,14 @@ public class SymbologyParser {
                 contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<LinePlacement>() {
                     @Override
                     public void update( LinePlacement obj, String val ) {
-                        obj.perpendicularOffset = Double.parseDouble( val );
-
+                        if ( val.endsWith( "px" ) ) {
+                            String valpx = val.substring( 0, val.length() - 2 );
+                            pixelTextPerpendicularToken = true;
+                            obj.perpendicularOffset = Double.parseDouble( valpx );
+                        } else {
+                            pixelTextPerpendicularToken = false;
+                            obj.perpendicularOffset = Double.parseDouble( val );
+                        }
                     }
                 }, contn ).second;
             }
@@ -1067,7 +1167,6 @@ public class SymbologyParser {
                     @Override
                     public void update( LinePlacement obj, String val ) {
                         obj.gap = Double.parseDouble( val );
-
                     }
                 }, contn ).second;
             }
@@ -1344,4 +1443,19 @@ public class SymbologyParser {
 
     }
 
+    public boolean getPixelPerpendicularToken() {
+        return pixelPerpendicularToken;
+    }
+
+    public boolean getPixelTextPerpendicularToken() {
+        return pixelTextPerpendicularToken;
+    }
+
+    public boolean getPixelTextDisplacementXToken() {
+        return pixelTextDisplacementXToken;
+    }
+
+    public boolean getPixelTextDisplacementYToken() {
+        return pixelTextDisplacementYToken;
+    }
 }

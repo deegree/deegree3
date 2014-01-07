@@ -81,6 +81,10 @@ class StrokeSymbologyParser {
 
     private SymbologyParserContext context;
 
+    private boolean pixelStrokeToken;
+    
+    private boolean pixelGapToken;
+
     StrokeSymbologyParser( SymbologyParserContext context ) {
         this.context = context;
     }
@@ -140,7 +144,14 @@ class StrokeSymbologyParser {
             contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
                 @Override
                 public void update( Stroke obj, String val ) {
-                    obj.width = Double.parseDouble( val );
+                    if ( val.endsWith( "px" ) ) {
+                        String valpx = val.substring( 0, val.length() - 2 );
+                        pixelStrokeToken = true;
+                        obj.width = Double.parseDouble( valpx );
+                    } else {
+                        pixelStrokeToken = false;
+                        obj.width = Double.parseDouble( val );
+                    }
                 }
             }, contn ).second;
         } else if ( name.equals( "stroke-linejoin" ) ) {
@@ -251,7 +262,14 @@ class StrokeSymbologyParser {
                 contn = context.parser.updateOrContinue( in, "Gap", base, new Updater<Stroke>() {
                     @Override
                     public void update( Stroke obj, String val ) {
-                        obj.strokeGap = Double.parseDouble( val );
+                        if ( val.endsWith( "px" ) ) {
+                            String valpx = val.substring( 0, val.length() - 2 );
+                            pixelGapToken = true;
+                            obj.strokeGap = Double.parseDouble( valpx );
+                        } else {
+                            pixelGapToken = false;
+                            obj.strokeGap = Double.parseDouble( val );
+                        }
                     }
                 }, contn ).second;
                 in.require( END_ELEMENT, null, "Gap" );
@@ -274,4 +292,11 @@ class StrokeSymbologyParser {
         return contn;
     }
 
+    public boolean getPixelStrokeToken() {
+        return pixelStrokeToken;
+    }
+    
+    public boolean getPixelGapToken() {
+        return pixelGapToken;
+    }
 }

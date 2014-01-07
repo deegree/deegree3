@@ -84,8 +84,8 @@ class LabelRenderer {
     void render( TextStyling styling, Font font, String text, Point p ) {
         Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
                                                                                null );
-        double x = pt.x + context.uomCalculator.considerUOM( styling.displacementX, styling.uom );
-        double y = pt.y - context.uomCalculator.considerUOM( styling.displacementY, styling.uom );
+        double x = pt.x + context.uomCalculator.considerUOM( styling.displacementX, styling.uomDisplacementX );
+        double y = pt.y - context.uomCalculator.considerUOM( styling.displacementY, styling.uomDisplacementY );
         renderer.graphics.setFont( font );
         AffineTransform transform = renderer.graphics.getTransform();
         renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
@@ -123,12 +123,13 @@ class LabelRenderer {
     void render( TextStyling styling, Font font, String text, Curve c ) {
         context.fillRenderer.applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
+        double poff = context.uomCalculator.considerUOM( styling.linePlacement.perpendicularOffset,
+                                                         styling.uomPerpendicularOffsetText );
         if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
             return;
         }
         if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
-                                       styling.linePlacement.perpendicularOffsetType );
+            stroke = new OffsetStroke( poff, stroke, styling.linePlacement.perpendicularOffsetType );
         }
 
         renderer.graphics.setStroke( stroke );
