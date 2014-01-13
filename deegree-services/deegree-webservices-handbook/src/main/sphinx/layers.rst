@@ -144,6 +144,8 @@ You can configure any number of ``StyleRef`` elements. Each corresponds to exact
 
 Here's a snippet with ``Style`` elements:
 
+PLEASE NOTE: The following mechanisms using StyleName LayerNameRef and StyleNameRef elements will only work with SLD files. Using direct SE styles, the only way to configure styles is the above.
+
 .. code-block:: xml
 
   <l:StyleRef>
