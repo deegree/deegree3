@@ -96,8 +96,8 @@ class GeoTiffTileDataSetBuilder {
         for ( TileMatrix tm : tms.getTileMatrices() ) {
             int xoff = (int) Math.round( x / tm.getTileWidth() );
             int yoff = (int) Math.round( y / tm.getTileHeight() );
-            int numx = (int) Math.round( envelope.getSpan0() / tm.getTileWidth() );
-            int numy = (int) Math.round( envelope.getSpan1() / tm.getTileHeight() );
+            int numx = (int) Math.ceil( (double) envelope.getSpan0() / (double) tm.getTileWidth() );
+            int numy = (int) Math.ceil( (double) envelope.getSpan1() / (double) tm.getTileHeight() );
             levels.add( new GeoTIFFTileDataLevel( tm, file, idx++, xoff, yoff, numx, numy ) );
         }
 
