@@ -2,7 +2,7 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2014 by:
- 
+
  IDgis bv
 
  This library is free software; you can redistribute it and/or modify it under
@@ -18,7 +18,7 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  Contact information:
- 
+
  IDgis bv
  Boomkamp 16
  7461 AX Rijssen
@@ -49,7 +49,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 public interface FeatureInfoContext {
 
-    OutputStream getOutputStream() throws IOException;
+    OutputStream getOutputStream()
+                            throws IOException;
 
-    XMLStreamWriter getXmlWriter() throws IOException, XMLStreamException;
+    XMLStreamWriter getXmlWriter()
+                            throws IOException, XMLStreamException;
+
+    void sendRedirect( String location )
+                            throws IOException;
 }
