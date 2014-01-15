@@ -47,7 +47,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.gml.property.Property;
@@ -124,25 +124,25 @@ public class FeatureInfoManager {
         return supportedFeatureInfoFormats.keySet();
     }
 
-    public void serializeFeatureInfo( FeatureInfoParams params )
-                            throws IOException {
+    public void serializeFeatureInfo( FeatureInfoParams params, FeatureInfoContext context )
+                            throws IOException, XMLStreamException {
 
         String format = params.getFormat();
         FeatureInfoSerializer serializer = featureInfoSerializers.get( format );
         if ( serializer != null ) {
-            serializer.serialize( params.getNsBindings(), params.getFeatureCollection(), params.getOutputStream() );
+            serializer.serialize( params.getNsBindings(), params.getFeatureCollection(), context );
             return;
         }
 
         String fiFile = supportedFeatureInfoFormats.get( format );
         if ( fiFile != null && !fiFile.isEmpty() ) {
-            runTemplate( params.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries() );
+            runTemplate( context.getOutputStream(), fiFile, params.getFeatureCollection(), params.isWithGeometries() );
         } else if ( isGml( format ) ) {
-            handleGmlOutput( format, params );
+            handleGmlOutput( format, params, context );
         } else if ( format.equalsIgnoreCase( "text/plain" ) ) {
-            handlePlainTextOutput( params );
+            handlePlainTextOutput( params, context );
         } else if ( format.equalsIgnoreCase( "text/html" ) ) {
-            runTemplate( params.getOutputStream(), null, params.getFeatureCollection(), params.isWithGeometries() );
+            runTemplate( context.getOutputStream(), null, params.getFeatureCollection(), params.isWithGeometries() );
         } else {
             throw new IOException( "FeatureInfo format '" + format + "' is unknown." );
         }
@@ -153,9 +153,9 @@ public class FeatureInfoManager {
                || defaultGMLGFIFormats.contains( format.toLowerCase() );
     }
 
-    private void handlePlainTextOutput( FeatureInfoParams params )
-                            throws UnsupportedEncodingException {
-        PrintWriter out = new PrintWriter( new OutputStreamWriter( params.getOutputStream(), "UTF-8" ) );
+    private void handlePlainTextOutput( FeatureInfoParams params, FeatureInfoContext context )
+                            throws IOException {
+        PrintWriter out = new PrintWriter( new OutputStreamWriter( context.getOutputStream(), "UTF-8" ) );
         for ( Feature f : params.getFeatureCollection() ) {
             out.println( f.getName().getLocalPart() + ":" );
             for ( Property p : f.getProperties() ) {
@@ -166,10 +166,10 @@ public class FeatureInfoManager {
         out.close();
     }
 
-    private void handleGmlOutput( String format, FeatureInfoParams params ) {
+    private void handleGmlOutput( String format, FeatureInfoParams params, FeatureInfoContext context ) throws XMLStreamException, IOException {        
+        XMLStreamWriter xmlWriter = context.getXmlWriter();
+        
         try {
-            XMLStreamWriter xmlWriter = params.getXmlWriter();
-
             // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
             HashMap<String, String> bindings = new HashMap<String, String>();
             String ns = determineNamespace( params );

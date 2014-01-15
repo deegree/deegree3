@@ -108,6 +108,7 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
@@ -400,7 +401,7 @@ public class WMSController extends AbstractOWS {
         sendImage( img, response, glg.getFormat() );
     }
 
-    private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
+    private void getFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
 
         Pair<FeatureCollection, LinkedList<String>> pair;
@@ -447,9 +448,8 @@ public class WMSController extends AbstractOWS {
         String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
 
         try {
-            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, response.getOutputStream(),
-                                                              geometries, loc, type, crs, response.getXMLWriter() );
-            featureInfoManager.serializeFeatureInfo( params );
+            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, geometries, loc, type, crs );
+            featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
             response.flushBuffer();
         } catch ( XMLStreamException e ) {
             throw new IOException( e.getLocalizedMessage(), e );
