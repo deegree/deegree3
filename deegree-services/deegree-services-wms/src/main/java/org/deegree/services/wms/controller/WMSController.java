@@ -88,6 +88,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.FeatureInfoParams;
+import org.deegree.featureinfo.serializing.FeatureInfoSerializer;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerRef;
@@ -114,6 +115,7 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
+import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.Serializer;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -221,12 +223,30 @@ public class WMSController extends AbstractOWS {
                     if ( t.getFile() != null ) {
                         featureInfoManager.addOrReplaceFormat( t.getFormat(),
                                                                metadata.getLocation().resolveToFile( t.getFile() ).toString() );
-                    } else {
+                    } else if ( t.getXSLTFile() != null ) {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
                         featureInfoManager.addOrReplaceXsltFormat( t.getFormat(),
                                                                    metadata.getLocation().resolveToUrl( xsltFile.getValue() ),
                                                                    version, workspace );
+                    } else if ( t.getSerializer() != null ) {
+                        Serializer serializer = t.getSerializer();
+
+                        FeatureInfoSerializer featureInfoSerializer;
+                        try {
+                            Class<?> clazz = workspace.getModuleClassLoader().loadClass( serializer.getJavaClass() );
+                            featureInfoSerializer = clazz.asSubclass( FeatureInfoSerializer.class ).newInstance();
+                        } catch ( ClassNotFoundException e ) {
+                            throw new IllegalArgumentException( "Couldn't find serializer class", e );
+                        } catch ( ClassCastException e ) {
+                            throw new IllegalArgumentException(
+                                                                "Configured serializer class doesn't implement FeatureInfoSerializer",
+                                                                e );
+                        }
+
+                        featureInfoManager.addOrReplaceCustomFormat( t.getFormat(), featureInfoSerializer );
+                    } else {
+                        throw new IllegalArgumentException( "Unknown GetFeatureInfoFormat" );
                     }
                 }
             }

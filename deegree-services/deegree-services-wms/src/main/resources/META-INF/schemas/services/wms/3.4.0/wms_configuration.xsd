@@ -69,6 +69,13 @@
                   </simpleContent>
                 </complexType>
               </element>
+              <element name="Serializer">
+              	<complexType>
+              		<sequence>
+						<element name="JavaClass" type="string" />
+					</sequence>
+              	</complexType>
+              </element>
             </choice>
             <element name="Format" type="string" />
           </sequence>

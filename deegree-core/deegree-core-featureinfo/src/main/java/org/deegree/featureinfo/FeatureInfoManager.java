@@ -102,6 +102,11 @@ public class FeatureInfoManager {
             supportedFeatureInfoFormats.put( "text/html", "" );
         }
     }
+    
+    public void addOrReplaceCustomFormat( String format, FeatureInfoSerializer serializer ) {
+        defaultGMLGFIFormats.remove( format );
+        featureInfoSerializers.put( format, serializer );
+    }
 
     public void addOrReplaceFormat( String format, String file ) {
         defaultGMLGFIFormats.remove( format );
