@@ -1,0 +1,9 @@
+<DataSourceConnectionProvider configVersion="3.4.0"
+  xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource ./datasource.xsd">
+
+  <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
+    <Argument name="jndiName" value="java:comp/env/jdbc/DatabaseName" />
+  </DataSource>
+
+</DataSourceConnectionProvider>
