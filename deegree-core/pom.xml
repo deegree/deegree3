@@ -48,6 +48,7 @@
     <module>deegree-core-time</module>
     <module>deegree-core-protocol</module>
     <module>deegree-core-workspace</module>
+    <module>deegree-connectionprovider-datasource</module>
   </modules>
 
 </project>

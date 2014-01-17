@@ -1,0 +1,15 @@
+<DataSourceConnectionProvider configVersion="3.4.0"
+  xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource ./datasource.xsd">
+
+  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+
+  <Property name="driverClassName" value="org.postgresql.Driver" />
+  <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
+  <Property name="username" value="kelvin" />
+  <Property name="password" value="s3cr3t" />
+  <Property name="poolPreparedStatements" value="true" />
+  <Property name="maxActive" value="10" />
+  <Property name="maxIdle" value="10" />
+
+</DataSourceConnectionProvider>

@@ -1,0 +1,15 @@
+<DataSourceConnectionProvider configVersion="3.4.0"
+  xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource ./datasource.xsd">
+
+  <DataSource javaClass="oracle.ucp.jdbc.PoolDataSourceFactory" factoryMethod="getPoolDataSource" />
+
+  <Property name="connectionFactoryClassName" value="oracle.jdbc.pool.OracleDataSource" />
+  <Property name="url" value="jdbc:oracle:thin:@//localhost:1521/XE" />
+  <Property name="user" value="kelvin" />
+  <Property name="initialPoolSize" value="5" />
+  <Property name="minPoolSize" value="5" />
+  <Property name="maxPoolSize" value="10" />
+  <Property name="maxStatements" value="50" />
+
+</DataSourceConnectionProvider>
