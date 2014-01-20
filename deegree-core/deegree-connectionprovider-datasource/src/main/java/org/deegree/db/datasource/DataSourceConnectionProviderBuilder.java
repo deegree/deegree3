@@ -95,12 +95,14 @@ class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
     }
 
     Method getDestroyMethod( final DataSource ds, final String methodName ) {
-        try {
-            return ds.getClass().getMethod( methodName );
-        } catch ( Exception e ) {
-            String msg = "Cannot find specified destroy method '" + methodName + "' for class '"
-                         + ds.getClass().getCanonicalName() + "'";
-            LOG.error( msg );
+        if ( methodName != null ) {
+            try {
+                return ds.getClass().getMethod( methodName );
+            } catch ( Exception e ) {
+                String msg = "Cannot find specified destroy method '" + methodName + "' for class '"
+                             + ds.getClass().getCanonicalName() + "'";
+                LOG.error( msg );
+            }
         }
         return null;
     }

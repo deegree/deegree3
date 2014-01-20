@@ -42,6 +42,7 @@ package org.deegree.db.datasource;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 import static org.deegree.db.datasource.DataSourceConnectionProviderProvider.SCHEMA_URL;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -51,6 +52,7 @@ import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
+import org.slf4j.Logger;
 
 /**
  * {@link ConnectionProviderMetadata} for the {@link DataSourceConnectionProvider}.
@@ -61,7 +63,9 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
  */
 class DataSourceConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
-    private static final String JAXB_PACKAGE = "org.deegree.db.legacy.jaxb";
+    private static final Logger LOG = getLogger( DataSourceConnectionProviderMetadata.class );
+
+    private static final String JAXB_PACKAGE = "org.deegree.db.datasource.jaxb";
 
     DataSourceConnectionProviderMetadata( final Workspace workspace,
                                           final ResourceLocation<ConnectionProvider> location,
@@ -75,6 +79,7 @@ class DataSourceConnectionProviderMetadata extends AbstractResourceMetadata<Conn
             final Object cfg = unmarshall( JAXB_PACKAGE, SCHEMA_URL, location.getAsStream(), workspace );
             return new DataSourceConnectionProviderBuilder( (DataSourceConnectionProvider) cfg, this, workspace );
         } catch ( Exception e ) {
+            LOG.error( e.getLocalizedMessage(), e );
             throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
     }
