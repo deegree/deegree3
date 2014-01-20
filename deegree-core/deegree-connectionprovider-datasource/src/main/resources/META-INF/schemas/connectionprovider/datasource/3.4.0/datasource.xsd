@@ -18,19 +18,20 @@
             <sequence>
               <element name="Argument" minOccurs="0" maxOccurs="unbounded">
                 <complexType>
-                  <attribute name="name" use="required" />
-                  <attribute name="value" use="required" />
+                  <attribute name="javaClass" use="required" />                
+                  <attribute name="value" use="required" />                  
                 </complexType>
               </element>
             </sequence>
             <attribute name="javaClass" use="required" />
             <attribute name="factoryMethod" use="optional" />
+            <attribute name="destroyMethod" use="optional" />
           </complexType>
         </element>
         <element name="Property" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <attribute name="name" use="required" />
-            <attribute name="value" use="required" />
+            <attribute name="value" use="required" />            
           </complexType>
         </element>
       </sequence>
