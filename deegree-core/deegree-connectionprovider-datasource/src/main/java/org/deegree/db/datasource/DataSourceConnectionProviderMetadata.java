@@ -40,68 +40,43 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.datasource;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.deegree.db.datasource.DataSourceConnectionProviderProvider.SCHEMA_URL;
 
 import org.deegree.db.ConnectionProvider;
-import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceException;
-import org.deegree.workspace.ResourceMetadata;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
+import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.Workspace;
+import org.deegree.workspace.standard.AbstractResourceMetadata;
 
 /**
- * {@link ConnectionProvider} based on <code>javax.sql.DataSource</code>.
+ * {@link ConnectionProviderMetadata} for the {@link DataSourceConnectionProvider}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
  * @since 3.4
  */
-class DatasourceConnectionProvider implements ConnectionProvider {
+class DataSourceConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
-    private final DatasourceConnectionProviderMetadata resourceMetadata;
+    private static final String JAXB_PACKAGE = "org.deegree.db.legacy.jaxb";
 
-    private final DataSource ds;
-
-    private final SQLDialect dialect;
-
-    DatasourceConnectionProvider( final DatasourceConnectionProviderMetadata resourceMetadata, final DataSource ds,
-                                  final SQLDialect dialect ) {
-        this.resourceMetadata = resourceMetadata;
-        this.ds = ds;
-        this.dialect = dialect;
+    DataSourceConnectionProviderMetadata( final Workspace workspace,
+                                          final ResourceLocation<ConnectionProvider> location,
+                                          final ConnectionProviderProvider provider ) {
+        super( workspace, location, provider );
     }
 
     @Override
-    public ResourceMetadata<? extends Resource> getMetadata() {
-        return resourceMetadata;
-    }
-
-    @Override
-    public void init() {
-    }
-
-    @Override
-    public Connection getConnection() {
+    public ResourceBuilder<ConnectionProvider> prepare() {
         try {
-            return ds.getConnection();
-        } catch ( SQLException e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
+            final Object cfg = unmarshall( JAXB_PACKAGE, SCHEMA_URL, location.getAsStream(), workspace );
+            return new DataSourceConnectionProviderBuilder( (DataSourceConnectionProvider) cfg, this, workspace );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( e.getLocalizedMessage(), e );
         }
-    }
-
-    @Override
-    public void destroy() {
-    }
-
-    @Override
-    public SQLDialect getDialect() {
-        return dialect;
-    }
-
-    @Override
-    public void invalidate( Connection conn ) {        
     }
 
 }

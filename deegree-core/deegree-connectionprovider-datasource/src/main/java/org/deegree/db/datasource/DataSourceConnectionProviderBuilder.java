@@ -59,24 +59,24 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
- * {@link ResourceBuilder} for the {@link DatasourceConnectionProvider}.
+ * {@link ResourceBuilder} for the {@link DataSourceConnectionProvider}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
  * @since 3.4
  */
-class DatasourceConnectionProviderBuilder implements ResourceBuilder<ConnectionProvider> {
+class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionProvider> {
 
-    private static final Logger LOG = getLogger( DatasourceConnectionProviderBuilder.class );
+    private static final Logger LOG = getLogger( DataSourceConnectionProviderBuilder.class );
 
     private final DataSourceConnectionProvider config;
 
-    private final DatasourceConnectionProviderMetadata metadata;
+    private final DataSourceConnectionProviderMetadata metadata;
 
     private final Workspace workspace;
 
-    DatasourceConnectionProviderBuilder( final DataSourceConnectionProvider config,
-                                         final DatasourceConnectionProviderMetadata metadata, final Workspace workspace ) {
+    DataSourceConnectionProviderBuilder( final DataSourceConnectionProvider config,
+                                         final DataSourceConnectionProviderMetadata metadata, final Workspace workspace ) {
         this.config = config;
         this.metadata = metadata;
         this.workspace = workspace;
@@ -98,7 +98,7 @@ class DatasourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
         } finally {
             close( conn );
         }
-        return new DatasourceConnectionProvider( metadata, ds, dialect );
+        return new org.deegree.db.datasource.DataSourceConnectionProvider( metadata, ds, dialect );
     }
 
     DataSource createOrRetrieveDataSourceInstance() {
