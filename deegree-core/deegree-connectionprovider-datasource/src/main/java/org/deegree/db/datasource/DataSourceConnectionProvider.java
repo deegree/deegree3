@@ -40,6 +40,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.datasource;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -50,6 +53,7 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceMetadata;
+import org.slf4j.Logger;
 
 /**
  * {@link ConnectionProvider} based on <code>javax.sql.DataSource</code>.
@@ -60,17 +64,34 @@ import org.deegree.workspace.ResourceMetadata;
  */
 class DataSourceConnectionProvider implements ConnectionProvider {
 
+    private static final Logger LOG = getLogger( DataSourceConnectionProvider.class );
+
     private final DataSourceConnectionProviderMetadata resourceMetadata;
 
     private final DataSource ds;
 
     private final SQLDialect dialect;
 
+    private final Method destroyMethod;
+
+    /**
+     * Creates a new {@link DataSourceConnectionProvider} instance.
+     * 
+     * @param resourceMetadata
+     *            metadata, must not be <code>null</code>
+     * @param ds
+     *            data source, must not be <code>null</code>
+     * @param dialect
+     *            SQL dialect, can be <code>null</code>
+     * @param destroyMethod
+     *            data source method for destroying the data source on shutdown, can be <code>null</code>
+     */
     DataSourceConnectionProvider( final DataSourceConnectionProviderMetadata resourceMetadata, final DataSource ds,
-                                  final SQLDialect dialect ) {
+                                  final SQLDialect dialect, final Method destroyMethod ) {
         this.resourceMetadata = resourceMetadata;
         this.ds = ds;
         this.dialect = dialect;
+        this.destroyMethod = destroyMethod;
     }
 
     @Override
@@ -80,6 +101,7 @@ class DataSourceConnectionProvider implements ConnectionProvider {
 
     @Override
     public void init() {
+        // nothing to do
     }
 
     @Override
@@ -87,12 +109,22 @@ class DataSourceConnectionProvider implements ConnectionProvider {
         try {
             return ds.getConnection();
         } catch ( SQLException e ) {
-            throw new ResourceException( e.getLocalizedMessage(), e );
+            String msg = "Unable to retrieve JDBC connection from DataSource: " + e.getLocalizedMessage();
+            LOG.error( msg );
+            throw new ResourceException( msg, e );
         }
     }
 
     @Override
     public void destroy() {
+        if ( destroyMethod != null ) {
+            try {
+                destroyMethod.invoke( ds );
+            } catch ( Exception e ) {
+                String msg = "Error destroying DataSource instance: " + e.getLocalizedMessage();
+                LOG.error( msg );
+            }
+        }
     }
 
     @Override
@@ -101,7 +133,8 @@ class DataSourceConnectionProvider implements ConnectionProvider {
     }
 
     @Override
-    public void invalidate( Connection conn ) {        
+    public void invalidate( Connection conn ) {
+        // nothing to do
     }
 
 }

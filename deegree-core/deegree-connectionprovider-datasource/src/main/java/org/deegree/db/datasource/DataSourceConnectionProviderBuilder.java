@@ -43,16 +43,15 @@ package org.deegree.db.datasource;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.ServiceLoader;
 
 import javax.sql.DataSource;
 
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
-import org.deegree.db.dialect.SqlDialectProvider;
+import org.deegree.db.dialect.SqlDialects;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.Workspace;
@@ -84,42 +83,44 @@ class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
 
     @Override
     public ConnectionProvider build() {
-        final DataSource ds = createOrRetrieveDataSourceInstance();
-        Connection conn = null;
-        try {
-            conn = ds.getConnection();
-        } catch ( SQLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        SQLDialect dialect = null;
-        try {
-            dialect = lookupSqlDialect( conn );
-        } finally {
-            close( conn );
-        }
-        return new org.deegree.db.datasource.DataSourceConnectionProvider( metadata, ds, dialect );
+        final DataSource ds = initializeDataSourceInstance();
+        final Method destroyMethod = getDestroyMethod( ds, config.getDataSource().getDestroyMethod() );
+        final SQLDialect dialect = lookupSqlDialect( ds );
+        return new org.deegree.db.datasource.DataSourceConnectionProvider( metadata, ds, dialect, destroyMethod );
     }
 
-    DataSource createOrRetrieveDataSourceInstance() {
+    private DataSource initializeDataSourceInstance() {
+        final DataSourceInitializer initializer = new DataSourceInitializer( workspace.getModuleClassLoader() );
+        return initializer.getConfiguredDataSource( config );
+    }
+
+    Method getDestroyMethod( final DataSource ds, final String methodName ) {
+        try {
+            return ds.getClass().getMethod( methodName );
+        } catch ( Exception e ) {
+            String msg = "Cannot find specified destroy method '" + methodName + "' for class '"
+                         + ds.getClass().getCanonicalName() + "'";
+            LOG.error( msg );
+        }
         return null;
     }
 
-    SQLDialect lookupSqlDialect( Connection conn ) {
-        ServiceLoader<SqlDialectProvider> dialectLoader = ServiceLoader.load( SqlDialectProvider.class,
-                                                                              workspace.getModuleClassLoader() );
-        Iterator<SqlDialectProvider> iter = dialectLoader.iterator();
+    private SQLDialect lookupSqlDialect( final DataSource ds ) {
         SQLDialect dialect = null;
-        while ( iter.hasNext() ) {
-            SqlDialectProvider prov = iter.next();
-            if ( prov.supportsConnection( conn ) ) {
-                dialect = prov.createDialect( conn );
-                break;
+        Connection conn = null;
+        try {
+            conn = ds.getConnection();
+            dialect = SqlDialects.lookupSqlDialect( conn, workspace.getModuleClassLoader() );
+        } catch ( SQLException e ) {
+            String msg = "Error connecting to DB: " + e.getLocalizedMessage();
+            LOG.error( msg );
+            return null;
+        } finally {
+            if ( conn != null ) {
+                close( conn );
             }
-        }
-        if ( dialect == null ) {
-            LOG.warn( "No SQL dialect for connection found, trying to continue." );
         }
         return dialect;
     }
+
 }
