@@ -55,11 +55,11 @@ import org.deegree.workspace.Workspace;
  * 
  * @since 3.4
  */
-class DataSourceConnectionProviderProvider extends ConnectionProviderProvider {
+public class DataSourceConnectionProviderProvider extends ConnectionProviderProvider {
 
     static final String CONFIG_NAMESPACE = "http://www.deegree.org/connectionprovider/datasource";
 
-    static final URL SCHEMA_URL = DataSourceConnectionProviderProvider.class.getResource( "/META-INF/schemas/connectionprovider/3.4.0/datasource.xsd" );
+    static final URL SCHEMA_URL = DataSourceConnectionProviderProvider.class.getResource( "/META-INF/schemas/connectionprovider/datasource/3.4.0/datasource.xsd" );
 
     @Override
     public String getNamespace() {

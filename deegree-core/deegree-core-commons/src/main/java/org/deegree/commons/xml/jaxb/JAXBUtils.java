@@ -74,10 +74,12 @@ public class JAXBUtils {
         try {
             o = u.unmarshal( input );
         } catch ( JAXBException e ) {
-            LOG.error( "Error in configuration file" );
+            LOG.error( "Error in configuration file: " + e.getLocalizedMessage() );
             // whyever they use the linked exception here...
             // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
-            LOG.error( "Error: " + e.getLinkedException().getMessage() );
+            if ( e.getLinkedException() != null ) {
+                LOG.error( "Error: " + e.getLinkedException().getLocalizedMessage() );
+            }
             LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
             throw e;
         } catch ( Exception e ) {
