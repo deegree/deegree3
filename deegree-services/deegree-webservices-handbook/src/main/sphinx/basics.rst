@@ -57,6 +57,15 @@ The following table provides a short description of the different types of works
 
 Physically, every configured resource corresponds to an XML configuration file in the active workspace directory.
 
+-----------------------------------------------
+Dependencies of the deegree configuration files
+-----------------------------------------------
+
+The following diagram shows the different types of resources and their dependencies.
+
+.. figure:: images/workspace-configuration-dependencies.png
+   :target: _images/workspace-configuration-dependencies.png
+
 -------------------------------------------
 Location of the deegree workspace directory
 -------------------------------------------
