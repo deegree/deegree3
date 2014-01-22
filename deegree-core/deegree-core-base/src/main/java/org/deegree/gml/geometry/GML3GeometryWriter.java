@@ -37,6 +37,8 @@
 package org.deegree.gml.geometry;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.geometry.Geometry.GeometryType.COMPOSITE_GEOMETRY;
+import static org.deegree.geometry.Geometry.GeometryType.ENVELOPE;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_32;
 
@@ -55,7 +57,9 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.Geometry.GeometryType;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -113,7 +117,6 @@ import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
-import org.deegree.gml.props.GMLStdPropsWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +138,8 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     private final ICRS outputCRS;
 
+    private final SFSProfiler simplifier;
+
     private CoordinateFormatter formatter;
 
     private CoordinateTransformer transformer;
@@ -144,10 +149,6 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     // this object is used for every coordinate conversion, hence this class is not Thread-safe
     private double[] transformedOrdinates;
 
-    private final boolean exportSf;
-
-    private final GMLStdPropsWriter stdPropsWriter;
-
     /**
      * Creates a new {@link GML3GeometryWriter} instance.
      * 
@@ -155,11 +156,9 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
      *            gml stream writer, must not be <code>null</code>
      */
     public GML3GeometryWriter( GMLStreamWriter gmlStreamWriter ) {
-
         super( gmlStreamWriter );
         this.outputCRS = gmlStreamWriter.getOutputCrs();
-        // TODO
-        this.exportSf = false;
+        this.simplifier = gmlStreamWriter.getGeometrySimplifier();
         IUnit crsUnits = null;
         if ( outputCRS != null ) {
             try {
@@ -177,7 +176,6 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         if ( formatter == null ) {
             formatter = new DecimalCoordinateFormatter( crsUnits );
         }
-        this.stdPropsWriter = new GMLStdPropsWriter( version, writer );
     }
 
     @SuppressWarnings("unchecked")
@@ -190,7 +188,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             exportReference( (GeometryReference<Geometry>) geometry );
             return;
         }
-
+        geometry = simplify( geometry );
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY:
             exportCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry );
@@ -236,6 +234,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
      * @throws UnknownCRSException
      * @throws TransformationException
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void exportMultiGeometry( MultiGeometry<? extends Geometry> geometry )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
@@ -246,7 +245,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             startGeometry( "MultiCurve", geometry );
             for ( Curve curve : multiCurve ) {
                 writer.writeStartElement( "gml", "curveMember", gmlNs );
-                if ( !exportSf && curve.getId() != null && referenceExportStrategy.isObjectExported( curve.getId() ) ) {
+                if ( curve.getId() != null && referenceExportStrategy.isObjectExported( curve.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + curve.getId() );
                 } else if ( curve instanceof CompositeCurve ) {
                     exportCompositeCurve( (CompositeCurve) curve );
@@ -265,7 +264,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 startGeometry( "MultiCurve", geometry );
                 for ( Curve curve : multiCurve ) {
                     writer.writeStartElement( "gml", "curveMember", gmlNs );
-                    if ( !exportSf && curve.getId() != null && referenceExportStrategy.isObjectExported( curve.getId() ) ) {
+                    if ( curve.getId() != null && referenceExportStrategy.isObjectExported( curve.getId() ) ) {
                         writer.writeAttribute( XLNNS, "href", "#" + curve.getId() );
                     } else if ( curve instanceof CompositeCurve ) {
                         exportCompositeCurve( (CompositeCurve) curve );
@@ -280,7 +279,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 startGeometry( "MultiLineString", geometry );
                 for ( LineString ls : multiLineString ) {
                     writer.writeStartElement( gmlNs, "lineStringMember" );
-                    if ( !exportSf && ls.getId() != null && referenceExportStrategy.isObjectExported( ls.getId() ) ) {
+                    if ( ls.getId() != null && referenceExportStrategy.isObjectExported( ls.getId() ) ) {
                         writer.writeAttribute( XLNNS, "href", "#" + ls.getId() );
                     } else {
                         exportCurve( ls ); // LineString is a type of Curve
@@ -296,7 +295,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             startGeometry( "MultiPoint", geometry );
             for ( Point point : multiPoint ) {
                 writer.writeStartElement( gmlNs, "pointMember" );
-                if ( !exportSf && point.getId() != null && referenceExportStrategy.isObjectExported( point.getId() ) ) {
+                if ( point.getId() != null && referenceExportStrategy.isObjectExported( point.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
                 } else {
                     export( point );
@@ -312,8 +311,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 startGeometry( "MultiSurface", geometry );
                 for ( Surface surface : multiSurface ) {
                     writer.writeStartElement( gmlNs, "surfaceMember" );
-                    if ( !exportSf && surface.getId() != null
-                         && referenceExportStrategy.isObjectExported( surface.getId() ) ) {
+                    if ( surface.getId() != null && referenceExportStrategy.isObjectExported( surface.getId() ) ) {
                         writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
                     } else if ( surface instanceof CompositeSurface ) {
                         exportCompositeSurface( (CompositeSurface) surface );
@@ -329,7 +327,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
                 startGeometry( "MultiPolygon", geometry );
                 for ( Polygon pol : multiPolygon ) {
                     writer.writeStartElement( gmlNs, "polygonMember" );
-                    if ( !exportSf && pol.getId() != null && referenceExportStrategy.isObjectExported( pol.getId() ) ) {
+                    if ( pol.getId() != null && referenceExportStrategy.isObjectExported( pol.getId() ) ) {
                         writer.writeAttribute( XLNNS, "href", "#" + pol.getId() );
                     } else {
                         exportSurface( pol );
@@ -345,7 +343,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             startGeometry( "MultiSolid", geometry );
             for ( Solid solid : multiSolid ) {
                 writer.writeStartElement( gmlNs, "solidMember" );
-                if ( !exportSf && solid.getId() != null && referenceExportStrategy.isObjectExported( solid.getId() ) ) {
+                if ( solid.getId() != null && referenceExportStrategy.isObjectExported( solid.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + solid.getId() );
                 } else if ( solid instanceof CompositeSolid ) {
                     exportCompositeSolid( (CompositeSolid) solid );
@@ -361,7 +359,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             startGeometry( "MultiSurface", geometry );
             for ( Surface surface : multiSurface ) {
                 writer.writeStartElement( gmlNs, "surfaceMember" );
-                if ( !exportSf && surface.getId() != null && referenceExportStrategy.isObjectExported( surface.getId() ) ) {
+                if ( surface.getId() != null && referenceExportStrategy.isObjectExported( surface.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
                 } else if ( surface instanceof CompositeSurface ) {
                     exportCompositeSurface( (CompositeSurface) surface );
@@ -378,7 +376,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             startGeometry( "MultiGeometry", geometry );
             for ( Geometry geometryMember : geometry ) {
                 writer.writeStartElement( gmlNs, "geometryMember" );
-                if ( !exportSf && geometryMember.getId() != null
+                if ( geometryMember.getId() != null
                      && referenceExportStrategy.isObjectExported( geometryMember.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + geometryMember.getId() );
                 } else {
@@ -1538,7 +1536,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
         }
 
-        if ( !exportSf && geometry.getId() != null ) {
+        if ( geometry.getId() != null ) {
             referenceExportStrategy.addExportedId( geometry.getId() );
             writeAttributeWithNS( gmlNs, "id", geometry.getId() );
         } else if ( version == GML_32 && geometry.getId() == null ) {
@@ -1614,4 +1612,16 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         }
         return env;
     }
+
+    private Geometry simplify( Geometry geometry ) {
+        if ( simplifier == null ) {
+            return geometry;
+        }
+        GeometryType type = geometry.getGeometryType();
+        if ( type == ENVELOPE || type == COMPOSITE_GEOMETRY ) {
+            return geometry;
+        }
+        return simplifier.simplify( geometry );
+    }
+
 }
