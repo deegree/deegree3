@@ -89,7 +89,6 @@ class GeometryClipper {
      * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
      */
     Geometry clipGeometry( Geometry geom ) {
-        geom = helper.transform( geom );
         if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {
                 Geometry clippedGeometry = clippingArea.getIntersection( geom );
