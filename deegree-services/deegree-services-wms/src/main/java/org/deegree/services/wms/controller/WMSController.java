@@ -260,9 +260,7 @@ public class WMSController extends AbstractOWS {
                         throw new IllegalArgumentException( "Unknown GetFeatureInfoFormat" );
                     }
                 }
-            }
-
-            featureInfoManager.finalizeConfiguration();
+            }            
 
             // if ( pi.getImageFormat() != null ) {
             // for ( ImageFormat f : pi.getImageFormat() ) {

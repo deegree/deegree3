@@ -16,6 +16,7 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.featureinfo.FeatureInfoContext;
+import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.workspace.Workspace;
@@ -38,7 +39,9 @@ public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
     }
 
     @Override
-    public void serialize( Map<String, String> nsBindings, FeatureCollection col, FeatureInfoContext context ) {
+    public void serialize( FeatureInfoParams params, FeatureInfoContext context ) {
+        Map<String, String> nsBindings = params.getNsBindings();
+        FeatureCollection col = params.getFeatureCollection();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader( workspace.getModuleClassLoader() );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
