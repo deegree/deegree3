@@ -114,6 +114,7 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.Serializer;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
@@ -164,9 +165,19 @@ public class WMSController extends AbstractOWS {
 
     private OWSMetadataProvider metadataProvider;
 
-    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
-        featureInfoManager = new FeatureInfoManager( true );
+
+        final boolean addDefaultFormats;
+        final FeatureInfoFormatsType featureInfoFormats = jaxbConfig.getFeatureInfoFormats();
+        if ( featureInfoFormats != null ) {
+            final Boolean enableDefaultFormats = featureInfoFormats.isEnableDefaultFormats();
+            addDefaultFormats = enableDefaultFormats == null || enableDefaultFormats;
+        } else {
+            addDefaultFormats = true;
+        }
+
+        featureInfoManager = new FeatureInfoManager( addDefaultFormats );
     }
 
     /**
