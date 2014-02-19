@@ -306,7 +306,7 @@ public class StyledGeometryTTProvider implements TextureTileProvider {
             // maxY += dH;
             // }
 
-            Query q = new Query( this.rootFT, Filters.addBBoxConstraint( tileEnv, null, null ), -1, -1, -1 );
+            Query q = new Query( this.rootFT, Filters.addBBoxConstraint( tileEnv, null, null, false ), -1, -1, -1 );
             FeatureInputStream frs = null;
             long sT = currentTimeMillis();
             try {
