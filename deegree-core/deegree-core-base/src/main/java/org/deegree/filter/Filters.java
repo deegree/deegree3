@@ -224,6 +224,21 @@ public class Filters {
      *            filter expression, can be <code>null</code>
      * @param propName
      *            can be <code>null</code>
+     * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
+     */
+    public static Filter addBBoxConstraint( final Envelope bbox, final Filter filter, final ValueReference propName ) {
+        return addBBoxConstraint( bbox, filter, propName, false );
+    }
+
+    /**
+     * Adds a bounding box constraint to the given {@link Filter}.
+     * 
+     * @param bbox
+     *            bounding box, can be <code>null</code>
+     * @param filter
+     *            filter expression, can be <code>null</code>
+     * @param propName
+     *            can be <code>null</code>
      * @param allowFalsePositives
      *            set to <code>true</code>, if false positives are acceptable (may enable faster index-only checks)
      * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
