@@ -49,10 +49,12 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.layer.persistence.tile.TileLayer;
 import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileDataSet;
@@ -76,7 +78,7 @@ class FeatureInfoFetcher {
         this.gfi = gfi;
     }
 
-    FeatureInfoParams fetch( HttpResponseBuffer response )
+    void fetch( FeatureInfoManager featureInfoManager, HttpResponseBuffer response )
                             throws OWSException, IOException, XMLStreamException {
         TileDataSet tds = layer.getTileDataSet( gfi.getTileMatrixSet() );
         TileDataLevel tdl = tds.getTileDataLevel( gfi.getTileMatrix() );
@@ -84,7 +86,9 @@ class FeatureInfoFetcher {
         FeatureCollection col = t.getFeatures( gfi.getI(), gfi.getJ(), 10 );
         ICRS crs = tds.getTileMatrixSet().getSpatialMetadata().getEnvelope().getCoordinateSystem();
         HashMap<String, String> nsBindings = new HashMap<String, String>();
-        return new FeatureInfoParams( nsBindings, col, gfi.getInfoFormat(), response.getOutputStream(), false, null,
-                                      null, crs, response.getXMLWriter() );
+
+        FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, gfi.getInfoFormat(), false, null, null, crs );
+
+        featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
     }
 }

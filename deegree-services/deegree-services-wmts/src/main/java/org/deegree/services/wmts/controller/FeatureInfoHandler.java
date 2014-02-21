@@ -47,7 +47,6 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.featureinfo.FeatureInfoManager;
-import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.tile.TileLayer;
 import org.deegree.protocol.wmts.ops.GetFeatureInfo;
@@ -94,8 +93,7 @@ class FeatureInfoHandler {
         TileLayer l = checkLayerConfigured( gfi );
         checkLayerFeatureInfoEnabled( gfi, l );
         FeatureInfoFetcher fetcher = new FeatureInfoFetcher( l, gfi );
-        FeatureInfoParams params = fetcher.fetch( response );
-        featureInfoManager.serializeFeatureInfo( params );
+        fetcher.fetch( featureInfoManager, response );
     }
 
     private TileLayer checkLayerConfigured( GetFeatureInfo gfi )
