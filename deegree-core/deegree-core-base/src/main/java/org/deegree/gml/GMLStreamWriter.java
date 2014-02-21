@@ -60,6 +60,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.dictionary.Definition;
 import org.deegree.gml.dictionary.GMLDictionaryWriter;
@@ -99,6 +100,8 @@ public class GMLStreamWriter {
     private ICRS crs;
 
     private CoordinateFormatter formatter;
+
+    private SFSProfiler geometrySimplifier;
 
     private GMLGeometryWriter geometryWriter;
 
@@ -283,6 +286,33 @@ public class GMLStreamWriter {
      */
     public void setGenerateBoundedByForFeatures( boolean exportBoundedBy ) {
         this.exportBoundedByForFeatures = exportBoundedBy;
+    }
+
+    /**
+     * Sets the {@link SFSProfiler} to be applied to exported {@link Geometry} instances.
+     * <p>
+     * NOTE: Simplification is performed before coordinate transformation, so constraints have to be expressed in the
+     * native CRS of the geometries.
+     * </p>
+     * 
+     * @param simplifier
+     *            simplifier to use, can be <code>null</code> (no simplification performed)
+     */
+    public void setGeometrySimplifier( SFSProfiler simplifier ) {
+        this.geometrySimplifier = simplifier;
+    }
+
+    /**
+     * Returns the {@link SFSProfiler} that is be applied to exported {@link Geometry} instances.
+     * <p>
+     * NOTE: Simplification is performed before coordinate transformation, so constraints have to be expressed in the
+     * native CRS of the geometries.
+     * </p>
+     * 
+     * @return simplifier, can be <code>null</code> (no simplification performed)
+     */
+    public SFSProfiler getGeometrySimplifier() {
+        return geometrySimplifier;
     }
 
     /**

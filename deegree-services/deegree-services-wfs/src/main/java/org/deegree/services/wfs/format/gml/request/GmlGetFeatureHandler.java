@@ -256,6 +256,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
+        gmlStream.setGeometrySimplifier( options.getGeometrySimplifier() );
         Map<String, String> prefixToNs = new HashMap<String, String>(
                                                                       format.getMaster().getStoreManager().getPrefixToNs() );
         prefixToNs.putAll( getFeatureTypeNsPrefixes( analyzer.getFeatureTypes() ) );
