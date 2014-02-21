@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2013 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -37,8 +36,10 @@ package org.deegree.feature.persistence.sql.config;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.commons.tom.primitive.BaseType.valueOf;
+import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import java.sql.Connection;
@@ -65,6 +66,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -104,25 +106,24 @@ import org.slf4j.LoggerFactory;
 /**
  * Generates {@link MappedAppSchema} instances (table-driven mode).
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
- * @version $Revision$, $Date$
+ * @since 3.2
  */
 public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger( MappedSchemaBuilderTable.class );
 
-    private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
+    private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
-    private Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
+    private final Map<QName, FeatureTypeMapping> ftNameToMapping = new HashMap<QName, FeatureTypeMapping>();
 
     private final Connection conn;
 
     private DatabaseMetaData md;
 
     // caches the column information
-    private Map<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>> tableNameToColumns = new HashMap<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>>();
+    private final Map<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>> tableNameToColumns = new HashMap<TableName, LinkedHashMap<SQLIdentifier, ColumnMetadata>>();
 
     private final SQLDialect dialect;
 
@@ -159,6 +160,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
      * 
      * @return mapped application schema, never <code>null</code>
      */
+    @Override
     public MappedAppSchema getMappedSchema() {
         FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         FeatureTypeMapping[] ftMappings = ftNameToMapping.values().toArray( new FeatureTypeMapping[ftNameToMapping.size()] );
@@ -183,7 +185,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
         TableName table = new TableName( ftDecl.getTable() );
         LOG.debug( "Processing feature type mapping for table '" + table + "'." );
-        if ( getColumns( table ).isEmpty() ) {
+        if ( getColumnMetadataFromDb( table ).isEmpty() ) {
             throw new FeatureStoreException( "No table with name '" + table + "' exists (or no columns defined)." );
         }
 
@@ -199,13 +201,13 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
         List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
         if ( propDecls != null && !propDecls.isEmpty() ) {
-            process( table, ftName, fidMapping, propDecls );
+            buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls );
         } else {
-            process( table, ftName, fidMapping );
+            buildFeatureTypeAndMapping( table, ftName, fidMapping );
         }
     }
 
-    private void process( TableName table, QName ftName, FIDMapping fidMapping )
+    private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping )
                             throws SQLException {
 
         LOG.debug( "Deriving properties and mapping for feature type '" + ftName + "' from table '" + table + "'" );
@@ -218,7 +220,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             fidColumnNames.add( column.first );
         }
 
-        for ( ColumnMetadata md : getColumns( table ).values() ) {
+        for ( ColumnMetadata md : getColumnMetadataFromDb( table ).values() ) {
             if ( fidColumnNames.contains( new SQLIdentifier( md.column.toLowerCase() ) ) ) {
                 LOG.debug( "Omitting column '" + md.column + "' from properties. Used in FIDMapping." );
                 continue;
@@ -241,11 +243,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                               + e.getMessage() );
                 }
             } else {
-                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, null, null, md.geomType,
-                                                            md.geometryParams.getDim(), INLINE );
+                PropertyType pt = new GeometryPropertyType( ptName, 0, 1, null, null, md.geomType, md.dim, INLINE );
                 pts.add( pt );
                 ValueReference path = new ValueReference( ptName );
-                GeometryMapping mapping = new GeometryMapping( path, true, dbField, md.geomType, md.geometryParams,
+                ICRS crs = deriveCrs( md.srid );
+                GeometryStorageParams geomStorageParams = new GeometryStorageParams( crs, md.srid, md.dim );
+                GeometryMapping mapping = new GeometryMapping( path, true, dbField, md.geomType, geomStorageParams,
                                                                null );
                 mappings.add( mapping );
             }
@@ -258,8 +261,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private void process( TableName table, QName ftName, FIDMapping fidMapping,
-                          List<JAXBElement<? extends AbstractParticleJAXB>> propDecls )
+    private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping,
+                                             List<JAXBElement<? extends AbstractParticleJAXB>> propDecls )
                             throws FeatureStoreException, SQLException {
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
@@ -267,7 +270,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
         for ( JAXBElement<? extends AbstractParticleJAXB> propDeclEl : propDecls ) {
             AbstractParticleJAXB propDecl = propDeclEl.getValue();
-            Pair<PropertyType, Mapping> pt = process( table, propDecl, ftName.getPrefix(), ftName.getNamespaceURI() );
+            Pair<PropertyType, Mapping> pt = buildPropertyAndMapping( table, propDecl, ftName.getPrefix(),
+                                                                      ftName.getNamespaceURI() );
             pts.add( pt.first );
             mappings.add( pt.second );
         }
@@ -279,8 +283,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         ftNameToMapping.put( ftName, ftMapping );
     }
 
-    private Pair<PropertyType, Mapping> process( TableName table, AbstractParticleJAXB propDecl, String ftPrefix,
-                                                 String ftNs )
+    private Pair<PropertyType, Mapping> buildPropertyAndMapping( TableName table, AbstractParticleJAXB propDecl,
+                                                                 String ftPrefix, String ftNs )
                             throws FeatureStoreException, SQLException {
 
         PropertyType pt = null;
@@ -360,16 +364,16 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                 type = md.geomType;
             }
             ICRS crs = null;
-            if ( geomDecl.getStorageCRS() != null && geomDecl.getStorageCRS().getValue() != null ) {
-                crs = CRSManager.getCRSRef( geomDecl.getStorageCRS().getValue() );
-            } else {
-                crs = md.geometryParams.getCrs();
-            }
             String srid = null;
             if ( geomDecl.getStorageCRS() != null && geomDecl.getStorageCRS().getSrid() != null ) {
                 srid = geomDecl.getStorageCRS().getSrid().toString();
             } else {
-                srid = md.geometryParams.getSrid();
+                srid = md.srid;
+            }
+            if ( geomDecl.getStorageCRS() != null && geomDecl.getStorageCRS().getValue() != null ) {
+                crs = CRSManager.getCRSRef( geomDecl.getStorageCRS().getValue() );
+            } else {
+                crs = deriveCrs( srid );
             }
             CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
             pt = new GeometryPropertyType( propName, minOccurs, maxOccurs, null, null, type, dim, INLINE );
@@ -408,7 +412,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         if ( generator instanceof AutoIDGenerator ) {
             if ( columns.isEmpty() ) {
                 // determine autoincrement column automatically
-                for ( ColumnMetadata md : getColumns( table ).values() ) {
+                for ( ColumnMetadata md : getColumnMetadataFromDb( table ).values() ) {
                     if ( md.isAutoincrement ) {
                         BaseType columnType = BaseType.valueOf( md.sqlType );
                         columns.add( new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( md.column ), columnType ) );
@@ -444,7 +448,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return new QName( namespace, localPart, prefix );
     }
 
-    private DatabaseMetaData getDBMetadata()
+    private DatabaseMetaData getDbMetadata()
                             throws SQLException {
         if ( md == null ) {
             md = conn.getMetaData();
@@ -454,7 +458,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
     private ColumnMetadata getColumn( TableName qTable, SQLIdentifier columnName )
                             throws SQLException, FeatureStoreException {
-        ColumnMetadata md = getColumns( qTable ).get( columnName );
+        ColumnMetadata md = getColumnMetadataFromDb( qTable ).get( columnName );
         if ( md == null ) {
             throw new FeatureStoreException( "Table '" + qTable + "' does not have a column with name '" + columnName
                                              + "'" );
@@ -462,13 +466,13 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         return md;
     }
 
-    private LinkedHashMap<SQLIdentifier, ColumnMetadata> getColumns( TableName qTable )
+    private LinkedHashMap<SQLIdentifier, ColumnMetadata> getColumnMetadataFromDb( TableName qTable )
                             throws SQLException {
 
         LinkedHashMap<SQLIdentifier, ColumnMetadata> columnNameToMD = tableNameToColumns.get( qTable );
 
         if ( columnNameToMD == null ) {
-            DatabaseMetaData md = getDBMetadata();
+            DatabaseMetaData md = getDbMetadata();
             columnNameToMD = new LinkedHashMap<SQLIdentifier, ColumnMetadata>();
             ResultSet rs = null;
             try {
@@ -491,9 +495,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                     // type name ("geometry") works for PostGIS, MSSQL and Oracle
                     if ( sqlTypeName.toLowerCase().contains( "geometry" ) ) {
                         String srid = dialect.getUndefinedSrid();
-                        ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
-                        GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
+                        GeometryPropertyType.GeometryType geomType = GEOMETRY;
                         Statement stmt = null;
                         ResultSet rs2 = null;
                         try {
@@ -502,7 +505,6 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                             rs2 = stmt.executeQuery( sql );
                             if ( rs2.next() ) {
                                 if ( rs2.getInt( 2 ) != -1 ) {
-                                    crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
                                     srid = "" + rs2.getInt( 2 );
                                 } else {
                                     srid = dialect.getUndefinedSrid();
@@ -511,11 +513,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                     dim = DIM_3;
                                 }
                                 geomType = getGeometryType( rs2.getString( 3 ) );
-                                LOG.debug( "Derived geometry type: " + geomType + ", crs: " + crs + ", srid: " + srid
-                                           + ", dim: " + dim + "" );
+                                LOG.debug( "Derived geometry type: " + geomType + ", srid: " + srid + ", dim: " + dim
+                                           + "" );
                             } else {
-                                LOG.warn( "No metadata for geometry column '" + column
-                                          + "' available in DB. Using defaults." );
+                                LOG.debug( "No metadata for geometry column '" + column
+                                           + "' available in DB. Using defaults." );
                             }
                         } catch ( Exception e ) {
                             LOG.warn( "Unable to determine geometry column details: " + e.getMessage()
@@ -524,13 +526,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                             JDBCUtils.close( rs2, stmt, null, LOG );
                         }
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
-                                                                      geomType, dim, crs, srid );
+                                                                      geomType, dim, srid );
                         columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     } else if ( sqlTypeName.toLowerCase().contains( "geography" ) ) {
 
                         LOG.warn( "Detected geography column. This is not fully supported yet. Expect bugs." );
                         String srid = dialect.getUndefinedSrid();
-                        ICRS crs = CRSManager.getCRSRef( "EPSG:4326", true );
                         CoordinateDimension dim = DIM_2;
                         GeometryPropertyType.GeometryType geomType = GeometryType.GEOMETRY;
                         Statement stmt = null;
@@ -541,7 +542,6 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                             rs2 = stmt.executeQuery( sql );
                             if ( rs2.next() ) {
                                 if ( rs2.getInt( 2 ) != -1 ) {
-                                    crs = CRSManager.lookup( "EPSG:" + rs2.getInt( 2 ), true );
                                     srid = "" + rs2.getInt( 2 );
                                 } else {
                                     srid = dialect.getUndefinedSrid();
@@ -550,8 +550,8 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                     dim = DIM_3;
                                 }
                                 geomType = getGeometryType( rs2.getString( 3 ).toUpperCase() );
-                                LOG.debug( "Derived geometry type (geography): " + geomType + ", crs: " + crs
-                                           + ", srid: " + srid + ", dim: " + dim + "" );
+                                LOG.debug( "Derived geometry type (geography): " + geomType + ", srid: " + srid
+                                           + ", dim: " + dim + "" );
                             } else {
                                 LOG.warn( "No metadata for geography column '" + column
                                           + "' available in DB. Using defaults." );
@@ -564,7 +564,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                         }
 
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
-                                                                      geomType, dim, crs, srid );
+                                                                      geomType, dim, srid );
                         columnNameToMD.put( new SQLIdentifier( column ), columnMd );
                     } else {
                         ColumnMetadata columnMd = new ColumnMetadata( column, sqlType, sqlTypeName, isNullable,
@@ -578,6 +578,22 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             }
         }
         return columnNameToMD;
+    }
+
+    private ICRS deriveCrs( String srid ) {
+        LOG.debug( "Deriving CRS from database SRID ('" + srid + "')." );
+        try {
+            return lookup( "EPSG:" + srid, true );
+        } catch ( UnknownCRSException e ) {
+            LOG.error( "Deriving CRS from database SRID ('" + srid
+                       + "') failed. Use StorageCRS option to configure CRS explicitly." );
+        }
+        try {
+            LOG.warn( "Defaulting to EPSG:4326." );
+            return lookup( "EPSG:4326", true );
+        } catch ( UnknownCRSException e ) {
+            throw new RuntimeException( e.getMessage(), e );
+        }
     }
 }
 
@@ -595,7 +611,9 @@ class ColumnMetadata {
 
     GeometryType geomType;
 
-    GeometryStorageParams geometryParams;
+    CoordinateDimension dim;
+
+    String srid;
 
     ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, boolean isAutoincrement ) {
         this.column = column;
@@ -605,13 +623,15 @@ class ColumnMetadata {
         this.isAutoincrement = isAutoincrement;
     }
 
-    public ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, GeometryType geomType,
-                           CoordinateDimension dim, ICRS crs, String srid ) {
+    ColumnMetadata( String column, int sqlType, String sqlTypeName, boolean isNullable, GeometryType geomType,
+                    CoordinateDimension dim, String srid ) {
         this.column = column;
         this.sqlType = sqlType;
         this.sqlTypeName = sqlTypeName;
         this.isNullable = isNullable;
         this.geomType = geomType;
-        this.geometryParams = new GeometryStorageParams( crs, srid, dim );
+        this.dim = dim;
+        this.srid = srid;
     }
+
 }

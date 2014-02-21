@@ -140,19 +140,19 @@ public class DefaultWorkspace implements Workspace {
 
         outer: for ( ResourceMetadata<? extends Resource> md : graph.toSortedList() ) {
             if ( states.getState( md.getIdentifier() ) == Deactivated ) {
+                LOG.warn( "Not building resource {} (deactivated).", md.getIdentifier() );
                 continue;
             }
-
+            LOG.info( "Building resource {}.", md.getIdentifier() );
             for ( ResourceIdentifier<? extends Resource> dep : md.getDependencies() ) {
                 if ( states.getState( dep ) != Initialized ) {
                     states.setState( md.getIdentifier(), Error );
                     String msg = "Dependent resource " + dep + " failed to initialize.";
-                    LOG.error( msg );
+                    LOG.error( "Unable to build resource {}: " + msg, md.getIdentifier() );
                     errors.registerError( md.getIdentifier(), msg );
                     continue outer;
                 }
             }
-            LOG.info( "Building resource {}.", md.getIdentifier() );
             try {
                 Resource res = prepared.getBuilder( md.getIdentifier() ).build();
                 if ( res == null ) {
