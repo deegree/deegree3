@@ -233,6 +233,12 @@ public class ConfigUtils {
         }
         if ( cfg.getFeatureInfo() != null && cfg.getFeatureInfo().isEnabled() ) {
             rad = cfg.getFeatureInfo().getPixelRadius().intValue();
+            if ( cfg.getFeatureInfo() != null ) {
+              if ( cfg.getFeatureInfo().isEnabled() ) {
+                rad = cfg.getFeatureInfo().getPixelRadius().intValue();
+                  } else {
+                    rad = 0;
+                    }
         } else if ( cfg.getFeatureInfoRadius() != null ) {
             rad = cfg.getFeatureInfoRadius();
         }
