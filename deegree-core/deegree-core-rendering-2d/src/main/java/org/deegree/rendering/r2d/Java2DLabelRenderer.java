@@ -109,19 +109,16 @@ public class Java2DLabelRenderer implements LabelRenderer {
     }
 
     @Override
-    public void createLabel( TextStyling styling, String text, Geometry geom ) {
-        
+    public void createLabel( TextStyling styling, String text, Geometry geom ) {        
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
         }
         if ( text == null || text.length() == 0 ) {
             LOG.debug( "Trying to render null or zero length text." );
         }
-
+        geom = renderer.rendererContext.geomHelper.transform( geom );
         geom = renderer.rendererContext.clipper.clipGeometry( geom );
-
         Font font = textRenderer.convertFont( styling );
-
         handleGeometryTypes( styling, text, font, geom );
     }
 

@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4-pre9-SNAPSHOT</version>
+    <version>3.4-pre10-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -187,6 +187,20 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-console</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-oracle</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>ojdbc6</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>ucp</artifactId>
+      <version>11.2.0.4</version>
     </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>

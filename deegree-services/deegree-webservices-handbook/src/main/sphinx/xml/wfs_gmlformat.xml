@@ -13,6 +13,9 @@
     <DisableDynamicSchema>true</DisableDynamicSchema>
     <DisableStreaming>false</DisableStreaming>
     <DecimalCoordinateFormatter places="8"/>
+    <GeometryLinearization>
+      <Accuracy>0.1</Accuracy>
+    </GeometryLinearization>    
   </GetFeatureResponse>
 
 </GMLFormat>

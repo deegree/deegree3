@@ -41,10 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo;
 
-import java.io.OutputStream;
 import java.util.Map;
-
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
@@ -66,8 +63,6 @@ public class FeatureInfoParams {
 
     private String format;
 
-    private OutputStream outputStream;
-
     private boolean withGeometries;
 
     private String schemaLocation;
@@ -76,20 +71,15 @@ public class FeatureInfoParams {
 
     private ICRS crs;
 
-    private XMLStreamWriter xmlWriter;
-
-    public FeatureInfoParams( Map<String, String> nsBindings, FeatureCollection col, String format, OutputStream out,
-                              boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs,
-                              XMLStreamWriter xmlWriter ) {
+    public FeatureInfoParams( Map<String, String> nsBindings, FeatureCollection col, String format,
+                              boolean withGeometries, String schemaLocation, FeatureType type, ICRS crs ) {
         this.nsBindings = nsBindings;
         this.featureCollection = col;
         this.format = format;
-        this.outputStream = out;
         this.withGeometries = withGeometries;
         this.schemaLocation = schemaLocation;
         this.featureType = type;
         this.crs = crs;
-        this.xmlWriter = xmlWriter;
     }
 
     /**
@@ -111,13 +101,6 @@ public class FeatureInfoParams {
      */
     public String getFormat() {
         return format;
-    }
-
-    /**
-     * @return the outputStream
-     */
-    public OutputStream getOutputStream() {
-        return outputStream;
     }
 
     /**
@@ -147,12 +130,4 @@ public class FeatureInfoParams {
     public ICRS getCrs() {
         return crs;
     }
-
-    /**
-     * @return the xmlWriter
-     */
-    public XMLStreamWriter getXmlWriter() {
-        return xmlWriter;
-    }
-
 }

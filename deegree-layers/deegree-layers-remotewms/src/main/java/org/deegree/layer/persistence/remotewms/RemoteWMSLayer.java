@@ -131,26 +131,20 @@ class RemoteWMSLayer extends AbstractLayer {
     }
 
     @Override
-    public RemoteWMSLayerData mapQuery( LayerQuery query, List<String> headers ) {
-        try {
-            Map<String, String> extraParams = new HashMap<String, String>();
-            replaceParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
-            ICRS crs = this.crs;
-            if ( !alwaysUseDefaultCrs ) {
-                ICRS envCrs = query.getEnvelope().getCoordinateSystem();
-                if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
-                    crs = envCrs;
-                }
+    public RemoteWMSLayerData mapQuery( LayerQuery query, List<String> headers ) {        
+        Map<String, String> extraParams = new HashMap<String, String>();
+        replaceParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
+        ICRS crs = this.crs;
+        if ( !alwaysUseDefaultCrs ) {
+            ICRS envCrs = query.getEnvelope().getCoordinateSystem();
+            if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
+                crs = envCrs;
             }
-
-            GetMap gm = new GetMap( singletonList( originalName ), query.getWidth(), query.getHeight(),
-                                    query.getEnvelope(), crs, format, transparent );
-            return new RemoteWMSLayerData( client, gm, extraParams );
-        } catch ( Throwable e ) {
-            LOG.warn( "Error when retrieving remote map: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
         }
-        return null;
+
+        GetMap gm = new GetMap( singletonList( originalName ), query.getWidth(), query.getHeight(),
+                                query.getEnvelope(), crs, format, transparent );
+        return new RemoteWMSLayerData( client, gm, extraParams );
     }
 
     @Override

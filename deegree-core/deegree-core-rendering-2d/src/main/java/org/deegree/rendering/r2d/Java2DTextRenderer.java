@@ -51,8 +51,8 @@ import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.geom.Path2D.Double;
+import java.awt.geom.Point2D;
 import java.util.Collection;
 
 import org.deegree.commons.annotations.LoggingNotes;
@@ -88,14 +88,14 @@ public class Java2DTextRenderer implements TextRenderer {
 
     private Java2DRenderer renderer;
 
-    //private Java2DLabelRenderer labelRenderer;
+    // private Java2DLabelRenderer labelRenderer;
 
     /**
      * @param renderer
      */
     public Java2DTextRenderer( Java2DRenderer renderer ) {
         this.renderer = renderer;
-        //this.labelRenderer = new Java2DLabelRenderer( renderer );
+        // this.labelRenderer = new Java2DLabelRenderer( renderer );
     }
 
     @Override
@@ -115,11 +115,9 @@ public class Java2DTextRenderer implements TextRenderer {
             LOG.debug( "Trying to render null or zero length text." );
             return;
         }
-
+        geom = renderer.rendererContext.geomHelper.transform( geom );
         geom = renderer.rendererContext.clipper.clipGeometry( geom );
-
         Font font = convertFont( styling );
-
         handleGeometryTypes( styling, text, font, geom );
     }
 
@@ -167,11 +165,11 @@ public class Java2DTextRenderer implements TextRenderer {
             }
         }
     }
-    
+
     void render( TextStyling styling, Font font, String text, Point p ) {
         Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
                                                                                null );
-        
+
         double x = pt.x + renderer.rendererContext.uomCalculator.considerUOM( styling.displacementX, styling.uom );
         double y = pt.y - renderer.rendererContext.uomCalculator.considerUOM( styling.displacementY, styling.uom );
         renderer.graphics.setFont( font );
@@ -193,8 +191,9 @@ public class Java2DTextRenderer implements TextRenderer {
         if ( styling.halo != null ) {
             renderer.rendererContext.fillRenderer.applyFill( styling.halo.fill, styling.uom );
 
-            BasicStroke stroke = new BasicStroke( round( 2 * renderer.rendererContext.uomCalculator.considerUOM( styling.halo.radius,
-                                                                                                styling.uom ) ),
+            BasicStroke stroke = new BasicStroke(
+                                                  round( 2 * renderer.rendererContext.uomCalculator.considerUOM( styling.halo.radius,
+                                                                                                                 styling.uom ) ),
                                                   CAP_BUTT, JOIN_ROUND );
             renderer.graphics.setStroke( stroke );
             renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
@@ -207,7 +206,7 @@ public class Java2DTextRenderer implements TextRenderer {
 
         renderer.graphics.setTransform( transform );
     }
-    
+
     void render( TextStyling styling, Font font, String text, Curve c ) {
         renderer.rendererContext.fillRenderer.applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
@@ -218,12 +217,12 @@ public class Java2DTextRenderer implements TextRenderer {
             stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
                                        styling.linePlacement.perpendicularOffsetType );
         }
-        
+
         renderer.graphics.setStroke( stroke );
         Double line = renderer.rendererContext.geomHelper.fromCurve( c, false );
         renderer.graphics.draw( line );
     }
-    
+
     protected Font convertFont( TextStyling styling ) {
         AffineTransform shear = null;
 

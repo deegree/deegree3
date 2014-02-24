@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.serializing;
 
-import java.io.OutputStream;
-import java.util.Map;
+import java.io.IOException;
 
-import org.deegree.feature.FeatureCollection;
+import javax.xml.stream.XMLStreamException;
+
+import org.deegree.featureinfo.FeatureInfoContext;
+import org.deegree.featureinfo.FeatureInfoParams;
 
 /**
  * <code>FeatureInfoSerializer</code>
@@ -54,6 +56,7 @@ public interface FeatureInfoSerializer {
      * @param col
      * @param outputStream
      */
-    void serialize( Map<String, String> nsBindings, FeatureCollection col, OutputStream outputStream );
+    void serialize( FeatureInfoParams params, FeatureInfoContext context )
+                            throws IOException, XMLStreamException;
 
 }

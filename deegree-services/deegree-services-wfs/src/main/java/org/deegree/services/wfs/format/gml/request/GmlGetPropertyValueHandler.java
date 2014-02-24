@@ -137,6 +137,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setProjections( analyzer.getProjections() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
+        gmlStream.setGeometrySimplifier( options.getGeometrySimplifier() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
         Map<String, String> prefixToNs = new HashMap<String, String>(

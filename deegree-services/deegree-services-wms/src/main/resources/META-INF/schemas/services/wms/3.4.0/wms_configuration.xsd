@@ -53,8 +53,8 @@
     </sequence>
   </complexType>
 
-  <complexType name="FeatureInfoFormatsType">
-    <sequence>
+  <complexType name="FeatureInfoFormatsType">  
+    <sequence>    
       <element name="GetFeatureInfoFormat" minOccurs="0" maxOccurs="unbounded">
         <complexType>
           <sequence>
@@ -69,12 +69,20 @@
                   </simpleContent>
                 </complexType>
               </element>
+              <element name="Serializer">
+              	<complexType>
+              		<sequence>
+						<element name="JavaClass" type="string" />
+					</sequence>
+              	</complexType>
+              </element>
             </choice>
             <element name="Format" type="string" />
           </sequence>
         </complexType>
       </element>
     </sequence>
+    <attribute name="enableDefaultFormats" type="boolean" default="true"/>
   </complexType>
 
   <complexType name="LayerOptionsType">

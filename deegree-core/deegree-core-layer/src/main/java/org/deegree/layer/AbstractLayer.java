@@ -44,10 +44,10 @@ import org.deegree.style.se.unevaluated.Style;
 
 /**
  * <code>Layer</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 @LoggingNotes(warn = "logs information about dimension handling")
@@ -74,7 +74,11 @@ public abstract class AbstractLayer implements Layer {
     }
 
     protected Style resolveStyleRef( StyleRef ref ) {
-        return metadata.getStyles().get( ref.getName() );
+        Style style = ref.getStyle();
+        if ( style == null ) {
+            style = metadata.getStyles().get( ref.getName() );
+        }
+        return style;
     }
 
     @Override
@@ -87,4 +91,8 @@ public abstract class AbstractLayer implements Layer {
         // nothing to do
     }
 
+    @Override
+    public boolean isStyleApplicable( StyleRef style ) {
+        return resolveStyleRef( style ) != null;
+    }
 }
