@@ -274,6 +274,12 @@ public class SDOGeometryConverter {
                                          OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN ), // ordinates
                                          crs );
 
+        return toGeometry( sdo, crs );
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Geometry toGeometry( GeomHolder sdo, ICRS crs )
+                            throws SQLException {
         if ( sdo.cnt_o < sdo.gtype_d || sdo.cnt_e < 3 || sdo.cnt_o % sdo.gtype_d > 0 || sdo.cnt_e % 3 > 0 )
             throw new SQLException( "Illegal Geometry" );
         else if ( sdo.gtype_l > 0 )
