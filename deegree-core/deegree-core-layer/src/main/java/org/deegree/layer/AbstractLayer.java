@@ -93,6 +93,9 @@ public abstract class AbstractLayer implements Layer {
 
     @Override
     public boolean isStyleApplicable( StyleRef style ) {
+        if ( metadata.getStyles().isEmpty() && "default".equals( style.getName() ) ) {
+            return true;
+        }
         return resolveStyleRef( style ) != null;
     }
 }

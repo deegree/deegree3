@@ -458,7 +458,8 @@ public class MapService {
             }
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(), layerRadius );
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(),
+                                               layerRadius );
             queries.add( query );
         }
         return queries;
