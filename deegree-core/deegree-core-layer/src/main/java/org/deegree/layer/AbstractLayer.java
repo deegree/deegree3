@@ -36,6 +36,8 @@ package org.deegree.layer;
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
+import java.util.Map;
+
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -93,6 +95,10 @@ public abstract class AbstractLayer implements Layer {
 
     @Override
     public boolean isStyleApplicable( StyleRef style ) {
+        Map<String, Style> styles = metadata.getStyles();
+        if ( styles.isEmpty() && "default".equals( style.getName() ) ) {
+            return true;
+        }
         return resolveStyleRef( style ) != null;
     }
 }
