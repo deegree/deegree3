@@ -41,6 +41,8 @@ package org.deegree.sqldialect.oracle.sdo;
 import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,7 +85,7 @@ import org.slf4j.LoggerFactory;
  * Convert between Oracle JDBC STRUCT and deegree Geometry
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a> 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
  * 
  * @version $Revision$, $Date$
  */
@@ -288,7 +290,8 @@ public class SDOGeometryConverter {
             throw new SQLException( "Unsupported Geometry" );
 
         Ring ringe = null;
-        List<Ring> ringi = new LinkedList<Ring>();
+        List<Ring> ringi = new ArrayList<Ring>();
+        List<Ring> ringu = new ArrayList<Ring>();
 
         int etype;
         while ( ( etype = sdo.nxt() ) != -1 ) {
@@ -312,10 +315,12 @@ public class SDOGeometryConverter {
                 case SDOEType.POLYGON_RING_EXTERIOR:
                     if ( ringe != null ) {
                         sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ringe, ringi ) );
-                        ringi.clear();
+                        ringi = new ArrayList<Ring>();
                     }
                     ringe = rng;
+                    break;
                 case SDOEType.POLYGON_RING_UNKNOWN:
+                    ringu.add( rng );
                 }
                 break;
 
@@ -334,10 +339,12 @@ public class SDOGeometryConverter {
                 case SDOEType.COMPOUND_POLYGON_RING_EXTERIOR:
                     if ( ringe != null ) {
                         sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ringe, ringi ) );
-                        ringi.clear();
+                        ringi = new ArrayList<Ring>();
                     }
                     ringe = rng;
+                    break;
                 case SDOEType.COMPOUND_POLYGON_RING_UNKNOWN:
+                    ringu.add( rng );
                 }
 
                 break;
@@ -346,6 +353,17 @@ public class SDOGeometryConverter {
             default: // other / not implemented
                 createUnknownException( sdo );
                 break;
+            }
+        }
+
+        if ( !ringu.isEmpty() ) {
+            LOG.warn( "SDO_Geometry with rings of unknown type detected. " +
+            		"Please consider upgrading to the current format using " +
+            		"the SDO_MIGRATE.TO_CURRENT procedure." );
+
+            // TODO: implement the proper algorithm to figure out the ring type
+            for ( Ring ring : ringu ) {
+                sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ring, Collections.<Ring> emptyList() ) );
             }
         }
 
