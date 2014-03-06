@@ -45,7 +45,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
@@ -72,26 +73,27 @@ public class FeatureInfoManager {
 
     private static final Logger LOG = getLogger( FeatureInfoManager.class );
 
-    private static final String[] GML_FORMATS = { "application/gml+xml; version=2.1",
-                                                 "application/gml+xml; version=3.0",
-                                                 "application/gml+xml; version=3.1",
-                                                 "application/gml+xml; version=3.2", "text/xml; subtype=gml/2.1.2",
-                                                 "text/xml; subtype=gml/3.0.1", "text/xml; subtype=gml/3.1.1",
-                                                 "text/xml; subtype=gml/3.2.1", "application/vnd.ogc.gml", "text/xml" };
-
-    private final HashMap<String, FeatureInfoSerializer> featureInfoSerializers = new HashMap<String, FeatureInfoSerializer>();
+    private final Map<String, FeatureInfoSerializer> featureInfoSerializers = new LinkedHashMap<String, FeatureInfoSerializer>();
 
     public FeatureInfoManager( boolean addDefaultFormats ) {
         if ( addDefaultFormats ) {
             LOG.debug( "Adding default feature info formats" );
 
             final FeatureInfoGmlWriter gmlWriter = new FeatureInfoGmlWriter();
-            for ( final String gmlFormat : GML_FORMATS ) {
-                featureInfoSerializers.put( gmlFormat, gmlWriter );
-            }
+
+            featureInfoSerializers.put( "application/vnd.ogc.gml", gmlWriter );
+            featureInfoSerializers.put( "text/xml", gmlWriter );
 
             featureInfoSerializers.put( "text/plain", new PlainTextFeatureInfoSerializer() );
             featureInfoSerializers.put( "text/html", new TemplateFeatureInfoSerializer() );
+
+            for ( final String version : new String[] { "2.1", "3.0", "3.1", "3.2" } ) {
+                featureInfoSerializers.put( "application/gml+xml; version=" + version, gmlWriter );
+            }
+
+            for ( final String version : new String[] { "2.1.2", "3.0.1", "3.1.1", "3.2.1" } ) {
+                featureInfoSerializers.put( "text/xml; subtype=gml/" + version, gmlWriter );
+            }
         }
     }
 
