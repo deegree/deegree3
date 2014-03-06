@@ -43,8 +43,12 @@ import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import oracle.jdbc.OracleConnection;
 import oracle.sql.ARRAY;
@@ -291,7 +295,7 @@ public class SDOGeometryConverter {
 
         Ring ringe = null;
         List<Ring> ringi = new ArrayList<Ring>();
-        List<Ring> ringu = new ArrayList<Ring>();
+        Set<Ring> ringu = new HashSet<Ring>();
 
         int etype;
         while ( ( etype = sdo.nxt() ) != -1 ) {
@@ -356,19 +360,88 @@ public class SDOGeometryConverter {
             }
         }
 
-        if ( !ringu.isEmpty() ) {
-            LOG.warn( "SDO_Geometry with rings of unknown type detected. " +
-            		"Please consider upgrading to the current format using " +
-            		"the SDO_MIGRATE.TO_CURRENT procedure." );
-
-            // TODO: implement the proper algorithm to figure out the ring type
-            for ( Ring ring : ringu ) {
-                sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ring, Collections.<Ring> emptyList() ) );
-            }
-        }
-
         if ( ringe != null ) {
             sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, ringe, ringi ) );
+        }
+
+        if ( !ringu.isEmpty() ) {
+            LOG.warn( "SDO_Geometry with rings of unknown type detected. "
+                      + "Please consider upgrading to the current format using "
+                      + "the SDO_MIGRATE.TO_CURRENT procedure." );
+
+            Map<Ring, Set<Ring>> contained = new HashMap<Ring, Set<Ring>>();
+            Map<Ring, Set<Ring>> contains = new HashMap<Ring, Set<Ring>>();
+
+            List<Polygon> polygons = new ArrayList<Polygon>();
+            for ( Ring r : ringu ) {                
+                polygons.add( _gf.createPolygon( null, r.getCoordinateSystem(), r, Collections.<Ring> emptyList() ) );
+            }
+
+            for ( Polygon a : polygons ) {
+                for ( Polygon b : polygons ) {
+                    if ( a != b ) {
+                        if ( a.isWithin( b ) ) {
+                            Set<Ring> containedSet = contained.get( a.getExteriorRing() );
+                            if ( containedSet == null ) {
+                                containedSet = new HashSet<Ring>();
+                                contained.put( a.getExteriorRing(), containedSet );
+                            }
+                            containedSet.add( b.getExteriorRing() );
+                        }
+
+                        if ( b.isWithin( a ) ) {
+                            Set<Ring> containsSet = contains.get( a.getExteriorRing() );
+                            if ( containsSet == null ) {
+                                containsSet = new HashSet<Ring>();
+                                contains.put( a.getExteriorRing(), containsSet );
+                            }
+                            containsSet.add( b.getExteriorRing() );
+                        }
+                    }
+                }
+            }
+
+            while ( !ringu.isEmpty() ) {
+                List<Ring> used = new ArrayList<Ring>();
+                for ( Ring a : ringu ) {
+                    if ( !contained.containsKey( a ) ) {
+                        used.add( a );
+                        ringi = new ArrayList<Ring>();
+
+                        Set<Ring> rings = contains.get( a );
+                        if ( rings != null ) {
+                            for ( Ring b : rings ) {
+                                Set<Ring> containedSet = contained.get( b );
+                                if ( containedSet == null || containedSet.size() == 1) {
+                                    used.add( b );
+                                    ringi.add( b );
+                                }
+                            }
+                        }
+
+                        sdo.add( GeomHolderTyp.POLYGON, _gf.createPolygon( null, sdo.crs, a, ringi ) );
+                    }
+                }
+
+                if ( used.isEmpty() ) {
+                    throw new IllegalArgumentException(
+                                                        "Illegal Geometry: failed to construct polgyons based on rings of unknown type" );
+                }
+
+                for ( Ring r : used ) {
+                    ringu.remove( r );
+
+                    contained.remove( r );
+                    for ( Set<Ring> s : contained.values() ) {
+                        s.remove( r );
+                    }
+
+                    contains.remove( r );
+                    for ( Set<Ring> s : contains.values() ) {
+                        s.remove( r );
+                    }
+                }
+            }
         }
 
         if ( sdo.geoms.size() == 0 ) {

@@ -684,7 +684,7 @@ public class SDOGeometryConverterTest {
                                            84098.2177, 432495.9074, 84094.0302, 432495.2438, 84088.2911, 432494.2792,
                                            84071.2275, 432491.5947, 84067.8887, 432491.0639, 84058.8188, 432489.2986 };
 
-        testMultiPolygon( 2, new int[]{0, 0}, gtype, srid, elemInfo, ordinates );
+        testPolygon( 1, gtype, srid, elemInfo, ordinates );
     }
 
     @Test
