@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -44,7 +43,6 @@ import java.sql.Types;
 import oracle.jdbc.OracleConnection;
 import oracle.sql.STRUCT;
 
-import org.apache.commons.dbcp.DelegatingConnection;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -54,13 +52,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add class documentation here
+ * {@link GeometryParticleConverter} for Oracle Spatial.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>O
  * 
- * @version $Revision$, $Date$
+ * @since 3.2
  */
 public class OracleGeometryConverter implements GeometryParticleConverter {
 
@@ -155,8 +152,6 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
         OracleConnection ocon = null;
         if ( conn instanceof OracleConnection ) {
             ocon = (OracleConnection) conn;
-        } else if ( conn instanceof DelegatingConnection ) {
-            ocon = (OracleConnection) ( (DelegatingConnection) conn ).getInnermostDelegate();
         } else {
             ocon = conn.unwrap( OracleConnection.class );
         }
