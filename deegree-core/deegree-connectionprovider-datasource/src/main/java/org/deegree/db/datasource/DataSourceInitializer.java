@@ -84,8 +84,15 @@ class DataSourceInitializer {
      * @param config
      *            JAXB configuration, must not be <code>null</code>
      * @return configured DataSource instance, can be <code>null</code> (initialization failed)
+     * @throws InstantiationException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     * @throws ClassNotFoundException
      */
-    DataSource getConfiguredDataSource( DataSourceConnectionProvider config ) {
+    DataSource getConfiguredDataSource( DataSourceConnectionProvider config )
+                            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+                            InvocationTargetException, InstantiationException {
         DataSource ds = getDataSourceInstance( config.getDataSource() );
         for ( DataSourceConnectionProvider.Property property : config.getProperty() ) {
             setProperty( ds, property );
@@ -94,18 +101,15 @@ class DataSourceInitializer {
     }
 
     @SuppressWarnings("unchecked")
-    DataSource getDataSourceInstance( DataSourceConnectionProvider.DataSource config ) {
+    DataSource getDataSourceInstance( DataSourceConnectionProvider.DataSource config )
+                            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+                            InvocationTargetException, InstantiationException {
         DataSource ds = null;
-        try {
-            final Class<?> klass = getClass( config.getJavaClass() );
-            if ( config.getFactoryMethod() != null ) {
-                ds = invokeStaticFactoryMethod( klass, config.getFactoryMethod(), config.getArgument() );
-            } else {
-                ds = invokeDataSourceConstructor( (Class<DataSource>) klass, config.getArgument() );
-            }
-        } catch ( Exception e ) {
-            String msg = "Initialization of DataSource failed: " + e.getLocalizedMessage();
-            LOG.error( msg, e );
+        final Class<?> klass = getClass( config.getJavaClass() );
+        if ( config.getFactoryMethod() != null ) {
+            ds = invokeStaticFactoryMethod( klass, config.getFactoryMethod(), config.getArgument() );
+        } else {
+            ds = invokeDataSourceConstructor( (Class<DataSource>) klass, config.getArgument() );
         }
         return ds;
     }

@@ -45,15 +45,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
 import org.deegree.db.ConnectionProvider;
-import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
 import org.deegree.db.dialect.SqlDialects;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -68,13 +67,13 @@ class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
 
     private static final Logger LOG = getLogger( DataSourceConnectionProviderBuilder.class );
 
-    private final DataSourceConnectionProvider config;
+    private final org.deegree.db.datasource.jaxb.DataSourceConnectionProvider config;
 
     private final DataSourceConnectionProviderMetadata metadata;
 
     private final Workspace workspace;
 
-    DataSourceConnectionProviderBuilder( final DataSourceConnectionProvider config,
+    DataSourceConnectionProviderBuilder( final org.deegree.db.datasource.jaxb.DataSourceConnectionProvider config,
                                          final DataSourceConnectionProviderMetadata metadata, final Workspace workspace ) {
         this.config = config;
         this.metadata = metadata;
@@ -85,13 +84,40 @@ class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
     public ConnectionProvider build() {
         final DataSource ds = initializeDataSourceInstance();
         final Method destroyMethod = getDestroyMethod( ds, config.getDataSource().getDestroyMethod() );
-        final SQLDialect dialect = lookupSqlDialect( ds );
-        return new org.deegree.db.datasource.DataSourceConnectionProvider( metadata, ds, dialect, destroyMethod );
+        final Connection conn = checkConnectivity( ds );
+        final SQLDialect dialect = SqlDialects.lookupSqlDialect( conn, workspace.getModuleClassLoader() );
+        close( conn );
+        return new DataSourceConnectionProvider( metadata, ds, dialect, destroyMethod );
     }
 
     private DataSource initializeDataSourceInstance() {
-        final DataSourceInitializer initializer = new DataSourceInitializer( workspace.getModuleClassLoader() );
-        return initializer.getConfiguredDataSource( config );
+        try {
+            final DataSourceInitializer initializer = new DataSourceInitializer( workspace.getModuleClassLoader() );
+            return initializer.getConfiguredDataSource( config );
+        } catch ( Exception e ) {
+            String msg = getMessageOrCauseMessage( e );
+            LOG.error( msg, e );
+            throw new ResourceException( msg, e );
+        }
+    }
+
+    private String getMessageOrCauseMessage( final Exception e ) {
+        if ( e.getLocalizedMessage() != null ) {
+            return e.getLocalizedMessage();
+        }
+        if ( e.getCause() != null ) {
+            return e.getCause().getLocalizedMessage();
+        }
+        return null;
+    }
+
+    private Connection checkConnectivity( DataSource ds ) {
+        try {
+            return ds.getConnection();
+        } catch ( Exception e ) {
+            String msg = "Error connecting to database: " + e.getLocalizedMessage();
+            throw new ResourceException( msg, e );
+        }
     }
 
     Method getDestroyMethod( final DataSource ds, final String methodName ) {
@@ -105,24 +131,6 @@ class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
             }
         }
         return null;
-    }
-
-    private SQLDialect lookupSqlDialect( final DataSource ds ) {
-        SQLDialect dialect = null;
-        Connection conn = null;
-        try {
-            conn = ds.getConnection();
-            dialect = SqlDialects.lookupSqlDialect( conn, workspace.getModuleClassLoader() );
-        } catch ( SQLException e ) {
-            String msg = "Error connecting to DB: " + e.getLocalizedMessage();
-            LOG.error( msg );
-            return null;
-        } finally {
-            if ( conn != null ) {
-                close( conn );
-            }
-        }
-        return dialect;
     }
 
 }

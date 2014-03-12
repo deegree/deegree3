@@ -3,6 +3,8 @@ package org.deegree.db.datasource;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.sql.DataSource;
 
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
@@ -15,7 +17,9 @@ public class DataSourceInitializerTest {
     private DataSourceInitializer initializer = new DataSourceInitializer( null );
 
     @Test
-    public void testGetDataSourceInstanceConstructor() {
+    public void testGetDataSourceInstanceConstructor()
+                            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+                            InvocationTargetException, InstantiationException {
         DataSourceConnectionProvider.DataSource config = new DataSourceConnectionProvider.DataSource();
         config.setJavaClass( DataSourceMock.class.getCanonicalName() );
         DataSource ds = initializer.getDataSourceInstance( config );
@@ -24,7 +28,9 @@ public class DataSourceInitializerTest {
     }
 
     @Test
-    public void testGetDataSourceInstanceConstructorWithArguments() {
+    public void testGetDataSourceInstanceConstructorWithArguments()
+                            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+                            InvocationTargetException, InstantiationException {
         DataSourceConnectionProvider.DataSource config = new DataSourceConnectionProvider.DataSource();
         config.setJavaClass( DataSourceMock.class.getCanonicalName() );
         DataSourceConnectionProvider.DataSource.Argument stringArgument = new DataSourceConnectionProvider.DataSource.Argument();
@@ -43,26 +49,9 @@ public class DataSourceInitializerTest {
     }
 
     @Test
-    public void testGetDataSourceInstanceConstructorWithNullArgument() {
-//        DataSourceConnectionProvider.DataSource config = new DataSourceConnectionProvider.DataSource();
-//        config.setJavaClass( DataSourceMock.class.getCanonicalName() );
-//        DataSourceConnectionProvider.DataSource.Argument stringArgument = new DataSourceConnectionProvider.DataSource.Argument();
-//        stringArgument.setJavaClass( "java.lang.String" );
-//        stringArgument.setValue( null );
-//        config.getArgument().add( stringArgument );
-//        DataSourceConnectionProvider.DataSource.Argument intArgument = new DataSourceConnectionProvider.DataSource.Argument();
-//        intArgument.setJavaClass( "java.lang.Integer" );
-//        intArgument.setValue( "4711" );
-//        config.getArgument().add( intArgument );
-//        DataSourceMock ds = (DataSourceMock) initializer.getDataSourceInstance( config );
-//        assertNotNull( ds );
-//        assertTrue( ds instanceof DataSourceMock );
-//        Assert.assertEquals( "aeiou", ds.getStringConstructorArg() );
-//        Assert.assertEquals( 4711, ds.getIntConstructorArg() );
-    }
-
-    @Test
-    public void testGetDataSourceInstanceStaticFactory() {
+    public void testGetDataSourceInstanceStaticFactory()
+                            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+                            InvocationTargetException, InstantiationException {
         DataSourceConnectionProvider.DataSource config = new DataSourceConnectionProvider.DataSource();
         config.setJavaClass( DataSourceMockFactory.class.getCanonicalName() );
         config.setFactoryMethod( "create" );
@@ -72,7 +61,9 @@ public class DataSourceInitializerTest {
     }
 
     @Test
-    public void testGetDataSourceInstanceStaticFactoryWithArguments() {
+    public void testGetDataSourceInstanceStaticFactoryWithArguments()
+                            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+                            InvocationTargetException, InstantiationException {
         DataSourceConnectionProvider.DataSource config = new DataSourceConnectionProvider.DataSource();
         config.setJavaClass( DataSourceMockFactory.class.getCanonicalName() );
         config.setFactoryMethod( "create" );
