@@ -36,6 +36,8 @@
 
 package org.deegree.cs.transformations;
 
+import static java.lang.Double.NaN;
+
 import java.util.Collections;
 
 import javax.vecmath.Point3d;
@@ -572,5 +574,25 @@ public class TransformationAccuracyTest extends TransformationAccuracy implement
         Assert.assertEquals( sourcePoint.y, targetPoint.x, 0 );
         Assert.assertEquals( sourcePoint.x, targetPoint.y, 0 );
         Assert.assertEquals( sourcePoint.z, targetPoint.z, 0 );
+    }
+
+    @Test
+    public void testEpsg4647ToEpsg4326()
+                            throws IllegalArgumentException, TransformationException {
+        ICRS sourceCRS = CRSManager.getCRSRef( "epsg:4647" );
+        ICRS targetCRS = CRSManager.getCRSRef( "epsg:4326" );
+        Point3d sourcePoint = new Point3d( 32574177.309926, 6020313.020522, NaN );
+        Point3d targetPoint = new Point3d( 10.140556, 54.325278, NaN );
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
+    }
+
+    @Test
+    public void testEpsg4647ToEpsg25832()
+                            throws IllegalArgumentException, TransformationException {
+        ICRS sourceCRS = CRSManager.getCRSRef( "epsg:4647" );
+        ICRS targetCRS = CRSManager.getCRSRef( "epsg:25832" );
+        Point3d sourcePoint = new Point3d( 32574177.309926, 6020313.020522, NaN );
+        Point3d targetPoint = new Point3d( 574177.309926, 6020313.020522, NaN );
+        doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, EPSILON_D, EPSILON_M );
     }
 }
