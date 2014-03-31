@@ -1051,7 +1051,7 @@ public class OGCFrontController extends HttpServlet {
             }
             for ( ModuleInfo moduleInfo : modulesInfo ) {
                 LOG.info( "- " + moduleInfo.toString() );
-                if ( moduleInfo.getArtifactId().equals( "deegree-services-commons" ) ) {
+                if ( "deegree-services-commons".equals( moduleInfo.getArtifactId() ) ) {
                     version = moduleInfo.getVersion();
                 }
             }
