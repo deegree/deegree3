@@ -243,15 +243,13 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void initConverter( Mapping particleMapping ) {
-        if ( particleMapping instanceof PrimitiveMapping ) {
+        if ( particleMapping.getConverter() != null ) {
+            CustomParticleConverter<TypedObjectNode> converter = instantiateConverter( particleMapping.getConverter() );
+            converter.init( particleMapping, this );
+            particleMappingToConverter.put( particleMapping, converter );
+        } else if ( particleMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
-            ParticleConverter<?> converter = null;
-            if ( pm.getConverter() == null ) {
-                converter = dialect.getPrimitiveConverter( pm.getMapping().toString(), pm.getType() );
-            } else {
-                converter = instantiateConverter( pm.getConverter() );
-                ( (CustomParticleConverter<TypedObjectNode>) converter ).init( particleMapping, this );
-            }
+            ParticleConverter<?> converter = dialect.getPrimitiveConverter( pm.getMapping().toString(), pm.getType() );
             particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
             GeometryMapping gm = (GeometryMapping) particleMapping;

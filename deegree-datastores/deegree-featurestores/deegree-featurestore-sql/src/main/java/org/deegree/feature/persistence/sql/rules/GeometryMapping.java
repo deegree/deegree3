@@ -35,16 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import java.util.List;
-
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.filter.MappingExpression;
+
+import java.util.List;
 
 /**
  * {@link Mapping} of {@link Geometry} particles.
@@ -62,9 +63,17 @@ public class GeometryMapping extends Mapping {
 
     private final GeometryStorageParams geometryParams;
 
-    public GeometryMapping( ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
-                            GeometryStorageParams geometryParams, List<TableJoin> tableChange ) {
-        super( path, voidable, tableChange );
+    public GeometryMapping(ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
+                           GeometryStorageParams geometryParams, List<TableJoin> tableChange, CustomConverterJAXB converter) {
+        super( path, voidable, tableChange, converter );
+        this.mapping = mapping;
+        this.type = type;
+        this.geometryParams = geometryParams;
+    }
+
+    public GeometryMapping(ValueReference path, boolean voidable, MappingExpression mapping, GeometryType type,
+                           GeometryStorageParams geometryParams, List<TableJoin> tableChange) {
+        super( path, voidable, tableChange, null );
         this.mapping = mapping;
         this.type = type;
         this.geometryParams = geometryParams;

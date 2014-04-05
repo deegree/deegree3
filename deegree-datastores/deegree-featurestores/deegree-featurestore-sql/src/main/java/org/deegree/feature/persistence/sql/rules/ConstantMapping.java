@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.expression.ValueReference;
 
@@ -58,8 +59,13 @@ public class ConstantMapping<T extends TypedObjectNode> extends Mapping {
      * @param value
      *            the value of the particle, must not be <code>null</code>
      */
+    public ConstantMapping( ValueReference path, T value, CustomConverterJAXB converter ) {
+        super( path, false, null, converter );
+        this.value = value;
+    }
+
     public ConstantMapping( ValueReference path, T value ) {
-        super( path, false, null );
+        super( path, false, null, null );
         this.value = value;
     }
 
