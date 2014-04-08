@@ -43,6 +43,7 @@ package org.deegree.services.wms.controller.capabilities;
 
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.cs.CRSUtils.getAxisAwareCrs;
 import static org.deegree.cs.persistence.CRSManager.lookup;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -52,11 +53,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.services.wms.controller.WMSController130;
 import org.slf4j.Logger;
 
 /**
@@ -100,32 +101,13 @@ class WmsCapabilities130SpatialMetadataWriter {
                     if ( crs.getAlias().startsWith( "AUTO" ) ) {
                         continue;
                     }
-                    // try {
-                    // crs.getWrappedCRS();
-                    // } catch ( UnknownCRSException e ) {
-                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                    // LOG.trace( "Stack trace:", e );
-                    // continue;
-                    // }
-                    Envelope envelope;
-                    ICRS srs = crs;
-                    try {
-                        Envelope src = layerEnv;
-                        GeometryTransformer transformer = new GeometryTransformer( srs );
-                        if ( src.getCoordinateSystem() == null ) {
-                            envelope = transformer.transform( layerEnv, latlon );
-                        } else {
-                            envelope = transformer.transform( layerEnv );
-                        }
-                    } catch ( Throwable e ) {
-                        LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
-                        LOG.trace( "Stack trace:", e );
+                    final Envelope envelope = getTransformedEnvelopeWithAuthoritativeAxisOrdering( layerEnv, crs,
+                                                                                                   latlon );
+                    if ( envelope == null ) {
                         continue;
                     }
-
                     writer.writeStartElement( WMSNS, "BoundingBox" );
                     writer.writeAttribute( "CRS", crs.getAlias() );
-
                     min = envelope.getMin();
                     max = envelope.getMax();
                     if ( min.equals( max ) ) {
@@ -136,28 +118,10 @@ class WmsCapabilities130SpatialMetadataWriter {
                         // all
                         // crs
                     }
-
-                    // check for srs with northing as first axis
-                    // try {
-                    srs = WMSController130.getCRS( crs.getAlias() );
-                    // } catch ( UnknownCRSException e ) {
-                    // // may fail if CRS is determined eg. from .prj
-                    // LOG.warn( "Cannot find: {}", e.getLocalizedMessage() );
-                    // LOG.trace( "Stack trace:", e );
-                    // }
-                    // switch ( srs.getAxis()[0].getOrientation() ) {
-                    // case Axis.AO_NORTH:
-                    // writer.writeAttribute( "miny", Double.toString( min.get0() ) );
-                    // writer.writeAttribute( "minx", Double.toString( min.get1() ) );
-                    // writer.writeAttribute( "maxy", Double.toString( max.get0() ) );
-                    // writer.writeAttribute( "maxx", Double.toString( max.get1() ) );
-                    // break;
-                    // default:
                     writer.writeAttribute( "minx", Double.toString( min.get0() ) );
                     writer.writeAttribute( "miny", Double.toString( min.get1() ) );
                     writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
                     writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
-                    // }
                     writer.writeEndElement();
                 }
             }
@@ -165,6 +129,29 @@ class WmsCapabilities130SpatialMetadataWriter {
             LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );
         }
+    }
+
+    private static Envelope getTransformedEnvelopeWithAuthoritativeAxisOrdering( final Envelope nativeBbox,
+                                                                                 final ICRS targetCrs, final ICRS latlon ) {
+        ICRS targetCrsWithOfficialAxisOrder = targetCrs;
+        try {
+            targetCrsWithOfficialAxisOrder = getAxisAwareCrs( targetCrs );
+        } catch ( UnknownCRSException e ) {
+            LOG.warn( "Cannot determine axis-aware CRS: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        try {
+            GeometryTransformer transformer = new GeometryTransformer( targetCrsWithOfficialAxisOrder );
+            if ( nativeBbox.getCoordinateSystem() == null ) {
+                return transformer.transform( nativeBbox, latlon );
+            } else {
+                return transformer.transform( nativeBbox );
+            }
+        } catch ( Throwable e ) {
+            LOG.warn( "Cannot transform: {}", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+        return null;
     }
 
     static void writeSrs( List<ICRS> crsList, XMLStreamWriter writer )
