@@ -100,9 +100,16 @@ public class GeoTIFFTest {
         Assert.assertNotNull( crs );
         ICRS coordSys = crs;
         assertNotNull( coordSys );
-        CRSCodeType code = coordSys.getCode();
-        assertNotNull( code );
-        String c = code.getCode();
+        CRSCodeType[] codes = coordSys.getCodes();
+        CRSCodeType epsgCode = null;
+        for (CRSCodeType code : codes) {
+            if ( "4326".equals( code.getCode() )) {
+                epsgCode = code;
+                break;
+            }
+        }
+        assertNotNull( epsgCode );
+        String c = epsgCode.getCode();
         assertNotNull( c );
         assertTrue( "4326".equals( c ) );
     }
