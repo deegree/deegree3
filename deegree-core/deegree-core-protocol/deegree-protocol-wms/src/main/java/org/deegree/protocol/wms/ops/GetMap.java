@@ -744,7 +744,7 @@ public class GetMap extends RequestBase {
         ICRS crsRef = CRSManager.getCRSRef( crs );
         try {
             crsRef = CRSUtils.getAxisAwareCrs( crsRef );
-        } catch ( UnknownCRSException e ) {
+        } catch ( Exception e ) {
             LOG.warn( "Unable to determine axis-aware variant of '" + crs + "'. Continuing." );
         }
         return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], crsRef );
