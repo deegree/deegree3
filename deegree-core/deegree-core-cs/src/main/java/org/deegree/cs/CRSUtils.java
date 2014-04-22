@@ -103,9 +103,8 @@ public class CRSUtils {
     /**
      * Retrieves an equivalent {@link ICRS} with authoritative axis ordering.
      * 
-     * NOTE: Due to the current state of the CRS database, this method is a bit of a hack. As soon as the CRS-DB has
-     * been sanitized by removing the custom XY-variants of EPSG-CRS, it will not be required anymore and should be
-     * removed.
+     * NOTE: Due to the current state of the CRS database, this method is a hack. As soon as the CRS-DB has been
+     * sanitized by removing the custom XY-variants of EPSG-CRS, it is not required anymore and should be removed.
      * 
      * @param crs
      *            CRS with authoritative or non-authoritative (forced XY) axis-ordering, must not be <code>null</code>
@@ -141,15 +140,32 @@ public class CRSUtils {
      */
     public static boolean isAxisAware( final ICRS crs )
                             throws UnknownCRSException {
+        final String alias = crs.getAlias().toLowerCase();
+        if (isUrnEpsgIdentifier( alias ) || isOgcCrsIdentifier( alias )) {
+            LOG.debug( alias + " is considered axis aware" );
+            return true;
+        }
         for ( final String crsString : crs.getOrignalCodeStrings() ) {
             final String lowerCrsString = crsString.toLowerCase();
-            if ( lowerCrsString.startsWith( "urn:ogc:def:crs:epsg::" ) ) {
-                LOG.info( crs.getAlias() + " is considered axis aware" );
+            if ( isUrnEpsgIdentifier( lowerCrsString ) ) {
+                LOG.debug( crs.getAlias() + " is considered axis aware" );
+                return true;
+            }
+            if ( isOgcCrsIdentifier( lowerCrsString ) ) {
+                LOG.debug( crs.getAlias() + " is considered axis aware" );
                 return true;
             }
         }
-        LOG.info( crs.getAlias() + " is not considered axis aware" );
+        LOG.debug( crs.getAlias() + " is not considered axis aware" );
         return false;
+    }
+
+    private static boolean isUrnEpsgIdentifier( final String lowerCrsString ) {
+        return lowerCrsString.startsWith( "urn:ogc:def:crs:epsg::" );
+    }
+
+    private static boolean isOgcCrsIdentifier( final String lowerCrsString ) {
+        return lowerCrsString.startsWith( "crs:" );
     }
 
     public static ICRS getAxisAwareCrs( final String epsgCode ) {
@@ -161,7 +177,7 @@ public class CRSUtils {
         for ( final String crsString : crs.getOrignalCodeStrings() ) {
             final String lowerCrsString = crsString.toLowerCase();
             if ( lowerCrsString.contains( "epsg:" ) ) {
-                return parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1) );
+                return parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1 ) );
             }
         }
         throw new IllegalArgumentException( "Unable to determine EPSG code for " + crs.getAlias() );
