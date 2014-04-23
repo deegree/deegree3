@@ -2,6 +2,6 @@ language: java
 jdk:
   - openjdk7
   - oraclejdk7
-install: "travis_retry mvn install -DskipTests=true -B -V"
-script: "travis_retry mvn verify -B -V"
+install: "travis_retry mvn install -Pintegration-tests -DskipTests=true -B -V"
+script: "travis_retry mvn verify -Pintegration-tests -B -V"
 env: MAVEN_OPTS="-XX:MaxPermSize=128m"
