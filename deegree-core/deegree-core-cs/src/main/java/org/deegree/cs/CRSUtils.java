@@ -92,4 +92,16 @@ public class CRSUtils {
                      + ". Conversion from scale denominator to resolution not implemented";
         throw new IllegalArgumentException( msg );
     }
-}
+
+
+    public static final int getEpsgCode( final ICRS crs ) {
+        for ( final String crsString : crs.getOrignalCodeStrings() ) {
+            final String lowerCrsString = crsString.toLowerCase();
+            if ( lowerCrsString.contains( "epsg:" ) ) {
+                return Integer.parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1) );
+            }
+        }
+        throw new IllegalArgumentException( "Unable to determine EPSG code for " + crs.getAlias() );
+    }
+
+ }
