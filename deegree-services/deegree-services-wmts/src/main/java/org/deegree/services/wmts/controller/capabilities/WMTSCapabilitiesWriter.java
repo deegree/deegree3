@@ -58,6 +58,10 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.tile.TileLayer;
@@ -66,6 +70,8 @@ import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.theme.Theme;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>WMTSCapabilitiesWriter</code>
@@ -76,6 +82,8 @@ import org.deegree.tile.TileMatrixSet;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
+
+    private static Logger LOG = LoggerFactory.getLogger( WMTSCapabilitiesWriter.class );
 
     static final String WMTSNS = "http://www.opengis.net/wmts/1.0";
 
@@ -92,6 +100,19 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
     private WmtsCapabilitiesMetadataWriter mdwriter;
 
     private WmtsLayerWriter layerWriter;
+
+    private static GeometryTransformer transformer;
+
+    // used for formatting WGS84 bounding box coordinates
+    private static CoordinateFormatter formatter = new DecimalCoordinateFormatter();
+
+    static {
+        try {
+            transformer = new GeometryTransformer( "EPSG:4326" );
+        } catch ( Exception e ) {
+            LOG.error( "Could not initialize GeometryTransformer." );
+        }
+    }
 
     public WMTSCapabilitiesWriter( XMLStreamWriter writer, ServiceIdentification identification,
                                    ServiceProvider provider, List<Theme> themes, String mdurltemplate,
@@ -136,6 +157,10 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement(); // Capabilities
     }
 
+    String getMdurltemplate() {
+        return mdurltemplate;
+    }
+
     private void exportThemes( List<Theme> themes )
                             throws XMLStreamException {
         if ( themes.isEmpty() ) {
@@ -151,7 +176,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
     private void exportTheme( Theme t )
                             throws XMLStreamException {
         writer.writeStartElement( WMTSNS, "Theme" );
-        exportMetadata( t.getLayerMetadata(), false, null );
+        exportMetadata( t.getLayerMetadata(), false, null, null );
 
         for ( Theme t2 : t.getThemes() ) {
             exportTheme( t2 );
@@ -161,16 +186,49 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-    void exportMetadata( LayerMetadata md, boolean idOnly, String otherid )
+    void exportMetadata( LayerMetadata md, boolean idOnly, String otherid, Envelope env )
                             throws XMLStreamException {
         if ( !idOnly ) {
             Description desc = md.getDescription();
-            writeElement( writer, OWS110_NS, "Title", desc.getTitle( null ).getString() );
+            LanguageString title = desc.getTitle( null );
+            if ( title != null ) {
+                writeElement( writer, OWS110_NS, "Title", title.getString() );
+            }
             LanguageString abs = desc.getAbstract( null );
             if ( abs != null ) {
                 writeElement( writer, OWS110_NS, "Abstract", abs.getString() );
             }
             exportKeyWords110New( writer, desc.getKeywords() );
+            if ( env != null ) {
+                env = getWgs84Envelope( env );
+                writer.writeStartElement( OWS110_NS, "WGS84BoundingBox" );
+                Point min = env.getMin();
+                Point max = env.getMax();
+                double minX = -180.0;
+                double minY = -90.0;
+                double maxX = 180.0;
+                double maxY = 90.0;
+                try {
+                    minX = min.get0();
+                    minY = min.get1();
+                    maxX = max.get0();
+                    maxY = max.get1();
+                } catch ( ArrayIndexOutOfBoundsException e ) {
+                    LOG.error( "Cannot generate WGS84 envelope for tile layer '" + md.getName()
+                               + "'. Using full extent.", e );
+                    minX = -180.0;
+                    minY = -90.0;
+                    maxX = 180.0;
+                    maxY = 90.0;
+                }
+                writer.writeStartElement( OWS110_NS, "LowerCorner" );
+                writer.writeCharacters( formatter.format( minX ) + " " + formatter.format( minY ) );
+                writer.writeEndElement();
+                writer.writeStartElement( OWS110_NS, "UpperCorner" );
+                writer.writeCharacters( formatter.format( maxX ) + " " + formatter.format( maxY ) );
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
         }
         if ( otherid == null ) {
             writeElement( writer, OWS110_NS, "Identifier", md.getName() );
@@ -182,6 +240,15 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
         } else {
             writeElement( writer, OWS110_NS, "Identifier", otherid );
         }
+    }
+
+    private Envelope getWgs84Envelope( Envelope env ) {
+        try {
+            env = transformer.transform( env );
+        } catch ( Exception e ) {
+            LOG.error( "Cannot transform TileLayer envelope to WGS84." );
+        }
+        return env;
     }
 
     private void exportLayers( List<Layer> layers )
@@ -213,7 +280,7 @@ public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
                             throws XMLStreamException {
         writer.writeStartElement( WMTSNS, "TileMatrixSet" );
 
-        exportMetadata( null, true, tms.getIdentifier() );
+        exportMetadata( null, true, tms.getIdentifier(), null );
         ICRS cs = tms.getSpatialMetadata().getCoordinateSystems().get( 0 );
         writeElement( writer, OWS110_NS, "SupportedCRS", cs.getAlias() );
         String wknScaleSet = tms.getWellKnownScaleSet();

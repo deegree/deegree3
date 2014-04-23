@@ -70,11 +70,11 @@ import org.deegree.tile.TileMatrixSet;
  */
 public class WmtsLayerWriter extends OWSCapabilitiesXMLAdapter {
 
-    private FeatureInfoManager mgr;
+    private final FeatureInfoManager mgr;
 
-    private XMLStreamWriter writer;
+    private final XMLStreamWriter writer;
 
-    private WMTSCapabilitiesWriter capWriter;
+    private final WMTSCapabilitiesWriter capWriter;
 
     WmtsLayerWriter( FeatureInfoManager mgr, XMLStreamWriter writer, WMTSCapabilitiesWriter capWriter ) {
         this.mgr = mgr;
@@ -102,7 +102,7 @@ public class WmtsLayerWriter extends OWSCapabilitiesXMLAdapter {
 
         writer.writeStartElement( WMTSNS, "Layer" );
 
-        capWriter.exportMetadata( md, true, null );
+        capWriter.exportMetadata( md, false, null, tl.getMetadata().getSpatialMetadata().getEnvelope() );
         writer.writeStartElement( WMTSNS, "Style" );
         writeElement( writer, OWS110_NS, "Identifier", "default" );
         writer.writeEndElement();
