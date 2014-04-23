@@ -69,7 +69,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
-          <testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>**/*IntegrationTest.java</include>
           </includes>

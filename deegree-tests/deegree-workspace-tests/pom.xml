@@ -85,7 +85,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
-          <testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>**/*IT.java</include>
           </includes>
