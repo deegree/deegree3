@@ -35,14 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.MappingExpression;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * {@link Mapping} for {@link Feature}-valued particles.
@@ -59,8 +59,15 @@ public class FeatureMapping extends Mapping {
     private QName valueFtName;
 
     public FeatureMapping( ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
+                           List<TableJoin> tableChange, CustomConverterJAXB converter ) {
+        super( path, voidable, tableChange, converter );
+        this.hrefMapping = hrefMapping;
+        this.valueFtName = valueFtName;
+    }
+
+    public FeatureMapping( ValueReference path, boolean voidable, MappingExpression hrefMapping, QName valueFtName,
                            List<TableJoin> tableChange ) {
-        super( path, voidable, tableChange );
+        super( path, voidable, tableChange, null );
         this.hrefMapping = hrefMapping;
         this.valueFtName = valueFtName;
     }
