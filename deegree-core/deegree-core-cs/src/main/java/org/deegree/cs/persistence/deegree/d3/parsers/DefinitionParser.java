@@ -183,8 +183,8 @@ public abstract class DefinitionParser {
             // convert the string IDs to CRSCodeTypes
             Set<CRSCodeType> codeSet = new HashSet<CRSCodeType>();
             int n = identifiers.length;
-            for ( int i = 0; i < n; i++ ) {
-                codeSet.add( CRSCodeType.valueOf( identifiers[i] ) );
+            for ( String identifier : identifiers ) {
+                codeSet.add( CRSCodeType.valueOf( identifier ) );
             }
             return new CRSIdentifiable( codeSet.toArray( new CRSCodeType[codeSet.size()] ), names, versions,
                                         descriptions, areasOfUse );
@@ -235,7 +235,7 @@ public abstract class DefinitionParser {
      */
     protected Unit parseUnit( XMLStreamReader reader, boolean required )
                             throws CRSConfigurationException {
-        String unitId = null;
+        String unitId;
         if ( !reader.isStartElement() ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NOT_START_STAX_ERROR",
                                                                       "CRSIdentifiable" ) );
@@ -311,9 +311,8 @@ public abstract class DefinitionParser {
      */
     public boolean moveReaderToNextIdentifiable( XMLStreamReader reader, Set<QName> allowedElements )
                             throws XMLStreamException {
-        if ( XMLStreamConstants.END_DOCUMENT == reader.getEventType() )
-            return false;
-        return XMLStreamUtils.moveReaderToFirstMatch( reader, allowedElements );
+        return XMLStreamConstants.END_DOCUMENT != reader.getEventType()
+               && XMLStreamUtils.moveReaderToFirstMatch( reader, allowedElements );
     }
 
     /**
