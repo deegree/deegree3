@@ -1226,6 +1226,27 @@
                 <crs:UsedDatum>epsg:6326</crs:UsedDatum>
         </crs:GeographicCRS>
         <crs:GeographicCRS>
+                <crs:Id>crs:84</crs:Id>
+                <crs:Id>urn:ogc:def:crs:ogc:1.3:crs84</crs:Id>
+                <crs:Id>wgs84(dd)</crs:Id>
+                <crs:Name>WGS 84</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:Description>WGS 84 again, but with *official* x,y axis order (from WMS 1.3.0 specification)</crs:Description>
+                <crs:AreaOfUse>-180.0,-90.0,180.0,90.0</crs:AreaOfUse>
+                <crs:AreaOfUse>World.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>longitude</crs:Name>
+                        <crs:Units>degree</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>latitude</crs:Name>
+                        <crs:Units>degree</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedDatum>epsg:6326</crs:UsedDatum>
+        </crs:GeographicCRS>
+        <crs:GeographicCRS>
                 <crs:Id>epsg:4601</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4601</crs:Id>
                 <crs:Id>urn:ogc:def:crs:epsg::4601</crs:Id>
@@ -9023,26 +9044,6 @@
                         <crs:Name>longitude</crs:Name>
                         <crs:Units>degree</crs:Units>
                         <crs:AxisOrientation>east</crs:AxisOrientation>
-                </crs:Axis>
-                <crs:UsedDatum>epsg:6326</crs:UsedDatum>
-        </crs:GeographicCRS>
-        <crs:GeographicCRS>
-                <crs:Id>crs:84</crs:Id>
-                <crs:Id>urn:ogc:def:crs:ogc:1.3:crs84</crs:Id>
-                <crs:Id>wgs84(dd)</crs:Id>
-                <crs:Name>WGS 84</crs:Name>
-                <crs:Version>2008-6-10T8:28</crs:Version>
-                <crs:Description>Handmade projection for WMS compliance testing.</crs:Description>
-                <crs:AreaOfUse>world</crs:AreaOfUse>
-                <crs:Axis>
-                        <crs:Name>longitude</crs:Name>
-                        <crs:Units>degree</crs:Units>
-                        <crs:AxisOrientation>east</crs:AxisOrientation>
-                </crs:Axis>
-                <crs:Axis>
-                        <crs:Name>latitude</crs:Name>
-                        <crs:Units>degree</crs:Units>
-                        <crs:AxisOrientation>north</crs:AxisOrientation>
                 </crs:Axis>
                 <crs:UsedDatum>epsg:6326</crs:UsedDatum>
         </crs:GeographicCRS>
@@ -16924,9 +16925,6 @@
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
                 <crs:Id>epsg:3034</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3034</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::3034</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::3034</crs:Id>
                 <crs:Name>ETRS89 / ETRS-LCC</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>-10.67,34.5,31.55,71.05</crs:AreaOfUse>
@@ -16945,10 +16943,28 @@
                 <crs:UsedProjection>epsg:19985</crs:UsedProjection>
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3034</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3034</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3034</crs:Id>
+                <crs:Name>ETRS89 / ETRS-LCC</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>-10.67,34.5,31.55,71.05</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe: Albania; Andorra; Austria; Belgium; Bosnia and Herzegovina; Bulgaria; Croatia; Cyprus; Czech Republic; Denmark; Estonia; Finland; Faroe Islands; France; Germany; Greece; Hungary; Ireland; Italy; Latvia; Liechtenstein; Lithuania; Luxembourg; Malta; Montenegro; Netherlands; Norway; Poland; Portugal; Romania; San Marino; Serbia; Slovakia; Slovenia; Spain; Svalbard; Sweden; Switzerland; United Kingdom (UK) including Channel Islands and Isle of Man; Vatican City State.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:19985</crs:UsedProjection>
+        </crs:ProjectedCRS>        
+        <crs:ProjectedCRS>
                 <crs:Id>epsg:3035</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3035</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::3035</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::3035</crs:Id>
                 <crs:Name>ETRS89 / ETRS-LAEA</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>-10.67,34.5,31.55,71.05</crs:AreaOfUse>
@@ -16957,15 +16973,36 @@
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
                         <crs:AxisOrientation>east</crs:AxisOrientation>
-                </crs:Axis>
+                </crs:Axis>                
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:19986</crs:UsedProjection>
+        </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3035</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3035</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3035</crs:Id>
+                <crs:Name>ETRS89 / ETRS-LAEA</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>-10.67,34.5,31.55,71.05</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe: Albania; Andorra; Austria; Belgium; Bosnia and Herzegovina; Bulgaria; Croatia; Cyprus; Czech Republic; Denmark; Estonia; Finland; Faroe Islands; France; Germany; Greece; Hungary; Ireland; Italy; Latvia; Liechtenstein; Lithuania; Luxembourg; Malta; Montenegro; Netherlands; Norway; Poland; Portugal; Romania; San Marino; Serbia; Slovakia; Slovenia; Spain; Svalbard; Sweden; Switzerland; United Kingdom (UK) including Channel Islands and Isle of Man; Vatican City State.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>y</crs:Name>
                         <crs:Units>metre</crs:Units>
                         <crs:AxisOrientation>north</crs:AxisOrientation>
                 </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>                
                 <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:19986</crs:UsedProjection>
-        </crs:ProjectedCRS>
+        </crs:ProjectedCRS>        
         <crs:ProjectedCRS>
                 <crs:Id>epsg:3036</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3036</crs:Id>
@@ -62102,9 +62139,6 @@
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
                 <crs:Id>epsg:3043</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3043</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::3043</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::3043</crs:Id>
                 <crs:Name>ETRS89 / ETRS-TM31</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>0.0,38.5,6.0,62.33</crs:AreaOfUse>
@@ -62123,10 +62157,28 @@
                 <crs:UsedProjection>epsg:16031</crs:UsedProjection>
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3043</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3043</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3043</crs:Id>
+                <crs:Name>ETRS89 / ETRS-TM31</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>0.0,38.5,6.0,62.33</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe - between 0°E and 6°E - Germany west of 6°E.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:16031</crs:UsedProjection>
+        </crs:ProjectedCRS>        
+        <crs:ProjectedCRS>
                 <crs:Id>epsg:3044</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3044</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::3044</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::3044</crs:Id>
                 <crs:Name>ETRS89 / ETRS-TM32</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:AreaOfUse>6.0,36.7,12.0,70.0</crs:AreaOfUse>
@@ -62144,6 +62196,27 @@
                 <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:16032</crs:UsedProjection>
         </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3044</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3044</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3044</crs:Id>
+                <crs:Name>ETRS89 / ETRS-TM32</crs:Name>
+                <crs:Version>2008-1-16T9:49</crs:Version>
+                <crs:AreaOfUse>6.0,36.7,12.0,70.0</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe - between 6°E and 12°E - Germany - Mecklenburg-Vorpommern west of 12°E.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>                
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:16032</crs:UsedProjection>
+        </crs:ProjectedCRS>        
         <crs:ProjectedCRS>
                 <crs:Id>epsg:3054</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3054</crs:Id>
