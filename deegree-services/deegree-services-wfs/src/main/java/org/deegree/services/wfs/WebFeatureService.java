@@ -35,9 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.ows.exception.OWSException.*;
+import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
 import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -63,6 +62,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -72,7 +72,13 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.om.OMCloneOptions;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMException;
+import org.apache.axiom.soap.SOAP11Version;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
@@ -137,11 +143,14 @@ import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReader;
 import org.deegree.protocol.wfs.transaction.xml.TransactionXmlReaderFactory;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
+import org.deegree.services.authentication.*;
+import org.deegree.services.authentication.soapauthentication.FailedAuthentication;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -560,7 +569,7 @@ public class WebFeatureService extends AbstractOWS {
             case DescribeFeatureType:
                 DescribeFeatureType describeFt = DescribeFeatureTypeKVPAdapter.parse( kvpParamsUC );
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
-                format.doDescribeFeatureType( describeFt, response );
+                format.doDescribeFeatureType( describeFt, response, false );
                 break;
             case DescribeStoredQueries:
                 DescribeStoredQueries describeStoredQueries = DescribeStoredQueriesKVPAdapter.parse( kvpParamsUC );
@@ -686,7 +695,7 @@ public class WebFeatureService extends AbstractOWS {
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 DescribeFeatureType describeFt = describeFtAdapter.parse();
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
-                format.doDescribeFeatureType( describeFt, response );
+                format.doDescribeFeatureType( describeFt, response, false );
                 break;
             case DropStoredQuery:
                 DropStoredQueryXMLAdapter dropStoredQueryAdapter = new DropStoredQueryXMLAdapter();
@@ -776,6 +785,159 @@ public class WebFeatureService extends AbstractOWS {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
+    }
+
+    @Override
+    public void doSOAP(SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response, List<FileItem> multiParts, SOAPFactory factory) throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
+        LOG.debug( "doSOAP" );
+
+        if ( disableBuffering ) {
+            super.doSOAP(soapDoc, request, response, multiParts, factory);
+            return;
+        }
+
+        Version requestVersion = null;
+        try {
+            if ( soapDoc.getVersion() instanceof SOAP11Version ) {
+                response.setContentType( "application/soap+xml" );
+                XMLStreamWriter xmlWriter = response.getXMLWriter();
+                String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
+                String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
+                xmlWriter.writeStartElement( "soap", "Envelope", soapEnvNS );
+                xmlWriter.writeNamespace( "soap", soapEnvNS );
+                xmlWriter.writeNamespace( "xsi", xsiNS );
+                xmlWriter.writeAttribute( xsiNS, "schemaLocation",
+                    "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
+                xmlWriter.writeStartElement( soapEnvNS, "Body" );
+            } else {
+                beginSOAPResponse( response );
+            }
+
+            OMElement body = soapDoc.getBody().getFirstElement().cloneOMElement();
+            XMLStreamReader bodyXmlStream = body.getXMLStreamReaderWithoutCaching();
+
+            String requestName = body.getLocalName();
+            WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            // check if requested version is supported and offered (except for GetCapabilities)
+            requestVersion = getVersion( body.getAttributeValue( new QName( "version" ) ) );
+            if ( requestType != WFSRequestType.GetCapabilities ) {
+                requestVersion = checkVersion( requestVersion );
+
+                // needed for CITE 1.1.0 compliance
+                String serviceAttr = body.getAttributeValue( new QName( "service" ) );
+                if ( serviceAttr != null && !( "WFS".equals( serviceAttr ) || "".equals( serviceAttr ) ) ) {
+                    throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
+                        INVALID_PARAMETER_VALUE, "service" );
+                }
+            }
+
+            switch ( requestType ) {
+                case CreateStoredQuery:
+                    CreateStoredQueryXMLAdapter createStoredQueryAdapter = new CreateStoredQueryXMLAdapter();
+                    createStoredQueryAdapter.setRootElement( body );
+                    CreateStoredQuery createStoredQuery = createStoredQueryAdapter.parse();
+                    storedQueryHandler.doCreateStoredQuery( createStoredQuery, response );
+                    break;
+                case DescribeFeatureType:
+                    DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
+                    describeFtAdapter.setRootElement( body );
+                    DescribeFeatureType describeFt = describeFtAdapter.parse();
+                    Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
+                    format.doDescribeFeatureType( describeFt, response, true );
+                    break;
+                case DropStoredQuery:
+                    DropStoredQueryXMLAdapter dropStoredQueryAdapter = new DropStoredQueryXMLAdapter();
+                    dropStoredQueryAdapter.setRootElement( body );
+                    DropStoredQuery dropStoredQuery = dropStoredQueryAdapter.parse();
+                    storedQueryHandler.doDropStoredQuery( dropStoredQuery, response );
+                    break;
+                case DescribeStoredQueries:
+                    DescribeStoredQueriesXMLAdapter describeStoredQueriesAdapter = new DescribeStoredQueriesXMLAdapter();
+                    describeStoredQueriesAdapter.setRootElement( body );
+                    DescribeStoredQueries describeStoredQueries = describeStoredQueriesAdapter.parse();
+                    storedQueryHandler.doDescribeStoredQueries( describeStoredQueries, response );
+                    break;
+                case GetCapabilities:
+                    GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
+                    getCapabilitiesAdapter.setRootElement( body );
+                    GetCapabilities wfsRequest = getCapabilitiesAdapter.parse( requestVersion );
+                    doGetCapabilities( wfsRequest, response );
+                    break;
+                case GetFeature:
+                    GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+                    getFeatureAdapter.setRootElement( body );
+                    GetFeature getFeature = getFeatureAdapter.parse();
+                    format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
+                        "outputFormat" );
+                    format.doGetFeature( getFeature, response );
+                    break;
+                case GetFeatureWithLock:
+                    checkTransactionsEnabled( requestName );
+                    GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
+                    getFeatureWithLockAdapter.setRootElement( body );
+                    GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                    format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
+                        "outputFormat" );
+                    format.doGetFeature( getFeatureWithLock, response );
+                    break;
+                case GetGmlObject:
+                    GetGmlObjectXMLAdapter getGmlObjectAdapter = new GetGmlObjectXMLAdapter();
+                    getGmlObjectAdapter.setRootElement( body );
+                    GetGmlObject getGmlObject = getGmlObjectAdapter.parse();
+                    format = determineFormat( requestVersion, getGmlObject.getOutputFormat(), "outputFormat" );
+                    format.doGetGmlObject( getGmlObject, response );
+                    break;
+                case GetPropertyValue:
+                    GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
+                    getPropertyValueAdapter.setRootElement( body );
+                    GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                    format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
+                        "outputFormat" );
+                    format.doGetPropertyValue( getPropertyValue, response );
+                    break;
+                case ListStoredQueries:
+                    ListStoredQueriesXMLAdapter listStoredQueriesAdapter = new ListStoredQueriesXMLAdapter();
+                    listStoredQueriesAdapter.setRootElement( body );
+                    ListStoredQueries listStoredQueries = listStoredQueriesAdapter.parse();
+                    storedQueryHandler.doListStoredQueries( listStoredQueries, response );
+                    break;
+                case LockFeature:
+                    checkTransactionsEnabled( requestName );
+                    LockFeatureXMLAdapter lockFeatureAdapter = new LockFeatureXMLAdapter();
+                    lockFeatureAdapter.setRootElement( body );
+                    LockFeature lockFeature = lockFeatureAdapter.parse();
+                    lockFeatureHandler.doLockFeature( lockFeature, response );
+                    break;
+                case Transaction:
+                    checkTransactionsEnabled( requestName );
+                    TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
+                    Transaction transaction = transactionReader.read( bodyXmlStream );
+                    new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                    break;
+                default:
+                    throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
+            }
+
+            endSOAPResponse( response );
+
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, e, request, requestVersion );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), request, requestVersion );
+        } catch ( MissingParameterException e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
+        } catch ( InvalidParameterValueException e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
+        } catch ( Throwable e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), request, requestVersion );
+        }
+
     }
 
     private Version getVersion( String versionString )
@@ -884,6 +1046,14 @@ public class WebFeatureService extends AbstractOWS {
                             throws ServletException {
         XMLExceptionSerializer serializer = getExceptionSerializer( requestVersion );
         sendException( null, serializer, e, response );
+    }
+
+    private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
+                                    OWSException e, ServletRequest request, Version requestVersion )
+                            throws OMException, ServletException {
+        XMLExceptionSerializer serializer = getExceptionSerializer( requestVersion );
+        sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
+            request.getCharacterEncoding() );
     }
 
     @Override

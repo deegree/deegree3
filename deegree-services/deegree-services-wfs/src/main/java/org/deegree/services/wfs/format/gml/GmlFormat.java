@@ -221,9 +221,13 @@ public class GmlFormat implements Format {
     }
 
     @Override
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap )
                             throws OWSException, XMLStreamException, IOException {
-        dftHandler.doDescribeFeatureType( request, response );
+        if ( isSoap ) {
+            dftHandler.doDescribeFeatureTypeInSoap( request, response );
+        } else {
+            dftHandler.doDescribeFeatureType( request, response );
+        }
     }
 
     @Override
