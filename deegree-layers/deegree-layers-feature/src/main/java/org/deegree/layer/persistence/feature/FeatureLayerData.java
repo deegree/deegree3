@@ -98,9 +98,9 @@ public class FeatureLayerData implements LayerData {
     public void render( RenderContext context ) {
         FeatureInputStream features = null;
         try {
-            // TODO Should this always be done on this level? What about min and maxFill values?
+            // TODO Should this always be done on this level? What about queueSize value?
             features = featureStore.query( queries.toArray( new Query[queries.size()] ) );
-            features = new ThreadedFeatureInputStream( features, 100, 20 );
+            features = new ThreadedFeatureInputStream( features, 100 );
 
             FeatureStreamRenderer renderer = new FeatureStreamRenderer( context, maxFeatures, evaluator );
             renderer.renderFeatureStream( features, style );
