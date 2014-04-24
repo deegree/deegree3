@@ -883,6 +883,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>it.geosolutions.imageio-ext</groupId>
+        <artifactId>imageio-ext-gdal-bindings</artifactId>
+        <version>1.10.1</version>
+      </dependency>
+      <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>0.9.8</version>
