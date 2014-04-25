@@ -1131,24 +1131,6 @@ public class SymbologyParser {
                     }
                 }, contn ).second;
             }
-            if ( in.getLocalName().equals( "Center" ) ) {
-                contn = updateOrContinue( in, "Center", baseOrEvaluated, new Updater<LinePlacement>() {
-                    @Override
-                    public void update( LinePlacement obj, String val ) {
-                        obj.center = Boolean.parseBoolean( val );
-
-                    }
-                }, contn ).second;
-            }
-            if ( in.getLocalName().equals( "WordWise" ) ) {
-                contn = updateOrContinue( in, "WordWise", baseOrEvaluated, new Updater<LinePlacement>() {
-                    @Override
-                    public void update( LinePlacement obj, String val ) {
-                        obj.wordWise = Boolean.parseBoolean( val );
-
-                    }
-                }, contn ).second;
-            }
         }
 
         return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
