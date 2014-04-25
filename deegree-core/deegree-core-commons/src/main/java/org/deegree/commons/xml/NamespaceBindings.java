@@ -69,8 +69,8 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
      * Creates a new instance of {@link NamespaceContext} with no bindings.
      */
     public NamespaceBindings() {
-        // nothing to do
-        // prefixToNs.put( CommonNamespaces.XMLNS_PREFIX, CommonNamespaces.XMLNS );
+    	prefixToNs.put( CommonNamespaces.XMLNSNS_PREFIX, CommonNamespaces.XMLNSNS );
+    	nsToPrefix.put( CommonNamespaces.XMLNSNS, CommonNamespaces.XMLNSNS_PREFIX );
     }
 
     /**
@@ -80,6 +80,8 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
      *            bindings to copy, must not be <code>null</code>
      */
     public NamespaceBindings( NamespaceBindings nsContext ) {
+    	this();
+    	
         prefixToNs.putAll( nsContext.prefixToNs );
         nsToPrefix.putAll( nsContext.nsToPrefix );
     }
@@ -92,6 +94,8 @@ public class NamespaceBindings implements org.jaxen.NamespaceContext, javax.xml.
      *            bindings to copy, must not be <code>null</code>
      */
     public NamespaceBindings( javax.xml.namespace.NamespaceContext nsContext, Collection<String> prefixes ) {
+    	this();
+    	
         for ( String prefix : prefixes ) {
             String ns = nsContext.getNamespaceURI( prefix );
             prefixToNs.put( prefix, ns );
