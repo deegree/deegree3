@@ -43,7 +43,8 @@ import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
-import static org.deegree.cs.components.Unit.METRE;
+import static org.deegree.cs.CRSUtils.EPSG_4326;
+import static org.deegree.cs.components.Axis.AO_EAST;
 import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -55,13 +56,9 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.commons.utils.Pair;
-import org.deegree.cs.CRSUtils;
-import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.style.styling.components.Mark;
@@ -232,42 +229,42 @@ public class RenderHelper {
 
     public static Pair<Envelope, DoublePair> getWorldToScreenTransform( AffineTransform worldToScreen, Envelope bbox,
                                                                         int width, int height ) {
-        
+
         // we have to flip horizontally, so invert y-axis and move y-axis with screen height
         worldToScreen.scale( 1, -1 );
         worldToScreen.translate( 0, -height );
-        
+
         // calculate scalex, scaley and swap axis if necessary
         final double scalex, scaley;
-        if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
-                && !bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) 
-                && bbox.getCoordinateSystem().getAxis()[0].getOrientation() != Axis.AO_EAST ) {
-            
-    		worldToScreen.scale( -1, 1 );
-    		worldToScreen.rotate( Math.PI / 2 );
-    		
-    		scalex = height / bbox.getSpan0();
-            scaley = width / bbox.getSpan1();
-        } else {
-        	scalex = width / bbox.getSpan0();
+        final ICRS crs = bbox.getCoordinateSystem();
+        if ( isXyOrdered( crs ) ) {
+            scalex = width / bbox.getSpan0();
             scaley = height / bbox.getSpan1();
+        } else {
+            worldToScreen.scale( -1, 1 );
+            worldToScreen.rotate( Math.PI / 2 );
+            scalex = height / bbox.getSpan0();
+            scaley = width / bbox.getSpan1();
         }
-        
+
         worldToScreen.scale( scalex, scaley );
         worldToScreen.translate( -bbox.getMin().get0(), -bbox.getMin().get1() );
-        
+
         return new Pair<Envelope, DoublePair>( bbox, new DoublePair( scalex, scaley ) );
+    }
+
+    private static boolean isXyOrdered( final ICRS crs ) {
+        return crs == null || crs.getAlias().equals( "CRS:1" ) || crs.getAxis()[0].getOrientation() == AO_EAST;
     }
 
     static double calculateResolution( final Envelope bbox, int width ) {
         double res;
         try {
-            if ( bbox.getCoordinateSystem() == null || bbox.getCoordinateSystem().getAlias().equals( "CRS:1" )
-                 || bbox.getCoordinateSystem().getUnits()[0].equals( METRE ) ) {
+            if ( isXyOrdered( bbox.getCoordinateSystem() ) ) {
                 res = bbox.getSpan0() / width; // use x for resolution
             } else {
                 // heuristics more or less copied from d2, TODO is use the proper UTM conversion
-                Envelope box = new GeometryTransformer( CRSUtils.EPSG_4326 ).transform( bbox );
+                Envelope box = new GeometryTransformer( EPSG_4326 ).transform( bbox );
                 double minx = box.getMin().get0(), miny = box.getMin().get1();
                 double maxx = minx + box.getSpan0();
                 double r = 6378.137;

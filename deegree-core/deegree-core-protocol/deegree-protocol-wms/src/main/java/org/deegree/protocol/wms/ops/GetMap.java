@@ -75,7 +75,9 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -739,7 +741,13 @@ public class GetMap extends RequestBase {
             return new GeometryFactory().createEnvelope( factor * bbox[0], factor * bbox[1], factor * bbox[2],
                                                          factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
         }
-        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], CRSManager.getCRSRef( crs ) );
+        ICRS crsRef = CRSManager.getCRSRef( crs );
+        try {
+            crsRef = CRSUtils.getAxisAwareCrs( crsRef );
+        } catch ( Exception e ) {
+            LOG.warn( "Unable to determine axis-aware variant of '" + crs + "'. Continuing." );
+        }
+        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], crsRef );
     }
 
     /**
