@@ -231,8 +231,8 @@ class WmsCapabilities130MetadataWriter {
                 }
 
                 maybeWriteElementNS( writer, WMSNS, "ContactPosition", contact.getPositionName() );
-                Address addr = contact.getContactInfo().getAddress();
-                if ( addr != null ) {
+                final Address addr = contact.getContactInfo().getAddress();
+                if ( addr != null && addr.isPhysicalInfoAvailable() ) {
                     writer.writeStartElement( WMSNS, "ContactAddress" );
                     writeElement( writer, WMSNS, "AddressType", "postal" );
                     for ( String s : addr.getDeliveryPoint() ) {
@@ -249,10 +249,9 @@ class WmsCapabilities130MetadataWriter {
                                      contact.getContactInfo().getPhone().getVoice().get( 0 ) );
                 maybeWriteElementNS( writer, WMSNS, "ContactFacsimileTelephone",
                                      contact.getContactInfo().getPhone().getFacsimile().get( 0 ) );
-                if ( addr != null ) {
-                    for ( String email : addr.getElectronicMailAddress() ) {
-                        maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress", email );
-                    }
+                if ( addr != null && !addr.getElectronicMailAddress().isEmpty() ) {
+                    maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress",
+                                         addr.getElectronicMailAddress().get( 0 ) );
                 }
 
                 writer.writeEndElement();

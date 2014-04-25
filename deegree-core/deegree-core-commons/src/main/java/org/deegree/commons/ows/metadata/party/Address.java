@@ -151,4 +151,14 @@ public class Address {
         }
         return electronicMailAddress;
     }
+
+    /**
+     * Returns whether any information on the physical address is available.
+     * 
+     * @returns <code>true</code>, if any physical information is available, <code>false</code> otherwise
+     */
+    public boolean isPhysicalInfoAvailable() {
+        return !getDeliveryPoint().isEmpty() || getCity() != null || getAdministrativeArea() != null
+               || getPostalCode() != null || getCountry() != null;
+    }
 }
