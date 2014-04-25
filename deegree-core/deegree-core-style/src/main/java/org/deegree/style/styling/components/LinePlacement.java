@@ -87,16 +87,6 @@ public class LinePlacement implements Copyable<LinePlacement> {
      * Default is false. deegree specific extension.
      */
     public boolean preventUpsideDown = false;
-    
-    /**
-     * Default is false. deegree specific extension.
-     */
-    public boolean center = false;
-    
-    /**
-     * Default is true. deegree specific extension.
-     */
-    public boolean wordWise = true;
 
     @Override
     public LinePlacement copy() {

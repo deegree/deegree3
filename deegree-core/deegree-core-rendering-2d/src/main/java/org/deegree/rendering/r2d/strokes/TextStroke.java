@@ -125,7 +125,7 @@ public class TextStroke implements Stroke {
     // I had none that was practical.
     // the method returns (true, path) if rendering word wise is possible
     // and (false, null) if not
-    private GeneralPath tryWordWise( Shape shape, double initialGap ) {
+    private GeneralPath tryWordWise( Shape shape ) {
         // two steps: first a list is prepared that describes what to render where
         // second the list is rendered
 
@@ -146,7 +146,7 @@ public class TextStroke implements Stroke {
         // end of line tag. Then, the next segment is considered. If repeat is on, the words list will never be empty
         // and the loop will run until the segment lengths list is empty.
         // TODO: Optimization: do not add Strings, add the GlyphVectors
-        if ( !prepareWordsToRender( words, wordsToRender, shape, wordsCopy, initialGap ) ) {
+        if ( !prepareWordsToRender( words, wordsToRender, shape, wordsCopy ) ) {
             return null;
         }
 
@@ -251,10 +251,10 @@ public class TextStroke implements Stroke {
     }
 
     private boolean prepareWordsToRender( LinkedList<String> words, LinkedList<StringOrGap> wordsToRender, Shape shape,
-                                          LinkedList<String> wordsCopy, double initialGap ) {
+                                          LinkedList<String> wordsCopy ) {
         LinkedList<Double> lengths = measurePathLengths( shape );
 
-        double currentGap = isZero( initialGap ) ? 0 : initialGap;
+        double currentGap = isZero( linePlacement.initialGap ) ? 0 : linePlacement.initialGap;
         if ( !isZero( currentGap ) ) {
             StringOrGap sog = new StringOrGap();
             sog.gap = currentGap;
@@ -441,43 +441,23 @@ public class TextStroke implements Stroke {
 
     public Shape createStrokedShape( Shape shape ) {
         GlyphVector glyphVector = font.createGlyphVector( frc, text );
-
-        double textWidth = glyphVector.getLogicalBounds().getWidth();
-        double shapeLength = getShapeLength( shape );
-
-        if ( !linePlacement.center ) {
-            textWidth += linePlacement.initialGap;
-        }
-
-        if ( textWidth > shapeLength ) {
+        if ( glyphVector.getLogicalBounds().getWidth() > getShapeLength( shape ) ) {
             return new GeneralPath();
         }
 
         shape = handleUpsideDown( shape );
 
-        double initialGap;
-        if ( linePlacement.center && !linePlacement.repeat ) {
-            initialGap = shapeLength / 2 - textWidth / 2;
-            if ( initialGap < linePlacement.initialGap ) {
-                initialGap = linePlacement.initialGap;
+        GeneralPath path = tryWordWise( shape );
+        if ( path != null ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Rendered text '" + text + "' word wise." );
             }
-        } else {
-            initialGap = linePlacement.initialGap;
+            return path;
         }
-
-        if ( linePlacement.wordWise ) {
-            GeneralPath path = tryWordWise( shape, initialGap );
-            if ( path != null ) {
-                if ( LOG.isDebugEnabled() ) {
-                    LOG.debug( "Rendered text '" + text + "' word wise." );
-                }
-                return path;
-            }
-        }
-        return renderCharacterWise( shape, glyphVector, initialGap );
+        return renderCharacterWise( shape, glyphVector );
     }
 
-    private Shape renderCharacterWise( Shape shape, GlyphVector glyphVector, double initialGap ) {
+    private Shape renderCharacterWise( Shape shape, GlyphVector glyphVector ) {
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
         double points[] = new double[6];
@@ -500,7 +480,7 @@ public class TextStroke implements Stroke {
                 moveY = lastY = points[1];
                 result.moveTo( moveX, moveY );
                 state.nextAdvance = glyphVector.getGlyphMetrics( state.currentChar ).getAdvance() * 0.5f;
-                state.next = state.nextAdvance + initialGap;
+                state.next = state.nextAdvance + linePlacement.initialGap;
                 break;
 
             case PathIterator.SEG_CLOSE:

@@ -26,8 +26,6 @@
         <xsd:extension base="LinePlacementType">
           <xsd:sequence>
             <xsd:element name="PreventUpsideDown" minOccurs="0" type="xsd:boolean" />
-            <xsd:element name="Center" minOccurs="0" type="xsd:boolean" />
-            <xsd:element name="WordWise" minOccurs="0" type="xsd:boolean" />
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
