@@ -29,6 +29,7 @@ package org.deegree.tile.persistence.cache;
 
 import java.io.File;
 
+import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 
 import org.deegree.tile.persistence.TileStore;
@@ -69,12 +70,13 @@ public class CachingTileStoreBuilder implements ResourceBuilder<TileStore> {
                 f = metadata.getLocation().resolveToFile( cache );
             }
             CacheManager cmgr = new CacheManager( f.toURI().toURL() );
-
             TileStore tileStore = workspace.getResource( TileStoreProvider.class, cfg.getTileStoreId() );
-
             return new CachingTileStore( tileStore, cmgr, cfg.getCacheName(), metadata );
+        } catch ( CacheException e ) {
+            // case needed, as NPE's inside exception can occur otherwise
+            throw new ResourceInitException( "Unable to create tile store: " + e.getMessage() );
         } catch ( Exception e ) {
-            throw new ResourceInitException( "Unable to create tile store.", e );
+            throw new ResourceInitException( "Unable to create tile store", e );
         }
     }
 
