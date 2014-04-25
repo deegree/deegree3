@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
+import static org.deegree.filter.Filters.addBBoxConstraint;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
 import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -69,10 +70,10 @@ import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
 
 /**
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class FeatureLayer extends AbstractLayer {
@@ -167,7 +168,7 @@ public class FeatureLayer extends AbstractLayer {
 
         final Envelope clickBox = query.calcClickBox( query.getLayerRadius() );
 
-        filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
+        filter = (OperatorFilter) addBBoxConstraint( clickBox, filter, null, false );
 
         QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
 
