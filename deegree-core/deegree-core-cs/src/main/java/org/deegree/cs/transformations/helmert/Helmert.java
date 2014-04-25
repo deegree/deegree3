@@ -410,23 +410,23 @@ public class Helmert extends Transformation {
      */
     @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer( super.getCodeAndName() );
-        buffer.append( "\n[\"" );
-        buffer.append( dx );
-        buffer.append( ", " );
-        buffer.append( dy );
-        buffer.append( ", " );
-        buffer.append( dz );
-        buffer.append( ", " );
-        buffer.append( ex );
-        buffer.append( ", " );
-        buffer.append( ey );
-        buffer.append( ", " );
-        buffer.append( ez );
-        buffer.append( ", " );
-        buffer.append( ppm );
-        buffer.append( ']' );
-        return buffer.toString();
+        final StringBuilder builder = new StringBuilder( super.getCodeAndName() );
+        builder.append( "\n[\"" );
+        builder.append( dx );
+        builder.append( ", " );
+        builder.append( dy );
+        builder.append( ", " );
+        builder.append( dz );
+        builder.append( ", " );
+        builder.append( ex );
+        builder.append( ", " );
+        builder.append( ey );
+        builder.append( ", " );
+        builder.append( ez );
+        builder.append( ", " );
+        builder.append( ppm );
+        builder.append( ']' );
+        return builder.toString();
     }
 
     /**
@@ -554,8 +554,8 @@ public class Helmert extends Transformation {
                     // call inverseTransform from geocentric
                     geocentricTransform.inverse();
                 }
-                Transformation step3 = concatenate( geocentricTransform, createMatrixTransform( alignedTarget,
-                                                                                                targetCRS, second ) );
+                Transformation step3 = concatenate( geocentricTransform,
+                                                    createMatrixTransform( alignedTarget, targetCRS, second ) );
                 return concatenate( step1, result, step3 );
             } catch ( TransformationException e ) {
                 LOG.warn( "Could not create an alignment matrix for the supplied Helmert transformation, are the coordinate systems correctly defined?" );
