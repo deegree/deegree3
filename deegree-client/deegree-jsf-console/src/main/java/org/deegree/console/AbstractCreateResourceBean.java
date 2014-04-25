@@ -93,7 +93,7 @@ public abstract class AbstractCreateResourceBean {
         return id;
     }
 
-    public void setId( String id ) {
+    public void setId( final String id ) {
         this.id = id;
     }
 
@@ -109,6 +109,11 @@ public abstract class AbstractCreateResourceBean {
         ResourceProvider<?> provider = metadata.getProvider( type );
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
         configTemplates = new ArrayList<String>( md.getExamples().keySet() );
+        if ( configTemplates.isEmpty() ) {
+            configTemplate = null;
+        } else {
+            configTemplate = configTemplates.get( 0 );
+        }
     }
 
     public List<String> getTypes() {
@@ -137,7 +142,7 @@ public abstract class AbstractCreateResourceBean {
         try {
             Class<?> pcls = metadata.getManager().getMetadata().getProviderClass();
             DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( pcls, id );
-            if ( !resourceDir.mkdirs() ) {
+            if ( !resourceDir.exists() && !resourceDir.mkdirs() ) {
                 throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
             }
             File resourceFile = new File( resourceDir, id + ".xml" );

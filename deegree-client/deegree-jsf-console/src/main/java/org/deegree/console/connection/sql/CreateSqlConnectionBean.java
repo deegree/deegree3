@@ -27,12 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.connection.sql;
 
-import java.util.Map;
-
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.db.ConnectionProviderManager;
@@ -45,7 +41,7 @@ import org.deegree.db.ConnectionProviderManager;
  * @since 3.4
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class CreateSqlConnectionBean extends AbstractCreateResourceBean {
 
     public CreateSqlConnectionBean() {
@@ -57,11 +53,4 @@ public class CreateSqlConnectionBean extends AbstractCreateResourceBean {
         return "/console/connection/sql/index";
     }
 
-    @Override
-    public String create() {
-        ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-        Map<String, Object> sMap = ctx.getSessionMap();
-        sMap.put( "newConfigId", getId() );
-        return "/console/connection/sql/jdbcparams";
-    }
 }
