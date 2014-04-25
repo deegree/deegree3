@@ -646,6 +646,37 @@ To enable AutoPlacement, you can simply set the "auto" attribute to "true".
 
 .. tip::
   AutoPlacement for labels only works for PointPlacement. AutoPlacement for LinePlacement is not implemented yet.
+  
+------------------------
+LinePlacement extensions
+------------------------
+
+There are additional deegree specific LinePlacement parameters available to enable more sophisticated
+text rendering along lines:
+
++-----------------------+------------+---------+-----------------------------------------------------------------+
+| Option                | Value      | Default | Description                                                     |
++=======================+============+=========+=================================================================+
+| PreventUpsideDown     | Boolean    | false   | Avoids upside down placement of text                            |
++-----------------------+------------+---------+-----------------------------------------------------------------+ 
+| Center                | Boolean    | false   | Places the text in the center of the line                       |
++-----------------------+----------- +---------+-----------------------------------------------------------------+ 
+| WordWise              | Boolean    | true    | Tries to place individual words instead of individual characters| 
++-----------------------+------------+---------+-----------------------------------------------------------------+
+
+^^^^^^^
+Example
+^^^^^^^ 
+
+.. code-block:: xml
+
+    <LinePlacement>
+	    <IsRepeated>false</IsRepeated>
+	    <InitialGap>10</InitialGap>
+	    <PreventUpsideDown>true</PreventUpsideDown>
+	    <Center>true</Center>
+	    <WordWise>false</WordWise>
+    </LinePlacement>
 
 __________________________
 SE & FE Functions
