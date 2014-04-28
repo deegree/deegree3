@@ -131,17 +131,9 @@ public abstract class AbstractOWS implements OWS {
 
     protected ImplementationMetadata<?> serviceInfo;
 
-    private String configId;
-
     protected AbstractOWS( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         this.configURL = configURL;
         this.serviceInfo = serviceInfo;
-        try {
-            File f = new File( configURL.toURI() );
-            this.configId = f.getName().substring( 0, f.getName().length() - 4 );
-        } catch ( URISyntaxException e ) {
-            // then no configId will be available
-        }
     }
 
     private static List<SerializerProvider> exceptionSerializers = new ArrayList<SerializerProvider>();
@@ -180,8 +172,24 @@ public abstract class AbstractOWS implements OWS {
         return serviceInfo;
     }
 
-    public String getId() {
-        return configId;
+    /**
+     * Returns the resource id of this {@link AbstractOWS}.
+     * 
+     * @return resource id, never <code>null</code>
+     * @throws ResourceInitException
+     *             if the id can not be derived from the config URL
+     */
+    protected String getId()
+                            throws ResourceInitException {
+        try {
+            final File wsDir = new File( workspace.getLocation(), "services" );
+            final File configFile = new File( configURL.toURI() );
+            final String relative = wsDir.toURI().relativize( configFile.toURI() ).getPath();
+            return relative.substring( 0, relative.lastIndexOf( '.' ) );
+        } catch ( URISyntaxException e ) {
+            final String msg = "Unable to determine service id from config URL: " + e.getMessage();
+            throw new ResourceInitException( msg );
+        }
     }
 
     /**
