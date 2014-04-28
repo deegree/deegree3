@@ -90,22 +90,5 @@ public class OraclePrimitiveConverter extends DefaultPrimitiveConverter {
         }
         return new PrimitiveValue( value, pt );
     }
-
-    // @Override
-    // protected PrimitiveValue toTimeParticle( Object sqlValue ) {
-    // Time value = null;
-    // if ( sqlValue instanceof Time ) {
-    // value = (Time) sqlValue;
-    // } else if ( sqlValue instanceof Date ) {
-    // try {
-    // value = new Time( DateUtils.formatISO8601Time( (java.util.Date) sqlValue ) );
-    // } catch ( ParseException e ) {
-    // throw new IllegalArgumentException( e.getMessage(), e );
-    // }
-    // } else {
-    // throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
-    // + "' to Time object." );
-    // }
-    // return new PrimitiveValue( value, pt );
-    // }
+    
 }
