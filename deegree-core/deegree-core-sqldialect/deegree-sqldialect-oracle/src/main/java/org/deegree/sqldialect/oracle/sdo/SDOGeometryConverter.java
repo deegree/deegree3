@@ -369,14 +369,17 @@ public class SDOGeometryConverter {
                       + "Please consider upgrading to the current format using "
                       + "the SDO_MIGRATE.TO_CURRENT procedure." );
 
+            // maps to store spatial relations between rings
             Map<Ring, Set<Ring>> contained = new HashMap<Ring, Set<Ring>>();
             Map<Ring, Set<Ring>> contains = new HashMap<Ring, Set<Ring>>();
 
-            List<Polygon> polygons = new ArrayList<Polygon>();
-            for ( Ring r : ringu ) {                
+            // construct a polygon for every ring in order to be able to utilize isWithin
+            List<Polygon> polygons = new ArrayList<Polygon>( ringu.size() );
+            for ( Ring r : ringu ) {
                 polygons.add( _gf.createPolygon( null, r.getCoordinateSystem(), r, Collections.<Ring> emptyList() ) );
             }
 
+            // determine spatial relationships between rings
             for ( Polygon a : polygons ) {
                 for ( Polygon b : polygons ) {
                     if ( a != b ) {
@@ -401,6 +404,8 @@ public class SDOGeometryConverter {
                 }
             }
 
+            // iteratively determine whether a ring is 
+            // an exterior or an interior ring until all rings are processed
             while ( !ringu.isEmpty() ) {
                 List<Ring> used = new ArrayList<Ring>();
                 for ( Ring a : ringu ) {
@@ -412,7 +417,7 @@ public class SDOGeometryConverter {
                         if ( rings != null ) {
                             for ( Ring b : rings ) {
                                 Set<Ring> containedSet = contained.get( b );
-                                if ( containedSet == null || containedSet.size() == 1) {
+                                if ( containedSet == null || containedSet.size() == 1 ) {
                                     used.add( b );
                                     ringi.add( b );
                                 }
@@ -423,11 +428,14 @@ public class SDOGeometryConverter {
                     }
                 }
 
+                // we should have solved the problem for at least one
+                // ring this time around (provided the overall problem is solvable at all)
                 if ( used.isEmpty() ) {
                     throw new IllegalArgumentException(
                                                         "Illegal Geometry: failed to construct polgyons based on rings of unknown type" );
                 }
 
+                // remove already processed rings
                 for ( Ring r : used ) {
                     ringu.remove( r );
 
