@@ -83,8 +83,8 @@
   <modules>
     <!-- workspace tests must run first! -->
     <module>deegree-workspace-tests</module>
-<!--
     <module>deegree-compliance-tests</module>
+<!--
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wms-tiling-tests</module>
 -->
