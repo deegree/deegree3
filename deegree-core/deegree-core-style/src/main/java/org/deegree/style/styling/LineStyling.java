@@ -58,6 +58,12 @@ public class LineStyling implements Styling<LineStyling> {
      */
     public UOM uom = Pixel;
 
+    public UOM uomStroke = Pixel;
+
+    public UOM uomPerpendicular = Pixel;
+
+    public UOM uomGp = Pixel;
+
     /**
      * Default is standard gray.
      */
@@ -83,6 +89,9 @@ public class LineStyling implements Styling<LineStyling> {
         copy.perpendicularOffset = perpendicularOffset;
         copy.perpendicularOffsetType = perpendicularOffsetType.copy();
         copy.uom = uom;
+        copy.uomStroke = uomStroke;
+        copy.uomPerpendicular = uomPerpendicular;
+        copy.uomGp = uomGp;
         return copy;
     }
 

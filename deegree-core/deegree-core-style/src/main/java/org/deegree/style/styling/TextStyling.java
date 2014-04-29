@@ -61,6 +61,12 @@ public class TextStyling implements Styling<TextStyling> {
      */
     public UOM uom = Pixel;
 
+    public UOM uomPerpendicularOffsetText = Pixel;
+
+    public UOM uomDisplacementX = Pixel;
+
+    public UOM uomDisplacementY = Pixel;
+
     /**
      * Default is a font with default settings.
      */
@@ -127,6 +133,9 @@ public class TextStyling implements Styling<TextStyling> {
         copy.linePlacement = linePlacement == null ? null : linePlacement.copy();
         copy.halo = halo == null ? null : halo.copy();
         copy.uom = uom;
+        copy.uomPerpendicularOffsetText = uomPerpendicularOffsetText;
+        copy.uomDisplacementX = uomDisplacementX;
+        copy.uomDisplacementY = uomDisplacementY;
         return copy;
     }
 
