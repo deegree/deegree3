@@ -86,7 +86,9 @@
     <module>deegree-compliance-tests</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wms-tiling-tests</module>
+<!--
     <module>deegree-wms-remoteows-tests</module>
+-->
     <module>deegree-wmts-tests</module>
   </modules>
 
