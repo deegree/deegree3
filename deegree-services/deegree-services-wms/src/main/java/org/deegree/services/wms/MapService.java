@@ -449,6 +449,9 @@ public class MapService {
             OperatorFilter f = filterItr == null ? null : filterItr.next();
             int layerRadius = 0;
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+              if ( l.getMetadata().getMapOptions().getFeatureInfoRadius() == 0 ) {
+                return null;
+              } else {
                 if ( l.getMetadata().getMapOptions() != null
                      && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
                     layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
