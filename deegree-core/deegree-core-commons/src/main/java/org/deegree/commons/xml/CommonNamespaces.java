@@ -190,6 +190,11 @@ public class CommonNamespaces {
     public static final String XMLNS_PREFIX = "xmlns";
 
     /**
+     * The XMLNSNS prefix is always assigned to: "xml"
+     */
+    public static final String XMLNSNS_PREFIX = "xml";
+
+    /**
      * The XS prefix is currently assigned to: "xs"
      */
     public static final String XS_PREFIX = "xs";
