@@ -115,7 +115,7 @@ public class SQLIdentifier implements Comparable<SQLIdentifier> {
                 break;
             }
             case '[': {
-                if ( lastChar != '"' ) {
+                if ( lastChar != ']' ) {
                     throw new IllegalArgumentException( "SQL identifier (=" + identifier
                                                         + ") starts with a bracket, but doesn't end with a bracket." );
                 }
@@ -201,7 +201,7 @@ public class SQLIdentifier implements Comparable<SQLIdentifier> {
      * @return name part, never <code>null</code>
      */
     public String getName() {
-        return name;
+        return isEscaped ? "\"" + name + "\"" : name;
     }
 
     /**
