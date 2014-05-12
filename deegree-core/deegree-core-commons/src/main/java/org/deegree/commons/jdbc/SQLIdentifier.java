@@ -201,7 +201,7 @@ public class SQLIdentifier implements Comparable<SQLIdentifier> {
      * @return name part, never <code>null</code>
      */
     public String getName() {
-        return isEscaped ? "\"" + name + "\"" : name;
+        return isEscaped ? escapeStartChar + name + escapeEndChar : name;
     }
 
     /**
