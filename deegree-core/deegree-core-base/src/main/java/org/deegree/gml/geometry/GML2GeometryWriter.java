@@ -36,6 +36,8 @@
 package org.deegree.gml.geometry;
 
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.geometry.Geometry.GeometryType.COMPOSITE_GEOMETRY;
+import static org.deegree.geometry.Geometry.GeometryType.ENVELOPE;
 
 import java.util.List;
 
@@ -48,6 +50,8 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.Geometry.GeometryType;
+import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -94,13 +98,13 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     private final ICRS outputCRS;
 
+    private final SFSProfiler simplifier;
+
     private CoordinateFormatter formatter;
 
     private CoordinateTransformer transformer;
 
     private double[] transformedOrdinates;
-
-    // private GeometryTransformer geoTransformer;
 
     /**
      * Creates a new {@link GML2GeometryWriter} instance.
@@ -111,6 +115,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     public GML2GeometryWriter( GMLStreamWriter gmlStream ) {
         super( gmlStream );
         this.outputCRS = gmlStream.getOutputCrs();
+        this.simplifier = gmlStream.getGeometrySimplifier();
         IUnit crsUnits = null;
         if ( outputCRS != null ) {
             try {
@@ -134,7 +139,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     @Override
     public void export( Geometry geometry )
                             throws XMLStreamException, TransformationException, UnknownCRSException {
-
+        geometry = simplify( geometry );
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY: {
             exportCompositeGeometry( (CompositeGeometry<GeometricPrimitive>) geometry );
@@ -145,6 +150,7 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             break;
         }
         case MULTI_GEOMETRY: {
+            geometry = simplify( geometry );
             exportMultiGeometry( (MultiGeometry<? extends Geometry>) geometry );
             break;
         }
@@ -334,16 +340,8 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             exportMultiLineString( (MultiLineString) multiGeometry );
             break;
         }
-        case MULTI_CURVE: {
-            exportMultiLineString( (MultiCurve) multiGeometry );
-            break;
-        }
         case MULTI_POLYGON: {
             exportMultiPolygon( (MultiPolygon) multiGeometry );
-            break;
-        }
-        case MULTI_SURFACE: {
-            exportMultiPolygon( (MultiSurface) multiGeometry );
             break;
         }
         case MULTI_GEOMETRY: {
@@ -360,6 +358,12 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             }
             writer.writeEndElement(); // </gml:MultiGeometry>
             break;
+        }
+        case MULTI_CURVE: {
+            throw new UnsupportedOperationException();
+        }
+        case MULTI_SURFACE: {
+            throw new UnsupportedOperationException();
         }
         case MULTI_SOLID: {
             throw new UnsupportedOperationException();
@@ -637,4 +641,16 @@ public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             writer.writeAttribute( "srsName", coordinateSystem.getAlias() );
         }
     }
+
+    private Geometry simplify( Geometry geometry ) {
+        if ( simplifier == null ) {
+            return geometry;
+        }
+        GeometryType type = geometry.getGeometryType();
+        if ( type == ENVELOPE || type == COMPOSITE_GEOMETRY ) {
+            return geometry;
+        }
+        return simplifier.simplify( geometry );
+    }
+
 }

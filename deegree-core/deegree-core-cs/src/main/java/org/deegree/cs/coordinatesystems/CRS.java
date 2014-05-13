@@ -184,9 +184,7 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
         super( identity );
         if ( axisOrder != null ) {
             this.axisOrder = new Axis[axisOrder.length];
-            for ( int i = 0; i < axisOrder.length; ++i ) {
-                this.axisOrder[i] = axisOrder[i];
-            }
+            System.arraycopy( axisOrder, 0, this.axisOrder, 0, axisOrder.length );
         } else {
             // rb: what to do
             this.axisOrder = null;
@@ -204,9 +202,7 @@ public abstract class CRS extends CRSIdentifiable implements ICRS {
      */
     public IAxis[] getAxis() {
         IAxis[] result = new Axis[axisOrder.length];
-        for ( int i = 0; i < axisOrder.length; ++i ) {
-            result[i] = axisOrder[i];
-        }
+        System.arraycopy( axisOrder, 0, result, 0, axisOrder.length );
         return result;
     }
 

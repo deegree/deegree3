@@ -91,6 +91,14 @@ public interface ResourceManager<T extends Resource> {
     ResourceMetadata<T> add( ResourceLocation<T> location );
 
     /**
+     * Removes a single resource.
+     * 
+     * @param md
+     *            resource metadata, must not be <code>null</code>
+     */
+    void remove( ResourceMetadata<?> md );
+
+    /**
      * Returns a list of available resource providers after find has been called.
      * 
      * @return never <code>null</code>

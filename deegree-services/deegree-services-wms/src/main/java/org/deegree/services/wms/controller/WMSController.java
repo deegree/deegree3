@@ -88,6 +88,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.FeatureInfoParams;
+import org.deegree.featureinfo.serializing.FeatureInfoSerializer;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaWriter;
 import org.deegree.layer.LayerRef;
@@ -108,11 +109,14 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
+import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.Serializer;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -161,9 +165,19 @@ public class WMSController extends AbstractOWS {
 
     private OWSMetadataProvider metadataProvider;
 
-    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
+    public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
-        featureInfoManager = new FeatureInfoManager( true );
+
+        final boolean addDefaultFormats;
+        final FeatureInfoFormatsType featureInfoFormats = jaxbConfig.getFeatureInfoFormats();
+        if ( featureInfoFormats != null ) {
+            final Boolean enableDefaultFormats = featureInfoFormats.isEnableDefaultFormats();
+            addDefaultFormats = enableDefaultFormats == null || enableDefaultFormats;
+        } else {
+            addDefaultFormats = true;
+        }
+
+        featureInfoManager = new FeatureInfoManager( addDefaultFormats );
     }
 
     /**
@@ -220,17 +234,33 @@ public class WMSController extends AbstractOWS {
                     if ( t.getFile() != null ) {
                         featureInfoManager.addOrReplaceFormat( t.getFormat(),
                                                                metadata.getLocation().resolveToFile( t.getFile() ).toString() );
-                    } else {
+                    } else if ( t.getXSLTFile() != null ) {
                         XSLTFile xsltFile = t.getXSLTFile();
                         GMLVersion version = GMLVersion.valueOf( xsltFile.getGmlVersion().toString() );
                         featureInfoManager.addOrReplaceXsltFormat( t.getFormat(),
                                                                    metadata.getLocation().resolveToUrl( xsltFile.getValue() ),
                                                                    version, workspace );
+                    } else if ( t.getSerializer() != null ) {
+                        Serializer serializer = t.getSerializer();
+
+                        FeatureInfoSerializer featureInfoSerializer;
+                        try {
+                            Class<?> clazz = workspace.getModuleClassLoader().loadClass( serializer.getJavaClass() );
+                            featureInfoSerializer = clazz.asSubclass( FeatureInfoSerializer.class ).newInstance();
+                        } catch ( ClassNotFoundException e ) {
+                            throw new IllegalArgumentException( "Couldn't find serializer class", e );
+                        } catch ( ClassCastException e ) {
+                            throw new IllegalArgumentException(
+                                                                "Configured serializer class doesn't implement FeatureInfoSerializer",
+                                                                e );
+                        }
+
+                        featureInfoManager.addOrReplaceCustomFormat( t.getFormat(), featureInfoSerializer );
+                    } else {
+                        throw new IllegalArgumentException( "Unknown GetFeatureInfoFormat" );
                     }
                 }
-            }
-
-            featureInfoManager.finalizeConfiguration();
+            }            
 
             // if ( pi.getImageFormat() != null ) {
             // for ( ImageFormat f : pi.getImageFormat() ) {
@@ -400,7 +430,7 @@ public class WMSController extends AbstractOWS {
         sendImage( img, response, glg.getFormat() );
     }
 
-    private void getFeatureInfo( Map<String, String> map, HttpResponseBuffer response, Version version )
+    private void getFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
 
         Pair<FeatureCollection, LinkedList<String>> pair;
@@ -447,9 +477,8 @@ public class WMSController extends AbstractOWS {
         String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
 
         try {
-            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, response.getOutputStream(),
-                                                              geometries, loc, type, crs, response.getXMLWriter() );
-            featureInfoManager.serializeFeatureInfo( params );
+            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, geometries, loc, type, crs );
+            featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
             response.flushBuffer();
         } catch ( XMLStreamException e ) {
             throw new IOException( e.getLocalizedMessage(), e );

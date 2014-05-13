@@ -102,7 +102,6 @@ import org.deegree.cs.exceptions.ProjectionException;
 public class LambertAzimuthalEqualArea extends AzimuthalProjection implements ILambertAzimuthalEqualArea {
 
     /**
-     * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
      * @param naturalOrigin
@@ -118,7 +117,6 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection implements IL
     }
 
     /**
-     * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
      * @param naturalOrigin
@@ -131,7 +129,6 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection implements IL
     }
 
     /**
-     * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
      * @param naturalOrigin
@@ -145,7 +142,6 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection implements IL
     }
 
     /**
-     * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
      * @param naturalOrigin
@@ -241,7 +237,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection implements IL
              */
             double[] apa = getAuthalicLatitudeSeriesValues( getSquaredEccentricity( geographicCRS ) );
 
-            double q = 0;
+            double q;
             double arcSinusBeta = 0;
             switch ( getMode() ) {
             case EQUATOR:
@@ -313,7 +309,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection implements IL
 
         if ( isSpherical( geographicCRS ) ) {
             double cosphi = Math.cos( phi );
-            double kAccent = 0;
+            double kAccent;
             switch ( getMode() ) {
             case OBLIQUE:
                 // Calculation of k' Snyder (24-2)
@@ -447,7 +443,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection implements IL
     }
 
     private synchronized Map<PARAMS, Double> calculateParameters( IGeographicCRS geographicCRS ) {
-        Map<PARAMS, Double> list = new HashMap<LambertAzimuthalEqualArea.PARAMS, Double>();
+        Map<PARAMS, Double> list = new HashMap<PARAMS, Double>();
         double sinb1 = Double.NaN;
         double cosb1 = Double.NaN;
         /**

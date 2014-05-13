@@ -70,6 +70,8 @@ public class BBOX extends SpatialOperator {
 
     private final Envelope param2;
 
+    private final boolean allowFalsePositives;
+
     /**
      * Creates a new {@link BBOX} instance which uses the default geometry property and the specified bounding box.
      * 
@@ -84,12 +86,28 @@ public class BBOX extends SpatialOperator {
      * Creates a new {@link BBOX} instance which uses the specified geometry property and bounding box.
      * 
      * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
      * @param param2
      *            bounding box argument for intersection testing, never <code>null</code>
      */
     public BBOX( Expression param1, Envelope param2 ) {
+        this( param1, param2, false );
+    }
+
+    /**
+     * Creates a new {@link BBOX} instance which uses the specified geometry property and bounding box.
+     * 
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            bounding box argument for intersection testing, never <code>null</code>
+     * @param allowFalsePositives
+     *            set to <code>true</code>, if false positives are acceptable (may enable faster index-only checks)
+     */
+    public BBOX( final Expression param1, final Envelope param2, final boolean allowFalsePositives ) {
         super( param1 );
         this.param2 = param2;
+        this.allowFalsePositives = allowFalsePositives;
     }
 
     /**
@@ -111,6 +129,15 @@ public class BBOX extends SpatialOperator {
      */
     public Envelope getBoundingBox() {
         return param2;
+    }
+
+    /**
+     * Returns whether false positives are acceptable in the result. This may enable faster index-only checks.
+     * 
+     * @return <code>true</code>, if false positives are acceptable, <code>false</code> otherwise
+     */
+    public boolean getAllowFalsePositives() {
+        return allowFalsePositives;
     }
 
     @Override

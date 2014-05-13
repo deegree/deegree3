@@ -190,7 +190,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 moduleInfo = new ModuleInfo( buildArtifactId, pomVersion, buildRev, buildDate, buildBy );
             } finally {
                 closeQuietly( buildInfoStream );
-                closeQuietly( classLoader );
+                //* closeQuietly( classLoader ); */ // TODO enable for JDK 1.7  
             }
         }
         return moduleInfo;

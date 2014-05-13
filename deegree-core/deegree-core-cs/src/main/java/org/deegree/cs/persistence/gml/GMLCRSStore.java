@@ -409,16 +409,14 @@ public class GMLCRSStore extends AbstractCRSStore {
             Pair<CRSIdentifiable, Object> paramValue = parameterValues.get( 0 );
             if ( paramValue != null && ( paramValue.second instanceof String ) ) {
                 String second = (String) paramValue.second;
-                if ( second != null ) {
-                    URL url = null;
-                    try {
-                        url = new URL( second );
-                    } catch ( Throwable t ) {
-                        LOG.debug( "Could not load NTv2 file from location: " + second );
-                    }
-                    if ( url != null ) {
-                        result = new NTv2Transformation( source, target, id, url );
-                    }
+                URL url = null;
+                try {
+                    url = new URL( second );
+                } catch ( Throwable t ) {
+                    LOG.debug( "Could not load NTv2 file from location: " + second );
+                }
+                if ( url != null ) {
+                    result = new NTv2Transformation( source, target, id, url );
                 }
             }
         }
@@ -440,7 +438,7 @@ public class GMLCRSStore extends AbstractCRSStore {
         List<String> versions = new ArrayList<String>();
         List<String> descriptions = new ArrayList<String>();
         List<String> areasOfUse = new ArrayList<String>();
-        String identifier = null;
+        String identifier;
         try {
             identifier = adapter.getRequiredNodeAsString( rootElement, new XPath( PRE + "identifier", nsContext ) );
         } catch ( XMLParsingException e ) {
@@ -524,10 +522,9 @@ public class GMLCRSStore extends AbstractCRSStore {
         for ( int i = 0; i < n; i++ ) {
             crsCodes[i] = CRSCodeType.valueOf( identifiers[i] );
         }
-        CRSIdentifiable result = new CRSIdentifiable( crsCodes, names, versions.toArray( new String[versions.size()] ),
-                                                      descriptions.toArray( new String[descriptions.size()] ),
-                                                      areasOfUse.toArray( new String[areasOfUse.size()] ) );
-        return result;
+        return new CRSIdentifiable( crsCodes, names, versions.toArray( new String[versions.size()] ),
+                                    descriptions.toArray( new String[descriptions.size()] ),
+                                    areasOfUse.toArray( new String[areasOfUse.size()] ) );
 
     }
 
@@ -586,7 +583,7 @@ public class GMLCRSStore extends AbstractCRSStore {
             crsElement2 = adapter.getRequiredElement( first, new XPath( "*[2]", nsContext ) );
         }
 
-        IProjectedCRS underlying = null;
+        IProjectedCRS underlying;
         IVerticalCRS vertical = null;
 
         if ( "ProjectedCRS".equals( crsElement1.getLocalName() ) ) {
@@ -665,7 +662,7 @@ public class GMLCRSStore extends AbstractCRSStore {
             throw new XMLParsingException( adapter, baseGEOCRSElementProperty,
                                            "No basetype for the projected crs found, each projected crs must have a base crs." );
         }
-        IGeographicCRS underlyingCRS = null;
+        IGeographicCRS underlyingCRS;
         if ( parsedBaseCRS.getType() == COMPOUND ) {
             ICRS cmpBase = ( (ICompoundCRS) parsedBaseCRS ).getUnderlyingCRS();
             if ( cmpBase.getType() != GEOGRAPHIC ) {
@@ -750,7 +747,7 @@ public class GMLCRSStore extends AbstractCRSStore {
         }
         IGeodeticDatum datum = parseDatum( datumElement );
         IAxis[] axis = parseAxisFromCSType( csTypeElement );
-        ICRS result = null;
+        ICRS result;
         if ( axis != null ) {
             if ( "ellipsoidalCS".equals( csTypeProp.getLocalName() ) ) {
                 if ( axis.length == 2 ) {
@@ -873,7 +870,7 @@ public class GMLCRSStore extends AbstractCRSStore {
                 }
                 if ( axis.length == 3 ) {
                     if ( axis[2].getUnits() == null ) {
-                        LOG.debug( "Could not check axis [2]: " + axis + " because it has no units." );
+                        LOG.debug( "Could not check axis [2]: " + axis[2] + " because it has no units." );
                     } else {
                         if ( !axis[2].getUnits().canConvert( Unit.METRE ) ) {
                             throw new XMLParsingException( adapter, rootElement,
@@ -973,7 +970,7 @@ public class GMLCRSStore extends AbstractCRSStore {
                     type = 1; // semiMinor
                 }
             }
-            double value = semiMajorAxis;
+            double value;
             if ( type == 2 ) {
                 result = new Ellipsoid( unit, semiMajorAxis, semiMajorAxis, id );
             } else {
@@ -1485,10 +1482,10 @@ public class GMLCRSStore extends AbstractCRSStore {
                         }
                     } catch ( XMLParsingException e ) {
                         LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
-                                   + e.getLocalizedMessage(), e );
+                                                           + e.getLocalizedMessage(), e );
                     } catch ( IOException e ) {
                         LOG.debug( "Could not get an identifiable for id: " + id.getOriginal() + " because: "
-                                   + e.getLocalizedMessage(), e );
+                                                           + e.getLocalizedMessage(), e );
                     }
 
                 }

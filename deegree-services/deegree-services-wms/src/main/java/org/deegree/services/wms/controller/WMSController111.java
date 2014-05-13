@@ -50,9 +50,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.protocol.wms.Utils;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
@@ -95,30 +93,18 @@ public class WMSController111 extends WMSControllerBase {
         throw new OWSException( get( "WMS.INVALID_SRS", name ), INVALID_SRS );
     }
 
-    /**
-     * @param crs
-     * @return the auto crs as defined in WMS 1.1.1 spec Annex E
-     */
-    public static ICRS getCRS( String crs ) {
-        if ( crs.startsWith( "AUTO:" ) ) {
-            String[] cs = crs.split( ":" )[1].split( "," );
-            int id = Integer.parseInt( cs[0] );
-            // this is not supported
-            // int units = Integer.parseInt( cs[1] );
-            double lon0 = Double.parseDouble( cs[2] );
-            double lat0 = Double.parseDouble( cs[3] );
-
-            return Utils.getAutoCRS( id, lon0, lat0 );
-        }
-        return CRSManager.getCRSRef( crs, true );
-    }
-
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
                                 ServiceIdentification identification, ServiceProvider provider,
                                 WMSController controller, OWSMetadataProvider metadata )
                             throws IOException {
         response.setContentType( "application/vnd.ogc.wms_xml" );
+        String userAgent = OGCFrontController.getContext().getUserAgent();
+
+        if ( userAgent.toLowerCase().contains( "mozilla" ) ) {
+            response.setContentType( "application/xml" );
+        }
+
         response.addHeader( "Content-Disposition", "inline; filename=\"capabilities.xml\"" );
         try {
             XMLStreamWriter xmlWriter = response.getXMLWriter();

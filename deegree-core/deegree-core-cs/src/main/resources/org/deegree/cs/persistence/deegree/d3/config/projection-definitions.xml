@@ -10781,4 +10781,22 @@
 		<crs:FalseEasting>0.0</crs:FalseEasting>
 		<crs:FalseNorthing>0.0</crs:FalseNorthing>
 	</crs:Mercator>
+  <crs:TransverseMercator>
+    <crs:Id>epsg:19851</crs:Id>
+    <crs:Name>Croatia Transverse Mercator</crs:Name>
+    <crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+    <crs:LongitudeOfNaturalOrigin>16.5</crs:LongitudeOfNaturalOrigin>
+    <crs:ScaleFactor>0.9999</crs:ScaleFactor>
+    <crs:FalseEasting>500000.0</crs:FalseEasting>
+    <crs:FalseNorthing>0.0</crs:FalseNorthing>
+  </crs:TransverseMercator>
+  <crs:TransverseMercator>
+    <crs:Id>epsg:4648</crs:Id>
+    <crs:Name>UTM zone 32N with prefix</crs:Name>
+    <crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+    <crs:LongitudeOfNaturalOrigin>9.0</crs:LongitudeOfNaturalOrigin>
+    <crs:ScaleFactor>0.9996</crs:ScaleFactor>
+    <crs:FalseEasting>32500000.0</crs:FalseEasting>
+    <crs:FalseNorthing>0.0</crs:FalseNorthing>
+  </crs:TransverseMercator>
 </crs:ProjectionDefinitions>

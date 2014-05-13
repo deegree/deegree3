@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -35,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml;
 
+import static java.lang.Integer.MAX_VALUE;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
@@ -44,8 +44,10 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
+import org.deegree.geometry.linearization.MaxErrorCriterion;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
@@ -54,6 +56,7 @@ import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
+import org.deegree.services.jaxb.wfs.GeometryLinearization;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.format.gml.request.GmlDescribeFeatureTypeHandler;
@@ -79,9 +82,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @since 3.3
  */
 public class GmlFormat implements Format {
 
@@ -110,7 +112,8 @@ public class GmlFormat implements Format {
     public GmlFormat( WebFeatureService master, GMLVersion gmlVersion ) {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
-                                             master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false );
+                                             master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false,
+                                             null );
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
@@ -189,17 +192,27 @@ public class GmlFormat implements Format {
             throw new ResourceInitException( "Error initializing coordinate formatter: " + e.getMessage(), e );
         }
 
-        GMLVersion gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
-        String mimeType = formatDef.getMimeType().get( 0 );
+        final GMLVersion gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
+        final String mimeType = formatDef.getMimeType().get( 0 );
+        final SFSProfiler geometrySimplifier = getSfsProfiler( formatDef.getGeometryLinearization() );
         this.options = new GmlFormatOptions( gmlVersion, responseContainerEl, responseFeatureMemberEl, schemaLocation,
                                              disableStreaming, generateBoundedByForFeatures, queryMaxFeatures,
                                              checkAreaOfUse, formatter, appSchemaBaseURL, mimeType,
-                                             exportOriginalSchema );
+                                             exportOriginalSchema, geometrySimplifier );
 
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
         this.ggoHandler = new GmlGetGmlObjectHandler( this );
+    }
+
+    private SFSProfiler getSfsProfiler( final GeometryLinearization geometryLinearization ) {
+        if ( geometryLinearization == null ) {
+            return null;
+        }
+        final double maxError = geometryLinearization.getAccuracy();
+        final MaxErrorCriterion crit = new MaxErrorCriterion( maxError, MAX_VALUE );
+        return new SFSProfiler( crit );
     }
 
     @Override
@@ -208,9 +221,13 @@ public class GmlFormat implements Format {
     }
 
     @Override
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap )
                             throws OWSException, XMLStreamException, IOException {
-        dftHandler.doDescribeFeatureType( request, response );
+        if ( isSoap ) {
+            dftHandler.doDescribeFeatureTypeInSoap( request, response );
+        } else {
+            dftHandler.doDescribeFeatureType( request, response );
+        }
     }
 
     @Override

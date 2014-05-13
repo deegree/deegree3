@@ -44,6 +44,7 @@ package org.deegree.layer.persistence.feature;
 import static org.deegree.commons.utils.CollectionUtils.clearNulls;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.filter.Filters.addBBoxConstraint;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilter;
 
 import java.util.ArrayList;
@@ -56,7 +57,6 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
-import org.deegree.filter.Filters;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
@@ -112,13 +112,13 @@ class QueryBuilder {
                                  new Mapper<Query, FeatureType>() {
                                      @Override
                                      public Query apply( FeatureType u ) {
-                                         Filter fil = Filters.addBBoxConstraint( bbox, filter2, geomProp );
+                                         Filter fil = addBBoxConstraint( bbox, filter2, geomProp, true );
                                          return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
                                                              query.getResolution(), sortBy );
                                      }
                                  } ) );
         } else {
-            Query fquery = createQuery( ftName, Filters.addBBoxConstraint( bbox, filter, geomProp ),
+            Query fquery = createQuery( ftName, addBBoxConstraint( bbox, filter, geomProp, true ),
                                         round( query.getScale() ), maxFeatures, query.getResolution(), sortBy );
             queries.add( fquery );
         }
@@ -126,7 +126,7 @@ class QueryBuilder {
         return queries;
     }
 
-    List<Query> buildInfoQueries(){
+    List<Query> buildInfoQueries() {
         List<Query> queries = new ArrayList<Query>();
         if ( ftName == null ) {
             queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
@@ -139,8 +139,7 @@ class QueryBuilder {
                                          } else {
                                              f = buildFilter( ( (OperatorFilter) filter ).getOperator(), u, bbox );
                                          }
-                                         return createQuery( u.getName(), f, -1, query.getFeatureCount(), -1,
-                                                             sortBy );
+                                         return createQuery( u.getName(), f, -1, query.getFeatureCount(), -1, sortBy );
                                      }
                                  } ) );
             clearNulls( queries );
@@ -156,7 +155,7 @@ class QueryBuilder {
         }
         return queries;
     }
-    
+
     static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
                               SortProperty[] sort ) {
         TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };

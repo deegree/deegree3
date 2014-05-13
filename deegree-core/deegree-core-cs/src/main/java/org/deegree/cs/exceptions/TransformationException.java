@@ -111,11 +111,7 @@ public class TransformationException extends Exception {
      *            for the exception.
      */
     public TransformationException( ICRS sourceCS, ICRS targetCS, String cause ) {
-        super(
-               new StringBuilder( "Can't transform from: " ).append( sourceCS.getCode() ).append( " into " ).append(
-                                                                                                                     targetCS.getCode() ).append(
-                                                                                                                                                  " because: " ).append(
-                                                                                                                                                                         cause ).toString() );
+        super( "Can't transform from: " + sourceCS.getCode() + " into " + targetCS.getCode() + " because: " + cause );
     }
 
     /**
@@ -133,7 +129,7 @@ public class TransformationException extends Exception {
      */
     public final void setTransformError( int coordinateNumber, String errorMessage ) {
         String value = "";
-        Integer key = Integer.valueOf( coordinateNumber );
+        Integer key = coordinateNumber;
         if ( transformErrors.containsKey( key ) && transformErrors.get( key ) != null ) {
             value = transformErrors.get( key ) + ";";
         }

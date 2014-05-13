@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -54,11 +53,11 @@ import org.deegree.workspace.Workspace;
 
 /**
  * {@link OWSProvider} for the {@link WebFeatureService}.
- * 
+ *
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @since 3.4
  */
 public class WFSProvider extends OWSProvider {
 
@@ -68,7 +67,7 @@ public class WFSProvider extends OWSProvider {
             handledNamespaces = new String[] { WFS_NS, WFS_200_NS };
             handledRequests = WFSRequestType.class;
             supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ),
-                                                     Version.parseVersion( "3.2.0" ) };
+                                                     Version.parseVersion( "3.2.0" ), Version.parseVersion( "3.4.0" ) };
             serviceName = new String[] { "WFS" };
         }
     };
@@ -80,7 +79,7 @@ public class WFSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WFSProvider.class.getResource( "/META-INF/schemas/services/wfs/3.2.0/wfs_configuration.xsd" );
+        return WFSProvider.class.getResource( "/META-INF/schemas/services/wfs/3.4.0/wfs_configuration.xsd" );
     }
 
     @Override

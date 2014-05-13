@@ -778,6 +778,9 @@ public class SymbologyParser {
                     in.nextTag();
 
                     if ( in.getLocalName().equalsIgnoreCase( "PointPlacement" ) ) {
+                        String cssName = in.getAttributeValue( null, "auto" );
+                        baseOrEvaluated.auto = ( cssName != null && cssName.equalsIgnoreCase( "true" ) ); 
+                        
                         while ( !( in.isEndElement() && in.getLocalName().equals( "PointPlacement" ) ) ) {
                             in.nextTag();
                             if ( in.getLocalName().equals( "AnchorPoint" ) ) {
@@ -1124,6 +1127,24 @@ public class SymbologyParser {
                     @Override
                     public void update( LinePlacement obj, String val ) {
                         obj.preventUpsideDown = Boolean.parseBoolean( val );
+
+                    }
+                }, contn ).second;
+            }
+            if ( in.getLocalName().equals( "Center" ) ) {
+                contn = updateOrContinue( in, "Center", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.center = Boolean.parseBoolean( val );
+
+                    }
+                }, contn ).second;
+            }
+            if ( in.getLocalName().equals( "WordWise" ) ) {
+                contn = updateOrContinue( in, "WordWise", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.wordWise = Boolean.parseBoolean( val );
 
                     }
                 }, contn ).second;

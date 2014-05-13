@@ -86,24 +86,24 @@ public class ResourceProviderMetadata {
                 }
                 int i = 1;
                 while ( true ) {
-                    String examplePrefix = "example" + i + "_";
+                    final String examplePrefix = "example" + i++ + "_";
                     String exampleLocation = props.getProperty( examplePrefix + "location" );
                     if ( exampleLocation == null ) {
                         break;
                     }
                     exampleLocation = exampleLocation.trim();
-                    String exampleName = "example";
-                    if ( props.containsKey( examplePrefix + "name" ) ) {
-                        exampleName = props.getProperty( examplePrefix + "name" ).trim();
+                    final URL exampleUrl = this.getClass().getResource( exampleLocation );
+                    if ( exampleUrl == null ) {
+                        LOG.error( "Configuration example file '" + exampleLocation + "' is missing on classpath." );
+                        continue;
                     }
+                    final String exampleName = getExampleDisplayName( props, examplePrefix, exampleLocation );
                     String exampleDescription = null;
                     if ( props.containsKey( examplePrefix + "description" ) ) {
                         exampleDescription = props.getProperty( examplePrefix + "description" ).trim();
                     }
-                    URL exampleUrl = this.getClass().getResource( exampleLocation );
                     ConfigExample example = new ConfigExample( exampleUrl, exampleName, exampleDescription );
                     exampleNameToExample.put( exampleName, example );
-                    i++;
                 }
             } catch ( IOException e ) {
                 LOG.error( e.getMessage(), e );
@@ -111,6 +111,20 @@ public class ResourceProviderMetadata {
                 closeQuietly( is );
             }
         }
+    }
+
+    private String getExampleDisplayName( final Properties props, final String examplePrefix,
+                                          final String exampleLocation ) {
+        if ( props.containsKey( examplePrefix + "name" ) ) {
+            return props.getProperty( examplePrefix + "name" ).trim();
+        }        
+        final int fileNameStart = exampleLocation.lastIndexOf( "/" ) + 1;
+        String exampleName = exampleLocation.substring( fileNameStart );
+        final int fileNameEnd = exampleName.lastIndexOf( '.' );
+        if ( fileNameEnd != -1 ) {
+            exampleName = exampleName.substring( 0, fileNameEnd );
+        }
+        return exampleName;
     }
 
     public static synchronized ResourceProviderMetadata getMetadata( ResourceProvider<?> rp ) {

@@ -382,12 +382,11 @@ public class InsertRowManager {
                         }
                         children.add( currentRow );
 
-                        // href handling is done above
-                        // SQLIdentifier hrefCol = null;
-                        // if ( ( (FeatureMapping) mapping ).getHrefMapping() != null ) {
-                        // hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
-                        // }
-                        // ref.addHrefingRow( currentRow, hrefCol );
+                        SQLIdentifier hrefCol = null;
+                        if ( ( (FeatureMapping) mapping ).getHrefMapping() != null ) {
+                            hrefCol = new SQLIdentifier( ( (FeatureMapping) mapping ).getHrefMapping().toString() );
+                        }
+                        ref.addHrefingRow( currentRow, hrefCol );
 
                         if ( !delayedRows.contains( subFeatureRow ) ) {
                             // sub feature already inserted, propagate key values right away

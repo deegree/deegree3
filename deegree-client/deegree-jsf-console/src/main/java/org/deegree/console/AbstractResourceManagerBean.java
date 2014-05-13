@@ -34,11 +34,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.console.datastore.feature.FeatureStoreConfig;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.services.controller.OGCFrontController;
@@ -55,7 +57,9 @@ import org.deegree.workspace.Workspace;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> {
+public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> implements Serializable {
+
+    private static final long serialVersionUID = -7795125766411006135L;
 
     private String newConfigType;
 
@@ -65,11 +69,15 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
 
     private String newConfigId;
 
-    protected final ResourceManager<?> resourceManager;
+    private transient ResourceManagerMetadata metadata;
 
-    private final ResourceManagerMetadata metadata;
+    protected transient ResourceManager<?> resourceManager;
 
-    private Workspace workspace;
+    private transient Workspace workspace;
+
+    protected AbstractResourceManagerBean() {
+        // default constructor required
+    }
 
     protected AbstractResourceManagerBean( Class<T> mgrClass ) {
         workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
@@ -130,6 +138,17 @@ public abstract class AbstractResourceManagerBean<T extends ResourceManager<?>> 
 
     public String getStartView() {
         return null;
+    }
+
+    public boolean getHasErrors() {
+        for ( ResourceMetadata<?> md : resourceManager.getResourceMetadata() ) {
+            FeatureStoreConfig config = new FeatureStoreConfig( md, resourceManager );
+            String state = config.getState();
+            if ( "Error".equals( state ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

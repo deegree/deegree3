@@ -121,14 +121,16 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
                             throws UnmappableException, FilterEvaluationException {
 
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-
-        SQLExpression propNameExpr = toProtoSQLSpatial(  op.getPropName() );
+        SQLExpression propNameExpr = toProtoSQLSpatial( op.getPropName() );
 
         switch ( op.getSubType() ) {
         case BBOX:
-            appendRelateOperation( builder, propNameExpr, ( (BBOX) op ).getBoundingBox(), "ANYINTERACT" );
-            // TODO on loose BBOX request like WMS-GetMap use the faster primary (index-only) filtering
-            // appendFilterOperation( builder, propNameExpr, ( (BBOX) op ).getBoundingBox() );
+            BBOX bbox = (BBOX) op;
+            if ( bbox.getAllowFalsePositives() ) {
+                appendFilterOperation( builder, propNameExpr, ( (BBOX) op ).getBoundingBox() );
+            } else {
+                appendRelateOperation( builder, propNameExpr, ( (BBOX) op ).getBoundingBox(), "ANYINTERACT" );
+            }
             break;
         case INTERSECTS:
             appendRelateOperation( builder, propNameExpr, ( (Intersects) op ).getGeometry(), "ANYINTERACT" );
@@ -171,7 +173,6 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
     /**
      * Append a primary (index) filter to the query
      */
-    @SuppressWarnings("unused")
     private void appendFilterOperation( SQLOperationBuilder builder, SQLExpression propNameExpr, Geometry geom ) {
         ICRS storageCRS = propNameExpr.getCRS();
         int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;

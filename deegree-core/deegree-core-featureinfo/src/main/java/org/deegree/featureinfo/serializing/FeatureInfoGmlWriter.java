@@ -40,7 +40,10 @@ import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
 import static org.deegree.gml.GMLVersion.GML_2;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,28 +55,31 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.featureinfo.FeatureInfoContext;
+import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.geometry.Envelope;
+import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.slf4j.Logger;
 
 /**
- * Writes GML <code>GetFeatureInfo</code> responses. TODO: adapt this to the serializer interface.
+ * Writes GML <code>GetFeatureInfo</code> responses.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class FeatureInfoGmlWriter {
+public class FeatureInfoGmlWriter implements FeatureInfoSerializer {
+
+    private static final Logger LOG = getLogger( FeatureInfoGmlWriter.class );
 
     private static final String WFS_NS = "http://www.opengis.net/wfs";
 
-    private final String gmlNull;
-
-    private final String gmlNs;
-
-    private final QName fidAttr;
+    /* ; */
 
     /**
      * Creates a new {@link FeatureInfoGmlWriter} instance for the specified GML version.
@@ -81,16 +87,11 @@ public class FeatureInfoGmlWriter {
      * @param version
      *            gml version, must not be <code>null</code>
      */
-    public FeatureInfoGmlWriter( GMLVersion version ) {
-        gmlNs = version.getNamespace();
-        if ( !version.equals( GML_2 ) ) {
-            fidAttr = new QName( gmlNs, "id" );
-            gmlNull = "Null";
-        } else {
-            fidAttr = new QName( "", "fid" );
-            gmlNull = "null";
-        }
-    }
+    /*
+     * public FeatureInfoGmlWriter( GMLVersion version ) { gmlNs = version.getNamespace(); if ( !version.equals( GML_2 )
+     * ) { fidAttr = new QName( gmlNs, "id" ); gmlNull = "Null"; } else { fidAttr = new QName( "", "fid" ); gmlNull =
+     * "null"; } }
+     */
 
     /**
      * Writes the given feature collection as a <code>wfs:FeatureCollection</code> element.
@@ -105,9 +106,19 @@ public class FeatureInfoGmlWriter {
      * @throws UnknownCRSException
      * @throws TransformationException
      */
-    public void export( FeatureCollection fc, GMLStreamWriter gmlWriter, String noNamespaceSchemaLocation,
-                        Map<String, String> bindings )
+    private void export( GMLVersion version, FeatureCollection fc, GMLStreamWriter gmlWriter,
+                         String noNamespaceSchemaLocation, Map<String, String> bindings )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+        QName fidAttr;
+        String gmlNull;
+        String gmlNs = version.getNamespace();
+        if ( !version.equals( GML_2 ) ) {
+            fidAttr = new QName( gmlNs, "id" );
+            gmlNull = "Null";
+        } else {
+            fidAttr = new QName( "", "fid" );
+            gmlNull = "null";
+        }
 
         XMLStreamWriter writer = gmlWriter.getXMLStream();
 
@@ -141,7 +152,16 @@ public class FeatureInfoGmlWriter {
             writer.writeAttribute( XSINS, "schemaLocation", locs );
         }
 
-        exportBoundedBy( gmlWriter, writer, fc.getEnvelope(), true );
+        Envelope env = fc.getEnvelope();
+        writer.writeStartElement( gmlNs, "boundedBy" );
+        if ( env != null ) {
+            gmlWriter.getGeometryWriter().exportEnvelope( env );
+        } else {
+            writer.writeStartElement( gmlNs, gmlNull );
+            writer.writeCharacters( "missing" );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
 
         for ( Feature f : fc ) {
             writer.writeStartElement( gmlNs, "featureMember" );
@@ -151,21 +171,56 @@ public class FeatureInfoGmlWriter {
         writer.writeEndElement();
     }
 
-    private void exportBoundedBy( GMLStreamWriter gmlWriter, XMLStreamWriter writer, Envelope env,
-                                  boolean indicateMissing )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
-
-        if ( env != null || indicateMissing ) {
-            writer.writeStartElement( gmlNs, "boundedBy" );
-            if ( env != null ) {
-                gmlWriter.getGeometryWriter().exportEnvelope( env );
-            } else {
-                writer.writeStartElement( gmlNs, gmlNull );
-                writer.writeCharacters( "missing" );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
+    private String determineNamespace( FeatureInfoParams params ) {
+        String ns = params.getFeatureType() == null ? null : params.getFeatureType().getName().getNamespaceURI();
+        if ( ns != null && ns.isEmpty() ) {
+            ns = null;
         }
+        return ns;
     }
 
+    @Override
+    public void serialize( FeatureInfoParams params, FeatureInfoContext context )
+                            throws IOException, XMLStreamException {
+
+        XMLStreamWriter xmlWriter = context.getXmlWriter();
+
+        try {
+            // for more than just quick 'hacky' schemaLocation attributes one should use a proper WFS
+            HashMap<String, String> bindings = new HashMap<String, String>();
+            String ns = determineNamespace( params );
+            if ( ns != null ) {
+                bindings.put( ns, params.getSchemaLocation() );
+                if ( !params.getNsBindings().containsValue( ns ) ) {
+                    params.getNsBindings().put( "app", ns );
+                }
+            }
+            if ( !params.getNsBindings().containsKey( "app" ) ) {
+                params.getNsBindings().put( "app", "http://www.deegree.org/app" );
+            }
+            bindings.put( "http://www.opengis.net/wfs", "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" );
+            String format = params.getFormat();
+
+            GMLVersion gmlVersion = GMLVersion.GML_2;
+            if ( format.endsWith( "3.0" ) || format.endsWith( "3.0.1" ) ) {
+                gmlVersion = GMLVersion.GML_30;
+            }
+            if ( format.endsWith( "3.1" ) || format.endsWith( "3.1.1" ) ) {
+                gmlVersion = GMLVersion.GML_31;
+            }
+            if ( format.endsWith( "3.2" ) || format.endsWith( "3.2.1" ) ) {
+                gmlVersion = GMLVersion.GML_32;
+            }
+
+            GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
+            gmlWriter.setOutputCrs( params.getCrs() );
+            gmlWriter.setNamespaceBindings( params.getNsBindings() );
+            gmlWriter.setExportGeometries( params.isWithGeometries() );
+            export( gmlVersion, params.getFeatureCollection(), gmlWriter, ns == null ? params.getSchemaLocation()
+                                                                                    : null, bindings );
+        } catch ( Throwable e ) {
+            LOG.warn( "Error when writing GetFeatureInfo GML response '{}'.", e.getLocalizedMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
+    }
 }

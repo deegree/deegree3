@@ -98,7 +98,7 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.commons.modules.ModuleInfo;
+import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -313,7 +313,6 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-
         HttpResponseBuffer responseBuffer = createHttpResponseBuffer( request, response );
 
         try {
@@ -1052,7 +1051,7 @@ public class OGCFrontController extends HttpServlet {
             }
             for ( ModuleInfo moduleInfo : modulesInfo ) {
                 LOG.info( "- " + moduleInfo.toString() );
-                if ( moduleInfo.getArtifactId().equals( "deegree-services-commons" ) ) {
+                if ( "deegree-services-commons".equals( moduleInfo.getArtifactId() ) ) {
                     version = moduleInfo.getVersion();
                 }
             }
@@ -1084,9 +1083,13 @@ public class OGCFrontController extends HttpServlet {
             LOG.error( "You probably forgot to add a required .jar to the WEB-INF/lib directory." );
             LOG.error( "The resource that could not be found was '{}'.", e.getMessage() );
             LOG.debug( "Stack trace:", e );
+
+            throw new ServletException( e );
         } catch ( Exception e ) {
             LOG.error( "Initialization failed!" );
             LOG.error( "An unexpected error was caught, stack trace:", e );
+
+            throw new ServletException( e );
         } finally {
             CONTEXT.remove();
         }
@@ -1200,54 +1203,54 @@ public class OGCFrontController extends HttpServlet {
     private DeegreeWorkspace getActiveWorkspace()
                             throws IOException, URISyntaxException {
 
+        String wsName = null;
         File wsRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
-        if ( !wsRoot.exists() || !wsRoot.isDirectory() ) {
-            String msg = "Workspace root directory ('" + wsRoot + "') does not exist or does not denote a directory.";
-            LOG.error( msg );
-            throw new IOException( msg );
-        }
+        if ( wsRoot.isDirectory() ) {
+            File activeWsConfigFile = new File( wsRoot, ACTIVE_WS_CONFIG_FILE );
 
-        File activeWsConfigFile = new File( wsRoot, ACTIVE_WS_CONFIG_FILE );
+            Properties props = loadWebappToWsMappings( activeWsConfigFile );
+            wsName = props.getProperty( ctxPath );
 
-        Properties props = loadWebappToWsMappings( activeWsConfigFile );
-        String wsName = props.getProperty( ctxPath );
-
-        File fallbackDir = null;
-        if ( wsName != null ) {
-            LOG.info( "Active workspace determined by webapp-to-workspace mapping file: " + activeWsConfigFile );
-        } else {
-            LOG.debug( "No webapp-to-workspace mappings file. Trying alternative methods." );
-            if ( !ctxPath.isEmpty() ) {
-                String webappName = ctxPath;
-                if ( webappName.startsWith( "/" ) ) {
-                    webappName = webappName.substring( 1 );
-                }
-                if ( !webappName.isEmpty() ) {
-                    File file = new File( wsRoot, webappName );
-                    LOG.debug( "Matching by webapp name ('" + file + "'). Checking for workspace directory '" + file
-                               + "'" );
-                    if ( file.exists() ) {
-                        wsName = webappName;
-                        LOG.info( "Active workspace determined by matching webapp name (" + webappName
-                                  + ") with available workspaces." );
+            if ( wsName != null ) {
+                LOG.info( "Active workspace determined by webapp-to-workspace mapping file: " + activeWsConfigFile );
+            } else {
+                LOG.debug( "No webapp-to-workspace mappings file. Trying alternative methods." );
+                if ( !ctxPath.isEmpty() ) {
+                    String webappName = ctxPath;
+                    if ( webappName.startsWith( "/" ) ) {
+                        webappName = webappName.substring( 1 );
+                    }
+                    if ( !webappName.isEmpty() ) {
+                        File file = new File( wsRoot, webappName );
+                        LOG.debug( "Matching by webapp name ('" + file + "'). Checking for workspace directory '"
+                                   + file + "'" );
+                        if ( file.exists() ) {
+                            wsName = webappName;
+                            LOG.info( "Active workspace determined by matching webapp name (" + webappName
+                                      + ") with available workspaces." );
+                        }
                     }
                 }
             }
+        } else {
+            String msg = "Workspace root directory ('" + wsRoot + "') does not exist or does not denote a directory.";
+            LOG.info( msg );
+        }
 
-            if ( wsName == null ) {
-                wsName = getActiveWorkspaceName();
-                if ( wsName != null && new File( wsRoot, wsName ).exists() ) {
-                    LOG.info( "Active workspace determined by matching workspace name from WEB-INF/workspace_name ("
-                              + wsName + ") with available workspaces." );
+        File fallbackDir = null;
+        if ( wsName == null ) {
+            wsName = getActiveWorkspaceName();
+            if ( wsName != null && new File( wsRoot, wsName ).exists() ) {
+                LOG.info( "Active workspace determined by matching workspace name from WEB-INF/workspace_name ("
+                          + wsName + ") with available workspaces." );
+            } else {
+                LOG.info( "Active workspace in webapp." );
+                fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
+                if ( !fallbackDir.exists() ) {
+                    LOG.debug( "Trying legacy-style workspace directory (WEB-INF/conf)" );
+                    fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
                 } else {
-                    LOG.info( "Active workspace in webapp." );
-                    fallbackDir = new File( resolveFileLocation( "WEB-INF/workspace", getServletContext() ).toURI() );
-                    if ( !fallbackDir.exists() ) {
-                        LOG.debug( "Trying legacy-style workspace directory (WEB-INF/conf)" );
-                        fallbackDir = new File( resolveFileLocation( "WEB-INF/conf", getServletContext() ).toURI() );
-                    } else {
-                        LOG.debug( "Using new-style workspace directory (WEB-INF/workspace)" );
-                    }
+                    LOG.debug( "Using new-style workspace directory (WEB-INF/workspace)" );
                 }
             }
         }
@@ -1487,6 +1490,11 @@ public class OGCFrontController extends HttpServlet {
      */
     private void sendException( OWS ows, OWSException e, HttpResponseBuffer res, Version requestVersion )
                             throws ServletException {
+        String userAgent = null;
+        if ( OGCFrontController.getContext() != null ) {
+            userAgent = OGCFrontController.getContext().getUserAgent();
+        }
+
         if ( ows == null ) {
             Collection<List<OWS>> values = serviceConfiguration.getAll().values();
             if ( values.size() > 0 && !values.iterator().next().isEmpty() ) {
@@ -1522,6 +1530,10 @@ public class OGCFrontController extends HttpServlet {
                 }
                 res.setExceptionSent();
             }
+        }
+
+        if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {
+            res.setContentType( "application/xml" );
         }
     }
 }

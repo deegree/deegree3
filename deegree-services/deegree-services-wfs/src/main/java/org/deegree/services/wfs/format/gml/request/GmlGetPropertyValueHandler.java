@@ -137,6 +137,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         GMLStreamWriter gmlStream = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setProjections( analyzer.getProjections() );
         gmlStream.setOutputCrs( analyzer.getRequestedCRS() );
+        gmlStream.setGeometrySimplifier( options.getGeometrySimplifier() );
         gmlStream.setCoordinateFormatter( options.getFormatter() );
         gmlStream.setGenerateBoundedByForFeatures( options.isGenerateBoundedByForFeatures() );
         Map<String, String> prefixToNs = new HashMap<String, String>(
@@ -146,7 +147,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         GmlXlinkOptions resolveOptions = new GmlXlinkOptions( request.getResolveParams() );
         BufferableXMLStreamWriter bufferedStream = (BufferableXMLStreamWriter) xmlStream;
         WfsXlinkStrategy additionalObjects = new WfsXlinkStrategy( bufferedStream, localReferencesPossible,
-                                                                             xLinkTemplate, resolveOptions );
+                                                                   xLinkTemplate, resolveOptions );
         gmlStream.setReferenceResolveStrategy( additionalObjects );
 
         // retrieve and write result features
@@ -177,13 +178,7 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
                                featureWriter );
         }
 
-        if ( !additionalObjects.getAdditionalRefs().isEmpty() ) {
-            xmlStream.writeStartElement( WFS_200_NS, "additionalValues" );
-            xmlStream.writeStartElement( WFS_200_NS, "SimpleFeatureCollection" );
-            writeAdditionalObjects( gmlStream, additionalObjects, new QName( WFS_200_NS, "member" ) );
-            xmlStream.writeEndElement();
-            xmlStream.writeEndElement();
-        }
+        writeAdditionalObjects( gmlStream, additionalObjects, new QName( WFS_200_NS, "member" ), request.getVersion() );
 
         // close container element
         xmlStream.writeEndElement();
@@ -195,9 +190,9 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer,
-                                    GmlXlinkOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
-                                    int maxResults, TypedObjectNodeXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
+    private void writeValuesStream( GetPropertyValue request, QueryAnalyzer analyzer, GmlXlinkOptions resolveState,
+                                    XMLStreamWriter xmlStream, int startIndex, int maxResults,
+                                    TypedObjectNodeXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
                             UnknownCRSException, TransformationException {
 
@@ -237,9 +232,9 @@ public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
         }
     }
 
-    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer,
-                                    GmlXlinkOptions resolveState, XMLStreamWriter xmlStream, int startIndex,
-                                    int maxResults, TypedObjectNodeXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
+    private void writeValuesCached( GetPropertyValue request, QueryAnalyzer analyzer, GmlXlinkOptions resolveState,
+                                    XMLStreamWriter xmlStream, int startIndex, int maxResults,
+                                    TypedObjectNodeXPathEvaluator evaluator, GMLFeatureWriter featureWriter )
                             throws XMLStreamException, FeatureStoreException, FilterEvaluationException,
                             UnknownCRSException, TransformationException {
 

@@ -27,6 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
+import static org.deegree.console.JsfUtils.getWorkspace;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -56,23 +58,23 @@ public class ServiceConfig extends Config {
 
     public String editMetadata()
                             throws IOException {
-        ResourceManager mgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+        ResourceManager mgr = getWorkspace().getResourceManager( OWSMetadataProviderManager.class );
         Config metadataConfig;
-        if ( workspace.getResource( OWSMetadataProviderProvider.class, id ) != null ) {
-            ResourceMetadata<?> md = workspace.getResourceMetadata( OWSMetadataProviderProvider.class, id );
+        if ( getWorkspace().getResource( OWSMetadataProviderProvider.class, id ) != null ) {
+            ResourceMetadata<?> md = getWorkspace().getResourceMetadata( OWSMetadataProviderProvider.class, id );
             metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
         } else {
             ResourceIdentifier ident = new DefaultResourceIdentifier( OWSMetadataProviderProvider.class, id );
             ResourceLocation loc = new IncorporealResourceLocation( IOUtils.toByteArray( METADATA_EXAMPLE_URL ), ident );
-            workspace.add( loc );
-            ResourceMetadata md = workspace.getResourceMetadata( ident.getProvider(), id );
+            getWorkspace().add( loc );
+            ResourceMetadata md = getWorkspace().getResourceMetadata( ident.getProvider(), id );
             metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
         }
         return metadataConfig.edit();
     }
 
     public String getCapabilitiesUrl() {
-        OWS ows = workspace.getResource( OWSProvider.class, id );
+        OWS ows = getWorkspace().getResource( OWSProvider.class, id );
         String type = ( (OWSProvider) ows.getMetadata().getProvider() ).getImplementationMetadata().getImplementedServiceName()[0];
 
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

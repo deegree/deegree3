@@ -1,12 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2009 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
- and
- - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,108 +31,62 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs UG (haftungsbeschränkt)
- Godesberger Allee 139, 53175 Bonn
- Germany
-
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.JOIN_ROUND;
-import static java.awt.geom.AffineTransform.getTranslateInstance;
-import static java.lang.Math.toRadians;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.commons.utils.math.MathUtils.round;
-
-import java.awt.BasicStroke;
 import java.awt.Font;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Path2D.Double;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.rendering.r2d.strokes.OffsetStroke;
-import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.style.styling.TextStyling;
+import org.deegree.rendering.r2d.Label;
 
 /**
- * Responsible for rendering a single label.
+ * <code>LabelRenderer</code>
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author Florian Bingel
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-class LabelRenderer {
+public interface LabelRenderer {
 
-    private Java2DRenderer renderer;
+    void createLabel( TextStyling styling, String text, Collection<Geometry> geoms );
+    
+    void createLabel( TextStyling styling, String text, Geometry geom );
+    
+    /**
+     * Render a text styling with a string and a geometry.
+     * 
+     * @param styling
+     * @param text
+     * @param geom
+     */
+    Label createLabel( TextStyling styling, Font font, String text, Point p );
+    
+    
+    /**
+     * Render a text styling with a string and a geometry.
+     * 
+     * @param styling
+     * @param text
+     * @param geom
+     */
+    void render( List<Label> pLables );
+    void render( Label label );
 
-    private RendererContext context;
+    void render();
 
-    LabelRenderer( Java2DRenderer renderer ) {
-        this.renderer = renderer;
-        this.context = renderer.rendererContext;
-    }
+    List<Label> getLabels();
 
-    void render( TextStyling styling, Font font, String text, Point p ) {
-        Point2D.Double pt = (Point2D.Double) renderer.worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ),
-                                                                               null );
-        double x = pt.x + context.uomCalculator.considerUOM( styling.displacementX, styling.uom );
-        double y = pt.y - context.uomCalculator.considerUOM( styling.displacementY, styling.uom );
-        renderer.graphics.setFont( font );
-        AffineTransform transform = renderer.graphics.getTransform();
-        renderer.graphics.rotate( toRadians( styling.rotation ), x, y );
-        TextLayout layout;
-        synchronized ( FontRenderContext.class ) {
-            // apparently getting the font render context is not threadsafe (despite having different graphics here)
-            // so do this globally synchronized to fix:
-            // http://tracker.deegree.org/deegree-core/ticket/200
-            FontRenderContext frc = renderer.graphics.getFontRenderContext();
-            layout = new TextLayout( text, font, frc );
-        }
-        double width = layout.getBounds().getWidth();
-        double height = layout.getBounds().getHeight();
-        double px = x - styling.anchorPointX * width;
-        double py = y + styling.anchorPointY * height;
-
-        if ( styling.halo != null ) {
-            context.fillRenderer.applyFill( styling.halo.fill, styling.uom );
-
-            BasicStroke stroke = new BasicStroke( round( 2 * context.uomCalculator.considerUOM( styling.halo.radius,
-                                                                                                styling.uom ) ),
-                                                  CAP_BUTT, JOIN_ROUND );
-            renderer.graphics.setStroke( stroke );
-            renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
-        }
-
-        renderer.graphics.setStroke( new BasicStroke() );
-
-        context.fillRenderer.applyFill( styling.fill, styling.uom );
-        layout.draw( renderer.graphics, (float) px, (float) py );
-
-        renderer.graphics.setTransform( transform );
-    }
-
-    void render( TextStyling styling, Font font, String text, Curve c ) {
-        context.fillRenderer.applyFill( styling.fill, styling.uom );
-        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
-        if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
-            return;
-        }
-        if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
-                                       styling.linePlacement.perpendicularOffsetType );
-        }
-
-        renderer.graphics.setStroke( stroke );
-        Double line = context.geomHelper.fromCurve( c, false );
-
-        renderer.graphics.draw( line );
-    }
 
 }
+
+
+
+
+

@@ -84,8 +84,7 @@ class FeatureInfoManagerBuilder {
             throw new ResourceInitException( "GetFeatureInfo format handler could not be initialized: "
                                              + e.getLocalizedMessage(), e );
         }
-
-        featureInfoManager.finalizeConfiguration();
+        
         return featureInfoManager;
     }
 

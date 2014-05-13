@@ -74,17 +74,17 @@ public class TextStyling implements Styling<TextStyling> {
     /**
      * Default is 0.
      */
-    public double rotation;
+    public double rotation = 0.0;
 
     /**
      * Default is 0.
      */
-    public double displacementX;
+    public double displacementX = 0.0;
 
     /**
      * Default is 0.
      */
-    public double displacementY;
+    public double displacementY = 0.0;
 
     /**
      * Default is 0.5.
@@ -99,13 +99,20 @@ public class TextStyling implements Styling<TextStyling> {
     /**
      * Default is no line placement.
      */
-    public LinePlacement linePlacement;
+    public LinePlacement linePlacement = null;
 
     /**
      * Default is no halo.
      */
-    public Halo halo;
+    public Halo halo = null;
 
+    
+    /**
+     * Default is no auto placement.
+     */
+    public boolean auto = false;
+
+          
     /**
      *
      */
@@ -127,6 +134,7 @@ public class TextStyling implements Styling<TextStyling> {
         copy.linePlacement = linePlacement == null ? null : linePlacement.copy();
         copy.halo = halo == null ? null : halo.copy();
         copy.uom = uom;
+        copy.auto = auto;
         return copy;
     }
 

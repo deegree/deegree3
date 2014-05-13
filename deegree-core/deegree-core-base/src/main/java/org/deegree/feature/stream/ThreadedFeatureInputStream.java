@@ -1,10 +1,12 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2014 by:
+ - IDgis bv -
+ and
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ 
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -19,6 +21,12 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  Contact information:
+ 
+ IDgis bv
+ Boomkamp 16
+ 7461 AX Rijssen
+ The Netherlands
+ http://idgis.nl/
 
  lat/lon GmbH
  Aennchenstr. 19, 53177 Bonn
@@ -36,25 +44,24 @@
 package org.deegree.feature.stream;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureInputStream} that uses a separate thread to keep an internal queue of features filled.
  * 
+ * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
  * 
- * @version $Revision: $, $Date: $
  */
 public class ThreadedFeatureInputStream implements FeatureInputStream {
 
@@ -63,24 +70,26 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
     // TODO where to manage this?
     private static ExecutorService service = Executors.newFixedThreadPool( 10 );
 
-    private final QueueFiller producer;
+    private final Consumer iterator;
 
     /**
-     * Creates a new {@link ThreadedFeatureInputStream} based on the given {@link FeatureInputStream} that uses the
-     * given thread to keep the internal queue of results filled.
+     * Creates a new {@link ThreadedFeatureInputStreamTest} based on the given {@link FeatureInputStream}.
      * 
-     * @param rs
-     * @param maxFill
-     * @param minFill
+     * @param featureInputStream
+     * @param queueSize
      */
-    public ThreadedFeatureInputStream( FeatureInputStream rs, int maxFill, int minFill ) {
-        producer = new QueueFiller( rs, maxFill, minFill );
-        service.execute( producer );
+    public ThreadedFeatureInputStream( final FeatureInputStream featureInputStream, final int queueSize ) {
+        final BlockingQueue<ProducerMessage> producerQueue = new ArrayBlockingQueue<ProducerMessage>( queueSize, true );
+        final BlockingQueue<ConsumerMessage> consumerQueue = new ArrayBlockingQueue<ConsumerMessage>( 1, true );
+
+        iterator = new Consumer( producerQueue, consumerQueue );
+
+        service.execute( new Producer( featureInputStream, producerQueue, consumerQueue ) );
     }
 
     @Override
     public void close() {
-        producer.exit();
+        iterator.close();
     }
 
     @Override
@@ -90,23 +99,7 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
 
     @Override
     public Iterator<Feature> iterator() {
-        return new Iterator<Feature>() {
-
-            @Override
-            public boolean hasNext() {
-                return producer.hasNext();
-            }
-
-            @Override
-            public Feature next() {
-                return producer.next();
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return iterator;
     }
 
     @Override
@@ -120,111 +113,270 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
         return i;
     }
 
-    private class QueueFiller implements Runnable {
+    protected static abstract class ConsumerMessage {
 
-        private final FeatureInputStream rs;
+        boolean isClosing() {
+            return false;
+        }
+    }
 
-        private final Queue<Feature> featureQueue;
+    protected static class ConsumerClosingMessage extends ConsumerMessage {
 
-        private int minFill;
+        @Override
+        boolean isClosing() {
+            return true;
+        }
 
-        private boolean exitRequested;
+        @Override
+        public boolean equals( Object o ) {
+            return o instanceof ConsumerClosingMessage;
+        }
+    }
 
-        private boolean sleeping;
+    protected static abstract class ProducerMessage {
 
-        private boolean finished;
+        boolean isFinished() {
+            return false;
+        }
 
-        private QueueFiller( FeatureInputStream rs, int maxFill, int minFill ) {
-            this.rs = rs;
-            this.featureQueue = new ArrayBlockingQueue<Feature>( maxFill, true );
-            this.minFill = minFill;
+        boolean isFeature() {
+            return false;
+        }
+
+        boolean isException() {
+            return false;
+        }
+
+        Feature getFeature() {
+            throw new IllegalStateException( "Not a ProducerFeatureMessage" );
+        }
+
+        Throwable getException() {
+            throw new IllegalStateException( "Not a ProducerExceptionMessage" );
+        }
+    }
+
+    protected static class ProducerFeatureMessage extends ProducerMessage {
+
+        final Feature feature;
+
+        ProducerFeatureMessage( final Feature feature ) {
+            this.feature = feature;
+        }
+
+        @Override
+        boolean isFeature() {
+            return true;
+        }
+
+        @Override
+        Feature getFeature() {
+            return feature;
+        }        
+
+        @Override
+        public boolean equals( Object obj ) {
+            if ( this == obj )
+                return true;
+            if ( obj == null )
+                return false;
+            if ( getClass() != obj.getClass() )
+                return false;
+            ProducerFeatureMessage other = (ProducerFeatureMessage) obj;
+            if ( feature == null ) {
+                if ( other.feature != null )
+                    return false;
+            } else if ( !feature.equals( other.feature ) )
+                return false;
+            return true;
+        }
+    }
+
+    protected static class ProducerExceptionMessage extends ProducerMessage {
+
+        final Throwable exception;
+
+        ProducerExceptionMessage( final Throwable exception ) {
+            this.exception = exception;
+        }
+
+        @Override
+        boolean isException() {
+            return true;
+        }
+
+        @Override
+        Throwable getException() {
+            return exception;
+        }        
+
+        @Override
+        public boolean equals( Object obj ) {
+            if ( this == obj )
+                return true;
+            if ( obj == null )
+                return false;
+            if ( getClass() != obj.getClass() )
+                return false;
+            ProducerExceptionMessage other = (ProducerExceptionMessage) obj;
+            if ( exception == null ) {
+                if ( other.exception != null )
+                    return false;
+            } else if ( !exception.equals( other.exception ) )
+                return false;
+            return true;
+        }
+    }
+
+    protected static class ProducerFinishedMessage extends ProducerMessage {
+
+        @Override
+        boolean isFinished() {
+            return true;
+        }
+
+        @Override
+        public boolean equals( Object o ) {
+            return o instanceof ProducerFinishedMessage;
+        }
+    }
+
+    protected static class Consumer implements Iterator<Feature> {
+        ProducerMessage lastMessage;
+
+        final BlockingQueue<ProducerMessage> producerQueue;
+
+        final BlockingQueue<ConsumerMessage> consumerQueue;
+
+        public Consumer( final BlockingQueue<ProducerMessage> producerQueue,
+                                 final BlockingQueue<ConsumerMessage> consumerQueue ) {
+
+            this.producerQueue = producerQueue;
+            this.consumerQueue = consumerQueue;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if ( lastMessage == null ) {
+                try {
+                    LOG.debug( "Initial message consumed" );
+
+                    lastMessage = producerQueue.take();
+                } catch ( InterruptedException e ) {
+                    throw new RuntimeException( e );
+                }
+            }
+
+            return !lastMessage.isFinished();
+        }
+
+        @Override
+        public Feature next() {
+            try {
+                if ( lastMessage == null ) {
+                    LOG.debug( "Initial message consumed" );
+
+                    lastMessage = producerQueue.take();
+                }
+
+                ProducerMessage currentMessage = lastMessage;
+                lastMessage = producerQueue.take();
+
+                if ( currentMessage.isException() ) {
+                    LOG.debug( "Exception consumed" );
+
+                    throw new RuntimeException( currentMessage.getException() );
+                }
+
+                if ( !currentMessage.isFeature() ) {
+                    throw new IllegalStateException( "FeatureProducerMessage expected" );
+                }
+
+                LOG.debug( "Feature consumed" );
+
+                return currentMessage.getFeature();
+            } catch ( InterruptedException e ) {
+                throw new RuntimeException( e );
+            }
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        void close() {
+            if ( hasNext() ) {
+
+                try {
+                    LOG.debug( "Requesting producer to finish" );
+
+                    consumerQueue.put( new ConsumerClosingMessage() );
+                } catch ( InterruptedException e ) {
+                    throw new RuntimeException( e );
+                }
+
+                while ( hasNext() ) {
+                    next();
+                }
+
+                LOG.debug( "Producer finished" );
+            } else {
+                LOG.debug( "Producer already finished" );
+            }
+        }
+    }
+
+    protected static class Producer implements Runnable {
+        private final FeatureInputStream featureInputStream;
+
+        private final BlockingQueue<ProducerMessage> producerQueue;
+
+        private final BlockingQueue<ConsumerMessage> consumerQueue;
+
+        protected Producer( FeatureInputStream featureInputStream,
+                                    BlockingQueue<ProducerMessage> producerQueue,
+                                    BlockingQueue<ConsumerMessage> consumerQueue ) {
+            this.featureInputStream = featureInputStream;
+            this.producerQueue = producerQueue;
+            this.consumerQueue = consumerQueue;
         }
 
         @Override
         public void run() {
-            LOG.debug( "Producer thread starting" );
             try {
-                Iterator<Feature> iter = rs.iterator();
-                try {
-                    Feature f = null;
-                    while ( iter.hasNext() && !exitRequested ) {
-                        if ( f == null ) {
-                            f = iter.next();
-                        }
-                        synchronized ( this ) {
-                            if ( !featureQueue.offer( f ) ) {
-                                // wait until we get notified that queue needs to be filled up again
+                LOG.debug( "Producer started" );
 
-                                // LOG.debug( "Producer thread going to sleep: fill=" + featureQueue.size() );
-                                sleeping = true;
-                                wait();
-                                sleeping = false;
-                                // LOG.debug( "Producer thread waking up: fill=" + featureQueue.size() );
-                            } else {
-                                f = null;
-                                // Wake reading thread
-                                notify();
-                            }
-                        }
+                for ( Feature f : featureInputStream ) {
+                    ConsumerMessage consumerMessage = consumerQueue.poll();
+                    if ( consumerMessage != null && consumerMessage.isClosing() ) {
+                        LOG.debug( "Producer halted" );
+
+                        break;
                     }
+
+                    LOG.debug( "Feature produced" );
+                    producerQueue.put( new ProducerFeatureMessage( f ) );
+                }
+            } catch ( InterruptedException e ) {
+                throw new RuntimeException( e );
+            } catch ( Throwable t ) {
+                try {
+                    LOG.debug( "Exception produced" );
+                    producerQueue.put( new ProducerExceptionMessage( t ) );
                 } catch ( InterruptedException e ) {
-                    LOG.debug( "Got interrupted." );
+                    throw new RuntimeException( e );
                 }
             } finally {
-                finished = true;
-                rs.close();
-                
-                // Consumer may still be waiting for more input
-                synchronized ( this ) {
-                    notify();
-                }
-                
-                LOG.debug( "Producer thread exiting" );
-            }
-        }
+                featureInputStream.close();
 
-        private boolean hasNext() {
-            int fill = featureQueue.size();
-            if ( sleeping && fill < minFill ) {
-                // LOG.debug( "Queue below min fill. Waking producer thread." );
-                synchronized ( this ) {
-                    notify();
+                try {
+                    producerQueue.put( new ProducerFinishedMessage() );
+                } catch ( InterruptedException e ) {
+                    throw new RuntimeException( e );
                 }
-            }
-            if ( fill > 0 ) {
-                return true;
-            }
-            synchronized (this) {
-                while ( true ) {
-                    // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
-                    if ( finished && featureQueue.isEmpty() ) {
-                        return false;
-                    }
-                    if ( !featureQueue.isEmpty() ) {
-                        return true;
-                    }
-                    try {
-                        wait(1000);
-                    } catch(InterruptedException ex) {
-                        // Ignore
-                    }
-                }
-            }
-        }
 
-        private Feature next() {
-            if ( !hasNext() ) {
-                throw new NoSuchElementException();
-            }
-            return featureQueue.poll();
-        }
-
-        private void exit() {
-            exitRequested = true;
-            if ( sleeping ) {
-                synchronized ( this ) {
-                    notify();
-                }
+                LOG.debug( "Producer finished" );
             }
         }
     }
@@ -235,5 +387,4 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
     public static void shutdown() {
         service.shutdown();
     }
-
 }

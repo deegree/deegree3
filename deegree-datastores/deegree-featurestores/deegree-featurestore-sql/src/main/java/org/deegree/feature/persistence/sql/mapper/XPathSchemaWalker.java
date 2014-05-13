@@ -36,7 +36,11 @@
 package org.deegree.feature.persistence.sql.mapper;
 
 import static java.lang.Boolean.TRUE;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.List;
@@ -114,9 +118,9 @@ public class XPathSchemaWalker {
                     }
                 } else {
                     throw new IllegalArgumentException(
-                                                        "Unable to match XPath '"
-                                                                                + propName.getAsText()
-                                                                                + "'to application schema. Only child element steps are supported." );
+                                                       "Unable to match XPath '"
+                                                                               + propName.getAsText()
+                                                                               + "'to application schema. Only child element steps are supported." );
                 }
             } else if ( o instanceof AllNodeStep ) {
                 // self()
@@ -169,16 +173,16 @@ public class XPathSchemaWalker {
                     XSTypeDefinition typeDef = currentEl.first.getTypeDefinition();
                     if ( !( typeDef instanceof XSComplexTypeDefinition ) ) {
                         throw new IllegalArgumentException(
-                                                            "Unable to match XPath '"
-                                                                                    + propName
-                                                                                    + "' to application schema. Referenced attribute does not exist." );
+                                                           "Unable to match XPath '"
+                                                                                   + propName
+                                                                                   + "' to application schema. Referenced attribute does not exist." );
                     }
                     if ( new QName( XSINS, "nil" ).equals( qName ) ) {
                         if ( !currentEl.first.getNillable() ) {
                             throw new IllegalArgumentException(
-                                                                "Unable to match XPath '"
-                                                                                        + propName
-                                                                                        + "' to application schema. Referenced element is not nillable." );
+                                                               "Unable to match XPath '"
+                                                                                       + propName
+                                                                                       + "' to application schema. Referenced element is not nillable." );
                         }
                         return new Pair<PrimitiveType, Boolean>( new PrimitiveType( BOOLEAN ), TRUE );
                     }
@@ -189,20 +193,20 @@ public class XPathSchemaWalker {
                         QName attrName = getQName( attrUse.getAttrDeclaration() );
                         if ( qName.equals( attrName ) ) {
                             return new Pair<PrimitiveType, Boolean>(
-                                                                     new PrimitiveType(
-                                                                                        attrUse.getAttrDeclaration().getTypeDefinition() ),
-                                                                     !attrUse.getRequired() );
+                                                    new PrimitiveType(
+                                                                      attrUse.getAttrDeclaration().getTypeDefinition() ),
+                                                                      !attrUse.getRequired() );
                         }
                     }
                     throw new IllegalArgumentException(
-                                                        "Unable to match XPath '"
-                                                                                + propName
-                                                                                + "' to application schema. Referenced attribute does not exist." );
+                                                       "Unable to match XPath '"
+                                                                               + propName
+                                                                               + "' to application schema. Referenced attribute does not exist." );
                 } else {
                     throw new IllegalArgumentException(
-                                                        "Unable to match XPath '"
-                                                                                + propName
-                                                                                + "'to application schema. Only child and attribute axis steps are supported." );
+                                                       "Unable to match XPath '"
+                                                                               + propName
+                                                                               + "'to application schema. Only child and attribute axis steps are supported." );
                 }
             } else if ( o instanceof AllNodeStep ) {
                 // self()
@@ -216,14 +220,27 @@ public class XPathSchemaWalker {
 
         XSTypeDefinition typeDef = currentEl.first.getTypeDefinition();
         if ( typeDef instanceof XSComplexTypeDefinition ) {
-            XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) typeDef;
-            if ( complexType.getSimpleType() == null ) {
-                throw new IllegalArgumentException( "XPath '" + propName
-                                                    + "' refers to a complex type with complex content." );
-            }
-            return new Pair<PrimitiveType, Boolean>( new PrimitiveType( complexType.getSimpleType() ), currentEl.second );
+            PrimitiveType pt = getPrimitiveInterpretation( propName, (XSComplexTypeDefinition) typeDef );
+            return new Pair<PrimitiveType, Boolean>( pt, currentEl.second );
         }
-        return new Pair<PrimitiveType, Boolean>( new PrimitiveType( (XSSimpleTypeDefinition) typeDef ), currentEl.second  );
+        return new Pair<PrimitiveType, Boolean>( new PrimitiveType( (XSSimpleTypeDefinition) typeDef ),
+                                currentEl.second );
+    }
+
+    private PrimitiveType getPrimitiveInterpretation( ValueReference propName, XSComplexTypeDefinition complexType ) {
+        short contentType = complexType.getContentType();
+        if ( contentType == CONTENTTYPE_SIMPLE ) {
+            return new PrimitiveType( complexType.getSimpleType() );
+        }
+        if ( contentType == CONTENTTYPE_MIXED ) {
+            return new PrimitiveType( STRING );
+        }
+        if ( contentType == CONTENTTYPE_ELEMENT ) {
+            String msg = "XPath '" + propName + "' refers to a complex type with complex content.";
+            throw new IllegalArgumentException( msg );
+        }
+        String msg = "XPath '" + propName + "' refers to an empty element type.";
+        throw new IllegalArgumentException( msg );
     }
 
     private QName getQName( NameStep step ) {
@@ -282,9 +299,9 @@ public class XPathSchemaWalker {
                 XSParticle o = (XSParticle) ol.item( i );
                 boolean voidable = o.getMinOccurs() == 0 || o.getMinOccurs() < num;
                 Pair<XSElementDeclaration, Boolean> elDecl = getTargetElementTerm( new Pair<XSTerm, Boolean>(
-                                                                                                              o.getTerm(),
-                                                                                                              voidable ),
-                                                                                   elName, num );
+                                        o.getTerm(),
+                                        voidable ),
+                                        elName, num );
                 if ( elDecl != null ) {
                     return elDecl;
                 }

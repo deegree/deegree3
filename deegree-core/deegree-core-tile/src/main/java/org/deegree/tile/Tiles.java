@@ -117,6 +117,7 @@ public class Tiles {
         Envelope env = matrix.getSpatialMetadata().getEnvelope();
         double minx = width * x + env.getMin().get0();
         double miny = env.getMax().get1() - height * y;
-        return GEOMETRY_FACTORY.createEnvelope( minx, miny - height, minx + width, miny, env.getCoordinateSystem() );
+        return GEOMETRY_FACTORY.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
     }
+
 }

@@ -38,6 +38,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle.sdo;
 
+import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,10 +99,9 @@ public class SDOGeometryConverter {
         GEOMETRY, POINT, CURVE, POLYGON
     }
 
-    private class GeomHolder {
+    protected static class GeomHolder {
         public final int gtype;
 
-        @SuppressWarnings("unused")
         public final int srid;
 
         public final int[] elem_info;
@@ -210,7 +211,7 @@ public class SDOGeometryConverter {
         }
     }
 
-    private class Triplet {
+    protected static class Triplet {
         public int a_off;
 
         public int b_typ;
@@ -882,7 +883,7 @@ public class SDOGeometryConverter {
         return SDOGTypeTT.POLYGON;
     }
 
-    private int buildPrimitive( List<Triplet> info, List<Point> pnts, GeometricPrimitive geom ) {
+    protected int buildPrimitive( List<Triplet> info, List<Point> pnts, GeometricPrimitive geom ) {
         PrimitiveType typ = geom.getPrimitiveType();
         int gtyp;
 
@@ -942,7 +943,7 @@ public class SDOGeometryConverter {
                 throw new InvalidParameterValueException();
             }
 
-            List<CurveSegment> eseg = pp.getExteriorRing().getCurveSegments();
+            List<CurveSegment> eseg = forceOrientation( pp.getExteriorRing(), true ).getCurveSegments();
             // handle exterior
             if ( isSimple ) {
                 buildCurveSegmentSimple( info, pnts, eseg.get( 0 ), true );
@@ -955,7 +956,7 @@ public class SDOGeometryConverter {
 
             for ( Ring rint : pp.getInteriorRings() ) {
                 // handle interior
-                List<CurveSegment> iseg = rint.getCurveSegments();
+                List<CurveSegment> iseg = forceOrientation( rint, false ).getCurveSegments();
 
                 if ( isSimple ) {
                     buildCurveSegmentSimple( info, pnts, iseg.get( 0 ), false );

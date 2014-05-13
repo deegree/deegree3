@@ -40,6 +40,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.deegree.client.core.utils.ActionParams.getParam1;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.console.JsfUtils.indicateException;
 import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 import java.io.File;
@@ -63,7 +64,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.commons.modules.ModuleInfo;
+import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;
@@ -75,10 +76,9 @@ import org.slf4j.LoggerFactory;
 /**
  * JSF Bean for controlling various global aspects of the {@link DeegreeWorkspace}.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 @ManagedBean(name = "workspace")
 @ApplicationScoped
@@ -92,12 +92,8 @@ public class WorkspaceBean implements Serializable {
 
     public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
 
-    // private static final String WS_DOWNLOAD_BASE_URL = "http://download.deegree.org/deegree3/workspaces/workspaces-";
-
-    private static final String[] WS_DOWNLOAD_URLS = { "http://download.occamlabs.de/workspaces/occamlabs-workspaces" };
-
     // only used when no build (Maven) module version information is available
-    private static final String DEFAULT_VERSION = "3.2.2";
+    private static final String DEFAULT_VERSION = "3.4-pre7";
 
     private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
                                              "deegree-workspace-utah", "deegree-workspace-wps" };
@@ -166,14 +162,6 @@ public class WorkspaceBean implements Serializable {
         return WS_UPLOAD_VIEW;
     }
 
-    // public static String getWsDownloadBaseUrl() {
-    // return WS_DOWNLOAD_BASE_URL;
-    // }
-
-    public static String[] getWsDownloadUrls() {
-        return WS_DOWNLOAD_URLS;
-    }
-
     public HashMap<String, String> getWorkspaceLocations() {
         return workspaceLocations;
     }
@@ -201,18 +189,16 @@ public class WorkspaceBean implements Serializable {
         return list;
     }
 
-    public void startWorkspace()
-                            throws Exception {
-
+    public void startWorkspace() {
         String wsName = (String) getParam1();
         try {
             OGCFrontController fc = OGCFrontController.getInstance();
             fc.setActiveWorkspaceName( wsName );
             fc.reload();
-        } catch ( Exception e ) {
-            e.printStackTrace();
+            lastMessage = "Workspace has been started.";
+        } catch ( Throwable t ) {
+            indicateException( "Workspace startup", t );
         }
-        lastMessage = "Workspace has been started.";
     }
 
     public void deleteWorkspace()

@@ -78,6 +78,9 @@ public class CachingTileMatrix implements TileDataLevel {
     @Override
     public Tile getTile( long x, long y ) {
         Tile tile = tileMatrix.getTile( x, y );
+        if (tile == null) {
+            return null;
+        }
         String key = identifier + "_" + x + "_" + y;
         return new CachedTile( tile, cache, key );
     }

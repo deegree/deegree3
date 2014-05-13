@@ -154,6 +154,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
         XMLStreamWriter xmlStream = getXMLResponseWriter( response, contentType, schemaLocation );
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
         gmlStream.setOutputCrs( format.getMaster().getDefaultQueryCrs() );
+        gmlStream.setGeometrySimplifier( options.getGeometrySimplifier() );
         if ( !( xmlStream instanceof BufferableXMLStreamWriter ) ) {
             xmlStream = new BufferableXMLStreamWriter( xmlStream, getObjectXlinkTemplate( version, gmlVersion ) );
         }

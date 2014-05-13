@@ -120,9 +120,7 @@ public class CompoundCRS extends CRS implements ICompoundCRS {
     @Override
     public IAxis[] getAxis() {
         IAxis[] result = new IAxis[axis.length];
-        for ( int i = 0; i < axis.length; ++i ) {
-            result[i] = axis[i];
-        }
+        System.arraycopy( axis, 0, result, 0, axis.length );
         return result;
     }
 
@@ -146,8 +144,8 @@ public class CompoundCRS extends CRS implements ICompoundCRS {
         if ( !result )
             return false;
         CompoundCRS c = (CompoundCRS) other;
-        return getUnderlyingCRS().equalsWithFlippedAxis( c.getUnderlyingCRS() ) && getHeightAxis().equals( c.getHeightAxis() )
-               && getHeightUnits().equals( c.getHeightUnits() );
+        return getUnderlyingCRS().equalsWithFlippedAxis( c.getUnderlyingCRS() )
+               && getHeightAxis().equals( c.getHeightAxis() ) && getHeightUnits().equals( c.getHeightUnits() );
     }
 
 }
