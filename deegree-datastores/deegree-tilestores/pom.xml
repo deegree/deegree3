@@ -29,7 +29,7 @@
     <module>deegree-tilestore-commons</module>
     <module>deegree-tilestore-filesystem</module>
     <module>deegree-tilestore-geotiff</module>
-    <module>deegree-tilestore-merge</module>
+    <module>deegree-tilestore-overlay</module>
     <module>deegree-tilestore-remotewms</module>
     <module>deegree-tilestore-remotewmts</module>
   </modules>

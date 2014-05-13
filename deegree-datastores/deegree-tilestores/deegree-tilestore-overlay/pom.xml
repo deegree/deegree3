@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-tilestore-merge</artifactId>
-  <name>deegree-tilestore-merge</name>
+  <artifactId>deegree-tilestore-overlay</artifactId>
+  <name>deegree-tilestore-overlay</name>
   <packaging>jar</packaging>
-  <description>Tile store implementation merges different other tile stores into one</description>
+  <description>Tile store implementation that creates an overlay from tile stores</description>
 
   <properties>
     <deegree.module.status>ok</deegree.module.status>
