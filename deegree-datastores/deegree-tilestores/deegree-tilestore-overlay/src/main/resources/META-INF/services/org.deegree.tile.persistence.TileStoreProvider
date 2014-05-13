@@ -1,1 +1,1 @@
-org.deegree.tile.persistence.merge.MergingTileStoreProvider
+org.deegree.tile.persistence.overlay.OverlayTileStoreProvider

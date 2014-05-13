@@ -173,7 +173,7 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-tilestore-merge</artifactId>
+      <artifactId>deegree-tilestore-overlay</artifactId>
       <version>${project.version}</version>
     </dependency>    
     <dependency>
