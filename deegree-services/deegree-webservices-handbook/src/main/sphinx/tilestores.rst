@@ -254,3 +254,47 @@ Let's have a look at an example:
 Please note that you need a locally configured tile matrix set that corresponds exactly to the tile matrix set of the remote WMTS. They need not have the same identifier(s) (just configure the TileMatrixSetId option if they differ), but the structure (coordinate system, tile size, number of tiles per matrix etc.) needs to be identical.
 
 Additionally you can specify default and override values for request parameters within the request params block. Just add ``Parameter`` tags as described in the :ref:`anchor-configuration-layer-request-options` layer chapter. The replacing/defaulting currently only works when you configure a WMTS on top of this tile store. Please note that the ``scope`` attribute allows ``GetTile`` and ``GetFeatureInfo``, as ``GetMap`` is not supported by WMTS services.
+
+------------------
+Overlay tile store
+------------------
+
+The overlay tile store creates an on-the-fly overlay from two or more source tile stores. If a tile is requested from an overlay tile store, the source tile stores are queried for the tile at this position. These source tiles are then put on top of each other to create the overlay tile. Empty tiles or transparent tiles allow to see what's below. The following illustration shows two common overlaying scenarios.
+
+.. figure:: images/tile-overlay.png
+   :figwidth: 80%
+   :width: 80%
+   :target: _images/tile-overlay.png
+
+.. note::
+   Source tile stores to an overlay tile store must use the same tile matrix.
+
+^^^^^^^^^^^^^^^^^^^^^
+Configuration example
+^^^^^^^^^^^^^^^^^^^^^
+
+Currently, the only configuration element is ``TileStoreId``. A valid configuration example looks like this:
+
+.. topic:: Overlay tile store config (example)
+
+   .. literalinclude:: xml/overlay_tilestore_minimal.xml
+      :language: xml
+
+This configuration sets up a new tile store that's based tile stores ``tilestore1`` and ``tilestore2``:
+
+* Tiles are overlayed in order: The tile from ``tilestore1`` is used as the base image. The corresponding tile from ``tilestore2`` is drawn on top of that.
+* The output format of the overlay tile store is currently fixed to JPEG
+
+^^^^^^^^^^^^^^^^^^^^^
+Configuration options
+^^^^^^^^^^^^^^^^^^^^^
+
+The configuration format for the overlay tile store is defined by schema file http://schemas.deegree.org/datasource/tile/overlay/3.4.0/overlay.xsd. The following table lists all available configuration options. When specifiying them, their order must be respected.
+
+.. table:: Options for ``OverlayTileStore`` configuration files
+
++-----------------------------+-------------+---------+--------------------------------------------------------+
+| Option                      | Cardinality | Value   | Description                                            |
++=============================+=============+=========+========================================================+
+| TileStoreId                 | 2..n        | String  | Identifiers of input tile stores, drawn in given order |
++-----------------------------+-------------+---------+--------------------------------------------------------+
