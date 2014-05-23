@@ -89,6 +89,8 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
     private static final Logger LOG = LoggerFactory.getLogger( GmlDescribeFeatureTypeHandler.class );
 
     private static final String APPSCHEMAS = "appschemas";
+    
+    private static final String OGC_SCHEMA_HOST = "http://schemas.opengis.net";
 
     // URL of workspace appschema directory
     private String wsAppSchemaBaseURL;
@@ -113,6 +115,8 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         URL baseUrl = DescribeFeatureType.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET" );
         if ( baseUrl != null ) {
             this.ogcSchemaJarBaseURL = baseUrl.toString();
+            LOG.debug( "GmlDescribeFeatureTypeHandler OGC Schema Jar Base URL: '" + this.ogcSchemaJarBaseURL + "'" );
+            
         }
     }
 
@@ -290,13 +294,37 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                     return options.getAppSchemaBaseURL() + "/" + relativePath;
                 }
                 if ( uri.startsWith( ogcSchemaJarBaseURL ) ) {
-                    return "http://schemas.opengis.net" + uri.substring( ogcSchemaJarBaseURL.length() );
+                    return translateOGCSchemaLocation( uri );
                 }
                 return uri;
             }
         } );
     }
 
+    /**
+     * Helper method to translate the internal URI given into a remote OGC Schema location. 
+     * This method ensures there's a starting "/" in the path.
+     * @param uri The URI String to translate
+     * @return The "remote" OGC Schema location.
+     */
+    private String translateOGCSchemaLocation(String uri){
+        
+        StringBuilder ogcSchemaLocation = new StringBuilder(OGC_SCHEMA_HOST);
+        String ogcSchemaPath = uri.substring( ogcSchemaJarBaseURL.length() );
+        if(!ogcSchemaPath.startsWith( "/" ))
+        {
+            ogcSchemaLocation.append("/");
+            LOG.debug( "OGC Schema path from internal Jar did not include starting '/'. Path: '" + ogcSchemaPath + "'. Prefixed with '/' to complete URL...." );
+        }
+        ogcSchemaLocation.append( ogcSchemaPath );
+
+        LOG.debug( "Translated OGC Schema Jar URL to schemaLocation: '" + ogcSchemaLocation + "'" );
+        
+        return ogcSchemaLocation.toString();
+        // Old behaviour
+        // return "http://schemas.opengis.net" + uri.substring( ogcSchemaJarBaseURL.length() );
+    }
+    
     private void writeWFSSchema( XMLStreamWriter writer, Version version, GMLVersion gmlVersion )
                             throws XMLStreamException {
 
