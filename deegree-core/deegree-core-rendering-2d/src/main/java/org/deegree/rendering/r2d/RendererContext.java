@@ -82,7 +82,7 @@ class RendererContext {
         this.graphics = graphics;
         if ( bbox != null ) {
             geomHelper = new GeometryHelper( bbox, width, worldToScreen );
-            clipper = new GeometryClipper( geomHelper, bbox, width );
+            clipper = new GeometryClipper( bbox, width );
         }
         uomCalculator = new UomCalculator( pixelSize, res );
         fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );

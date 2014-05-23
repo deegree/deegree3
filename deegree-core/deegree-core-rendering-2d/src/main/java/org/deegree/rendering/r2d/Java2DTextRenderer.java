@@ -94,7 +94,7 @@ public class Java2DTextRenderer implements TextRenderer {
     }
 
     @Override
-    public void render( TextStyling styling, String text, Geometry geom ) {
+    public void render( final TextStyling styling, final String text, final Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
             return;
@@ -103,12 +103,9 @@ public class Java2DTextRenderer implements TextRenderer {
             LOG.debug( "Trying to render null or zero length text." );
             return;
         }
-
-        geom = renderer.rendererContext.clipper.clipGeometry( geom );
-
-        Font font = convertFont( styling );
-
-        handleGeometryTypes( styling, text, font, geom );
+        final Geometry clippedGeometry = renderer.transformToWorldCrsAndClip( geom );
+        final Font font = convertFont( styling );
+        handleGeometryTypes( styling, text, font, clippedGeometry );
     }
 
     private void handleGeometryTypes( TextStyling styling, String text, Font font, Geometry geom ) {
