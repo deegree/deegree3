@@ -205,7 +205,7 @@ public class Java2DRenderer implements Renderer {
             clippedGeometry = envelopeToPolygon( (Envelope) clippedGeometry );
         }
         if ( clippedGeometry instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) geom );
+            rendererContext.polygonRenderer.render( styling, (Surface) clippedGeometry );
         }
         if ( clippedGeometry instanceof MultiGeometry<?> ) {
             for ( final Geometry g : (MultiGeometry<?>) clippedGeometry ) {
