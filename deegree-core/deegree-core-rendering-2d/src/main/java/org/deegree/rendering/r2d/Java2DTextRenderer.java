@@ -115,9 +115,12 @@ public class Java2DTextRenderer implements TextRenderer {
             LOG.debug( "Trying to render null or zero length text." );
             return;
         }
-        final Geometry clippedGeometry = renderer.transformToWorldCrsAndClip( geom );
+        final Geometry renderGeometry = renderer.transformToWorldCrsAndClip( geom );
+        if ( renderGeometry == null ) {
+            return;
+        }
         final Font font = convertFont( styling );
-        handleGeometryTypes( styling, text, font, clippedGeometry );
+        handleGeometryTypes( styling, text, font, renderGeometry );
     }
 
     private void handleGeometryTypes( TextStyling styling, String text, Font font, Geometry geom ) {
