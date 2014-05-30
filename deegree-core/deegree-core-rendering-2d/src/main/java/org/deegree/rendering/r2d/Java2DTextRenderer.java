@@ -104,6 +104,9 @@ public class Java2DTextRenderer implements TextRenderer {
             return;
         }
         final Geometry clippedGeometry = renderer.transformToWorldCrsAndClip( geom );
+        if ( clippedGeometry == null ) {
+            return;
+        }
         final Font font = convertFont( styling );
         handleGeometryTypes( styling, text, font, clippedGeometry );
     }

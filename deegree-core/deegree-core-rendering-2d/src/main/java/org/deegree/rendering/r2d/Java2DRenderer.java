@@ -149,14 +149,17 @@ public class Java2DRenderer implements Renderer {
             rendererContext.pointRenderer.render( styling, pointInWorldCrs.get0(), pointInWorldCrs.get1() );
             return;
         }
-        final Geometry clippedGeometry = transformToWorldCrsAndClip( geom );
+        final Geometry renderGeometry = transformToWorldCrsAndClip( geom );
+        if ( renderGeometry == null ) {
+            return;
+        }
         // TODO properly convert'em
-        if ( clippedGeometry instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) clippedGeometry );
-        } else if ( clippedGeometry instanceof Curve ) {
-            rendererContext.curveRenderer.render( styling, (Curve) clippedGeometry );
-        } else if ( clippedGeometry instanceof MultiGeometry<?> ) {
-            final MultiGeometry<?> mc = (MultiGeometry<?>) clippedGeometry;
+        if ( renderGeometry instanceof Surface ) {
+            rendererContext.polygonRenderer.render( styling, (Surface) renderGeometry );
+        } else if ( renderGeometry instanceof Curve ) {
+            rendererContext.curveRenderer.render( styling, (Curve) renderGeometry );
+        } else if ( renderGeometry instanceof MultiGeometry<?> ) {
+            final MultiGeometry<?> mc = (MultiGeometry<?>) renderGeometry;
             for ( final Geometry g : mc ) {
                 render( styling, g );
             }
@@ -173,15 +176,18 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
             return;
         }
-        final Geometry clippedGeometry = transformToWorldCrsAndClip( geom );
-        if ( clippedGeometry instanceof Curve ) {
-            final Double line = rendererContext.geomHelper.fromCurve( (Curve) clippedGeometry, false );
+        final Geometry renderGeometry = transformToWorldCrsAndClip( geom );
+        if ( renderGeometry == null ) {
+            return;
+        }
+        if ( renderGeometry instanceof Curve ) {
+            final Double line = rendererContext.geomHelper.fromCurve( (Curve) renderGeometry, false );
             rendererContext.strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
                                                         styling.perpendicularOffsetType );
-        } else if ( clippedGeometry instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) clippedGeometry );
-        } else if ( clippedGeometry instanceof MultiGeometry<?> ) {
-            final MultiGeometry<?> mc = (MultiGeometry<?>) clippedGeometry;
+        } else if ( renderGeometry instanceof Surface ) {
+            rendererContext.polygonRenderer.render( styling, (Surface) renderGeometry );
+        } else if ( renderGeometry instanceof MultiGeometry<?> ) {
+            final MultiGeometry<?> mc = (MultiGeometry<?>) renderGeometry;
             for ( final Geometry g : mc ) {
                 render( styling, g );
             }
@@ -200,15 +206,18 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
         }
-        Geometry clippedGeometry = transformToWorldCrsAndClip( geom );
-        if ( clippedGeometry instanceof Envelope ) {
-            clippedGeometry = envelopeToPolygon( (Envelope) clippedGeometry );
+        Geometry renderGeometry = transformToWorldCrsAndClip( geom );
+        if ( renderGeometry == null ) {
+            return;
         }
-        if ( clippedGeometry instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) clippedGeometry );
+        if ( renderGeometry instanceof Envelope ) {
+            renderGeometry = envelopeToPolygon( (Envelope) renderGeometry );
         }
-        if ( clippedGeometry instanceof MultiGeometry<?> ) {
-            for ( final Geometry g : (MultiGeometry<?>) clippedGeometry ) {
+        if ( renderGeometry instanceof Surface ) {
+            rendererContext.polygonRenderer.render( styling, (Surface) renderGeometry );
+        }
+        if ( renderGeometry instanceof MultiGeometry<?> ) {
+            for ( final Geometry g : (MultiGeometry<?>) renderGeometry ) {
                 render( styling, g );
             }
         }
