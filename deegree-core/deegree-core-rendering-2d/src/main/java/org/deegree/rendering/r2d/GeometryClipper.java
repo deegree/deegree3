@@ -41,6 +41,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
+import static org.deegree.rendering.r2d.OrientationFixer.fixOrientation;
+
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
@@ -51,7 +53,7 @@ import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 
 /**
- * Responsible for clipping geometries to a rendering viewport.
+ * Responsible for clipping geometries to the area of the viewport.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
@@ -60,16 +62,13 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
  */
 class GeometryClipper {
 
-    private GeometryHelper helper;
+    private final Polygon clippingArea;
 
-    private Polygon clippingArea;
-
-    GeometryClipper( GeometryHelper helper, Envelope bbox, int width ) {
-        this.helper = helper;
-        this.clippingArea = calculateClippingArea( bbox, width );
+    GeometryClipper( final Envelope viewPort, final int width ) {
+        this.clippingArea = calculateClippingArea( viewPort, width );
     }
 
-    private Polygon calculateClippingArea( Envelope bbox, int width ) {
+    private Polygon calculateClippingArea( final Envelope bbox, final int width ) {
         double resolution = bbox.getSpan0() / width;
         double delta = resolution * 100;
         double[] minCords = new double[] { bbox.getMin().get0() - delta, bbox.getMin().get1() - delta };
@@ -85,10 +84,10 @@ class GeometryClipper {
      * completely.
      * 
      * @param geom
-     *            the geometry to clip, must not be <code>null</code>
+     *            the geometry to clip, must not be <code>null</code> and in the same CRS as the clipping area
      * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
      */
-    Geometry clipGeometry( Geometry geom ) {
+    Geometry clipGeometry( final Geometry geom ) {
         if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {
                 Geometry clippedGeometry = clippingArea.getIntersection( geom );
@@ -102,7 +101,7 @@ class GeometryClipper {
                 if ( jtsOrig == jtsClipped ) {
                     return geom;
                 }
-                geom = OrientationFixer.fixOrientation( clippedGeometry, clippedGeometry.getCoordinateSystem() );
+                return fixOrientation( clippedGeometry, clippedGeometry.getCoordinateSystem() );
             } catch ( UnsupportedOperationException e ) {
                 // use original geometry if intersection not supported by JTS
                 return geom;
