@@ -28,3 +28,4 @@ deegree Webservices
    crs
    restapi
    javamodules
+   gdal

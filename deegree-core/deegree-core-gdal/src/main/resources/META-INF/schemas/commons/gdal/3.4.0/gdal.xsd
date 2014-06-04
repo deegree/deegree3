@@ -13,7 +13,7 @@
   <element name="GDALSettings">
     <complexType>
       <sequence>
-        <element name="OpenDatasets" type="positiveInteger" minOccurs="0" />
+        <element name="OpenDatasets" type="positiveInteger" />
         <element name="GDALOption" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <simpleContent>

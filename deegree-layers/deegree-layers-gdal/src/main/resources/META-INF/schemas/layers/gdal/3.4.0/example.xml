@@ -1,18 +1,10 @@
-<?xml version="1.0"?>
-<CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial" xsi:schemaLocation="http://www.deegree.org/layers/coverage http://schemas.deegree.org/layers/coverage/3.2.0/coverage.xsd"
-  configVersion="3.2.0">
-  <CoverageStoreId>inspire</CoverageStoreId>
-  <CoverageLayer>
-    <l:Name>example</l:Name>
-    <d:Title>Example INSPIRE layer</d:Title>
-    <l:StyleRef>
-      <l:StyleStoreId>inspire</l:StyleStoreId>
-      <l:Style>
-        <l:StyleName>newname</l:StyleName>
-        <l:LayerNameRef>someLayer</l:LayerNameRef>
-        <l:StyleNameRef>someStyle</l:StyleNameRef>
-      </l:Style>
-    </l:StyleRef>
-  </CoverageLayer>
-</CoverageLayers>
+<GDALLayers configVersion="3.4.0" xmlns="http://www.deegree.org/layers/gdal" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial">
+  <GDALLayer>
+    <l:Name>luchtfoto_2010</l:Name>
+    <d:Title>Orthophoto layer served from an ECW file</d:Title>
+    <s:CRS>EPSG:28992 EPSG:25831 EPSG:25832 EPSG:31466 EPSG:31467 EPSG:4326 EPSG:3857 EPSG:3035 EPSG:3034 EPSG:4258 EPSG:3043 EPSG:3044</s:CRS>
+    <l:ScaleDenominators min="0" max="10000" />
+    <File>/mnt/storage/geodata/ecw/2010/Luchtfoto2010_25cm.ecw</File>
+  </GDALLayer>
+</GDALLayers>
