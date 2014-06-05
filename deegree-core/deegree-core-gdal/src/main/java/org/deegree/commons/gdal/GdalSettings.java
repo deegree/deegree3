@@ -82,18 +82,20 @@ public class GdalSettings implements Initializable, Destroyable {
 
     @Override
     public void init( final Workspace workspace ) {
+        LOG.info( "--------------------------------------------------------------------------------" );
+        LOG.info( "GDAL JNI adapter." );
+        LOG.info( "--------------------------------------------------------------------------------" );        
         GDALSettings settings = getGdalConfigOptions( workspace );
         if ( settings == null ) {
-            LOG.info( "No " + configFileName + " in workspace. Not initializing GDAL." );
+            LOG.info( "No " + configFileName + " in workspace. Not initializing GDAL JNI adapter." );
+            return;
         } else {
             registerGdal( settings );
         }
+        LOG.info( "GDAL JNI adapter initialized successfully." );
     }
 
     private void registerGdal( GDALSettings settings ) {
-        LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "GDAL configuration." );
-        LOG.info( "--------------------------------------------------------------------------------" );
         if ( registerOnceQuietly() ) {
             for ( GDALOption gdalConfigOption : settings.getGDALOption() ) {
                 LOG.info( "GDAL: " + gdalConfigOption.getName() + "=" + gdalConfigOption.getValue().trim() );
@@ -114,7 +116,7 @@ public class GdalSettings implements Initializable, Destroyable {
             registerCalledSuccessfully = true;
             return true;
         } catch ( Exception e ) {
-            LOG.error( "Registration of GDAL failed: " + e.getMessage(), e );
+            LOG.error( "Registration of GDAL JNI adapter failed: " + e.getMessage(), e );
         }
         return false;
     }
@@ -132,8 +134,6 @@ public class GdalSettings implements Initializable, Destroyable {
             } catch ( Exception e ) {
                 LOG.error( "Error reading GDALSettings file: " + e.getMessage() );
             }
-        } else {
-            LOG.info( "No '" + configFileName + "' in workspace." );
         }
         return null;
     }
