@@ -74,6 +74,37 @@ You can use TrueType font files to use custom vector symbols in a ``Mark`` eleme
 To find out what index you need to access, have a look at this post_ on the mailinglist which explains it very well.
 
 .. _post: http://osgeo-org.1560.n6.nabble.com/SE-Styling-MarkIndex-glyph-index-tt5022210.html#a5026571
+  
+------------------------
+LinePlacement extensions
+------------------------
+
+There are additional deegree specific LinePlacement parameters available to enable more sophisticated
+text rendering along lines:
+
++-----------------------+------------+---------+-----------------------------------------------------------------+
+| Option                | Value      | Default | Description                                                     |
++=======================+============+=========+=================================================================+
+| PreventUpsideDown     | Boolean    | false   | Avoids upside down placement of text                            |
++-----------------------+------------+---------+-----------------------------------------------------------------+ 
+| Center                | Boolean    | false   | Places the text in the center of the line                       |
++-----------------------+------------+---------+-----------------------------------------------------------------+ 
+| WordWise              | Boolean    | true    | Tries to place individual words instead of individual characters| 
++-----------------------+------------+---------+-----------------------------------------------------------------+
+
+^^^^^^^
+Example
+^^^^^^^ 
+
+.. code-block:: xml
+
+    <LinePlacement>
+	    <IsRepeated>false</IsRepeated>
+	    <InitialGap>10</InitialGap>
+	    <PreventUpsideDown>true</PreventUpsideDown>
+	    <Center>true</Center>
+	    <WordWise>false</WordWise>
+    </LinePlacement>
 
 __________________________
 Filter encoding extensions
