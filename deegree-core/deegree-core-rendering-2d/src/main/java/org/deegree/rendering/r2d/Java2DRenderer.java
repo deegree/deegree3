@@ -139,33 +139,34 @@ public class Java2DRenderer implements Renderer {
     }
 
     @Override
-    public void render( PointStyling styling, Geometry geom ) {
+    public void render( final PointStyling styling, final Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
         if ( geom instanceof Point ) {
-            geom = rendererContext.geomHelper.transform( geom );
-            rendererContext.pointRenderer.render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
+            final Point pointInWorldCrs = (Point) rendererContext.geomHelper.transform( geom );
+            rendererContext.pointRenderer.render( styling, pointInWorldCrs.get0(), pointInWorldCrs.get1() );
             return;
         }
-        geom = rendererContext.geomHelper.transform( geom );
-        geom = rendererContext.clipper.clipGeometry( geom );
-        // TODO properly convert'em
-        if ( geom instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) geom );
-        } else if ( geom instanceof Curve ) {
-            rendererContext.curveRenderer.render( styling, (Curve) geom );
-        } else if ( geom instanceof MultiGeometry<?> ) {
-            MultiGeometry<?> mc = (MultiGeometry<?>) geom;
-            for ( Geometry g : mc ) {
+        final Geometry clippedGeometry = transformToWorldCrsAndClip( geom );
+        if ( clippedGeometry == null ) {
+            return;
+        }
+        if ( clippedGeometry instanceof Surface ) {
+            rendererContext.polygonRenderer.render( styling, (Surface) clippedGeometry );
+        } else if ( clippedGeometry instanceof Curve ) {
+            rendererContext.curveRenderer.render( styling, (Curve) clippedGeometry );
+        } else if ( clippedGeometry instanceof MultiGeometry<?> ) {
+            final MultiGeometry<?> mc = (MultiGeometry<?>) clippedGeometry;
+            for ( final Geometry g : mc ) {
                 render( styling, g );
             }
         }
     }
 
     @Override
-    public void render( LineStyling styling, Geometry geom ) {
+    public void render( final LineStyling styling, final Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
             return;
@@ -174,19 +175,24 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
             return;
         }
-        geom = rendererContext.geomHelper.transform( geom );        
+        Geometry renderGeometry = null;
         if ( isPathGenerationExpensive( styling ) ) {
-            geom = rendererContext.clipper.clipGeometry( geom );
+            renderGeometry = transformToWorldCrsAndClip( geom );
+            if ( renderGeometry == null ) {
+                return;
+            }
+        } else {
+            renderGeometry = rendererContext.geomHelper.transform( geom );
         }
-        if ( geom instanceof Curve ) {
-            Double line = rendererContext.geomHelper.fromCurve( (Curve) geom, false );
+        if ( renderGeometry instanceof Curve ) {
+            final Double line = rendererContext.geomHelper.fromCurve( (Curve) renderGeometry, false );
             rendererContext.strokeRenderer.applyStroke( styling.stroke, styling.uom, line, styling.perpendicularOffset,
                                                         styling.perpendicularOffsetType );
-        } else if ( geom instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) geom );
-        } else if ( geom instanceof MultiGeometry<?> ) {
-            MultiGeometry<?> mc = (MultiGeometry<?>) geom;
-            for ( Geometry g : mc ) {
+        } else if ( renderGeometry instanceof Surface ) {
+            rendererContext.polygonRenderer.render( styling, (Surface) renderGeometry );
+        } else if ( renderGeometry instanceof MultiGeometry<?> ) {
+            final MultiGeometry<?> mc = (MultiGeometry<?>) renderGeometry;
+            for ( final Geometry g : mc ) {
                 render( styling, g );
             }
         }
@@ -197,29 +203,33 @@ public class Java2DRenderer implements Renderer {
     }
 
     @Override
-    public void render( PolygonStyling styling, Geometry geom ) {
+    public void render( final PolygonStyling styling, final Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with polygon styling." );
-        }
-        if ( geom instanceof Curve ) {
+        } else if ( geom instanceof Curve ) {
             LOG.warn( "Trying to render line with polygon styling." );
         }
-        geom = rendererContext.geomHelper.transform( geom );        
+        Geometry renderGeometry = null;
         if ( isPathGenerationExpensive( styling ) ) {
-            geom = rendererContext.clipper.clipGeometry( geom );
+            renderGeometry = transformToWorldCrsAndClip( renderGeometry );
+            if ( renderGeometry == null ) {
+                return;
+            }
+        } else {
+            renderGeometry = rendererContext.geomHelper.transform( geom );
         }
-        if ( geom instanceof Envelope ) {
-            geom = envelopeToPolygon( (Envelope) geom );
+        if ( renderGeometry instanceof Envelope ) {
+            renderGeometry = envelopeToPolygon( (Envelope) renderGeometry );
         }
-        if ( geom instanceof Surface ) {
-            rendererContext.polygonRenderer.render( styling, (Surface) geom );
+        if ( renderGeometry instanceof Surface ) {
+            rendererContext.polygonRenderer.render( styling, (Surface) renderGeometry );
         }
-        if ( geom instanceof MultiGeometry<?> ) {
-            for ( Geometry g : (MultiGeometry<?>) geom ) {
+        if ( renderGeometry instanceof MultiGeometry<?> ) {
+            for ( Geometry g : (MultiGeometry<?>) renderGeometry ) {
                 render( styling, g );
             }
         }
@@ -261,6 +271,11 @@ public class Java2DRenderer implements Renderer {
                 render( (PolygonStyling) styling, geom );
             }
         }
+    }
+
+    Geometry transformToWorldCrsAndClip( final Geometry geom ) {
+        final Geometry geomInWorldCrs = rendererContext.geomHelper.transform( geom );
+        return rendererContext.clipper.clipGeometry( geomInWorldCrs );
     }
 
 }
