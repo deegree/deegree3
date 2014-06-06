@@ -27,6 +27,7 @@
   <modules>
     <module>deegree-layers-coverage</module>  
     <module>deegree-layers-feature</module>
+    <module>deegree-layers-gdal</module> 
     <module>deegree-layers-remotewms</module>
     <module>deegree-layers-tile</module>
   </modules>
