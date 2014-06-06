@@ -113,6 +113,7 @@ class TileHandler {
         if ( !tds.getNativeImageFormat().equals( format ) ) {
             throw new OWSException( "Unknown format: " + format, INVALID_PARAMETER_VALUE );
         }
+        response.setContentType( format );
 
         TileDataLevel level = tds.getTileDataLevel( op.getTileMatrix() );
         if ( level == null ) {
