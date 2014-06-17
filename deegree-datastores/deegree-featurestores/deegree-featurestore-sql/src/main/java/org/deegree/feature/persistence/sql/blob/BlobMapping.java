@@ -139,4 +139,17 @@ public class BlobMapping {
     public String getInternalIdColumn() {
         return "id";
     }
+    
+    public String getXPlanInternalIdColumn() {
+        return "internal_id";
+    }
+
+    public String getXPlanIdColumn() {
+        return "plan_id";
+    }
+
+    public String getXPlanNameColumn() {
+        return "plan_name";
+    }
+    
 }

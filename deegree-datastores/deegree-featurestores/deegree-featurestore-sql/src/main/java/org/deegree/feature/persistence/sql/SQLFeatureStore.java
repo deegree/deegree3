@@ -70,6 +70,7 @@ import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -139,6 +140,9 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
+import org.jaxen.expr.DefaultAbsoluteLocationPath;
+import org.jaxen.expr.DefaultNameStep;
+import org.jaxen.expr.Expr;
 import org.slf4j.Logger;
 
 /**
@@ -218,10 +222,10 @@ public class SQLFeatureStore implements FeatureStore {
         this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
         fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
-                                                                  : DEFAULT_FETCH_SIZE;
+                                                                 : DEFAULT_FETCH_SIZE;
         LOG.debug( "Fetch size: " + fetchSize );
         readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
-                                                                           : !dialect.requiresTransactionForCursorMode();
+                                                                          : !dialect.requiresTransactionForCursorMode();
         LOG.debug( "Read auto commit: " + readAutoCommit );
 
         if ( config.getFeatureCache() != null ) {
@@ -293,6 +297,10 @@ public class SQLFeatureStore implements FeatureStore {
         return dialect.getGeometryConverter( column, crs, srid, is2d );
     }
 
+    private PrimitiveParticleConverter createPrimitiveMapping( String column ) {
+        return dialect.getPrimitiveConverter( column, new PrimitiveType( BaseType.STRING ) );
+    }
+
     @SuppressWarnings("unchecked")
     private CustomParticleConverter<TypedObjectNode> instantiateConverter( CustomConverterJAXB config ) {
         String className = config.getClazz();
@@ -301,8 +309,8 @@ public class SQLFeatureStore implements FeatureStore {
             return (CustomParticleConverter<TypedObjectNode>) workspace.getModuleClassLoader().loadClass( className ).newInstance();
         } catch ( Throwable t ) {
             String msg = "Unable to instantiate custom particle converter (class=" + className + "). "
-                                    + " Maybe directory 'modules' in your workspace is missing the JAR with the "
-                                    + " referenced converter class?! " + t.getMessage();
+                         + " Maybe directory 'modules' in your workspace is missing the JAR with the "
+                         + " referenced converter class?! " + t.getMessage();
             LOG.error( msg, t );
             throw new IllegalArgumentException( msg );
         }
@@ -405,7 +413,7 @@ public class SQLFeatureStore implements FeatureStore {
         MappingExpression me = propMapping.second.getMapping();
         if ( me == null || !( me instanceof DBField ) ) {
             String msg = "Cannot determine BBOX for feature type '" + ftMapping.getFeatureType()
-                                    + "' (relational mode).";
+                         + "' (relational mode).";
             LOG.warn( msg );
             return null;
         }
@@ -627,7 +635,8 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
                 throw new FilterEvaluationException( msg );
             }
-            // should be no problem iterating over the features (id queries usually request only a few ids)
+            // should be no problem iterating over the features (id queries
+            // usually request only a few ids)
             hits = queryByIdFilter( (IdFilter) filter, query.getSortProperties() ).count();
         }
         return hits;
@@ -843,7 +852,7 @@ public class SQLFeatureStore implements FeatureStore {
             ICRS literalCRS = literal.getCoordinateSystem();
             if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
                 LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-                                        + crs.getAlias() );
+                           + crs.getAlias() );
                 try {
                     GeometryTransformer transformer = new GeometryTransformer( crs );
                     transformedLiteral = transformer.transform( literal );
@@ -894,11 +903,12 @@ public class SQLFeatureStore implements FeatureStore {
     public FeatureInputStream query( final Query[] queries )
                             throws FeatureStoreException, FilterEvaluationException {
 
-        // check for common case: multiple featuretypes, same bbox (WMS), no other filter constraints
+        // check for common case: multiple featuretypes, same bbox (WMS), no
+        // other filter constraints
         boolean wmsStyleQuery = false;
         Envelope env = queries[0].getPrefilterBBoxEnvelope();
         if ( getSchema().getBlobMapping() != null && queries[0].getFilter() == null
-                                && queries[0].getSortProperties().length == 0 ) {
+             && queries[0].getSortProperties().length == 0 ) {
             wmsStyleQuery = true;
             for ( int i = 1; i < queries.length; i++ ) {
                 Envelope queryBBox = queries[i].getPrefilterBBoxEnvelope();
@@ -1012,7 +1022,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         if ( ftNameToIdAnalysis.size() != 1 ) {
             throw new FeatureStoreException(
-                                    "Currently, only relational id queries are supported that target single feature types." );
+                                             "Currently, only relational id queries are supported that target single feature types." );
         }
 
         QName ftName = ftNameToIdAnalysis.keySet().iterator().next();
@@ -1123,6 +1133,9 @@ public class SQLFeatureStore implements FeatureStore {
                 wb = getWhereBuilderBlob( bboxFilter, conn );
                 LOG.debug( "WHERE clause: " + wb.getWhere() );
                 // LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
+            } else if ( query.getFilter() instanceof OperatorFilter ) {
+                wb = getWhereBuilderBlob( (OperatorFilter) query.getFilter(), conn );
+                LOG.debug( "WHERE clause: " + wb.getWhere() );
             }
             String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
 
@@ -1199,7 +1212,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             int i = 1;
             // if ( blobMapping != null ) {
-            stmt.setShort( i++, getSchema().getFtId( ftName ) );
+            stmt.setShort( i++, getFtId( ftName ) );
             if ( wb != null ) {
                 for ( SQLArgument o : wb.getWhere().getArguments() ) {
                     o.setArgument( stmt, i++ );
@@ -1427,7 +1440,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
                                                   Connection conn )
-                                                                          throws FilterEvaluationException, UnmappableException {
+                            throws FilterEvaluationException, UnmappableException {
         PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
         return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
     }
@@ -1439,13 +1452,48 @@ public class SQLFeatureStore implements FeatureStore {
             @Override
             public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
-                GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), undefinedSrid,
-                                                                                  CoordinateDimension.DIM_2 );
-                GeometryMapping bboxMapping = new GeometryMapping( null, false,
-                                                                   new DBField( blobMapping.getBBoxColumn() ),
-                                                                   GeometryType.GEOMETRY, geometryParams, null );
-                return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null, blobMapping.getBBoxColumn(),
-                                                aliasManager.getRootTableAlias() );
+                String column;
+                ParticleConverter<?> converter;
+                if ( isProperty( propName, "internalId" ) ) {
+                    column = blobMapping.getXPlanInternalIdColumn();
+                    converter = createPrimitiveMapping( column );
+                } else if ( isProperty( propName, "nummer" ) ) {
+                    column = blobMapping.getXPlanIdColumn();
+                    converter = createPrimitiveMapping( column );
+                } else if ( isProperty( propName, "name" ) ) {
+                    column = blobMapping.getXPlanNameColumn();
+                    converter = createPrimitiveMapping( column );
+                } else {
+                    column = blobMapping.getBBoxColumn();
+                    GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(),
+                                                                                      undefinedSrid,
+                                                                                      CoordinateDimension.DIM_2 );
+                    GeometryMapping bboxMapping = new GeometryMapping( null, false, new DBField( column ),
+                                                                       GeometryType.GEOMETRY, geometryParams, null );
+                    converter = getGeometryConverter( bboxMapping );
+                }
+                return new PropertyNameMapping( converter, null, column, aliasManager.getRootTableAlias() );
+            }
+
+            @SuppressWarnings("deprecation")
+            private boolean isProperty( ValueReference propName, String expectedLocalPart ) {
+                Expr xPath = propName.getAsXPath();
+                if ( xPath instanceof DefaultAbsoluteLocationPath
+                     && !( (DefaultAbsoluteLocationPath) xPath ).getSteps().isEmpty() ) {
+                    List<?> steps = ( (DefaultAbsoluteLocationPath) xPath ).getSteps();
+                    Object step = steps.get( steps.size() - 1 );
+                    if ( step instanceof DefaultNameStep ) {
+                        String localPart = ( (DefaultNameStep) step ).getLocalName();
+                        String prefix = ( (DefaultNameStep) step ).getPrefix();
+                        String namespaceURI = propName.getNsContext().getNamespaceURI( prefix );
+
+                        QName lastStepQName = new QName( namespaceURI, localPart );
+                        return new QName( "http://www.xplanung.de/xplangml/4/0", expectedLocalPart ).equals( lastStepQName )
+                               || new QName( "http://www.xplanung.de/xplangml/4/1", expectedLocalPart ).equals( lastStepQName );
+                    }
+
+                }
+                return false;
             }
 
             @Override
@@ -1554,7 +1602,7 @@ public class SQLFeatureStore implements FeatureStore {
                     inspectors.add( inspectorClass.newInstance() );
                 } catch ( Exception e ) {
                     String msg = "Unable to instantiate custom feature inspector '" + className + "': "
-                                            + e.getMessage();
+                                 + e.getMessage();
                     throw new ResourceInitException( msg );
                 }
             }

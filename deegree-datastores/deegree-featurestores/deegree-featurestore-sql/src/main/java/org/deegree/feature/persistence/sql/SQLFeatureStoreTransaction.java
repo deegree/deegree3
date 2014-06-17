@@ -621,9 +621,15 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( blobMapping.getDataColumn() );
                 sql.append( "," );
                 sql.append( blobMapping.getBBoxColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanInternalIdColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanIdColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanNameColumn() );
                 sql.append( ") VALUES(?,?,?," );
                 sql.append( blobGeomConverter.getSetSnippet( null ) );
-                sql.append( ")" );
+                sql.append( ",?,?,?)" );
                 LOG.debug( "Inserting: {}", sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString() );
                 for ( Feature feature : features ) {
@@ -698,7 +704,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws SQLException, FeatureStoreException {
 
         LOG.debug( "Inserting feature with id '" + feature.getId() + "' (BLOB)" );
-
         if ( fs.getSchema().getFeatureType( feature.getName() ) == null ) {
             throw new FeatureStoreException( "Cannot insert feature '" + feature.getName()
                                              + "': feature type is not served by this feature store." );
@@ -730,6 +735,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.warn( "Unable to determine bbox of feature with id '" + feature.getId() + "': " + e.getMessage() );
         }
         blobGeomConverter.setParticle( stmt, bboxGeom, 4 );
+
+        stmt.setString( 5, determineXPlanPropertyValue( feature, "internalId" ) );
+        stmt.setString( 6, determineXPlanPropertyValue( feature, "nummer" ) );
+        stmt.setString( 7, determineXPlanPropertyValue( feature, "name" ) );
+
         // stmt.addBatch();
         stmt.execute();
 
@@ -747,6 +757,14 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         // }
         // }
         return internalId;
+    }
+
+    private String determineXPlanPropertyValue( Feature feature, String propertyName ) {
+        String xplanNamespaceUri = feature.getName().getNamespaceURI();
+        List<Property> properties = feature.getProperties( new QName( xplanNamespaceUri, propertyName ) );
+        if ( properties.size() > 0 && properties.get( 0 ).getValue() instanceof PrimitiveValue )
+            return ( (PrimitiveValue) properties.get( 0 ).getValue() ).getAsText();
+        return null;
     }
 
     @Override
