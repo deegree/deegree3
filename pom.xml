@@ -30,12 +30,12 @@
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/deegree-releases/</url>
+      <id>xplanungisk-release</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/xplanungisk-release/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/deegree-snapshots/</url>
+      <id>xplanungisk-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/xplanungisk-snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
