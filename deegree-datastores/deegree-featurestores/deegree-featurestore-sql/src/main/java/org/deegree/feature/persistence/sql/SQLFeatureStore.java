@@ -1243,10 +1243,10 @@ public class SQLFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
 
-        if ( filter != null ) {
-            LOG.debug( "Applying in-memory post-filtering." );
-            result = new FilteredFeatureInputStream( result, filter );
-        }
+        // if ( filter != null ) {
+        // LOG.debug( "Applying in-memory post-filtering." );
+        // result = new FilteredFeatureInputStream( result, filter );
+        // }
 
         if ( query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
