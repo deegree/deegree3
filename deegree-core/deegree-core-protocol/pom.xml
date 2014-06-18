@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4-pre12</version>
+    <version>3.4-pre12-0.1-xplan-SNAPSHOT</version>
   </parent>
 
   <repositories>
