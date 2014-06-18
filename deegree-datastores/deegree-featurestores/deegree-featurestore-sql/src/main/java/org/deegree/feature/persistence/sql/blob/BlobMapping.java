@@ -151,5 +151,9 @@ public class BlobMapping {
     public String getXPlanNameColumn() {
         return "plan_name";
     }
+
+    public String getXPlanRechtsstandColumn() {
+        return "rechtsstand";
+    }
     
 }
