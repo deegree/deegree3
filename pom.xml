@@ -31,11 +31,11 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <url>http://repo.lat-lon/nexus/content/repositories/deegree-releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <url>http://repo.lat-lon/nexus/content/repositories/deegree-snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
