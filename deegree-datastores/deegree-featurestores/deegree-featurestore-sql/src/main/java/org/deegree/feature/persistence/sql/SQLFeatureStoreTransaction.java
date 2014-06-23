@@ -627,9 +627,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( blobMapping.getXPlanIdColumn() );
                 sql.append( "," );
                 sql.append( blobMapping.getXPlanNameColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanRechtsstandColumn() );
                 sql.append( ") VALUES(?,?,?," );
                 sql.append( blobGeomConverter.getSetSnippet( null ) );
-                sql.append( ",?,?,?)" );
+                sql.append( ",?,?,?,?)" );
                 LOG.debug( "Inserting: {}", sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString() );
                 for ( Feature feature : features ) {
@@ -739,6 +741,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         stmt.setString( 5, determineXPlanPropertyValue( feature, "internalId" ) );
         stmt.setString( 6, determineXPlanPropertyValue( feature, "nummer" ) );
         stmt.setString( 7, determineXPlanPropertyValue( feature, "name" ) );
+        stmt.setString( 8, determineXPlanPropertyValue( feature, "rechtsstand" ) );
 
         // stmt.addBatch();
         stmt.execute();
