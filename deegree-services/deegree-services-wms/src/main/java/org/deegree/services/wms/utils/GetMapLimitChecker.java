@@ -36,15 +36,14 @@ package org.deegree.services.wms.utils;
 
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 
-import java.util.List;
+import java.math.BigInteger;
 
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.wms.controller.ops.GetMap;
-import org.deegree.services.wms.model.layers.Layer;
 
 /**
- * Checks whether a {@link GetMap} request is valid with regard to the requested image size and layer count.
+ * Checks whether a {@link GetMap} request is valid with regard to the configured limits on image size and layer count.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
@@ -52,13 +51,63 @@ import org.deegree.services.wms.model.layers.Layer;
  */
 public class GetMapLimitChecker {
 
-    public void checkRequestedSizeAndLayerCount( final GetMap request, final ServiceConfigurationType config )
-                            throws OWSException {        
-        checkWidth( request.getWidth(), null );
-        checkHeight( request.getHeight(), null );
-        checkLayerCount( request.getLayers(), null );
+    /**
+     * Checks whether the given {@link GetMap} request can be processed with regard to the configured limits on image
+     * size and layer count.
+     * 
+     * @param request
+     *            request, must not be <code>null</code>
+     * @param config
+     *            WMS config, must not be <code>null</code>
+     * @throws OWSException
+     *             if the request can not be processed
+     */
+    public void checkRequestedSizeAndLayerCount( final GetMap request, final DeegreeWMS config )
+                            throws OWSException {
+        checkWidth( request.getWidth(), toIntegerNullSafe( config.getMaxWidth() ) );
+        checkHeight( request.getHeight(), toIntegerNullSafe( config.getMaxHeight () ) );
+        int layerCount = request.getLayers() != null ? request.getLayers().size() : 0;
+        checkLayerCount( layerCount, toIntegerNullSafe( config.getLayerLimit() ) );
     }
 
+    /**
+     * Checks whether the given {@link org.deegree.protocol.wms.ops.GetMap} request can be processed with regard to the
+     * configured limits on image size and layer count.
+     * 
+     * @param request
+     *            request, must not be <code>null</code>
+     * @param config
+     *            WMS config, must not be <code>null</code>
+     * @throws OWSException
+     *             if the request can not be processed
+     */
+    public void checkRequestedSizeAndLayerCount( final org.deegree.protocol.wms.ops.GetMap request,
+                                                 final DeegreeWMS config )
+                            throws OWSException {
+        checkWidth( request.getWidth(), toIntegerNullSafe( config.getMaxWidth() ) );
+        checkHeight( request.getHeight(), toIntegerNullSafe( config.getMaxHeight () ) );
+        int layerCount = request.getLayers() != null ? request.getLayers().size() : 0;
+        checkLayerCount( layerCount, toIntegerNullSafe( config.getLayerLimit() ) );
+    }
+
+    private final Integer toIntegerNullSafe( final BigInteger value ) {
+        if ( value == null ) {
+            return null;
+        }
+        return value.intValue();
+    }
+
+    /**
+     * Checks whether the requested map width is greater than zero and does not exceed the maximum allowed width (if
+     * set).
+     * 
+     * @param requestedWidth
+     *            requested map width
+     * @param maxWidth
+     *            maximum allowed width, can be <code>null</code> (no limit)
+     * @throws OWSException
+     *             if the requested map width is invalid
+     */
     void checkWidth( final int requestedWidth, final Integer maxWidth )
                             throws OWSException {
         if ( requestedWidth <= 0 ) {
@@ -74,6 +123,17 @@ public class GetMapLimitChecker {
         }
     }
 
+    /**
+     * Checks whether the requested map height is greater than zero and does not exceed the maximum allowed height (if
+     * set).
+     * 
+     * @param requestedWidth
+     *            requested map height
+     * @param maxHeight
+     *            maximum allowed height, can be <code>null</code> (no limit)
+     * @throws OWSException
+     *             if the requested map height width is invalid
+     */
     void checkHeight( final int requestedHeight, final Integer maxHeight )
                             throws OWSException {
         if ( requestedHeight <= 0 ) {
@@ -89,14 +149,25 @@ public class GetMapLimitChecker {
         }
     }
 
-    void checkLayerCount( final List<Layer> layers, final Integer maxLayers ) throws OWSException {
-        if ( layers == null ) {
+    /**
+     * Checks whether the number of requested layers does not exceed the maximum the maximum allowed number (if set).
+     * 
+     * @param requestedLayerCount
+     *            requested map height
+     * @param maxLayers
+     *            maximum number of layers, can be <code>null</code> (no limit)
+     * @throws OWSException
+     *             if too many layers are requested
+     */
+    void checkLayerCount( final int requestedLayerCount, final Integer maxLayers )
+                            throws OWSException {
+        if ( maxLayers == null ) {
             return;
         }
-        if ( layers.size() > maxLayers ) {
+        if ( requestedLayerCount > maxLayers ) {
             final String msg = "Too many layers requested. Maximum number of layers: " + maxLayers;
             throw new OWSException( msg, INVALID_PARAMETER_VALUE, "layer" );
         }
     }
-    
+
 }
