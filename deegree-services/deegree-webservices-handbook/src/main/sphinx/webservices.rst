@@ -322,6 +322,13 @@ The following table shows what top level options are available.
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| LayerLimit               | 0..1         | Integer | Maximum number of layers in a GetMap request, default: unlimited             |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| MaxWidth                 | 0..1         | Integer | Maximum width in a GetMap request, default: unlimited                        |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| MaxHeight                | 0..1         | Integer | Maximum height in a GetMap request, default: unlimited                       |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+
 
 ^^^^^^^^^^^^^
 Basic options
