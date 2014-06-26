@@ -39,8 +39,8 @@ import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_V
 import java.math.BigInteger;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
-import org.deegree.services.wms.controller.ops.GetMap;
 
 /**
  * Checks whether a {@link GetMap} request is valid with regard to the configured limits on image size and layer count.
@@ -65,27 +65,7 @@ public class GetMapLimitChecker {
     public void checkRequestedSizeAndLayerCount( final GetMap request, final DeegreeWMS config )
                             throws OWSException {
         checkWidth( request.getWidth(), toIntegerNullSafe( config.getMaxWidth() ) );
-        checkHeight( request.getHeight(), toIntegerNullSafe( config.getMaxHeight () ) );
-        int layerCount = request.getLayers() != null ? request.getLayers().size() : 0;
-        checkLayerCount( layerCount, toIntegerNullSafe( config.getLayerLimit() ) );
-    }
-
-    /**
-     * Checks whether the given {@link org.deegree.protocol.wms.ops.GetMap} request can be processed with regard to the
-     * configured limits on image size and layer count.
-     * 
-     * @param request
-     *            request, must not be <code>null</code>
-     * @param config
-     *            WMS config, must not be <code>null</code>
-     * @throws OWSException
-     *             if the request can not be processed
-     */
-    public void checkRequestedSizeAndLayerCount( final org.deegree.protocol.wms.ops.GetMap request,
-                                                 final DeegreeWMS config )
-                            throws OWSException {
-        checkWidth( request.getWidth(), toIntegerNullSafe( config.getMaxWidth() ) );
-        checkHeight( request.getHeight(), toIntegerNullSafe( config.getMaxHeight () ) );
+        checkHeight( request.getHeight(), toIntegerNullSafe( config.getMaxHeight() ) );
         int layerCount = request.getLayers() != null ? request.getLayers().size() : 0;
         checkLayerCount( layerCount, toIntegerNullSafe( config.getLayerLimit() ) );
     }
