@@ -36,16 +36,20 @@
 package org.deegree.commons.xml.stax;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.junit.Assert;
 import org.junit.Test;
@@ -165,4 +169,18 @@ public class FilteringXMLStreamWriterTest {
         Assert.assertEquals( 0, actual.length );
     }
 
+    @Test
+    public void testFilteringXPathSetPrefixBug()
+                            throws Exception {
+        final XMLAdapter input = new XMLAdapter( FilteringXMLStreamWriterTest.class.getResourceAsStream( "filtering_xpath_set_prefix.xml" ) );
+        final List<String> list = new ArrayList<String>();
+        list.add( "/app:a/nix:d" );
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final XMLStreamWriter writer = getWriter( list, bos );
+        input.getRootElement().serialize( writer );
+        writer.close();
+        byte[] actual = bos.toByteArray();
+        byte[] expected = IOUtils.toByteArray( FilteringXMLStreamWriterTest.class.getResourceAsStream( "filtering_xpath_set_prefix_expected.xml" ) );
+        Assert.assertArrayEquals( expected, actual );
+    }
 }
