@@ -419,7 +419,7 @@ ________________
           </ogc:Filter>
           <PointSymbolizer>
             <Graphic>
-              <Mark
+              <Mark>
                 <WellKnownName>square</WellKnownName>
                 <Fill>
                   <SvgParameter name="fill">#FF0000</SvgParameter>
