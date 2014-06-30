@@ -343,19 +343,25 @@ public class FilteringXMLStreamWriter implements XMLStreamWriter {
     @Override
     public void setPrefix( String prefix, String uri )
                             throws XMLStreamException {
-        writer.setPrefix( prefix, uri );
+        if ( isWriting ) {
+            writer.setPrefix( prefix, uri );
+        }
     }
 
     @Override
     public void setDefaultNamespace( String uri )
                             throws XMLStreamException {
-        writer.setDefaultNamespace( uri );
+        if ( isWriting ) {
+            writer.setDefaultNamespace( uri );
+        }
     }
 
     @Override
     public void setNamespaceContext( NamespaceContext context )
                             throws XMLStreamException {
-        writer.setNamespaceContext( context );
+        if ( isWriting ) {
+            writer.setNamespaceContext( context );
+        }
     }
 
     @Override
