@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.4-pre12-SNAPSHOT</version>
+    <version>3.4-pre14-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -28,7 +28,9 @@
     <module>deegree-tilestore-cache</module>
     <module>deegree-tilestore-commons</module>
     <module>deegree-tilestore-filesystem</module>
+    <module>deegree-tilestore-gdal</module>
     <module>deegree-tilestore-geotiff</module>
+    <module>deegree-tilestore-merge</module>
     <module>deegree-tilestore-remotewms</module>
     <module>deegree-tilestore-remotewmts</module>
   </modules>

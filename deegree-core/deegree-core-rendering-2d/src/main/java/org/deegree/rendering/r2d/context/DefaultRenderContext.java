@@ -182,6 +182,11 @@ public class DefaultRenderContext implements RenderContext {
         applyAntialias( options );
     }
 
+    public void setImage( BufferedImage img ) {
+        this.image = img;
+        this.graphics = img.createGraphics();
+    }
+
     private void applyAntialias( MapOptions options ) {
         switch ( options.getAntialias() ) {
         case IMAGE:

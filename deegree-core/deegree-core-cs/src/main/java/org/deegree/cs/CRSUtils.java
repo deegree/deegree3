@@ -177,9 +177,9 @@ public class CRSUtils {
         for ( final String crsString : crs.getOrignalCodeStrings() ) {
             final String lowerCrsString = crsString.toLowerCase();
             if ( lowerCrsString.contains( "epsg:" ) ) {
-                return parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1 ) );
+                return Integer.parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1) );
             }
         }
         throw new IllegalArgumentException( "Unable to determine EPSG code for " + crs.getAlias() );
     }
-}
+ }

@@ -411,7 +411,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             String s = me.toString();
             s = s.substring( 1, s.length() - 1 );
             PrimitiveValue value = new PrimitiveValue( s, pt.first );
-            return new ConstantMapping<PrimitiveValue>( path, value );
+            return new ConstantMapping<PrimitiveValue>( path, value, config.getCustomConverter() );
         }
         throw new IllegalArgumentException( "Mapping expressions of type '" + me.getClass()
                                             + "' are not supported yet." );
@@ -430,7 +430,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new GeometryMapping( path, escalateVoid, me, type, geometryParams, joinedTable );
+        return new GeometryMapping( path, escalateVoid, me, type, geometryParams, joinedTable, config.getCustomConverter() );
     }
 
     private FeatureMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -447,7 +447,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                                                                                     ptName, 0, 1, null );
         boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new FeatureMapping( path, escalateVoid, hrefMe, pt.getFTName(), joinedTable );
+        return new FeatureMapping( path, escalateVoid, hrefMe, pt.getFTName(), joinedTable, config.getCustomConverter() );
     }
 
     private CompoundMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -469,7 +469,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
 
-        return new CompoundMapping( path, escalateVoid, particles, joinedTable, elDecl.first );
+        return new CompoundMapping( path, escalateVoid, particles, joinedTable, elDecl.first, config.getCustomConverter() );
     }
 
     private boolean determineParticleVoidability( boolean fromSchema, NullEscalationType config ) {

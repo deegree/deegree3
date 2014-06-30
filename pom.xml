@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4-pre12-SNAPSHOT</version>
+  <version>3.4-pre14-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -881,6 +881,11 @@
             <artifactId>jai_imageio</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>it.geosolutions.imageio-ext</groupId>
+        <artifactId>imageio-ext-gdal-bindings</artifactId>
+        <version>1.10.1</version>
       </dependency>
       <dependency>
         <groupId>org.reflections</groupId>
