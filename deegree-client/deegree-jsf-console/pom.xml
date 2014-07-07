@@ -183,11 +183,6 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-tilestore-merge</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
       <artifactId>deegree-tilestore-remotewms</artifactId>
       <version>${project.version}</version>
     </dependency>
