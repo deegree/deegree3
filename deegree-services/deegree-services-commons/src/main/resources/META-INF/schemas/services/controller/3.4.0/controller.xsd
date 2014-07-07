@@ -40,7 +40,7 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-
+      <xs:element name="RequestTimeoutMilliseconds" type="xs:positiveInteger" minOccurs="0">
       <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="configVersion" type="controller:ConfigVersionType" use="required" />
@@ -51,6 +51,7 @@
       <xs:enumeration value="3.0.0" />
       <xs:enumeration value="3.1.0" />
       <xs:enumeration value="3.2.0" />
+      <xs:enumeration value="3.4.0" />
     </xs:restriction>
   </xs:simpleType>
 
