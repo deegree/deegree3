@@ -47,7 +47,7 @@ public class MainConfig extends Config implements Serializable {
 
     private static final long serialVersionUID = -8185523546919352171L;
 
-    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
+    private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.4.0/controller.xsd" );
 
     private String file;
 
@@ -84,7 +84,7 @@ public class MainConfig extends Config implements Serializable {
 
     @Override
     public URL getTemplate() {
-        return ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
+        return ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.4.0/example.xml" );
     }
 
     @Override

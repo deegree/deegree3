@@ -60,7 +60,7 @@ public class OwsGlobalConfigLoader implements Initializable {
 
     private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
 
-    private static final URL CONTROLLER_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
+    private static final URL CONTROLLER_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/controller/3.4.0/controller.xsd" );
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
