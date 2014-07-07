@@ -87,8 +87,8 @@ public class JAXBUtils {
             LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
         }
         return o;
-    }
-
+    }    
+    
     /**
      * Creates a JAXB {@link Unmarshaller} which is instantiated with the given classpath (as well as the common
      * configuration classpath). If the given schemalocation is not <code>null</code>, the unmarshaller will validate

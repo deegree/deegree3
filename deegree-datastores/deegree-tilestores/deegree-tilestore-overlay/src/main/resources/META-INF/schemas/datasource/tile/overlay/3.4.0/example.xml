@@ -1,0 +1,9 @@
+<OverlayTileStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/tile/overlay"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/overlay http://schemas.deegree.org/datasource/tile/overlay/3.4.0/overlay.xsd">
+
+  <TileStoreId>tilestore1</TileStoreId>
+  <TileStoreId>tilestore2</TileStoreId>
+  <TileStoreId>tilestore3</TileStoreId>
+
+</OverlayTileStore>
