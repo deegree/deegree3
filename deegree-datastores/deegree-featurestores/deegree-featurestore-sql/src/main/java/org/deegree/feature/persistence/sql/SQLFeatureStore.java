@@ -589,6 +589,7 @@ public class SQLFeatureStore implements FeatureStore {
             ConnectionManager mgr = workspace.getSubsystemManager( ConnectionManager.class );
             conn = mgr.get( getConnId() );
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -870,6 +871,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
+            stmt.setFetchSize( fetchSize );
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             rs.next();
             hits = rs.getInt( 1 );
@@ -1049,12 +1051,12 @@ public class SQLFeatureStore implements FeatureStore {
             }
             stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                           + " A WHERE A.gml_id in (" + sb + ")" );
+            stmt.setFetchSize( fetchSize );
             int idx = 0;
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( ++idx, id );
             }
             rs = stmt.executeQuery();
-
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
@@ -1145,6 +1147,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "SQL: {}", sql );
 
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             int i = 1;
@@ -1473,6 +1476,7 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( " ORDER BY QUERY_POS" );
             }
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             int argIdx = 1;
             for ( final short ftId2 : ftId ) {
                 stmt.setShort( argIdx++, ftId2 );
