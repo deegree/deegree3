@@ -35,17 +35,23 @@
 package org.deegree.services.controller.watchdog;
 
 /**
- * A request that is watched by the {@link RequestWatchdog}.
+ * A request that is watched by the {@link WatchdogDaemon}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * 
  * @since 3.4
  */
-public class WatchedRequest {
+class WatchedRequest {
 
     private final Thread thread;
 
     private final long stopTimeInMillis;
+
+    private final long startTimeInMillis;
+
+    private final String service;
+
+    private final String request;
 
     /**
      * Creates a new {@link WatchedRequest} instance.
@@ -55,9 +61,13 @@ public class WatchedRequest {
      * @param stopTimeInMillis
      *            time (in milliseconds) when the request will be interrupted
      */
-    public WatchedRequest( final Thread thread, final long stopTimeInMillis ) {
+    WatchedRequest( final Thread thread, final long stopTimeInMillis, final long startTimeInMillis,
+                    final String service, final String request ) {
         this.thread = thread;
         this.stopTimeInMillis = stopTimeInMillis;
+        this.startTimeInMillis = startTimeInMillis;
+        this.service = service;
+        this.request = request;
     }
 
     /**
@@ -70,7 +80,7 @@ public class WatchedRequest {
     }
 
     /**
-     * Returns the time when the request needs to be stopped forcefully.
+     * Returns the time when the request needs to be interrupted.
      * 
      * @return time (in milliseconds) when the request needs to be interrupted
      */
@@ -78,4 +88,8 @@ public class WatchedRequest {
         return stopTimeInMillis;
     }
 
+    @Override
+    public String toString() {
+        return service + ":" + request + "@" + startTimeInMillis;
+    }
 }
