@@ -40,7 +40,16 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="RequestTimeoutMilliseconds" type="xs:positiveInteger" minOccurs="0">
+      <xs:element name="RequestTimeoutMilliseconds" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:positiveInteger">
+              <xs:attribute name="serviceId" type="xs:string" use="required" />
+              <xs:attribute name="request" type="xs:string" use="required" />
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="configVersion" type="controller:ConfigVersionType" use="required" />
