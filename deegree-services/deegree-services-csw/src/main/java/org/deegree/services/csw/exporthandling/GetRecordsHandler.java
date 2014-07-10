@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -78,7 +77,6 @@ import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -98,9 +96,8 @@ import de.odysseus.staxon.json.JsonXMLOutputFactory;
  * @see CSWController
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
- * @author last edited by: $Author: thomas $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.4
  */
 public class GetRecordsHandler {
 
@@ -110,15 +107,12 @@ public class GetRecordsHandler {
 
     private final String schemaLocation;
 
-    private final MetadataStore<?> store;
-
     private final Map<QName, ConfiguredElementName> configuredElementNames;
 
     public GetRecordsHandler( int maxMatches, String schemaLocation, MetadataStore<?> store,
                               Map<QName, ConfiguredElementName> elementNames ) {
         this.maxMatches = maxMatches;
         this.schemaLocation = schemaLocation;
-        this.store = store;
         this.configuredElementNames = elementNames;
     }
 
@@ -249,11 +243,6 @@ public class GetRecordsHandler {
     protected void exportSearchResults202( XMLStreamWriter writer, GetRecords getRec, MetadataStore<?> store )
                             throws XMLStreamException, OWSException, MetadataStoreException {
 
-        boolean asDC = false;
-        if ( OutputSchema.determineOutputSchema( OutputSchema.DC ).equals( getRec.getOutputSchema() ) ) {
-            asDC = true;
-        }
-
         ReturnableElement elementSetName = null;
         String[] returnElements = null;
         MetadataQuery query = null;
@@ -274,6 +263,7 @@ public class GetRecordsHandler {
             // must be an AdhocQUery
             int maxRecords = maxMatches > 0 ? maxMatches : getRec.getMaxRecords();
             int startPosition = getRec.getStartPosition();
+            @SuppressWarnings("unchecked")
             AdhocQueryAnalyzer fb = new AdhocQueryAnalyzer( getRec.getAdhocQuery(), startPosition, maxRecords,
                                                             (MetadataStore<RegistryObject>) store );
             query = fb.getMetadataQuery();
@@ -292,6 +282,7 @@ public class GetRecordsHandler {
         MetadataResultSet<?> rs = null;
 
         writer.writeStartElement( CSW_202_NS, "SearchResults" );
+        final String outputSchema = getRec.getOutputSchema() == null ? null : "" + getRec.getOutputSchema();
         try {
             if ( maxMatches <= 0 ) {
                 LOG.debug( "Max matches not configured, performing 2 queries: count + data" );
@@ -322,7 +313,7 @@ public class GetRecordsHandler {
                 if ( rs != null ) {
                     while ( rs.next() ) {
                         if ( counter < returnedRecords ) {
-                            writeRecord( writer, rs.getRecord(), asDC, elementSetName, returnElements );
+                            writeRecord( writer, rs.getRecord(), outputSchema, elementSetName, returnElements );
                         }
                         counter++;
                     }
@@ -363,7 +354,7 @@ public class GetRecordsHandler {
                 writer.writeAttribute( "nextRecord", Integer.toString( nextRecord ) );
                 writer.writeAttribute( "expires", ISO8601Converter.formatDateTime( new Date() ) );
                 for ( MetadataRecord record : records ) {
-                    writeRecord( writer, record, asDC, elementSetName, returnElements );
+                    writeRecord( writer, record, outputSchema, elementSetName, returnElements );
                 }
             }
         } finally {
@@ -481,13 +472,10 @@ public class GetRecordsHandler {
         }
     }
 
-    private void writeRecord( XMLStreamWriter writer, MetadataRecord record, boolean asDC,
-                              ReturnableElement elementSetName, String[] returnElements )
+    private void writeRecord( final XMLStreamWriter writer, final MetadataRecord record, final String outputSchema,
+                              final ReturnableElement elementSetName, final String[] returnElements )
                             throws MetadataStoreException, XMLStreamException {
-        MetadataRecord rec = record;
-        if ( asDC ) {
-            rec = rec.toDublinCore();
-        }
+        final MetadataRecord rec = convertRecordToDublinCoreIfNecessary( record, outputSchema );
         if ( returnElements.length > 0 ) {
             List<String> newReturnElements = new ArrayList<String>();
             for ( String returnElement : returnElements ) {
@@ -507,6 +495,16 @@ public class GetRecordsHandler {
         } else {
             rec.serialize( writer, elementSetName );
         }
+    }
+
+    private MetadataRecord convertRecordToDublinCoreIfNecessary( final MetadataRecord record, final String outputSchema ) {
+        if ( record.getName() == null ) {
+            return record;
+        }
+        if ( outputSchema != null && outputSchema.equalsIgnoreCase( record.getName().getNamespaceURI() ) ) {
+            return record;
+        }
+        return record.toDublinCore();
     }
 
     private ConfiguredElementName getConfiguredElementName( QName qName ) {
