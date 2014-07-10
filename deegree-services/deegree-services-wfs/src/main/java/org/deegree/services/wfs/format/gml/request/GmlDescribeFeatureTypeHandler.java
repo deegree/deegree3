@@ -211,7 +211,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
         StringBuffer base64Schema = new StringBuffer();
         Base64EncodingStringBufferOutputStream base64OutputStream = new Base64EncodingStringBufferOutputStream( base64Schema );
-        XMLOutputFactory factory = XMLOutputFactory.newFactory();
+        final XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter schemaWriter = factory.createXMLStreamWriter( base64OutputStream );
 
         // open "wfs:DescribeFeatureTypeResponse" element
