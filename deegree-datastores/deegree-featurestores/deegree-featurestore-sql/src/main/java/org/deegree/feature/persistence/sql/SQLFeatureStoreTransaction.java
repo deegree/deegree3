@@ -837,21 +837,25 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 if ( mapping.getJoinedTable() != null && !mapping.getJoinedTable().isEmpty() ) {
                     continue;
                 }
-                ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
-                if ( mapping instanceof PrimitiveMapping ) {
-                    MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
-                    if ( !( me instanceof DBField ) ) {
-                        continue;
+                
+                Object value = replacementProp.getValue();
+                if ( value != null ) {                
+                    ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
+                    if ( mapping instanceof PrimitiveMapping ) {
+                        MappingExpression me = ( (PrimitiveMapping) mapping ).getMapping();
+                        if ( !( me instanceof DBField ) ) {
+                            continue;
+                        }
+                        converter.setParticle( stmt, (PrimitiveValue) value, i++ );
+                    } else if ( mapping instanceof GeometryMapping ) {
+                        MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
+                        if ( !( me instanceof DBField ) ) {
+                            continue;
+                        }
+                        converter.setParticle( stmt, (Geometry) value, i++ );
                     }
-                    PrimitiveValue value = (PrimitiveValue) replacementProp.getValue();
-                    converter.setParticle( stmt, value, i++ );
-                } else if ( mapping instanceof GeometryMapping ) {
-                    MappingExpression me = ( (GeometryMapping) mapping ).getMapping();
-                    if ( !( me instanceof DBField ) ) {
-                        continue;
-                    }
-                    Geometry value = (Geometry) replacementProp.getValue();
-                    converter.setParticle( stmt, value, i++ );
+                } else {
+                    stmt.setObject( i++, null );
                 }
             }
         }
