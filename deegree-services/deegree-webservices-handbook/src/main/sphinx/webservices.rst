@@ -967,31 +967,33 @@ Service controller
 
 The controller configuration is used to configure various global aspects that affect all services.
 
-Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, if you want the default behaviour, just omit the file completely.
+Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, and you can also omit the file completely.
 
 An empty example file looks like follows:
 
 .. code-block:: xml
 
   <?xml version='1.0'?>
-  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.2.0'>
+  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.4.0'>
   </deegreeServiceController>
 
 The following table lists all available configuration options. When specifiying them, their order must be respected.
 
 .. table:: Options for ``deegreeServiceController``
 
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| Option                  | Cardinality  | Value   | Description                                                                                  |
-+=========================+==============+=========+==============================================================================================+
-| ReportedUrls            | 0..1         | Complex | Hardcode reported URLs in service responses                                                  |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| PreventClassloaderLeaks | 0..1         | Boolean | TODO                                                                                         |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| RequestLogging          | 0..1         | Complex | TODO                                                                                         |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| ValidateResponses       | 0..1         | Boolean | TODO                                                                                         |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
++----------------------------+-------------+---------+---------------------------------------------+
+| Option                     | Cardinality | Value   | Description                                 |
++============================+=============+=========+=============================================+
+| ReportedUrls               | 0..1        | Complex | Hardcode reported URLs in service responses |
++----------------------------+-------------+---------+---------------------------------------------+
+| PreventClassloaderLeaks    | 0..1        | Boolean | TODO                                        |
++----------------------------+-------------+---------+---------------------------------------------+
+| RequestLogging             | 0..1        | Complex | TODO                                        |
++----------------------------+-------------+---------+---------------------------------------------+
+| ValidateResponses          | 0..1        | Boolean | TODO                                        |
++----------------------------+-------------+---------+---------------------------------------------+
+| RequestTimeoutMilliseconds | 0..n        | Complex | Maximum request execution time              |
++----------------------------+-------------+---------+---------------------------------------------+
 
 The following sections describe the available options in detail.
 
@@ -1017,4 +1019,37 @@ For this example, deegree would report ``http://www.mygeoportal.com/ows`` as ser
 
 The URL configured by ``Resources`` relates to the reported URL of the ``resources`` servlet, which allows to access parts of the active deegree workspace via HTTP. Currently, this is only used in WFS DescribeFeatureType responses that access GML application schema directories.
 
+^^^^^^^^^^^^^^^^
+Request timeouts
+^^^^^^^^^^^^^^^^
 
+By default, the execution time of a request to a web service is not constrained. It depends on the complexity of the request and the configuration -- it's well possible to create a WMS configuration and a GetMap request that will require hours of processing time. Generally, it is the responsibility of the configuration creator to ensure that service requests will return in a reasonable time (e.g. by applying scale limitations in the layer configuration).
+
+Nevertheless, it is sometimes desirable to enforce an execution time limit. This can be achieved by using the RequestTimeoutMilliseconds option:
+
+.. code-block:: xml
+
+  ...
+    <RequestTimeoutMilliseconds serviceId="wms1" request="GetMap">1000</RequestTimeoutMilliseconds>
+    <RequestTimeoutMilliseconds serviceId="wms2" request="GetMap">2500</RequestTimeoutMilliseconds>
+  ...
+
+This example enforces the following time-out behaviour:
+
+* GetMap requests to WMS instance wms1 will be interrupted after an execution time of 1000 milliseconds
+* GetMap requests to WMS instance wms2 will be interrupted after an execution time of 2500 milliseconds
+
+Besides the time-out value in milliseconds, the following sub-options are supported by RequestTimeoutMilliseconds:
+
+.. table:: Options for ``RequestTimeoutMilliseconds``
+
++------------+-------------+---------+------------------------------------+
+| Option     | Cardinality | Value   | Description                        |
++============+=============+=========+====================================+
+| @serviceId | 1           | String  | Resource identifier of the service |
++------------+-------------+---------+------------------------------------+
+| @request   | 1           | String  | Service request                    |
++------------+-------------+---------+------------------------------------+
+
+.. note::
+  A time-out value can be configured for any service type and request. However, a correct termination of requests requires that the relevant Java code is actually interruptible. So far, this has only been verified for GetMap requests to WMS based on feature layers.
