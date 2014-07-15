@@ -507,6 +507,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             conn = connProvider.getConnection();
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
@@ -788,6 +789,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
+            stmt.setFetchSize( fetchSize );
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             rs.next();
             hits = rs.getInt( 1 );
@@ -967,12 +969,12 @@ public class SQLFeatureStore implements FeatureStore {
             }
             stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                           + " A WHERE A.gml_id in (" + sb + ")" );
+            stmt.setFetchSize( fetchSize );
             int idx = 0;
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( ++idx, id );
             }
             rs = stmt.executeQuery();
-
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
@@ -1063,6 +1065,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "SQL: {}", sql );
 
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             int i = 1;
@@ -1356,62 +1359,54 @@ public class SQLFeatureStore implements FeatureStore {
 
     private FeatureInputStream queryMultipleFts( Query[] queries, Envelope looseBBox )
                             throws FeatureStoreException {
-
         FeatureInputStream result = null;
-
-        short[] ftId = new short[queries.length];
-        for ( int i = 0; i < ftId.length; i++ ) {
-            Query query = queries[i];
-            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-                String msg = "Join queries between multiple feature types are currently not supported.";
-                throw new UnsupportedOperationException( msg );
-            }
-            ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
-        }
-
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         AbstractWhereBuilder blobWb = null;
         try {
             if ( looseBBox != null ) {
-                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( looseBBox ) );
+                final OperatorFilter bboxFilter = new OperatorFilter( new BBOX( looseBBox ) );
                 blobWb = getWhereBuilderBlob( bboxFilter, conn );
             }
-
             conn = getConnection();
-            StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
-                                                 + " WHERE " );
-            if ( looseBBox != null ) {
-                sql.append( "gml_bounded_by && ? AND " );
-            }
-            sql.append( "ft_type IN(?" );
-            for ( int i = 1; i < ftId.length; i++ ) {
-                sql.append( ",?" );
-            }
-            sql.append( ") ORDER BY " );
-            sql.append( dialect.stringIndex( "'['" + dialect.stringPlus() + dialect.cast( "ft_type", "varchar(2000)" )
-                                             + dialect.stringPlus() + "']'", "?" ) );
-            stmt = conn.prepareStatement( sql.toString() );
-            int firstFtArg = 1;
-            if ( blobWb != null && blobWb.getWhere() != null ) {
-                for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
-                    o.setArgument( stmt, firstFtArg++ );
+            final short[] ftId = getQueriedFeatureTypeIds( queries );
+            final StringBuilder sql = new StringBuilder();
+            for ( int i = 0; i < ftId.length; i++ ) {
+                if ( i > 0 ) {
+                    sql.append( " UNION " );
+                }
+                sql.append( "SELECT gml_id,binary_object" );
+                if ( ftId.length > 1 ) {
+                    sql.append( "," );
+                    sql.append( i );
+                    sql.append( " AS QUERY_POS" );
+                }
+                sql.append( " FROM " );
+                sql.append( blobMapping.getTable() );
+                sql.append( " WHERE ft_type=?" );
+                if ( looseBBox != null ) {
+                    sql.append( " AND gml_bounded_by && ?" );
                 }
             }
-            StringBuffer orderString = new StringBuffer();
-            for ( int i = 0; i < ftId.length; i++ ) {
-                stmt.setShort( i + firstFtArg, ftId[i] );
-                orderString.append( "[" );
-                orderString.append( "" + ftId[i] );
-                orderString.append( "]" );
+            if ( ftId.length > 1 ) {
+                sql.append( " ORDER BY QUERY_POS" );
             }
-            stmt.setString( ftId.length + firstFtArg, orderString.toString() );
+            stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
+            int argIdx = 1;
+            for ( final short ftId2 : ftId ) {
+                stmt.setShort( argIdx++, ftId2 );
+                if ( blobWb != null && blobWb.getWhere() != null ) {
+                    for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
+                        o.setArgument( stmt, argIdx++ );
+                    }
+                }
+            }
             LOG.debug( "Query: {}", sql );
             LOG.debug( "Prepared: {}", stmt );
-
             rs = stmt.executeQuery();
-            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
+            final FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             close( rs, stmt, conn, LOG );
@@ -1421,6 +1416,19 @@ public class SQLFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
         return result;
+    }
+
+    private short[] getQueriedFeatureTypeIds( Query[] queries ) {
+        short[] ftId = new short[queries.length];
+        for ( int i = 0; i < ftId.length; i++ ) {
+            Query query = queries[i];
+            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+                String msg = "Join queries between multiple feature types are currently not supported.";
+                throw new UnsupportedOperationException( msg );
+            }
+            ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
+        }
+        return ftId;
     }
 
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,

@@ -101,7 +101,7 @@ public class WMSController111 extends WMSControllerBase {
         response.setContentType( "application/vnd.ogc.wms_xml" );
         String userAgent = OGCFrontController.getContext().getUserAgent();
 
-        if ( userAgent.toLowerCase().contains( "mozilla" ) ) {
+        if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {
             response.setContentType( "application/xml" );
         }
 

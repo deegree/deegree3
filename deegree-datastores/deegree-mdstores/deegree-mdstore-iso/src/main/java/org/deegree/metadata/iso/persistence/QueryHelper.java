@@ -106,9 +106,13 @@ class QueryHelper extends SqlHelper {
             }
 
             getPSBody( builder, idSelect );
+            idSelect.append( " ORDER BY " );
             if ( builder.getOrderBy() != null ) {
-                idSelect.append( " ORDER BY " );
                 idSelect.append( builder.getOrderBy().getSQL() );
+            }
+            else
+            {
+                idSelect.append( idColumn );
             }
 
             if ( query != null && query.getStartPosition() != 1 && dialect instanceof PostGISDialect ) {
