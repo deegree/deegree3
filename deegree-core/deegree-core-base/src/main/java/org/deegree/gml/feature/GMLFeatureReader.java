@@ -123,6 +123,17 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
     }
 
     /**
+     * Creates a new {@link GMLFeatureReader} instance that is configured from the given {@link GMLStreamReader}.
+     *
+     * @param gmlStreamReader
+     *            provides the configuration, must not be <code>null</code>
+     * @param skipBrokenGeometries
+     */
+    public GMLFeatureReader( GMLStreamReader gmlStreamReader, boolean skipBrokenGeometries ) {
+        super( gmlStreamReader, skipBrokenGeometries );
+    }
+
+    /**
      * Returns the object representation for the feature (or feature collection) element event that the cursor of the
      * given <code>XMLStreamReader</code> points at.
      *

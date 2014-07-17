@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
@@ -62,6 +57,12 @@ import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.List;
 
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -324,8 +325,24 @@ public class GMLStreamReader {
      * @throws UnknownCRSException
      */
     public Feature readFeature()
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        return getFeatureReader().parseFeature( xmlStream, defaultCRS );
+                    throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        return readFeature( false );
+    }
+
+    /**
+     * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
+     * stream points to.
+     *
+     * @param skipBrokenGeometries
+     * @return deegree model representation for the current GML feature element, never <code>null</code>
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    public Feature readFeature( boolean skipBrokenGeometries )
+                    throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        Feature feature = getFeatureReader( skipBrokenGeometries ).parseFeature( xmlStream, defaultCRS );
+        return feature;
     }
 
     /**
@@ -450,12 +467,22 @@ public class GMLStreamReader {
      * @return a configured {@link GMLFeatureReader} instance, never <code>null</code>
      */
     public GMLFeatureReader getFeatureReader() {
+        return getFeatureReader( false );
+    }
+
+    /**
+     * Returns a configured {@link GMLFeatureReader} instance for calling specific feature parsing methods.
+     *
+     * @param skipBrokenGeometries
+     * @return a configured {@link GMLFeatureReader} instance, never <code>null</code>
+     */
+    public GMLFeatureReader getFeatureReader( boolean skipBrokenGeometries ) {
         if ( featureReader == null ) {
-            featureReader = new GMLFeatureReader( this );
+            featureReader = new GMLFeatureReader( this, skipBrokenGeometries );
         }
         return featureReader;
     }
-
+    
     /**
      * Returns a configured {@link GMLGeometryReader} instance for calling specific geometry parsing methods.
      * 
@@ -490,4 +517,9 @@ public class GMLStreamReader {
         }
         return dictReader;
     }
+
+    public List<String> getSkippedBrokenGeometryErrors() {
+        return featureReader.getSkippedBrokenGeometryErrors();
+    }
+
 }
