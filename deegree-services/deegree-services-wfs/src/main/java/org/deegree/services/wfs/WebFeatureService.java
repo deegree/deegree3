@@ -461,10 +461,14 @@ public class WebFeatureService extends AbstractOWS {
                 List<LanguageString> abstracts = null;
                 // TODO
                 List<Pair<List<LanguageString>, CodeType>> keywords = null;
-                String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                final List<String> metadataUrls = new ArrayList<String>();
+                final String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                if ( url != null ) {
+                    metadataUrls.add( url );
+                }
                 try {
-                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords, url,
-                                                                Collections.<StringPair> emptyList() );
+                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,
+                                                                metadataUrls, null, null, null, null );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
@@ -997,10 +1001,10 @@ public class WebFeatureService extends AbstractOWS {
 
     private Collection<FeatureType> getFeatureTypesToExport() {
         if ( mdProvider.getDatasetMetadata() != null && !mdProvider.getDatasetMetadata().isEmpty() ) {
-            LOG.debug ("Dataset metadata available. Only announcing feature types with metadata.");
+            LOG.debug( "Dataset metadata available. Only announcing feature types with metadata." );
             return getFeatureTypesWithMetadata();
         }
-        LOG.debug ("No dataset metadata available. Announcing feature types from all feature stores.");
+        LOG.debug( "No dataset metadata available. Announcing feature types from all feature stores." );
         return getAllFeatureTypes();
     }
 

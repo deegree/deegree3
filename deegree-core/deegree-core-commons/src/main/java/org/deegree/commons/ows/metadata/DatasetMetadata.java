@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -39,55 +38,72 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.ows.metadata.layer.Attribution;
+import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
+import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 
 /**
  * Encapsulates metadata on a dataset (layer, feature type, etc.) served by an OGC web service (as reported in the
  * capabilities document).
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @since 3.4
  */
 public class DatasetMetadata extends Description {
 
     private final QName name;
 
-    private final String url;
+    private final List<String> metadataUrls;
 
-    private List<StringPair> externalUrls;
+    private final List<ExternalIdentifier> externalIds;
+
+    private final List<UrlWithFormat> dataUrls;
+
+    private final List<UrlWithFormat> featureListUrls;
+
+    private final Attribution attribution;
 
     /**
      * Creates a new {@link DatasetMetadata} instance.
      * 
      * @param name
-     *            name of the dataset, must not be <code>null</code>
+     *            name, must not be <code>null</code>
      * @param titles
-     *            titles for the dataset, may be <code>null</code> (no titles)
+     *            titles, may be <code>null</code> (no titles)
      * @param abstracts
-     *            abstracts for the dataset, may be <code>null</code> (no titles)
+     *            abstracts, may be <code>null</code> (no titles)
      * @param keywords
-     *            keywords for the dataset, may be <code>null</code> (no keywords)
-     * @param url
-     *            metadata url, may be <code>null</code> (no metadata url)
-     * @param externalUrls
-     *            pairs of authority name and authority identifiers, may be empty but not <code>null</code>
+     *            keywords, may be <code>null</code> (no keywords)
+     * @param metadataUrls
+     *            urls of metadata records, may be <code>null</code> (no metadata records))
+     * @param externalIds
+     *            external identifiers, may be <code>null</code> (no external identifiers)
+     * @param dataUrls
+     *            links to the underlying data (of a layer), may be <code>null</code> (no links)
+     * @param featureListUrls
+     *            links to the list of the features (used in a layer), may be <code>null</code> (no links)
+     * @param attribution
+     *             indicates the provider of a layer, may be <code>null</code> (no attribution)
      */
-    public DatasetMetadata( QName name, List<LanguageString> titles, List<LanguageString> abstracts,
-                            List<Pair<List<LanguageString>, CodeType>> keywords, String url,
-                            List<StringPair> externalUrls ) {
+    public DatasetMetadata( final QName name, final List<LanguageString> titles, final List<LanguageString> abstracts,
+                            final List<Pair<List<LanguageString>, CodeType>> keywords, final List<String> metadataUrls,
+                            final List<ExternalIdentifier> externalIds, final List<UrlWithFormat> dataUrls,
+                            final List<UrlWithFormat> featureListUrls, final Attribution attribution ) {
         super( name.getLocalPart(), titles, abstracts, keywords );
         this.name = name;
-        this.url = url;
-        this.externalUrls = externalUrls;
+        this.metadataUrls = metadataUrls;
+        this.externalIds = externalIds;
+        this.dataUrls = dataUrls;
+        this.featureListUrls = featureListUrls;
+        this.attribution = attribution;
     }
 
     /**
-     * Returns the qualified name of the dataset.
+     * Returns the qualified name.
      * 
      * @return qualified name of the dataset, never <code>null</code>
      */
@@ -96,19 +112,48 @@ public class DatasetMetadata extends Description {
     }
 
     /**
-     * Returns the metadata url.
+     * Returns the URLs of metadata records.
      * 
-     * @return metadata url, may be <code>null</code> (no metadata url)
+     * @return urls of metadata records, may be <code>null</code> (no metadata records)
      */
-    public String getUrl() {
-        return url;
+    public List<String> getMetadataUrls() {
+        return metadataUrls;
     }
 
     /**
-     * @return the external metadata urls (authority name plus identifier), may be empty but not <code>null</code>
+     * Returns the external identifiers.
+     * 
+     * @return external identifiers, may be <code>null</code> (no external identifiers)
      */
-    public List<StringPair> getExternalUrls() {
-        return externalUrls;
+    public List<ExternalIdentifier> getExternalIds() {
+        return externalIds;
+    }
+
+    /**
+     * Returns the links to the underlying data (of a layer).
+     * 
+     * @return links to the underlying data (of a layer), may be <code>null</code> (no links)
+     */
+    public List<UrlWithFormat> getDataUrls() {
+        return dataUrls;
+    }
+
+    /**
+     * Returns the links to the list of the features (used in a layer).
+     * 
+     * @return links to the list of the features (used in a layer), may be <code>null</code> (no links)
+     */    
+    public List<UrlWithFormat> getFeatureListUrls() {
+        return featureListUrls;
+    }
+
+    /**
+     * Returns information on the provider (of a layer).
+     * 
+     * @return information on the provider, may be <code>null</code> (no information)
+     */
+    public Attribution getAttribution() {
+        return attribution;
     }
 
 }

@@ -64,7 +64,7 @@ public class OwsGlobalConfigLoader implements Initializable {
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
-    private static final URL METADATA_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
+    private static final URL METADATA_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.4.0/metadata.xsd" );
 
     private DeegreeServicesMetadataType metadataConfig;
 
