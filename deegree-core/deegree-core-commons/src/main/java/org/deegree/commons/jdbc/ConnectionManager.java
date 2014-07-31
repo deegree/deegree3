@@ -44,6 +44,7 @@ import static org.deegree.commons.jdbc.ConnectionManager.Type.H2;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
 import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
+import static org.deegree.commons.jdbc.ConnectionManager.Type.GeoPackage;
 
 import java.io.File;
 import java.net.URL;
@@ -76,14 +77,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the {@link ConnectionPools} of a {@link DeegreeWorkspace}.
+ * Manages the {@link ConnectionPool} of a {@link DeegreeWorkspace}.
  * <p>
  * TODO complete separation of JDBC parameter definition ({@link JDBCParams}) and connection pooling
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class ConnectionManager extends AbstractBasicResourceManager implements ResourceProvider {
@@ -97,12 +97,12 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
     public static enum Type {
-        PostgreSQL, MSSQL, Oracle, H2
+        PostgreSQL, MSSQL, Oracle, H2, GeoPackage
     }
 
     /**
      * Initializes the {@link ConnectionManager} by loading all JDBC pool configurations from the given directory.
-     * 
+     *
      * @param jdbcDir
      */
     @SuppressWarnings("unchecked")
@@ -154,7 +154,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     /**
      * @param id
      * @return the type of the connection, null if the connection is unknown or the connection type could not be
-     *         determined
+     * determined
      */
     public Type getType( String id ) {
         return idToType.get( id );
@@ -162,9 +162,8 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     /**
      * Returns a connection from the connection pool with the given id.
-     * 
-     * @param id
-     *            id of the connection pool
+     *
+     * @param id id of the connection pool
      * @return connection from the corresponding connection pool, null, if not available
      */
     public Connection get( String id ) {
@@ -184,12 +183,10 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     /**
      * Returns a connection from the connection pool with the given id.
-     * 
-     * @param id
-     *            id of the connection pool
+     *
+     * @param id id of the connection pool
      * @return connection from the corresponding connection pool
-     * @throws SQLException
-     *             if the connection pool is unknown or a SQLException occurs creating the connection
+     * @throws SQLException if the connection pool is unknown or a SQLException occurs creating the connection
      */
     public static Connection getConnection( String id )
                             throws SQLException {
@@ -203,11 +200,9 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     /**
      * Invalidates a broken {@link Connection} to avoid its re-use.
-     * 
-     * @param id
-     *            connection pool id, must not be <code>null</code>
-     * @param conn
-     *            connection, must not be <code>null</code>
+     *
+     * @param id   connection pool id, must not be <code>null</code>
+     * @param conn connection, must not be <code>null</code>
      * @throws Exception
      */
     public static void invalidate( String id, Connection conn )
@@ -220,11 +215,10 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
 
     /**
      * Adds the connection pool defined in the given file.
-     * 
+     *
      * @param connId
      * @param params
-     * @param workspace
-     *            can be <code>null</code>
+     * @param workspace can be <code>null</code>
      * @throws JAXBException
      */
     public void addPool( String connId, JDBCParams params, DeegreeWorkspace workspace ) {
@@ -265,11 +259,14 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
         if ( url.startsWith( "jdbc:sqlserver:" ) ) {
             idToType.put( connId, MSSQL );
         }
+        if ( url.startsWith( "jdbc:sqlite:" ) ) {
+            idToType.put( connId, GeoPackage );
+        }
     }
 
     /**
      * Adds a connection pool as specified in the parameters.
-     * 
+     *
      * @param connId
      * @param url
      * @param user
@@ -370,7 +367,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     @Override
     public ResourceState deleteResource( String id ) {
         throw new UnsupportedOperationException(
-                                                 "Deleting of connection pools not supported. Deleted JDBCParams resource instead." );
+                                "Deleting of connection pools not supported. Deleted JDBCParams resource instead." );
     }
 
     @Override
@@ -383,7 +380,7 @@ public class ConnectionManager extends AbstractBasicResourceManager implements R
     @Override
     public ResourceState activate( String id ) {
         throw new UnsupportedOperationException(
-                                                 "Activating of connection pools not supported. Activate JDBCParams resource instead." );
+                                "Activating of connection pools not supported. Activate JDBCParams resource instead." );
     }
 
     @Override

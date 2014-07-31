@@ -65,10 +65,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manages the {@link JDBCParams} resources in a {@link DeegreeWorkspace}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 @SuppressWarnings("unchecked")
@@ -84,12 +83,13 @@ public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
         try {
             for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
                 registerDriver( new DriverWrapper( d ) );
+                registerDriver( new DriverWrapper( new org.sqlite.JDBC() ) );
                 LOG.info( "Found and loaded {}", d.getClass().getName() );
             }
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         }
-        System.out.println(workspace);
+        System.out.println( workspace );
         super.startup( workspace );
     }
 
@@ -141,6 +141,7 @@ public class JDBCParamsManager extends AbstractResourceManager<JDBCParams> {
             try {
                 // no need to check for class loader, the driver manager does that already
                 DriverManager.deregisterDriver( driver );
+                DriverManager.deregisterDriver( new org.sqlite.JDBC() );
             } catch ( SQLException e1 ) {
                 LOG.error( "Cannot unload driver: " + driver );
             }

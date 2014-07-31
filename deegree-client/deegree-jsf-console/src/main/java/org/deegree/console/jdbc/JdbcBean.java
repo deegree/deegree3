@@ -91,6 +91,10 @@ public class JdbcBean {
             dbConn = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
             return;
         }
+        if ( dbType.equals( "geopackage" ) ) {
+            dbConn = "jdbc:sqlite:" + dbName;
+            return;
+        }
     }
 
     public void setDbPort( String dbPort ) {
@@ -143,6 +147,10 @@ public class JdbcBean {
                 dbPort = "5432";
             }
             dbConn = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+            return;
+        }
+        if ( dbType.equals( "geopackage" ) ) {
+            dbConn = "jdbc:sqlite:" + dbName;
             return;
         }
     }

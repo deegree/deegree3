@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.3.11</version>
+  <version>3.3.12-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -12,7 +13,7 @@
     <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
     <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
     <url>https://github.com/deegree/deegree3.git</url>
-    <tag>deegree-3.3.11</tag>
+    <tag>deegree-3.3.0</tag>
   </scm>
 
   <repositories>
@@ -39,9 +40,9 @@
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
+      <!--
+            <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
+      -->
       <url>file:///tmp/site/${project.version}/</url>
     </site>
   </distributionManagement>
@@ -675,6 +676,12 @@
         <groupId>com.oracle</groupId>
         <artifactId>ojdbc6</artifactId>
         <version>11.2.0.2</version>
+      </dependency>
+      <!-- SQLite -->
+      <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.7.2</version>
       </dependency>
       <!-- Batik -->
       <dependency>
