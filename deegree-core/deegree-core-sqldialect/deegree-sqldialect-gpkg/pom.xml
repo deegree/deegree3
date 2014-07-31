@@ -1,13 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-tilestores</artifactId>
-  <packaging>pom</packaging>
-  <name>deegree-tilestores</name>
-  <description>Abstraction layer for map tile persistence and backend implementations</description>
+  <artifactId>deegree-sqldialect-gpkg</artifactId>
+  <name>deegree-sqldialect-gpkg</name>
+  <packaging>jar</packaging>
+  <description>SQL dialect for GeoPackage</description>
+
+  <properties>
+    <deegree.module.status>rework</deegree.module.status>
+  </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
-    <artifactId>deegree-datastores</artifactId>
+    <artifactId>deegree-core-sqldialect</artifactId>
     <version>3.3.12-SNAPSHOT</version>
   </parent>
 
@@ -24,15 +28,15 @@
     </repository>
   </repositories>
 
-  <modules>
-    <module>deegree-tilestore-cache</module>
-    <module>deegree-tilestore-commons</module>
-    <module>deegree-tilestore-filesystem</module>
-    <module>deegree-tilestore-geotiff</module>
-    <module>deegree-tilestore-gpkg</module>
-    <module>deegree-tilestore-remotewms</module>
-    <module>deegree-tilestore-remotewmts</module>
-  </modules>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+    </dependency>
+  </dependencies>
 </project>
-
