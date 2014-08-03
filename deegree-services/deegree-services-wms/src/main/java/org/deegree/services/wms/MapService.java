@@ -225,7 +225,7 @@ public class MapService {
     private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
                                                                   List<String> headers, double scale,
                                                                   ListIterator<LayerQuery> queryIter )
-                                                                                          throws OWSException {
+                            throws OWSException {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
@@ -233,7 +233,7 @@ public class MapService {
             assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
-                                        || layer.getMetadata().getScaleDenominators().second < scale ) {
+                     || layer.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
                 if ( layer.isStyleApplicable( query.getStyle() ) ) {
@@ -283,7 +283,7 @@ public class MapService {
             LayerQuery query = queryIter.next();
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 if ( l.getMetadata().getScaleDenominators().first > scale
-                                        || l.getMetadata().getScaleDenominators().second < scale ) {
+                     || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
                 list.add( l.infoQuery( query, headers ) );
@@ -321,16 +321,21 @@ public class MapService {
             OperatorFilter f = filterItr == null ? null : filterItr.next();
             int layerRadius = 0;
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                if ( l.getMetadata().getMapOptions() != null
-                     && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
-                    layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
+                if ( l.getMetadata().getMapOptions().getFeatureInfoRadius() == 0 ) {
+                    return null;
                 } else {
-                    layerRadius = defaultLayerOptions.getFeatureInfoRadius();
+                    if ( l.getMetadata().getMapOptions() != null
+                         && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
+                        layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
+                    } else {
+                        layerRadius = defaultLayerOptions.getFeatureInfoRadius();
+                    }
                 }
             }
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(), layerRadius );
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(),
+                                               layerRadius );
             queries.add( query );
         }
         return queries;
