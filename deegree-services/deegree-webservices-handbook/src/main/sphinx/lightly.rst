@@ -14,10 +14,10 @@ Accessing deegree's service console
 
 The service console is a web-based administration interface for configuring your deegree webservices installation. If deegree webservices are running on your machine, you can usually access the console from your browser via http://localhost:8080
 
-.. figure:: images/console_start.jpg
+.. figure:: images/console_start.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_start.jpg
+   :target: _images/console_start.png
 
    deegree webservices administration console
 
@@ -44,18 +44,18 @@ Downloading and activating example workspaces
 
 Click the **workspaces** link on the left:
 
-.. figure:: images/console_workspaces.jpg
+.. figure:: images/console_workspaces.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspaces.jpg
+   :target: _images/console_workspaces.png
 
    Workspaces view
 
 The bottom of the workspaces view lists example workspaces provided by the deegree project. You should see the following items:
 
+* **deegree-workspace-csw**: :ref:`anchor-workspace-csw`
 * **deegree-workspace-inspire**: :ref:`anchor-workspace-inspire`
 * **deegree-workspace-utah**: :ref:`anchor-workspace-utah`
-* **deegree-workspace-csw**: :ref:`anchor-workspace-csw`
 * **deegree-workspace-wps**: :ref:`anchor-workspace-wps`
 
 .. tip::
@@ -65,10 +65,10 @@ If you click **Import**, the corresponding example workspace will be fetched fro
 
 After downloading has completed, the new workspace will be listed in section "Available workspaces":
 
-.. figure:: images/console_workspace_imported.jpg
+.. figure:: images/console_workspace_imported.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_imported.jpg
+   :target: _images/console_workspace_imported.png
 
    Downloaded, but inactive workspace
 
@@ -87,19 +87,19 @@ This workspace is a basic INSPIRE View and Download Services setup. It contains 
 
 After downloading and activating the "deegree-workspace-inspire" workspace, you can click the **see layers** link, which opens a simple map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
-.. figure:: images/console_workspace_inspire1.jpg
+.. figure:: images/console_workspace_inspire1.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire1.jpg
+   :target: _images/console_workspace_inspire1.png
 
    Map client showing base map
 
 Click the **+** on the right to see a list of available layers. You can now tick the INSPIRE layers offered by the deegree WMS. 
 
-.. figure:: images/console_workspace_inspire2.jpg
+.. figure:: images/console_workspace_inspire2.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire2.jpg
+   :target: _images/console_workspace_inspire2.png
 
    INSPIRE layers rendered by the deegree WMS
 
@@ -110,10 +110,10 @@ Note that nothing will be rendered for layer AD.Address, as the configured stora
 
 Use the third drop-down menu to select an example request. Entries **Insert_200.xml** or **Insert_110.xml** can be used to insert a small number of INSPIRE Address features using WFS-T insert requests:
 
-.. figure:: images/console_workspace_inspire3.jpg
+.. figure:: images/console_workspace_inspire3.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire3.jpg
+   :target: _images/console_workspace_inspire3.png
 
    WFS-T example requests
 
