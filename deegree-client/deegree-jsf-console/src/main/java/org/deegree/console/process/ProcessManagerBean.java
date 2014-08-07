@@ -51,4 +51,10 @@ public class ProcessManagerBean extends AbstractResourceManagerBean<ProcessManag
     public ProcessManagerBean() {
         super( ProcessManager.class );
     }
+
+    @Override
+    public String getStartView() {
+        return "/console/process/index";
+    }
+
 }
