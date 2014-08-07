@@ -119,19 +119,19 @@ Use the third drop-down menu to select an example request. Entries **Insert_200.
 
 Click **Send** to execute the request. After successful insertion, the internal storage contains a few addresses, and you may want to move back to the layer overview (**see layers**). If you activate layer AD.Address this time, the newly inserted features will be rendered by the deegree WMS (look for them in the area of Enkhuizen):
 
-.. figure:: images/console_workspace_inspire4.jpg
+.. figure:: images/console_workspace_inspire4.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire4.jpg
+   :target: _images/console_workspace_inspire4.png
 
    Ad.Address layer after insertion of example Address features
 
 The example requests also contain a lot of query examples, e.g. requesting of INSPIRE Addresses by street name:
 
-.. figure:: images/console_workspace_inspire5.jpg
+.. figure:: images/console_workspace_inspire5.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire5.jpg
+   :target: _images/console_workspace_inspire5.png
 
    WFS query examples
 
