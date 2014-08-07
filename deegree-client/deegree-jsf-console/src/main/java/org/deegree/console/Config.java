@@ -132,7 +132,7 @@ public class Config implements Comparable<Config>, Serializable {
                             throws IOException {
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&id=" ).append( id );
-        sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
+        sb.append( "&schemaUrl=" ).append( ""+schemaURL );
         sb.append( "&resourceProviderClass=" ).append( metadata.getIdentifier().getProvider().getCanonicalName() );
         sb.append( "&nextView=" ).append( resourceOutcome );
         return sb.toString();
