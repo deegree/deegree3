@@ -85,6 +85,7 @@ public class WorkspaceUtils {
         list = g.toSortedList();
         workspace.destroy( list.get( 0 ).getIdentifier() );
         for ( ResourceMetadata<? extends Resource> md : list ) {
+            workspace.add( md.getLocation() );
             workspace.init( md.getIdentifier(), null );
         }
     }
