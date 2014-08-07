@@ -113,7 +113,7 @@ public class FeatureStoreConfig extends Config {
         FeatureStoreLoader fsLoader = new FeatureStoreLoader( fs );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsConfig", this );
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put( "fsLoader", fsLoader );
-        return "/console/featurestore/loader";
+        return "/console/datastore/feature/loader";
     }
 
     public List<NamespaceBinding> getNamespaces() {
