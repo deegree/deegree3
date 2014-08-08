@@ -24,9 +24,12 @@
       <h:outputScript library="codemirror" name="mode/xml/xml.js" />
 
       <h:form prependId="false" styleClass="form-main">
+      	<h:panelGroup id="xmleditor-title" layout="block">
+        	<h:outputText value="Editing XML resource: ${xmlEditorBean.title}" />
+        </h:panelGroup>
+      
         <h:panelGroup id="xmleditor" layout="block">
-          <h:panelGroup id="xmleditor-actions" layout="block">
-            <h:outputText value="Editing XML resource: ${xmlEditorBean.id} (${xmlEditorBean.resourceProviderClass})" />
+          <h:panelGroup id="xmleditor-actions" layout="block">            
             <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
               action="${xmlEditorBean.save}" />
             <h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}"
@@ -35,8 +38,8 @@
               action="${xmlEditorBean.validate}">
               <f:ajax execute="xmltextarea" />
             </h:commandButton>
-            <h:commandButton styleClass="button" value="Toggle fullscreen" onclick="toggleFullscreen(); return false" />
-          </h:panelGroup>
+            <h:commandButton styleClass="button" value="Toggle fullscreen" onclick="toggleFullscreen(); return false" />            
+          </h:panelGroup>          
           <h:panelGroup id="xmleditor-input" layout="block">
             <h:inputTextarea id="xmltextarea" cols="30" rows="10" value="${xmlEditorBean.content}" />
           </h:panelGroup>
