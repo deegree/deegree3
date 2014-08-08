@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>deegree-jsf-console</artifactId>
+  <artifactId>deegree-testservice</artifactId>
   <packaging>jar</packaging>
-  <name>deegree-jsf-console</name>
-  <description>Administration console for deegree Web Services</description>
+  <name>deegree-testservice</name>
+  <description>Webservices base webapp for integration tests</description>
   <properties>
     <deegree.module.status>rework</deegree.module.status>
   </properties>
@@ -11,6 +11,7 @@
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>
     <version>3.4-pre15-SNAPSHOT</version>
+    <relativePath>../../deegree-client</relativePath>
   </parent>
   <repositories>
     <repository>
@@ -30,7 +31,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>webapp-template.xml</descriptor>
+            <descriptor>src/assembly/webapp-template.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -226,10 +227,5 @@
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
     </dependency> 
-    <dependency>
-      <groupId>org.primefaces</groupId>
-      <artifactId>primefaces</artifactId>
-      <version>4.0</version>
-    </dependency>    
-  </dependencies>
+ </dependencies>
 </project>
