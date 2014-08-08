@@ -273,12 +273,16 @@ public class XmlEditorBean implements Serializable {
 
                 File resourceFile = null;
                 File resourceDir = null;
+                File resourceMainFile = null;
                 if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
+                    File baseResourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
+                    resourceMainFile = new File( baseResourceDir, id + ".xml" );
+                    
                     resourceDir = new File( wsDir, "services" );
                     resourceFile = new File( resourceDir, id + "_metadata.xml" );
                 } else {
                     resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
-                    resourceFile = new File( resourceDir, id + ".xml" );
+                    resourceMainFile = resourceFile = new File( resourceDir, id + ".xml" );
                 }
 
                 if ( !resourceDir.exists() && !resourceDir.mkdirs() ) {
@@ -287,9 +291,13 @@ public class XmlEditorBean implements Serializable {
                 FileUtils.writeStringToFile( resourceFile, content );
 
                 DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( cls, id );
-                ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
+                ResourceLocation<?> loc = new DefaultResourceLocation( resourceMainFile, ident );
                 workspace.add( loc );
 
+                if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
+                    workspace.destroy( ident );
+                }
+                
                 workspace.getLocationHandler().activate( loc );
                 WorkspaceUtils.reinitializeChain( workspace, ident );
             }
