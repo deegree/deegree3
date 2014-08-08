@@ -151,47 +151,47 @@ The Utah example workspace contains a web mapping setup based on data from the s
 
 After downloading and activating the "deegree-workspace-utah" workspace, you can click on the **see layers** link, which opens a simple map client that displays a base map (not rendered by deegree, but loaded from the OpenStreetMap servers).
 
-.. figure:: images/console_workspace_utah1.jpg
+.. figure:: images/console_workspace_utah1.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_utah1.jpg
+   :target: _images/console_workspace_utah1.png
 
    Map client showing base map
 
 Click the **+** on the right to see a list of available layers. Tick the ones you want to see. They will be rendered by your deegree webservices instance.
 
-.. figure:: images/console_workspace_utah2.jpg
+.. figure:: images/console_workspace_utah2.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_utah2.jpg
+   :target: _images/console_workspace_utah2.png
 
    Selecting WMS layers to be displayed
 
 .. tip::
   The map client is based on `OpenLayers <http://openlayers.org/>`_. Drag the map by holding the mouse button and moving your mouse. Zoom using the controls on the left or with the mouse wheel. Alternatively, you can open a zoom rectangle by holding the SHIFT key and clicking the mouse button in the map area.
 
-.. figure:: images/console_workspace_utah3.jpg
+.. figure:: images/console_workspace_utah3.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_utah3.jpg
+   :target: _images/console_workspace_utah3.png
 
    Exploring Utah layers
 
 In order to send requests against the WFS, you may use the **send requests** link in the service console (you may need to go back in your browser first). A simple interface for sending XML requests will open up. This interface is meant for accessing OGC web services on the protocol level and contains some reasonable example requests.
 
-.. figure:: images/console_workspace_utah4.jpg
+.. figure:: images/console_workspace_utah4.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_utah4.jpg
+   :target: _images/console_workspace_utah4.png
 
    Sending example requests
 
 Select one of the example requests from the third drop-down menu and click **Send**. The server response will be displayed in the lower section.
 
-.. figure:: images/console_workspace_utah5.jpg
+.. figure:: images/console_workspace_utah5.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_utah5.jpg
+   :target: _images/console_workspace_utah5.png
 
    Sending example requests
 
@@ -201,10 +201,10 @@ Select one of the example requests from the third drop-down menu and click **Sen
 .. tip::
   Instead of using the built-in layer preview or the generic OGC client, you may use any compliant OGC client for accessing the WMS and WFS. Successfully tested desktop clients include Quantum GIS (install WFS plugin for accessing WFS), uDig, OpenJUMP and deegree iGeoDesktop. The service address to enter in your client is: http://localhost:8080/services.
 
-.. figure:: images/qgis_workspace_utah.jpg
+.. figure:: images/qgis_workspace_utah.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/qgis_workspace_utah.jpg
+   :target: _images/qgis_workspace_utah.png
 
    Quantum GIS displaying a WMS layer from the Utah workspace
 
@@ -221,80 +221,80 @@ This workspace contains a catalogue service (CSW) setup that complies to the ISO
 
 After downloading and starting the workspace, some errors will be indicated (red exclamation marks):
 
-.. figure:: images/console_workspace_csw1.jpg
+.. figure:: images/console_workspace_csw1.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw1.jpg
+   :target: _images/console_workspace_csw1.png
 
    Initial startup of deegree-workspace-csw
 
-Don't worry, this is just because we're missing the correct connection information to connect to our database. We're going to fix that right away. Click **server connections -> jdbc**:
+Don't worry, this is just because we're missing the correct connection information to connect to our database. We're going to fix that right away. Click **connections -> databases**:
 
-.. figure:: images/console_workspace_csw2.jpg
+.. figure:: images/console_workspace_csw2.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw2.jpg
+   :target: _images/console_workspace_csw2.png
 
    JDBC connection view
 
 Click **Edit**:
 
-.. figure:: images/console_workspace_csw3.jpg
+.. figure:: images/console_workspace_csw3.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw3.jpg
+   :target: _images/console_workspace_csw3.png
 
    Editing the JDBC resource configuration file
 
 Make sure to enter the correct connection parameters and click **Save**. You should now have a working connection to your database, and the exclamation mark for **conn1** should disappear. Click **Reload** to force a full reinitialization of the workspace:
 
-.. figure:: images/console_workspace_csw4.jpg
+.. figure:: images/console_workspace_csw4.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw4.jpg
+   :target: _images/console_workspace_csw4.png
 
    Reinitializing the workspace
 
 The indicated problems are gone now, but we still need to create the required database tables. Change to the metadata store view (**data stores -> metadata**) and click **Setup tables**:
 
-.. figure:: images/console_workspace_csw5.jpg
+.. figure:: images/console_workspace_csw5.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw5.jpg
+   :target: _images/console_workspace_csw5.png
 
    Metadata store view
 
 In the next view, click **Execute**: 
 
-.. figure:: images/console_workspace_csw6.jpg
+.. figure:: images/console_workspace_csw6.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw6.jpg
+   :target: _images/console_workspace_csw6.png
 
    Creating tables for storing ISO metadata records
 
-.. figure:: images/console_workspace_csw7.jpg
+.. figure:: images/console_workspace_csw7.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw7.jpg
+   :target: _images/console_workspace_csw7.png
 
    After table creation
 
 If all went well, you should now have a working, but empty CSW setup. You can connect to the CSW with compliant clients or use the **send requests** link to send raw CSW requests to the service. The workspace comes with some suitable example requests. Use the third drop-down menu to select an example request. Entry **complex_insert.xml** can be used to insert some ISO example records using a CSW transaction request:
 
-.. figure:: images/console_workspace_csw8.jpg
+.. figure:: images/console_workspace_csw8.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw8.jpg
+   :target: _images/console_workspace_csw8.png
 
    Choosing example requests
 
 Click **Send**. After successful insertion, some records have been inserted into the CSW (respectively the database). You may want to explore other example requests as well, e.g. for retrieving records:
 
-.. figure:: images/console_workspace_csw9.jpg
+.. figure:: images/console_workspace_csw9.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_csw9.jpg
+   :target: _images/console_workspace_csw9.png
 
    Other example CSW requests
 
