@@ -1,4 +1,0 @@
-name=SQL
-wizard=/console/featurestore/sql/wizard
-example1_location=/META-INF/schemas/datasource/feature/sql/3.4.0/example_minimal.xml
-example2_location=/META-INF/schemas/datasource/feature/sql/3.4.0/example_complex.xml

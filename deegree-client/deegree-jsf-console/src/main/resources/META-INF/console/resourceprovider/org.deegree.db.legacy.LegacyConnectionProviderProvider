@@ -1,3 +1,0 @@
-name=JDBC (legacy)
-example1_location=/META-INF/schemas/jdbc/3.0.0/example.xml
-wizard=/console/jdbc/edit
