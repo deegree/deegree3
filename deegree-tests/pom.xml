@@ -110,7 +110,7 @@
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <id>jsf-console</id>
+                <id>prepare-testservice</id>
                 <phase>generate-resources</phase>
                 <goals>
                   <goal>unpack-dependencies</goal>
@@ -119,7 +119,7 @@
                   <classifier>webapp-template</classifier>
                   <type>zip</type>
                   <includeGroupIds>org.deegree</includeGroupIds>
-                  <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
+                  <includeArtifactIds>deegree-testservice</includeArtifactIds>
                   <outputDirectory>src/main/webapp</outputDirectory>
                 </configuration>
               </execution>
