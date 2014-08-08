@@ -57,6 +57,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.xerces.xni.parser.XMLParseException;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
@@ -140,12 +141,34 @@ public class XmlEditorBean implements Serializable {
     public void setNextView( String nextView ) {
         this.nextView = nextView;
     }
+    
+    private File getFile() {
+        File workspaceRoot = new File( DeegreeWorkspace.getWorkspaceRoot() );
+        
+        final String platformFileName;
+        if ( !File.separator.equals( "/" ) ) {
+            StringBuilder sb = new StringBuilder();
+            
+            String separator = "";
+            for ( String filePart : fileName.split( "/" ) ) {
+                sb.append(separator);
+                sb.append(filePart);
+                
+                separator = File.separator;
+            }
+            platformFileName = sb.toString();
+        } else {
+            platformFileName = fileName;
+        }
+        
+        return new File( workspaceRoot, platformFileName);
+    }
 
     public String getContent()
                             throws IOException, ClassNotFoundException {
         if ( content == null ) {
-            if ( resourceProviderClass == null ) {
-                content = FileUtils.readFileToString( new File( fileName ) );
+            if ( resourceProviderClass == null ) {                            
+                content = FileUtils.readFileToString( getFile() );
                 return content;
             }
             Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
@@ -194,8 +217,8 @@ public class XmlEditorBean implements Serializable {
 
     private void activate() {
         try {
-            if ( resourceProviderClass == null ) {
-                FileUtils.write( new File( fileName ), content );
+            if ( resourceProviderClass == null ) {                
+                FileUtils.write( getFile(), content );
                 return;
             }
 
