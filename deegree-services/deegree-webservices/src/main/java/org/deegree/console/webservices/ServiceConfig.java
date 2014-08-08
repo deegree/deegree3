@@ -35,18 +35,13 @@ import java.net.URL;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.deegree.console.Config;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
-import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.deegree.workspace.standard.IncorporealResourceLocation;
 
 public class ServiceConfig extends Config {
 
@@ -64,11 +59,13 @@ public class ServiceConfig extends Config {
             ResourceMetadata<?> md = getWorkspace().getResourceMetadata( OWSMetadataProviderProvider.class, id );
             metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
         } else {
-            ResourceIdentifier ident = new DefaultResourceIdentifier( OWSMetadataProviderProvider.class, id );
-            ResourceLocation loc = new IncorporealResourceLocation( IOUtils.toByteArray( METADATA_EXAMPLE_URL ), ident );
-            getWorkspace().add( loc );
-            ResourceMetadata md = getWorkspace().getResourceMetadata( ident.getProvider(), id );
-            metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
+            StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
+            sb.append( "&id=" ).append( id );
+            sb.append( "&schemaUrl=" ).append( ((OWSMetadataProviderProvider)mgr.getProviders().get( 0 )).getSchema() );
+            sb.append( "&resourceProviderClass=" ).append( OWSMetadataProviderProvider.class.getCanonicalName() );
+            sb.append( "&nextView=" ).append( "/console/webservices/index" );
+            sb.append( "&emptyTemplate=" ).append( METADATA_EXAMPLE_URL );
+            return sb.toString();
         }
         return metadataConfig.edit();
     }
