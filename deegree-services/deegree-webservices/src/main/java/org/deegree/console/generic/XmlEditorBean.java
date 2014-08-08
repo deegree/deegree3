@@ -61,7 +61,6 @@ import org.apache.xerces.xni.parser.XMLParseException;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
@@ -238,65 +237,39 @@ public class XmlEditorBean implements Serializable {
                 workspace.destroy( md.getIdentifier() );
 
                 md.getLocation().setContent( IOUtils.toInputStream( content ) );
-                // special handling because of non-identity between id and filename:
-                if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
-                    if ( workspace instanceof DefaultWorkspace ) {
-                        File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
-                        file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
-                        FileUtils.write( file, content );
-                    } else {
-                        LOG.warn( "Could not persist metadata configuration." );
-                    }
-                } else {
-                    workspace.getLocationHandler().persist( md.getLocation() );
-                }
-
+                workspace.getLocationHandler().persist( md.getLocation() );
                 workspace.getLocationHandler().activate( md.getLocation() );
                 WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
             } else {
                 // newly create entry
+                if ( !( workspace instanceof DefaultWorkspace ) ) {
+                    throw new Exception( "Could not persist configuration." );
+                }
+                
                 ResourceManager<?> mgr = null;
-                searchmgr: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
+                outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
                     for ( ResourceProvider<?> p : r.getProviders() ) {
                         if ( p != null && cls.isAssignableFrom( p.getClass() ) ) {
                             mgr = r;
-                            break searchmgr;
+                            break outer;
                         }
                     }
                 }
 
-                if ( !( workspace instanceof DefaultWorkspace ) ) {
-                    throw new Exception( "Could not persist configuration." );
-                }
-
                 File wsDir = ( (DefaultWorkspace) workspace ).getLocation();
 
-                File resourceFile = null;
-                File resourceDir = null;
-                File resourceMainFile = null;
-                if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
-                    File baseResourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
-                    resourceMainFile = new File( baseResourceDir, id + ".xml" );
-                    
-                    resourceDir = new File( wsDir, "services" );
-                    resourceFile = new File( resourceDir, id + "_metadata.xml" );
-                } else {
-                    resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
-                    resourceMainFile = resourceFile = new File( resourceDir, id + ".xml" );
-                }
+                File resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
+                File resourceFile = new File( resourceDir, id + ".xml" );
 
                 if ( !resourceDir.exists() && !resourceDir.mkdirs() ) {
                     throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
                 }
+
                 FileUtils.writeStringToFile( resourceFile, content );
 
                 DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( cls, id );
-                ResourceLocation<?> loc = new DefaultResourceLocation( resourceMainFile, ident );
+                ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
                 workspace.add( loc );
-
-                if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
-                    workspace.destroy( ident );
-                }
                 
                 workspace.getLocationHandler().activate( loc );
                 WorkspaceUtils.reinitializeChain( workspace, ident );
