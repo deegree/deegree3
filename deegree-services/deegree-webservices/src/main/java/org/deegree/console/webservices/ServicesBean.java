@@ -27,7 +27,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,9 +63,7 @@ public class ServicesBean extends AbstractResourceManagerBean<OwsManager> implem
         super( OwsManager.class );
         Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
         if ( workspace instanceof DefaultWorkspace ) {
-            File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
-            file = new File( file, "main.xml" );
-            mainConfig = new MainConfig( file.getAbsolutePath() );
+            mainConfig = new MainConfig( ( (DefaultWorkspace) workspace ).getLocation().getName() );
         }
     }
 

@@ -33,6 +33,7 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.Config;
 
 /**
@@ -44,25 +45,31 @@ import org.deegree.console.Config;
  */
 public class ProxyConfig extends Config {
 
+    private static final long serialVersionUID = 8497662530418889854L;
+
     private static final URL PROXY_SCHEMA_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/3.0.0/proxy.xsd" );
 
     private static final URL PROXY_EXAMPLE_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/3.0.0/example.xml" );
 
-    private String file;
+    private static final String FILE_NAME = "proxy.xml";
+    
+    private File file;
 
-    public ProxyConfig( String file ) {
+    public ProxyConfig( ) {
         super( null, null, "/console/proxy/index", false );
-        this.file = file;
+        
+        file = new File( new File ( DeegreeWorkspace.getWorkspaceRoot() ), FILE_NAME );        
     }
 
     @Override
     public String edit()
                             throws IOException {
-        FileUtils.copyURLToFile( getTemplate(), new File( file ) );
+        if ( !file.exists() ) {
+            FileUtils.copyURLToFile( getTemplate(), file );
+        }
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-        sb.append( "&id=" ).append( id );
         sb.append( "&schemaUrl=" ).append( PROXY_SCHEMA_URL.toString() );
-        sb.append( "&fileName=" ).append( file );
+        sb.append( "&fileName=" ).append( FILE_NAME );
         sb.append( "&nextView=" ).append( getResourceOutcome() );
         return sb.toString();
     }

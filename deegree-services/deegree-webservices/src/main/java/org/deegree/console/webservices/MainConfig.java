@@ -34,6 +34,7 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.console.Config;
 
 /**
@@ -48,26 +49,36 @@ public class MainConfig extends Config implements Serializable {
     private static final long serialVersionUID = -8185523546919352171L;
 
     private static final URL MAIN_SCHEMA_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
-
-    private String file;
+    
+    private static final String FILE_NAME = "services/main.xml";
+    
+    private String workspaceName;
+    private File file;
 
     public MainConfig() {
         super( null, null, "/console/webservices/index", false );
     }
 
-    public MainConfig( String file ) {
+    public MainConfig( String workspaceName) {
         super( null, null, "/console/webservices/index", false );
-        this.file = file;
+        
+        file = new File ( new File ( DeegreeWorkspace.getWorkspaceRoot() ), workspaceName );
+        for ( String filePart : FILE_NAME.split( "/" ) ) {
+            file = new File( file, filePart );
+        }
+        
+        this.workspaceName = workspaceName;
     }
 
     @Override
     public String edit()
                             throws IOException {
-        FileUtils.copyURLToFile( getTemplate(), new File( file ) );
+        if ( !file.exists() ) {
+            FileUtils.copyURLToFile( getTemplate(), file );
+        }
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-        sb.append( "&id=" ).append( id );
         sb.append( "&schemaUrl=" ).append( MAIN_SCHEMA_URL.toString() );
-        sb.append( "&fileName=" ).append( file );
+        sb.append( "&fileName=" ).append( workspaceName + "/" + FILE_NAME );
         sb.append( "&nextView=" ).append( getResourceOutcome() );
         return sb.toString();
     }
