@@ -35,12 +35,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.console.metadata.ConfigExample;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
 import org.deegree.workspace.ResourceLocation;
@@ -53,9 +55,9 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
  * JSF backing bean for views of type "Create new XYZ resource".
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.4
  */
 @ManagedBean
@@ -138,6 +140,11 @@ public abstract class AbstractCreateResourceBean {
             provider = metadata.getProviders().get( 0 );
         }
         ResourceProviderMetadata md = ResourceProviderMetadata.getMetadata( provider );
+        final Map<String, ConfigExample> examples = md.getExamples();
+        if ( examples == null || !examples.containsKey( configTemplate ) ) {
+            JsfUtils.indicateException( "Creating resource", "Internal error: Example template missing!?" );
+            return getOutcome();
+        }
         URL templateURL = md.getExamples().get( configTemplate ).getContentLocation();
         try {
             Class<?> pcls = metadata.getManager().getMetadata().getProviderClass();
