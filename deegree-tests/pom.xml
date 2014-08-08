@@ -59,12 +59,12 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
@@ -81,6 +81,7 @@
   </dependencies>
 
   <modules>
+    <module>deegree-testservice</module>
     <!-- workspace tests must run first! -->
     <module>deegree-workspace-tests</module>
     <module>deegree-compliance-tests</module>
