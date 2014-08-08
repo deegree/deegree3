@@ -153,6 +153,10 @@ public abstract class AbstractCreateResourceBean {
                 throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
             }
             File resourceFile = new File( resourceDir, id + ".xml" );
+            if ( resourceFile.exists() ) {
+                JsfUtils.indicateException( "Creating resource", "Resource with this identifier already exists!" );
+                return getOutcome();
+            }
             FileOutputStream os = new FileOutputStream( resourceFile );
             IOUtils.copy( templateURL.openStream(), os );
             os.close();
