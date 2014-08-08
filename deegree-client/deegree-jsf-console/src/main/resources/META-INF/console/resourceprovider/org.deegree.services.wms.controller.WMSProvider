@@ -1,4 +1,0 @@
-name=WMS
-example1_name=example
-example1_location=/META-INF/schemas/services/wms/3.4.0/example.xml
-example1_description=WMS configuration based on themes
