@@ -64,7 +64,9 @@ public class ProxyConfig extends Config {
     @Override
     public String edit()
                             throws IOException {
-        FileUtils.copyURLToFile( getTemplate(), file );
+        if ( !file.exists() ) {
+            FileUtils.copyURLToFile( getTemplate(), file );
+        }
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&schemaUrl=" ).append( PROXY_SCHEMA_URL.toString() );
         sb.append( "&fileName=" ).append( FILE_NAME );
