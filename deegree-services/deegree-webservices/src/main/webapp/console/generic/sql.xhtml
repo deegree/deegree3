@@ -1,0 +1,37 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <script type="text/javascript" src="../js/CodeMirror-0.94/js/codemirror.js"></script>
+    <script type="text/javascript">
+    var editor
+    function activateEditor(){
+        editor = CodeMirror.fromTextArea("sqlForm:sqlArea", {
+          parserfile: "parsesql.js",
+          path: "../js/CodeMirror-0.94/js/",
+          stylesheet: "../js/CodeMirror-0.94/css/sqlcolors.css"
+        })
+        var p = document.getElementById("highlighting")
+        p.parentNode.removeChild(p)
+    }
+    function save(){
+        editor &amp;&amp; editor.toTextArea()
+    }
+  </script>
+    <h:form id="sqlForm">
+      <fieldset style="height: 90%;" class="fieldset">
+        <legend>
+          <h:outputText styleClass="titel" value="Setup database" />
+        </legend>
+        <h:inputTextarea id="sqlArea" cols="70" rows="21" value="#{execution.statements}" />
+        <h:outputText value="#{execution.message}" />
+        <br /> <br />
+        <h:commandButton styleClass="buttonSave" value="#{labels.sql_execute}" action="#{execution.execute}" />
+        <h:commandButton styleClass="buttonCancel" value="#{labels.sql_back}" action="#{execution.getBackOutcome}" />
+        <p id="highlighting" style="cursor: pointer;" class="schema" onclick="activateEditor();">Turn on
+          highlighting</p>
+      </fieldset>
+    </h:form>
+  </ui:define>
+</ui:composition>

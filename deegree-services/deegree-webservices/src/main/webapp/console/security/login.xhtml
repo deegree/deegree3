@@ -1,0 +1,16 @@
+<h:form id="logInForm" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <h:panelGroup rendered="#{!logBean.passwordSet}">
+    <h:panelGroup>
+      <h:outputText styleClass="error" value="Security hint: No password has been set." />
+    </h:panelGroup>
+  </h:panelGroup>
+  <h:panelGroup rendered="#{logBean.passwordSet and !logBean.loggedIn}">
+    <h:outputLabel styleClass="label" value="#{labels.password}" />
+    <h:inputSecret styleClass="liste" id="password" value="#{logBean.currentPassword}" />
+    <h:commandButton styleClass="buttonLogin" value="#{labels.login}" action="#{logBean.logIn}" />
+  </h:panelGroup>
+  <h:panelGroup rendered="#{logBean.passwordSet and logBean.loggedIn}">
+    <h:commandButton styleClass="buttonLogout" value="#{labels.logout}" action="#{logBean.logOut}" />
+  </h:panelGroup>
+</h:form>

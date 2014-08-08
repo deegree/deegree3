@@ -1,0 +1,38 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <h:panelGroup>
+      <fieldset class="fieldset">
+        <legend>
+          <h:outputText styleClass="titel" value="Create new layer" />
+        </legend>
+        <h:form>
+          <h:panelGroup>
+            <h:outputLabel styleClass="label" for="newFSBt" value="Identifier" />
+            <h:inputText styleClass="liste" id="newFSBt" value="#{createLayerBean.id}" size="16" required="true"
+              requiredMessage="#{labels.resource_name_req}" />
+            <br />
+            <h:panelGroup>
+              <h:outputLabel styleClass="label" for="newFSBt" value="Type" />
+              <h:selectOneMenu styleClass="liste" value="#{createLayerBean.type}">
+                <f:selectItems value="#{createLayerBean.types}" />
+                <f:ajax listener="#{createLayerBean.changeType}" render="templates" />
+              </h:selectOneMenu>
+            </h:panelGroup>
+            <h:panelGroup id="templates">
+              <h:outputText value="XML config template" />
+              <h:selectOneMenu styleClass="liste" value="#{createLayerBean.configTemplate}">
+                <f:selectItems value="#{createLayerBean.configTemplates}" />
+              </h:selectOneMenu>
+            </h:panelGroup>
+            <br />
+            <h:commandButton styleClass="buttonCreateNew" value="#{labels.featureStores_new}"
+              action="#{createLayerBean.create}" />
+          </h:panelGroup>
+        </h:form>
+      </fieldset>
+    </h:panelGroup>
+  </ui:define>
+</ui:composition>

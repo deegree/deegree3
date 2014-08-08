@@ -1,0 +1,13 @@
+body {
+	background-color: #ffffff;
+	color: grey;
+	font-family: "Courier New", Courier, monospace;
+	font-weight: normal;
+	font-size: small;
+	padding: 5pt;
+}
+
+a {
+	text-decoration: none;
+	color: grey;
+}

@@ -1,0 +1,3 @@
+name=services
+start_view=/console/webservices/index
+category=service

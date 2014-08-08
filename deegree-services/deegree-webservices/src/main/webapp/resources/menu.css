@@ -1,0 +1,30 @@
+.menutopic {
+	font-weight: bold;
+	line-height: 1.4em;
+}
+
+.titel {
+	font-weight: bold;
+	line-height: 1.4em;
+}
+
+.menuitem {
+	margin-left: 15px;
+	line-height: 1.4em;
+}
+
+.navi {
+	color: grey;
+}
+
+span.navi {
+	color: #DCDAD5;
+}
+
+.navi:hover {
+	color: green;
+}
+
+.naviactive {
+	color: green;	
+}

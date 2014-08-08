@@ -1,0 +1,3 @@
+name=jdbc
+start_view=/console/jdbc/index
+category=connection
