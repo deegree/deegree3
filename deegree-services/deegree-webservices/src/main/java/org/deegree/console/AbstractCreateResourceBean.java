@@ -30,8 +30,6 @@ package org.deegree.console;
 import static org.deegree.console.JsfUtils.getWorkspace;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,16 +39,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
-import org.apache.commons.io.IOUtils;
 import org.deegree.console.metadata.ConfigExample;
 import org.deegree.console.metadata.ResourceManagerMetadata;
 import org.deegree.console.metadata.ResourceProviderMetadata;
-import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
-import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
-import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.deegree.workspace.standard.DefaultResourceLocation;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultWorkspace;
 
 /**
@@ -147,21 +141,19 @@ public abstract class AbstractCreateResourceBean {
         }
         URL templateURL = md.getExamples().get( configTemplate ).getContentLocation();
         try {
-            Class<?> pcls = metadata.getManager().getMetadata().getProviderClass();
-            DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( pcls, id );
-            if ( !resourceDir.exists() && !resourceDir.mkdirs() ) {
-                throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
+            URL schemaURL = null;
+            if ( provider != null && provider instanceof AbstractResourceProvider<?> ) {
+                schemaURL = ( (AbstractResourceProvider<?>) provider ).getSchema();
             }
-            File resourceFile = new File( resourceDir, id + ".xml" );
-            FileOutputStream os = new FileOutputStream( resourceFile );
-            IOUtils.copy( templateURL.openStream(), os );
-            os.close();
-            ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
-            getWorkspace().add( loc );
-            ResourceMetadata<?> rmd = getWorkspace().getResourceMetadata( ident.getProvider(), ident.getId() );
-            Config c = new Config( rmd, metadata.getManager(), getOutcome(), true );
-            c.setTemplate( templateURL );
-            return c.edit();
+
+            StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
+            sb.append( "&id=" ).append( id );
+            sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
+            sb.append( "&resourceProviderClass=" ).append( metadata.getManager().getMetadata().getProviderClass().getCanonicalName() );
+            sb.append( "&nextView=" ).append( getOutcome() );
+            sb.append( "&emptyTemplate=" ).append( templateURL );
+
+            return sb.toString();
         } catch ( Exception t ) {
             JsfUtils.indicateException( "Creating resource", t );
         }
