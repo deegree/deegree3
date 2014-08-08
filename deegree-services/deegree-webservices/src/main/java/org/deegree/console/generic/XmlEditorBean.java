@@ -61,7 +61,10 @@ import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.standard.AbstractResourceProvider;
@@ -260,6 +263,24 @@ public class XmlEditorBean implements Serializable {
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Document is valid.", null );
             getCurrentInstance().addMessage( null, fm );
         }
+        return null;
+    }
+    
+    public String getTitle() throws ClassNotFoundException {
+        if ( fileName != null ) {
+            return fileName;
+        }
+        
+        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+        ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+        
+        for ( ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers() ) {
+            if ( resourceManager.getProviders().contains( md.getProvider() ) ) {
+                return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+            }
+        }        
+        
         return null;
     }
 }
