@@ -55,13 +55,14 @@ public class ServiceConfig extends Config {
                             throws IOException {
         ResourceManager mgr = getWorkspace().getResourceManager( OWSMetadataProviderManager.class );
         Config metadataConfig;
-        if ( getWorkspace().getResource( OWSMetadataProviderProvider.class, id ) != null ) {
-            ResourceMetadata<?> md = getWorkspace().getResourceMetadata( OWSMetadataProviderProvider.class, id );
+        if ( getWorkspace().getResource( OWSMetadataProviderProvider.class, id + "_metadata" ) != null ) {
+            ResourceMetadata<?> md = getWorkspace().getResourceMetadata( OWSMetadataProviderProvider.class,
+                                                                         id + "_metadata" );
             metadataConfig = new Config( md, mgr, "/console/webservices/index", true );
         } else {
             StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
-            sb.append( "&id=" ).append( id );
-            sb.append( "&schemaUrl=" ).append( ((OWSMetadataProviderProvider)mgr.getProviders().get( 0 )).getSchema() );
+            sb.append( "&id=" ).append( id ).append( "_metadata" );
+            sb.append( "&schemaUrl=" ).append( ( (OWSMetadataProviderProvider) mgr.getProviders().get( 0 ) ).getSchema() );
             sb.append( "&resourceProviderClass=" ).append( OWSMetadataProviderProvider.class.getCanonicalName() );
             sb.append( "&nextView=" ).append( "/console/webservices/index" );
             sb.append( "&emptyTemplate=" ).append( METADATA_EXAMPLE_URL );
