@@ -226,7 +226,7 @@ public class WorkspaceBean implements Serializable {
         if ( bean != null ) {
             bean.init();
         }
-        return ctx.getViewRoot().getViewId();
+        return "/index?faces-redirect=true";
     }
 
     public void downloadWorkspace() {
