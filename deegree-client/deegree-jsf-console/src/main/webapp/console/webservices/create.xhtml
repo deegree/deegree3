@@ -14,10 +14,13 @@
             <h:inputText styleClass="liste" id="newFSBt" value="#{createServiceBean.id}" size="16" required="true"
               requiredMessage="#{labels.resource_name_req}" />
             <br />
-            <h:outputLabel styleClass="label" for="newFSBt" value="Service type" />
-            <h:selectOneMenu styleClass="liste" value="#{createServiceBean.type}">
-              <f:selectItems value="#{createServiceBean.types}" />
-            </h:selectOneMenu>
+            <h:panelGroup>
+              <h:outputLabel styleClass="label" for="newFSBt" value="Service type" />
+              <h:selectOneMenu styleClass="liste" value="#{createServiceBean.type}">
+                <f:selectItems value="#{createServiceBean.types}" />
+                <f:ajax listener="#{createServiceBean.changeType}" render="templates" />
+              </h:selectOneMenu>
+            </h:panelGroup>
             <h:panelGroup id="templates">
               <h:outputText value="XML config template" />
               <h:selectOneMenu styleClass="liste" value="#{createServiceBean.configTemplate}">
