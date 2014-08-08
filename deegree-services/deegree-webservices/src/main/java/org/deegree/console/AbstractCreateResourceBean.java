@@ -145,10 +145,17 @@ public abstract class AbstractCreateResourceBean {
             if ( provider != null && provider instanceof AbstractResourceProvider<?> ) {
                 schemaURL = ( (AbstractResourceProvider<?>) provider ).getSchema();
             }
-
+            File resourceFile = new File( resourceDir, id + ".xml" );
+            if ( resourceFile.exists() ) {
+                JsfUtils.indicateException( "Creating resource", "Resource with this identifier already exists!" );
+                return getOutcome();
+            }
             StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
             sb.append( "&id=" ).append( id );
-            sb.append( "&schemaUrl=" ).append( schemaURL.toString() );
+            sb.append( "&schemaUrl=" );
+            if ( schemaURL != null ) {
+                sb.append( schemaURL.toString() )
+            }
             sb.append( "&resourceProviderClass=" ).append( metadata.getManager().getMetadata().getProviderClass().getCanonicalName() );
             sb.append( "&nextView=" ).append( getOutcome() );
             sb.append( "&emptyTemplate=" ).append( templateURL );
