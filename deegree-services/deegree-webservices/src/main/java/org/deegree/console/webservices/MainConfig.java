@@ -27,12 +27,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console.webservices;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.deegree.console.Config;
 
@@ -63,11 +61,11 @@ public class MainConfig extends Config implements Serializable {
     @Override
     public String edit()
                             throws IOException {
-        FileUtils.copyURLToFile( getTemplate(), new File( file ) );
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&id=" ).append( id );
         sb.append( "&schemaUrl=" ).append( MAIN_SCHEMA_URL.toString() );
         sb.append( "&fileName=" ).append( file );
+        sb.append( "&emptyTemplate=").append( getTemplate() );
         sb.append( "&nextView=" ).append( getResourceOutcome() );
         return sb.toString();
     }

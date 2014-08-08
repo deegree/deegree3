@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.List;
@@ -60,11 +61,15 @@ import org.apache.xerces.xni.parser.XMLParseException;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
+import org.deegree.workspace.ResourceLocation;
+import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 
@@ -89,6 +94,16 @@ public class XmlEditorBean implements Serializable {
     private String schemaAsText;
 
     private String resourceProviderClass;
+
+    private String emptyTemplate;
+
+    public String getEmptyTemplate() {
+        return emptyTemplate;
+    }
+
+    public void setEmptyTemplate( String emptyTemplate ) {
+        this.emptyTemplate = emptyTemplate;
+    }
 
     public String getFileName() {
         return fileName;
@@ -145,7 +160,18 @@ public class XmlEditorBean implements Serializable {
                             throws IOException, ClassNotFoundException {
         if ( content == null ) {
             if ( resourceProviderClass == null ) {
-                content = FileUtils.readFileToString( new File( fileName ) );
+                File f = null;
+                if ( fileName != null )
+                    f = new File( fileName );
+
+                if ( fileName != null && !f.exists() && emptyTemplate != null ) {
+                    // load template content if the requested file did not exists
+                    StringWriter sw = new StringWriter();
+                    IOUtils.copy( ( new URL( emptyTemplate ) ).openStream(), sw );
+                    content = sw.toString();
+                    return content;
+                }
+                content = FileUtils.readFileToString( f );
                 return content;
             }
             Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
@@ -153,6 +179,10 @@ public class XmlEditorBean implements Serializable {
             ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
             if ( md != null ) {
                 content = IOUtils.toString( md.getLocation().getAsStream() );
+            } else if ( emptyTemplate != null ) {
+                StringWriter sw = new StringWriter();
+                IOUtils.copy( ( new URL( emptyTemplate ) ).openStream(), sw );
+                content = sw.toString();
             }
         }
         return content;
@@ -190,7 +220,7 @@ public class XmlEditorBean implements Serializable {
 
     public void setResourceProviderClass( String providerClass ) {
         this.resourceProviderClass = providerClass;
-    }    
+    }
 
     private void activate() {
         try {
@@ -203,26 +233,50 @@ public class XmlEditorBean implements Serializable {
             Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
             ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
 
-            workspace.destroy( md.getIdentifier() );
+            if ( md != null ) {
+                workspace.destroy( md.getIdentifier() );
 
-            md.getLocation().setContent( IOUtils.toInputStream( content ) );
-            // special handling because of non-identity between id and filename:
-            if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
-                if ( workspace instanceof DefaultWorkspace ) {
-                    File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
-                    file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
-                    FileUtils.write( file, content );
-                } else {
-                    LOG.warn( "Could not persist metadata configuration." );
-                }
-            } else {
+                md.getLocation().setContent( IOUtils.toInputStream( content ) );
                 workspace.getLocationHandler().persist( md.getLocation() );
-            }
+                workspace.getLocationHandler().activate( md.getLocation() );
+                WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
+            } else {
+                // newly create entry
+                if ( !( workspace instanceof DefaultWorkspace ) ) {
+                    throw new Exception( "Could not persist configuration." );
+                }
+                
+                ResourceManager<?> mgr = null;
+                outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
+                    for ( ResourceProvider<?> p : r.getProviders() ) {
+                        if ( p != null && cls.isAssignableFrom( p.getClass() ) ) {
+                            mgr = r;
+                            break outer;
+                        }
+                    }
+                }
 
-            workspace.getLocationHandler().activate( md.getLocation() );
-            WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
+                File wsDir = ( (DefaultWorkspace) workspace ).getLocation();
+
+                File resourceDir = new File( wsDir, mgr.getMetadata().getWorkspacePath() );
+                File resourceFile = new File( resourceDir, id + ".xml" );
+
+                if ( !resourceDir.exists() && !resourceDir.mkdirs() ) {
+                    throw new IOException( "Could not create resource directory '" + resourceDir + "'" );
+                }
+
+                FileUtils.writeStringToFile( resourceFile, content );
+
+                DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( cls, id );
+                ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
+                workspace.add( loc );
+                
+                workspace.getLocationHandler().activate( loc );
+                WorkspaceUtils.reinitializeChain( workspace, ident );
+            }
         } catch ( Exception t ) {
-            t.printStackTrace();
+            LOG.warn( "Could not activate Resource {}", t.getMessage() );
+            LOG.trace( "Exception", t );
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;
