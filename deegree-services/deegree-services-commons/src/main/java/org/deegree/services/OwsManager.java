@@ -61,7 +61,7 @@ public class OwsManager extends DefaultResourceManager<OWS> {
     private Workspace workspace;
 
     public OwsManager() {
-        super( new DefaultResourceManagerMetadata<OWS>( OWSProvider.class, "web services", "services/" ) );
+        super( new DefaultResourceManagerMetadata<OWS>( OWSProvider.class, "web services", "services" ) );
     }
 
     @Override

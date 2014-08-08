@@ -61,6 +61,7 @@ import org.apache.xerces.xni.parser.XMLParseException;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
@@ -245,7 +246,7 @@ public class XmlEditorBean implements Serializable {
                 if ( !( workspace instanceof DefaultWorkspace ) ) {
                     throw new Exception( "Could not persist configuration." );
                 }
-                
+
                 ResourceManager<?> mgr = null;
                 outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
                     for ( ResourceProvider<?> p : r.getProviders() ) {
@@ -270,7 +271,7 @@ public class XmlEditorBean implements Serializable {
                 DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( cls, id );
                 ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
                 workspace.add( loc );
-                
+
                 workspace.getLocationHandler().activate( loc );
                 WorkspaceUtils.reinitializeChain( workspace, ident );
             }
@@ -314,6 +315,24 @@ public class XmlEditorBean implements Serializable {
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Document is valid.", null );
             getCurrentInstance().addMessage( null, fm );
         }
+        return null;
+    }
+
+    public String getTitle() throws ClassNotFoundException {
+        if ( fileName != null ) {
+            return fileName;
+        }
+
+        Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
+        Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
+        ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
+
+        for ( ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers() ) {
+            if ( resourceManager.getProviders().contains( md.getProvider() ) ) {
+                return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+            }
+        }
+
         return null;
     }
 }

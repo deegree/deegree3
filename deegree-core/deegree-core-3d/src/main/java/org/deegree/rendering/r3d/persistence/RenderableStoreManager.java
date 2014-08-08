@@ -50,7 +50,7 @@ public class RenderableStoreManager extends DefaultResourceManager<RenderableSto
 
     public RenderableStoreManager() {
         super( new DefaultResourceManagerMetadata<RenderableStore>( RenderableStoreProvider.class, "renderable stores",
-                                                                    "datasources/renderable/" ) );
+                                                                    "datasources/renderable" ) );
     }
 
 }

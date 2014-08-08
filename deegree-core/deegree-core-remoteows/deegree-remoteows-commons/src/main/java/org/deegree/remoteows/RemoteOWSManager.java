@@ -49,7 +49,7 @@ public class RemoteOWSManager extends DefaultResourceManager<RemoteOWS> {
 
     public RemoteOWSManager() {
         super( new DefaultResourceManagerMetadata<RemoteOWS>( RemoteOWSProvider.class, "remote OWS stores",
-                                                              "datasources/remoteows/" ) );
+                                                              "datasources/remoteows" ) );
     }
 
 }
