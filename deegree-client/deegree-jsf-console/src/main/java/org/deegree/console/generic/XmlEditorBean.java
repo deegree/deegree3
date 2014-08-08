@@ -184,60 +184,13 @@ public class XmlEditorBean implements Serializable {
         return null;
     }
 
-    public String saveAndApply() {
-        if ( checkValidity() ) {
-            activate();
-            FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Saved configuration.", null );
-            getCurrentInstance().addMessage( null, fm );
-            return nextView;
-        }
-        return null;
-    }
-
     public String getResourceProviderClass() {
         return resourceProviderClass;
     }
 
     public void setResourceProviderClass( String providerClass ) {
         this.resourceProviderClass = providerClass;
-    }
-
-    private void saveFile() {
-        try {
-            if ( resourceProviderClass == null ) {
-                FileUtils.write( new File( fileName ), content );
-                return;
-            }
-
-            Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
-            Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
-            ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
-
-            workspace.destroy( md.getIdentifier() );
-
-            md.getLocation().setContent( IOUtils.toInputStream( content ) );
-            // special handling because of non-identity between id and filename:
-            if ( resourceProviderClass.equals( OWSMetadataProviderProvider.class.getCanonicalName() ) ) {
-                if ( workspace instanceof DefaultWorkspace ) {
-                    File file = new File( ( (DefaultWorkspace) workspace ).getLocation(), "services" );
-                    file = new File( file, md.getIdentifier().getId() + "_metadata.xml" );
-                    FileUtils.write( file, content );
-                } else {
-                    LOG.warn( "Could not persist metadata configuration." );
-                }
-            } else {
-                workspace.getLocationHandler().persist( md.getLocation() );
-            }
-
-            workspace.getLocationHandler().activate( md.getLocation() );
-            WorkspaceUtils.reinitializeChain( workspace, md.getIdentifier() );
-        } catch ( Exception t ) {
-            t.printStackTrace();
-            FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
-            FacesContext.getCurrentInstance().addMessage( null, fm );
-            return;
-        }
-    }
+    }    
 
     private void activate() {
         try {
