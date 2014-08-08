@@ -1,0 +1,42 @@
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+  <ui:define name="center">
+    <f:view>
+      <h:panelGroup>
+        <fieldset class="fieldset">
+          <legend>
+            <h:outputText styleClass="titel" value="Coverage stores" />
+          </legend>
+          <h:form>
+            <table style="font-size: small; margin-bottom: 20px">
+              <ui:repeat value="#{coverageManagerBean.configs}" var="config">
+                <tr align="left">
+                  <td><h:outputLabel styleClass="buttonActivate" rendered="#{config.state=='Initialized'}"
+                      value="#{labels.featureStores_deactivate}" /> <h:outputLabel styleClass="buttonDeactivate"
+                      rendered="#{config.state!='Error' and config.state!='Initialized'}" value="#{labels.featureStores_activate}" /> <h:outputLabel
+                      styleClass="buttonError" rendered="#{config.state=='Error'}" value="!" /></td>
+                  <td />
+                  <td><h:outputLabel styleClass="buttonDeactivate" value="#{config.id}" /></td>
+                  <td><h:commandButton styleClass="buttonInfo" rendered="#{config.state=='Initialized'}"
+                      value="Deactivate" action="#{config.deactivate}" /> <h:commandButton styleClass="buttonInfo"
+                      rendered="#{config.state!='Error' and config.state!='Initialized'}" value="Activate" action="#{config.activate}" /></td>
+                  <td><h:commandButton styleClass="buttonEdit" value="#{labels.featureStores_edit}"
+                      action="#{config.edit}" /></td>
+                  <td><h:commandButton styleClass="buttonDelete" value="#{labels.featureStores_delete}"
+                      action="#{config.delete}" onclick="return confirmDelete();" /></td>
+                  <td><h:commandButton styleClass="buttonError" rendered="#{config.state=='Error'}"
+                      value="Show errors" action="#{config.showErrors}" /></td>
+                </tr>
+              </ui:repeat>
+            </table>
+          </h:form>
+          <h:form>
+            <h:link styleClass="buttonCreateNew" value="#{labels.featureStores_new}" outcome="create" />
+          </h:form>
+        </fieldset>
+      </h:panelGroup>
+    </f:view>
+  </ui:define>
+</ui:composition>

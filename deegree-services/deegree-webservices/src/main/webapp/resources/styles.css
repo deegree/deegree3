@@ -1,0 +1,184 @@
+body {
+	background-color: #ffffff;
+	color: grey;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: small;
+	padding: 5pt;
+}
+
+a {
+	text-decoration: none !important;
+}
+
+/* Begin: Layout elements */
+#container {
+	background-image:url("#{resource['images:bg.png']}");
+	background-repeat: no-repeat;
+	text-align: justify;
+	margin-top: 0;
+	margin-right: auto;
+	margin-bottom: 0px;
+	margin-left: auto;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	width:930px;
+	height:690px;
+	z-index:1;
+	top: 30px;
+	left: auto;
+	text-decoration: none;
+}
+
+#header {
+	width:860px;
+	padding-top: 100px;
+	margin-left:40px;
+	margin-bottom: 10px;
+}
+
+#logo {
+	float: left;
+	margin-left: 10px;
+}
+
+#login {
+	float: right;
+	margin-right: 10px;
+}
+
+#main {
+	width:860px;
+	height:550px;	
+	margin-left:60px;
+}
+
+#left {
+	position: absolute;
+	top: 140px;
+	left: 50px;
+	width: 160px;
+}
+
+#center {
+	margin-left: 175px;
+	width: 600px;
+	height: 485px;
+    font-size: small;
+	text-align: left;
+	overflow-x: auto;
+	overflow-y: auto;
+/*	float:right;
+	padding-right:20px;
+	margin-right: 10px;
+
+	font-size: small;
+	text-align: left;
+	overflow-x: auto;
+	overflow-y: auto;
+	*/
+}
+
+#footer {
+	border-top: 1px solid black;
+	font-size: small;
+	margin-top: 10px;
+	clear: both;
+	text-align: right;
+	margin-top: 10px;
+}
+/* End: Layout divs */
+
+/* Begin: Styles for "Please wait" */
+#PLEASEWAIT_BG {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	opacity: .20;
+	filter: alpha(opacity = 50);
+	-moz-opacity: 0.2;
+	background-color: gray;
+	display: none;
+}
+
+#PLEASEWAIT {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -100px;
+	margin-top: -50px;
+	height: 100px;
+	width: 200px;
+	z-index: 11;
+	background-color: transparent;
+	text-align: center;
+	font-size: small;
+	display: none;
+	color:grey;
+	font-family:"Courier New",Courier,monospace;
+	font-weight:normal;
+}
+
+.curved {
+	background: transparent;
+	width: 100%;
+}
+
+.curved p {
+	padding: 0.5em;
+	margin: 0 10px;
+}
+
+.curved .b1 {
+	display: block;
+	overflow: hidden;
+	height: 1px;
+	margin: 0 4px;
+	background: black;
+	font-size: 1px;
+}
+
+.curved .b2 {
+	display: block;
+	overflow: hidden;
+	background: white;
+	border-left: 2px solid black;
+	border-right: 2px solid black;
+	margin: 0 3px;
+	height: 1px;
+	font-size: 1px;
+}
+
+.curved .b3 {
+	display: block;
+	overflow: hidden;
+	height: 1px;
+	background: white;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	margin: 0 2px;
+	font-size: 1px;
+}
+
+.curved .b4 {
+	display: block;
+	overflow: hidden;
+	height: 2px;
+	margin: 0 1px;
+	background: white;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	font-size: 1px;
+}
+
+.curved .boxcontent {
+	display: block;
+	background: white;
+	border: 0 solid black;
+	border-width: 0 1px;
+}
+/* End: styles for "Please wait" */
