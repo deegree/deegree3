@@ -14,12 +14,10 @@
   <PropertyName>app:code</PropertyName>
   
   <ogc:Filter>
-    <ogc:And>
       <ogc:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
         <ogc:PropertyName>app:code</ogc:PropertyName>
         <ogc:Literal>301</ogc:Literal>
       </ogc:PropertyIsLike>
-    </ogc:And>
   </ogc:Filter>
   
   </Query>

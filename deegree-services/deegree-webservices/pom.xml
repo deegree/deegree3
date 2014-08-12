@@ -4,17 +4,14 @@
   <packaging>war</packaging>
   <name>deegree-webservices</name>
   <description>Webapp that includes deegree WMS, WFS, CSW, WPS, common datastore modules and service administration console</description>
-
   <properties>
-    <deegree.module.status>ok</deegree.module.status>
+    <deegree.module.status>rework</deegree.module.status>
   </properties>
-
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
     <version>3.4-pre15-SNAPSHOT</version>
   </parent>
-
   <repositories>
     <repository>
       <id>deegree-repo</id>
@@ -27,7 +24,6 @@
       </snapshots>
     </repository>
   </repositories>
-
   <build>
     <plugins>
       <plugin>
@@ -36,23 +32,8 @@
         <executions>
           <execution>
             <goals>
-              <goal>copy</goal>
               <goal>assemble-log4j</goal>
               <goal>generate-buildinfo</goal>
-            </goals>
-            <configuration>
-              <files>
-                <file>
-                  <from>src/main/tomcat/tomcat-users.xml</from>
-                  <to>target/deegree-tomcat/conf/tomcat-users.xml</to>
-                </file>
-              </files>
-            </configuration>
-          </execution>
-          <execution>
-            <id>assemble-console</id>
-            <goals>
-              <goal>assemble-console</goal>
             </goals>
           </execution>
         </executions>
@@ -77,10 +58,29 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>    
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>tomcat-maven-plugin</artifactId>
+        <configuration>
+          <ignorePackaging>true</ignorePackaging>
+        </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <configuration>
+            <additionalProjectFacets>
+              <jst.jsf>2.1</jst.jsf>
+            </additionalProjectFacets>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
-
   <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
   <profiles>
     <profile>
@@ -96,20 +96,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
-              <execution>
-                <id>jsf-console</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>unpack-dependencies</goal>
-                </goals>
-                <configuration>
-                  <classifier>webapp-template</classifier>
-                  <type>zip</type>
-                  <includeGroupIds>org.deegree</includeGroupIds>
-                  <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
-                  <outputDirectory>src/main/webapp</outputDirectory>
-                </configuration>
-              </execution>
               <execution>
                 <id>tomcat</id>
                 <phase>generate-resources</phase>
@@ -176,18 +162,161 @@
       </dependencies>
     </profile>
   </profiles>
-
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-tomcat</artifactId>
       <version>${project.version}</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wmts</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-services-wms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wps</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-csw</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-config</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-memory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-shape</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-simplesql</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-featurestore-sql</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-postgis</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-mdstore-iso</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-mdstore-iso-memory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-themes-remotewms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-remotewms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-tile</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-coverage</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-feature</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-gdal</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-gdal</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-geotiff</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-filesystem</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-merge</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-remotewms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-tilestore-remotewmts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-connectionprovider-datasource</artifactId>
       <version>${project.version}</version>
     </dependency>    
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-jsf-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+      <version>4.0</version>
+    </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -206,6 +335,4 @@
       <artifactId>activation</artifactId>
     </dependency>
   </dependencies>
-
 </project>
-

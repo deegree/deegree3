@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html">
+
+<h:head />
+
+<f:metadata>
+  <f:viewParam name="id" value="#{xmlEditorBean.id}" />
+  <f:viewParam name="fileName" value="#{xmlEditorBean.fileName}" />
+  <f:viewParam name="schemaUrl" value="#{xmlEditorBean.schemaUrl}" />
+  <f:viewParam name="resourceProviderClass" value="#{xmlEditorBean.resourceProviderClass}" />
+  <f:viewParam name="nextView" value="#{xmlEditorBean.nextView}" />
+  <f:viewParam name="emptyTemplate" value="#{xmlEditorBean.emptyTemplate}" />
+</f:metadata>
+
+<h:body>
+  <ui:composition template="/layout.xhtml" xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:dg="http://deegree.org/jsf"
+    xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+    <ui:define name="center">
+
+      <h:outputStylesheet library="codemirror" name="lib/codemirror.css" />
+      <h:outputStylesheet library="codemirror" name="theme/ambiance.css" />
+      <h:outputStylesheet name="codemirror-fix.css" />
+      <h:outputScript library="codemirror" name="lib/codemirror.js" />
+      <h:outputScript library="codemirror" name="mode/xml/xml.js" />
+
+      <h:form prependId="false" styleClass="form-main">
+      	<h:panelGroup id="xmleditor-title" layout="block">
+        	<h:outputText value="Editing XML resource: ${xmlEditorBean.title}" />
+        </h:panelGroup>
+      
+        <h:panelGroup id="xmleditor" layout="block">
+          <h:panelGroup id="xmleditor-actions" layout="block">            
+            <h:commandButton styleClass="buttonSave" value="#{labels.xmlEditor_save}" onclick="save()"
+              action="${xmlEditorBean.save}" />
+            <h:commandButton styleClass="buttonCancel" value="#{labels.xmlEditor_cancel}"
+              action="${xmlEditorBean.cancel}" />
+            <h:commandButton styleClass="buttonCancel" value="Validate" onclick="save()"
+              action="${xmlEditorBean.validate}">
+              <f:ajax execute="xmltextarea" />
+            </h:commandButton>
+            <h:commandButton styleClass="button" value="Toggle fullscreen" onclick="toggleFullscreen(); return false" />            
+          </h:panelGroup>          
+          <h:panelGroup id="xmleditor-input" layout="block">
+            <h:inputTextarea id="xmltextarea" cols="30" rows="10" value="${xmlEditorBean.content}" />
+          </h:panelGroup>
+        </h:panelGroup>
+      </h:form>
+
+      <script type="text/javascript">
+							var textArea;
+							var editor;
+							function activateEditor() {
+								textArea = window.document
+										.getElementById("xmltextarea");
+								config = {
+									theme : "ambiance",
+									lineNumbers : true
+								};
+								editor = CodeMirror.fromTextArea(textArea,
+										config);
+							}
+							function save() {
+								textArea.value = editor.getValue();
+							}
+							function toggleFullscreen() {
+								var main = window.document
+										.getElementById('main');
+								if (main.className == 'main') {
+									main.className = 'fullscreen';
+								} else {
+									main.className = 'main';
+								}
+							}
+							function jumpTo(line, column) {
+								editor.focus();
+								editor.getDoc().setCursor(line - 1, column - 1);								
+							}
+							activateEditor();
+						</script>
+    </ui:define>
+  </ui:composition>
+</h:body>
+</html>
