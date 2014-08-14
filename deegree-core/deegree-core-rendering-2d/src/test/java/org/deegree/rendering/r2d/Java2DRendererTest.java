@@ -254,6 +254,40 @@ public class Java2DRendererTest {
         style.graphic.displacementY = 16;
         r.render( style, geomFac.createPoint( null, new double[] { 2500, 4000 }, mapcs ) );
 
+        style = new PointStyling();
+        style.graphic.size = 32;
+        r.render( style, geomFac.createPoint( null, new double[] { 3000, 4000 }, mapcs ) );
+        style.graphic.size = 16;
+        style.graphic.rotation = 45;
+        r.render( style, geomFac.createPoint( null, new double[] { 3000, 4000 }, mapcs ) );
+
+        style = new PointStyling();
+        style.graphic.size = 32;
+        r.render( style, geomFac.createPoint( null, new double[] { 3500, 4000 }, mapcs ) );
+        style.graphic.size = 16;
+        style.graphic.rotation = 45;
+        style.graphic.displacementX = 16;
+        style.graphic.displacementY = 16;
+        r.render( style, geomFac.createPoint( null, new double[] { 3500, 4000 }, mapcs ) );
+
+        // TODO: fix required!
+        style = new PointStyling();
+        style.graphic.size = 32;
+        r.render( style, geomFac.createPoint( null, new double[] { 4000, 4000 }, mapcs ) );
+        style.graphic.size = 16;
+        style.graphic.anchorPointX = 0.5;
+        style.graphic.anchorPointY = 0;
+        style.graphic.displacementX = 16;
+        style.graphic.displacementY = 16;
+        r.render( style, geomFac.createPoint( null, new double[] { 4000, 4000 }, mapcs ) );
+        style.graphic.size = 16;
+        style.graphic.anchorPointX = 0.5;
+        style.graphic.anchorPointY = 0;
+        style.graphic.rotation = 45;
+        style.graphic.displacementX = 16;
+        style.graphic.displacementY = 16;
+        r.render( style, geomFac.createPoint( null, new double[] { 4000, 4000 }, mapcs ) );
+        
         g.dispose();
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
@@ -263,6 +297,9 @@ public class Java2DRendererTest {
         texts.add( "third line: 32 pixel default square, inside a 16 pixel default square (lower right corner)" );
         texts.add( "third line: 32 pixel default square, inside a 16 pixel default square (upper left corner), two times" );
         texts.add( "third line: 32 pixel default square, inside a 16 pixel default square (lower right corner) again" );
+        texts.add( "third line: 32 pixel default square, inside a 16 pixel rotated square" );
+        texts.add( "third line: 32 pixel default square, outside a 16 pixel rotated square (lower right corner)" );
+        texts.add( "third line: 32 pixel default square, outside a 16 pixel square (upper center at lower right corner of the large square) and a 16 pixel rotated square (lower right corner)" );
         writeTestImage( img, texts, time2 - time );
     }
 
