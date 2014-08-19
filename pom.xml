@@ -1080,8 +1080,8 @@
   </licenses>
 
   <issueManagement>
-    <system>Trac</system>
-    <url>http://tracker.deegree.org/deegree-services/</url>
+    <system>github</system>
+    <url>https://github.com/deegree/deegree3/issues</url>
   </issueManagement>
 
   <developers>
