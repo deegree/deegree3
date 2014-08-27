@@ -1311,7 +1311,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
             String msg = "Error in 'gml:LinearRing' element. Must specify at least four points.";
-            LOG.warn( msg );
+            throw new XMLParsingException( xmlStream, msg );
         }
 
         LinearRing linearRing = geomFac.createLinearRing( gid, crs, points );

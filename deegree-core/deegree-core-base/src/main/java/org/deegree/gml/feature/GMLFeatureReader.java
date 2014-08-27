@@ -35,28 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
-import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -88,6 +66,27 @@ import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
+
 /**
  * {@link AbstractGMLObjectReader} for features and feature collections.
  * 
@@ -116,6 +115,17 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
      */
     public GMLFeatureReader( GMLStreamReader gmlStreamReader ) {
         super( gmlStreamReader );
+    }
+
+    /**
+     * Creates a new {@link GMLFeatureReader} instance that is configured from the given {@link GMLStreamReader}.
+     *
+     * @param gmlStreamReader
+     *            provides the configuration, must not be <code>null</code>
+     * @param skipBrokenGeometries
+     */
+    public GMLFeatureReader( GMLStreamReader gmlStreamReader, boolean skipBrokenGeometries ) {
+        super( gmlStreamReader, skipBrokenGeometries );
     }
 
     /**

@@ -35,32 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.commons;
 
-import static java.util.Collections.EMPTY_LIST;
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
-import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
-import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
-import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -117,6 +91,31 @@ import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import static java.util.Collections.EMPTY_LIST;
+import static javax.xml.stream.XMLStreamConstants.CDATA;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
+import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
+import static org.apache.xerces.xs.XSTypeDefinition.SIMPLE_TYPE;
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+
 /**
  * Concrete extensions are parsers for a specific category of GML objects.
  * 
@@ -141,6 +140,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     protected final GMLReferenceResolver specialResolver;
 
     protected final GmlDocumentIdContext idContext;
+    
+    private final boolean skipBrokenGeometries;
+
+    private final List<String> skippedBrokenGeometryErrors = new ArrayList<String>();
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
@@ -149,11 +152,22 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     /**
      * Creates a new {@link AbstractGMLObjectReader} instance.
-     * 
+     *
      * @param gmlStreamReader
      *            GML stream reader, must not be <code>null</code>
      */
     protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader ) {
+        this( gmlStreamReader, false );
+    }
+
+    /**
+     * Creates a new {@link AbstractGMLObjectReader} instance.
+     *
+     * @param gmlStreamReader
+     *            GML stream reader, must not be <code>null</code>
+     * @param skipBrokenGeometries
+     */
+    protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader, boolean skipBrokenGeometries ) {
         this.gmlStreamReader = gmlStreamReader;
         this.specialResolver = gmlStreamReader.getResolver();
         this.idContext = gmlStreamReader.getIdContext();
@@ -161,11 +175,12 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         this.schema = gmlStreamReader.getAppSchema();
         this.gmlNs = gmlStreamReader.getVersion().getNamespace();
         this.version = gmlStreamReader.getVersion();
+        this.skipBrokenGeometries = skipBrokenGeometries;
     }
 
     /**
      * Returns the object representation for the given property element.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
      *            corresponding <code>END_ELEMENT</code> event
@@ -190,7 +205,18 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         if ( propDecl instanceof SimplePropertyType ) {
             property = parseSimpleProperty( xmlStream, (SimplePropertyType) propDecl );
         } else if ( propDecl instanceof GeometryPropertyType ) {
-            property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
+            QName elementName = xmlStream.getName();
+            try {
+                property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
+            } catch ( XMLParsingException e ) {
+                if ( skipBrokenGeometries ) {
+                    LOG.warn( "Broken geometry was detected: " + e.getMessage() );
+                    skippedBrokenGeometryErrors.add( e.getMessage() );
+                    property = new GenericProperty( propDecl, elementName, null, true );
+                    XMLStreamUtils.skipToEndElement( xmlStream, elementName );
+                } else
+                    throw e;
+            }
         } else if ( propDecl instanceof FeaturePropertyType ) {
             property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
         } else if ( propDecl instanceof CustomPropertyType ) {
@@ -228,6 +254,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         }
         // LOG.debug( "Nope." );
         return null;
+    }
+
+    public List<String> getSkippedBrokenGeometryErrors() {
+        return skippedBrokenGeometryErrors;
     }
 
     private Property parseSimpleProperty( XMLStreamReaderWrapper xmlStream, SimplePropertyType propDecl )
