@@ -558,7 +558,6 @@ public class XMLStreamUtils {
     public static boolean skipToEndElement( XMLStreamReader reader, QName elementName )
                     throws XMLStreamException {
         while ( !( reader.isEndElement() && elementName.equals( reader.getName() ) ) ) {
-            skipElement( reader );
             nextElement( reader );
         }
         return reader.isEndElement() && elementName.equals( reader.getName() );
