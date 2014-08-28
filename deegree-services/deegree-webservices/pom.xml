@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4-pre12-xplan-0.2.1</version>
+    <version>3.4-pre13-xplan-0.3-SNAPSHOT</version>
   </parent>
 
   <repositories>
