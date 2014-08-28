@@ -35,26 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.net.URL;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import junit.framework.Assert;
-
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.gml.property.Property;
@@ -72,6 +53,26 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.junit.Test;
 import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Tests that check the correct reading of {@link Feature} / {@link FeatureCollection} objects from GML instance
@@ -574,4 +575,17 @@ public class GMLFeatureReaderTest {
         assertEquals( 35, gmlReader.getAppSchema().getGeometryTypes().size() );
         assertEquals( 182, fc.size() );
     }
+
+    @Test
+    public void testParsingWithBrokenGeometry()
+                    throws FactoryConfigurationError, Exception {
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../cite/feature/dataset-broken-geometry.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature( true );
+        List<String> skippedBrokenGeometryErrors = gmlReader.getSkippedBrokenGeometryErrors();
+
+        assertThat( 106, is( fc.size() ) );
+        assertThat( skippedBrokenGeometryErrors.size(), is( 1 ) );
+    }
+
 }
