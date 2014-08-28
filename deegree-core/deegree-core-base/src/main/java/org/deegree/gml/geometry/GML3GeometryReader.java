@@ -53,7 +53,6 @@ import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
-import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -94,6 +93,7 @@ import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.geometry.refs.SolidReference;
 import org.deegree.geometry.refs.SurfaceReference;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1310,7 +1310,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
-            String msg = "Error in 'gml:LinearRing' element. Must specify at least four points.";
+            String msg = Messages.get( "GML_LINEAR_RING_LESS_THAN_FOUR_POINTS_ERROR" );
             throw new XMLParsingException( xmlStream, msg );
         }
 
