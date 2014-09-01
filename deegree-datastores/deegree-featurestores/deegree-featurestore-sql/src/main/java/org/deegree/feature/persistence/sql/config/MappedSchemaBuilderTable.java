@@ -143,7 +143,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                      boolean deleteCascadingByDB, Workspace workspace ) throws SQLException,
                             FeatureStoreException {
         this.dialect = dialect;
-        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, jdbcConnId );
+        ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, jdbcConnId);
         conn = prov.getConnection();
         try {
             for ( FeatureTypeMappingJAXB ftDecl : ftDecls ) {
@@ -195,7 +195,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             ftName = new QName( table.getTable() );
         }
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
-        LOG.debug( "Feature type name: '" + ftName + "'." );
+        LOG.debug("Feature type name: '" + ftName + "'.");
 
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
@@ -459,11 +459,20 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     private ColumnMetadata getColumn( TableName qTable, SQLIdentifier columnName )
                             throws SQLException, FeatureStoreException {
         ColumnMetadata md = getColumnMetadataFromDb( qTable ).get( columnName );
+        if ( md == null )
+            md = getUnescapedColumnMetadata( qTable, columnName );
         if ( md == null ) {
             throw new FeatureStoreException( "Table '" + qTable + "' does not have a column with name '" + columnName
                                              + "'" );
         }
         return md;
+    }
+
+    private ColumnMetadata getUnescapedColumnMetadata( TableName qTable, SQLIdentifier columnName )
+                            throws SQLException {
+        String name = columnName.getName();
+        SQLIdentifier unescapedColumnName = new SQLIdentifier( name.substring( 1, name.length() - 1 ) );
+        return getColumnMetadataFromDb( qTable ).get( unescapedColumnName );
     }
 
     private LinkedHashMap<SQLIdentifier, ColumnMetadata> getColumnMetadataFromDb( TableName qTable )
