@@ -81,7 +81,7 @@ public class ImageUtils {
         }
 
         BufferedImage img = new BufferedImage( width, height, getType( transparent, format ) );
-        if ( !transparent ) {
+        if ( !isTransparentAndTransparencySupported( format, transparent ) ) {
             Graphics2D g = img.createGraphics();
             g.setBackground( bgColor );
             g.clearRect( 0, 0, width, height );
@@ -92,7 +92,7 @@ public class ImageUtils {
     }
 
     private static boolean isTransparentAndTransparencySupported( String format, boolean transparent ) {
-        if ( format.equals( "image/x-ms-bmp" ) ) {
+        if ( format.equals( "image/x-ms-bmp" ) || format.equals( "image/jpeg" ) ) {
             return false;
         }
         return transparent;
