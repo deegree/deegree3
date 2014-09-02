@@ -63,7 +63,7 @@ public class DataSourceMock implements DataSource {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    //@Override
     public Logger getParentLogger()
                             throws SQLFeatureNotSupportedException {
         throw new UnsupportedOperationException();
