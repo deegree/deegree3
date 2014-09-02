@@ -64,11 +64,10 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 public class ImageUtils {
 
     private static int getType( boolean transparent, String format ) {
-        int type = transparent ? TYPE_INT_ARGB : TYPE_INT_RGB;
-        if ( format.equals( "image/x-ms-bmp" ) ) {
-            type = TYPE_INT_RGB;
+        if ( !isTransparentAndTransparencySupported( format, transparent ) ) {
+            return TYPE_INT_RGB;
         }
-        return type;
+        return transparent ? TYPE_INT_ARGB : TYPE_INT_RGB;
     }
 
     /**
@@ -90,6 +89,13 @@ public class ImageUtils {
         }
 
         return img;
+    }
+
+    private static boolean isTransparentAndTransparencySupported( String format, boolean transparent ) {
+        if ( format.equals( "image/x-ms-bmp" ) ) {
+            return false;
+        }
+        return transparent;
     }
 
     /**
