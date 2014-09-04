@@ -152,18 +152,18 @@ import org.slf4j.LoggerFactory;
  * TODO Currently unsupported are the elements from the <code>_ImplicitGeometry</code> substitution group, i.e.
  * <code>Grid</code> and <code>RectifiedGrid</code>).
  * </p>
- * 
+ *
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeometryReader {
 
     private static Logger LOG = LoggerFactory.getLogger( GML3GeometryReader.class );
 
-    private static String FID = "gid";
+    private static String GID = "gid";
 
     private static String GMLID = "id";
 
@@ -245,7 +245,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
 
     /**
      * Creates a new {@link GML3GeometryReader} for the given {@link GMLStreamReader}.
-     * 
+     *
      * @param gmlStream
      *            gml stream reader, must not be <code>null</code>
      */
@@ -255,6 +255,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         surfacePatchParser = new GML3SurfacePatchReader( this, gmlStream );
     }
 
+    @Override
     public boolean isGeometryElement( XMLStreamReader reader ) {
         if ( reader != null && reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
             QName elName = reader.getName();
@@ -263,6 +264,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         return false;
     }
 
+    @Override
     public boolean isGeometryOrEnvelopeElement( XMLStreamReader reader ) {
         if ( reader != null && reader.getEventType() == XMLStreamConstants.START_ELEMENT ) {
             QName elName = reader.getName();
@@ -274,7 +276,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns whether the given element name denotes a GML 3.1.1 geometry element (a concrete element substitutable for
      * "gml:_Geometry").
-     * 
+     *
      * @param elName
      *            qualified element name to check
      * @return true, if the element is a GML 3.1.1 geometry element, false otherwise
@@ -295,7 +297,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns whether the given element name denotes a GML 3.1.1 geometry (a concrete element substitutable for
      * "gml:_Geometry") or envelope element.
-     * 
+     *
      * @param elName
      *            qualified element name to check
      * @return true, if the element is a GML 3.1.1 geometry or a GML 3.1.1 envelope element, false otherwise
@@ -323,7 +325,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>GeometricComplex</code></li>
      * <li><code>_ImplicitGeometry</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
@@ -355,7 +357,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>GeometricComplex</code></li>
      * <li><code>_ImplicitGeometry</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>jec</code> event (&lt;gml:_Geometry&gt;), points at the corresponding
      *            <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
@@ -368,6 +370,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
+    @Override
     public Geometry parse( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
@@ -435,7 +438,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt; or
      * &lt;gml:Envelope&gt;)</li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt; or
      *            &lt;gml:Envelope&gt;), points at the corresponding <code>END_ELEMENT</code> event
@@ -460,7 +463,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt; or
      * &lt;gml:Envelope&gt;)</li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt; or
      *            &lt;gml:Envelope&gt;), points at the corresponding <code>END_ELEMENT</code> event
@@ -511,7 +514,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>_Surface</code></li>
      * <li><code>_Solid</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricPrimitive&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_GeometricPrimitive&gt;) afterwards
@@ -588,7 +591,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>MultiSolid</code></li>
      * <li><code>MultiSurface</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricAggregate&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_GeometricAggregate&gt;) afterwards
@@ -656,7 +659,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <p>
      * NOTE: For technical reasons (XML Schema does not support multiple inheritance), there is no substitution group
      * <code>gml:_GeometricComplex</code> defined in the GML schemas. However, it is described in the comments.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -712,7 +715,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>Grid</code></li>
      * <li><code>RectifiedGrid</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_ImplicitGeometry&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_ImplicitGeometry&gt;) afterwards
@@ -760,7 +763,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>LineString</code></li>
      * <li><code>OrientableCurve</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Curve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Curve&gt;) afterwards
@@ -847,7 +850,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>LinearRing</code></li>
      * <li><code>Ring</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Ring&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Ring&gt;) afterwards
@@ -909,7 +912,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>Tin</code></li>
      * <li><code>TriangulatedSurface</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Surface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Surface&gt;) afterwards
@@ -1005,7 +1008,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li><code>CompositeSolid</code></li>
      * <li><code>Solid</code></li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Solid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Solid&gt;) afterwards
@@ -1061,7 +1064,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Point&gt;)</li>
      * <li>Postcondition: cursor points at the next event after the <code>END_ELEMENT</code> (&lt;/gml:Point&gt;)</li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Point&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Point&gt;) afterwards
@@ -1129,7 +1132,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:LineString</code> element. Consumes all corresponding events
      * from the given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineString&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:LineString&gt;) afterwards
@@ -1204,7 +1207,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:Curve</code> element. Consumes all corresponding events from the
      * associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Curve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Curve&gt;) afterwards
@@ -1247,7 +1250,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:OrientableCurve</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OrientableCurve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:OrientableCurve&gt;) afterwards
@@ -1288,7 +1291,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:LinearRing</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LinearRing&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:LinearRing&gt;) afterwards
@@ -1329,7 +1332,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:Ring</code> element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Ring&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Ring&gt;) afterwards
@@ -1377,7 +1380,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a (&lt;gml:Polygon&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Polygon&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Polygon&gt;) afterwards
@@ -1466,7 +1469,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a (&lt;gml:Surface&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Surface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Surface&gt;) afterwards
@@ -1526,7 +1529,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a (&lt;gml:PolyhedralSurface&gt;) element. Consumes all corresponding events
      * from the given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:PolyhedralSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:PolyhedralSurface&gt;) afterwards
@@ -1570,7 +1573,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a (&lt;gml:TriangulatedSurface&gt;) element. Consumes all corresponding
      * events from the given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:TriangulatedSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:TriangulatedSurface&gt;) afterwards
@@ -1619,7 +1622,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * Note: GML 3.1.1 specifies both "gml:trianglePatches" and "gml:controlPoint" properties for "gml:Tin". This is
      * apparently redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property here. This method
      * copes with this by only using the controlPoints for building the {@link Tin} object.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Tin&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Tin&gt;) afterwards
@@ -1727,7 +1730,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:OrientableSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OrientableSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:OrientableSurface&gt;) afterwards
@@ -1769,7 +1772,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a (&lt;gml:Solid&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Solid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Solid&gt;) afterwards
@@ -1829,7 +1832,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:CompositeCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeCurve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeCurve&gt;) afterwards
@@ -1873,7 +1876,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:CompositeSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeSurface&gt;) afterwards
@@ -1917,7 +1920,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:CompositeSolid</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeSolid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeSolid&gt;) afterwards
@@ -1960,7 +1963,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:GeometricComplex</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:GeometricComplex&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:GeometricComplex&gt;) afterwards
@@ -2006,7 +2009,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiPoint</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiPoint&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiPoint&gt;) afterwards
@@ -2066,7 +2069,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiCurve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiCurve&gt;) afterwards
@@ -2125,7 +2128,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiLineString</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiLineString&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiLineString&gt;) afterwards
@@ -2177,7 +2180,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiSurface</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiSurface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiSurface&gt;) afterwards
@@ -2236,7 +2239,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiPolygon</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiPolygon&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiPolygon&gt;) afterwards
@@ -2288,7 +2291,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiSolid</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiSolid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiSolid&gt;) afterwards
@@ -2347,7 +2350,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:MultiGeometry</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiGeometry&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiGeometry&gt;) afterwards
@@ -2406,7 +2409,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:Envelope</code> element. Consumes all corresponding events from
      * the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Envelope&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Envelope&gt;) afterwards
@@ -2422,7 +2425,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
     /**
      * Returns the object representation of a <code>gml:Envelope</code> element. Consumes all corresponding events from
      * the associated <code>XMLStream</code>.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Envelope&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Envelope&gt;) afterwards
@@ -2502,7 +2505,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The point value may be specified using an inline <code>gml:Point</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link PointReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2551,7 +2554,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The LineString value may be specified using an inline <code>gml:LineString</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link LineStringReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2600,7 +2603,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The curve value may be specified using an inline <code>gml:_Curve</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link CurveReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2644,7 +2647,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The polygon value may be specified using an inline <code>gml:Polygon</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link PolygonReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2693,7 +2696,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The curve value may be specified using an inline <code>gml:_Surface</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link SurfaceReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2737,7 +2740,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The solid value may be specified using an inline <code>gml:Solid</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link SolidReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2786,7 +2789,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The solid value may be specified using an inline <code>gml:_GeometricPrimitive</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link GeometricPrimitiveReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2830,7 +2833,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * The geometry value may be specified using an inline <code>gml:_Geometry</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link GeometryReference} object is returned.
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2872,20 +2875,20 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      * <code>XMLStreamReader</code> points to.
      * <p>
      * Looks after 'gml:id' (GML 3) first, if no such attribute is present, the 'gid' (GML 2) attribute is used.
-     * 
+     *
      * @return the geometry id, or "" (empty string) if neither a 'gml:id' nor a 'gid' attribute is present
      */
     private String parseGeometryId( XMLStreamReaderWrapper xmlStream ) {
 
         String gid = xmlStream.getAttributeValue( gmlNs, GMLID );
         if ( gid == null ) {
-            gid = xmlStream.getAttributeValue( null, FID );
+            gid = xmlStream.getAttributeValue( null, GID );
         }
 
         // Check that the geometry id has the correct form. "gid" and "gml:id" are both based
         // on the XML type "ID": http://www.w3.org/TR/xmlschema11-2/#NCName
         // Thus, they must match the NCName production rule. This means that they may not contain
-        // a separating colon (only at the first position a colon is allowed) and must not
+        // a separating colon (onGMLly at the first position a colon is allowed) and must not
         // start with a digit.
         if ( gid != null && gid.length() > 0 && !gid.matches( "[^\\d][^:]+" ) ) {
             String msg = Messages.getMessage( "GML_INVALID_GEOMETRYID", gid );

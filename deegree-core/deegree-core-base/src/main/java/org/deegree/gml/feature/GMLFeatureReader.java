@@ -242,7 +242,6 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
                 propDecl = ( (DynamicFeatureType) ft ).addSimplePropertyDeclaration( lastPropDecl, propName );
             }
         } else {
-            System.out.println (xmlStream.getName());
             if ( gmlStreamReader.getGeometryReader().isGeometryElement( xmlStream ) ) {
                 LOG.debug( "Detected geometry property '" + propName + "'." );
                 propDecl = ( (DynamicFeatureType) ft ).addGeometryPropertyDeclaration( lastPropDecl, propName );
@@ -366,7 +365,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
                 // (see GML spec. (where???))
                 if ( BOUNDED_BY_GML31.equals( activeDecl.getName() ) || BOUNDED_BY_GML32.equals( activeDecl.getName() ) ) {
                     Envelope bbox = (Envelope) property.getValue();
-                    if ( bbox.getCoordinateSystem() != null ) {
+                    if ( bbox != null && bbox.getCoordinateSystem() != null ) {
                         activeCRS = bbox.getCoordinateSystem();
                         LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
                     }
