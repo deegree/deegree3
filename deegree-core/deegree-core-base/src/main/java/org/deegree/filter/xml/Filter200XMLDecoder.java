@@ -68,7 +68,6 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
@@ -129,10 +128,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Decodes XML fragments that comply to the <a href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding
  * Specification</a> 2.0.0.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class Filter200XMLDecoder {
@@ -141,21 +140,7 @@ public class Filter200XMLDecoder {
 
     private static final String FES_NS = "http://www.opengis.net/fes/2.0";
 
-    private static final String GML_NS = CommonNamespaces.GMLNS;
-
-    private static final String GML32_NS = CommonNamespaces.GML3_2_NS;
-
     private static final QName RESOURCE_ID_ELEMENT = new QName( FES_NS, "ResourceId" );
-
-    private static final QName RID_ATTR_NAME = new QName( "rid" );
-
-    private static final QName PREVIOUS_RID_ATTR_NAME = new QName( "previousRid" );
-
-    private static final QName VERSION_ATTR_NAME = new QName( "version" );
-
-    private static final QName START_DATE_ATTR_NAME = new QName( "startDate" );
-
-    private static final QName END_DATE_ATTR_NAME = new QName( "endDate" );
 
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
@@ -285,7 +270,7 @@ public class Filter200XMLDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:Filter&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Filter&gt;)</li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
      *            (&lt;fes:Filter&gt;), points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Filter&gt;)
@@ -338,7 +323,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:expression&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;) afterwards
@@ -390,7 +375,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Function&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:Function&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/fes:Function&gt;) afterwards
@@ -431,7 +416,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:expression&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;) afterwards
@@ -476,7 +461,7 @@ public class Filter200XMLDecoder {
      * </li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
      *            (&lt;fes:comparisonOps&gt;), points at the corresponding <code>END_ELEMENT</code> event
@@ -553,7 +538,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:temporalOps&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
      *            (&lt;fes:temporalOps&gt;), points at the corresponding <code>END_ELEMENT</code> event
@@ -565,8 +550,8 @@ public class Filter200XMLDecoder {
      */
     public static TemporalOperator parseTemporalOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException( "Parsing of temporal operator '" + xmlStream.getName()
+                                                 + " is not implemented yet." );
 
         // TemporalOperator temporalOperator = null;
         //
@@ -640,15 +625,15 @@ public class Filter200XMLDecoder {
 
     private static Operator parseOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-
         Operator operator = null;
 
         // check if element name is a valid operator element
         Operator.Type type = elementNameToOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String expectedList = elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
-                                  + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
-                                  + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            String expectedList = elemNames( LogicalOperator.SubType.class, logicalOperatorTypeToElementName ) + ", "
+                                  + elemNames( SpatialOperator.SubType.class, spatialOperatorTypeToElementName ) + ", "
+                                  + elemNames( ComparisonOperator.SubType.class, comparisonOperatorTypeToElementName )
+                                  + "," + elemNames( TemporalOperator.SubType.class, temporalOperatorTypeToElementName );
             String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(), expectedList );
             throw new XMLParsingException( xmlStream, msg );
         }
@@ -666,6 +651,11 @@ public class Filter200XMLDecoder {
             LOG.debug( "Building spatial operator" );
             operator = parseSpatialOperator( xmlStream );
             break;
+        case TEMPORAL: {
+            LOG.debug( "Building temporal operator" );
+            operator = parseTemporalOperator( xmlStream );
+            break;
+        }
         }
         return operator;
     }
@@ -1126,7 +1116,7 @@ public class Filter200XMLDecoder {
             break;
         }
         case TOUCHES: {
-            // <xsd:element ref="fes:expression"/> (NOTE: we accept minOccurs="1" as well)
+            // <xsd:element re="fes:expression"/> (NOTE: we accept minOccurs="1" as well)
             Expression param1 = null;
             if ( elementNameToExpressionType.containsKey( xmlStream.getName() ) ) {
                 param1 = parseExpression( xmlStream );
@@ -1172,7 +1162,7 @@ public class Filter200XMLDecoder {
 
     /**
      * Return a String with all element names of the given enum class.
-     * 
+     *
      * @param enumClass
      * @param map
      *            the operator type -> element name map

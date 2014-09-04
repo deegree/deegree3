@@ -42,10 +42,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Defines a predicate based on temporal relationships between two time-valued arguments.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public abstract class TemporalOperator implements Operator {
@@ -65,21 +65,22 @@ public abstract class TemporalOperator implements Operator {
      * Convenience enum type for discriminating the different {@link TemporalOperator} types.
      */
     public enum SubType {
-        AFTER, ANYINTERACTS, BEFORE, BEGINS, BEGUNBY, DURING, ENDEDBY, MEETS, METBY, OVERLAPPEDBY, TEQUALS, TCONTAINS, TOVERLAPS
+        AFTER, ANYINTERACTS, BEFORE, BEGINS, BEGUNBY, DURING, ENDS, ENDEDBY, MEETS, METBY, OVERLAPPEDBY, TEQUALS, TCONTAINS, TOVERLAPS
     }
 
     /**
      * Always returns {@link Operator.Type#TEMPORAL} (for {@link TemporalOperator} instances).
-     * 
+     *
      * @return {@link Operator.Type#TEMPORAL}
      */
+    @Override
     public Type getType() {
         return Type.TEMPORAL;
     }
 
     /**
      * Returns the type of spatial operator. Use this to safely determine the subtype of {@link TemporalOperator}.
-     * 
+     *
      * @return type of spatial operator
      */
     public SubType getSubType() {
