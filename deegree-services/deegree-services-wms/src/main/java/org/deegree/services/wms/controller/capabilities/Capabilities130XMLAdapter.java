@@ -81,6 +81,8 @@ import org.slf4j.Logger;
 @LoggingNotes(warn = "logs problems with CRS when outputting 1.3.0 capabilities", trace = "logs stack traces")
 public class Capabilities130XMLAdapter {
 
+    private static final String MD_URL_REQUEST_CSW = "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+
     private static final Logger LOG = getLogger( Capabilities130XMLAdapter.class );
 
     private final String getUrl;
@@ -108,7 +110,20 @@ public class Capabilities130XMLAdapter {
         this.service = service;
         this.controller = controller;
         metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
-        themeWriter = new WmsCapabilities130ThemeWriter( controller, this, getUrl, metadata );
+        final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
+        themeWriter = new WmsCapabilities130ThemeWriter( this, metadata, mdUrlTemplate );
+    }
+
+    private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
+        String mdUrlTemplate = controller.getMetadataURLTemplate();
+        if ( mdUrlTemplate.isEmpty() ) {
+            mdUrlTemplate = getUrl;
+            if ( !( mdUrlTemplate.endsWith( "?" ) || mdUrlTemplate.endsWith( "&" ) ) ) {
+                mdUrlTemplate += "?";
+            }
+            mdUrlTemplate += MD_URL_REQUEST_CSW;
+        }
+        return mdUrlTemplate;
     }
 
     /**
