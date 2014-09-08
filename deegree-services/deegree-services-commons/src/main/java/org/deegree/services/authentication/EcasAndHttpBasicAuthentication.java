@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.util.Base64;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.util.base64.Base64Utils;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
 import org.deegree.services.controller.EcasCredentials;
@@ -29,7 +29,7 @@ public class EcasAndHttpBasicAuthentication implements CredentialsProvider {
 
     @Override
     public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,
-                                  HttpServletResponse response )
+                              HttpServletResponse response )
                             throws SecurityException {
         String authorizationHeader = req.getHeader( "authorization" );
         if ( authorizationHeader != null ) {
@@ -109,7 +109,7 @@ public class EcasAndHttpBasicAuthentication implements CredentialsProvider {
                 // 6: length of "Basic "
                 String encodedCreds = authorizationHeader.substring( 6 ).trim();
                 LOG.debug( "encodedCreds: " + encodedCreds );
-                String creds = new String( Base64.decode( encodedCreds ) );
+                String creds = new String( Base64Utils.decode( encodedCreds ) );
                 LOG.debug( "creds: " + creds );
                 int delimPos = creds.indexOf( ':' );
                 if ( delimPos != -1 ) {

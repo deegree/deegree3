@@ -55,10 +55,10 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.axiom.util.base64.Base64Utils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.utils.RequestUtils;
-import org.apache.axiom.om.util.Base64;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.ows.http.CloseRequiredInputStream;
@@ -165,7 +165,7 @@ class RemoteWMTSTile implements Tile {
                 } else {
                     user = credentials.getUser();
                     password = credentials.getPassword();
-                    String encode = Base64.encode( ( user + ":" + password ).getBytes() );
+                    String encode = Base64Utils.encode( ( user + ":" + password ).getBytes() );
                     String value = "Basic " + encode;
                     additionalHeader.put( "Authorization", value );
                 }

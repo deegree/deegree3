@@ -55,7 +55,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.apache.axiom.om.util.Base64;
+import org.apache.axiom.util.base64.Base64Utils;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.RequestUtils;
@@ -144,7 +144,7 @@ class RemoteWMSTile implements Tile {
                 } else {
                     user = credentials.getUser();
                     password = credentials.getPassword();
-                    String encode = Base64.encode( ( user + ":" + password ).getBytes() );
+                    String encode = Base64Utils.encode( ( user + ":" + password ).getBytes() );
                     String value = "Basic " + encode;
                     additionalHeader.put( "Authorization", value );
                 }
