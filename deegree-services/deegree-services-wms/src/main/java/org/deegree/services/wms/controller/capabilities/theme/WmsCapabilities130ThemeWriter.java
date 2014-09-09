@@ -119,11 +119,11 @@ public class WmsCapabilities130ThemeWriter {
     public void writeTheme( final XMLStreamWriter writer, final Theme theme )
                             throws XMLStreamException {
         final LayerMetadata layerMetadata = new LayerMetadataMerger().merge( theme );
-        final DatasetMetadataMerger merger = new DatasetMetadataMerger();
-        final DatasetMetadata providerMetadata = getDatasetMetadataFromProvider( theme );
-        final DatasetMetadata datasetMetadata = merger.mergeDatasetMetadata( providerMetadata, theme, layerMetadata,
-                                                                             mdUrlTemplate );
-        final DoublePair scaleDenominators = merger.mergeScaleDenominators( theme );
+        final DatasetMetadataFactory factory = new DatasetMetadataFactory();
+        final DatasetMetadata dsMd1 = getDatasetMetadataFromProvider( theme );
+        final DatasetMetadata dsMd2 = factory.buildDatasetMetadata( layerMetadata, theme, mdUrlTemplate );
+        final DatasetMetadata datasetMetadata = new DatasetMetadataMerger().merge( dsMd1, dsMd2 );
+        final DoublePair scaleDenominators = new DatasetMetadataMerger().mergeScaleDenominators( theme );
         final Map<String, String> authorityNameToUrl = getExternalAuthorityNameToUrlMap( metadataProvider );
         writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, theme.getThemes() );
     }

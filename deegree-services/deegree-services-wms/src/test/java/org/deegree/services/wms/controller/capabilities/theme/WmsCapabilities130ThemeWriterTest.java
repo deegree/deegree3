@@ -40,6 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.theme;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
@@ -49,7 +51,6 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,15 +72,14 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities130ThemeWriter;
 import org.h2.util.IOUtils;
 import org.junit.Test;
 
 /**
- * Unit test for {@link WmsCapabilities130ThemeWriter}.
- * 
+ * Unit tests for {@link WmsCapabilities130ThemeWriter}.
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriterTest {
@@ -87,7 +87,30 @@ public class WmsCapabilities130ThemeWriterTest {
     private final WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter( null, null, null );
 
     @Test
-    public void writeTheme()
+    public void writeThemeMinimal()
+                            throws Exception {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
+        writer.writeStartElement( "Layer" );
+        writer.writeNamespace( "", WMSNS );
+        writer.writeNamespace( "xlink", XLNNS );
+        XMLAdapter.writeElement( writer, "Title", "Container" );
+        final LayerMetadata layerMetadata = createLayerMetadataMinimal();
+        layerMetadata.setQueryable( false );
+        final DatasetMetadata datasetMetadata = createDatasetMetadataMinimal();
+        final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
+        final Map<String, String> authorityNameToUrl = createAuthorities();
+        themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
+        writer.writeEndElement();
+        writer.flush();
+        bos.close();
+        final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_minimal.xml" );
+        final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
+        assertArrayEquals( expected, bos.toByteArray() );
+    }
+
+    @Test
+    public void writeThemeFull()
                             throws Exception {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
@@ -98,14 +121,25 @@ public class WmsCapabilities130ThemeWriterTest {
         final LayerMetadata layerMetadata = createLayerMetadata();
         final DatasetMetadata datasetMetadata = createDatasetMetadata();
         final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
-        final Map<String, String> authorityNameToUrl = createAuthorities();
+        final Map<String, String> authorityNameToUrl = emptyMap();
         themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
         writer.writeEndElement();
         writer.flush();
         bos.close();
-        final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer.xml" );
+        final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
+        System.out.println(new String (bos.toByteArray()));
         assertArrayEquals( expected, bos.toByteArray() );
+    }
+
+    private DatasetMetadata createDatasetMetadataMinimal() {
+        final QName name = new QName( "SimpleTheme" );
+        final List<LanguageString> titles = emptyList();
+        final List<LanguageString> abstracts = emptyList();
+        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+        final String url = null;
+        final List<StringPair> externalUrls = emptyList();
+        return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
     }
 
     private DatasetMetadata createDatasetMetadata() {
@@ -128,10 +162,15 @@ public class WmsCapabilities130ThemeWriterTest {
         return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
     }
 
-    private LayerMetadata createLayerMetadata() {
-        final LanguageString title = new LanguageString( "SimpleThemeTitle", null );
-        final List<LanguageString> titles = Collections.singletonList( title );
+    private LayerMetadata createLayerMetadataMinimal() {
+        final List<LanguageString> titles = emptyList();
         final Description description = new Description( "SimpleTheme", titles, null, null );
+        final SpatialMetadata spatialMetadata = null;
+        return new LayerMetadata( "SimpleTheme", description, spatialMetadata );
+    }
+
+    private LayerMetadata createLayerMetadata() {
+        final Description description = new Description( "SimpleTheme", null, null, null );
         final ICRS epsg28992 = CRSManager.getCRSRef( "EPSG:28992" );
         final ICRS epsg25832 = CRSManager.getCRSRef( "EPSG:25832" );
         final double[] min = new double[] { -59874.0, 249043.0 };
@@ -143,8 +182,6 @@ public class WmsCapabilities130ThemeWriterTest {
         final SpatialMetadata spatialMetadata = new SpatialMetadata( envelope, crsList );
         final LayerMetadata themeMetadata = new LayerMetadata( "SimpleTheme", description, spatialMetadata );
         themeMetadata.setCascaded( 5 );
-        final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
-        themeMetadata.setScaleDenominators( scaleDenominators );
         return themeMetadata;
     }
 

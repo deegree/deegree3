@@ -42,8 +42,6 @@ package org.deegree.services.wms.controller.capabilities.theme;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
-import static org.deegree.commons.utils.StringUtils.replaceAll;
-import static org.deegree.theme.Themes.getAllLayers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +49,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
-import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
@@ -106,54 +103,15 @@ class DatasetMetadataMerger {
     }
 
     /**
-     * Returns a {@link DatasetMetadata} object for the given {@link Theme} that combines the metadata provider
-     * information with the layer metadata.
+     * Merges the two given {@link DatasetMetadata} instances.
      *
      * @param providerMetadata
-     *            can be <code>null</code>
-     * @param theme
-     *            must not be <code>null</code>
+     *            metadata from provider (takes precedence), can be <code>null</code>
      * @param layerMetadata
-     *            must not be <code>null</code>
-     * @param mdUrlTemplate
-     *            can be <code>null</code>
-     * @return combined dataset metadata, never <code>null</code>
+     *            metadata from layer, can be <code>null</code>
+     * @return merged metadata, can be <code>null</code>
      */
-    DatasetMetadata mergeDatasetMetadata( final DatasetMetadata providerMetadata, final Theme theme,
-                                          final LayerMetadata layerMetadata, final String mdUrlTemplate ) {
-        final DatasetMetadata layerDatasetMetadata = buildDatasetMetadata( layerMetadata, theme, mdUrlTemplate );
-        return merge( providerMetadata, layerDatasetMetadata );
-    }
-
-    private DatasetMetadata buildDatasetMetadata( final LayerMetadata layerMetadata, final Theme theme,
-                                                  final String mdUrlTemplate ) {
-        String localName = layerMetadata.getName();
-        if ( localName == null ) {
-            localName = "unnamed";
-        }
-        final QName name = new QName( localName );
-        final List<LanguageString> titles = new ArrayList<LanguageString>();
-        final List<LanguageString> abstracts = new ArrayList<LanguageString>();
-        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        final String metadataSetId = getFirstMetadataSetId( theme );
-        final String metadataSetUrl = getUrlForMetadataSetId( metadataSetId, mdUrlTemplate );
-        final List<StringPair> externalUrls = new ArrayList<StringPair>();
-        final Description description = layerMetadata.getDescription();
-        if ( description != null ) {
-            if ( description.getTitles() != null ) {
-                titles.addAll( description.getTitles() );
-            }
-            if ( description.getAbstracts() != null ) {
-                abstracts.addAll( description.getAbstracts() );
-            }
-            if ( description.getKeywords() != null ) {
-                keywords.addAll( description.getKeywords() );
-            }
-        }
-        return new DatasetMetadata( name, titles, abstracts, keywords, metadataSetUrl, externalUrls );
-    }
-
-    private DatasetMetadata merge( final DatasetMetadata providerMetadata, final DatasetMetadata layerMetadata ) {
+    DatasetMetadata merge( final DatasetMetadata providerMetadata, final DatasetMetadata layerMetadata ) {
         if ( providerMetadata == null ) {
             return layerMetadata;
         } else if ( layerMetadata == null ) {
@@ -191,22 +149,4 @@ class DatasetMetadataMerger {
         return merged;
     }
 
-    private String getFirstMetadataSetId( final Theme theme ) {
-        if ( theme.getLayerMetadata().getMetadataId() != null ) {
-            return theme.getLayerMetadata().getMetadataId();
-        }
-        for ( final Layer layer : getAllLayers( theme ) ) {
-            if ( layer.getMetadata().getMetadataId() != null ) {
-                return layer.getMetadata().getMetadataId();
-            }
-        }
-        return null;
-    }
-
-    private String getUrlForMetadataSetId( final String id, final String mdUrlTemplate ) {
-        if ( id == null || mdUrlTemplate == null ) {
-            return null;
-        }
-        return replaceAll( mdUrlTemplate, "${metadataSetId}", id );
-    }
 }
