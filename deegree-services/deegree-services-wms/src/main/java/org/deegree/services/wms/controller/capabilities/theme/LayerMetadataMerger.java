@@ -40,6 +40,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.theme;
 
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+
+import java.util.List;
+
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
@@ -75,6 +81,40 @@ class LayerMetadataMerger {
         }
         themeMetadata.merge( layerMetadata );
         return themeMetadata;
+    }
+
+    /**
+     * Returns the combined (least restrictive) scale denominators for the given theme/sublayers.
+     *
+     * @param theme
+     *            must not be <code>null</code>
+     * @return combined scale denomiators, first value is min, second is max, never <code>null</code>
+     */
+    DoublePair mergeScaleDenominators( final Theme theme ) {
+        Double min = POSITIVE_INFINITY;
+        Double max = NEGATIVE_INFINITY;
+        if ( theme.getLayerMetadata() != null && theme.getLayerMetadata().getScaleDenominators() != null ) {
+            final DoublePair themeScales = theme.getLayerMetadata().getScaleDenominators();
+            if ( !themeScales.first.isInfinite() ) {
+                min = themeScales.first;
+            }
+            if ( !themeScales.second.isInfinite() ) {
+                max = themeScales.second;
+            }
+        }
+        final List<Layer> layers = Themes.getAllLayers( theme );
+        if ( layers != null ) {
+            for ( final Layer layer : layers ) {
+                if ( layer.getMetadata() != null ) {
+                    final DoublePair layerScales = layer.getMetadata().getScaleDenominators();
+                    if ( layerScales != null ) {
+                        min = Math.min( min, layerScales.first );
+                        max = Math.max( max, layerScales.second );
+                    }
+                }
+            }
+        }
+        return new DoublePair( min, max );
     }
 
 }

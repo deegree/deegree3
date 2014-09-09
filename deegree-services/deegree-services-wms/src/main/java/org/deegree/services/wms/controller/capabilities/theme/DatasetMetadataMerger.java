@@ -40,9 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.theme;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,60 +48,21 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.StringPair;
-import org.deegree.layer.Layer;
-import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.theme.Theme;
-import org.deegree.theme.Themes;
 
 /**
- * Obtains merged {@link LayerMetadata} and {@link DatasetMetadata} objects for {@link Theme} objects.
- *
+ * Merges {@link DatasetMetadata} instances.
+ * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.3
  */
 class DatasetMetadataMerger {
 
     /**
-     * Returns the combined (least restrictive) scale denominators for the given theme/sublayers.
-     *
-     * @param theme
-     *            must not be <code>null</code>
-     * @return combined scale denomiators, first value is min, second is max, never <code>null</code>
-     */
-    DoublePair mergeScaleDenominators( final Theme theme ) {
-        Double min = POSITIVE_INFINITY;
-        Double max = NEGATIVE_INFINITY;
-        if ( theme.getLayerMetadata() != null && theme.getLayerMetadata().getScaleDenominators() != null ) {
-            final DoublePair themeScales = theme.getLayerMetadata().getScaleDenominators();
-            if ( !themeScales.first.isInfinite() ) {
-                min = themeScales.first;
-            }
-            if ( !themeScales.second.isInfinite() ) {
-                max = themeScales.second;
-            }
-        }
-        final List<Layer> layers = Themes.getAllLayers( theme );
-        if ( layers != null ) {
-            for ( final Layer layer : layers ) {
-                if ( layer.getMetadata() != null ) {
-                    final DoublePair layerScales = layer.getMetadata().getScaleDenominators();
-                    if ( layerScales != null ) {
-                        min = Math.min( min, layerScales.first );
-                        max = Math.max( max, layerScales.second );
-                    }
-                }
-            }
-        }
-        return new DoublePair( min, max );
-    }
-
-    /**
-     * Merges the two given {@link DatasetMetadata} instances.
-     *
+     * Merges two {@link DatasetMetadata} instances.
+     * 
      * @param providerMetadata
      *            metadata from provider (takes precedence), can be <code>null</code>
      * @param layerMetadata

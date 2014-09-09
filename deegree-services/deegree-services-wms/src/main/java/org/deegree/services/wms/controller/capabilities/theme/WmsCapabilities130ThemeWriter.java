@@ -123,7 +123,7 @@ public class WmsCapabilities130ThemeWriter {
         final DatasetMetadata dsMd1 = getDatasetMetadataFromProvider( theme );
         final DatasetMetadata dsMd2 = factory.buildDatasetMetadata( layerMetadata, theme, mdUrlTemplate );
         final DatasetMetadata datasetMetadata = new DatasetMetadataMerger().merge( dsMd1, dsMd2 );
-        final DoublePair scaleDenominators = new DatasetMetadataMerger().mergeScaleDenominators( theme );
+        final DoublePair scaleDenominators = new LayerMetadataMerger().mergeScaleDenominators( theme );
         final Map<String, String> authorityNameToUrl = getExternalAuthorityNameToUrlMap( metadataProvider );
         writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, theme.getThemes() );
     }
