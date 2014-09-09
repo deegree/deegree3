@@ -36,8 +36,6 @@
 package org.deegree.metadata.iso.persistence.sql;
 
 import static java.sql.DriverManager.getConnection;
-import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
@@ -59,7 +57,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.jdbc.ConnectionManager.Type;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.filter.FilterEvaluationException;
@@ -87,6 +84,10 @@ import org.junit.Test;
  */
 public class DefaultQueryServiceIT {
 
+    private static final String ORACLE = "Oracle";
+
+    private static final String POSTGRESQL = "PostgreSQL";
+
     private Connection connection;
 
     private AbstractWhereBuilder builder;
@@ -96,7 +97,7 @@ public class DefaultQueryServiceIT {
     @Before
     public void initiQueryService()
                             throws Exception {
-        Pair<Type, Connection> typeToConnection = initTypeAndConnection();
+        Pair<String, Connection> typeToConnection = initTypeAndConnection();
         if ( typeToConnection != null ) {
             connection = typeToConnection.second;
             MetadataQuery query = parseQuery();
@@ -167,36 +168,33 @@ public class DefaultQueryServiceIT {
         return (OperatorFilter) Filter110XMLDecoder.parse( xmlStreamReader );
     }
 
-    private Pair<Type, Connection> initTypeAndConnection()
+    private Pair<String, Connection> initTypeAndConnection()
                             throws IOException, ClassNotFoundException {
         Properties props = new Properties();
         props.load( DefaultQueryServiceIT.class.getResourceAsStream( "/testdb.properties" ) );
         String jdbcUrlOpt = props.getProperty( "jdbcUrl" );
-        Type type = detectSqlType( jdbcUrlOpt );
+        String type = detectSqlType( jdbcUrlOpt );
         loadDriver( type );
         try {
             String user = props.getProperty( "user" );
             String password = props.getProperty( "password" );
             Connection connection = getConnection( jdbcUrlOpt, user, password );
-            return new Pair<Type, Connection>( type, connection );
+            return new Pair<String, Connection>( type, connection );
         } catch ( SQLException e ) {
             return null;
         }
     }
 
-    private Type detectSqlType( String jdbcUrlOpt ) {
-        Type type;
+    private String detectSqlType( String jdbcUrlOpt ) {
         if ( jdbcUrlOpt.startsWith( "jdbc:oracle:" ) ) {
-            type = Oracle;
-        } else {
-            type = PostgreSQL;
+            return ORACLE;
         }
-        return type;
+        return POSTGRESQL;
     }
 
-    private void loadDriver( Type type )
+    private void loadDriver( String type )
                             throws ClassNotFoundException {
-        if ( type == Oracle ) {
+        if ( ORACLE.equals( type ) ) {
             Class.forName( "oracle.jdbc.driver.OracleDriver" );
         } else {
             Class.forName( "org.postgresql.Driver" );
@@ -205,15 +203,15 @@ public class DefaultQueryServiceIT {
 
     private SQLDialect initSqlDialect()
                             throws SQLException, IOException, ClassNotFoundException {
-        Pair<Type, Connection> conn = initTypeAndConnection();
-        if ( conn.first == Oracle ) {
-            return initOracleSqlDialect( conn );
+        Pair<String, Connection> conn = initTypeAndConnection();
+        if ( ORACLE.equals( conn.first ) ) {
+            return initOracleSqlDialect( conn.second );
         } else {
-            return new PostGISDialect( true );
+            return new PostGISDialect( null );
         }
     }
 
-    private SQLDialect initOracleSqlDialect( Pair<Type, Connection> conn )
+    private SQLDialect initOracleSqlDialect( Connection conn )
                             throws SQLException {
         String schema = null;
         Statement stmt = null;
@@ -223,7 +221,7 @@ public class DefaultQueryServiceIT {
         int major = 10;
         int minor = 0;
         try {
-            stmt = conn.second.createStatement();
+            stmt = conn.createStatement();
             // this function / parameters exists since oracle version 8
             rs = stmt.executeQuery( "SELECT sys_context('USERENV', 'CURRENT_SCHEMA') FROM DUAL" );
             if ( rs.next() )
@@ -242,7 +240,7 @@ public class DefaultQueryServiceIT {
                 }
             }
         } finally {
-            JDBCUtils.close( rs, stmt, conn.second, null );
+            JDBCUtils.close( rs, stmt, conn, null );
         }
         return new OracleDialect( schema, major, minor );
     }

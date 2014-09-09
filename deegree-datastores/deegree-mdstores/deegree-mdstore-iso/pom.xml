@@ -67,14 +67,7 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-sqldialect-postgis</artifactId>
-      <scope>test</scope>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

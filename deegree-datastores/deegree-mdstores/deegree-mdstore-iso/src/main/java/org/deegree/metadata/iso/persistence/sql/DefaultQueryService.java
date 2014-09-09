@@ -35,9 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
-import static org.deegree.commons.jdbc.ConnectionManager.Type.MSSQL;
-import static org.deegree.commons.jdbc.ConnectionManager.Type.Oracle;
-import static org.deegree.commons.jdbc.ConnectionManager.Type.PostgreSQL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
@@ -63,6 +60,7 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
 
 /**
@@ -99,13 +97,12 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
             StringBuilder idSelect = getPreparedStatementDatasetIDs( builder );
 
             // TODO: use SQLDialect
-            if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == MSSQL ) {
+            if ( query != null && query.getStartPosition() != 1 && isMySql() ) {
                 String oldHeader = idSelect.toString();
                 idSelect = idSelect.append( " from (" ).append( oldHeader );
                 idSelect.append( ", ROW_NUMBER() OVER (ORDER BY X1.ID) as rownum" );
             }
-            if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 )
-                 && dialect.getDBType() == Oracle ) {
+            if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 ) && isOracle() ) {
                 String oldHeader = idSelect.toString();
                 idSelect = new StringBuilder();
                 idSelect.append( "select * from ( " );
@@ -121,19 +118,18 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
                 idSelect.append( builder.getOrderBy().getSQL() );
             }
 
-            if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == PostgreSQL ) {
+            if ( query != null && query.getStartPosition() != 1 && isPostgresql() ) {
                 idSelect.append( " OFFSET " ).append( Integer.toString( query.getStartPosition() - 1 ) );
             }
-            if ( query != null && query.getStartPosition() != 1 && dialect.getDBType() == MSSQL ) {
+            if ( query != null && query.getStartPosition() != 1 && isMySql() ) {
                 idSelect.append( ") as X1 where X1.rownum > " );
                 idSelect.append( query.getStartPosition() - 1 );
             }
             // take a look in the wiki before changing this!
-            if ( dialect.getDBType() == PostgreSQL && query != null && query.getMaxRecords() > -1 ) {
+            if ( isPostgresql() && query != null && query.getMaxRecords() > -1 ) {
                 idSelect.append( " LIMIT " ).append( query.getMaxRecords() );
             }
-            if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 )
-                 && dialect.getDBType() == Oracle ) {
+            if ( query != null && ( query.getStartPosition() != 1 || query.getMaxRecords() > -1 ) && isOracle() ) {
                 idSelect.append( " ) " );
                 if ( query.getStartPosition() != 1 ) {
                     idSelect.append( " a " );
@@ -354,4 +350,15 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
         }
     }
 
+    private boolean isMySql() {
+        return dialect.getClass().getSimpleName().equals( "MSSQLDialect" );
+    }
+
+    private boolean isPostgresql() {
+        return dialect instanceof PostGISDialect;
+    }
+
+    private boolean isOracle() {
+        return dialect.getClass().getSimpleName().equals( "OracleDialect" );
+    }
 }
