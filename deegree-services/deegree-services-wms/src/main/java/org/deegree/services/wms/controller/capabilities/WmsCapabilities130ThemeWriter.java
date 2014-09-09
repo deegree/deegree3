@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -72,31 +71,54 @@ import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 
 /**
- * Responsible for writing out themes capabilities.
+ * Writes WMS 1.3.0 Layer elements.
+ * <p>
+ * Data/Metadata is considered from the Theme/Layer tree as well as from the {@link OWSMetadataProvider}.
+ * </p>
  *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  *
- * @version $Revision: $, $Date: $
+ * @since 3.3
  */
 class WmsCapabilities130ThemeWriter {
 
-    private final Capabilities130XMLAdapter capWriter;
+    private final OWSMetadataProvider metadataProvider;
+
+    private final Capabilities130XMLAdapter styleWriter;
 
     private final String mdUrlTemplate;
 
-    private final OWSMetadataProvider metadata;
-
-    WmsCapabilities130ThemeWriter( final Capabilities130XMLAdapter capWriter, final OWSMetadataProvider metadata,
-                                   final String mdUrlTemplate ) {
-        this.capWriter = capWriter;
-        this.metadata = metadata;
+    /**
+     * Creates a new {@link WmsCapabilities130ThemeWriter} instance.
+     * 
+     * @param metadataProvider
+     *            provider for metadata on OWS datasets, can be <code>null</code>
+     * @param styleWriter
+     *            writer for WMS 1.3.0 Style elements, can be <code>null</code> (styles will be skipped)
+     * @param mdUrlTemplate
+     *            URL template for requesting metadata records (<code>${metadataSetId}</code> will be replaced with
+     *            metadata id), can be <code>null</code>
+     */
+    WmsCapabilities130ThemeWriter( final OWSMetadataProvider metadataProvider,
+                                   final Capabilities130XMLAdapter styleWriter, final String mdUrlTemplate ) {
+        this.metadataProvider = metadataProvider;
+        this.styleWriter = styleWriter;
         this.mdUrlTemplate = mdUrlTemplate;
     }
 
+    /**
+     * Writes the given {@link Theme} as a WMS 1.3.0 Layer element.
+     * 
+     * @param writer
+     *            used to write the XML, must not be <code>null</code>
+     * @param theme
+     *            theme to be serialized, must not be <code>null</code>
+     * @throws XMLStreamException
+     */
     void writeTheme( final XMLStreamWriter writer, final Theme theme )
                             throws XMLStreamException {
-        final LayerMetadataMerger metadataMerger = new LayerMetadataMerger( metadata, mdUrlTemplate );
+        final LayerMetadataMerger metadataMerger = new LayerMetadataMerger( metadataProvider, mdUrlTemplate );
         final LayerMetadata layerTreeMetadata = metadataMerger.getLayerTreeMetadata( theme );
         final DatasetMetadata md = metadataMerger.getDatasetMetadata( theme, layerTreeMetadata );
         writer.writeStartElement( WMSNS, "Layer" );
@@ -194,16 +216,20 @@ class WmsCapabilities130ThemeWriter {
 
     private void writeAuthorityUrls( final XMLStreamWriter writer, final DatasetMetadata md )
                             throws XMLStreamException {
-        final Map<String, String> auths = metadata.getExternalMetadataAuthorities();
-        for ( final StringPair extUrls : md.getExternalUrls() ) {
-            final String url = auths.get( extUrls.first );
-            writer.writeStartElement( WMSNS, "AuthorityURL" );
-            writer.writeAttribute( "name", extUrls.first );
-            writer.writeStartElement( WMSNS, "OnlineResource" );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", url );
-            writer.writeEndElement();
-            writer.writeEndElement();
+        if ( metadataProvider != null && metadataProvider.getExternalMetadataAuthorities() != null ) {
+            final Map<String, String> auths = metadataProvider.getExternalMetadataAuthorities();
+            for ( final StringPair extUrls : md.getExternalUrls() ) {
+                final String url = auths.get( extUrls.first );
+                if ( url != null ) {
+                    writer.writeStartElement( WMSNS, "AuthorityURL" );
+                    writer.writeAttribute( "name", extUrls.first );
+                    writer.writeStartElement( WMSNS, "OnlineResource" );
+                    writer.writeAttribute( XLNNS, "type", "simple" );
+                    writer.writeAttribute( XLNNS, "href", url );
+                    writer.writeEndElement();
+                    writer.writeEndElement();
+                }
+            }
         }
     }
 
@@ -234,17 +260,19 @@ class WmsCapabilities130ThemeWriter {
 
     private void writeStyles( final XMLStreamWriter writer, final LayerMetadata md )
                             throws XMLStreamException {
-        Map<String, Style> legends = md.getLegendStyles();
-        for ( Entry<String, Style> e : md.getStyles().entrySet() ) {
-            if ( e.getKey() == null || e.getKey().isEmpty() ) {
-                continue;
+        if ( styleWriter != null ) {
+            final Map<String, Style> legends = md.getLegendStyles();
+            for ( final Entry<String, Style> e : md.getStyles().entrySet() ) {
+                if ( e.getKey() == null || e.getKey().isEmpty() ) {
+                    continue;
+                }
+                Style ls = e.getValue();
+                if ( legends.get( e.getKey() ) != null ) {
+                    ls = legends.get( e.getKey() );
+                }
+                final Pair<Integer, Integer> p = new Legends().getLegendSize( ls );
+                styleWriter.writeStyle( writer, e.getKey(), e.getKey(), p, md.getName(), e.getValue() );
             }
-            Style ls = e.getValue();
-            if ( legends.get( e.getKey() ) != null ) {
-                ls = legends.get( e.getKey() );
-            }
-            Pair<Integer, Integer> p = new Legends().getLegendSize( ls );
-            capWriter.writeStyle( writer, e.getKey(), e.getKey(), p, md.getName(), e.getValue() );
         }
     }
 

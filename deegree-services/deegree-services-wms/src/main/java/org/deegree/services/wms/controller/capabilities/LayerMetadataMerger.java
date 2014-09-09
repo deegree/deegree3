@@ -1,3 +1,43 @@
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2014 by:
+ - Department of Geography, University of Bonn -
+ and
+ - lat/lon GmbH -
+ and
+ - Occam Labs UG (haftungsbeschränkt) -
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ Occam Labs UG (haftungsbeschränkt)
+ Godesberger Allee 139, 53175 Bonn
+ Germany
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities;
 
 import static org.deegree.commons.utils.StringUtils.replaceAll;
@@ -20,19 +60,45 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 
+/**
+ * Obtains merged {@link LayerMetadata} and {@link DatasetMetadata} objects for {@link Theme} objects.
+ * 
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * 
+ * @since 3.3
+ */
 class LayerMetadataMerger {
 
-    private final OWSMetadataProvider metadata;
+    private final OWSMetadataProvider metadataProvider;
 
     private final String mdUrlTemplate;
 
-    LayerMetadataMerger( final OWSMetadataProvider metadata, final String mdUrlTemplate ) {
-        this.metadata = metadata;
+    /**
+     * Creates a new {@link LayerMetadata} instance.
+     * 
+     * @param metadataProvider
+     *            provider for metadata on OWS datasets, can be <code>null</code>
+     * @param mdUrlTemplate
+     *            URL template for requesting metadata records (<code>${metadataSetId}</code> will be replaced with
+     *            metadata id), can be <code>null</code>
+     */
+    LayerMetadataMerger( final OWSMetadataProvider metadataProvider, final String mdUrlTemplate ) {
+        this.metadataProvider = metadataProvider;
         this.mdUrlTemplate = mdUrlTemplate;
     }
 
+    /**
+     * Returns a {@link LayerMetadata} object that merges information from layers if not defined directly in the
+     * {@link LayerMetadata} of the {@link Theme}.
+     * 
+     * @see LayerMetadata#merge(LayerMetadata)
+     * 
+     * @param theme
+     *            must not be <code>null</code>
+     * @return merged layer metadata, never <code>null</code>
+     */
     LayerMetadata getLayerTreeMetadata( final Theme theme ) {
-        final LayerMetadata themeMetadata = theme.getLayerMetadata();
+        final LayerMetadata themeMetadata = theme.getMetadata();
         LayerMetadata layerMetadata = null;
         for ( final Layer l : Themes.getAllLayers( theme ) ) {
             if ( layerMetadata == null ) {
@@ -45,8 +111,18 @@ class LayerMetadataMerger {
         return themeMetadata;
     }
 
+    /**
+     * Returns a {@link DatasetMetadata} for the given {@link Theme}, either obtained from the metadata provider or
+     * generated from the given layer metadata (if not available from metadata provider).
+     * 
+     * @param theme
+     *            must not be <code>null</code>
+     * @param layerTreeMetadata
+     *            must not be <code>null</code>
+     * @return dataset metadata, never <code>null</code>
+     */
     DatasetMetadata getDatasetMetadata( final Theme theme, final LayerMetadata layerTreeMetadata ) {
-        if ( theme.getLayerMetadata().getName() != null ) {
+        if ( metadataProvider != null && theme.getMetadata().getName() != null ) {
             final String name = getNameFromThemeOrFirstNamedLayer( theme );
             final DatasetMetadata md = getDatasetMetadataFromProvider( name );
             if ( md != null ) {
@@ -57,8 +133,8 @@ class LayerMetadataMerger {
     }
 
     private String getNameFromThemeOrFirstNamedLayer( final Theme theme ) {
-        if ( theme.getLayerMetadata().getName() != null ) {
-            return theme.getLayerMetadata().getName();
+        if ( theme.getMetadata().getName() != null ) {
+            return theme.getMetadata().getName();
         }
         for ( final Layer layer : getAllLayers( theme ) ) {
             if ( layer.getMetadata().getName() != null ) {
@@ -72,7 +148,7 @@ class LayerMetadataMerger {
         if ( themeOrLayerName == null ) {
             return null;
         }
-        return metadata.getDatasetMetadata( new QName( themeOrLayerName ) );
+        return metadataProvider.getDatasetMetadata( new QName( themeOrLayerName ) );
     }
 
     private DatasetMetadata buildDatasetMetadataFromLayerTree( final LayerMetadata layerMetadata, final Theme theme ) {
@@ -103,8 +179,8 @@ class LayerMetadataMerger {
     }
 
     private String getFirstMetadataSetId( final Theme theme ) {
-        if ( theme.getLayerMetadata().getMetadataId() != null ) {
-            return theme.getLayerMetadata().getMetadataId();
+        if ( theme.getMetadata().getMetadataId() != null ) {
+            return theme.getMetadata().getMetadataId();
         }
         for ( final Layer layer : getAllLayers( theme ) ) {
             if ( layer.getMetadata().getMetadataId() != null ) {

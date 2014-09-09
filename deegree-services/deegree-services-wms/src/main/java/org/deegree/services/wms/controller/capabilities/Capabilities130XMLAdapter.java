@@ -111,12 +111,12 @@ public class Capabilities130XMLAdapter {
         this.controller = controller;
         metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
         final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
-        themeWriter = new WmsCapabilities130ThemeWriter( this, metadata, mdUrlTemplate );
+        themeWriter = new WmsCapabilities130ThemeWriter( metadata, this, mdUrlTemplate );
     }
 
     private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
         String mdUrlTemplate = controller.getMetadataURLTemplate();
-        if ( mdUrlTemplate.isEmpty() ) {
+        if ( mdUrlTemplate != null && mdUrlTemplate.isEmpty() ) {
             mdUrlTemplate = getUrl;
             if ( !( mdUrlTemplate.endsWith( "?" ) || mdUrlTemplate.endsWith( "&" ) ) ) {
                 mdUrlTemplate += "?";
