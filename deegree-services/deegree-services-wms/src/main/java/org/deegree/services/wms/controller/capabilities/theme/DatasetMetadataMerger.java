@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wms.controller.capabilities;
+package org.deegree.services.wms.controller.capabilities.theme;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -69,30 +69,7 @@ import org.deegree.theme.Themes;
  *
  * @since 3.3
  */
-class ThemeMetadataMerger {
-
-    /**
-     * Returns the combined layer metadata for the given theme/sublayers.
-     *
-     * @see LayerMetadata#merge(LayerMetadata)
-     *
-     * @param theme
-     *            must not be <code>null</code>
-     * @return combined layer metadata, never <code>null</code>
-     */
-    LayerMetadata mergeLayerMetadata( final Theme theme ) {
-        final LayerMetadata themeMetadata = theme.getLayerMetadata();
-        LayerMetadata layerMetadata = null;
-        for ( final Layer l : Themes.getAllLayers( theme ) ) {
-            if ( layerMetadata == null ) {
-                layerMetadata = l.getMetadata();
-            } else {
-                layerMetadata.merge( l.getMetadata() );
-            }
-        }
-        themeMetadata.merge( layerMetadata );
-        return themeMetadata;
-    }
+class DatasetMetadataMerger {
 
     /**
      * Returns the combined (least restrictive) scale denominators for the given theme/sublayers.

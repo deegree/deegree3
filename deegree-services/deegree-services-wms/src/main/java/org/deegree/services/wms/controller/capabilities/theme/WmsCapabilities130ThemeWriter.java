@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wms.controller.capabilities;
+package org.deegree.services.wms.controller.capabilities.theme;
 
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
@@ -66,6 +66,7 @@ import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 
@@ -80,7 +81,7 @@ import org.deegree.theme.Theme;
  *
  * @since 3.3
  */
-class WmsCapabilities130ThemeWriter {
+public class WmsCapabilities130ThemeWriter {
 
     private final OWSMetadataProvider metadataProvider;
 
@@ -99,8 +100,8 @@ class WmsCapabilities130ThemeWriter {
      *            URL template for requesting metadata records (<code>${metadataSetId}</code> will be replaced with
      *            metadata id), can be <code>null</code>
      */
-    WmsCapabilities130ThemeWriter( final OWSMetadataProvider metadataProvider,
-                                   final Capabilities130XMLAdapter styleWriter, final String mdUrlTemplate ) {
+    public WmsCapabilities130ThemeWriter( final OWSMetadataProvider metadataProvider,
+                                          final Capabilities130XMLAdapter styleWriter, final String mdUrlTemplate ) {
         this.metadataProvider = metadataProvider;
         this.styleWriter = styleWriter;
         this.mdUrlTemplate = mdUrlTemplate;
@@ -115,10 +116,10 @@ class WmsCapabilities130ThemeWriter {
      *            theme to be serialized, must not be <code>null</code>
      * @throws XMLStreamException
      */
-    void writeTheme( final XMLStreamWriter writer, final Theme theme )
+    public void writeTheme( final XMLStreamWriter writer, final Theme theme )
                             throws XMLStreamException {
-        final ThemeMetadataMerger merger = new ThemeMetadataMerger();
-        final LayerMetadata layerMetadata = merger.mergeLayerMetadata( theme );
+        final LayerMetadata layerMetadata = new LayerMetadataMerger().merge( theme );
+        final DatasetMetadataMerger merger = new DatasetMetadataMerger();
         final DatasetMetadata providerMetadata = getDatasetMetadataFromProvider( theme );
         final DatasetMetadata datasetMetadata = merger.mergeDatasetMetadata( providerMetadata, theme, layerMetadata,
                                                                              mdUrlTemplate );

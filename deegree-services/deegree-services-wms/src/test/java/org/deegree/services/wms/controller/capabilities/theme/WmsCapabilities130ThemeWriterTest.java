@@ -38,7 +38,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wms.controller.capabilities;
+package org.deegree.services.wms.controller.capabilities.theme;
 
 import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
@@ -71,6 +71,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities130ThemeWriter;
 import org.h2.util.IOUtils;
 import org.junit.Test;
 
