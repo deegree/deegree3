@@ -40,14 +40,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -73,63 +70,41 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
-import org.deegree.services.metadata.OWSMetadataProvider;
-import org.deegree.theme.Theme;
-import org.deegree.theme.persistence.standard.StandardTheme;
 import org.h2.util.IOUtils;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Unit test for {@link WmsCapabilities130ThemeWriter}.
- *
+ * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriterTest {
 
-    private WmsCapabilities130ThemeWriter themeWriter;
-
-    @Before
-    public void setup() {
-        final OWSMetadataProvider metadataProvider = createMockMetadataProvider();
-        themeWriter = new WmsCapabilities130ThemeWriter( metadataProvider, null, null );
-    }
+    private final WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter( null, null, null );
 
     @Test
     public void writeTheme()
                             throws Exception {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final XMLStreamWriter xmlWriter = newInstance().createXMLStreamWriter( bos );
-        xmlWriter.writeStartElement( "Layer" );
-        xmlWriter.writeNamespace( "", WMSNS );
-        xmlWriter.writeNamespace( "xlink", XLNNS );
-        XMLAdapter.writeElement( xmlWriter, "Title", "Container" );
-        final Theme theme = createExampleTheme();
-        themeWriter.writeTheme( xmlWriter, theme );
-        xmlWriter.writeEndElement();
-        xmlWriter.flush();
+        final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
+        writer.writeStartElement( "Layer" );
+        writer.writeNamespace( "", WMSNS );
+        writer.writeNamespace( "xlink", XLNNS );
+        XMLAdapter.writeElement( writer, "Title", "Container" );
+        final LayerMetadata layerMetadata = createLayerMetadata();
+        final DatasetMetadata datasetMetadata = createDatasetMetadata();
+        final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
+        final Map<String, String> authorityNameToUrl = createAuthorities();
+        themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
+        writer.writeEndElement();
+        writer.flush();
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
-        System.out.println(new String (bos.toByteArray()));
         assertArrayEquals( expected, bos.toByteArray() );
-    }
-
-    private OWSMetadataProvider createMockMetadataProvider() {
-        final OWSMetadataProvider metadataProvider = mock( OWSMetadataProvider.class );
-        final DatasetMetadata dataset = createDatasetMetadata();
-        final List<DatasetMetadata> datasets = singletonList( dataset );
-        when( metadataProvider.getDatasetMetadata() ).thenReturn( datasets );
-        when( metadataProvider.getDatasetMetadata( dataset.getQName() ) ).thenReturn( dataset );
-        final Map<String, String> authorityNameToUrl = new HashMap<String, String>();
-        authorityNameToUrl.put( "authority1", "http://www.authority1.com" );
-        authorityNameToUrl.put( "authority2", "http://www.authority2.com" );
-        when( metadataProvider.getExternalMetadataAuthorities() ).thenReturn( authorityNameToUrl );
-        return metadataProvider;
     }
 
     private DatasetMetadata createDatasetMetadata() {
@@ -152,7 +127,7 @@ public class WmsCapabilities130ThemeWriterTest {
         return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
     }
 
-    private Theme createExampleTheme() {
+    private LayerMetadata createLayerMetadata() {
         final LanguageString title = new LanguageString( "SimpleThemeTitle", null );
         final List<LanguageString> titles = Collections.singletonList( title );
         final Description description = new Description( "SimpleTheme", titles, null, null );
@@ -169,9 +144,14 @@ public class WmsCapabilities130ThemeWriterTest {
         themeMetadata.setCascaded( 5 );
         final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
         themeMetadata.setScaleDenominators( scaleDenominators );
-        final List<Theme> subThemes = emptyList();
-        final List<Layer> layers = emptyList();
-        return new StandardTheme( themeMetadata, subThemes, layers, null );
+        return themeMetadata;
+    }
+
+    private Map<String, String> createAuthorities() {
+        final Map<String, String> authorityNameToUrl = new HashMap<String, String>();
+        authorityNameToUrl.put( "authority1", "http://www.authority1.com" );
+        authorityNameToUrl.put( "authority2", "http://www.authority2.com" );
+        return authorityNameToUrl;
     }
 
 }
