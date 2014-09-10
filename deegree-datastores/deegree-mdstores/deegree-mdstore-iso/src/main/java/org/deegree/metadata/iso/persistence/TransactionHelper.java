@@ -90,7 +90,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
-class TransactionHelper extends SqlHelper {
+final class TransactionHelper extends SqlHelper {
 
     private static final Logger LOG = getLogger( TransactionHelper.class );
 
