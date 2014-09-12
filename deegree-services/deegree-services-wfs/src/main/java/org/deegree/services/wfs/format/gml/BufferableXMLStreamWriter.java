@@ -81,6 +81,10 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
     private static final int MEMORY_BUFFER_SIZE_IN_BYTES = 10 * 1024 * 1024;
 
+    private static final String BUFFER_NS = "http://www.deegree.org/buffering/wfs/service";
+
+    private static final String BUFFER_PREFIX = "d3buffering";
+
     private static final String ELEMENT_NAME_CONTAINER_ROOT = "Container";
 
     private static final String ELEMENT_NAME_OPEN_ELEMENT = "OpenElement";
@@ -118,7 +122,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
         XMLStreamReader inStream = getBufferedXML();
-        skipToRequiredElement( inStream, new QName( ELEMENT_NAME_UNCLEAR_REFERENCE ) );
+        skipToRequiredElement( inStream, new QName( BUFFER_NS, ELEMENT_NAME_UNCLEAR_REFERENCE, BUFFER_PREFIX ) );
         boolean onContentElement = true;
 
         int eventType = 0;
@@ -184,7 +188,7 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
             String nsPrefix = inStream.getAttributePrefix( i );
             String value = inStream.getAttributeValue( i );
             String nsURI = inStream.getAttributeNamespace( i );
-                    if ( nsURI == null || nsURI.equals( "" ) ) {
+            if ( nsURI == null || nsURI.equals( "" ) ) {
                 sink.writeAttribute( attrLocalName, value );
             } else {
                 if ( attrLocalName.equals( "href" ) && nsURI.equals( XLNNS ) ) {
@@ -242,7 +246,8 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
     private void writeWrapperElementWithNamespacesAndDummyLevel()
                             throws XMLStreamException {
-        activeWriter.writeStartElement( ELEMENT_NAME_CONTAINER_ROOT );
+        activeWriter.writeStartElement( BUFFER_PREFIX, ELEMENT_NAME_CONTAINER_ROOT, BUFFER_NS );
+        activeWriter.writeNamespace( BUFFER_PREFIX, BUFFER_NS );
         Iterator<String> namespaceIter = nsBindings.getNamespaceURIs();
         while ( namespaceIter.hasNext() ) {
             String ns = namespaceIter.next();
@@ -255,9 +260,9 @@ public class BufferableXMLStreamWriter implements XMLStreamWriter {
         }
 
         for ( int i = 0; i < openElements; i++ ) {
-            activeWriter.writeStartElement( ELEMENT_NAME_OPEN_ELEMENT );
+            activeWriter.writeStartElement( BUFFER_PREFIX, ELEMENT_NAME_OPEN_ELEMENT, BUFFER_NS );
         }
-        activeWriter.writeEmptyElement( ELEMENT_NAME_UNCLEAR_REFERENCE );
+        activeWriter.writeEmptyElement( BUFFER_PREFIX, ELEMENT_NAME_UNCLEAR_REFERENCE, BUFFER_NS );
     }
 
     @Override
