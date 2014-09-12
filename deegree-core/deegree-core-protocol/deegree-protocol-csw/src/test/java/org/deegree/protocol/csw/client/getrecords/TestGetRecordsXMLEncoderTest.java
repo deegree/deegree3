@@ -35,16 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.csw.client.getrecords;
 
-import static junit.framework.Assert.assertTrue;
 import static org.deegree.commons.xml.CommonNamespaces.APISO;
 import static org.deegree.commons.xml.CommonNamespaces.APISO_PREFIX;
 import static org.deegree.filter.MatchAction.ANY;
+import static org.deegree.protocol.csw.CSWConstants.ResultType.results;
+import static org.deegree.protocol.csw.CSWConstants.ReturnableElement.full;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -86,61 +90,109 @@ import org.xml.sax.SAXException;
  */
 public class TestGetRecordsXMLEncoderTest {
 
+    private static final String OUTPUT_FORMAT = "http://www.isotc211.org/2005/gmd";
+
+    private static final String OUTPUT_SCHEMA = "application/xml";
+
+    private static final Version VERSION = new Version( 2, 0, 2 );
+
+    private static final int START_POSITION = 10;
+
+    private static final int MAX_RECORDS = 15;
+
     @Test
     public void testExportMin()
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
-        GetRecords getRecords = new GetRecords( new Version( 2, 0, 2 ), ResultType.results, ReturnableElement.full,
-                                                null );
-        validateGetRecordsRequest( getRecords );
-        assertTrue( true );
+        GetRecords getRecords = new GetRecords( VERSION, ResultType.results, ReturnableElement.full, null );
+        writeAndvalidateGetRecordsRequest( getRecords );
     }
 
     @Test
     public void testExportMax()
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
-        GetRecords getRecords = new GetRecords(
-                                                new Version( 2, 0, 2 ),
-                                                10,
-                                                15,
-                                                "application/xml",
-                                                "http://www.isotc211.org/2005/gmd",
-                                                Collections.singletonList( new QName(
-                                                                                      CommonNamespaces.ISOAP10GMDNS,
-                                                                                      "MD_Metadata",
-                                                                                      CommonNamespaces.ISOAP10GMD_PREFIX ) ),
-                                                ResultType.results, ReturnableElement.full, null );
-        validateGetRecordsRequest( getRecords );
-        assertTrue( true );
+        GetRecords getRecords = initGetRecordsWithoutFilter();
+        writeAndvalidateGetRecordsRequest( getRecords );
     }
 
     @Test
     public void testExportFilter()
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
+        GetRecords getRecords = initGetRecordsWithFilter();
+        writeAndvalidateGetRecordsRequest( getRecords );
+    }
+
+    @Test
+    public void testExportHopCountWithFilter()
+                            throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
+                            TransformationException, IOException, SAXException {
+        GetRecords getRecords = initGetRecordsWithFilterAndHopCount();
+        ByteArrayOutputStream getRecordsAsXml = writeGetRecordsAsXml( getRecords );
+        String getRecordsAsXmlString = asString( getRecordsAsXml );
+        assertTrue( getRecordsAsXmlString.contains( "hopCount=\"2\"" ) );
+        validateGetRecordsXml( getRecordsAsXml );
+    }
+
+    @Test
+    public void testExportHopCountWithoutFilter()
+                            throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
+                            TransformationException, IOException, SAXException {
+        GetRecords getRecords = initGetRecordsWithHopCount();
+        ByteArrayOutputStream getRecordsAsXml = writeGetRecordsAsXml( getRecords );
+        String getRecordsAsXmlString = asString( getRecordsAsXml );
+        assertTrue( getRecordsAsXmlString.contains( "hopCount=\"2\"" ) );
+        validateGetRecordsXml( getRecordsAsXml );
+    }
+
+    private GetRecords initGetRecordsWithoutFilter() {
+        return new GetRecords( VERSION, START_POSITION, MAX_RECORDS, OUTPUT_SCHEMA, OUTPUT_FORMAT, createTypeNames(),
+                               results, full, null );
+    }
+
+    private GetRecords initGetRecordsWithFilter() {
+        Filter filter = createFilter();
+        List<QName> typeNames = createTypeNames();
+        return new GetRecords( VERSION, START_POSITION, MAX_RECORDS, OUTPUT_SCHEMA, OUTPUT_FORMAT, typeNames, results,
+                               full, filter );
+    }
+
+    private GetRecords initGetRecordsWithHopCount() {
+        List<QName> typeNames = createTypeNames();
+        return new GetRecords( VERSION, START_POSITION, MAX_RECORDS, OUTPUT_SCHEMA, OUTPUT_FORMAT, typeNames, results,
+                               full, null, 2 );
+    }
+
+    private GetRecords initGetRecordsWithFilterAndHopCount() {
+        Filter filter = createFilter();
+        List<QName> typeNames = createTypeNames();
+        return new GetRecords( VERSION, START_POSITION, MAX_RECORDS, OUTPUT_SCHEMA, OUTPUT_FORMAT, typeNames, results,
+                               full, filter, 2 );
+    }
+
+    private Filter createFilter() {
         Expression param1 = new ValueReference( new QName( APISO, "Identifier", APISO_PREFIX ) );
         Expression param2 = new Literal<PrimitiveValue>( "3528635identifer18745" );
         Operator rootOperator = new PropertyIsEqualTo( param1, param2, true, ANY );
-        Filter filter = new OperatorFilter( rootOperator );
-        
-        GetRecords getRecords = new GetRecords(
-                                                new Version( 2, 0, 2 ),
-                                                10,
-                                                15,
-                                                "application/xml",
-                                                "http://www.isotc211.org/2005/gmd",
-                                                Collections.singletonList( new QName(
-                                                                                      CommonNamespaces.ISOAP10GMDNS,
-                                                                                      "MD_Metadata",
-                                                                                      CommonNamespaces.ISOAP10GMD_PREFIX ) ),
-                                                ResultType.results, ReturnableElement.full, filter );
-        validateGetRecordsRequest( getRecords );
-        assertTrue( true );
+        return new OperatorFilter( rootOperator );
     }
-    private void validateGetRecordsRequest( GetRecords getRecords )
+
+    private List<QName> createTypeNames() {
+        return Collections.singletonList( new QName( CommonNamespaces.ISOAP10GMDNS, "MD_Metadata",
+                                                     CommonNamespaces.ISOAP10GMD_PREFIX ) );
+    }
+
+    private void writeAndvalidateGetRecordsRequest( GetRecords getRecords )
                             throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
                             TransformationException, IOException, SAXException {
+        ByteArrayOutputStream os = writeGetRecordsAsXml( getRecords );
+        validateGetRecordsXml( os );
+    }
+
+    private ByteArrayOutputStream writeGetRecordsAsXml( GetRecords getRecords )
+                            throws XMLStreamException, FactoryConfigurationError, UnknownCRSException,
+                            TransformationException, IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( os );
 
@@ -148,7 +200,11 @@ public class TestGetRecordsXMLEncoderTest {
 
         writer.close();
         os.close();
+        return os;
+    }
 
+    private void validateGetRecordsXml( ByteArrayOutputStream os )
+                            throws SAXException, IOException {
         InputStream getRecordsRequest = new ByteArrayInputStream( os.toByteArray() );
         SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
         Validator validator = null;
@@ -163,6 +219,11 @@ public class TestGetRecordsXMLEncoderTest {
             return;
         }
         validator.validate( source );
+    }
+
+    private String asString( ByteArrayOutputStream getRecordsAsXml )
+                            throws UnsupportedEncodingException {
+        return getRecordsAsXml.toString();
     }
 
 }
