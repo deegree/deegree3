@@ -44,6 +44,7 @@ package org.deegree.services.wms.controller.capabilities;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.XMLAdapter.maybeWriteElement;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElementNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
@@ -59,6 +60,7 @@ import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.wms.controller.WMSController;
 
 /**
@@ -178,6 +180,11 @@ class WmsCapabilities130MetadataWriter {
         writer.writeEndElement();
 
         writeServiceProvider( writer );
+
+        final DeegreeWMS config = controller.getConfig();
+        maybeWriteElementNS( writer, WMSNS, "LayerLimit", config.getLayerLimit() );
+        maybeWriteElementNS( writer, WMSNS, "MaxWidth", config.getMaxWidth() );
+        maybeWriteElementNS( writer, WMSNS, "MaxHeight", config.getMaxHeight() );
 
         writer.writeEndElement();
     }
