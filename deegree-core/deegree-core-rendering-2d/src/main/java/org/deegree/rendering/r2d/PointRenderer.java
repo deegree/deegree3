@@ -96,9 +96,12 @@ class PointRenderer {
         }
 
         if ( img != null ) {
+            // TODO: fix rotation if anchor point is not 0.5,0.5 - see org.deegree.rendering.r2d.Java2DRendererTest.testPointStyling()
             AffineTransform t = rendererContext.graphics.getTransform();
             if ( !isZero( g.rotation ) ) {
-                rendererContext.graphics.rotate( toRadians( g.rotation ), x, y );
+                int rotationPointX = round( rect.x + rect.getWidth() * g.anchorPointX );
+                int rotationPointY = round( rect.y + rect.getHeight() * g.anchorPointY );
+                rendererContext.graphics.rotate( toRadians( g.rotation ), rotationPointX, rotationPointY );
             }
             rendererContext.graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ),
                                                 round( rect.height ), null );
