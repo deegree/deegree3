@@ -64,11 +64,10 @@ import javax.media.jai.operator.ColorQuantizerDescriptor;
 public class ImageUtils {
 
     private static int getType( boolean transparent, String format ) {
-        int type = transparent ? TYPE_INT_ARGB : TYPE_INT_RGB;
-        if ( format.equals( "image/x-ms-bmp" ) ) {
-            type = TYPE_INT_RGB;
+        if ( !isTransparentAndTransparencySupported( format, transparent ) ) {
+            return TYPE_INT_RGB;
         }
-        return type;
+        return transparent ? TYPE_INT_ARGB : TYPE_INT_RGB;
     }
 
     /**
@@ -82,7 +81,7 @@ public class ImageUtils {
         }
 
         BufferedImage img = new BufferedImage( width, height, getType( transparent, format ) );
-        if ( !transparent ) {
+        if ( !isTransparentAndTransparencySupported( format, transparent ) ) {
             Graphics2D g = img.createGraphics();
             g.setBackground( bgColor );
             g.clearRect( 0, 0, width, height );
@@ -90,6 +89,13 @@ public class ImageUtils {
         }
 
         return img;
+    }
+
+    private static boolean isTransparentAndTransparencySupported( String format, boolean transparent ) {
+        if ( format.equals( "image/x-ms-bmp" ) || format.equals( "image/jpeg" ) ) {
+            return false;
+        }
+        return transparent;
     }
 
     /**
