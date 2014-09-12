@@ -15,6 +15,7 @@ import org.deegree.commons.xml.XsltUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.featureinfo.FeatureInfoContext;
 import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.gml.GMLStreamWriter;
@@ -55,7 +56,9 @@ public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
                 nsBindings = new HashMap<String, String>();
             }
             for ( Feature f : col ) {
-                nsBindings.putAll( f.getType().getSchema().getNamespaceBindings() );
+                AppSchema schema = f.getType().getSchema();
+                if ( schema != null )
+                    nsBindings.putAll( schema.getNamespaceBindings() );
             }
             writer.setNamespaceBindings( nsBindings );
             writer.write( col );
