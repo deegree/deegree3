@@ -1481,11 +1481,11 @@ public class XMLAdapter {
      * @param text
      * @throws XMLStreamException
      */
-    public static void maybeWriteElement( XMLStreamWriter writer, String name, String text )
+    public static void maybeWriteElement( XMLStreamWriter writer, String name, Object text )
                             throws XMLStreamException {
         if ( text != null ) {
             writer.writeStartElement( name );
-            writer.writeCharacters( text );
+            writer.writeCharacters( "" + text );
             writer.writeEndElement();
         }
     }
@@ -1499,11 +1499,11 @@ public class XMLAdapter {
      * @param text
      * @throws XMLStreamException
      */
-    public static void maybeWriteElementNS( XMLStreamWriter writer, String ns, String name, String text )
+    public static void maybeWriteElementNS( XMLStreamWriter writer, String ns, String name, Object text )
                             throws XMLStreamException {
         if ( text != null ) {
             writer.writeStartElement( ns, name );
-            writer.writeCharacters( text );
+            writer.writeCharacters( "" + text );
             writer.writeEndElement();
         }
     }

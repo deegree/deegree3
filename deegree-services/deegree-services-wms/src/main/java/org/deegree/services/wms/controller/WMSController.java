@@ -138,6 +138,7 @@ import org.deegree.services.wms.controller.ops.GetFeatureInfo;
 import org.deegree.services.wms.controller.ops.GetMap;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.model.layers.Layer;
+import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
 import org.slf4j.Logger;
 
@@ -179,6 +180,10 @@ public class WMSController extends AbstractOWS {
 
     private FeatureInfoManager featureInfoManager;
 
+    private DeegreeWMS conf;
+
+    private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
+
     public WMSController( URL configURL, ImplementationMetadata<?> serviceInfo ) {
         super( configURL, serviceInfo );
         try {
@@ -187,6 +192,15 @@ public class WMSController extends AbstractOWS {
             // then no configId will be available
         }
         featureInfoManager = new FeatureInfoManager( true );
+    }
+
+    /**
+     * Returns the configuration.
+     * 
+     * @return configuration, after successful initialization, this is never <code>null</code>
+     */
+    public DeegreeWMS getConfig() {
+        return conf;
     }
 
     /**
@@ -280,7 +294,7 @@ public class WMSController extends AbstractOWS {
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
-        DeegreeWMS conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
+        conf = (DeegreeWMS) unmarshallConfig( CONFIG_JAXB_PACKAGE, CONFIG_SCHEMA, controllerConf );
 
         if ( conf.getExtendedCapabilities() != null ) {
             this.extendedCaps = new HashMap<String, List<OMElement>>();
@@ -696,7 +710,7 @@ public class WMSController extends AbstractOWS {
             // this makes it possible to request srs that are not advertised, which may be useful
             controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
         }
-
+        getMapLimitChecker.checkRequestedSizeAndLayerCount( gm, conf );
     }
 
     private void checkGetMap( Version version, org.deegree.protocol.wms.ops.GetMap gm )
@@ -730,6 +744,7 @@ public class WMSController extends AbstractOWS {
             // this makes it possible to request srs that are not advertised, which may be useful
             controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
         }
+        getMapLimitChecker.checkRequestedSizeAndLayerCount( gm, conf );
     }
 
     protected void getCapabilities( Map<String, String> map, HttpResponseBuffer response )
