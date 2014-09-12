@@ -144,7 +144,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
                                      boolean deleteCascadingByDB, Workspace workspace ) throws SQLException,
                             FeatureStoreException {
         this.dialect = dialect;
-        ConnectionProvider prov = workspace.getResource(ConnectionProviderProvider.class, jdbcConnId);
+        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, jdbcConnId );
         conn = prov.getConnection();
         try {
             for ( FeatureTypeMappingJAXB ftDecl : ftDecls ) {
@@ -196,7 +196,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             ftName = new QName( table.getTable() );
         }
         ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
-        LOG.debug("Feature type name: '" + ftName + "'.");
+        LOG.debug( "Feature type name: '" + ftName + "'." );
 
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
