@@ -99,7 +99,6 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
-import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -471,13 +470,11 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
     private ColumnMetadata getUnescapedColumnMetadata( TableName qTable, SQLIdentifier columnName )
                             throws SQLException {
-        char escapeChar = Character.UNASSIGNED;
-        if ( dialect instanceof PostGISDialect )
-            escapeChar = '"';
-
         String name = columnName.getName();
+        char leadingEscapeChar = dialect.getLeadingEscapeChar();
+        char tailingEscapeChar = dialect.getTailingEscapeChar();
 
-        if ( escapeChar == name.charAt( 0 ) && escapeChar == name.charAt( name.length() - 1 ) ) {
+        if ( leadingEscapeChar == name.charAt( 0 ) && tailingEscapeChar == name.charAt( name.length() - 1 ) ) {
             SQLIdentifier unescapedColumnName = new SQLIdentifier( name.substring( 1, name.length() - 1 ) );
             return getColumnMetadataFromDb( qTable ).get( unescapedColumnName );
         }
