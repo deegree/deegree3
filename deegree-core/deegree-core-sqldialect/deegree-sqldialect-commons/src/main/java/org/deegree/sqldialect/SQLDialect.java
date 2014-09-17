@@ -212,4 +212,17 @@ public interface SQLDialect {
      */
     String getSelectSequenceNextVal( String sequence );
 
+    /**
+     * Returns the leading escape char for the SQLDialect
+     *
+     * @return leading escape char
+     */
+    public char getLeadingEscapeChar();
+
+    /**
+     * Returns the tailing escape char for the SQLDialect
+     *
+     * @return tailing escape char
+     */
+    public char getTailingEscapeChar();
 }
