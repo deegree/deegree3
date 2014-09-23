@@ -111,7 +111,7 @@ public class AnyInteractsTest {
     }
 
     private boolean anyInteracts( TimeGeometricPrimitive a, TimeGeometricPrimitive b ) {
-        return anyInteracts.anyInteracts( a, b );
+        return anyInteracts.evaluate( a, b );
     }
 
     private TimeInstant instant( final String s ) {

@@ -17,31 +17,31 @@ public class LaxDuring {
      * @param t2
      * @return
      */
-    public boolean laxDuring( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
+    public boolean evaluate( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
         if ( t1 instanceof TimeInstant ) {
-            return laxDuring( ( (TimeInstant) t1 ).getPosition(), t2 );
+            return evaluate( ( (TimeInstant) t1 ).getPosition(), t2 );
         } else if ( t2 instanceof TimeInstant ) {
             return false;
         } else {
-            return laxDuring( (TimePeriod) t1, (TimePeriod) t2 );
+            return evaluate( (TimePeriod) t1, (TimePeriod) t2 );
         }
     }
 
-    public boolean laxDuring( final TimePosition t1, final TimeGeometricPrimitive t2 ) {
+    public boolean evaluate( final TimePosition t1, final TimeGeometricPrimitive t2 ) {
         if ( t2 instanceof TimeInstant ) {
-            return laxDuring( t1, ( (TimeInstant) t2 ).getPosition() );
+            return evaluate( t1, ( (TimeInstant) t2 ).getPosition() );
         }
-        return laxDuring( t1, (TimePeriod) t2 );
+        return evaluate( t1, (TimePeriod) t2 );
     }
 
-    public boolean laxDuring( final TimePosition t1, final TimePosition t2 ) {
+    public boolean evaluate( final TimePosition t1, final TimePosition t2 ) {
         if ( isIndeterminate( t1 ) || isIndeterminate( t2 ) ) {
             throw new RuntimeException();
         }
         return compare( t1, t2 ) == 0;
     }
 
-    public boolean laxDuring( final TimePosition t1, final TimePeriod t2 ) {
+    public boolean evaluate( final TimePosition t1, final TimePeriod t2 ) {
         if ( isIndeterminate( t1 ) ) {
             throw new RuntimeException();
         }
@@ -60,8 +60,8 @@ public class LaxDuring {
         return true;
     }
 
-    public boolean laxDuring( final TimePeriod t1, final TimePeriod t2 ) {
-        if ( !laxDuring( t1.getBeginPosition(), t2 ) ) {
+    public boolean evaluate( final TimePeriod t1, final TimePeriod t2 ) {
+        if ( !evaluate( t1.getBeginPosition(), t2 ) ) {
             return false;
         }
         final TimePosition t1End = t1.getEndPosition();

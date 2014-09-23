@@ -116,7 +116,7 @@ public class LaxDuringTest {
     }
 
     private boolean laxDuring( TimeGeometricPrimitive a, TimeGeometricPrimitive b ) {
-        return laxDuring.laxDuring( a, b );
+        return laxDuring.evaluate( a, b );
     }
 
     private TimeInstant instant( final String s ) {

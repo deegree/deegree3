@@ -10,34 +10,34 @@ import org.deegree.time.primitive.TimePositionOrInstant;
 
 public class AnyInteracts {
 
-    public boolean anyInteracts( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
+    public boolean evaluate( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
         if ( t1 == null || t2 == null ) {
             return false;
         }
         if ( t1 instanceof TimeInstant ) {
-            return anyInteracts( ( (TimeInstant) t1 ).getPosition(), t2 );
+            return evaluate( ( (TimeInstant) t1 ).getPosition(), t2 );
         } else if ( t2 instanceof TimeInstant ) {
-            return anyInteracts( ( (TimeInstant) t2 ).getPosition(), t1 );
+            return evaluate( ( (TimeInstant) t2 ).getPosition(), t1 );
         } else {
-            return anyInteracts( (TimePeriod) t1, (TimePeriod) t2 );
+            return evaluate( (TimePeriod) t1, (TimePeriod) t2 );
         }
     }
 
-    public boolean anyInteracts( final TimePosition t1, final TimeGeometricPrimitive t2 ) {
+    public boolean evaluate( final TimePosition t1, final TimeGeometricPrimitive t2 ) {
         if ( t2 instanceof TimeInstant ) {
-            return anyInteracts( t1, ( (TimeInstant) t2 ).getPosition() );
+            return evaluate( t1, ( (TimeInstant) t2 ).getPosition() );
         }
-        return anyInteracts( t1, (TimePeriod) t2 );
+        return evaluate( t1, (TimePeriod) t2 );
     }
 
-    public boolean anyInteracts( final TimePosition t1, final TimePosition t2 ) {
+    public boolean evaluate( final TimePosition t1, final TimePosition t2 ) {
         if ( isIndeterminate( t1 ) || isIndeterminate( t2 ) ) {
             throw new RuntimeException();
         }
         return compare( t1, t2 ) == 0;
     }
 
-    public boolean anyInteracts( final TimePosition t1, final TimePeriod t2 ) {
+    public boolean evaluate( final TimePosition t1, final TimePeriod t2 ) {
         if ( isIndeterminate( t1 ) ) {
             throw new RuntimeException();
         }
@@ -56,8 +56,8 @@ public class AnyInteracts {
         return true;
     }
 
-    public boolean anyInteracts( final TimePeriod t1, final TimePeriod t2 ) {
-        return anyInteracts( t1.getBeginPosition(), t2 ) || anyInteracts( t2.getBeginPosition(), t1 );
+    public boolean evaluate( final TimePeriod t1, final TimePeriod t2 ) {
+        return evaluate( t1.getBeginPosition(), t2 ) || evaluate( t2.getBeginPosition(), t1 );
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
