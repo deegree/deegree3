@@ -285,13 +285,19 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
      * </p>
      * 
      * @return connection with auto commit set to off, never <code>null</code>
-     * @throws SQLException
+     * @throws MetadataStoreException
      */
     private Connection getConnection()
-                            throws SQLException {
-        ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connectionId );
-        Connection conn = prov.getConnection();
-        conn.setAutoCommit( false );
+                            throws MetadataStoreException {
+        Connection conn = null;
+        try {
+            ConnectionProvider prov = workspace.getResource( ConnectionProviderProvider.class, connectionId );
+            conn = prov.getConnection();
+            conn.setAutoCommit( false );
+        } catch ( Throwable e ) {
+            e.printStackTrace();
+            throw new MetadataStoreException( e.getMessage() );
+        }
         return conn;
     }
 
