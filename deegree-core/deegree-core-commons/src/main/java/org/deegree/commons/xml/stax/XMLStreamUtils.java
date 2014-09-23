@@ -910,4 +910,23 @@ public class XMLStreamUtils {
         }
     }
 
+    /**
+     * Unconditionally close a {@link XMLStreamReader}.
+     * 
+     * Equivalent to XMLStreamReader.close(), except any exceptions will be ignored. This is typically used in finally
+     * blocks.
+     * 
+     * @param xmlReader
+     *            to close, may be null or already closed
+     */
+    public static void closeQuietly( XMLStreamReader xmlReader ) {
+        if ( xmlReader != null ) {
+            try {
+                xmlReader.close();
+            } catch ( Exception e ) {
+                LOG.info( "XMLStreamReader could not be closed: {}", e.getMessage() );
+            }
+        }
+    }
+
 }

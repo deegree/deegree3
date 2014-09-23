@@ -36,6 +36,7 @@
 package org.deegree.cs.persistence;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -51,7 +52,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
@@ -232,16 +232,6 @@ public class CRSManager implements Initializable, Destroyable {
             throw new CRSStoreException( msg );
         }
         return provider.getCRSStore( configURL, workspace );
-    }
-
-    private void closeQuietly( XMLStreamReader xmlReader ) {
-        if ( xmlReader != null ) {
-            try {
-                xmlReader.close();
-            } catch ( XMLStreamException e ) {
-                LOG.info( "XMLStreamReader could not be closed: {}", e.getMessage() );
-            }
-        }
     }
 
     /**
