@@ -113,6 +113,7 @@ import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
+import org.deegree.services.jaxb.wms.GetMapFormatsType;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
@@ -234,14 +235,7 @@ public class WMSController extends AbstractOWS {
         }
 
         try {
-            // put in the default formats
-            supportedImageFormats.add( "image/png" );
-            supportedImageFormats.add( "image/png; subtype=8bit" );
-            supportedImageFormats.add( "image/png; mode=8bit" );
-            supportedImageFormats.add( "image/gif" );
-            supportedImageFormats.add( "image/jpeg" );
-            supportedImageFormats.add( "image/tiff" );
-            supportedImageFormats.add( "image/x-ms-bmp" );
+           addSupportedImageFormats( conf );
 
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
@@ -730,6 +724,27 @@ public class WMSController extends AbstractOWS {
         return featureInfoManager;
     }
 
+    private void addSupportedImageFormats( DeegreeWMS conf ) {
+        if ( conf.getGetMapFormats() != null ) {
+            GetMapFormatsType getMapFormats = conf.getGetMapFormats();
+            List<String> getMapFormatList = getMapFormats.getGetMapFormat();
+            for ( String getMapFormat : getMapFormatList ) {
+                supportedImageFormats.add( getMapFormat );
+            }
+        }
+        if ( supportedImageFormats.isEmpty() ) {
+            // put in the default formats
+            supportedImageFormats.add( "image/png" );
+            supportedImageFormats.add( "image/png; subtype=8bit" );
+            supportedImageFormats.add( "image/png; mode=8bit" );
+            supportedImageFormats.add( "image/gif" );
+            supportedImageFormats.add( "image/jpeg" );
+            supportedImageFormats.add( "image/tiff" );
+            supportedImageFormats.add( "image/x-ms-bmp" );
+        }
+    }
+
+    
     /**
      * <code>Controller</code>
      * 
