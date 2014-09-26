@@ -320,6 +320,8 @@ The following table shows what top level options are available.
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | FeatureInfoFormats       | 0..1         | Complex | Configures additional feature info output formats                            |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| GetMapFormats            | 0..1         | Complex | Configures additional image output formats                                   |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | LayerLimit               | 0..1         | Integer | Maximum number of layers in a GetMap request, default: unlimited             |
@@ -576,6 +578,32 @@ The selector for properties and features is a kind of pattern matching on the ob
 +--------------------------+----------------------------------------------------------+
 | *selector1*, *selector2* | matches all objects matching *selector1* and *selector2* |
 +--------------------------+----------------------------------------------------------+
+
+.. _anchor-image-output-configuration:
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Custom image output formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Any mime type of the following output formats can be configured to be available as response format for GetMap requests.
+
+ * ``image/png``
+ * ``image/png; subtype=8bit``
+ * ``image/png; mode=8bit``
+ * ``image/gif``
+ * ``image/jpeg``
+ * ``image/tiff``
+ * ``image/x-ms-bmp``
+
+If no format has been configured, all formats are supported.
+
+This is how the configuration section looks like for configuring only ``image/png`` as image output format:
+
+.. code-block:: xml
+
+  <GetMapFormats>
+    <GetMapFormat>image/png</GetMapFormat>
+  </GetMapFormats>
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
