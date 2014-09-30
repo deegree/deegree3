@@ -38,6 +38,7 @@ package org.deegree.metadata.iso.persistence;
 import org.deegree.metadata.iso.persistence.inspectors.InspectorCouplingTest;
 import org.deegree.metadata.iso.persistence.inspectors.InspectorIdentifierTest;
 import org.deegree.metadata.iso.persistence.parsing.ParseISOTest;
+import org.deegree.metadata.iso.persistence.sql.AnyTextHelperTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -52,7 +53,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ InspectorIdentifierTest.class, ParseISOTest.class, InspectorCouplingTest.class,
-               ISORecordAnyTextTest.class, ISORecordSerializeTest.class, ISOMetadatStoreTransactionTest.class })
+               AnyTextHelperTest.class, ISORecordSerializeTest.class, ISOMetadatStoreTransactionTest.class })
 public class ISOTestbed {
 
 }

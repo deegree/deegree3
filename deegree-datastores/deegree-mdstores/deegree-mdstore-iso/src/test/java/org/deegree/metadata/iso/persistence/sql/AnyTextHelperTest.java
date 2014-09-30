@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import java.net.URL;
 import java.util.TimeZone;
@@ -45,6 +45,8 @@ import javax.xml.bind.Unmarshaller;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
+import org.deegree.metadata.iso.persistence.AbstractISOTest;
+import org.deegree.metadata.iso.persistence.TstConstants;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,9 +61,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 30992 $, $Date: 2011-05-31 16:09:20 +0200 (Di, 31. Mai 2011) $
  */
-public class ISORecordAnyTextTest extends AbstractISOTest {
+public class AnyTextHelperTest extends AbstractISOTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( ISORecordAnyTextTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( AnyTextHelperTest.class );
 
     @Test
     public void testAnyTextElement_ALL()

@@ -33,10 +33,11 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import java.util.List;
 
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
@@ -44,14 +45,14 @@ import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.PropertyNameMapping;
 
 /**
- * TODO add class documentation here
+ * Encapsulates backend informations (table names, column names...) and creation of common sql snippets.
  * 
  * @author <a href="mailto:goltz@lat-lon.org">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-abstract class SqlHelper {
+abstract class AbstractSqlHelper {
 
     protected String idColumn;
 
@@ -75,7 +76,7 @@ abstract class SqlHelper {
 
     protected final List<Queryable> queryables;
 
-    SqlHelper( SQLDialect dialect, List<Queryable> queryables ) {
+    AbstractSqlHelper( SQLDialect dialect, List<Queryable> queryables ) {
         this.dialect = dialect;
         this.queryables = queryables;
         idColumn = ISOPropertyNameMapper.CommonColumnNames.id.name();
@@ -138,4 +139,5 @@ abstract class SqlHelper {
         }
 
     }
-}
+    
+}   
