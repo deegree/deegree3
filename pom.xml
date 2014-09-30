@@ -10,16 +10,16 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
     <tag>HEAD</tag>
   </scm>
 
   <repositories>
     <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <id>latlon-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -31,12 +31,12 @@
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <id>jrcportal-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/jrcportal-release/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>jrcportal-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/jrcportal-snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
