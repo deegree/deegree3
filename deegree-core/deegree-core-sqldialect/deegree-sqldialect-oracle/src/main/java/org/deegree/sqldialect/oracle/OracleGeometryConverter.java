@@ -114,36 +114,26 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
         if ( sqlValue == null ) {
             return null;
         }
-        try {
-            return new SDOGeometryConverter().toGeometry( (STRUCT) sqlValue, crs );
-        } catch ( Throwable t ) {
-            LOG.trace( t.getMessage(), t );
-            throw new IllegalArgumentException();
-        }
+        return new SDOGeometryConverter().toGeometry( (STRUCT) sqlValue, crs );
     }
 
     @Override
     public void setParticle( PreparedStatement stmt, Geometry particle, int paramIndex )
                             throws SQLException {
-        try {
-            if ( particle == null ) {
-                stmt.setNull( paramIndex, Types.STRUCT, "MDSYS.SDO_GEOMETRY" );
-            } else {
-                Geometry compatible = getCompatibleGeometry( particle );
-                // TODO clarify if this was only a wkt/wkb requirement ?!
-                // (background Envelope -> Optimized Rectangles in Oracle are preferred and faster for SDO_RELATE
-                // filters )
-                //
-                // if ( compatible instanceof Envelope ) {
-                // compatible = compatible.getConvexHull();
-                // }
-                OracleConnection ocon = getOracleConnection( stmt.getConnection() );
-                Object struct = new SDOGeometryConverter().fromGeometry( ocon, isrid, compatible, true );
-                stmt.setObject( paramIndex, struct );
-            }
-        } catch ( Throwable t ) {
-            t.printStackTrace();
-            throw new IllegalArgumentException();
+        if ( particle == null ) {
+            stmt.setNull( paramIndex, Types.STRUCT, "MDSYS.SDO_GEOMETRY" );
+        } else {
+            Geometry compatible = getCompatibleGeometry( particle );
+            // TODO clarify if this was only a wkt/wkb requirement ?!
+            // (background Envelope -> Optimized Rectangles in Oracle are preferred and faster for SDO_RELATE
+            // filters )
+            //
+            // if ( compatible instanceof Envelope ) {
+            // compatible = compatible.getConvexHull();
+            // }
+            OracleConnection ocon = getOracleConnection( stmt.getConnection() );
+            Object struct = new SDOGeometryConverter().fromGeometry( ocon, isrid, compatible, true );
+            stmt.setObject( paramIndex, struct );
         }
     }
 
