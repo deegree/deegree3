@@ -593,7 +593,8 @@ public class ParseIdentificationInfo extends XMLAdapter {
                     String temporalExtentEnd = getNodeAsString( extentElem, new XPath( endXpath.toString(),
                                                                                        nsContextParseII ), null );
                     try {
-                        if ( temporalExtentBegin != null && temporalExtentEnd != null ) {
+                        if ( temporalExtentBegin != null && temporalExtentEnd != null
+                             && !"".equals( temporalExtentBegin ) && !"".equals( temporalExtentEnd ) ) {
                             tempBeg = parseDate( temporalExtentBegin );
                             tempEnd = parseDate( temporalExtentEnd );
                         }
@@ -712,18 +713,17 @@ public class ParseIdentificationInfo extends XMLAdapter {
             List<OperatesOnData> operatesOnDataList = new ArrayList<OperatesOnData>();
             for ( OMElement operatesOnElem : operatesOn ) {
                 String operatesOnStringUuIdAttribute = operatesOnElem.getAttributeValue( new QName( "uuidref" ) );
-                String operatesOnString = "";
                 if ( operatesOnStringUuIdAttribute != null && !operatesOnStringUuIdAttribute.equals( "" ) ) {
                     operatesOnList.add( operatesOnStringUuIdAttribute );
                 } else {
-                    operatesOnString = getNodeAsString( operatesOnElem,
-                                                        new XPath(
-                                                                   "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
-                                                                   nsContextParseII ), null );
+                    String operatesOnString = getNodeAsString( operatesOnElem,
+                                                               new XPath(
+                                                                          "./gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString",
+                                                                          nsContextParseII ), null );
                     if ( operatesOnString != null ) {
                         operatesOnString = operatesOnString.trim();
+                        operatesOnList.add( operatesOnString );
                     }
-                    operatesOnList.add( operatesOnString );
                 }
             }
             List<OMElement> operatesOnCoupledResources = getElements( sv_serviceIdentification,
@@ -780,7 +780,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                 nsContextParseII ), null );
         Date date = null;
         try {
-            if ( revisionDateString != null ) {
+            if ( revisionDateString != null && !"".equals( revisionDateString ) ) {
                 date = parseDate( revisionDateString );
             } else {
                 date = null;
@@ -796,7 +796,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                 "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:DateTime | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date",
                                                                 nsContextParseII ), null );
         try {
-            if ( creationDateString != null ) {
+            if ( creationDateString != null && !"".equals( creationDateString ) ) {
                 date = parseDate( creationDateString );
             } else {
                 date = null;
@@ -812,7 +812,7 @@ public class ParseIdentificationInfo extends XMLAdapter {
                                                                    "./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date | ./gmd:date/gmd:CI_Date[./gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:DateTime",
                                                                    nsContextParseII ), null );
         try {
-            if ( publicationDateString != null ) {
+            if ( publicationDateString != null && !"".equals( publicationDateString ) ) {
                 date = parseDate( publicationDateString );
             } else {
                 date = null;
