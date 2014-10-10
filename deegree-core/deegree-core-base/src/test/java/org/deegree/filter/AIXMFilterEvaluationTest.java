@@ -64,10 +64,10 @@ import org.junit.Test;
 
 /**
  * Tests the correct evaluation of filter expressions on AIXM features / geometries.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class AIXMFilterEvaluationTest {
@@ -104,16 +104,22 @@ public class AIXMFilterEvaluationTest {
     @Test
     public void filterByAIXMCustomGeometryProperty()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter( "aixm_custom_geometry_property.xml" );
+        final Filter filter = parseFilter( "aixm_custom_geometry_property.xml" );
         assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADD" );
     }
 
     @Test
     public void filterByAIXMCustomGeometryBBOX()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter filter = parseFilter( "aixm_custom_geometry_bbox.xml" );
-        FeatureCollection members = fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() );
+        final Filter filter = parseFilter( "aixm_custom_geometry_bbox.xml" );
         assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADH" );
+    }
+
+    @Test
+    public void filterByTimeInstant()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        final Filter filter = parseFilter( "aixm_timeinstant_begin.xml" );
+        assertResultSet( fc.getMembers( filter, new TypedObjectNodeXPathEvaluator() ), "EADD", "EADH" );
     }
 
     private void assertResultSet( FeatureCollection fc, String... expectedIds ) {
