@@ -35,17 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -53,10 +54,10 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import junit.framework.Assert;
-
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.XMLParsingException;
@@ -70,19 +71,22 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
  * Tests that check the correct reading of {@link Feature} / {@link FeatureCollection} objects from GML instance
  * documents.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureReaderTest {
+
+    private static final String AIXM_NS = "http://www.aixm.aero/schema/5.1";
 
     private static final Logger LOG = getLogger( GMLFeatureReaderTest.class );
 
@@ -567,11 +571,26 @@ public class GMLFeatureReaderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             XMLParsingException, UnknownCRSException, ReferenceResolvingException {
 
-        URL docURL = GMLFeatureReaderTest.class.getResource( "../aixm/feature/AIXM51_BasicMessage.gml" );
-        GMLStreamReader gmlReader = createGMLStreamReader( GML_32, docURL );
-        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        final URL docURL = GMLFeatureReaderTest.class.getResource( "../aixm/feature/AIXM51_BasicMessage.gml" );
+        final GMLStreamReader gmlReader = createGMLStreamReader( GML_32, docURL );
+        final FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         assertEquals( 157, gmlReader.getAppSchema().getFeatureTypes().length );
         assertEquals( 35, gmlReader.getAppSchema().getGeometryTypes().size() );
         assertEquals( 182, fc.size() );
+
+        final Feature organisationAuthority = fc.iterator().next();
+        assertEquals( "ORGCIVIL_AVIATION", organisationAuthority.getId() );
+        final List<Property> timeSliceProps = organisationAuthority.getProperties( new QName( AIXM_NS, "timeSlice" ) );
+        assertEquals( 1, timeSliceProps.size() );
+        final Property timeSliceProp = timeSliceProps.get( 0 );
+        final ElementNode timeSlice = (ElementNode) timeSliceProp.getChildren().get( 0 );
+        final List<TypedObjectNode> props = timeSlice.getChildren();
+        assertEquals( 6, props.size() );
+        final ElementNode validTime = (ElementNode) props.get( 0 );
+        assertEquals( new QName( GML_32.getNamespace(), "validTime" ), validTime.getName() );
+//        final TimePeriod timePeriod = (TimePeriod) validTime.getChildren().get( 0 );
+//        assertNotNull( timePeriod );
+//        assertNotNull( timePeriod.getType() );
     }
+
 }

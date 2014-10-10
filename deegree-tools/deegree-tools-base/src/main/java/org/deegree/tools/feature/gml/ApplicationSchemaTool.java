@@ -478,10 +478,6 @@ public class ApplicationSchemaTool {
             String inputURL = new File( inputFileName ).toURI().toURL().toString();
             GMLAppSchemaReader decoder = new GMLAppSchemaReader( GMLVersion.GML_31, null, inputURL );
             schema = decoder.extractAppSchema();
-            System.err.println( "Mangled types:" );
-            for ( QName typeName : decoder.getAllEncounteredTypes() ) {
-                System.err.println( "- " + typeName );
-            }
             break;
         }
         case gml32: {

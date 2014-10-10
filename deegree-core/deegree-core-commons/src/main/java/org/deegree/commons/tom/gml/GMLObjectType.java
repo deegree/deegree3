@@ -43,17 +43,17 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
  * Defines a class of {@link GMLObject}s, i.e. objects with same name and same types of properties.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public interface GMLObjectType {
 
     /**
      * Returns the category of GML object type definition.
-     * 
+     *
      * @returns category, never <code>null</code>
      */
     GMLObjectCategory getCategory();
@@ -63,21 +63,21 @@ public interface GMLObjectType {
      * <p>
      * In a GML encoding, this corresponds to the objects's element name.
      * </p>
-     * 
+     *
      * @return the name of the object, never <code>null</code>
      */
     QName getName();
 
     /**
      * Returns whether this type definition is abstract or not.
-     * 
+     *
      * @return <code>true</code>, if this type is abstract, <code>false</code> otherwise
      */
     boolean isAbstract();
 
     /**
      * Returns the declaration of the property with the given name.
-     * 
+     *
      * @param propName
      *            name of the property, must not be <code>null</code>
      * @return the declaration of the property, or <code>null</code> if no such property is defined
@@ -86,7 +86,7 @@ public interface GMLObjectType {
 
     /**
      * Returns all property declarations of the object type.
-     * 
+     *
      * @return property declarations (in order), may be empty, but never <code>null</code>
      */
     List<PropertyType> getPropertyDeclarations();
