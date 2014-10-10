@@ -42,6 +42,9 @@ import static org.apache.xerces.xs.XSConstants.WILDCARD;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_ALL;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_CHOICE;
 import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_SEQUENCE;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.GEOMETRY;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
@@ -60,8 +63,10 @@ import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -80,6 +85,7 @@ import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -116,10 +122,10 @@ import org.w3c.dom.ls.LSInput;
  * <li>gml?</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
@@ -168,13 +174,17 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     private Set<QName> featureElementNames = new HashSet<QName>();
 
+    private Set<QName> timeObjectElementNames = new HashSet<QName>();
+
     private Set<QName> timeSliceElementNames = new HashSet<QName>();
+
+    private final Map<QName, GMLObjectCategory> elNameToObjectCategory = new HashMap<QName, GMLObjectCategory>();
 
     private SortedSet<String> appNamespaces;
 
     /**
      * Creates a new {@link GMLSchemaInfoSet} instance for the given GML version and using the specified schemas.
-     * 
+     *
      * @param version
      *            gml version of the schema files, can be null (auto-detect GML version)
      * @param schemaUrls
@@ -192,7 +202,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     /**
      * Creates a new {@link GMLSchemaInfoSet} instance for the given GML version and using the specified inputs.
-     * 
+     *
      * @param version
      *            gml version of the schema files, can be null (auto-detect GML version)
      * @param inputs
@@ -291,24 +301,32 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         for ( XSElementDeclaration elemDecl : ftDecls ) {
             QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
             featureElementNames.add( name );
+            elNameToObjectCategory.put( name, FEATURE );
         }
-
         for ( XSElementDeclaration elemDecl : getGeometryElementDeclarations( null, false ) ) {
             QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
             geomElementNames.add( name );
+            elNameToObjectCategory.put( name, GEOMETRY );
         }
-
         if ( abstractTimeSliceElementDecl != null ) {
             for ( XSElementDeclaration elemDecl : getTimeSliceElementDeclarations( null, false ) ) {
                 QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
                 timeSliceElementNames.add( name );
             }
         }
+        if ( abstractTimeObjectElementDecl != null ) {
+            for ( final XSElementDeclaration elemDecl : getTimeObjectElementDeclarations( null, false ) ) {
+                final QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
+                timeObjectElementNames.add( name );
+                elNameToObjectCategory.put( name, TIME_OBJECT );
+            }
+        }
+
     }
 
     /**
      * Determines the GML version of the given {@link XMLSchemaInfoSet} heuristically.
-     * 
+     *
      * @param xmlSchemaInfoSet
      *            XML schema, must not be <code>null</code>
      * @return gml version, never <code>null</code>
@@ -335,7 +353,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     /**
      * Returns the GML version used for the infoset.
-     * 
+     *
      * @return the GML version used for the infoset, never <code>null</code>
      */
     public GMLVersion getVersion() {
@@ -344,7 +362,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
     /**
      * Returns whether the given namespace is a GML core namespace.
-     * 
+     *
      * @param ns
      *            namespace to check, may be <code>null</code>
      * @return true, if it is a GML core namespace, false otherwise
@@ -377,7 +395,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * <p>
      * This excludes all namespaces that are imported by the GML core schemas.
      * </p>
-     * 
+     *
      * @return all application namespaces, never <code>null</code>
      */
     public synchronized SortedSet<String> getAppNamespaces() {
@@ -401,7 +419,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Returns the element declaration of the abstract object element, i.e.
      * <code>{http://www.opengis.net/gml}_Object</code> (GML 3.0 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractObject</code> (GML 3.2).
-     * 
+     *
      * @return declaration object of the abstract object element, may be <code>null</code> (for GML 2)
      */
     public XSElementDeclaration getAbstractObjectElementDeclaration() {
@@ -411,7 +429,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     /**
      * Returns the element declaration of the abstract GML element, i.e. <code>{http://www.opengis.net/gml}_GML</code>
      * (GML 3.0 to 3.1) or <code>{http://www.opengis.net/gml/3.2}AbstractGML</code> (GML 3.2).
-     * 
+     *
      * @return declaration object of the abstract GML element, may be <code>null</code> (for GML 2)
      */
     public XSElementDeclaration getAbstractGMLElementDeclaration() {
@@ -422,7 +440,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Returns the element declaration of the abstract feature element, i.e.
      * <code>{http://www.opengis.net/gml}_Feature</code> (GML 2 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractFeature</code> (GML 3.2).
-     * 
+     *
      * @return declaration object of the abstract feature element
      */
     public XSElementDeclaration getAbstractFeatureElementDeclaration() {
@@ -433,7 +451,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Returns the element declaration of the abstract geometry element, i.e.
      * <code>{http://www.opengis.net/gml}_Geometry</code> (GML 2 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractGeometry</code> (GML 3.2).
-     * 
+     *
      * @return declaration object of the abstract geometry element
      */
     public XSElementDeclaration getAbstractGeometryElementDeclaration() {
@@ -444,7 +462,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Returns the element declaration of the abstract time slice element, i.e.
      * <code>{http://www.opengis.net/gml}_TimeSlice</code> (GML 2 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractTimeSlice</code> (GML 3.2).
-     * 
+     *
      * @return declaration object of the abstract time slice element
      */
     public XSElementDeclaration getAbstractTimeSliceElementDeclaration() {
@@ -455,7 +473,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Returns the element declaration of the abstract curve segment element, i.e.
      * <code>{http://www.opengis.net/gml}_CurveSegment</code> (GML 3 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractCurveSegment</code> (GML 3.2).
-     * 
+     *
      * @return declaration object of the abstract curve segment element, may be <code>null</code> (for GML 2)
      */
     public XSElementDeclaration getAbstractCurveSegmentElementDeclaration() {
@@ -466,7 +484,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * Returns the element declaration of the abstract surface patch element, i.e.
      * <code>{http://www.opengis.net/gml}_SurfacePatch</code> (GML 3 to 3.1) or
      * <code>{http://www.opengis.net/gml/3.2}AbstractSurfacePatch</code> (GML 3.2).
-     * 
+     *
      * @return element declaration object of the abstract geometry element, may be <code>null</code> (for GML 2)
      */
     public XSElementDeclaration getAbstractSurfacePatchElementDeclaration() {
@@ -516,7 +534,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * <code>gml:AbstractFeature</code> element that has a property whose content model extends
      * <code>gml:AbstractFeatureMemberType</code> is a feature collection. See OGC 07-061, section 6.5.
      * </p>
-     * 
+     *
      * @param featureDecl
      *            feature element declaration, must not be <code>null</code>
      * @return true, if the given element declaration is a feature collection, false otherwise
@@ -607,9 +625,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     }
 
     /**
-     * Checks the given element declaration and returns a {@link ObjectPropertyType} if it defines a GML object property
-     * or GML reference property.
-     * 
+     * Checks the given element declaration and returns an {@link ObjectPropertyType} if it defines a GML object
+     * property.
+     *
      * @param elDecl
      * @param ptName
      * @param minOccurs
@@ -617,8 +635,9 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
      * @param ptSubstitutions
      * @return corresponding {@link ObjectPropertyType} or <code>null</code> if it's not a GML object property
      */
-    public ObjectPropertyType getGMLPropertyDecl( XSElementDeclaration elDecl, QName ptName, int minOccurs,
-                                                  int maxOccurs, List<PropertyType> ptSubstitutions ) {
+    public ObjectPropertyType getGMLPropertyDecl( final XSElementDeclaration elDecl, final QName ptName,
+                                                  final int minOccurs, final int maxOccurs,
+                                                  final List<PropertyType> ptSubstitutions ) {
         if ( !( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) ) {
             return null;
         }
@@ -629,13 +648,14 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             pt = buildFeaturePropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
         }
         if ( pt == null ) {
-            if ( allowsXLink( (XSComplexTypeDefinition) elDecl.getTypeDefinition() ) ) {
-                LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
-                           + elDecl.getName() + "), but handling is not implemented yet." );
-                // // TODO actually determine allowed value representations
-                // pt = new GenericObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl.getAbstract(),
-                // elDecl.getNillable(), ptSubstitutions, BOTH, typeDef );
-            }
+            // final GMLPropertySemantics semantics = derivePropertySemantics( elDecl );
+            // if ( semantics == null || semantics.getValueCategory() == null ) {
+            // LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
+            // + elDecl.getName() + "), but handling is not implemented yet." );
+            // } else {
+            // pt = new ObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl, ptSubstitutions,
+            // semantics.getRepresentations(), semantics.getValueCategory() );
+            // }
         }
         return pt;
     }
@@ -654,7 +674,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     /**
      * Analyzes the given complex type definition and returns a {@link FeaturePropertyType} if it defines a feature
      * property.
-     * 
+     *
      * @param elementDecl
      * @param typeDef
      * @param minOccurs
@@ -859,7 +879,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     /**
      * Analyzes the given complex type definition and returns a {@link GeometryPropertyType} if it defines a geometry
      * property.
-     * 
+     *
      * @param elementDecl
      * @param typeDef
      * @param minOccurs
@@ -1069,45 +1089,65 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     }
 
     /**
+     * Returns the {@link GMLObjectCategory} of the given element declaration..
+     *
+     * @param elName
+     *            element declaration, must not be <code>null</code>
+     * @return category, can be <code>null</code> (element is not a recognized GML object)
+     */
+    public GMLObjectCategory getObjectCategory( final XSElementDeclaration elDecl ) {
+        return elNameToObjectCategory.get( new QName( elDecl.getNamespace(), elDecl.getName() ) );
+    }
+
+    /**
+     * Returns the {@link GMLObjectCategory} of the given element.
+     *
+     * @param elName
+     *            element name, must not be <code>null</code>
+     * @return category, can be <code>null</code> (element is not a recognized GML object)
+     */
+    public GMLObjectCategory getObjectCategory( final QName elName ) {
+        return elNameToObjectCategory.get( elName );
+    }
+
+    /**
      * Determines the generic GML property type interpretation for the given {@link XSElementDeclaration}.
-     * 
+     *
      * @param elDecl
      *            element declaration, must not be <code>null</code>
      * @return GML property type semantics, or <code>null</code> if the element declaration cannot be interpreted as a
      *         GML property type
      */
-    public GMLPropertySemantics derivePropertySemantics( XSElementDeclaration elDecl ) {
-
+    public GMLPropertySemantics derivePropertySemantics( final XSElementDeclaration elDecl ) {
         if ( !( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) ) {
             return null;
         }
-
-        QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
+        final QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
         LOG.trace( "Checking if element declaration '" + ptName + "' defines a complex-valued GML property type." );
-
-        XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-        boolean allowsXlink = allowsXLink( typeDef );
-
-        XSElementDeclaration valueElementDeclFromAnnotations = determineAnnotationDefinedValueElement( elDecl );
-        XSElementDeclaration valueElementDeclFromModelGroup = determineModelGroupDefinedValueElement( typeDef );
-
+        final XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
+        final boolean allowsXlink = allowsXLink( typeDef );
+        final XSElementDeclaration valueElementDeclFromAnnotations = determineAnnotationDefinedValueElement( elDecl );
+        final XSElementDeclaration valueElementDeclFromModelGroup = determineModelGroupDefinedValueElement( typeDef );
         if ( valueElementDeclFromModelGroup == null && valueElementDeclFromAnnotations != null ) {
-            ValueRepresentation allowedRepresentation = REMOTE;
-            return new GMLPropertySemantics( elDecl, valueElementDeclFromAnnotations, allowedRepresentation );
+            final ValueRepresentation allowedRepresentation = REMOTE;
+            final GMLObjectCategory category = getObjectCategory( valueElementDeclFromAnnotations );
+            return new GMLPropertySemantics( elDecl, valueElementDeclFromAnnotations, allowedRepresentation, category );
         }
         if ( valueElementDeclFromModelGroup != null && valueElementDeclFromAnnotations == null ) {
             ValueRepresentation allowedRepresentation = INLINE;
             if ( allowsXlink ) {
                 allowedRepresentation = BOTH;
             }
-            return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation );
+            final GMLObjectCategory category = getObjectCategory( valueElementDeclFromModelGroup );
+            return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation, category );
         }
         if ( valueElementDeclFromModelGroup != null && valueElementDeclFromAnnotations != null ) {
             ValueRepresentation allowedRepresentation = INLINE;
             if ( allowsXlink ) {
                 allowedRepresentation = BOTH;
             }
-            return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation );
+            final GMLObjectCategory category = getObjectCategory( valueElementDeclFromModelGroup );
+            return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation, category );
         }
         return null;
     }

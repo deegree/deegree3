@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static org.apache.xerces.xs.XSConstants.ELEMENT_DECLARATION;
+import static org.apache.xerces.xs.XSConstants.MODEL_GROUP;
+import static org.apache.xerces.xs.XSConstants.WILDCARD;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.StringReader;
@@ -63,7 +67,9 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.GMLObjectType;
+import org.deegree.commons.tom.gml.GenericGMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -87,12 +93,12 @@ import org.w3c.dom.ls.LSInput;
 
 /**
  * Provides access to the {@link AppSchema} defined in one or more GML schema documents.
- * 
+ *
  * @see AppSchema
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GMLAppSchemaReader {
@@ -109,7 +115,7 @@ public class GMLAppSchemaReader {
 
     // key: name of feature type, value: feature type
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
-    
+
     private Map<QName, GMLObjectType> typeNameToType = new HashMap<QName, GMLObjectType>();
 
     // key: name of ft A, value: name of ft B (A is in substitionGroup B)
@@ -133,7 +139,7 @@ public class GMLAppSchemaReader {
 
     /**
      * Creates a new {@link GMLAppSchemaReader} from the given schema URL(s).
-     * 
+     *
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
      * @param namespaceHints
@@ -199,7 +205,7 @@ public class GMLAppSchemaReader {
 
     /**
      * Creates a new {@link GMLAppSchemaReader} from the given <code>LSInput</code>s.
-     * 
+     *
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
      * @param namespaceHints
@@ -260,7 +266,7 @@ public class GMLAppSchemaReader {
 
     /**
      * Creates a new {@link GMLAppSchemaReader} from the given schema file (which may be a directory).
-     * 
+     *
      * @param gmlVersion
      *            gml version of the schema files, can be null (auto-detect GML version)
      * @param namespaceHints
@@ -326,10 +332,10 @@ public class GMLAppSchemaReader {
         }
 
         List<GMLObjectType> geometryTypes = new ArrayList<GMLObjectType>();
-        for ( QName geometryName : geometryNameToGeometryElement.keySet() ) {
-            GMLObjectType type = buildGeometryType( geometryNameToGeometryElement.get( geometryName ) );
+        for ( final XSElementDeclaration elDecl : analyzer.getGeometryElementDeclarations( null, false ) ) {
+            final GMLObjectType type = buildGenericObjectType( elDecl );
             geometryTypes.add( type );
-            typeNameToType.put( geometryName, type );
+            typeNameToType.put( type.getName(), type );
         }
 
         Map<GMLObjectType, GMLObjectType> typeToSuperType = new HashMap<GMLObjectType, GMLObjectType>();
@@ -338,6 +344,13 @@ public class GMLAppSchemaReader {
             if ( substitutionFtName != null ) {
                 typeToSuperType.put( typeNameToType.get( ftName ), typeNameToType.get( substitutionFtName ) );
             }
+        }
+
+        final List<GMLObjectType> genericGmlObjectTypes = new ArrayList<GMLObjectType>();
+        for ( final XSElementDeclaration elDecl : analyzer.getTimeObjectElementDeclarations( null, false ) ) {
+            final GMLObjectType type = buildGenericObjectType( elDecl );
+            genericGmlObjectTypes.add( type );
+            typeNameToType.put( type.getName(), type );
         }
 
         return new GenericAppSchema( fts, ftSubstitution, prefixToNs, analyzer, geometryTypes, typeToSuperType );
@@ -414,70 +427,64 @@ public class GMLAppSchemaReader {
         return new GenericFeatureType( ftName, pts, featureElementDecl.getAbstract() );
     }
 
-    private GMLObjectType buildGeometryType( XSElementDeclaration elDecl ) {
-
-        QName elName = createQName( elDecl.getNamespace(), elDecl.getName() );
-        LOG.debug( "Building geometry type declaration: '" + elName + "'" );
-
+    private GMLObjectType buildGenericObjectType( final XSElementDeclaration elDecl ) {
+        final QName elName = createQName( elDecl.getNamespace(), elDecl.getName() );
+        final GMLObjectCategory category = analyzer.getObjectCategory( elName );
+        LOG.debug( "Building object type declaration: '" + elName + "'" );
         if ( elDecl.getTypeDefinition().getType() == XSTypeDefinition.SIMPLE_TYPE ) {
-            String msg = "The schema type of feature element '" + elName
-                         + "' is simple, but geometry elements must always have a complex type.";
+            final String msg = "The schema type of element '" + elName
+                               + "' is simple, but object elements must have a complex type.";
             throw new IllegalArgumentException( msg );
         }
-
-        // extract property types from type definition
-        List<PropertyType> pts = new ArrayList<PropertyType>();
-        XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-
-        // element contents
+        final List<PropertyType> pts = new ArrayList<PropertyType>();
+        final XSComplexTypeDefinition typeDef = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
-            XSParticle particle = typeDef.getParticle();
-            int minOccurs = particle.getMinOccurs();
-            int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
-            XSTerm term = particle.getTerm();
+            final XSParticle particle = typeDef.getParticle();
+            final int minOccurs = particle.getMinOccurs();
+            final int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
+            final XSTerm term = particle.getTerm();
             switch ( term.getType() ) {
-            case XSConstants.MODEL_GROUP: {
+            case MODEL_GROUP: {
                 addPropertyTypes( pts, (XSModelGroup) term, minOccurs, maxOccurs );
                 break;
             }
-            case XSConstants.ELEMENT_DECLARATION: {
+            case ELEMENT_DECLARATION: {
                 pts.add( buildPropertyType( (XSElementDeclaration) term, minOccurs, maxOccurs ) );
                 break;
             }
-            case XSConstants.WILDCARD: {
-                String msg = "Broken GML application schema: Geometry element '" + elName
-                             + "' uses wildcard in type model.";
+            case WILDCARD: {
+                final String msg = "Broken GML application schema: Object element '" + elName
+                                   + "' uses wildcard in type model.";
                 throw new IllegalArgumentException( msg );
             }
             default: {
-                String msg = "Internal error. Unhandled term type: " + term.getName();
+                final String msg = "Internal error. Unhandled term type: " + term.getName();
                 throw new RuntimeException( msg );
             }
             }
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            LOG.debug( "Empty geometry type declaration." );
+            LOG.debug( "Empty GML object type declaration." );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
-            String msg = "Broken GML application schema: Geometry element '" + elName
-                         + "' uses mixed content in type model.";
+            final String msg = "Broken GML application schema: GML object element '" + elName
+                               + "' uses mixed content in type model.";
             throw new IllegalArgumentException( msg );
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
-            String msg = "Broken GML application schema: Geometry element '" + elName
-                         + "' uses simple content in type model.";
+            final String msg = "Broken GML application schema: GML object element '" + elName
+                               + "' uses simple content in type model.";
             throw new IllegalArgumentException( msg );
         }
         default: {
-            String msg = "Internal error. Unhandled ContentType: " + typeDef.getContentType();
+            final String msg = "Internal error. Unhandled ContentType: " + typeDef.getContentType();
             throw new RuntimeException( msg );
         }
         }
-
-        return new GenericFeatureType( elName, pts, elDecl.getAbstract() );
+        return new GenericGMLObjectType( category, elName, pts, elDecl.getAbstract() );
     }
 
     private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup, int parentMinOccurs,
@@ -622,7 +629,7 @@ public class GMLAppSchemaReader {
      * This is basically done to cope with GML application schemas that don't follow good practices (minOccurs/maxOccurs
      * should only be set on the property element declaration).
      * </p>
-     * 
+     *
      * @param parentOccurs
      *            occurence information of the parent model group, -1 means unbounded
      * @param occurs
@@ -674,7 +681,7 @@ public class GMLAppSchemaReader {
     /**
      * After parsing, this method can be called to find out all referenced types that have been encountered (for
      * debugging).
-     * 
+     *
      * @return
      */
     public Set<QName> getAllEncounteredTypes() {
