@@ -49,6 +49,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -190,6 +191,18 @@ public class DynamicAppSchema implements AppSchema {
 
     @Override
     public Map<GMLObjectType, GMLObjectType> getGeometryToSuperType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public GMLObjectType getGmlObjectType( QName name ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<GMLObjectType> getGmlObjectTypes( GMLObjectCategory timeObject ) {
         // TODO Auto-generated method stub
         return null;
     }

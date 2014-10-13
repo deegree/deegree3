@@ -45,6 +45,7 @@ import static org.apache.xerces.xs.XSModelGroup.COMPOSITOR_SEQUENCE;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.GEOMETRY;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.ISOAP10GMDNS;
@@ -317,6 +318,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             for ( XSElementDeclaration elemDecl : getTimeSliceElementDeclarations( null, false ) ) {
                 QName name = new QName( elemDecl.getNamespace(), elemDecl.getName() );
                 timeSliceElementNames.add( name );
+                elNameToObjectCategory.put( name, TIME_SLICE );
             }
         }
         if ( abstractTimeObjectElementDecl != null ) {

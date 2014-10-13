@@ -51,6 +51,7 @@ import java.util.TreeSet;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSNamespaceItemList;
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -497,5 +498,21 @@ public class GenericAppSchema implements AppSchema {
     @Override
     public Map<GMLObjectType, GMLObjectType> getGeometryToSuperType() {
         return typeToSuperType;
+    }
+
+    @Override
+    public GMLObjectType getGmlObjectType( final QName name ) {
+        return typeNameToType.get( name );
+    }
+
+    @Override
+    public List<GMLObjectType> getGmlObjectTypes( final GMLObjectCategory category ) {
+        final List<GMLObjectType> types = new ArrayList<GMLObjectType>();
+        for ( final GMLObjectType type : typeNameToType.values() ) {
+            if ( type.getCategory() == category ) {
+                types.add( type );
+            }
+        }
+        return types;
     }
 }

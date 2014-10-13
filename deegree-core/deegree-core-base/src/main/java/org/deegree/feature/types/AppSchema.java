@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
@@ -182,4 +183,15 @@ public interface AppSchema {
     AppSchemaGeometryHierarchy getGeometryHierarchy();
 
     Map<GMLObjectType, GMLObjectType> getGeometryToSuperType();
+
+    /**
+     * Retrieves the object type declaration with the given name.
+     *
+     * @param name
+     *            type declaration to look up, must not be <code>null</code>
+     * @return the type with the given name, or <code>null</code> if no such type exists
+     */
+    GMLObjectType getGmlObjectType( QName name );
+
+    List<GMLObjectType> getGmlObjectTypes( GMLObjectCategory timeObject );
 }

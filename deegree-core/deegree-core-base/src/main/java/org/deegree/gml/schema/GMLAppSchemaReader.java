@@ -258,6 +258,11 @@ public class GMLAppSchemaReader {
             genericGmlObjectTypes.add( type );
             typeNameToType.put( type.getName(), type );
         }
+        for ( final XSElementDeclaration elDecl : gmlSchema.getTimeSliceElementDeclarations( null, false ) ) {
+            final GMLObjectType type = buildGenericObjectType( elDecl );
+            genericGmlObjectTypes.add( type );
+            typeNameToType.put( type.getName(), type );
+        }
         return new GenericAppSchema( fts, ftSubstitution, prefixToNs, gmlSchema, genericGmlObjectTypes, typeToSuperType );
     }
 
