@@ -498,7 +498,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             if ( xsdValueType.getTypeCategory() == SIMPLE_TYPE ) {
                 node = parseSimpleXMLElement( xmlStream, elDecl );
             } else {
-                ObjectPropertyType propDecl = schema.getCustomElDecl( elDecl );
+                ObjectPropertyType propDecl = schema.getGMLSchema().getCustomElDecl( elDecl );
                 if ( propDecl != null ) {
                     if ( propDecl instanceof GeometryPropertyType ) {
                         node = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
@@ -544,7 +544,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, xsdValueType );
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
 
-        Map<QName, XSTerm> childElementDecls = schema.getAllowedChildElementDecls( xsdValueType );
+        Map<QName, XSTerm> childElementDecls = schema.getGMLSchema().getAllowedChildElementDecls( xsdValueType );
 
         switch ( xsdValueType.getContentType() ) {
         case CONTENTTYPE_ELEMENT: {

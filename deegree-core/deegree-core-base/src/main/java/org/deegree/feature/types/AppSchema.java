@@ -6,13 +6,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSTerm;
-import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 
 /**
@@ -145,18 +140,6 @@ public interface AppSchema {
     Map<String, String> getNamespaceBindings();
 
     /**
-     * Returns the {@link XSElementDeclaration}s/{@link XSWildcard}s that the given complex type definition allows for.
-     * <p>
-     * TODO: Respect order and cardinality of child elements.
-     * </p>
-     *
-     * @param type
-     *            complex type definition, must not be <code>null</code>
-     * @return allowed child element declarations, never <code>null</code>
-     */
-    Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type );
-
-    /**
      * Returns the application namespaces.
      * <p>
      * NOTE: This excludes the GML core namespaces.
@@ -175,15 +158,6 @@ public interface AppSchema {
      * @return namespace dependencies, may be empty, but never <code>null</code>
      */
     List<String> getNamespacesDependencies( String ns );
-
-    /**
-     * Returns the {@link ObjectPropertyType} for the given element declaration (if it defines an object property).
-     *
-     * @param elDecl
-     *            element declaration, must not be <code>null</code>
-     * @return property declaration or <code>null</code> (if the element does not declare an {@link ObjectPropertyType})
-     */
-    ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl );
 
     /**
      * Returns all geometry types that are defined in this application schema.

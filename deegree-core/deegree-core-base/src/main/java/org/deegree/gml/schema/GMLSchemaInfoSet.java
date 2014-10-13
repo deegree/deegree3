@@ -85,6 +85,7 @@ import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -181,6 +182,10 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
     private final Map<QName, GMLObjectCategory> elNameToObjectCategory = new HashMap<QName, GMLObjectCategory>();
 
     private SortedSet<String> appNamespaces;
+
+    private final Map<XSComplexTypeDefinition, Map<QName, XSTerm>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSTerm>>();
+
+    private final Map<XSElementDeclaration, ObjectPropertyType> elDeclToGMLObjectPropDecl = new HashMap<XSElementDeclaration, ObjectPropertyType>();
 
     /**
      * Creates a new {@link GMLSchemaInfoSet} instance for the given GML version and using the specified schemas.
@@ -1150,6 +1155,77 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             return new GMLPropertySemantics( elDecl, valueElementDeclFromModelGroup, allowedRepresentation, category );
         }
         return null;
+    }
+
+    /**
+     * Returns the {@link XSElementDeclaration}s/{@link XSWildcard}s that the given complex type definition allows for.
+     * <p>
+     * TODO: Respect order and cardinality of child elements.
+     * </p>
+     *
+     * @param type
+     *            complex type definition, must not be <code>null</code>
+     * @return allowed child element declarations, never <code>null</code>
+     */
+    public synchronized Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
+        Map<QName, XSTerm> childDeclMap = typeToAllowedChildDecls.get( type );
+        if ( childDeclMap == null ) {
+            childDeclMap = new HashMap<QName, XSTerm>();
+            typeToAllowedChildDecls.put( type, childDeclMap );
+            List<XSTerm> childDecls = new ArrayList<XSTerm>();
+            addChildElementDecls( type.getParticle(), childDecls );
+
+            for ( XSTerm term : childDecls ) {
+                if ( term instanceof XSElementDeclaration ) {
+                    XSElementDeclaration decl = (XSElementDeclaration) term;
+                    QName name = new QName( decl.getNamespace(), decl.getName() );
+                    childDeclMap.put( name, decl );
+                    for ( XSElementDeclaration substitution : getSubstitutions( decl, null, true, true ) ) {
+                        name = new QName( substitution.getNamespace(), substitution.getName() );
+                        LOG.debug( "Adding: " + name );
+                        childDeclMap.put( name, substitution );
+                    }
+                } else if ( term instanceof XSWildcard ) {
+                    childDeclMap.put( new QName( "*" ), term );
+                }
+            }
+        }
+        return childDeclMap;
+    }
+
+    /**
+     * Returns the {@link ObjectPropertyType} for the given element declaration (if it defines an object property).
+     *
+     * @param elDecl
+     *            element declaration, must not be <code>null</code>
+     * @return property declaration or <code>null</code> (if the element does not declare an {@link ObjectPropertyType})
+     */
+    public synchronized ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
+        ObjectPropertyType pt = null;
+        if ( !elDeclToGMLObjectPropDecl.containsKey( elDecl ) ) {
+            QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
+            pt = getGMLPropertyDecl( elDecl, ptName, 1, 1, null );
+            elDeclToGMLObjectPropDecl.put( elDecl, pt );
+        } else {
+            pt = elDeclToGMLObjectPropDecl.get( elDecl );
+        }
+        return pt;
+    }
+
+    private void addChildElementDecls( final XSParticle particle, final List<XSTerm> propDecls ) {
+        if ( particle != null ) {
+            final XSTerm term = particle.getTerm();
+            if ( term instanceof XSModelGroup ) {
+                final XSObjectList particles = ( (XSModelGroup) term ).getParticles();
+                for ( int i = 0; i < particles.getLength(); i++ ) {
+                    addChildElementDecls( (XSParticle) particles.item( i ), propDecls );
+                }
+            } else if ( term instanceof XSWildcard || term instanceof XSElementDeclaration ) {
+                propDecls.add( term );
+            } else {
+                throw new RuntimeException( "Unhandled term type: " + term.getClass() );
+            }
+        }
     }
 
     private XSElementDeclaration determineAnnotationDefinedValueElement( XSElementDeclaration elDecl ) {

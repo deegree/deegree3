@@ -48,30 +48,22 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSNamespaceItemList;
-import org.apache.xerces.xs.XSObjectList;
-import org.apache.xerces.xs.XSParticle;
-import org.apache.xerces.xs.XSTerm;
-import org.apache.xerces.xs.XSWildcard;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Generic {@link AppSchema} implementation, can be used for representing arbitrary application schemas.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GenericAppSchema implements AppSchema {
@@ -101,13 +93,9 @@ public class GenericAppSchema implements AppSchema {
 
     private final GMLSchemaInfoSet gmlSchema;
 
-    private final Map<XSComplexTypeDefinition, Map<QName, XSTerm>> typeToAllowedChildDecls = new HashMap<XSComplexTypeDefinition, Map<QName, XSTerm>>();
-
     private final Map<String, List<String>> nsToDependencies = new HashMap<String, List<String>>();
 
     private final Set<String> appNamespaces = new TreeSet<String>();
-
-    private final Map<XSElementDeclaration, ObjectPropertyType> elDeclToGMLObjectPropDecl = new HashMap<XSElementDeclaration, ObjectPropertyType>();
 
     private final List<GMLObjectType> geometryTypes;
 
@@ -116,7 +104,7 @@ public class GenericAppSchema implements AppSchema {
     /**
      * Creates a new {@link GenericAppSchema} instance from the given {@link FeatureType}s and their derivation
      * hierarchy.
-     * 
+     *
      * @param fts
      *            all application feature types (abstract and non-abstract), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), must not be
@@ -411,58 +399,12 @@ public class GenericAppSchema implements AppSchema {
     }
 
     @Override
-    public synchronized Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
-
-        Map<QName, XSTerm> childDeclMap = typeToAllowedChildDecls.get( type );
-
-        if ( childDeclMap == null ) {
-            childDeclMap = new HashMap<QName, XSTerm>();
-            typeToAllowedChildDecls.put( type, childDeclMap );
-            List<XSTerm> childDecls = new ArrayList<XSTerm>();
-            addChildElementDecls( type.getParticle(), childDecls );
-
-            for ( XSTerm term : childDecls ) {
-                if ( term instanceof XSElementDeclaration ) {
-                    XSElementDeclaration decl = (XSElementDeclaration) term;
-                    QName name = new QName( decl.getNamespace(), decl.getName() );
-                    childDeclMap.put( name, decl );
-                    for ( XSElementDeclaration substitution : gmlSchema.getSubstitutions( decl, null, true, true ) ) {
-                        name = new QName( substitution.getNamespace(), substitution.getName() );
-                        LOG.debug( "Adding: " + name );
-                        childDeclMap.put( name, substitution );
-                    }
-                } else if ( term instanceof XSWildcard ) {
-                    childDeclMap.put( new QName( "*" ), term );
-                }
-            }
-        }
-        return childDeclMap;
-    }
-
-    private void addChildElementDecls( XSParticle particle, List<XSTerm> propDecls ) {
-        if ( particle != null ) {
-            XSTerm term = particle.getTerm();
-            if ( term instanceof XSModelGroup ) {
-                XSObjectList particles = ( (XSModelGroup) term ).getParticles();
-                for ( int i = 0; i < particles.getLength(); i++ ) {
-                    addChildElementDecls( (XSParticle) particles.item( i ), propDecls );
-                }
-            } else if ( term instanceof XSWildcard || term instanceof XSElementDeclaration ) {
-                propDecls.add( term );
-            } else {
-                throw new RuntimeException( "Unhandled term type: " + term.getClass() );
-            }
-        }
-    }
-
-    @Override
     public Set<String> getAppNamespaces() {
         return appNamespaces;
     }
 
     @Override
     public List<String> getNamespacesDependencies( String ns ) {
-
         List<String> nsDependencies = nsToDependencies.get( ns );
         if ( nsDependencies == null ) {
             Set<String> dependencies = new HashSet<String>();
@@ -491,19 +433,6 @@ public class GenericAppSchema implements AppSchema {
             nsToDependencies.put( ns, nsDependencies );
         }
         return nsDependencies;
-    }
-
-    @Override
-    public synchronized ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
-        ObjectPropertyType pt = null;
-        if ( !elDeclToGMLObjectPropDecl.containsKey( elDecl ) ) {
-            QName ptName = new QName( elDecl.getNamespace(), elDecl.getName() );
-            pt = gmlSchema.getGMLPropertyDecl( elDecl, ptName, 1, 1, null );
-            elDeclToGMLObjectPropDecl.put( elDecl, pt );
-        } else {
-            pt = elDeclToGMLObjectPropDecl.get( elDecl );
-        }
-        return pt;
     }
 
     @Override

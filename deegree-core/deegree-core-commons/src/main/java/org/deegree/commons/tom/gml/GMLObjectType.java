@@ -61,7 +61,7 @@ public interface GMLObjectType {
     /**
      * Returns the name that objects of this type have.
      * <p>
-     * In a GML encoding, this corresponds to the objects's element name.
+     * In a GML encoding, this corresponds to the object's element name.
      * </p>
      *
      * @return the name of the object, never <code>null</code>
