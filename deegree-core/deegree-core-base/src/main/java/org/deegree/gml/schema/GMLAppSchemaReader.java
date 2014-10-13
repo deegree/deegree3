@@ -239,10 +239,10 @@ public class GMLAppSchemaReader {
             }
         }
 
-        List<GMLObjectType> geometryTypes = new ArrayList<GMLObjectType>();
+        final List<GMLObjectType> genericGmlObjectTypes = new ArrayList<GMLObjectType>();
         for ( final XSElementDeclaration elDecl : gmlSchema.getGeometryElementDeclarations( null, false ) ) {
             final GMLObjectType type = buildGenericObjectType( elDecl );
-            geometryTypes.add( type );
+            genericGmlObjectTypes.add( type );
             typeNameToType.put( type.getName(), type );
         }
 
@@ -253,15 +253,12 @@ public class GMLAppSchemaReader {
                 typeToSuperType.put( typeNameToType.get( ftName ), typeNameToType.get( substitutionFtName ) );
             }
         }
-
-        final List<GMLObjectType> genericGmlObjectTypes = new ArrayList<GMLObjectType>();
         for ( final XSElementDeclaration elDecl : gmlSchema.getTimeObjectElementDeclarations( null, false ) ) {
             final GMLObjectType type = buildGenericObjectType( elDecl );
             genericGmlObjectTypes.add( type );
             typeNameToType.put( type.getName(), type );
         }
-
-        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, gmlSchema, geometryTypes, typeToSuperType );
+        return new GenericAppSchema( fts, ftSubstitution, prefixToNs, gmlSchema, genericGmlObjectTypes, typeToSuperType );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration elDecl ) {

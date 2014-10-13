@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
+import static org.deegree.commons.tom.gml.GMLObjectCategory.GEOMETRY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,7 +99,7 @@ public class GenericAppSchema implements AppSchema {
 
     private final Set<String> appNamespaces = new TreeSet<String>();
 
-    private final List<GMLObjectType> geometryTypes;
+    private final List<GMLObjectType> geometryTypes = new ArrayList<GMLObjectType>();
 
     private final AppSchemaGeometryHierarchy geometryHierarchy;
 
@@ -112,16 +114,16 @@ public class GenericAppSchema implements AppSchema {
      * @param ftToSuperFt
      *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), can be <code>null</code>
-     * @param xsModel
-     *            full XML schema infoset (e.g. for custom property type definitions, etc.), may be <code>null</code>
      * @param prefixToNs
      *            preferred namespace prefixes to use, key: prefix, value: namespace, may be <code>null</code>
+     * @param xsModel
+     *            full GML/XML schema infoset, may be <code>null</code>
      * @throws IllegalArgumentException
      *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
     public GenericAppSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
                              Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel,
-                             List<GMLObjectType> geometryTypes, Map<GMLObjectType, GMLObjectType> typeToSuperType )
+                             List<GMLObjectType> gmlObjectTypes, Map<GMLObjectType, GMLObjectType> typeToSuperType )
                             throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
@@ -211,33 +213,38 @@ public class GenericAppSchema implements AppSchema {
         }
 
         this.gmlSchema = xsModel;
-        this.geometryTypes = geometryTypes;
-        if ( geometryTypes != null ) {
-            for ( GMLObjectType gmlObjectType : geometryTypes ) {
+        if ( gmlObjectTypes != null ) {
+            for ( final GMLObjectType gmlObjectType : gmlObjectTypes ) {
                 typeNameToType.put( gmlObjectType.getName(), gmlObjectType );
+                if ( gmlObjectType.getCategory() == GEOMETRY ) {
+                    geometryTypes.add( gmlObjectType );
+                }
             }
         }
 
-        // build substitution group lookup maps
         if ( typeToSuperType != null ) {
-            this.typeToSuperType.putAll( typeToSuperType );
-            for ( GMLObjectType ft : fts ) {
-                List<GMLObjectType> substitutionGroups = new ArrayList<GMLObjectType>();
-                GMLObjectType substitutionGroup = typeToSuperType.get( ft );
-                while ( substitutionGroup != null ) {
-                    substitutionGroups.add( substitutionGroup );
-                    substitutionGroup = ftToSuperFt.get( substitutionGroup );
-                }
-                if ( !substitutionGroups.isEmpty() ) {
-                    typeToSuperTypes.put( ft, substitutionGroups );
-                }
-            }
+            populateSubstitutionLookupMap( fts, ftToSuperFt, typeToSuperType );
         }
-
-        if ( geometryTypes != null && gmlSchema != null ) {
+        if ( !geometryTypes.isEmpty() && gmlSchema != null ) {
             geometryHierarchy = new AppSchemaGeometryHierarchy( this, gmlSchema.getVersion() );
         } else {
             geometryHierarchy = null;
+        }
+    }
+
+    private void populateSubstitutionLookupMap( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt,
+                                                Map<GMLObjectType, GMLObjectType> typeToSuperType ) {
+        this.typeToSuperType.putAll( typeToSuperType );
+        for ( GMLObjectType ft : fts ) {
+            List<GMLObjectType> substitutionGroups = new ArrayList<GMLObjectType>();
+            GMLObjectType substitutionGroup = typeToSuperType.get( ft );
+            while ( substitutionGroup != null ) {
+                substitutionGroups.add( substitutionGroup );
+                substitutionGroup = ftToSuperFt.get( substitutionGroup );
+            }
+            if ( !substitutionGroups.isEmpty() ) {
+                typeToSuperTypes.put( ft, substitutionGroups );
+            }
         }
     }
 
@@ -475,7 +482,11 @@ public class GenericAppSchema implements AppSchema {
 
     @Override
     public GMLObjectType getGeometryType( QName gtName ) {
-        return typeNameToType.get( gtName );
+        final GMLObjectType gmlObjectType = typeNameToType.get( gtName );
+        if ( gmlObjectType == null || gmlObjectType.getCategory() != GEOMETRY ) {
+            return null;
+        }
+        return gmlObjectType;
     }
 
     @Override

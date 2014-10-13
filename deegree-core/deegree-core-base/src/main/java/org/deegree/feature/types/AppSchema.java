@@ -14,7 +14,7 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
  * Defines {@link GMLObjectType}s (e.g. feature types) and their derivation hierarchy.
  * <p>
  * May be based on a {@link GMLSchemaInfoSet}. If this is the case, {@link #getGMLSchema()} can be used to access the
- * full schema infoset.
+ * full XML/GML schema infoset.
  * </p>
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>

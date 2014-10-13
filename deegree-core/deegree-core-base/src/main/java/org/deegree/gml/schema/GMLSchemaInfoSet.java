@@ -326,7 +326,6 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                 elNameToObjectCategory.put( name, TIME_OBJECT );
             }
         }
-
     }
 
     /**

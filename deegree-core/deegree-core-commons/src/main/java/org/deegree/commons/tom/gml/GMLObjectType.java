@@ -52,7 +52,7 @@ import org.deegree.commons.tom.gml.property.PropertyType;
 public interface GMLObjectType {
 
     /**
-     * Returns the category of GML object type definition.
+     * Returns the GML object type category.
      *
      * @returns category, never <code>null</code>
      */
