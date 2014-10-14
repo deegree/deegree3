@@ -88,7 +88,6 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**

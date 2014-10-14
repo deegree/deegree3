@@ -79,6 +79,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLObjectCategory;
+import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -98,6 +99,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.SimpleProperty;
+import org.deegree.feature.timeslice.TimeSlice;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.ArrayPropertyType;
@@ -298,6 +300,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             return parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
         case TIME_OBJECT:
             return parseTimeObjectProperty( xmlStream, propDecl, crs );
+        case TIME_SLICE:
+            return parseTimeSliceProperty( xmlStream, propDecl, crs );
         default:
             throw new RuntimeException( "Internal error. Unhandled GML object category " + propDecl.getCategory() );
         }
@@ -426,6 +430,41 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
                 xmlStream.nextTag();
             } else {
                 property = new GenericProperty( propDecl, propName, null, isNilled );
+            }
+        }
+        return property;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Property parseTimeSliceProperty( final XMLStreamReaderWrapper xmlStream, final ObjectPropertyType propDecl, final ICRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+        final QName propName = xmlStream.getName();
+        final Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
+        Property property = null;
+        final String href = xmlStream.getAttributeValue( XLNNS, "href" );
+        if ( href != null ) {
+            GMLReference<TimeSlice> refObject = null;
+            if ( specialResolver != null ) {
+                refObject = new GMLReference<TimeSlice>( specialResolver, href, xmlStream.getSystemId() );
+            } else {
+                refObject = new GMLReference<TimeSlice>( idContext, href, xmlStream.getSystemId() );
+            }
+            idContext.addReference( refObject );
+            final List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
+            values.add( refObject );
+            property = new GenericProperty( propDecl, propName, refObject, attrs, values );
+            skipElement( xmlStream );
+        } else {
+            // inline
+            if ( xmlStream.nextTag() == START_ELEMENT ) {
+                final TimeSlice timeSlice = gmlStreamReader.getFeatureReader().parseTimeSlice(  xmlStream, crs );
+                final List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
+                values.add( timeSlice );
+                property = new GenericProperty( propDecl, propName, timeSlice, attrs, values );
+                xmlStream.skipElement();
+            } else {
+                // yes, empty time slice property elements are actually valid
+                property = new GenericProperty( propDecl, propName, null, attrs, EMPTY_LIST );
             }
         }
         return property;

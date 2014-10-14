@@ -655,7 +655,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
         }
         if ( pt == null ) {
             final GMLPropertySemantics semantics = derivePropertySemantics( elDecl );
-            if ( semantics == null || semantics.getValueCategory() != TIME_OBJECT ) {
+            if ( semantics == null
+                 || ( semantics.getValueCategory() != TIME_OBJECT && semantics.getValueCategory() != TIME_SLICE ) ) {
                 LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
                            + elDecl.getName() + "), but handling is not implemented yet." );
             } else {

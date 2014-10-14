@@ -74,10 +74,10 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 
 /**
  * Provides
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GMLObjectWalker {
@@ -89,7 +89,7 @@ public class GMLObjectWalker {
     /**
      * Creates a new {@link GMLObjectWalker} instance that will trigger callbacks to the given {@link GMLObjectVisitor}
      * instance.
-     * 
+     *
      * @param visitor
      *            visitor instance, must not be <code>null</code>
      */
@@ -99,7 +99,7 @@ public class GMLObjectWalker {
 
     /**
      * Starts the traversal of the {@link GMLObject} hierarchy.
-     * 
+     *
      * @param node
      *            start node, must not be <code>null</code>
      */
@@ -125,7 +125,7 @@ public class GMLObjectWalker {
             } else if ( node instanceof Feature ) {
                 Feature f = (Feature) node;
                 if ( visitor.visitFeature( f ) ) {
-                    traverseFeature( f );
+                    traverseGMLObject( f );
                 }
             } else if ( node instanceof Geometry ) {
                 Geometry g = (Geometry) node;
@@ -133,14 +133,13 @@ public class GMLObjectWalker {
                     traverseGeometry( g );
                 }
             } else {
-                throw new UnsupportedOperationException();
+                traverseGMLObject( node );
             }
         }
 
     }
 
-    private void traverseFeature( Feature node ) {
-        // TODO GML properties?
+    private void traverseGMLObject( GMLObject node ) {
         for ( Property prop : node.getProperties() ) {
             if ( prop.getValue() != null ) {
                 TypedObjectNode ton = prop.getValue();
