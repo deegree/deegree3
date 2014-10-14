@@ -40,7 +40,7 @@ public class GmlTimePositionTypeWriterTest {
         xmlWriter.writeStartElement( "TimePosition" );
         gmlTimePositionTypeWriter.write( timePosition, xmlWriter );
         xmlWriter.writeEndElement();
-        assertEquals( "<TimePosition frame=\"http://my.big.org/TRS/calendars/japanese\" calendarEraName=\"Meiji\">0025-03</TimePosition>",
+        assertEquals( "<TimePosition frame=\"http://my.big.org/TRS/calendars/japanese\" calendarEraName=\"Meiji\" indeterminatePosition=\"before\">0025-03</TimePosition>",
                       xmlWriter.getOutput() );
     }
 }

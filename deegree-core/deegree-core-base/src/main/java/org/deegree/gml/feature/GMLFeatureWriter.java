@@ -98,16 +98,18 @@ import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.deegree.gml.reference.FeatureReference;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
+import org.deegree.time.gml.writer.GmlTimeGeometricPrimitiveWriter;
+import org.deegree.time.primitive.TimeGeometricPrimitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based GML writer for {@link Feature} (and {@link FeatureCollection}) instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
@@ -140,7 +142,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
-     * 
+     *
      * @param gmlStreamWriter
      *            GML stream writer, must not be <code>null</code>
      */
@@ -181,7 +183,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     /**
      * Exports the given {@link Feature} (or {@link FeatureCollection}).
-     * 
+     *
      * @param feature
      *            feature to be exported, must not be <code>null</code>
      * @throws XMLStreamException
@@ -195,7 +197,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     /**
      * Exports the given {@link Property}.
-     * 
+     *
      * @param prop
      *            property to be exported, must not be <code>null</code>
      * @throws XMLStreamException
@@ -429,9 +431,11 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 endEmptyElement();
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( (TypedObjectNode) property.getValue(), resolveState );
+                export( property.getValue(), resolveState );
                 writer.writeEndElement();
             }
+        } else if ( pt instanceof ObjectPropertyType ) {
+            exportGenericObjectProperty( (ObjectPropertyType) pt, (GMLObject) value, resolveState );
         } else {
             throw new RuntimeException( "Internal error. Unhandled property type '" + pt.getClass() + "'" );
         }
@@ -601,7 +605,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         QName propName = pt.getName();
         LOG.debug( "Exporting feature property '" + propName + "'" );
         if ( subFeature == null ) {
-            exportEmptyFeatureProperty( propName );
+            exportEmptyProperty( propName );
         } else if ( subFeature instanceof FeatureReference ) {
             exportFeatureProperty( pt, (FeatureReference) subFeature, resolveState, propName );
         } else {
@@ -624,7 +628,27 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void exportEmptyFeatureProperty( QName propName )
+    private void exportGenericObjectProperty( final ObjectPropertyType pt, final GMLObject object,
+                                              final GmlXlinkOptions resolveState )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        final QName propName = pt.getName();
+        LOG.debug( "Exporting object property '" + propName + "'" );
+        if ( object == null ) {
+            exportEmptyProperty( propName );
+        } else {
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            switch ( pt.getCategory() ) {
+            case TIME_OBJECT:
+                new GmlTimeGeometricPrimitiveWriter().write( writer, (TimeGeometricPrimitive) object );
+                break;
+            default:
+                throw new RuntimeException();
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    private void exportEmptyProperty( QName propName )
                             throws XMLStreamException {
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
         endEmptyElement();

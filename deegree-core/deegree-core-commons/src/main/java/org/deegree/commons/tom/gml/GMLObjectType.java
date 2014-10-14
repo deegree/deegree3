@@ -91,10 +91,4 @@ public interface GMLObjectType {
      */
     List<PropertyType> getPropertyDeclarations();
 
-    // /**
-    // * Returns the corresponding XML schema element declaration (if available).
-    // *
-    // * @return XML schema element declaration, can be <code>null</code> (not based on an XML schema declaration)
-    // */
-    // XSElementDeclaration getXSElementDeclaration();
 }

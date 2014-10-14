@@ -50,6 +50,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -119,6 +120,9 @@ import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.schema.WellKnownGMLTypes;
+import org.deegree.time.gml.reader.GmlTimeGeometricPrimitiveReader;
+import org.deegree.time.primitive.TimeGeometricPrimitive;
+import org.deegree.time.primitive.reference.TimeGeometricPrimitiveReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -229,10 +233,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         Property property = null;
         if ( propDecl instanceof SimplePropertyType ) {
             property = parseSimpleProperty( xmlStream, (SimplePropertyType) propDecl );
-        } else if ( propDecl instanceof GeometryPropertyType ) {
-            property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
-        } else if ( propDecl instanceof FeaturePropertyType ) {
-            property = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
+        } else if ( propDecl instanceof ObjectPropertyType ) {
+            property = parseObjectProperty( xmlStream, (ObjectPropertyType) propDecl, crs );
         } else if ( propDecl instanceof CustomPropertyType ) {
             property = parseCustomProperty( xmlStream, (CustomPropertyType) propDecl, crs );
         } else if ( propDecl instanceof EnvelopePropertyType ) {
@@ -284,6 +286,21 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
         }
         return property;
+    }
+
+    private Property parseObjectProperty( final XMLStreamReaderWrapper xmlStream, final ObjectPropertyType propDecl,
+                                          final ICRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+        switch ( propDecl.getCategory() ) {
+        case FEATURE:
+            return parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
+        case GEOMETRY:
+            return parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
+        case TIME_OBJECT:
+            return parseTimeObjectProperty( xmlStream, propDecl, crs );
+        default:
+            throw new RuntimeException( "Internal error. Unhandled GML object category " + propDecl.getCategory() );
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -375,6 +392,39 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
                 xmlStream.nextTag();
             } else {
                 // yes, empty geometry property elements are actually valid
+                property = new GenericProperty( propDecl, propName, null, isNilled );
+            }
+        }
+        return property;
+    }
+
+    private Property parseTimeObjectProperty( final XMLStreamReaderWrapper xmlStream,
+                                              final ObjectPropertyType propDecl, final ICRS crs )
+                            throws NoSuchElementException, XMLStreamException, XMLParsingException, UnknownCRSException {
+        QName propName = xmlStream.getName();
+        Map<QName, PrimitiveValue> attrs = parseAttributes( xmlStream, propDecl.getElementDecl() );
+        boolean isNilled = attrs.containsKey( XSI_NIL ) && (Boolean) attrs.get( XSI_NIL ).getValue();
+        Property property = null;
+        String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+        if ( href != null ) {
+            TimeGeometricPrimitiveReference<TimeGeometricPrimitive> ref = null;
+            if ( specialResolver != null ) {
+                ref = new TimeGeometricPrimitiveReference<TimeGeometricPrimitive>( specialResolver, href,
+                                                                                   xmlStream.getSystemId() );
+            } else {
+                ref = new TimeGeometricPrimitiveReference<TimeGeometricPrimitive>( idContext, href,
+                                                                                   xmlStream.getSystemId() );
+            }
+            idContext.addReference( ref );
+            property = new GenericProperty( propDecl, propName, ref, isNilled );
+            skipElement( xmlStream );
+        } else {
+            if ( xmlStream.nextTag() == START_ELEMENT ) {
+                final GmlTimeGeometricPrimitiveReader timeReader = new GmlTimeGeometricPrimitiveReader( gmlStreamReader );
+                final TimeGeometricPrimitive timeObject = timeReader.read( xmlStream );
+                property = new GenericProperty( propDecl, propName, timeObject, isNilled );
+                xmlStream.nextTag();
+            } else {
                 property = new GenericProperty( propDecl, propName, null, isNilled );
             }
         }
@@ -500,14 +550,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             } else {
                 ObjectPropertyType propDecl = schema.getGMLSchema().getCustomElDecl( elDecl );
                 if ( propDecl != null ) {
-                    if ( propDecl instanceof GeometryPropertyType ) {
-                        node = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
-                    } else if ( propDecl instanceof FeaturePropertyType ) {
-                        node = parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
-                    } else {
-                        throw new RuntimeException( "Internal error. Unhandled GML object property type "
-                                                    + propDecl.getClass().getName() );
-                    }
+                    node = parseObjectProperty( xmlStream, propDecl, crs );
                 } else {
                     node = parseComplexXMLElement( xmlStream, elDecl, crs );
                 }

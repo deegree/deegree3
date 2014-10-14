@@ -45,7 +45,7 @@ public class GmlTimePositionTypeWriter {
 
     private static final String CALENDAR_ERA_NAME = "calendarEraName";
 
-//    private static final String INDETERMINATE_POSITION = "indeterminatePosition";
+    private static final String INDETERMINATE_POSITION = "indeterminatePosition";
 
     public void write( final TimePosition timePosition, final XMLStreamWriter writer )
                             throws XMLStreamException {
@@ -54,7 +54,11 @@ public class GmlTimePositionTypeWriter {
         // <attribute name="calendarEraName" type="string"/>
         writeAttributeIfNotNull( CALENDAR_ERA_NAME, timePosition.getCalendarEraName(), writer );
         // <attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
-        // writeAttributeIfNotNull( INDETERMINATE_POSITION, timePosition.getIndeterminatePosition(), writer );
+        String indeterminatePosition = null;
+        if ( timePosition.getIndeterminatePosition() != null ) {
+            indeterminatePosition = timePosition.getIndeterminatePosition().toString().toLowerCase();
+        }
+        writeAttributeIfNotNull( INDETERMINATE_POSITION, indeterminatePosition, writer );
         // gml:TimePositionUnion
         writeCharactersIfNotEmpty( timePosition.getValue(), writer );
     }

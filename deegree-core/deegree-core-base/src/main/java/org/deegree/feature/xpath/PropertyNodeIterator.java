@@ -35,38 +35,66 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.xpath.node.GMLObjectNode;
 import org.deegree.feature.xpath.node.PropertyNode;
+import org.deegree.feature.xpath.node.TimePositionAdapter;
+import org.deegree.time.position.TimePosition;
+import org.deegree.time.primitive.TimeInstant;
+import org.deegree.time.primitive.TimePeriod;
 
 /**
  * {@link Iterator} over property nodes of a feature node.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 class PropertyNodeIterator implements Iterator<PropertyNode> {
 
     private GMLObjectNode<GMLObject, GMLObject> parent;
 
-    private Iterator<Property> props;
+    private Iterator<Property> propertyIter;
 
-    PropertyNodeIterator( GMLObjectNode<GMLObject, GMLObject> parent ) {
+    PropertyNodeIterator( final GMLObjectNode<GMLObject, GMLObject> parent ) {
         this.parent = parent;
-        if ( parent.getValue().getProperties() != null ) {
-            this.props = parent.getValue().getProperties().iterator();
+        final GMLObject object = parent.getValue();
+        final List<Property> props = new ArrayList<Property>();
+        if ( object.getProperties() != null ) {
+            props.addAll( object.getProperties() );
         }
+        if ( object instanceof TimeInstant ) {
+            final TimePosition position = ( (TimeInstant) object ).getPosition();
+            props.add( new TimePositionAdapter().getAsXMLElement( new QName( GML3_2_NS, "timePosition" ), position ) );
+        } else if ( object instanceof TimePeriod ) {
+            final TimePosition beginPosition = ( (TimePeriod) object ).getBeginPosition();
+            if ( beginPosition != null ) {
+                props.add( new TimePositionAdapter().getAsXMLElement( new QName( GML3_2_NS, "beginPosition" ),
+                                                                      beginPosition ) );
+            }
+            final TimePosition endPosition = ( (TimePeriod) object ).getEndPosition();
+            if ( endPosition != null ) {
+                props.add( new TimePositionAdapter().getAsXMLElement( new QName( GML3_2_NS, "endPosition" ),
+                                                                      endPosition ) );
+            }
+        }
+        propertyIter = props.iterator();
     }
 
     @Override
     public boolean hasNext() {
-        return props != null && props.hasNext();
+        return propertyIter != null && propertyIter.hasNext();
     }
 
     @Override
@@ -75,8 +103,8 @@ class PropertyNodeIterator implements Iterator<PropertyNode> {
             throw new NoSuchElementException();
         }
         Property prop = null;
-        if ( props != null && props.hasNext() ) {
-            prop = props.next();
+        if ( propertyIter != null && propertyIter.hasNext() ) {
+            prop = propertyIter.next();
         }
         return new PropertyNode( parent, prop );
     }

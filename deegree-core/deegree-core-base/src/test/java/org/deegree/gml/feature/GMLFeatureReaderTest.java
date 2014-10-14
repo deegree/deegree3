@@ -71,6 +71,7 @@ import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.deegree.time.primitive.TimePeriod;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -588,9 +589,9 @@ public class GMLFeatureReaderTest {
         assertEquals( 6, props.size() );
         final ElementNode validTime = (ElementNode) props.get( 0 );
         assertEquals( new QName( GML_32.getNamespace(), "validTime" ), validTime.getName() );
-//        final TimePeriod timePeriod = (TimePeriod) validTime.getChildren().get( 0 );
-//        assertNotNull( timePeriod );
-//        assertNotNull( timePeriod.getType() );
+        final TimePeriod timePeriod = (TimePeriod) validTime.getChildren().get( 0 );
+        assertNotNull( timePeriod );
+        assertEquals( "rtvtOXS0", timePeriod.getId() );
     }
 
 }

@@ -654,14 +654,14 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             pt = buildFeaturePropertyType( ptName, elDecl, typeDef, minOccurs, maxOccurs, ptSubstitutions );
         }
         if ( pt == null ) {
-            // final GMLPropertySemantics semantics = derivePropertySemantics( elDecl );
-            // if ( semantics == null || semantics.getValueCategory() == null ) {
-            // LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
-            // + elDecl.getName() + "), but handling is not implemented yet." );
-            // } else {
-            // pt = new ObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl, ptSubstitutions,
-            // semantics.getRepresentations(), semantics.getValueCategory() );
-            // }
+            final GMLPropertySemantics semantics = derivePropertySemantics( elDecl );
+            if ( semantics == null || semantics.getValueCategory() != TIME_OBJECT ) {
+                LOG.debug( "Identified generic object property declaration ({" + elDecl.getNamespace() + "}"
+                           + elDecl.getName() + "), but handling is not implemented yet." );
+            } else {
+                pt = new ObjectPropertyType( ptName, minOccurs, maxOccurs, elDecl, ptSubstitutions,
+                                             semantics.getRepresentations(), semantics.getValueCategory() );
+            }
         }
         return pt;
     }

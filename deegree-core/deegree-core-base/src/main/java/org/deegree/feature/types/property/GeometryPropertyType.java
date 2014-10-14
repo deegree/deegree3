@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
+import static org.deegree.commons.tom.gml.GMLObjectCategory.GEOMETRY;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -74,10 +76,10 @@ import org.deegree.geometry.primitive.TriangulatedSurface;
 
 /**
  * {@link ObjectPropertyType} that defines a property with a {@link Geometry} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GeometryPropertyType extends ObjectPropertyType {
@@ -155,7 +157,7 @@ public class GeometryPropertyType extends ObjectPropertyType {
 
         /**
          * Find the common base type of this geometry type and another geometry type
-         * 
+         *
          * @param other
          *            to get the base type for.
          * @return the common base
@@ -186,7 +188,7 @@ public class GeometryPropertyType extends ObjectPropertyType {
         /**
          * Get the geometry type from the given string, if the type could not be mapped, a {@link #GEOMETRY} will be
          * returned.
-         * 
+         *
          * @param geomString
          *            to get the type for
          * @return the geometry type.
@@ -342,7 +344,7 @@ public class GeometryPropertyType extends ObjectPropertyType {
     public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                  List<PropertyType> substitutions, GeometryType geomType, CoordinateDimension dim,
                                  ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation, GEOMETRY );
         this.geomType = geomType;
         this.allowedGeometryTypes = new HashSet<GeometryType>();
         this.allowedGeometryTypes.add( this.geomType );
@@ -364,7 +366,7 @@ public class GeometryPropertyType extends ObjectPropertyType {
     public GeometryPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                  List<PropertyType> substitutions, Set<GeometryType> geomTypes,
                                  CoordinateDimension dim, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation, GEOMETRY );
         this.allowedGeometryTypes = geomTypes;
         this.geomType = GeometryType.determineMinimalBaseGeometry( geomTypes );
         this.dim = dim;

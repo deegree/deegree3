@@ -93,10 +93,10 @@ import org.junit.Test;
 
 /**
  * Exports the features in the Philosophers example and validates them against the corresponding schema.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class GMLFeatureWriterTest {
@@ -354,7 +354,7 @@ public class GMLFeatureWriterTest {
         assertFalse( memoryWriter.toString().contains( "rsts206" ) );
         assertTrue( memoryWriter.toString().contains( "rsts207" ) );
     }
-    
+
     @Test
     public void testAIXM51RouteSegmentTimeSliceProjection2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
