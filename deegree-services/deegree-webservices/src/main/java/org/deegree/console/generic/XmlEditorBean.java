@@ -223,6 +223,20 @@ public class XmlEditorBean implements Serializable {
         this.resourceProviderClass = providerClass;
     }
 
+    private ResourceManager<?> lookupResourceManager( Workspace workspace, Class<?> cls ) {
+        ResourceManager<?> mgr = null;
+        outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
+            for ( ResourceProvider<?> p : r.getProviders() ) {
+                if ( p != null && cls.isAssignableFrom( p.getClass() ) ) {
+                    mgr = r;
+                    break outer;
+                }
+            }
+        }
+
+        return mgr;
+    }
+    
     private void activate() {
         try {
             if ( resourceProviderClass == null ) {
@@ -247,15 +261,7 @@ public class XmlEditorBean implements Serializable {
                     throw new Exception( "Could not persist configuration." );
                 }
 
-                ResourceManager<?> mgr = null;
-                outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
-                    for ( ResourceProvider<?> p : r.getProviders() ) {
-                        if ( p != null && cls.isAssignableFrom( p.getClass() ) ) {
-                            mgr = r;
-                            break outer;
-                        }
-                    }
-                }
+                ResourceManager<?> mgr = lookupResourceManager( workspace, cls );
 
                 File wsDir = ( (DefaultWorkspace) workspace ).getLocation();
 
@@ -328,9 +334,17 @@ public class XmlEditorBean implements Serializable {
         Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
         ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
 
-        for ( ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers() ) {
-            if ( resourceManager.getProviders().contains( md.getProvider() ) ) {
-                return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+        if ( md == null ) {
+            // lookup path if file will be created from template
+            ResourceManager<?> mgr = lookupResourceManager( workspace, cls );
+            if ( mgr != null ) {
+                return mgr.getMetadata().getWorkspacePath() + "/" + id;
+            }
+        } else {
+            for ( ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers() ) {
+                if ( resourceManager.getProviders().contains( md.getProvider() ) ) {
+                    return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
+                }
             }
         }
 
