@@ -199,10 +199,10 @@ public final class ISO8601Converter {
     }
 
     /**
-     * Returns an encoding of the given {@link TimeInstant} that complies with <code>xs:date</code>.
+     * Returns an encoding of the given {@link Temporal} that complies with <code>xs:date</code>.
      * <p>
-     * The returned format is <code<YYYY-MM-DD[TZ]</code>. The timezone is used from the {@link TimeInstant} object, if
-     * time zone is unknown {@link TimeInstant#isTimeZoneUnknown()}, no time zone information is appended (= local
+     * The returned format is <code<YYYY-MM-DD[TZ]</code>. The timezone is used from the {@link Temporal} object, if
+     * time zone is unknown {@link Temporal#isTimeZoneUnknown()}, no time zone information is appended (= local
      * time).
      * </p>
      * 
@@ -210,7 +210,7 @@ public final class ISO8601Converter {
      *            point in time to be encoded, must not be <code>null</code>
      * @return encoded <code>xs:date</code>, never <code>null</code>
      */
-    public static String formatDate( TimeInstant date ) {
+    public static String formatDate( Temporal date ) {
 
         TimeZone tz = date.getCalendar().getTimeZone();
         SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_DATE );
@@ -225,10 +225,10 @@ public final class ISO8601Converter {
     }
 
     /**
-     * Returns an encoding of the given {@link TimeInstant} that complies with <code>xs:time</code>.
+     * Returns an encoding of the given {@link Temporal} that complies with <code>xs:time</code>.
      * <p>
-     * The returned format is <code>hh:mm:ss[.SSS][TZ]</code>. The timezone is used from the {@link TimeInstant} object,
-     * if time zone is unknown {@link TimeInstant#isTimeZoneUnknown()}, no time zone information is appended (= local
+     * The returned format is <code>hh:mm:ss[.SSS][TZ]</code>. The timezone is used from the {@link Temporal} object,
+     * if time zone is unknown {@link Temporal#isTimeZoneUnknown()}, no time zone information is appended (= local
      * time).
      * </p>
      * 
@@ -236,7 +236,7 @@ public final class ISO8601Converter {
      *            point in time to be encoded, must not be <code>null</code>
      * @return encoded <code>xs:date</code>, never <code>null</code>
      */
-    public static String formatTime( TimeInstant date ) {
+    public static String formatTime( Temporal date ) {
 
         TimeZone tz = date.getCalendar().getTimeZone();
         SimpleDateFormat sdf = null;
@@ -256,10 +256,10 @@ public final class ISO8601Converter {
     }
 
     /**
-     * Returns an encoding of the given {@link TimeInstant} that complies with <code>xs:dateTime</code>.
+     * Returns an encoding of the given {@link Temporal} that complies with <code>xs:dateTime</code>.
      * <p>
      * The returned format is <code<YYYY-MM-DDThh:mm:ss[.SSS][TZ]</code>. The timezone is used from the
-     * {@link TimeInstant} object, if time zone is unknown {@link TimeInstant#isTimeZoneUnknown()}, no time zone
+     * {@link Temporal} object, if time zone is unknown {@link Temporal#isTimeZoneUnknown()}, no time zone
      * information is appended (= local time).
      * </p>
      * 
@@ -267,7 +267,7 @@ public final class ISO8601Converter {
      *            point in time to be encoded, must not be <code>null</code>
      * @return encoded <code>xs:dateTime</code>, never <code>null</code>
      */
-    public static String formatDateTime( TimeInstant date ) {
+    public static String formatDateTime( Temporal date ) {
 
         TimeZone tz = date.getCalendar().getTimeZone();
         SimpleDateFormat sdf = null;

@@ -42,7 +42,7 @@ import java.util.TimeZone;
 /**
  * Base class for temporal primitives that represent a point in time.
  * <p>
- * A {@link TimeInstant} is a thin wrapper around {@link Calendar} that tracks whether the {@link TimeInstant} has been
+ * A {@link Temporal} is a thin wrapper around {@link Calendar} that tracks whether the {@link Temporal} has been
  * created with our without explicit time zone information. If it has been constructed without an explicit time zone,
  * the default time zone ({@link TimeZone#getDefault()}) is used for the underlying calendar.
  * </p>
@@ -52,34 +52,34 @@ import java.util.TimeZone;
  * 
  * @version $Revision$, $Date$
  */
-public abstract class TimeInstant implements Comparable<TimeInstant> {
+public abstract class Temporal implements Comparable<Temporal> {
 
     protected final Calendar cal;
 
     protected final boolean tzIsUnknown;
 
     /**
-     * Creates a new {@link TimeInstant} instance.
+     * Creates a new {@link Temporal} instance.
      * 
      * @param cal
      *            calendar, must not be <code>null</code>
      * @param tzIsUnknown
      *            <code>true</code>, if the timezone is unknown, <code>false</code> otherwise
      */
-    TimeInstant( Calendar cal, boolean tzIsUnknown ) {
+    Temporal( Calendar cal, boolean tzIsUnknown ) {
         this.cal = cal;
         this.tzIsUnknown = tzIsUnknown;
     }
 
     /**
-     * Creates a new {@link TimeInstant} instance.
+     * Creates a new {@link Temporal} instance.
      * 
      * @param date
      *            time instant as a date, must not be <code>null</code>
      * @param tz
      *            timezone used by the date, can be <code>null</code> (time zone unknown)
      */
-    TimeInstant( java.util.Date date, TimeZone tz ) {
+    Temporal( java.util.Date date, TimeZone tz ) {
         Calendar cal = null;
         if ( tz != null ) {
             cal = Calendar.getInstance( tz );
@@ -154,25 +154,25 @@ public abstract class TimeInstant implements Comparable<TimeInstant> {
     }
 
     /**
-     * Returns a new {@link TimeInstant} that represents the same point in time, but using the specified time zone.
+     * Returns a new {@link Temporal} that represents the same point in time, but using the specified time zone.
      * 
      * @param tz
      *            time zone can be <code>null</code> (use system's local time zone)
      * @return time instant using the given time zone, never <code>null</code>
      */
-    public abstract TimeInstant toTimeZone( TimeZone tz );
+    public abstract Temporal toTimeZone( TimeZone tz );
 
     @Override
     public boolean equals( Object o ) {
-        if ( !( o instanceof TimeInstant ) ) {
+        if ( !( o instanceof Temporal ) ) {
             return false;
         }
-        TimeInstant that = (TimeInstant) o;
+        Temporal that = (Temporal) o;
         return this.cal.equals( that.cal );
     }
 
     @Override
-    public int compareTo( TimeInstant that ) {
+    public int compareTo( Temporal that ) {
         return this.cal.compareTo( that.cal );
     }
 }

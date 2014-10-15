@@ -52,7 +52,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Duration;
-import org.deegree.commons.tom.datetime.TimeInstant;
+import org.deegree.commons.tom.datetime.Temporal;
 
 /**
  * <code>Dimension</code>
@@ -201,7 +201,7 @@ public class Dimension<T> {
                 }
             } else {
                 if ( time ) {
-                    sb.append( formatDateTime( (TimeInstant) o ) );
+                    sb.append( formatDateTime( (Temporal) o ) );
                 } else {
                     sb.append( o );
                 }

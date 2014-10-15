@@ -95,7 +95,7 @@ public class AnyInteracts {
         return t.getIndeterminatePosition() != null;
     }
 
-    protected Comparable<org.deegree.commons.tom.datetime.TimeInstant> getValue( final TimePosition t ) {
+    protected Comparable<org.deegree.commons.tom.datetime.Temporal> getValue( final TimePosition t ) {
         final String value = t.getValue();
         // TODO handle other types than dateTime
         return parseDateTime( value );
