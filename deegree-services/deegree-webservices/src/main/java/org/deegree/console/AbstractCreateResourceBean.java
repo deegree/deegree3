@@ -154,7 +154,7 @@ public abstract class AbstractCreateResourceBean {
             sb.append( "&id=" ).append( id );
             sb.append( "&schemaUrl=" );
             if ( schemaURL != null ) {
-                sb.append( schemaURL.toString() )
+                sb.append( schemaURL.toString() );
             }
             sb.append( "&resourceProviderClass=" ).append( metadata.getManager().getMetadata().getProviderClass().getCanonicalName() );
             sb.append( "&nextView=" ).append( getOutcome() );

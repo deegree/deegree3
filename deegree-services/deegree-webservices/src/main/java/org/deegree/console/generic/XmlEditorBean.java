@@ -61,8 +61,8 @@ import org.apache.xerces.xni.parser.XMLParseException;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
@@ -246,7 +246,7 @@ public class XmlEditorBean implements Serializable {
                 if ( !( workspace instanceof DefaultWorkspace ) ) {
                     throw new Exception( "Could not persist configuration." );
                 }
-                
+
                 ResourceManager<?> mgr = null;
                 outer: for ( ResourceManager<?> r : workspace.getResourceManagers() ) {
                     for ( ResourceProvider<?> p : r.getProviders() ) {
@@ -271,7 +271,7 @@ public class XmlEditorBean implements Serializable {
                 DefaultResourceIdentifier<?> ident = new DefaultResourceIdentifier( cls, id );
                 ResourceLocation<?> loc = new DefaultResourceLocation( resourceFile, ident );
                 workspace.add( loc );
-                
+
                 workspace.getLocationHandler().activate( loc );
                 WorkspaceUtils.reinitializeChain( workspace, ident );
             }
@@ -306,8 +306,8 @@ public class XmlEditorBean implements Serializable {
 
     private String toString( SchemaValidationEvent event ) {
         XMLParseException e = event.getException();
-        return "<a href=\"javascript:jumpTo(" + e.getLineNumber() + "," + e.getColumnNumber() + ")\">Error near line " + e.getLineNumber()
-               + ", column " + e.getColumnNumber() + "</a>: " + e.getLocalizedMessage();
+        return "<a href=\"javascript:jumpTo(" + e.getLineNumber() + "," + e.getColumnNumber() + ")\">Error near line "
+               + e.getLineNumber() + ", column " + e.getColumnNumber() + "</a>: " + e.getLocalizedMessage();
     }
 
     public String validate() {
@@ -317,22 +317,23 @@ public class XmlEditorBean implements Serializable {
         }
         return null;
     }
-    
-    public String getTitle() throws ClassNotFoundException {
+
+    public String getTitle()
+                            throws ClassNotFoundException {
         if ( fileName != null ) {
             return fileName;
         }
-        
+
         Workspace workspace = OGCFrontController.getServiceWorkspace().getNewWorkspace();
         Class<?> cls = workspace.getModuleClassLoader().loadClass( resourceProviderClass );
         ResourceMetadata<?> md = workspace.getResourceMetadata( (Class) cls, id );
-        
+
         for ( ResourceManager<? extends Resource> resourceManager : workspace.getResourceManagers() ) {
             if ( resourceManager.getProviders().contains( md.getProvider() ) ) {
                 return resourceManager.getMetadata().getWorkspacePath() + "/" + id;
             }
-        }        
-        
+        }
+
         return null;
     }
 }
