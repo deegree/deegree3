@@ -21,85 +21,126 @@ public class AnyInteractsTest {
     private final AnyInteracts anyInteracts = new AnyInteracts();
 
     @Test
-    public void instantInstant() {
-        assertAnyInteracts( instant( "2014-01-01T00:00:01" ), instant( "2014-01-01T00:00:01" ) );
-        assertNotAnyInteracts( instant( "2014-01-01T00:00:01" ), instant( "2014-01-01T00:00:02" ) );
-        assertNotAnyInteracts( instant( "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:01" ) );
+    public void anyInteractsBegins() {
+        assertAnyInteracts( instant( "00:00:02" ), period( "00:00:02", "00:00:03" ) );
+        assertAnyInteracts( instant( "00:00:02" ), period( "00:00:02", null ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:02", "00:00:06" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:02", null ) );
     }
 
     @Test
-    public void instantPeriod() {
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:00" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:01" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:02" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ), instant( "2014-01-01T00:00:03" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ), instant( "2014-01-01T00:00:00" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ), instant( "2014-01-01T00:00:01" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ), instant( "2014-01-01T00:00:02" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ), instant( "2014-01-01T00:00:03" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ), instant( "2014-01-01T00:00:04" ) );
-        assertAnyInteracts( instant( "2014-01-01T00:00:02" ), period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) );
-        assertNotAnyInteracts( instant( "2014-01-01T00:00:04" ), period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) );
+    public void anyInteractsBegunBy() {
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), instant( "00:00:02" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:02", "00:00:03" ) );
+        assertAnyInteracts( period( "00:00:02", null ), instant( "00:00:02" ) );
+        assertAnyInteracts( period( "00:00:02", null ), period( "00:00:02", "00:00:03" ) );
     }
 
     @Test
-    public void instantPeriodIndeterminate() {
-        assertNotAnyInteracts( period( "2014-01-01T00:00:01", "INDETERMINATE" ), instant( "2014-01-01T00:00:00" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:01", "INDETERMINATE" ), instant( "2014-01-01T00:00:01" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:01", "INDETERMINATE" ), instant( "2014-01-01T00:00:02" ) );
+    public void anyInteractsEnds() {
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:01", "00:00:05" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( null, "00:00:05" ) );
     }
 
     @Test
-    public void periodPeriod() {
-        // Begins
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:02", "2014-01-01T00:00:06" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:02", "INDETERMINATE" ) );
-        // BegunBy
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ) );
-        // Ends
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:01", "2014-01-01T00:00:05" ) );
-        // EndedBy
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:04", "2014-01-01T00:00:05" ) );
-        // TContains
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:03", "2014-01-01T00:00:04" ) );
-        // During
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:01", "2014-01-01T00:00:06" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:01", "INDETERMINATE" ) );
-        // TEquals
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ) );
-        // TOverlaps
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:04", "2014-01-01T00:00:06" ) );
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:04", "INDETERMINATE" ) );
-        // OverlappedBy
-        assertAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                            period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) );
-        // After
-        assertNotAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                               period( "2014-01-01T00:00:00", "2014-01-01T00:00:01" ) );
-        // Before
-        assertNotAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                               period( "2014-01-01T00:00:06", "2014-01-01T00:00:07" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                               period( "2014-01-01T00:00:06", "INDETERMINATE" ) );
-        // Meets
-        assertNotAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                               period( "2014-01-01T00:00:05", "2014-01-01T00:00:06" ) );
-        assertNotAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                               period( "2014-01-01T00:00:05", "INDETERMINATE" ) );
-        // MetBy
-        assertNotAnyInteracts( period( "2014-01-01T00:00:02", "2014-01-01T00:00:05" ),
-                               period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ) );
+    public void anyInteractsEndedBy() {
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:04", "00:00:05" ) );
+        assertAnyInteracts( period( null, "00:00:05" ), period( "00:00:04", "00:00:05" ) );
+    }
+
+    @Test
+    public void anyInteractsTContains() {
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), instant( "00:00:03" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:03", "00:00:04" ) );
+        assertAnyInteracts( period( "00:00:02", null ), instant( "00:00:03" ) );
+        assertAnyInteracts( period( "00:00:02", null ), period( "00:00:03", "00:00:04" ) );
+        assertAnyInteracts( period( null, "00:00:05" ), instant( "00:00:03" ) );
+        assertAnyInteracts( period( null, "00:00:05" ), period( "00:00:03", "00:00:04" ) );
+        assertAnyInteracts( period( null, null ), instant( "00:00:03" ) );
+        assertAnyInteracts( period( null, null ), period( "00:00:03", "00:00:04" ) );
+    }
+
+    @Test
+    public void anyInteractsDuring() {
+        assertAnyInteracts( instant( "00:00:02" ), period( "00:00:01", "00:00:06" ) );
+        assertAnyInteracts( instant( "00:00:02" ), period( "00:00:01", null ) );
+        assertAnyInteracts( instant( "00:00:02" ), period( null, "00:00:06" ) );
+        assertAnyInteracts( instant( "00:00:02" ), period( null, null ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:01", "00:00:06" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:01", null ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( null, "00:00:06" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( null, null ) );
+    }
+
+    @Test
+    public void anyInteractsTEquals() {
+        assertAnyInteracts( instant( "00:00:02" ), instant( "00:00:02" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:02", "00:00:05" ) );
+        assertAnyInteracts( period( "00:00:02", null ), period( "00:00:02", null ) );
+        assertAnyInteracts( period( null, "00:00:05" ), period( null, "00:00:05" ) );
+        assertAnyInteracts( period( null, null ), period( null, null ) );
+    }
+
+    @Test
+    public void anyInteractsTOverlaps() {
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:04", "00:00:06" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:04", null ) );
+        assertAnyInteracts( period( null, "00:00:05" ), period( "00:00:04", "00:00:06" ) );
+        assertAnyInteracts( period( null, "00:00:05" ), period( "00:00:04", null ) );
+    }
+
+    @Test
+    public void anyInteractsOverlappedBy() {
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:01", "00:00:03" ) );
+        assertAnyInteracts( period( "00:00:02", "00:00:05" ), period( null, "00:00:03" ) );
+        assertAnyInteracts( period( "00:00:02", null ), period( "00:00:01", "00:00:03" ) );
+        assertAnyInteracts( period( "00:00:02", null ), period( null, "00:00:03" ) );
+    }
+
+    @Test
+    public void anyInteractsAfter() {
+        assertNotAnyInteracts( instant( "00:00:02" ), instant( "00:00:01" ) );
+        assertNotAnyInteracts( instant( "00:00:02" ), period( "00:00:00", "00:00:01" ) );
+        assertNotAnyInteracts( instant( "00:00:02" ), period( null, "00:00:01" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), instant( "00:00:01" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:00", "00:00:01" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( null, "00:00:01" ) );
+        assertNotAnyInteracts( period( "00:00:02", null ), instant( "00:00:01" ) );
+        assertNotAnyInteracts( period( "00:00:02", null ), period( "00:00:00", "00:00:01" ) );
+        assertNotAnyInteracts( period( "00:00:02", null ), period( null, "00:00:01" ) );
+    }
+
+    @Test
+    public void anyInteractsBefore() {
+        assertNotAnyInteracts( instant( "00:00:05" ), instant( "00:00:06" ) );
+        assertNotAnyInteracts( instant( "00:00:05" ), period( "00:00:06", "00:00:07" ) );
+        assertNotAnyInteracts( instant( "00:00:05" ), period( "00:00:06", null ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), instant( "00:00:06" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:06", "00:00:07" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:06", null ) );
+        assertNotAnyInteracts( period( null, "00:00:05" ), instant( "00:00:06" ) );
+        assertNotAnyInteracts( period( null, "00:00:05" ), period( "00:00:06", "00:00:07" ) );
+        assertNotAnyInteracts( period( null, "00:00:05" ), period( "00:00:06", null ) );
+    }
+
+    @Test
+    public void anyInteractsMeets() {
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), instant( "00:00:05" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:05", "00:00:06" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:05", null ) );
+        assertNotAnyInteracts( period( null, "00:00:05" ), instant( "00:00:05" ) );
+        assertNotAnyInteracts( period( null, "00:00:05" ), period( "00:00:05", "00:00:06" ) );
+        assertNotAnyInteracts( period( null, "00:00:05" ), period( "00:00:05", null ) );
+    }
+
+    @Test
+    public void anyInteractsMetBy() {
+        assertNotAnyInteracts( instant( "00:00:02" ), period( "00:00:01", "00:00:02" ) );
+        assertNotAnyInteracts( instant( "00:00:02" ), period( null, "00:00:02" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( "00:00:01", "00:00:02" ) );
+        assertNotAnyInteracts( period( "00:00:02", "00:00:05" ), period( null, "00:00:02" ) );
+        assertNotAnyInteracts( period( "00:00:02", null ), period( "00:00:01", "00:00:02" ) );
+        assertNotAnyInteracts( period( "00:00:02", null ), period( null, "00:00:02" ) );
     }
 
     private void assertAnyInteracts( TimeGeometricPrimitive a, TimeGeometricPrimitive b ) {
@@ -118,7 +159,7 @@ public class AnyInteractsTest {
         final List<Property> props = emptyList();
         final List<RelatedTime> relatedTimes = emptyList();
         TimePosition pos = null;
-        if ( "INDETERMINATE".equals( s ) ) {
+        if ( s == null ) {
             pos = new TimePosition( null, null, UNKNOWN, "" );
         } else {
             pos = new TimePosition( null, null, null, s );
