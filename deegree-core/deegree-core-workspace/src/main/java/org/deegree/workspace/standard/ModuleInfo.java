@@ -155,7 +155,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
         builder = builder.setScanners( new ResourcesScanner() );
         Reflections r = new Reflections( builder );
 
-        Set<String> resources = r.getResources( Pattern.compile( "MANIFEST\\.MF" ) );
+        Set<String> resources = r.getResources( Pattern.compile( "(MANIFEST\\.MF|buildinfo\\.properties)" ) );
         if ( !resources.isEmpty() ) {
             URLClassLoader classLoader = new URLClassLoader( new URL[] { classpathURL }, null );
             String resourcePath = resources.iterator().next();
@@ -164,17 +164,18 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 Properties props = new Properties();
                 buildInfoStream = classLoader.getResourceAsStream( resourcePath );
                 props.load( buildInfoStream );
-                String buildBy = props.getProperty( "deegree-build-by" );
-                String buildArtifactId = props.getProperty( "deegree-build-artifactId" );
-                String buildDate = props.getProperty( "deegree-build-date" );
-                String buildRev = props.getProperty( "deegree-build-rev" );
+                String buildBy = props.getProperty( "deegree-build-by", props.getProperty( "build.by" ) );
+                String buildArtifactId = props.getProperty( "deegree-build-artifactId",
+                                                            props.getProperty( "build.artifactId" ) );
+                String buildDate = props.getProperty( "deegree-build-date", props.getProperty( "build.date" ) );
+                String buildRev = props.getProperty( "deegree-build-rev", props.getProperty( "build.svnrev" ) );
                 String pomVersion = null;
 
                 if ( buildArtifactId == null ) {
                     // skipping because this jar is not from deegree
                     return null;
                 }
-                
+
                 resources = r.getResources( Pattern.compile( "pom\\.properties" ) );
                 InputStream pomInputStream = null;
                 if ( !resources.isEmpty() ) {
@@ -185,7 +186,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                         props.load( pomInputStream );
                         String pomArtifactId = props.getProperty( "artifactId" );
                         if ( !pomArtifactId.equals( buildArtifactId ) ) {
-                            LOG.warn( "ArtifactId mismatch for module on path: {} (MANIFEST.MF vs. pom.properties).",
+                            LOG.warn( "ArtifactId mismatch for module on path: {} (MANIFEST.MF/buildinfo.properties vs. pom.properties).",
                                       classpathURL );
                         }
                         pomVersion = props.getProperty( "version" );
