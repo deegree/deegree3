@@ -206,4 +206,10 @@ public class DynamicAppSchema implements AppSchema {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public List<GMLObjectType> getGmlObjectTypes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

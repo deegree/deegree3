@@ -193,5 +193,7 @@ public interface AppSchema {
      */
     GMLObjectType getGmlObjectType( QName name );
 
+    List<GMLObjectType> getGmlObjectTypes();
+
     List<GMLObjectType> getGmlObjectTypes( GMLObjectCategory timeObject );
 }

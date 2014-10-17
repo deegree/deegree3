@@ -506,6 +506,11 @@ public class GenericAppSchema implements AppSchema {
     }
 
     @Override
+    public List<GMLObjectType> getGmlObjectTypes() {
+        return new ArrayList<GMLObjectType>( typeNameToType.values() );
+    }
+
+    @Override
     public List<GMLObjectType> getGmlObjectTypes( final GMLObjectCategory category ) {
         final List<GMLObjectType> types = new ArrayList<GMLObjectType>();
         for ( final GMLObjectType type : typeNameToType.values() ) {
@@ -515,4 +520,5 @@ public class GenericAppSchema implements AppSchema {
         }
         return types;
     }
+
 }
