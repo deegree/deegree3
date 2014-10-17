@@ -41,7 +41,9 @@ import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.filter.Expression;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
+import org.deegree.filter.XPathEvaluator;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +111,24 @@ public abstract class TemporalOperator implements Operator {
         return s;
     }
 
-    protected TimeGeometricPrimitive getTimePrimitiveValue( final TypedObjectNode node ) {
+    @Override
+    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
+                            throws FilterEvaluationException {
+        final TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
+        final TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
+        if ( param1Values.length == 1 && param2Values.length == 1 ) {
+            final TimeGeometricPrimitive t1 = getTimePrimitiveValue( param1Values[0] );
+            final TimeGeometricPrimitive t2 = getTimePrimitiveValue( param2Values[0] );
+            return evaluate( t1, t2 );
+        }
+        return false;
+    }
+
+    protected boolean evaluate( TimeGeometricPrimitive t1, TimeGeometricPrimitive t2 ) {
+        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
+    }
+
+    private TimeGeometricPrimitive getTimePrimitiveValue( final TypedObjectNode node ) {
         if ( node == null ) {
             return null;
         }

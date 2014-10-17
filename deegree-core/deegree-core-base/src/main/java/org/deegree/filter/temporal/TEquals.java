@@ -35,10 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.temporal;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.XPathEvaluator;
 import org.deegree.time.operator.Equals;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 
@@ -65,16 +62,8 @@ public class TEquals extends TemporalOperator {
     }
 
     @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        final TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
-        final TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
-        if ( param1Values.length == 1 && param2Values.length == 1 ) {
-            final TimeGeometricPrimitive t1 = getTimePrimitiveValue( param1Values[0] );
-            final TimeGeometricPrimitive t2 = getTimePrimitiveValue( param2Values[0] );
-            return new Equals().evaluate( t1, t2 );
-        }
-        return false;
+    protected boolean evaluate( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
+        return new Equals().evaluate( t1, t2 );
     }
 
 }
