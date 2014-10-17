@@ -46,6 +46,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -592,6 +593,19 @@ public class GMLFeatureReaderTest {
         final TimePeriod timePeriod = (TimePeriod) validTime.getChildren().get( 0 );
         assertNotNull( timePeriod );
         assertEquals( "rtvtOXS0", timePeriod.getId() );
+
+        final Feature f = getFeature( fc, "EADD" );
+        assertNotNull( f.getEnvelope() );
     }
 
+    private Feature getFeature( final FeatureCollection fc, final String gmlId ) {
+        final Iterator<Feature> iter = fc.iterator();
+        while ( iter.hasNext() ) {
+            final Feature f = iter.next();
+            if ( gmlId.equals( f.getId() ) ) {
+                return f;
+            }
+        }
+        return null;
+    }
 }
