@@ -35,46 +35,35 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.temporal;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
-import org.deegree.time.operator.Equals;
-import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
  * {@link TemporalOperator} that...
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
-public class TEquals extends TemporalOperator {
+public class Ends extends TemporalOperator {
 
     /**
-     * Creates a new instance of {@link TEquals}.
-     *
+     * Creates a new instance of {@link Ends}.
+     * 
      * @param param1
      *            first temporal expression (time instant or period), must not be <code>null</code>
      * @param param2
      *            second temporal expression (time instant or period), must not be <code>null</code>
      */
-    public TEquals( Expression param1, Expression param2 ) {
+    public Ends( Expression param1, Expression param2 ) {
         super( param1, param2 );
     }
 
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        final TypedObjectNode[] param1Values = param1.evaluate( obj, xpathEvaluator );
-        final TypedObjectNode[] param2Values = param2.evaluate( obj, xpathEvaluator );
-        if ( param1Values.length == 1 && param2Values.length == 1 ) {
-            final TimeGeometricPrimitive t1 = getTimePrimitiveValue( param1Values[0] );
-            final TimeGeometricPrimitive t2 = getTimePrimitiveValue( param2Values[0] );
-            return new Equals().evaluate( t1, t2 );
-        }
-        return false;
+        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
     }
-
 }

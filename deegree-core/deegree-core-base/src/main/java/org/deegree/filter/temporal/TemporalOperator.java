@@ -35,8 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.temporal;
 
+import java.util.List;
+
+import org.deegree.commons.tom.ElementNode;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Operator;
+import org.deegree.time.primitive.TimeGeometricPrimitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,5 +107,26 @@ public abstract class TemporalOperator implements Operator {
         s += param1.toString( indent + "  " );
         s += param2.toString( indent + "  " );
         return s;
+    }
+
+    protected TimeGeometricPrimitive getTimePrimitiveValue( final TypedObjectNode node ) {
+        if ( node == null ) {
+            return null;
+        }
+        if ( node instanceof TimeGeometricPrimitive ) {
+            return (TimeGeometricPrimitive) node;
+        }
+        if ( node instanceof Property ) {
+            return getTimePrimitiveValue( ( (Property) node ).getValue() );
+        }
+        if ( node instanceof ElementNode ) {
+            final ElementNode elNode = (ElementNode) node;
+            final List<TypedObjectNode> children = elNode.getChildren();
+            if ( children == null || children.isEmpty() ) {
+                return null;
+            }
+            return getTimePrimitiveValue( children.get( 0 ) );
+        }
+        return null;
     }
 }
