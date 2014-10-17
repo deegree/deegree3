@@ -40,17 +40,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.tile;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
@@ -59,6 +54,16 @@ import org.deegree.style.StyleRef;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataSet;
 import org.slf4j.Logger;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.layer.Utils.calcResolution;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A layer implementation based on a list of tile data sets.
@@ -88,19 +93,16 @@ public class TileLayer extends AbstractLayer {
     @Override
     public TileLayerData mapQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
+        double resolution = query.getResolution();
         Envelope env = query.getEnvelope();
         ICRS crs = env.getCoordinateSystem();
-
         String tds = coordinateSystems.get( crs );
-        if ( tds == null ) {
-            String msg = "Tile layer " + getMetadata().getName() + " does not offer the coordinate system "
-                                    + crs.getAlias();
-            LOG.debug( msg );
-            throw new OWSException( msg, OWSException.INVALID_CRS );
+        Iterator<Tile> tiles;
+        if ( tds != null ) {
+            tiles = retrieveTiles( resolution, env, tds );
+        } else {
+            tiles = retrieveTilesInSourceCrs( query, env, crs );
         }
-        TileDataSet data = tileDataSets.get( tds );
-
-        Iterator<Tile> tiles = data.getTiles( env, query.getResolution() );
         return new TileLayerData( tiles );
     }
 
@@ -128,4 +130,65 @@ public class TileLayer extends AbstractLayer {
     public boolean isStyleApplicable( StyleRef style ) {
         return true;
     }
+
+    /**
+     * Retrieves tiles in an available source crs. For that a crs is chosen from the coordinateSystems map, the bounding
+     * box and the resolution of the query are transformed into that crs and the matching tiles are returned.
+     * 
+     * @param query
+     *            never <code>null</code>
+     * @param env
+     *            never <code>null</code>
+     * @param crs
+     *            never <code>null</code>
+     * @return tile iterator
+     * @throws OWSException
+     */
+    Iterator<Tile> retrieveTilesInSourceCrs( LayerQuery query, Envelope env, ICRS crs )
+                            throws OWSException {
+        LOG.debug( "There are no source tiles for coordinate system " + crs.getAlias() );
+        Iterator<ICRS> coordinateSystemsIter = coordinateSystems.keySet().iterator();
+        if ( coordinateSystemsIter.hasNext() ) {
+            ICRS alternativeCrs = coordinateSystemsIter.next();
+            return retrieveTilesInAlternativeCrs( query, env, alternativeCrs );
+        } else {
+            String msg = "Tile layer " + getMetadata().getName() + " does not offer the coordinate system "
+                         + crs.getAlias();
+            LOG.debug( msg );
+            throw new OWSException( msg, OWSException.INVALID_CRS );
+        }
+    }
+
+    private Iterator<Tile> retrieveTilesInAlternativeCrs( LayerQuery query, Envelope env, ICRS alternativeCrs )
+                            throws OWSException {
+        LOG.debug( "Using coordinate system " + alternativeCrs.getAlias() + " instead to retrieve source tiles" );
+        String alternativeTds = coordinateSystems.get( alternativeCrs );
+        Envelope alternativeEnv = retrieveTransformedEnvelope( env, alternativeCrs );
+        double alternativeResolution = calcResolution( alternativeEnv, query.getWidth(), query.getHeight() );
+        return retrieveTiles( alternativeResolution, alternativeEnv, alternativeTds );
+    }
+
+    private Envelope retrieveTransformedEnvelope( Envelope env, ICRS alternativeCrs )
+                            throws OWSException {
+        try {
+            return new GeometryTransformer( alternativeCrs ).transform( env );
+        } catch ( TransformationException e ) {
+            String msg = "Could not transform bounding box to new coordinate system: " + e.getMessage();
+            LOG.warn( msg );
+            e.printStackTrace();
+            throw new OWSException( "Tiles cannot be retrieved: " + msg, NO_APPLICABLE_CODE );
+        } catch ( UnknownCRSException e ) {
+            String msg = "Could not transform bounding box to new coordinate system as the CRS is not known: "
+                         + e.getMessage();
+            LOG.warn( msg );
+            e.printStackTrace();
+            throw new OWSException( "Tiles cannot be retrieved: " + msg, NO_APPLICABLE_CODE );
+        }
+    }
+
+    private Iterator<Tile> retrieveTiles( double resolution, Envelope env, String tds ) {
+        TileDataSet data = tileDataSets.get( tds );
+        return data.getTiles( env, resolution );
+    }
+
 }
