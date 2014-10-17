@@ -379,6 +379,12 @@
         <artifactId>httpclient</artifactId>
         <version>4.2.3</version>
         <scope>compile</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -530,11 +536,27 @@
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
         <version>1.2.14</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-api</artifactId>
         <version>1.2.14</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
@@ -709,8 +731,8 @@
         <version>1.7</version>
         <exclusions>
           <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <groupId>fop</groupId>
           </exclusion>
         </exclusions>
       </dependency>
