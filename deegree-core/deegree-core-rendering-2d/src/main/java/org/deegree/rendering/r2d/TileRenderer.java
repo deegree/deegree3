@@ -42,6 +42,8 @@ package org.deegree.rendering.r2d;
 
 import org.deegree.tile.Tile;
 
+import java.util.Iterator;
+
 /**
  * <code>TileRenderer</code>
  * 
@@ -53,6 +55,12 @@ import org.deegree.tile.Tile;
 
 public interface TileRenderer {
 
-    void render( Tile tile );
+    /**
+     * Renders all tiles and executes a transformation if query CRS is different from tile CRS.
+     * 
+     * @param tiles
+     *            never <code>null</code>
+     */
+    void render( Iterator<Tile> tiles );
 
 }
