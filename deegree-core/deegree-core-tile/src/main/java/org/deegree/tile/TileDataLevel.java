@@ -58,7 +58,7 @@ public interface TileDataLevel {
     TileMatrix getMetadata();
 
     /**
-     * Retrieves a single tile. Tile (0,0) is lower left.
+     * Retrieves a single tile.
      * 
      * @param x
      *            column index of the tile, counting from zero
@@ -67,5 +67,4 @@ public interface TileDataLevel {
      * @return the tile at x/y or <code>null</code> if there is no such tile
      */
     Tile getTile( long x, long y );
-
 }
