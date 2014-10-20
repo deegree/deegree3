@@ -108,6 +108,11 @@ public class Java2DTileRenderer implements TileRenderer {
     public void render( Iterator<Tile> tiles ) {
         BufferedImage image = new BufferedImage( width, height, TYPE_4BYTE_ABGR );
         Graphics g = image.getGraphics();
+        ICRS crsOfTile = renderAllTilesInTileCrs( tiles, g );
+        renderToMainGraphics( image, crsOfTile );
+    }
+
+    private ICRS renderAllTilesInTileCrs( Iterator<Tile> tiles, Graphics g ) {
         ICRS crsOfTile = null;
         AffineTransform worldToScreenTransformInTileCrs = null;
         if ( tiles.hasNext() ) {
@@ -119,7 +124,7 @@ public class Java2DTileRenderer implements TileRenderer {
         while ( tiles.hasNext() ) {
             renderInTileCrs( tiles.next(), g, worldToScreenTransformInTileCrs );
         }
-        renderToMainGraphics( image, crsOfTile );
+        return crsOfTile;
     }
 
     private AffineTransform createWorldToScreenTransform( ICRS sourceCrs ) {
@@ -150,7 +155,7 @@ public class Java2DTileRenderer implements TileRenderer {
     }
 
     private void renderToMainGraphics( BufferedImage image, ICRS sourceCrs ) {
-        if ( !sourceCrs.equals( envelope.getCoordinateSystem() ) ) {
+        if ( !envelope.getCoordinateSystem().equals( sourceCrs ) ) {
             BufferedImage transformedImage = transformImage( image, sourceCrs );
             drawImage( transformedImage, graphics, worldToScreen, envelope );
         } else {
