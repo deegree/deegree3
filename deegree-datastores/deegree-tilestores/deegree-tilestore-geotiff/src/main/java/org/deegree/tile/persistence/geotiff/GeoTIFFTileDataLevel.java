@@ -40,13 +40,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import java.io.File;
-
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
+
+import java.io.File;
 
 /**
  * The <code>GeoTIFFTileMatrix</code> is a tile matrix handing out GeoTIFFTile tiles. It uses an object pool shared
@@ -105,8 +105,10 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
         double height = metadata.getTileHeight();
         Envelope env = metadata.getSpatialMetadata().getEnvelope();
         double minx = width * x + env.getMin().get0();
-        double miny = env.getMax().get1() - height * y;
-        Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
+        double miny = height * y + env.getMin().get1();
+        double maxx = minx + width;
+        double maxy = miny + height;
+        Envelope envelope = fac.createEnvelope( minx, miny, maxx, maxy, env.getCoordinateSystem() );
         return new GeoTIFFTile( readerPool, imageIndex, (int) x, (int) y, envelope, (int) metadata.getTilePixelsX(),
                                 (int) metadata.getTilePixelsY() );
     }
