@@ -41,7 +41,7 @@
 package org.deegree.rendering.r2d;
 
 import org.deegree.commons.utils.math.MathUtils;
-import org.deegree.cs.GeotoolsRasterTransformer;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
@@ -70,7 +70,6 @@ import static org.slf4j.LoggerFactory.getLogger;
  * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
-
 public class Java2DTileRenderer implements TileRenderer {
 
     private static final Logger LOG = getLogger( Java2DTileRenderer.class );
@@ -109,11 +108,11 @@ public class Java2DTileRenderer implements TileRenderer {
     public void render( Iterator<Tile> tiles ) {
         BufferedImage image = new BufferedImage( width, height, TYPE_4BYTE_ABGR );
         Graphics g = image.getGraphics();
-        String crsOfTile = null;
+        ICRS crsOfTile = null;
         AffineTransform worldToScreenTransformInTileCrs = null;
         if ( tiles.hasNext() ) {
             Tile firstTile = tiles.next();
-            crsOfTile = firstTile.getEnvelope().getCoordinateSystem().getAlias();
+            crsOfTile = firstTile.getEnvelope().getCoordinateSystem();
             worldToScreenTransformInTileCrs = createWorldToScreenTransform( crsOfTile );
             renderInTileCrs( firstTile, g, worldToScreenTransformInTileCrs );
         }
@@ -123,22 +122,22 @@ public class Java2DTileRenderer implements TileRenderer {
         renderToMainGraphics( image, crsOfTile );
     }
 
-    private AffineTransform createWorldToScreenTransform( String sourceCrs ) {
-        if ( !sourceCrs.equals( envelope.getCoordinateSystem().getAlias() ) ) {
-            try {
+    private AffineTransform createWorldToScreenTransform( ICRS sourceCrs ) {
+        try {
+            if ( !sourceCrs.equals( envelope.getCoordinateSystem() ) ) {
                 AffineTransform worldToScreenInTileCrs = new AffineTransform();
-                Envelope transformedEnvelope = new GeometryTransformer( CRSManager.lookup( sourceCrs ) ).transform( envelope );
+                Envelope transformedEnvelope = transformQueryEnvelope( sourceCrs );
                 RenderHelper.getWorldToScreenTransform( worldToScreenInTileCrs, transformedEnvelope, width, height );
                 return worldToScreenInTileCrs;
-            } catch ( TransformationException e ) {
-                LOG.warn( "Could not transform query envelope to tile envelope: " + e.getMessage() );
-                e.printStackTrace();
-            } catch ( UnknownCRSException e ) {
-                LOG.warn( "Could not transform query envelope to tile envelope as CRS is unknown: " + e.getMessage() );
-                e.printStackTrace();
             }
+            return worldToScreen;
+        } catch ( UnknownCRSException e ) {
+            handleWorldToScreenTransformException( e );
+            return worldToScreen;
+        } catch ( TransformationException e ) {
+            handleWorldToScreenTransformException( e );
+            return worldToScreen;
         }
-        return worldToScreen;
     }
 
     private void renderInTileCrs( Tile tile, Graphics g, AffineTransform worldToScreenInTileCrs ) {
@@ -150,13 +149,42 @@ public class Java2DTileRenderer implements TileRenderer {
         drawImage( image, g, worldToScreenInTileCrs, tile.getEnvelope() );
     }
 
-    private void renderToMainGraphics( BufferedImage image, String sourceCrs ) {
-        String targetCrs = envelope.getCoordinateSystem().getAlias();
-        if ( !sourceCrs.equals( targetCrs ) ) {
-            BufferedImage transformedImage = new GeotoolsRasterTransformer( targetCrs ).transform( image );
+    private void renderToMainGraphics( BufferedImage image, ICRS sourceCrs ) {
+        if ( !sourceCrs.equals( envelope.getCoordinateSystem() ) ) {
+            BufferedImage transformedImage = transformImage( image, sourceCrs );
             drawImage( transformedImage, graphics, worldToScreen, envelope );
         } else {
             drawImage( image, graphics, worldToScreen, envelope );
+        }
+    }
+
+    private BufferedImage transformImage( BufferedImage image, ICRS sourceCrs ) {
+        try {
+            Envelope sourceEnvelope = transformQueryEnvelope( sourceCrs );
+            GeotoolsRasterTransformer transformer = new GeotoolsRasterTransformer( sourceEnvelope, envelope );
+            return transformer.transform( image );
+        } catch ( UnknownCRSException e ) {
+            handleTransformImageException( e );
+            return image;
+        } catch ( TransformationException e ) {
+            handleTransformImageException( e );
+            return image;
+        }
+    }
+
+    private Envelope transformQueryEnvelope( ICRS targetCrs )
+                            throws UnknownCRSException, TransformationException {
+        try {
+            ICRS crs = CRSManager.lookup( targetCrs.getAlias() );
+            return new GeometryTransformer( crs ).transform( envelope );
+        } catch ( TransformationException e ) {
+            LOG.warn( "Could not transform envelope: " + e.getMessage() );
+            e.printStackTrace();
+            throw e;
+        } catch ( UnknownCRSException e ) {
+            LOG.warn( "Could not transform envelope as CRS is unknown: " + e.getMessage() );
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -175,13 +203,29 @@ public class Java2DTileRenderer implements TileRenderer {
         maxx = MathUtils.round( maxPoint.x );
         maxy = MathUtils.round( maxPoint.y );
 
+        int minxCorrected = Math.min( minx, maxx );
+        int minyCorrected = Math.min( miny, maxy );
+        int maxxCorrected = Math.max( minx, maxx );
+        int maxyCorrected = Math.max( miny, maxy );
+
         try {
-            g.drawImage( image, minx, miny, maxx - minx, maxy - miny, null );
+            g.drawImage( image, minxCorrected, minyCorrected, maxxCorrected - minxCorrected, maxyCorrected
+                                                                                             - minyCorrected, null );
         } catch ( TileIOException e ) {
             LOG.debug( "Error retrieving image: " + e.getMessage() );
             g.setColor( RED );
             g.fillRect( minx, miny, maxx - minx, maxy - miny );
         }
+    }
+
+    private void handleWorldToScreenTransformException( Exception e ) {
+        LOG.warn( "Envelope could not be transformed to source CRS. World-To-Screen-Transformation of query envelope is used! Reason: "
+                  + e.getMessage() );
+    }
+
+    private void handleTransformImageException( Exception e ) {
+        LOG.warn( "Envelope could not be transformed to source CRS. Geotools transformation is canceled! Reason: "
+                  + e.getMessage() );
     }
 
 }
