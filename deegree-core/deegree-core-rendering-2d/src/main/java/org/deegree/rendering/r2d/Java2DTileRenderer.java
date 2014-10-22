@@ -155,7 +155,7 @@ public class Java2DTileRenderer implements TileRenderer {
     }
 
     private void renderToMainGraphics( BufferedImage image, ICRS sourceCrs ) {
-        if ( !envelope.getCoordinateSystem().equals( sourceCrs ) ) {
+        if ( sourceCrs != null && !envelope.getCoordinateSystem().equals( sourceCrs ) ) {
             BufferedImage transformedImage = transformImage( image, sourceCrs );
             drawImage( transformedImage, graphics, worldToScreen, envelope );
         } else {
