@@ -525,6 +525,12 @@
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
         <version>1.2.12</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jsr173_api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
