@@ -44,7 +44,6 @@ import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.tile.Tile;
@@ -180,8 +179,7 @@ public class Java2DTileRenderer implements TileRenderer {
     private Envelope transformQueryEnvelope( ICRS targetCrs )
                             throws UnknownCRSException, TransformationException {
         try {
-            ICRS crs = CRSManager.lookup( targetCrs.getAlias() );
-            return new GeometryTransformer( crs ).transform( envelope );
+            return new GeometryTransformer( targetCrs ).transform( envelope );
         } catch ( TransformationException e ) {
             LOG.warn( "Could not transform envelope: " + e.getMessage() );
             e.printStackTrace();
