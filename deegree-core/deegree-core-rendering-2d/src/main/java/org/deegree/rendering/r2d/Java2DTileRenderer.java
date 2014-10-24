@@ -113,17 +113,29 @@ public class Java2DTileRenderer implements TileRenderer {
 
     private ICRS renderAllTilesInTileCrs( Iterator<Tile> tiles, Graphics g ) {
         ICRS crsOfTile = null;
-        AffineTransform worldToScreenTransformInTileCrs = null;
-        if ( tiles.hasNext() ) {
-            Tile firstTile = tiles.next();
-            crsOfTile = firstTile.getEnvelope().getCoordinateSystem();
-            worldToScreenTransformInTileCrs = createWorldToScreenTransform( crsOfTile );
-            renderInTileCrs( firstTile, g, worldToScreenTransformInTileCrs );
+        Tile firstNonNullTile = retrieveFirstNonNullTile( tiles );
+        if ( firstNonNullTile != null ) {
+            crsOfTile = firstNonNullTile.getEnvelope().getCoordinateSystem();
+            AffineTransform worldToScreenTransformInTileCrs = createWorldToScreenTransform( crsOfTile );
+            renderInTileCrs( firstNonNullTile, g, worldToScreenTransformInTileCrs );
+            processRestOfTiles( tiles, g, worldToScreenTransformInTileCrs );
         }
+        return crsOfTile;
+    }
+
+    private Tile retrieveFirstNonNullTile( Iterator<Tile> tiles ) {
+        while ( tiles.hasNext() ) {
+            Tile tile = tiles.next();
+            if ( tile != null )
+                return tile;
+        }
+        return null;
+    }
+
+    private void processRestOfTiles( Iterator<Tile> tiles, Graphics g, AffineTransform worldToScreenTransformInTileCrs ) {
         while ( tiles.hasNext() ) {
             renderInTileCrs( tiles.next(), g, worldToScreenTransformInTileCrs );
         }
-        return crsOfTile;
     }
 
     private AffineTransform createWorldToScreenTransform( ICRS sourceCrs ) {

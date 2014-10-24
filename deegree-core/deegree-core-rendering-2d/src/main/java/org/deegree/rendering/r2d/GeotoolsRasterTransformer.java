@@ -88,6 +88,12 @@ public class GeotoolsRasterTransformer {
         }
     }
 
+    private String retrieveEpsgCode( Envelope envelope ) {
+        ICRS crs = envelope.getCoordinateSystem();
+        int code = getEpsgCode( crs );
+        return "epsg:" + code;
+    }
+
     private Coverage transformCoverage( BufferedImage image, Envelope2D gtSourceEnvelope, Envelope2D gtTargetEnvelope ) {
         GridCoverageFactory coverageFactory = CoverageFactoryFinder.getGridCoverageFactory( null );
         GridCoverage2D coverage = coverageFactory.create( "coverageToTransform", image, gtSourceEnvelope );
@@ -98,12 +104,6 @@ public class GeotoolsRasterTransformer {
         RenderedImage renderedImage = ( (GridCoverage2D) transformedCoverage ).getRenderedImage();
         NullOpImage opImage = new NullOpImage( renderedImage, null, OP_IO_BOUND, null );
         return opImage.getAsBufferedImage();
-    }
-
-    private String retrieveEpsgCode( Envelope envelope ) {
-        ICRS crs = envelope.getCoordinateSystem();
-        int code = getEpsgCode( crs );
-        return "epsg:" + code;
     }
 
 }
