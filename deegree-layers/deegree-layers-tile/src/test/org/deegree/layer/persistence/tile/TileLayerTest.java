@@ -38,6 +38,14 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Tests for {@link org.deegree.layer.persistence.tile.TileLayer}.
+ *
+ * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
+ * @author last edited by: $Author: stenger $
+ *
+ * @version $Revision$, $Date$
+ */
 public class TileLayerTest {
 
     private static List<TileDataSet> tileDataSets;
