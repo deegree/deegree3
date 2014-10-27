@@ -30,35 +30,24 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-public class GeotoolsRasterTransformer {
+public class GeotoolsRasterTransformer implements ImageTransformer {
 
     private static final Logger LOG = getLogger( GeotoolsRasterTransformer.class );
-
-    private final Envelope sourceEnvelope;
 
     private final Envelope targetEnvelope;
 
     /**
      * GeotoolsRasterTransformer transforms an image from sourceEnvelope to targetEnvelope.
      *
-     * @param sourceEnvelope
-     *            never <code>null</code>
      * @param targetEnvelope
-     *            never <code>null</code>
+     *            target envelope of image, never <code>null</code>
      */
-    public GeotoolsRasterTransformer( Envelope sourceEnvelope, Envelope targetEnvelope ) {
-        this.sourceEnvelope = sourceEnvelope;
+    public GeotoolsRasterTransformer( Envelope targetEnvelope ) {
         this.targetEnvelope = targetEnvelope;
     }
 
-    /**
-     * Transforms an image.
-     *
-     * @param image
-     *            never <code>null</code>
-     * @return transformed image
-     */
-    public BufferedImage transform( BufferedImage image ) {
+    @Override
+    public BufferedImage transform( BufferedImage image, Envelope sourceEnvelope ) {
         try {
             Envelope2D gtSourceEnvelope = createGtEnvelope( sourceEnvelope );
             Envelope2D gtTargetEnvelope = createGtEnvelope( targetEnvelope );

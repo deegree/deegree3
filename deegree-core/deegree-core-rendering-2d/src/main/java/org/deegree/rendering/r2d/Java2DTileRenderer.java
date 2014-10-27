@@ -177,8 +177,8 @@ public class Java2DTileRenderer implements TileRenderer {
     private BufferedImage transformImage( BufferedImage image, ICRS sourceCrs ) {
         try {
             Envelope sourceEnvelope = transformQueryEnvelope( sourceCrs );
-            GeotoolsRasterTransformer transformer = new GeotoolsRasterTransformer( sourceEnvelope, envelope );
-            return transformer.transform( image );
+            ImageTransformer transformer = new GeotoolsRasterTransformer( envelope );
+            return transformer.transform( image, sourceEnvelope );
         } catch ( UnknownCRSException e ) {
             handleTransformImageException( e );
             return image;
