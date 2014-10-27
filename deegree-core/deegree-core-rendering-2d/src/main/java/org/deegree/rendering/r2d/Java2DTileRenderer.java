@@ -254,7 +254,7 @@ public class Java2DTileRenderer implements TileRenderer {
     }
 
     private void handleTransformImageException( Exception e ) {
-        LOG.warn( "Envelope could not be transformed to source CRS. Geotools transformation is canceled! Reason: "
+        LOG.warn( "Envelope could not be transformed to source CRS. Image transformation is canceled! Reason: "
                   + e.getMessage() );
     }
 
