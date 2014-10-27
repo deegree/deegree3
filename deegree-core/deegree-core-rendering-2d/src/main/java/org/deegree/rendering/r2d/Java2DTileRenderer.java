@@ -81,6 +81,8 @@ public class Java2DTileRenderer implements TileRenderer {
 
     private final Envelope envelope;
 
+    private final ImageTransformer imageTransformer;
+
     private AffineTransform worldToScreen = new AffineTransform();
 
     /**
@@ -94,12 +96,17 @@ public class Java2DTileRenderer implements TileRenderer {
      *            query height
      * @param envelope
      *            query envelope, never <code>null</code>
+     * @param imageTransformer
+     *            image transformer to transform image, if source CRS of tiles does not match CRS of query envelope. If
+     *            <code>null</code>, image transformation is not possible.
      */
-    public Java2DTileRenderer( Graphics2D graphics, int width, int height, Envelope envelope ) {
+    public Java2DTileRenderer( Graphics2D graphics, int width, int height, Envelope envelope,
+                               ImageTransformer imageTransformer ) {
         this.graphics = graphics;
         this.width = width;
         this.height = height;
         this.envelope = envelope;
+        this.imageTransformer = imageTransformer;
         RenderHelper.getWorldToScreenTransform( worldToScreen, envelope, width, height );
     }
 
@@ -176,15 +183,23 @@ public class Java2DTileRenderer implements TileRenderer {
 
     private BufferedImage transformImage( BufferedImage image, ICRS sourceCrs ) {
         try {
+            checkIfImageTransformationIsPossible();
             Envelope sourceEnvelope = transformQueryEnvelope( sourceCrs );
-            ImageTransformer transformer = new GeotoolsRasterTransformer( envelope );
-            return transformer.transform( image, sourceEnvelope );
+            return imageTransformer.transform( image, sourceEnvelope );
         } catch ( UnknownCRSException e ) {
             handleTransformImageException( e );
             return image;
         } catch ( TransformationException e ) {
             handleTransformImageException( e );
             return image;
+        }
+    }
+
+    private void checkIfImageTransformationIsPossible() {
+        if ( imageTransformer == null ) {
+            String msg = "Source tiles do not offer the requested coordinate system and transformation has not been implemented, yet";
+            LOG.debug( msg );
+            throw new RasterRenderingException( msg );
         }
     }
 

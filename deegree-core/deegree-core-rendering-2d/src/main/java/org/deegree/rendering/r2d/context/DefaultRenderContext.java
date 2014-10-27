@@ -35,6 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
+import org.deegree.rendering.r2d.Java2DLabelRenderer;
+import org.deegree.rendering.r2d.Java2DRasterRenderer;
+import org.deegree.rendering.r2d.Java2DRenderer;
+import org.deegree.rendering.r2d.Java2DTextRenderer;
+import org.deegree.rendering.r2d.Java2DTileRenderer;
+import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
+import org.deegree.style.utils.ImageUtils;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.KEY_INTERPOLATION;
 import static java.awt.RenderingHints.KEY_RENDERING;
@@ -52,19 +65,6 @@ import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 import static javax.imageio.ImageIO.write;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.deegree.rendering.r2d.Java2DRasterRenderer;
-import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.Java2DTextRenderer;
-import org.deegree.rendering.r2d.Java2DLabelRenderer;
-import org.deegree.rendering.r2d.Java2DTileRenderer;
-import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
-import org.deegree.style.utils.ImageUtils;
-
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -81,7 +81,7 @@ public class DefaultRenderContext implements RenderContext {
     private Java2DRenderer renderer;
 
     private Java2DTextRenderer textRenderer;
-    
+
     private Java2DLabelRenderer labelRenderer;
 
     private Java2DRasterRenderer rasterRenderer;
@@ -102,7 +102,7 @@ public class DefaultRenderContext implements RenderContext {
         textRenderer = new Java2DTextRenderer( renderer );
         labelRenderer = new Java2DLabelRenderer( renderer, textRenderer );
         rasterRenderer = new Java2DRasterRenderer( graphics );
-        tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope() );
+        tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(), null );
     }
 
     @Override
@@ -134,19 +134,19 @@ public class DefaultRenderContext implements RenderContext {
     public void setOutput( OutputStream out ) {
         this.out = out;
     }
-    
+
     /**
      * To be called after all Renderings are done, to render and maybe optimize the labels.
      */
     @Override
     public void optimizeAndDrawLabels() {
-        //Optimize Label Placement here, if pointplacement set to auto=true
-        try{
-            new AutoLabelPlacement(labelRenderer.getLabels(), renderer );
+        // Optimize Label Placement here, if pointplacement set to auto=true
+        try {
+            new AutoLabelPlacement( labelRenderer.getLabels(), renderer );
         } catch ( Throwable e ) {
             e.printStackTrace();
         }
-        labelRenderer.render( );
+        labelRenderer.render();
     }
 
     @Override

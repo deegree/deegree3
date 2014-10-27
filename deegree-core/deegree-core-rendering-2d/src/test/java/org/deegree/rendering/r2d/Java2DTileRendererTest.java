@@ -46,7 +46,7 @@ public class Java2DTileRendererTest {
         BufferedImage image = new BufferedImage( 500, 500, TYPE_4BYTE_ABGR );
         Graphics2D graphics = (Graphics2D) image.getGraphics();
         return new Java2DTileRenderer( graphics, 500, 500,
-                                       new DefaultEnvelope( mock( Point.class ), mock( Point.class ) ) );
+                                       new DefaultEnvelope( mock( Point.class ), mock( Point.class ) ), null );
     }
 
 }
