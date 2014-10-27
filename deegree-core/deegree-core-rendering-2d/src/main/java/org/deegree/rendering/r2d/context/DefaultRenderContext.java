@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.context;
 
+import org.deegree.rendering.r2d.GeotoolsRasterTransformer;
 import org.deegree.rendering.r2d.Java2DLabelRenderer;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
@@ -102,7 +103,8 @@ public class DefaultRenderContext implements RenderContext {
         textRenderer = new Java2DTextRenderer( renderer );
         labelRenderer = new Java2DLabelRenderer( renderer, textRenderer );
         rasterRenderer = new Java2DRasterRenderer( graphics );
-        tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(), null );
+        tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(),
+                                               new GeotoolsRasterTransformer( info.getEnvelope() ) );
     }
 
     @Override
