@@ -56,7 +56,7 @@ import java.util.Iterator;
 public interface TileRenderer {
 
     /**
-     * Renders all tiles and executes a transformation if query CRS is different from tile CRS.
+     * Renders all tiles.
      * 
      * @param tiles
      *            never <code>null</code>
