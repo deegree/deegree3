@@ -943,6 +943,17 @@
         <artifactId>antlr-runtime</artifactId>
         <version>3.4</version>
       </dependency>
+      <!-- geotools -->
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-coverage</artifactId>
+        <version>9.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-epsg-hsql</artifactId>
+        <version>9.5</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
