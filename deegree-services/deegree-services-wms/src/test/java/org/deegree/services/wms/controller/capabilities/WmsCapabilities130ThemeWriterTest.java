@@ -84,9 +84,9 @@ import org.junit.Test;
 
 /**
  * Unit test for {@link WmsCapabilities130ThemeWriter}.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriterTest {
@@ -115,6 +115,7 @@ public class WmsCapabilities130ThemeWriterTest {
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
+        System.out.println(new String (bos.toByteArray()));
         assertArrayEquals( expected, bos.toByteArray() );
     }
 
@@ -170,7 +171,7 @@ public class WmsCapabilities130ThemeWriterTest {
         themeMetadata.setScaleDenominators( scaleDenominators );
         final List<Theme> subThemes = emptyList();
         final List<Layer> layers = emptyList();
-        return new StandardTheme( themeMetadata, subThemes, layers );
+        return new StandardTheme( themeMetadata, subThemes, layers, null );
     }
 
 }

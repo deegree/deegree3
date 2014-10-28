@@ -91,7 +91,7 @@ class WmsCapabilities130ThemeWriter {
 
     /**
      * Creates a new {@link WmsCapabilities130ThemeWriter} instance.
-     * 
+     *
      * @param metadataProvider
      *            provider for metadata on OWS datasets, can be <code>null</code>
      * @param styleWriter
@@ -109,7 +109,7 @@ class WmsCapabilities130ThemeWriter {
 
     /**
      * Writes the given {@link Theme} as a WMS 1.3.0 Layer element.
-     * 
+     *
      * @param writer
      *            used to write the XML, must not be <code>null</code>
      * @param theme
@@ -280,7 +280,7 @@ class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         Double min = POSITIVE_INFINITY;
         Double max = NEGATIVE_INFINITY;
-        if ( theme.getMetadata() != null && theme.getLayerMetadata().getScaleDenominators() != null ) {
+        if ( theme.getLayerMetadata() != null && theme.getLayerMetadata().getScaleDenominators() != null ) {
             final DoublePair themeScales = theme.getLayerMetadata().getScaleDenominators();
             if ( !themeScales.first.isInfinite() ) {
                 min = themeScales.first;

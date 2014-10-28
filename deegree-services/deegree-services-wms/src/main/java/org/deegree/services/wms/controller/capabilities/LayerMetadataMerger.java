@@ -62,9 +62,9 @@ import org.deegree.theme.Themes;
 
 /**
  * Obtains merged {@link LayerMetadata} and {@link DatasetMetadata} objects for {@link Theme} objects.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 class LayerMetadataMerger {
@@ -75,7 +75,7 @@ class LayerMetadataMerger {
 
     /**
      * Creates a new {@link LayerMetadata} instance.
-     * 
+     *
      * @param metadataProvider
      *            provider for metadata on OWS datasets, can be <code>null</code>
      * @param mdUrlTemplate
@@ -90,15 +90,15 @@ class LayerMetadataMerger {
     /**
      * Returns a {@link LayerMetadata} object that merges information from layers if not defined directly in the
      * {@link LayerMetadata} of the {@link Theme}.
-     * 
+     *
      * @see LayerMetadata#merge(LayerMetadata)
-     * 
+     *
      * @param theme
      *            must not be <code>null</code>
      * @return merged layer metadata, never <code>null</code>
      */
     LayerMetadata getLayerTreeMetadata( final Theme theme ) {
-        final LayerMetadata themeMetadata = theme.getMetadata();
+        final LayerMetadata themeMetadata = theme.getLayerMetadata();
         LayerMetadata layerMetadata = null;
         for ( final Layer l : Themes.getAllLayers( theme ) ) {
             if ( layerMetadata == null ) {
@@ -114,7 +114,7 @@ class LayerMetadataMerger {
     /**
      * Returns a {@link DatasetMetadata} for the given {@link Theme}, either obtained from the metadata provider or
      * generated from the given layer metadata (if not available from metadata provider).
-     * 
+     *
      * @param theme
      *            must not be <code>null</code>
      * @param layerTreeMetadata
@@ -122,7 +122,7 @@ class LayerMetadataMerger {
      * @return dataset metadata, never <code>null</code>
      */
     DatasetMetadata getDatasetMetadata( final Theme theme, final LayerMetadata layerTreeMetadata ) {
-        if ( metadataProvider != null && theme.getMetadata().getName() != null ) {
+        if ( metadataProvider != null && theme.getLayerMetadata().getName() != null ) {
             final String name = getNameFromThemeOrFirstNamedLayer( theme );
             final DatasetMetadata md = getDatasetMetadataFromProvider( name );
             if ( md != null ) {
@@ -133,8 +133,8 @@ class LayerMetadataMerger {
     }
 
     private String getNameFromThemeOrFirstNamedLayer( final Theme theme ) {
-        if ( theme.getMetadata().getName() != null ) {
-            return theme.getMetadata().getName();
+        if ( theme.getLayerMetadata().getName() != null ) {
+            return theme.getLayerMetadata().getName();
         }
         for ( final Layer layer : getAllLayers( theme ) ) {
             if ( layer.getMetadata().getName() != null ) {
@@ -179,8 +179,8 @@ class LayerMetadataMerger {
     }
 
     private String getFirstMetadataSetId( final Theme theme ) {
-        if ( theme.getMetadata().getMetadataId() != null ) {
-            return theme.getMetadata().getMetadataId();
+        if ( theme.getLayerMetadata().getMetadataId() != null ) {
+            return theme.getLayerMetadata().getMetadataId();
         }
         for ( final Layer layer : getAllLayers( theme ) ) {
             if ( layer.getMetadata().getMetadataId() != null ) {
