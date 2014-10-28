@@ -62,6 +62,7 @@ import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
+import org.deegree.commons.ows.metadata.layer.LogoUrl;
 import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
@@ -121,7 +122,7 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeNamespace( "xlink", XLNNS );
         XMLAdapter.writeElement( writer, "Title", "Container" );
         final LayerMetadata layerMetadata = createLayerMetadata();
-        final DatasetMetadata datasetMetadata = createDatasetMetadata();
+        final DatasetMetadata datasetMetadata = createDatasetMetadataFull();
         final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
         final Map<String, String> authorityNameToUrl = createAuthorityNameToUrlMap();
         themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
@@ -130,7 +131,6 @@ public class WmsCapabilities130ThemeWriterTest {
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
-        System.out.println( new String( bos.toByteArray() ) );
         assertArrayEquals( expected, bos.toByteArray() );
     }
 
@@ -148,7 +148,7 @@ public class WmsCapabilities130ThemeWriterTest {
                                     featureListUrls, attribution );
     }
 
-    private DatasetMetadata createDatasetMetadata() {
+    private DatasetMetadata createDatasetMetadataFull() {
         final QName name = new QName( "SimpleTheme" );
         final List<LanguageString> titles = singletonList( new LanguageString( "SimpleTheme Title", null ) );
         final List<LanguageString> abstracts = singletonList( new LanguageString( "SimpleTheme Abstract", null ) );
@@ -161,13 +161,16 @@ public class WmsCapabilities130ThemeWriterTest {
         final Pair<List<LanguageString>, CodeType> keywords1 = new Pair<List<LanguageString>, CodeType>( keywordsList1,
                                                                                                          code1 );
         keywords.add( keywords1 );
-        final List<String> metadataUrls = singletonList( "http://www.url.net" );
+        final List<String> metadataUrls = new ArrayList<String>();
+        metadataUrls.add( "http://www.url.net" );
+        metadataUrls.add( "http://www.url2.net" );
         final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
         externalIds.add( new ExternalIdentifier( "extid1", "authority1" ) );
         externalIds.add( new ExternalIdentifier( "extid2", "authority2" ) );
         final List<UrlWithFormat> dataUrls = null;
         final List<UrlWithFormat> featureListUrls = null;
-        final Attribution attribution = null;
+        final LogoUrl logoUrl = new LogoUrl( "http://logo.url", "image/png", 64, 32 );
+        final Attribution attribution = new Attribution( "AttributionTitle", "http://attribution.url", logoUrl );
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
                                     featureListUrls, attribution );
     }

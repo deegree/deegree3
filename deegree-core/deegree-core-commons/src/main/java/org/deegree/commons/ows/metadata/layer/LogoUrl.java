@@ -6,17 +6,17 @@ public class LogoUrl extends UrlWithFormat {
 
     private final int height;
 
-    public LogoUrl( final String url, final String format, final int width, final int height ) {
+    public LogoUrl( final String url, final String format, final Integer width, final Integer height ) {
         super( url, format );
         this.width = width;
         this.height = height;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
 

@@ -56,11 +56,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.layer.Attribution;
+import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
+import org.deegree.commons.ows.metadata.layer.LogoUrl;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
@@ -178,12 +180,14 @@ public class WmsCapabilities130ThemeWriter {
         writeCrsAndBoundingBoxes( writer, layerMetadata.getSpatialMetadata() );
         // <element ref="wms:Dimension" minOccurs="0" maxOccurs="unbounded"/>
         writeDimensions( writer, layerMetadata.getDimensions() );
+        // <element ref="wms:Attribution" minOccurs="0"/>
+        writeAttribution( writer, datasetMetadata.getAttribution() );
         // <element ref="wms:AuthorityURL" minOccurs="0" maxOccurs="unbounded"/>
-        writeAuthorityUrls( writer, datasetMetadata.getExternalUrls(), authorityNameToUrl );
+        writeAuthorityUrls( writer, authorityNameToUrl );
         // <element ref="wms:Identifier" minOccurs="0" maxOccurs="unbounded"/>
-        writeIdentifiers( writer, datasetMetadata.getExternalUrls() );
+        writeIdentifiers( writer, datasetMetadata.getExternalIds() );
         // <element ref="wms:MetadataURL" minOccurs="0" maxOccurs="unbounded"/>
-        writeMetadataUrl( writer, datasetMetadata.getUrl() );
+        writeMetadataUrls( writer, datasetMetadata.getMetadataUrls() );
         // <element ref="wms:Style" minOccurs="0" maxOccurs="unbounded"/>
         writeStyles( writer, layerMetadata.getName(), layerMetadata.getLegendStyles(), layerMetadata.getStyles() );
         // <element ref="wms:MinScaleDenominator" minOccurs="0"/>
@@ -259,48 +263,90 @@ public class WmsCapabilities130ThemeWriter {
         }
     }
 
-    private void writeAuthorityUrls( final XMLStreamWriter writer, final List<StringPair> extUrls,
-                                     final Map<String, String> authorityNameToUrl )
+    private void writeAttribution( final XMLStreamWriter writer, final Attribution attribution )
                             throws XMLStreamException {
-        if ( extUrls != null && authorityNameToUrl != null ) {
-            for ( final StringPair extUrl : extUrls ) {
-                final String url = authorityNameToUrl.get( extUrl.first );
-                if ( url != null ) {
-                    writer.writeStartElement( WMSNS, "AuthorityURL" );
-                    writer.writeAttribute( "name", extUrl.first );
-                    writer.writeStartElement( WMSNS, "OnlineResource" );
-                    writer.writeAttribute( XLNNS, "type", "simple" );
-                    writer.writeAttribute( XLNNS, "href", url );
-                    writer.writeEndElement();
+        if ( attribution != null ) {
+            writer.writeStartElement( WMSNS, "Attribution" );
+            if ( attribution.getTitle() != null ) {
+                writer.writeStartElement( WMSNS, "Title" );
+                writer.writeCharacters( attribution.getTitle() );
+                writer.writeEndElement();
+            }
+            if ( attribution.getUrl() != null ) {
+                writer.writeEmptyElement( WMSNS, "OnlineResource" );
+                writer.writeAttribute( XLNNS, "type", "simple" );
+                writer.writeAttribute( XLNNS, "href", attribution.getUrl() );
+            }
+            if ( attribution.getLogoUrl() != null ) {
+                final LogoUrl logoUrl = attribution.getLogoUrl();
+                writer.writeStartElement( WMSNS, "LogoURL" );
+                if ( logoUrl.getWidth() != null ) {
+                    writer.writeAttribute( "width", "" + logoUrl.getWidth() );
+                }
+                if ( logoUrl.getHeight() != null ) {
+                    writer.writeAttribute( "height", "" + logoUrl.getHeight() );
+                }
+                if ( logoUrl.getFormat() != null ) {
+                    writer.writeStartElement( WMSNS, "Format" );
+                    writer.writeCharacters( logoUrl.getFormat() );
                     writer.writeEndElement();
                 }
+                if ( logoUrl.getUrl() != null ) {
+                    writer.writeEmptyElement( WMSNS, "OnlineResource" );
+                    writer.writeAttribute( XLNNS, "type", "simple" );
+                    writer.writeAttribute( XLNNS, "href", logoUrl.getUrl() );
+                }
+                writer.writeEndElement();
             }
-        }
-    }
-
-    private void writeIdentifiers( final XMLStreamWriter writer, final List<StringPair> extUrls )
-                            throws XMLStreamException {
-        for ( final StringPair extUrl : extUrls ) {
-            writer.writeStartElement( WMSNS, "Identifier" );
-            writer.writeAttribute( "authority", extUrl.first );
-            writer.writeCharacters( extUrl.second );
             writer.writeEndElement();
         }
     }
 
-    private void writeMetadataUrl( final XMLStreamWriter writer, final String url )
+    private void writeAuthorityUrls( final XMLStreamWriter writer, final Map<String, String> authorityNameToUrl )
                             throws XMLStreamException {
-        if ( url == null ) {
+        if ( authorityNameToUrl != null ) {
+            for ( final Entry<String, String> authorityNameAndUrl : authorityNameToUrl.entrySet() ) {
+                writer.writeStartElement( WMSNS, "AuthorityURL" );
+                writer.writeAttribute( "name", authorityNameAndUrl.getKey() );
+                writer.writeStartElement( WMSNS, "OnlineResource" );
+                writer.writeAttribute( XLNNS, "type", "simple" );
+                writer.writeAttribute( XLNNS, "href", authorityNameAndUrl.getValue() );
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
+        }
+    }
+
+    private void writeIdentifiers( final XMLStreamWriter writer, final List<ExternalIdentifier> ids )
+                            throws XMLStreamException {
+        if ( ids == null ) {
             return;
         }
-        writer.writeStartElement( WMSNS, "MetadataURL" );
-        writer.writeAttribute( "type", "ISO19115:2003" );
-        writeElement( writer, WMSNS, "Format", "application/xml" );
-        writer.writeStartElement( WMSNS, "OnlineResource" );
-        writer.writeAttribute( XLNNS, "type", "simple" );
-        writer.writeAttribute( XLNNS, "href", url );
-        writer.writeEndElement();
-        writer.writeEndElement();
+        for ( final ExternalIdentifier id : ids ) {
+            writer.writeStartElement( WMSNS, "Identifier" );
+            if ( id.getAuthorityCode() != null ) {
+                writer.writeAttribute( "authority", id.getAuthorityCode() );
+            }
+            writer.writeCharacters( id.getId() );
+            writer.writeEndElement();
+        }
+    }
+
+    private void writeMetadataUrls( final XMLStreamWriter writer, final List<String> urls )
+                            throws XMLStreamException {
+        if ( urls == null ) {
+            return;
+        }
+        for ( final String url : urls ) {
+            writer.writeStartElement( WMSNS, "MetadataURL" );
+            writer.writeAttribute( "type", "ISO19115:2003" );
+            writeElement( writer, WMSNS, "Format", "application/xml" );
+            writer.writeStartElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            writer.writeAttribute( XLNNS, "href", url );
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
     }
 
     private void writeStyles( final XMLStreamWriter writer, final String name, final Map<String, Style> legends,
