@@ -202,11 +202,10 @@
     </sequence>
   </complexType>
 
-  <complexType name="ExternalMetadataSetIdType">
+    <complexType name="ExternalMetadataSetIdType">
     <simpleContent>
       <extension base="string">
         <attribute name="authority" type="string" use="required" />
-        <attribute name="authorityUrl" type="string" use="required" />
       </extension>
     </simpleContent>
   </complexType>

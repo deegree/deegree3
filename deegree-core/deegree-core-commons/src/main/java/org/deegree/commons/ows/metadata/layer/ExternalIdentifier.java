@@ -6,12 +6,9 @@ public class ExternalIdentifier {
 
     private final String authorityCode;
 
-    private final String authorityUrl;
-
-    public ExternalIdentifier( final String id, final String authorityCode, final String authorityUrl ) {
+    public ExternalIdentifier( final String id, final String authorityCode ) {
         this.id = id;
         this.authorityCode = authorityCode;
-        this.authorityUrl = authorityUrl;
     }
 
     public String getId() {
@@ -20,10 +17,6 @@ public class ExternalIdentifier {
 
     public String getAuthorityCode() {
         return authorityCode;
-    }
-
-    public String getAuthorityUrl() {
-        return authorityUrl;
     }
 
 }

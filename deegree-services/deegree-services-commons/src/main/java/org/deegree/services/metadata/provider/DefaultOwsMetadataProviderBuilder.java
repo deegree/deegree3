@@ -70,9 +70,9 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building web service metadata providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
+ *
  * @since 3.4
  */
 public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMetadataProvider> {
@@ -182,7 +182,7 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
     }
 
     private ExternalIdentifier fromJaxb( final ExternalMetadataSetIdType jaxbEl ) {
-        return new ExternalIdentifier( jaxbEl.getValue(), jaxbEl.getAuthority(), jaxbEl.getAuthorityUrl() );
+        return new ExternalIdentifier( jaxbEl.getValue(), jaxbEl.getAuthority() );
     }
 
     private Attribution fromJaxb( final org.deegree.services.jaxb.metadata.DatasetMetadataType.Attribution jaxbEl ) {

@@ -51,7 +51,7 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,11 +60,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.layer.Attribution;
+import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
+import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -99,7 +101,7 @@ public class WmsCapabilities130ThemeWriterTest {
         layerMetadata.setQueryable( false );
         final DatasetMetadata datasetMetadata = createDatasetMetadataMinimal();
         final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
-        final Map<String, String> authorityNameToUrl = createAuthorities();
+        final Map<String, String> authorityNameToUrl = emptyMap();
         themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
         writer.writeEndElement();
         writer.flush();
@@ -121,14 +123,14 @@ public class WmsCapabilities130ThemeWriterTest {
         final LayerMetadata layerMetadata = createLayerMetadata();
         final DatasetMetadata datasetMetadata = createDatasetMetadata();
         final DoublePair scaleDenominators = new DoublePair( 0.0, 999999.9 );
-        final Map<String, String> authorityNameToUrl = emptyMap();
+        final Map<String, String> authorityNameToUrl = createAuthorityNameToUrlMap();
         themeWriter.writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, null );
         writer.writeEndElement();
         writer.flush();
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
-        System.out.println(new String (bos.toByteArray()));
+        System.out.println( new String( bos.toByteArray() ) );
         assertArrayEquals( expected, bos.toByteArray() );
     }
 
@@ -137,9 +139,13 @@ public class WmsCapabilities130ThemeWriterTest {
         final List<LanguageString> titles = emptyList();
         final List<LanguageString> abstracts = emptyList();
         final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        final String url = null;
-        final List<StringPair> externalUrls = emptyList();
-        return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
+        final List<String> metadataUrls = null;
+        final List<ExternalIdentifier> externalIds = null;
+        final List<UrlWithFormat> dataUrls = null;
+        final List<UrlWithFormat> featureListUrls = null;
+        final Attribution attribution = null;
+        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+                                    featureListUrls, attribution );
     }
 
     private DatasetMetadata createDatasetMetadata() {
@@ -155,11 +161,22 @@ public class WmsCapabilities130ThemeWriterTest {
         final Pair<List<LanguageString>, CodeType> keywords1 = new Pair<List<LanguageString>, CodeType>( keywordsList1,
                                                                                                          code1 );
         keywords.add( keywords1 );
-        final String url = "http://www.url.net";
-        final List<StringPair> externalUrls = new ArrayList<StringPair>();
-        externalUrls.add( new StringPair( "authority1", "http://www.authority1.com/url1" ) );
-        externalUrls.add( new StringPair( "authority2", "http://www.authority2.com/url2" ) );
-        return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
+        final List<String> metadataUrls = singletonList( "http://www.url.net" );
+        final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+        externalIds.add( new ExternalIdentifier( "extid1", "authority1" ) );
+        externalIds.add( new ExternalIdentifier( "extid2", "authority2" ) );
+        final List<UrlWithFormat> dataUrls = null;
+        final List<UrlWithFormat> featureListUrls = null;
+        final Attribution attribution = null;
+        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+                                    featureListUrls, attribution );
+    }
+
+    private Map<String, String> createAuthorityNameToUrlMap() {
+        final Map<String, String> authorityNameToUrl = new LinkedHashMap<String, String>();
+        authorityNameToUrl.put( "authority1", "http://whatever.authority1.com" );
+        authorityNameToUrl.put( "authority2", "http://whatever.authority2.com" );
+        return authorityNameToUrl;
     }
 
     private LayerMetadata createLayerMetadataMinimal() {
@@ -183,13 +200,6 @@ public class WmsCapabilities130ThemeWriterTest {
         final LayerMetadata themeMetadata = new LayerMetadata( "SimpleTheme", description, spatialMetadata );
         themeMetadata.setCascaded( 5 );
         return themeMetadata;
-    }
-
-    private Map<String, String> createAuthorities() {
-        final Map<String, String> authorityNameToUrl = new HashMap<String, String>();
-        authorityNameToUrl.put( "authority1", "http://www.authority1.com" );
-        authorityNameToUrl.put( "authority2", "http://www.authority2.com" );
-        return authorityNameToUrl;
     }
 
 }

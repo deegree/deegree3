@@ -50,10 +50,12 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.layer.Attribution;
+import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
+import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.theme.Theme;
@@ -79,7 +81,6 @@ class DatasetMetadataFactory {
         final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
         final String metadataSetId = getFirstMetadataSetId( theme );
         final String metadataSetUrl = getUrlForMetadataSetId( metadataSetId, mdUrlTemplate );
-        final List<StringPair> externalUrls = new ArrayList<StringPair>();
         final Description description = layerMetadata.getDescription();
         if ( description != null ) {
             if ( description.getTitles() != null ) {
@@ -92,7 +93,19 @@ class DatasetMetadataFactory {
                 keywords.addAll( description.getKeywords() );
             }
         }
-        return new DatasetMetadata( name, titles, abstracts, keywords, metadataSetUrl, externalUrls );
+        final List<String> metadataUrls = new ArrayList<String>();
+        if ( metadataSetUrl != null ) {
+            metadataUrls.add( metadataSetUrl );
+        }
+        final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+        if ( metadataSetId != null ) {
+            externalIds.add( new ExternalIdentifier( metadataSetId, null) );
+        }
+        final List<UrlWithFormat> dataUrls = null;
+        final List<UrlWithFormat> featureListUrls = null;
+        final Attribution attribution = null;
+        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+                                    featureListUrls, attribution );
     }
 
     private String getFirstMetadataSetId( final Theme theme ) {
