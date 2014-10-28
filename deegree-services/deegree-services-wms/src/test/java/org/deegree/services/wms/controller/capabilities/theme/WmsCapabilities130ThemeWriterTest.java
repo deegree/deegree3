@@ -167,8 +167,12 @@ public class WmsCapabilities130ThemeWriterTest {
         final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
         externalIds.add( new ExternalIdentifier( "extid1", "authority1" ) );
         externalIds.add( new ExternalIdentifier( "extid2", "authority2" ) );
-        final List<UrlWithFormat> dataUrls = null;
-        final List<UrlWithFormat> featureListUrls = null;
+        final List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+        dataUrls.add( new UrlWithFormat( "http://data1.url", "text/xml" ) );
+        dataUrls.add( new UrlWithFormat( "http://data2.url", "text/plain" ) );
+        final List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+        featureListUrls.add( new UrlWithFormat( "http://featurelist1.url", "text/xml" ) );
+        featureListUrls.add( new UrlWithFormat( "http://featurelist2.url", "text/plain" ) );
         final LogoUrl logoUrl = new LogoUrl( "http://logo.url", "image/png", 64, 32 );
         final Attribution attribution = new Attribution( "AttributionTitle", "http://attribution.url", logoUrl );
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,

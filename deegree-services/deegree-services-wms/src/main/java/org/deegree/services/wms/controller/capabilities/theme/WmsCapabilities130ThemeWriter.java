@@ -59,6 +59,7 @@ import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
 import org.deegree.commons.ows.metadata.layer.LogoUrl;
+import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
@@ -186,6 +187,10 @@ public class WmsCapabilities130ThemeWriter {
         writeAuthorityUrls( writer, authorityNameToUrl );
         // <element ref="wms:Identifier" minOccurs="0" maxOccurs="unbounded"/>
         writeIdentifiers( writer, datasetMetadata.getExternalIds() );
+        // <element ref="wms:DataURL" minOccurs="0" maxOccurs="unbounded"/>
+        writeDataUrls( writer, datasetMetadata.getDataUrls() );
+        // <element ref="wms:FeatureListURL" minOccurs="0" maxOccurs="unbounded"/>
+        writeFeatureListUrls( writer, datasetMetadata.getFeatureListUrls() );
         // <element ref="wms:MetadataURL" minOccurs="0" maxOccurs="unbounded"/>
         writeMetadataUrls( writer, datasetMetadata.getMetadataUrls() );
         // <element ref="wms:Style" minOccurs="0" maxOccurs="unbounded"/>
@@ -332,6 +337,40 @@ public class WmsCapabilities130ThemeWriter {
         }
     }
 
+    private void writeDataUrls( final XMLStreamWriter writer, final List<UrlWithFormat> urls )
+                            throws XMLStreamException {
+        if ( urls == null ) {
+            return;
+        }
+        for ( final UrlWithFormat url : urls ) {
+            writer.writeStartElement( WMSNS, "DataURL" );
+            if ( url.getFormat() != null ) {
+                writer.writeStartElement( WMSNS, "Format" );
+                writer.writeCharacters( url.getFormat() );
+                writer.writeEndElement();
+            }
+            writeOnlineResource( writer, url.getUrl() );
+            writer.writeEndElement();
+        }
+    }
+
+    private void writeFeatureListUrls( final XMLStreamWriter writer, final List<UrlWithFormat> urls )
+                            throws XMLStreamException {
+        if ( urls == null ) {
+            return;
+        }
+        for ( final UrlWithFormat url : urls ) {
+            writer.writeStartElement( WMSNS, "FeatureListURL" );
+            if ( url.getFormat() != null ) {
+                writer.writeStartElement( WMSNS, "Format" );
+                writer.writeCharacters( url.getFormat() );
+                writer.writeEndElement();
+            }
+            writeOnlineResource( writer, url.getUrl() );
+            writer.writeEndElement();
+        }
+    }
+
     private void writeMetadataUrls( final XMLStreamWriter writer, final List<String> urls )
                             throws XMLStreamException {
         if ( urls == null ) {
@@ -376,6 +415,15 @@ public class WmsCapabilities130ThemeWriter {
         final Double max = scaleDenominators.second;
         if ( !max.isInfinite() ) {
             writeElement( writer, WMSNS, "MaxScaleDenominator", max + "" );
+        }
+    }
+
+    private void writeOnlineResource( final XMLStreamWriter writer, final String url )
+                            throws XMLStreamException {
+        if ( url != null ) {
+            writer.writeEmptyElement( WMSNS, "OnlineResource" );
+            writer.writeAttribute( XLNNS, "type", "simple" );
+            writer.writeAttribute( XLNNS, "href", url );
         }
     }
 
