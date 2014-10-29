@@ -37,6 +37,7 @@ package org.deegree.junit;
 
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
@@ -65,6 +66,28 @@ public class XMLAssert {
      * Asserts that the specified XML document is valid with respect to the schemas that it references (using
      * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
      * 
+     * @param is
+     *            provides the XML document to be validated
+     * @param schemaLocations
+     *            optional locations of schema documents to be considered in the validation
+     */
+    public static void assertValidity( final InputStream is, String... schemaLocations ) {
+        XMLInputSource source = new XMLInputSource( null, null, null, is, null );
+        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
+        if ( events.size() > 0 ) {
+            fail( events.get( 0 ).toString() );
+        }
+        if ( LOG.isErrorEnabled() ) {
+            for ( SchemaValidationEvent event : events ) {
+                LOG.error( event.toString() );
+            }
+        }
+    }
+
+    /**
+     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
+     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
+     *
      * @param reader
      *            provides the XML document to be validated
      * @param schemaLocations

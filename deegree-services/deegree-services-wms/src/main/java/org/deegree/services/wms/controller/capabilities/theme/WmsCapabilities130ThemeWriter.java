@@ -170,7 +170,7 @@ public class WmsCapabilities130ThemeWriter {
         // <element ref="wms:Name" minOccurs="0"/>
         writeName( writer, layerMetadata.getName() );
         // <element ref="wms:Title"/>
-        writeTitle( writer, datasetMetadata.getTitles() );
+        writeTitle( writer, datasetMetadata.getTitles(), layerMetadata.getName() );
         // <element ref="wms:Abstract" minOccurs="0"/>
         writeAbstract( writer, datasetMetadata.getAbstracts() );
         // <element ref="wms:KeywordList" minOccurs="0"/>
@@ -187,12 +187,12 @@ public class WmsCapabilities130ThemeWriter {
         writeAuthorityUrls( writer, authorityNameToUrl );
         // <element ref="wms:Identifier" minOccurs="0" maxOccurs="unbounded"/>
         writeIdentifiers( writer, datasetMetadata.getExternalIds() );
+        // <element ref="wms:MetadataURL" minOccurs="0" maxOccurs="unbounded"/>
+        writeMetadataUrls( writer, datasetMetadata.getMetadataUrls() );
         // <element ref="wms:DataURL" minOccurs="0" maxOccurs="unbounded"/>
         writeDataUrls( writer, datasetMetadata.getDataUrls() );
         // <element ref="wms:FeatureListURL" minOccurs="0" maxOccurs="unbounded"/>
         writeFeatureListUrls( writer, datasetMetadata.getFeatureListUrls() );
-        // <element ref="wms:MetadataURL" minOccurs="0" maxOccurs="unbounded"/>
-        writeMetadataUrls( writer, datasetMetadata.getMetadataUrls() );
         // <element ref="wms:Style" minOccurs="0" maxOccurs="unbounded"/>
         writeStyles( writer, layerMetadata.getName(), layerMetadata.getLegendStyles(), layerMetadata.getStyles() );
         // <element ref="wms:MinScaleDenominator" minOccurs="0"/>
@@ -228,10 +228,12 @@ public class WmsCapabilities130ThemeWriter {
         }
     }
 
-    private void writeTitle( final XMLStreamWriter writer, final List<LanguageString> titles )
+    private void writeTitle( final XMLStreamWriter writer, final List<LanguageString> titles, final String name )
                             throws XMLStreamException {
         if ( titles != null && !titles.isEmpty() ) {
             writeElement( writer, WMSNS, "Title", titles.get( 0 ).getString() );
+        } else if ( name != null ) {
+            writeElement( writer, WMSNS, "Title", name );
         }
     }
 

@@ -46,8 +46,10 @@ import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.junit.XMLAssert.assertValidity;
 import static org.junit.Assert.assertArrayEquals;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -87,6 +89,8 @@ import org.junit.Test;
  */
 public class WmsCapabilities130ThemeWriterTest {
 
+    private static final String SCHEMA_URL = "http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
+
     private final WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter( null, null, null );
 
     @Test
@@ -109,6 +113,7 @@ public class WmsCapabilities130ThemeWriterTest {
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_minimal.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
+        assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
         assertArrayEquals( expected, bos.toByteArray() );
     }
 
@@ -131,6 +136,7 @@ public class WmsCapabilities130ThemeWriterTest {
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
+        assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
         assertArrayEquals( expected, bos.toByteArray() );
     }
 

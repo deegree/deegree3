@@ -1,1 +1,1 @@
-<Layer xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink"><Title>Container</Title><Layer><Name>SimpleTheme</Name><MinScaleDenominator>0.0</MinScaleDenominator><MaxScaleDenominator>999999.9</MaxScaleDenominator></Layer></Layer>
+<Layer xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink"><Title>Container</Title><Layer><Name>SimpleTheme</Name><Title>SimpleTheme</Title><MinScaleDenominator>0.0</MinScaleDenominator><MaxScaleDenominator>999999.9</MaxScaleDenominator></Layer></Layer>
