@@ -1,5 +1,18 @@
 package org.deegree.rendering.r2d;
 
+import static javax.media.jai.Interpolation.INTERP_BILINEAR;
+import static javax.media.jai.Interpolation.getInstance;
+import static javax.media.jai.OpImage.OP_IO_BOUND;
+import static org.deegree.cs.CRSUtils.getEpsgCode;
+import static org.deegree.cs.CRSUtils.hasEpsgCode;
+import static org.geotools.coverage.processing.Operations.DEFAULT;
+import static org.geotools.referencing.CRS.decode;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import javax.media.jai.NullOpImage;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -10,18 +23,6 @@ import org.opengis.coverage.Coverage;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
-
-import javax.media.jai.NullOpImage;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-
-import static javax.media.jai.Interpolation.INTERP_BILINEAR;
-import static javax.media.jai.Interpolation.getInstance;
-import static javax.media.jai.OpImage.OP_IO_BOUND;
-import static org.deegree.cs.CRSUtils.getEpsgCode;
-import static org.geotools.coverage.processing.Operations.DEFAULT;
-import static org.geotools.referencing.CRS.decode;
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Can be used to transform raster images. The transform mechanism uses geotools.
@@ -63,8 +64,8 @@ public class GeotoolsRasterTransformer implements ImageTransformer {
     private Envelope2D createGtEnvelope( Envelope envelope )
                             throws FactoryException {
         try {
-            String epsgCode = retrieveEpsgCode( envelope );
-            CoordinateReferenceSystem crs = decode( epsgCode );
+            String crsCode = retrieveCrsCode( envelope );
+            CoordinateReferenceSystem crs = decode( crsCode );
             double minX = envelope.getMin().get0();
             double minY = envelope.getMin().get1();
             double width = envelope.getMax().get0() - minX;
@@ -77,8 +78,19 @@ public class GeotoolsRasterTransformer implements ImageTransformer {
         }
     }
 
-    private String retrieveEpsgCode( Envelope envelope ) {
+    private String retrieveCrsCode( Envelope envelope ) {
         ICRS crs = envelope.getCoordinateSystem();
+        if ( hasEpsgCode( crs ) ) {
+            LOG.debug( "CRS" + crs.getAlias() + "has an epsg code." );
+            return retrieveEpsgCode( crs );
+        } else {
+            LOG.debug( "CRS" + crs.getAlias() + "does not have an epsg code. Identifier of CRS is used instead!" );
+            return crs.getAlias();
+        }
+
+    }
+
+    private String retrieveEpsgCode( ICRS crs ) {
         int code = getEpsgCode( crs );
         return "epsg:" + code;
     }
