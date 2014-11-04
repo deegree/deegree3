@@ -164,11 +164,14 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Layer" );
         // <attribute name="queryable" type="boolean" default="0"/>
-        writeQueryable( writer, layerMetadata.isQueryable() && layerMetadata.getName() != null );
+        writeQueryable( writer, layerMetadata.isRequestable() && layerMetadata.isQueryable()
+                                && layerMetadata.getName() != null );
         // <attribute name="cascaded" type="nonNegativeInteger"/>
         writeCascaded( writer, layerMetadata.getCascaded() );
         // <element ref="wms:Name" minOccurs="0"/>
-        writeName( writer, layerMetadata.getName() );
+        if ( layerMetadata.isRequestable() ) {
+            writeName( writer, layerMetadata.getName() );
+        }
         // <element ref="wms:Title"/>
         writeTitle( writer, datasetMetadata.getTitles(), layerMetadata.getName() );
         // <element ref="wms:Abstract" minOccurs="0"/>
