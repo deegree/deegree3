@@ -64,6 +64,7 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataAuthorityType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataSetIdType;
+import org.deegree.services.jaxb.metadata.KeywordsType;
 import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.workspace.ResourceBuilder;
@@ -143,7 +144,7 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         final QName name = jaxbEl.getName();
         final List<LanguageString> titles = fromJaxb( jaxbEl.getTitle() );
         final List<LanguageString> abstracts = fromJaxb( jaxbEl.getAbstract() );
-        final List<Pair<List<LanguageString>, CodeType>> keywords = emptyList();
+        final List<Pair<List<LanguageString>, CodeType>> keywords = fromJaxbKeywords( jaxbEl.getKeywords() );
         final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
         final String metadataUrl = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
         if ( metadataUrl != null ) {
@@ -151,7 +152,8 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         }
         if ( jaxbEl.getMetadataURL() != null ) {
             for ( final MetadataURL jaxbMetadataUrl : jaxbEl.getMetadataURL() ) {
-                metadataUrls.add (new MetadataUrl( jaxbMetadataUrl.getValue(), jaxbMetadataUrl.getType(), jaxbMetadataUrl.getFormat() ));
+                metadataUrls.add( new MetadataUrl( jaxbMetadataUrl.getValue(), jaxbMetadataUrl.getType(),
+                                                   jaxbMetadataUrl.getFormat() ) );
             }
         }
         final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
@@ -176,6 +178,17 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
             return null;
         }
         return StringUtils.replaceAll( pattern, "${metadataSetId}", datasetId );
+    }
+
+    private List<Pair<List<LanguageString>, CodeType>> fromJaxbKeywords( final List<KeywordsType> jaxbEls ) {
+        if ( jaxbEls == null ) {
+            return emptyList();
+        }
+        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+        for ( final KeywordsType jaxbEl : jaxbEls ) {
+            keywords.add( fromJaxb( jaxbEl ) );
+        }
+        return keywords;
     }
 
     private List<LanguageString> fromJaxb( List<LanguageStringType> strings ) {
@@ -205,4 +218,10 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         return new Attribution( jaxbEl.getTitle(), jaxbEl.getURL(), logoUrl );
     }
 
+    private Pair<List<LanguageString>, CodeType> fromJaxb( final KeywordsType jaxbEl ) {
+        final CodeType type = jaxbEl.getType() == null ? null : new CodeType( jaxbEl.getType().getValue(),
+                                                                              jaxbEl.getType().getCodeSpace() );
+        final List<LanguageString> languageStrings = fromJaxb( jaxbEl.getKeyword() );
+        return new Pair<List<LanguageString>, CodeType>( languageStrings, type );
+    }
 }

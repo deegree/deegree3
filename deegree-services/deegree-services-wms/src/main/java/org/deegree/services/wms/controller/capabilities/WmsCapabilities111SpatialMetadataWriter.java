@@ -63,11 +63,11 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-class WmsCapabilities111SpatialMetadataWriter {
+public class WmsCapabilities111SpatialMetadataWriter {
 
     private static final Logger LOG = getLogger( WmsCapabilities111SpatialMetadataWriter.class );
 
-    static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv )
+    public static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv )
                             throws XMLStreamException {
         for ( ICRS crs : srs ) {
             writeElement( writer, "SRS", crs.getAlias() );

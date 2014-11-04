@@ -56,8 +56,10 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
+import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities111ThemeWriter;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
@@ -73,6 +75,8 @@ import org.deegree.theme.Themes;
 @LoggingNotes(warn = "logs problems with CRS when outputting 1.1.1 capabilities", trace = "logs stack traces")
 public class Capabilities111XMLAdapter extends XMLAdapter {
 
+    private static final String MD_URL_REQUEST_CSW = "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";    
+    
     // private static final Logger LOG = getLogger( Capabilities111XMLAdapter.class );
 
     private final String getUrl;
@@ -91,12 +95,26 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
      * @param service
      * @param controller
      */
-    public Capabilities111XMLAdapter( ServiceIdentification identification, ServiceProvider provider, String getUrl,
-                                      String postUrl, MapService service, WMSController controller ) {
+    public Capabilities111XMLAdapter( ServiceIdentification identification, ServiceProvider provider,
+                                      OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
+                                      WMSController controller ) {
         this.getUrl = getUrl;
         this.service = service;
         metadataWriter = new WmsCapabilities111MetadataWriter( identification, provider, getUrl, postUrl, controller );
-        themeWriter = new WmsCapabilities111ThemeWriter( controller, getUrl, this );
+        final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
+        themeWriter = new WmsCapabilities111ThemeWriter( metadata, this, mdUrlTemplate );
+    }
+
+    private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
+        String mdUrlTemplate = controller.getMetadataURLTemplate();
+        if ( mdUrlTemplate != null && mdUrlTemplate.isEmpty() ) {
+            mdUrlTemplate = getUrl;
+            if ( !( mdUrlTemplate.endsWith( "?" ) || mdUrlTemplate.endsWith( "&" ) ) ) {
+                mdUrlTemplate += "?";
+            }
+            mdUrlTemplate += MD_URL_REQUEST_CSW;
+        }
+        return mdUrlTemplate;
     }
 
     /**
@@ -172,7 +190,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         }
     }
 
-    static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
+    public static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
                             throws XMLStreamException {
         for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
             Dimension<?> dim = entry.getValue();
@@ -200,8 +218,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         }
     }
 
-    void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
-                     String layerName, Style style )
+    public void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
+                            String layerName, Style style )
                             throws XMLStreamException {
         writer.writeStartElement( "Style" );
         writeElement( writer, "Name", name );

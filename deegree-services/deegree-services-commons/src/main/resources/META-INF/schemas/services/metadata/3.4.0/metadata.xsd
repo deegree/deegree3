@@ -150,6 +150,7 @@
       <element name="Name" type="QName" />
       <element name="Title" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
       <element name="Abstract" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
+      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
       <element name="MetadataSetId" type="string" minOccurs="0" />
       <element name="MetadataURL" minOccurs="0" maxOccurs="unbounded">
         <complexType>
