@@ -82,6 +82,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
@@ -314,11 +315,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
             if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                for ( final String metadataUrl : ftMd.getMetadataUrls() ) {
+                for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
                     writer.writeStartElement( WFS_NS, "MetadataURL" );
                     writer.writeAttribute( "type", "TC211" );
                     writer.writeAttribute( "format", "XML" );
-                    writer.writeCharacters( metadataUrl );
+                    writer.writeCharacters( metadataUrl.getUrl() );
                     writer.writeEndElement();
                 }
             }
@@ -689,11 +690,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
                 if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                    for ( final String metadataUrl : ftMd.getMetadataUrls() ) {
+                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
                         writer.writeStartElement( WFS_NS, "MetadataURL" );
                         writer.writeAttribute( "type", "19139" );
                         writer.writeAttribute( "format", "text/xml" );
-                        writer.writeCharacters( metadataUrl );
+                        writer.writeCharacters( metadataUrl.getUrl() );
                         writer.writeEndElement();
                     }
                 }
@@ -994,9 +995,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
                 if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                    for ( final String metadataUrl : ftMd.getMetadataUrls() ) {
+                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
                         writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
-                        writer.writeAttribute( XLN_NS, "href", metadataUrl );
+                        writer.writeAttribute( XLN_NS, "href", metadataUrl.getUrl() );
                     }
                 }
 

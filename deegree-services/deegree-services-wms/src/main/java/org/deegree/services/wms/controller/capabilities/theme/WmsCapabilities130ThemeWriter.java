@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
 import org.deegree.commons.ows.metadata.layer.LogoUrl;
@@ -376,18 +377,26 @@ public class WmsCapabilities130ThemeWriter {
         }
     }
 
-    private void writeMetadataUrls( final XMLStreamWriter writer, final List<String> urls )
+    private void writeMetadataUrls( final XMLStreamWriter writer, final List<MetadataUrl> list )
                             throws XMLStreamException {
-        if ( urls == null ) {
+        if ( list == null ) {
             return;
         }
-        for ( final String url : urls ) {
+        for ( final MetadataUrl url : list ) {
             writer.writeStartElement( WMSNS, "MetadataURL" );
-            writer.writeAttribute( "type", "ISO19115:2003" );
-            writeElement( writer, WMSNS, "Format", "application/xml" );
+            if ( url.getType() == null ) {
+                writer.writeAttribute( "type", "ISO19115:2003" );
+            } else {
+                writer.writeAttribute( "type", url.getType() );
+            }
+            if ( url.getFormat() == null ) {
+                writeElement( writer, WMSNS, "Format", "application/xml" );
+            } else {
+                writeElement( writer, WMSNS, "Format", url.getFormat() );
+            }
             writer.writeStartElement( WMSNS, "OnlineResource" );
             writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", url );
+            writer.writeAttribute( XLNNS, "href", url.getUrl() );
             writer.writeEndElement();
             writer.writeEndElement();
         }

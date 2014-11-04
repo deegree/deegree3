@@ -82,13 +82,13 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -461,10 +461,10 @@ public class WebFeatureService extends AbstractOWS {
                 List<LanguageString> abstracts = null;
                 // TODO
                 List<Pair<List<LanguageString>, CodeType>> keywords = null;
-                final List<String> metadataUrls = new ArrayList<String>();
+                final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
                 final String url = getMetadataURL( metadataUrlTemplate, ftMd );
                 if ( url != null ) {
-                    metadataUrls.add( url );
+                    metadataUrls.add( new MetadataUrl( url, null, null ) );
                 }
                 try {
                     DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,

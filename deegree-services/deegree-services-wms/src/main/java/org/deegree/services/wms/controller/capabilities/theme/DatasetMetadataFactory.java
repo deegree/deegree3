@@ -50,6 +50,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
 import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
@@ -93,13 +94,13 @@ class DatasetMetadataFactory {
                 keywords.addAll( description.getKeywords() );
             }
         }
-        final List<String> metadataUrls = new ArrayList<String>();
+        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
         if ( metadataSetUrl != null ) {
-            metadataUrls.add( metadataSetUrl );
+            metadataUrls.add( new MetadataUrl( metadataSetUrl, null, null ) );
         }
         final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
         if ( metadataSetId != null ) {
-            externalIds.add( new ExternalIdentifier( metadataSetId, null) );
+            externalIds.add( new ExternalIdentifier( metadataSetId, null ) );
         }
         final List<UrlWithFormat> dataUrls = null;
         final List<UrlWithFormat> featureListUrls = null;

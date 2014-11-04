@@ -43,6 +43,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.ows.metadata.layer.Attribution;
@@ -58,6 +59,7 @@ import org.deegree.services.jaxb.metadata.DatasetMetadataType;
 import org.deegree.services.jaxb.metadata.DatasetMetadataType.Attribution.LogoURL;
 import org.deegree.services.jaxb.metadata.DatasetMetadataType.DataURL;
 import org.deegree.services.jaxb.metadata.DatasetMetadataType.FeatureListURL;
+import org.deegree.services.jaxb.metadata.DatasetMetadataType.MetadataURL;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataAuthorityType;
@@ -142,10 +144,15 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         final List<LanguageString> titles = fromJaxb( jaxbEl.getTitle() );
         final List<LanguageString> abstracts = fromJaxb( jaxbEl.getAbstract() );
         final List<Pair<List<LanguageString>, CodeType>> keywords = emptyList();
-        final List<String> metadataUrls = new ArrayList<String>();
+        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
         final String metadataUrl = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
         if ( metadataUrl != null ) {
-            metadataUrls.add( metadataUrl );
+            metadataUrls.add( new MetadataUrl( metadataUrl, null, null ) );
+        }
+        if ( jaxbEl.getMetadataURL() != null ) {
+            for ( final MetadataURL jaxbMetadataUrl : jaxbEl.getMetadataURL() ) {
+                metadataUrls.add (new MetadataUrl( jaxbMetadataUrl.getValue(), jaxbMetadataUrl.getType(), jaxbMetadataUrl.getFormat() ));
+            }
         }
         final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
         for ( ExternalMetadataSetIdType metadatsetIdType : jaxbEl.getExternalMetadataSetId() ) {

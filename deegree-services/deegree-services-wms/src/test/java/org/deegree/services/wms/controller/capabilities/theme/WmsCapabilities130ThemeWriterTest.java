@@ -62,6 +62,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
 import org.deegree.commons.ows.metadata.layer.LogoUrl;
@@ -145,7 +146,7 @@ public class WmsCapabilities130ThemeWriterTest {
         final List<LanguageString> titles = emptyList();
         final List<LanguageString> abstracts = emptyList();
         final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        final List<String> metadataUrls = null;
+        final List<MetadataUrl> metadataUrls = null;
         final List<ExternalIdentifier> externalIds = null;
         final List<UrlWithFormat> dataUrls = null;
         final List<UrlWithFormat> featureListUrls = null;
@@ -167,9 +168,9 @@ public class WmsCapabilities130ThemeWriterTest {
         final Pair<List<LanguageString>, CodeType> keywords1 = new Pair<List<LanguageString>, CodeType>( keywordsList1,
                                                                                                          code1 );
         keywords.add( keywords1 );
-        final List<String> metadataUrls = new ArrayList<String>();
-        metadataUrls.add( "http://www.url.net" );
-        metadataUrls.add( "http://www.url2.net" );
+        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+        metadataUrls.add( new MetadataUrl( "http://www.url.net", null, null ) );
+        metadataUrls.add( new MetadataUrl( "http://www.url2.net", null, null ) );
         final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
         externalIds.add( new ExternalIdentifier( "extid1", "authority1" ) );
         externalIds.add( new ExternalIdentifier( "extid2", "authority2" ) );

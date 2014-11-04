@@ -46,6 +46,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
 import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
@@ -87,7 +88,7 @@ class DatasetMetadataMerger {
         if ( layerMetadata.getKeywords() != null ) {
             keywords.addAll( layerMetadata.getKeywords() );
         }
-        final List<String> metadataUrls = new ArrayList<String>();
+        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
         if ( providerMetadata.getMetadataUrls() != null ) {
             metadataUrls.addAll( providerMetadata.getMetadataUrls() );
         }

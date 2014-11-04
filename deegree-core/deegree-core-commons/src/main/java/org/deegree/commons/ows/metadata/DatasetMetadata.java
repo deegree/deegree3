@@ -57,7 +57,7 @@ public class DatasetMetadata extends Description {
 
     private final QName name;
 
-    private final List<String> metadataUrls;
+    private final List<MetadataUrl> metadataUrls;
 
     private final List<ExternalIdentifier> externalIds;
 
@@ -87,12 +87,13 @@ public class DatasetMetadata extends Description {
      * @param featureListUrls
      *            links to the list of the features (used in a layer), may be <code>null</code> (no links)
      * @param attribution
-     *             indicates the provider of a layer, may be <code>null</code> (no attribution)
+     *            indicates the provider of a layer, may be <code>null</code> (no attribution)
      */
     public DatasetMetadata( final QName name, final List<LanguageString> titles, final List<LanguageString> abstracts,
-                            final List<Pair<List<LanguageString>, CodeType>> keywords, final List<String> metadataUrls,
-                            final List<ExternalIdentifier> externalIds, final List<UrlWithFormat> dataUrls,
-                            final List<UrlWithFormat> featureListUrls, final Attribution attribution ) {
+                            final List<Pair<List<LanguageString>, CodeType>> keywords,
+                            final List<MetadataUrl> metadataUrls, final List<ExternalIdentifier> externalIds,
+                            final List<UrlWithFormat> dataUrls, final List<UrlWithFormat> featureListUrls,
+                            final Attribution attribution ) {
         super( name.getLocalPart(), titles, abstracts, keywords );
         this.name = name;
         this.metadataUrls = metadataUrls;
@@ -116,7 +117,7 @@ public class DatasetMetadata extends Description {
      * 
      * @return urls of metadata records, may be <code>null</code> (no metadata records)
      */
-    public List<String> getMetadataUrls() {
+    public List<MetadataUrl> getMetadataUrls() {
         return metadataUrls;
     }
 
@@ -142,7 +143,7 @@ public class DatasetMetadata extends Description {
      * Returns the links to the list of the features (used in a layer).
      * 
      * @return links to the list of the features (used in a layer), may be <code>null</code> (no links)
-     */    
+     */
     public List<UrlWithFormat> getFeatureListUrls() {
         return featureListUrls;
     }
