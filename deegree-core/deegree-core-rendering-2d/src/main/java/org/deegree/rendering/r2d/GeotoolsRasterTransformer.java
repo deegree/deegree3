@@ -13,6 +13,7 @@ import javax.media.jai.NullOpImage;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
+import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.geotools.coverage.CoverageFactoryFinder;
@@ -22,6 +23,7 @@ import org.geotools.geometry.Envelope2D;
 import org.opengis.coverage.Coverage;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.cs.AxisDirection;
 import org.slf4j.Logger;
 
 /**
@@ -66,10 +68,31 @@ public class GeotoolsRasterTransformer implements ImageTransformer {
         try {
             String crsCode = retrieveCrsCode( envelope );
             CoordinateReferenceSystem crs = decode( crsCode );
-            double minX = envelope.getMin().get0();
-            double minY = envelope.getMin().get1();
-            double width = envelope.getMax().get0() - minX;
-            double height = envelope.getMax().get1() - minY;
+
+            int dEnv0 = envelope.getCoordinateSystem().getAxis()[0].getOrientation();
+            AxisDirection gtEnv0 = crs.getCoordinateSystem().getAxis(0).getDirection();
+
+            boolean deegreeCrsIsYX = dEnv0 == Axis.AO_NORTH;
+            boolean geotoolsCrsIsYX = gtEnv0.equals(AxisDirection.NORTH);
+
+            double minX, minY, maxX, maxY;
+            if (deegreeCrsIsYX == geotoolsCrsIsYX) {
+                LOG.debug("keeping axis order for geotools raster transformation");
+                minX = envelope.getMin().get0();
+                minY = envelope.getMin().get1();
+                maxX = envelope.getMax().get0();
+                maxY = envelope.getMax().get1();
+            }
+            else {
+                LOG.debug("inverting axis order for geotools raster transformation");
+                minX = envelope.getMin().get1();
+                minY = envelope.getMin().get0();
+                maxX = envelope.getMax().get1();
+                maxY = envelope.getMax().get0();
+            }
+            double width = maxX - minX;
+            double height = maxY - minY;
+
             return new Envelope2D( crs, minX, minY, width, height );
         } catch ( FactoryException e ) {
             LOG.warn( "Geotools CRS could not be created: " + e.getMessage() );
