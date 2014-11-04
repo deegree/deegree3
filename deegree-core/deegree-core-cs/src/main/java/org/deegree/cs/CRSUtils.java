@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs;
 
-import static java.lang.Integer.parseInt;
 import static org.deegree.commons.utils.MapUtils.calcDegreeResFromScale;
 import static org.deegree.commons.utils.MapUtils.calcMetricResFromScale;
 import static org.deegree.cs.components.Unit.DEGREE;
@@ -141,7 +140,7 @@ public class CRSUtils {
     public static boolean isAxisAware( final ICRS crs )
                             throws UnknownCRSException {
         final String alias = crs.getAlias().toLowerCase();
-        if (isUrnEpsgIdentifier( alias ) || isOgcCrsIdentifier( alias )) {
+        if ( isUrnEpsgIdentifier( alias ) || isOgcCrsIdentifier( alias ) ) {
             LOG.debug( alias + " is considered axis aware" );
             return true;
         }
@@ -177,9 +176,27 @@ public class CRSUtils {
         for ( final String crsString : crs.getOrignalCodeStrings() ) {
             final String lowerCrsString = crsString.toLowerCase();
             if ( lowerCrsString.contains( "epsg:" ) ) {
-                return Integer.parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1) );
+                return Integer.parseInt( lowerCrsString.substring( lowerCrsString.lastIndexOf( ":" ) + 1 ) );
             }
         }
         throw new IllegalArgumentException( "Unable to determine EPSG code for " + crs.getAlias() );
     }
- }
+
+    /**
+     * Checks whether crs has an epsg code,
+     * 
+     * @param crs
+     *            crs to check
+     * @return true if crs has an epsg code, false otherwise
+     */
+    public static final boolean hasEpsgCode( final ICRS crs ) {
+        for ( final String crsString : crs.getOrignalCodeStrings() ) {
+            final String lowerCrsString = crsString.toLowerCase();
+            if ( lowerCrsString.contains( "epsg:" ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+}
