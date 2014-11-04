@@ -67,6 +67,7 @@ import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.jaxb.ThemeType;
+import org.deegree.theme.persistence.standard.jaxb.ThemeType.Identifier;
 import org.deegree.theme.persistence.standard.jaxb.Themes;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;

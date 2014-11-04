@@ -46,7 +46,7 @@ import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.junit.XMLAssert.assertValidity;
+import static org.deegree.services.wms.controller.capabilities.theme.XMLAssert.assertValidity;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.io.ByteArrayInputStream;
