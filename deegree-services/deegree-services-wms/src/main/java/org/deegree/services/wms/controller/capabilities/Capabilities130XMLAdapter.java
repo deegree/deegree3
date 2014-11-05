@@ -117,7 +117,7 @@ public class Capabilities130XMLAdapter {
 
     private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
         String mdUrlTemplate = controller.getMetadataURLTemplate();
-        if ( mdUrlTemplate != null && mdUrlTemplate.isEmpty() ) {
+        if ( mdUrlTemplate == null || mdUrlTemplate.isEmpty() ) {
             mdUrlTemplate = getUrl;
             if ( !( mdUrlTemplate.endsWith( "?" ) || mdUrlTemplate.endsWith( "&" ) ) ) {
                 mdUrlTemplate += "?";
