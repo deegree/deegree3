@@ -34,7 +34,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.time.gml.writer;
 
+import static java.util.UUID.randomUUID;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+
+import java.util.UUID;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -55,13 +58,22 @@ public class GmlTimeInstantWriter {
     public void write( final XMLStreamWriter writer, final TimeInstant timeInstant )
                             throws XMLStreamException {
         writer.writeStartElement( gmlPrefix, "TimeInstant", gmlNs );
-        writer.writeAttribute( gmlPrefix, gmlNs, "id", timeInstant.getId() );
+        writeGmlId( writer, timeInstant );
         // <attribute name="frame" type="anyURI" default="#ISO-8601"/>
         writeAttributeIfNotNull( FRAME, timeInstant.getFrame(), writer );
         // <element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0" maxOccurs="unbounded"/>
         // <element name="timePosition" type="gml:TimePositionType">
         writeTimePosition( writer, timeInstant.getPosition() );
         writer.writeEndElement();
+    }
+
+    private void writeGmlId( final XMLStreamWriter writer, final TimeInstant timeInstant )
+                            throws XMLStreamException {
+        if ( timeInstant.getId() != null ) {
+            writer.writeAttribute( gmlPrefix, gmlNs, "id", timeInstant.getId() );
+        } else {
+            writer.writeAttribute( gmlPrefix, gmlNs, "id", "uuid." + randomUUID() );
+        }
     }
 
     private void writeAttributeIfNotNull( final String name, final String value, final XMLStreamWriter writer )

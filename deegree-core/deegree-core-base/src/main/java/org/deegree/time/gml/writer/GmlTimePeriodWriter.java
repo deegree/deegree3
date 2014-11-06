@@ -34,6 +34,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.time.gml.writer;
 
+import static java.util.UUID.randomUUID;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 
 import javax.xml.stream.XMLStreamException;
@@ -55,13 +56,22 @@ public class GmlTimePeriodWriter {
     public void write( final XMLStreamWriter writer, final TimePeriod timePeriod )
                             throws XMLStreamException {
         writer.writeStartElement( gmlPrefix, "TimePeriod", gmlNs );
-        writer.writeAttribute( gmlPrefix, gmlNs, "id", timePeriod.getId() );
+        writeGmlId( writer, timePeriod );
         // <attribute name="frame" type="anyURI" default="#ISO-8601"/>
         writeAttributeIfNotNull( FRAME, timePeriod.getFrame(), writer );
         // <element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0" maxOccurs="unbounded"/>
         writeBeginOrBeginPosition( writer, timePeriod.getBegin() );
         writeEndOrEndPosition( writer, timePeriod.getEnd() );
         writer.writeEndElement();
+    }
+
+    private void writeGmlId( final XMLStreamWriter writer, final TimePeriod timePeriod )
+                            throws XMLStreamException {
+        if ( timePeriod.getId() != null ) {
+            writer.writeAttribute( gmlPrefix, gmlNs, "id", timePeriod.getId() );
+        } else {
+            writer.writeAttribute( gmlPrefix, gmlNs, "id", "uuid." + randomUUID() );
+        }
     }
 
     private void writeAttributeIfNotNull( final String name, final String value, final XMLStreamWriter writer )

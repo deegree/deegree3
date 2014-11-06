@@ -5,8 +5,6 @@ import static org.deegree.time.operator.TimeCompareUtils.compareBegin;
 import static org.deegree.time.operator.TimeCompareUtils.compareEnd;
 import static org.deegree.time.operator.TimeCompareUtils.end;
 
-import java.util.UUID;
-
 import org.deegree.time.position.TimePosition;
 import org.deegree.time.primitive.GenericTimePeriod;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
@@ -36,7 +34,7 @@ public class SplitBy {
     }
 
     private TimePeriod create( final TimePosition begin, final TimePosition end ) {
-        return new GenericTimePeriod( UUID.randomUUID().toString(), null, null, null, begin, end );
+        return new GenericTimePeriod( null, null, null, null, begin, end );
     }
 
 }

@@ -1,6 +1,5 @@
 package org.deegree.time.operator;
 
-import static java.util.UUID.randomUUID;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.time.position.IndeterminateValue.UNKNOWN;
 
@@ -16,13 +15,13 @@ public class TimeObjectFactory {
 
     public TimeInstant createInstant( final Temporal t ) {
         final TimePosition position = createPosition( t );
-        return new GenericTimeInstant( randomUUID().toString(), null, null, null, position );
+        return new GenericTimeInstant( null, null, null, null, position );
     }
 
     public TimePeriod createPeriod( final Temporal begin, final Temporal end ) {
         final TimePosition pos1 = createPosition( begin );
         final TimePosition pos2 = createPosition( end );
-        return new GenericTimePeriod( randomUUID().toString(), null, null, null, pos1, pos2 );
+        return new GenericTimePeriod( null, null, null, null, pos1, pos2 );
     }
 
     public TimeGeometricPrimitive createPeriodOrInstant( final Temporal begin, final Temporal end ) {

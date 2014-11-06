@@ -2,8 +2,6 @@ package org.deegree.time.operator;
 
 import static org.deegree.time.position.IndeterminateValue.UNKNOWN;
 
-import java.util.UUID;
-
 import org.deegree.time.position.TimePosition;
 import org.deegree.time.primitive.GenericTimePeriod;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
@@ -25,7 +23,7 @@ public class ExpandEndIndeterminate {
 
     private TimePeriod createPeriod( final TimePosition begin ) {
         final TimePosition end = new TimeObjectFactory().createPosition( null );
-        return new GenericTimePeriod( UUID.randomUUID().toString(), null, null, null, begin, end );
+        return new GenericTimePeriod( null, null, null, null, begin, end );
     }
 
 }
