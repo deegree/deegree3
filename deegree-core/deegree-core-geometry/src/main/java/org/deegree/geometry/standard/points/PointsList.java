@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.Reference;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
@@ -76,6 +76,11 @@ public class PointsList implements Points {
 
     @Override
     public int getDimension() {
+        for ( final Point point : points ) {
+            if ( !( point instanceof Reference<?> ) ) {
+                return point.getCoordinateDimension();
+            }
+        }
         int dimension = 2;
         for ( final Point point : points ) {
             try {
