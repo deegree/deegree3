@@ -48,6 +48,7 @@ import java.util.UUID;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.CoordinateTransformer;
@@ -125,11 +126,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This class is not thread-safe.
  * </p>
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
@@ -151,7 +152,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Creates a new {@link GML3GeometryWriter} instance.
-     * 
+     *
      * @param gmlStreamWriter
      *            gml stream writer, must not be <code>null</code>
      */
@@ -226,7 +227,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a multi-geometry via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param geometry
      *            a {@link MultiGeometry} object
      * @throws XMLStreamException
@@ -392,7 +393,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a point via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param point
      *            a {@link Point} object
      * @throws XMLStreamException
@@ -423,7 +424,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a curve via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param curve
      *            a {@link Curve} object
      * @throws XMLStreamException
@@ -491,7 +492,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a surface via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param surface
      *            a {@link Surface} object
      * @throws XMLStreamException
@@ -544,7 +545,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a triangulated surface via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param triangSurface
      *            a {@link TriangulatedSurface} object
      * @throws XMLStreamException
@@ -573,7 +574,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a tin via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param tin
      *            a {@link Tin} object
      * @throws XMLStreamException
@@ -689,7 +690,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a solid via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param solid
      *            a {@link Solid} object
      * @throws XMLStreamException
@@ -726,7 +727,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a ring via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param ring
      *            a {@link Ring} object
      * @throws XMLStreamException
@@ -773,7 +774,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a composite curve via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param compositeCurve
      *            the {@link CompositeCurve} object
      * @throws XMLStreamException
@@ -799,7 +800,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a composite surface via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param compositeSurface
      *            the {@link CompositeSurface} object
      * @throws XMLStreamException
@@ -823,7 +824,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a composite solid via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param compositeSolid
      *            the {@link CompositeSolid} object
      * @throws XMLStreamException
@@ -852,7 +853,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting an {@link Envelope} via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param envelope
      *            the envelope object
      * @throws XMLStreamException
@@ -912,7 +913,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a {@link SurfacePatch} via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param surfacePatch
      *            a surface patch object
      * @throws XMLStreamException
@@ -1073,7 +1074,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a composite geometry via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param geometryComplex
      *            the {@link CompositeGeometry} object
      * @throws XMLStreamException
@@ -1096,7 +1097,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     /**
      * Exporting a curve segment via the XMLStreamWriter given when the class was constructed
-     * 
+     *
      * @param curveSeg
      *            a {@link CurveSegment} object
      * @throws XMLStreamException
@@ -1481,47 +1482,67 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
     private void export( Points points, int srsDimension )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
-        boolean hasID = false; // see if there exists a point that has an ID
-        for ( Point p : points ) {
-            if ( p.getId() != null && p.getId().trim().length() > 0 ) {
+        final boolean hasID = checkForReferencesOrIds( points );
+        if ( !hasID ) {
+            exportAnonymousPoints( points );
+        } else {
+            exportPointsAsProperties( points );
+        }
+    }
+
+    private boolean checkForReferencesOrIds( final Points points ) {
+        boolean hasID = false;
+        for ( final Point p : points ) {
+            if ( p instanceof Reference<?> && !( (Reference<?>) p ).isLocal() ) {
+                hasID = true;
+                break;
+            } else if ( p.getId() != null && p.getId().trim().length() > 0 ) {
                 hasID = true;
                 break;
             }
         }
-        if ( !hasID ) { // if not then use the <posList> element to export the points
-            if ( version != GML_30 ) {
-                writer.writeStartElement( "gml", "posList", gmlNs );
+        return hasID;
+    }
 
-                // TODO CITE
-                // writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
-                boolean first = true;
-                for ( Point p : points ) {
-                    double[] ordinates = getTransformedCoordinate( p.getCoordinateSystem(), p.getAsArray() );
-                    for ( int i = 0; i < ordinates.length; i++ ) {
-                        if ( !first ) {
-                            writer.writeCharacters( " " + formatter.format( ordinates[i] ) );
-                        } else {
-                            writer.writeCharacters( formatter.format( ordinates[i] ) );
-                            first = false;
-                        }
+    private void exportAnonymousPoints( final Points points )
+                            throws XMLStreamException, TransformationException, UnknownCRSException {
+        if ( version != GML_30 ) {
+            writer.writeStartElement( "gml", "posList", gmlNs );
+            // TODO CITE
+            // writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
+            boolean first = true;
+            for ( final Point p : points ) {
+                final double[] ordinates = getTransformedCoordinate( p.getCoordinateSystem(), p.getAsArray() );
+                for ( int i = 0; i < ordinates.length; i++ ) {
+                    if ( !first ) {
+                        writer.writeCharacters( " " + formatter.format( ordinates[i] ) );
+                    } else {
+                        writer.writeCharacters( formatter.format( ordinates[i] ) );
+                        first = false;
                     }
                 }
-                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        } else {
+            for ( final Point p : points ) {
+                exportAsPos( p );
+            }
+        }
+    }
+
+    private void exportPointsAsProperties( final Points points )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        for ( final Point point : points ) {
+            writer.writeStartElement( "gml", "pointProperty", gmlNs );
+            if ( point instanceof Reference<?> && !( (Reference<?>) point ).isLocal() ) {
+                final Reference<?> ref = (Reference<?>) point;
+                writeAttributeWithNS( XLNNS, "href", ref.getURI() );
+            } else if ( point.getId() != null && referenceExportStrategy.isObjectExported( point.getId() ) ) {
+                writeAttributeWithNS( XLNNS, "href", "#" + point.getId() );
             } else {
-                for ( Point p : points ) {
-                    exportAsPos( p );
-                }
+                export( point );
             }
-        } else { // if there are points with IDs, see whether an ID was already encountered
-            for ( Point point : points ) {
-                writer.writeStartElement( "gml", "pointProperty", gmlNs );
-                if ( point.getId() != null && referenceExportStrategy.isObjectExported( point.getId() ) ) {
-                    writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
-                } else {
-                    export( point );
-                }
-                writer.writeEndElement();
-            }
+            writer.writeEndElement();
         }
     }
 

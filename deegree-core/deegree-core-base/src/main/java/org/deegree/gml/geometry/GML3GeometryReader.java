@@ -2517,12 +2517,11 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
      */
     public Point parsePointProperty( XMLStreamReaderWrapper xmlStream, ICRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
-
         Point point = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            point = new PointReference( idContext, href, xmlStream.getSystemId() );
+            point = new PointReference( getResolver(), href, xmlStream.getSystemId() );
             idContext.addReference( (GeometryReference<?>) point );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2571,7 +2570,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            lineString = new LineStringReference( idContext, href, xmlStream.getSystemId() );
+            lineString = new LineStringReference( getResolver(), href, xmlStream.getSystemId() );
             idContext.addReference( (GeometryReference<?>) lineString );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2620,7 +2619,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            curve = new CurveReference<Curve>( idContext, href, xmlStream.getSystemId() );
+            curve = new CurveReference<Curve>( getResolver(), href, xmlStream.getSystemId() );
             idContext.addReference( (GeometryReference<?>) curve );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2664,7 +2663,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            polygon = new PolygonReference( idContext, href, xmlStream.getSystemId() );
+            polygon = new PolygonReference( getResolver(), href, xmlStream.getSystemId() );
             idContext.addReference( (GeometryReference<?>) polygon );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2713,7 +2712,7 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            surface = new SurfaceReference<Surface>( idContext, href, xmlStream.getSystemId() );
+            surface = new SurfaceReference<Surface>( getResolver(), href, xmlStream.getSystemId() );
             idContext.addReference( (GeometryReference<?>) surface );
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
