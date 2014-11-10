@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,6 +75,8 @@ import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -227,6 +230,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                 xmlStream.writeAttribute( "lockId", lock.getId() );
             }
         }
+        prebindNamespaces( xmlStream, format.getGmlFormatOptions().getPrebindNamespaces() );
 
         if ( !isGetFeatureById ) {
             // ensure that namespace for feature member elements is bound
@@ -388,6 +392,21 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         // close "wfs:FeatureCollection"
         xmlStream.writeEndElement();
         xmlStream.flush();
+    }
+
+    private void prebindNamespaces( final XMLStreamWriter xmlStream, final NamespaceBindings prebindNamespaces )
+                            throws XMLStreamException {
+        if ( prebindNamespaces == null ) {
+            return;
+        }
+        final Iterator<String> prefixes = prebindNamespaces.getPrefixes();
+        while ( prefixes.hasNext() ) {
+            final String prefix = prefixes.next();
+            final String uri = prebindNamespaces.getNamespaceURI( prefix );
+            if ( !uri.equals( CommonNamespaces.XMLNS ) ) {
+                writeNamespaceIfNotBound( xmlStream, prefix, uri );
+            }
+        }
     }
 
     private void writeFeatureMembersStream( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
