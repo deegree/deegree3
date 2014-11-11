@@ -141,6 +141,11 @@ public class OwsHttpClientImpl implements OwsHttpClient {
 
             query = new URI( sb.toString() );
             HttpGet httpGet = new HttpGet( query );
+            if ( headers != null ) {
+                for ( Entry<String, String> header : headers.entrySet() ) {
+                    httpGet.addHeader( header.getKey(), header.getValue() );
+                }
+            }
             DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
             LOG.debug( "Performing GET request: " + query );
             HttpResponse httpResponse = httpClient.execute( httpGet );
@@ -160,6 +165,11 @@ public class OwsHttpClientImpl implements OwsHttpClient {
         OwsHttpResponse response = null;
         try {
             HttpPost httpPost = new HttpPost( endPoint.toURI() );
+            if ( headers != null ) {
+                for ( Entry<String, String> header : headers.entrySet() ) {
+                    httpPost.addHeader( header.getKey(), header.getValue() );
+                }
+            }
             DefaultHttpClient httpClient = getInitializedHttpClient( endPoint );
             LOG.debug( "Performing POST request on " + endPoint );
             LOG.debug( "post size: " + body.size() );

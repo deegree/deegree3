@@ -714,6 +714,12 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
     public InputStream getMap( GetMap getMap )
                             throws IOException, OWSException {
+        return getMap( getMap, httpBasicUser, httpBasicPass, null );
+    }
+
+    public InputStream getMap( GetMap getMap, String httpBasicUser, String httpBasicPassword,
+                               Map<String, String> additionalHeader )
+                            throws IOException, OWSException {
         Map<String, String> map = new HashMap<String, String>();
         map.put( "request", "GetMap" );
         map.put( "version", wmsVersion.toString() );

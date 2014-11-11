@@ -55,6 +55,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.axiom.util.base64.Base64Utils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.utils.RequestUtils;
@@ -66,6 +67,10 @@ import org.deegree.protocol.wmts.client.Layer;
 import org.deegree.protocol.wmts.client.WMTSClient;
 import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.protocol.wmts.ops.GetTile;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.EcasCredentials;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.RequestContext;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
 import org.slf4j.Logger;
@@ -148,7 +153,27 @@ class RemoteWMTSTile implements Tile {
 
         CloseRequiredInputStream is = null;
         try {
-            GetTileResponse response = client.getTile( request );
+            GetTileResponse response;
+            RequestContext requestContext = OGCFrontController.getContext();
+            if ( requestContext != null && requestContext.getCredentials() != null ) {
+                Credentials credentials = requestContext.getCredentials();
+                String user = null;
+                String password = null;
+                Map<String, String> additionalHeader = new HashMap<String, String>();
+                if ( credentials instanceof EcasCredentials ) {
+                    additionalHeader.put( "ECAS_ST", ( (EcasCredentials) credentials ).getTicket() );
+                } else {
+                    user = credentials.getUser();
+                    password = credentials.getPassword();
+                    String encode = Base64Utils.encode( ( user + ":" + password ).getBytes() );
+                    String value = "Basic " + encode;
+                    additionalHeader.put( "Authorization", value );
+                }
+                response = client.getTile( request, 5, 60, user, password, additionalHeader );
+
+            } else {
+                response = client.getTile( request );
+            }
             is = response.getAsRawResponse().getAsBinaryStream();
         } catch ( Exception e ) {
             throw new TileIOException( e.getMessage(), e );
