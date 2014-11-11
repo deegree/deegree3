@@ -59,12 +59,12 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
@@ -81,6 +81,7 @@
   </dependencies>
 
   <modules>
+    <module>deegree-testservice</module>
     <!-- workspace tests must run first! -->
     <module>deegree-workspace-tests</module>
     <module>deegree-compliance-tests</module>
@@ -109,7 +110,7 @@
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <id>jsf-console</id>
+                <id>prepare-testservice</id>
                 <phase>generate-resources</phase>
                 <goals>
                   <goal>unpack-dependencies</goal>
@@ -118,7 +119,7 @@
                   <classifier>webapp-template</classifier>
                   <type>zip</type>
                   <includeGroupIds>org.deegree</includeGroupIds>
-                  <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
+                  <includeArtifactIds>deegree-testservice</includeArtifactIds>
                   <outputDirectory>src/main/webapp</outputDirectory>
                 </configuration>
               </execution>

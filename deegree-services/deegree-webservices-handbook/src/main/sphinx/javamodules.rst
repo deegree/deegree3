@@ -55,10 +55,10 @@ Checking available JARs
 
 In order to see which JARs are available to your deegree webservices instance/workspace, use the "module info" link in the general section of the service console:
 
-.. figure:: images/module_info.jpg
+.. figure:: images/module_info.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/module_info.jpg
+   :target: _images/module_info.png
 
    Displaying available JARs using the service console
 
