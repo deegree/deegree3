@@ -46,6 +46,7 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.property.ExtraProps;
+import org.deegree.feature.timeslice.TimeSlice;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -54,10 +55,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for common {@link Feature} implementations.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeature implements Feature {
@@ -78,7 +79,7 @@ public abstract class AbstractFeature implements Feature {
 
     /**
      * Creates a new {@link AbstractFeature} instance.
-     * 
+     *
      * @param fid
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
      * @param ft
@@ -128,9 +129,10 @@ public abstract class AbstractFeature implements Feature {
 
     /**
      * Helper method for calculating the envelope of a feature.
-     * 
+     *
      * @return envelope of all geometry properties of the feature
      */
+    @Override
     public Envelope calcEnvelope() {
         Envelope featureBBox = null;
         for ( Property prop : this.getProperties() ) {
@@ -169,7 +171,7 @@ public abstract class AbstractFeature implements Feature {
         return featureBBox;
     }
 
-    private Envelope mergeEnvelope( TypedObjectNode node, Envelope env ) {
+    private Envelope mergeEnvelope( final TypedObjectNode node, Envelope env ) {
         if ( node instanceof Property ) {
             Property prop = (Property) node;
             if ( prop.getValue() != null ) {
@@ -188,6 +190,12 @@ public abstract class AbstractFeature implements Feature {
             } else {
                 LOG.warn( "Encountered one-dimensional bbox. Ignoring for feature envelope." );
             }
+        } else if ( node instanceof TimeSlice ) {
+            final TimeSlice timeSlice = (TimeSlice) node;
+            for ( final Property prop : timeSlice.getProperties() ) {
+                final Envelope propEnvelope = mergeEnvelope( prop, env );
+                env = mergeEnvelope( env, propEnvelope );
+            }
         } else if ( node instanceof ElementNode ) {
             // e.g. INSPIRE Address geometry
             ElementNode xml = (ElementNode) node;
@@ -199,6 +207,16 @@ public abstract class AbstractFeature implements Feature {
             }
         }
         return env;
+    }
+
+    private Envelope mergeEnvelope( final Envelope existing, final Envelope additional ) {
+        if ( existing == null ) {
+            return additional;
+        }
+        if ( additional == null || additional.getCoordinateDimension() < 2 ) {
+            return existing;
+        }
+        return existing.merge( additional );
     }
 
     @Override

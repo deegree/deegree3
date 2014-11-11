@@ -60,17 +60,16 @@ import static org.deegree.feature.types.property.GeometryPropertyType.GeometryTy
 
 import java.util.HashSet;
 
-import junit.framework.Assert;
-
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Tests some of the geometrytype mapping functions.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GeometryTypeTest {

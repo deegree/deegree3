@@ -106,15 +106,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Creates {@link MappedAppSchema} instances from {@link AppSchema}s by inferring a canonical database mapping.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class AppSchemaMapper {
 
-    private static Logger LOG = LoggerFactory.getLogger( AppSchemaMapper.class );
+    private static final Logger LOG = LoggerFactory.getLogger( AppSchemaMapper.class );
 
     private final AppSchema appSchema;
 
@@ -132,7 +132,7 @@ public class AppSchemaMapper {
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
-     * 
+     *
      * @param appSchema
      *            application schema to be mapped, must not be <code>null</code>
      * @param createBlobMapping
@@ -192,7 +192,7 @@ public class AppSchemaMapper {
 
     /**
      * Returns the {@link MappedAppSchema} instance.
-     * 
+     *
      * @return mapped schema, never <code>null</code>
      */
     public MappedAppSchema getMappedSchema() {
@@ -287,7 +287,7 @@ public class AppSchemaMapper {
                             jc = generateJoinChain( mc, propMc );
                         }
                         List<Mapping> particles = null;
-                        ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );
+                        ObjectPropertyType opt = appSchema.getGMLSchema().getCustomElDecl( substitution );
 
                         before = mcManager.getContextCount();
 
@@ -751,7 +751,7 @@ public class AppSchemaMapper {
         NamespaceContext nsContext = null;
 
         for ( XSElementDeclaration substitution : substitutions ) {
-            ObjectPropertyType opt = appSchema.getCustomElDecl( substitution );
+            ObjectPropertyType opt = appSchema.getGMLSchema().getCustomElDecl( substitution );
             if ( opt != null ) {
                 mappings.addAll( generatePropMapping( opt, mc ) );
             } else {

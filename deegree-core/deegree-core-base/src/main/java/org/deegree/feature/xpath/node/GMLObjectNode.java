@@ -35,19 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath.node;
 
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
+import org.deegree.time.primitive.TimeInstant;
+import org.deegree.time.primitive.TimePeriod;
 
 /**
  * {@link ElementNode} that wraps a {@link GMLObject} and it's parent.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> extends ElementNode<V> {
@@ -70,7 +74,11 @@ public class GMLObjectNode<V extends GMLObject, P extends TypedObjectNode> exten
             return ( (Feature) object ).getName();
         } else if ( object instanceof Geometry ) {
             // TODO should be covered by the type
-            return new QName ("GEOMETRY");
+            return new QName( "GEOMETRY" );
+        } else if ( object instanceof TimeInstant ) {
+            return new QName( GML3_2_NS, "TimeInstant" );
+        } else if ( object instanceof TimePeriod ) {
+            return new QName( GML3_2_NS, "TimePeriod" );
         }
         throw new IllegalArgumentException( "Creating GMLObjectNode from " + object.getClass()
                                             + " needs implementation." );

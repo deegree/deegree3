@@ -42,14 +42,14 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * {@link TimeInstant} for representing dates with time information (e.g. <code>xs:dateTime</code>).
+ * {@link Temporal} for representing dates with time information (e.g. <code>xs:dateTime</code>).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class DateTime extends TimeInstant {
+public class DateTime extends Temporal {
 
     /**
      * Creates a new {@link DateTime} instance.

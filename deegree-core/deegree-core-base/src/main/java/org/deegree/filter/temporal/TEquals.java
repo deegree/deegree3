@@ -36,22 +36,22 @@
 package org.deegree.filter.temporal;
 
 import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.XPathEvaluator;
+import org.deegree.time.operator.Equals;
+import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
  * {@link TemporalOperator} that...
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class TEquals extends TemporalOperator {
 
     /**
      * Creates a new instance of {@link TEquals}.
-     * 
+     *
      * @param param1
      *            first temporal expression (time instant or period), must not be <code>null</code>
      * @param param2
@@ -62,8 +62,8 @@ public class TEquals extends TemporalOperator {
     }
 
     @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
+    protected boolean evaluate( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
+        return new Equals().evaluate( t1, t2 );
     }
+
 }
