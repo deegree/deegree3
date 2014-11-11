@@ -38,12 +38,12 @@ package org.deegree.commons.tom;
 
 /**
  * Represents a lazy reference to an {@link Object}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  * @param <T>
  *            type of the referenced object
  */
@@ -61,7 +61,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Creates a new {@link Reference} instance.
-     * 
+     *
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
      * @param uri
@@ -80,7 +80,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Returns the URI of the object.
-     * 
+     *
      * @return the URI of the object, never <code>null</code>
      */
     public String getURI() {
@@ -89,7 +89,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Sets the URI of the object.
-     * 
+     *
      * @param uri
      *            URI of the object, must not be <code>null</code>
      */
@@ -99,7 +99,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Returns whether the reference has been resolved.
-     * 
+     *
      * @return true, if the reference has been resolved, false otherwise
      */
     public boolean isResolved() {
@@ -113,7 +113,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Sets the referenced object.
-     * 
+     *
      * @param object
      *            the referenced object, may be <code>null</code>
      */
@@ -123,7 +123,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Returns the referenced {@link Object} instance (may trigger resolving and fetching it).
-     * 
+     *
      * @return the referenced {@link Object} instance
      * @throws ReferenceResolvingException
      *             if the reference cannot be resolved

@@ -777,4 +777,11 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         }
         return ft;
     }
+
+    protected GMLReferenceResolver getResolver() {
+        if ( specialResolver != null ) {
+            return specialResolver;
+        }
+        return idContext;
+    }
 }

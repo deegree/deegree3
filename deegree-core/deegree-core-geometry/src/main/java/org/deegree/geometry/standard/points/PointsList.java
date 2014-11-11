@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.deegree.commons.tom.Reference;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
@@ -52,12 +53,12 @@ import com.vividsolutions.jts.geom.Envelope;
  * This implementation is rather expensive, as every contained point is represented as an individual {@link Point}
  * object. Whenever possible, {@link PackedPoints} or {@link PointsPoints} should be used instead.
  * </p>
- * 
+ *
  * @see PackedPoints
  * @see PointsPoints
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class PointsList implements Points {
@@ -66,7 +67,7 @@ public class PointsList implements Points {
 
     /**
      * Creates a new {@link PointsList} instance based on the given list.
-     * 
+     *
      * @param points
      */
     public PointsList( List<Point> points ) {
@@ -75,7 +76,20 @@ public class PointsList implements Points {
 
     @Override
     public int getDimension() {
-        return points.get( 0 ).getCoordinateDimension();
+        for ( final Point point : points ) {
+            if ( !( point instanceof Reference<?> ) ) {
+                return point.getCoordinateDimension();
+            }
+        }
+        int dimension = 2;
+        for ( final Point point : points ) {
+            try {
+                dimension = point.getCoordinateDimension();
+            } catch ( Exception e ) {
+                // nothing to do, try next
+            }
+        }
+        return dimension;
     }
 
     @Override
