@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.junit;
+package org.deegree.services.wms.controller.capabilities.theme;
 
 import static org.junit.Assert.fail;
 
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class XMLAssert {
+class XMLAssert {
 
     private static final Logger LOG = LoggerFactory.getLogger( XMLAssert.class );
 
@@ -73,49 +73,6 @@ public class XMLAssert {
      */
     public static void assertValidity( final InputStream is, String... schemaLocations ) {
         XMLInputSource source = new XMLInputSource( null, null, null, is, null );
-        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
-        if ( events.size() > 0 ) {
-            fail( events.get( 0 ).toString() );
-        }
-        if ( LOG.isErrorEnabled() ) {
-            for ( SchemaValidationEvent event : events ) {
-                LOG.error( event.toString() );
-            }
-        }
-    }
-
-    /**
-     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
-     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
-     *
-     * @param reader
-     *            provides the XML document to be validated
-     * @param schemaLocations
-     *            optional locations of schema documents to be considered in the validation
-     */
-    public static void assertValidity( Reader reader, String... schemaLocations ) {
-        XMLInputSource source = new XMLInputSource( null, null, null, reader, null );
-        List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
-        if ( events.size() > 0 ) {
-            fail( events.get( 0 ).toString() );
-        }
-        if ( LOG.isErrorEnabled() ) {
-            for ( SchemaValidationEvent event : events ) {
-                LOG.error( event.toString() );
-            }
-        }
-    }
-
-    /**
-     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
-     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
-     * 
-     * @param source
-     *            provides the document to be validated
-     * @param schemaLocations
-     *            optional locations of schema documents to be considered in the validation
-     */
-    public static void assertValidity( XMLInputSource source, String... schemaLocations ) {
         List<SchemaValidationEvent> events = SchemaValidator.validate( source, schemaLocations );
         if ( events.size() > 0 ) {
             fail( events.get( 0 ).toString() );

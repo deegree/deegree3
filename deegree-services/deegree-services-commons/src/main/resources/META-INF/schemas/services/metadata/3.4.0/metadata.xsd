@@ -141,6 +141,7 @@
       <enumeration value="3.0.0" />
       <enumeration value="3.1.0" />
       <enumeration value="3.2.0" />
+      <enumeration value="3.4.0" />
     </restriction>
   </simpleType>
 
@@ -149,15 +150,63 @@
       <element name="Name" type="QName" />
       <element name="Title" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
       <element name="Abstract" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
+      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
       <element name="MetadataSetId" type="string" minOccurs="0" />
+      <element name="MetadataURL" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="format" type="string" use="optional" />
+              <attribute name="type" type="NMTOKEN" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
       <element name="ExternalMetadataSetId" type="md:ExternalMetadataSetIdType" minOccurs="0" maxOccurs="unbounded" />
+      <element name="DataURL" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="format" type="string" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="FeatureListURL" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="format" type="string" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="Attribution" minOccurs="0" maxOccurs="1">
+        <complexType>
+          <sequence>
+            <element name="Title" type="string" minOccurs="0" />
+            <element name="URL" type="string" minOccurs="0" />
+            <element name="LogoURL" minOccurs="0">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="format" type="string" use="required" />
+                    <attribute name="width" type="int" />
+                    <attribute name="height" type="int" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
     </sequence>
   </complexType>
 
-  <complexType name="ExternalMetadataSetIdType">
+    <complexType name="ExternalMetadataSetIdType">
     <simpleContent>
       <extension base="string">
-        <attribute name="authority" type="string" />
+        <attribute name="authority" type="string" use="required" />
       </extension>
     </simpleContent>
   </complexType>
