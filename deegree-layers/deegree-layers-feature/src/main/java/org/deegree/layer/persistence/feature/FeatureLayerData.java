@@ -95,7 +95,7 @@ public class FeatureLayerData implements LayerData {
     }
 
     @Override
-    public void render( RenderContext context ) {
+    public void render( RenderContext context ) throws InterruptedException {
         FeatureInputStream features = null;
         try {
             // TODO Should this always be done on this level? What about queueSize value?
@@ -104,6 +104,8 @@ public class FeatureLayerData implements LayerData {
 
             FeatureStreamRenderer renderer = new FeatureStreamRenderer( context, maxFeatures, evaluator );
             renderer.renderFeatureStream( features, style );
+        } catch ( InterruptedException e ) {
+            throw e;
         } catch ( FilterEvaluationException e ) {
             LOG.warn( "A filter could not be evaluated. The error was '{}'.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

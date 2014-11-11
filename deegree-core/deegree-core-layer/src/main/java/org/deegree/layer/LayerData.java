@@ -47,7 +47,7 @@ import org.deegree.rendering.r2d.context.RenderContext;
  */
 public interface LayerData {
 
-    void render( RenderContext context );
+    void render( RenderContext context ) throws InterruptedException;
 
     // think about using a infocontext or something here
     FeatureCollection info();
