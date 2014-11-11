@@ -98,6 +98,7 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
+import org.deegree.commons.config.ResourceState;
 import org.deegree.commons.modules.ModuleInfo;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
@@ -115,7 +116,9 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
+import org.deegree.services.controller.watchdog.RequestWatchdog;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestTimeoutMilliseconds;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.resources.ResourcesServlet;
 import org.slf4j.Logger;
@@ -178,6 +181,8 @@ public class OGCFrontController extends HttpServlet {
     private transient String hardcodedResourcesUrl;
 
     private transient final ThreadLocal<RequestContext> CONTEXT = new ThreadLocal<RequestContext>();
+
+    private transient RequestWatchdog requestWatchdog;
 
     private transient SecurityConfiguration securityConfiguration;
 
@@ -798,9 +803,11 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
             long dispatchTime = FrontControllerStats.requestDispatched();
             try {
+                watchTimeout( ows, request );
                 ows.doKVP( normalizedKVPParams, requestWrapper, response, multiParts );
             } finally {
                 FrontControllerStats.requestFinished( dispatchTime );
+                unwatchTimeout();
             }
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
@@ -883,9 +890,11 @@ public class OGCFrontController extends HttpServlet {
                 LOG.debug( "Dispatching request to OWS: " + ows.getClass().getName() );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
+                    watchTimeout( ows, xmlStream.getLocalName() );
                     ows.doXML( xmlStream, requestWrapper, response, multiParts );
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
+                    unwatchTimeout();
                 }
             }
         } catch ( SecurityException e ) {
@@ -1001,6 +1010,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
             long dispatchTime = FrontControllerStats.requestDispatched();
             try {
+                watchTimeout( ows, env.getSOAPBodyFirstElementLocalName() );
                 ows.doSOAP( env, requestWrapper, response, multiParts, factory );
             } finally {
                 FrontControllerStats.requestFinished( dispatchTime );
@@ -1126,6 +1136,12 @@ public class OGCFrontController extends HttpServlet {
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
         }
+        if ( mainConfig != null && !mainConfig.getRequestTimeoutMilliseconds().isEmpty() ) {
+            LOG.info( "Initializing request watchdog." );
+            initRequestWatchdog( mainConfig.getRequestTimeoutMilliseconds() );
+        } else {
+            LOG.info( "Not initializing request watchdog. No request time-outs configured." );
+        }
         LOG.info( "" );
     }
 
@@ -1150,11 +1166,19 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
+    private void initRequestWatchdog( final List<RequestTimeoutMilliseconds> timeoutConfigs ) {
+        requestWatchdog = new RequestWatchdog( timeoutConfigs );
+        requestWatchdog.init();
+    }
+
     private void destroyWorkspace() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Destroying workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
         workspace.destroyAll();
+        if ( requestWatchdog != null ) {
+            requestWatchdog.destroy();
+        }
         LOG.info( "" );
     }
 
@@ -1362,7 +1386,8 @@ public class OGCFrontController extends HttpServlet {
 
     /**
      * Apply workarounds for classloader leaks, see eg. <a
-     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog post</a>.
+     * href="http://java.jiderhamn.se/2012/02/26/classloader-leaks-v-common-mistakes-and-known-offenders/">this blog
+     * post</a>.
      */
     private void plugClassLoaderLeaks() {
         // if the feature store manager does this, it breaks
@@ -1521,4 +1546,27 @@ public class OGCFrontController extends HttpServlet {
             }
         }
     }
+
+    private void watchTimeout( final OWS ows, final String requestName ) {
+        if ( requestWatchdog != null ) {
+            final String serviceId = findServiceId( ows );
+            requestWatchdog.watchCurrentThread( serviceId, requestName );
+        }
+    }
+
+    private String findServiceId( final OWS ows ) {
+        for ( final ResourceState state : serviceConfiguration.getStates() ) {
+            if ( state.getResource() == ows ) {
+                return state.getId();
+            }
+        }
+        return null;
+    }
+
+    private void unwatchTimeout() {
+        if ( requestWatchdog != null ) {
+            requestWatchdog.unwatchCurrentThread();
+        }
+    }
+
 }

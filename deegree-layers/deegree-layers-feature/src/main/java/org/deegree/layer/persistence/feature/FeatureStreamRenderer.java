@@ -82,13 +82,17 @@ class FeatureStreamRenderer {
         this.evaluator = evaluator;
     }
 
-    void renderFeatureStream( FeatureInputStream features, Style style ) {
+    void renderFeatureStream( FeatureInputStream features, Style style )
+                            throws InterruptedException {
         int cnt = 0;
 
         Renderer renderer = context.getVectorRenderer();
         TextRenderer textRenderer = context.getTextRenderer();
 
         for ( Feature f : features ) {
+            if ( Thread.interrupted() ) {
+                throw new InterruptedException();
+            }
             try {
                 LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate( f,
                                                                                                    (XPathEvaluator<Feature>) evaluator );

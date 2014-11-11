@@ -38,6 +38,7 @@ package org.deegree.services.wms;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
@@ -343,7 +344,12 @@ public class MapService {
         Iterator<MapOptions> optIter = mapOptions.iterator();
         for ( LayerData d : layerDataList ) {
             ctx.applyOptions( optIter.next() );
-            d.render( ctx );
+            try {
+                d.render( ctx );
+            } catch ( InterruptedException e ) {
+                String msg = "Request time-out.";
+                throw new OWSException( msg, NO_APPLICABLE_CODE );
+            }
         }
 
         ScaleFunction.getCurrentScaleValue().remove();

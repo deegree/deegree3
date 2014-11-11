@@ -59,9 +59,9 @@ import org.deegree.console.WorkspaceBean;
 @SessionScoped
 public class WebServiceConfigManager {
 
-    private static final URL MAIN_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.2.0/example.xml" );
+    private static final URL MAIN_EXAMPLE_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.4.0/example.xml" );
 
-    private static final URL MAIN_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
+    private static final URL MAIN_SCHEMA_URL = WebServiceConfigManager.class.getResource( "/META-INF/schemas/services/controller/3.4.0/controller.xsd" );
 
     private final Config mainConfig;
 

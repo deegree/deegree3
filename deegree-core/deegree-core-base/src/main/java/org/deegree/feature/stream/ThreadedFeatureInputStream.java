@@ -173,12 +173,12 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
             } finally {
                 finished = true;
                 rs.close();
-                
+
                 // Consumer may still be waiting for more input
                 synchronized ( this ) {
                     notify();
                 }
-                
+
                 LOG.debug( "Producer thread exiting" );
             }
         }
@@ -194,7 +194,7 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
             if ( fill > 0 ) {
                 return true;
             }
-            synchronized (this) {
+            synchronized ( this ) {
                 while ( true ) {
                     // LOG.debug( "Queue empty. Checking if more features are coming from producer." );
                     if ( finished && featureQueue.isEmpty() ) {
@@ -204,8 +204,8 @@ public class ThreadedFeatureInputStream implements FeatureInputStream {
                         return true;
                     }
                     try {
-                        wait(1000);
-                    } catch(InterruptedException ex) {
+                        wait( 1000 );
+                    } catch ( InterruptedException ex ) {
                         // Ignore
                     }
                 }
