@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.metadata.iso.persistence;
+package org.deegree.metadata.iso.persistence.sql;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -41,13 +41,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.ISOMetadataResultSet;
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
@@ -67,19 +71,24 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31272 $, $Date: 2011-07-13 23:10:35 +0200 (Mi, 13. Jul 2011) $
  */
-class QueryHelper extends SqlHelper {
+public class DefaultQueryService extends AbstractSqlHelper implements QueryService {
 
-    private static final Logger LOG = getLogger( QueryHelper.class );
+    private static final Logger LOG = getLogger( DefaultQueryService.class );
 
     /** Used to limit the fetch size for SELECT statements that potentially return a lot of rows. */
-    public static final int DEFAULT_FETCH_SIZE = 100;
+    private static final int DEFAULT_FETCH_SIZE = 100;
 
-    QueryHelper( SQLDialect dialect, List<Queryable> queryables ) {
+    private static final int QUERY_TIMEOUT_SECONDS = 300;
+
+    public DefaultQueryService( SQLDialect dialect, List<Queryable> queryables ) {
         super( dialect, queryables );
     }
 
-    ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
+    @Override
+    public ISOMetadataResultSet execute( MetadataQuery query, Connection conn )
                             throws MetadataStoreException {
+        List<TypedObjectNode> arguments = new ArrayList<TypedObjectNode>();
+        String sql = null;
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -106,13 +115,9 @@ class QueryHelper extends SqlHelper {
             }
 
             getPSBody( builder, idSelect );
-            idSelect.append( " ORDER BY " );
             if ( builder.getOrderBy() != null ) {
+                idSelect.append( " ORDER BY " );
                 idSelect.append( builder.getOrderBy().getSQL() );
-            }
-            else
-            {
-                idSelect.append( idColumn );
             }
 
             if ( query != null && query.getStartPosition() != 1 && dialect instanceof PostGISDialect ) {
@@ -176,34 +181,35 @@ class QueryHelper extends SqlHelper {
                 outerSelect.append( sortCols );
             }
 
-            String sql = outerSelect.toString();
-            LOG.trace( sql );
-            preparedStatement = conn.prepareStatement( sql );
+            sql = outerSelect.toString();
+            preparedStatement = createPreparedStatement( conn, sql );
 
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
                     o.setArgument( preparedStatement, i++ );
+                    arguments.add( o.getValue() );
                 }
             }
 
             if ( builder.getOrderBy() != null ) {
                 for ( SQLArgument o : builder.getOrderBy().getArguments() ) {
                     o.setArgument( preparedStatement, i++ );
+                    arguments.add( o.getValue() );
                 }
             }
-            LOG.debug( preparedStatement.toString() );
+            logSqlAndArguments( preparedStatement, sql, arguments );
 
             preparedStatement.setFetchSize( DEFAULT_FETCH_SIZE );
             rs = preparedStatement.executeQuery();
             return new ISOMetadataResultSet( rs, conn, preparedStatement );
         } catch ( SQLException e ) {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
+            JDBCUtils.close( rs, preparedStatement, conn, LOG );
+            logSqlExceptionWithSqlAndArguments( e, sql, arguments );
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
-            LOG.debug( msg );
             throw new MetadataStoreException( msg );
         } catch ( Throwable t ) {
-            JDBCUtils.close( rs, preparedStatement, null, LOG );
+            JDBCUtils.close( rs, preparedStatement, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
@@ -214,10 +220,13 @@ class QueryHelper extends SqlHelper {
         }
     }
 
-    int executeCounting( MetadataQuery query, Connection conn )
+    @Override
+    public int executeCounting( MetadataQuery query, Connection conn )
                             throws MetadataStoreException, FilterEvaluationException, UnmappableException {
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
+        List<TypedObjectNode> arguments = new ArrayList<TypedObjectNode>();
+        String sql = null;
         try {
             AbstractWhereBuilder builder = getWhereBuilder( query, conn );
             LOG.debug( "new Counting" );
@@ -230,31 +239,32 @@ class QueryHelper extends SqlHelper {
             getDatasetIDs.append( "))" );
             getPSBody( builder, getDatasetIDs );
 
-            String sql = getDatasetIDs.toString();
-            LOG.trace( sql );
+            sql = getDatasetIDs.toString();
 
-            preparedStatement = conn.prepareStatement( sql );
+            preparedStatement = createPreparedStatement( conn, sql );
             int i = 1;
             if ( builder.getWhere() != null ) {
                 for ( SQLArgument o : builder.getWhere().getArguments() ) {
                     o.setArgument( preparedStatement, i++ );
+                    arguments.add( o.getValue() );
                 }
             }
-            LOG.debug( preparedStatement.toString() );
+            logSqlAndArguments( preparedStatement, sql, arguments );
             rs = preparedStatement.executeQuery();
             rs.next();
             LOG.debug( "rs for rowCount: " + rs.getInt( 1 ) );
             return rs.getInt( 1 );
         } catch ( SQLException e ) {
             String msg = Messages.getMessage( "ERROR_SQL", preparedStatement.toString(), e.getMessage() );
-            LOG.debug( msg );
+            logSqlExceptionWithSqlAndArguments( e, sql, arguments );
             throw new MetadataStoreException( msg );
         } finally {
             JDBCUtils.close( rs, preparedStatement, conn, LOG );
         }
     }
 
-    ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
+    @Override
+    public ISOMetadataResultSet executeGetRecordById( List<String> idList, Connection conn )
                             throws MetadataStoreException {
         ResultSet rs = null;
         PreparedStatement stmt = null;
@@ -273,11 +283,10 @@ class QueryHelper extends SqlHelper {
             }
 
             String sql = select.toString();
-            LOG.trace( sql );
-            stmt = conn.prepareStatement( sql );
+            stmt = createPreparedStatement( conn, sql );
             stmt.setFetchSize( DEFAULT_FETCH_SIZE );
             LOG.debug( "select RecordById statement: " + stmt );
-
+            LOG.trace( sql );
             int i = 1;
             for ( String identifier : idList ) {
                 stmt.setString( i, identifier );
@@ -287,7 +296,7 @@ class QueryHelper extends SqlHelper {
             }
             rs = stmt.executeQuery();
         } catch ( Throwable t ) {
-            JDBCUtils.close( rs, stmt, null, LOG );
+            JDBCUtils.close( rs, stmt, conn, LOG );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
@@ -299,9 +308,50 @@ class QueryHelper extends SqlHelper {
         return new ISOMetadataResultSet( rs, conn, stmt );
     }
 
-    private AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
+    protected AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
                                         (OperatorFilter) query.getFilter(), query.getSorting(), false );
     }
+
+    protected PreparedStatement createPreparedStatement( Connection conn, String sql )
+                            throws SQLException {
+        PreparedStatement preparedStatement = conn.prepareStatement( sql );
+        preparedStatement.setQueryTimeout( QUERY_TIMEOUT_SECONDS );
+        return preparedStatement;
+    }
+
+    protected void logSqlAndArguments( PreparedStatement preparedStatement, String sql, List<TypedObjectNode> arguments ) {
+        if ( LOG.isDebugEnabled() ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Performing SQL statement: \n" );
+            sb.append( "   " ).append( sql ).append( "\n" );
+            sb.append( "with argumens: \n" );
+            appendArguments( arguments, sb );
+            LOG.debug( sb.toString() );
+        }
+        if ( LOG.isTraceEnabled() )
+            LOG.trace( preparedStatement.toString() );
+    }
+
+    private void logSqlExceptionWithSqlAndArguments( SQLException e, String sql, List<TypedObjectNode> arguments ) {
+        if ( LOG.isErrorEnabled() ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Error while performing the SQL statement: \n" );
+            sb.append( "   " ).append( sql ).append( "\n" );
+            sb.append( "with arguments \n" );
+            appendArguments( arguments, sb );
+            sb.append( "error message: " );
+            sb.append( e.getMessage() );
+            LOG.error( sb.toString() );
+        }
+    }
+
+    private void appendArguments( List<TypedObjectNode> arguments, StringBuilder sb ) {
+        for ( TypedObjectNode argument : arguments ) {
+            String argumentValue = argument != null ? argument.toString() : "NULL";
+            sb.append( "   - " ).append( argumentValue ).append( "\n" );
+        }
+    }
+
 }
