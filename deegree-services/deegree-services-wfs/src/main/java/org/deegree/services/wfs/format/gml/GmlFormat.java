@@ -38,12 +38,14 @@ import static java.lang.Integer.MAX_VALUE;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
@@ -56,6 +58,7 @@ import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
+import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse.PrebindNamespace;
 import org.deegree.services.jaxb.wfs.GeometryLinearization;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.Format;
@@ -113,7 +116,7 @@ public class GmlFormat implements Format {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
                                              master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false,
-                                             null );
+                                             null, null );
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
@@ -143,6 +146,7 @@ public class GmlFormat implements Format {
 
         GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
         boolean exportOriginalSchema = false;
+        NamespaceBindings prebindNamespaces = null;
         if ( responseConfig != null ) {
             if ( responseConfig.isDisableStreaming() != null ) {
                 disableStreaming = responseConfig.isDisableStreaming();
@@ -166,6 +170,7 @@ public class GmlFormat implements Format {
                     appSchemaBaseURL = null;
                 }
             }
+            prebindNamespaces = getNamespaceBindings( responseConfig.getPrebindNamespace() );
         }
 
         int queryMaxFeatures = master.getQueryMaxFeatures();
@@ -198,12 +203,23 @@ public class GmlFormat implements Format {
         this.options = new GmlFormatOptions( gmlVersion, responseContainerEl, responseFeatureMemberEl, schemaLocation,
                                              disableStreaming, generateBoundedByForFeatures, queryMaxFeatures,
                                              checkAreaOfUse, formatter, appSchemaBaseURL, mimeType,
-                                             exportOriginalSchema, geometrySimplifier );
+                                             exportOriginalSchema, geometrySimplifier, prebindNamespaces );
 
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
         this.ggoHandler = new GmlGetGmlObjectHandler( this );
+    }
+
+    private NamespaceBindings getNamespaceBindings( final List<PrebindNamespace> prebindNamespaces ) {
+        if ( prebindNamespaces == null ) {
+            return null;
+        }
+        final NamespaceBindings nsBindings = new NamespaceBindings();
+        for ( final PrebindNamespace prebindNamespace : prebindNamespaces ) {
+            nsBindings.addNamespace( prebindNamespace.getPrefix(), prebindNamespace.getUri() );
+        }
+        return nsBindings;
     }
 
     private SFSProfiler getSfsProfiler( final GeometryLinearization geometryLinearization ) {

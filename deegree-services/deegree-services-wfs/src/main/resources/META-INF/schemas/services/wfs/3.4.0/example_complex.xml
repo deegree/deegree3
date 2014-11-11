@@ -29,6 +29,9 @@
       <AdditionalSchemaLocation>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
       </AdditionalSchemaLocation>
       <DisableStreaming>false</DisableStreaming>
+      <PrebindNamespace prefix="ad" uri="urn:x-inspire:specification:gmlas:Addresses:3.0"/>
+      <PrebindNamespace prefix="base" uri="urn:x-inspire:specification:gmlas:BaseTypes:3.2"/>
+      <PrebindNamespace prefix="xlink" uri="http://www.w3.org/1999/xlink"/>      
     </GetFeatureResponse>
   </GMLFormat>
 

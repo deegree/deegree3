@@ -102,6 +102,12 @@
                     </complexType>
                   </element>
                   <element name="DisableStreaming" type="boolean" minOccurs="0" default="false" />
+                  <element name="PrebindNamespace" minOccurs="0" maxOccurs="unbounded">
+                    <complexType>
+                      <attribute name="prefix" use="required"/>
+                      <attribute name="uri" use="required"/>
+                    </complexType>
+                  </element>
                 </sequence>
               </complexType>
             </element>
