@@ -56,6 +56,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.slf4j.Logger;
@@ -75,7 +77,7 @@ public class WmsCapabilities130SpatialMetadataWriter {
     public static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> crsList, Envelope layerEnv )
                             throws XMLStreamException {
         writeSrs( crsList, writer );
-
+        final CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
         ICRS latlon;
         try {
             latlon = lookup( "CRS:84" );
@@ -91,10 +93,10 @@ public class WmsCapabilities130SpatialMetadataWriter {
                     // bbox = (Envelope) bbox.getBuffer( 0.0001 ); // should be ok to just use the same value for all
                     // crs
                 }
-                writeElement( writer, WMSNS, "westBoundLongitude", min.get0() + "" );
-                writeElement( writer, WMSNS, "eastBoundLongitude", max.get0() + "" );
-                writeElement( writer, WMSNS, "southBoundLatitude", min.get1() + "" );
-                writeElement( writer, WMSNS, "northBoundLatitude", max.get1() + "" );
+                writeElement( writer, WMSNS, "westBoundLongitude", formatter.format( min.get0() ) );
+                writeElement( writer, WMSNS, "eastBoundLongitude", formatter.format( max.get0() ) );
+                writeElement( writer, WMSNS, "southBoundLatitude", formatter.format( min.get1() ) );
+                writeElement( writer, WMSNS, "northBoundLatitude", formatter.format( max.get1() ) );
                 writer.writeEndElement();
 
                 for ( ICRS crs : crsList ) {
@@ -118,10 +120,10 @@ public class WmsCapabilities130SpatialMetadataWriter {
                         // all
                         // crs
                     }
-                    writer.writeAttribute( "minx", Double.toString( min.get0() ) );
-                    writer.writeAttribute( "miny", Double.toString( min.get1() ) );
-                    writer.writeAttribute( "maxx", Double.toString( max.get0() ) );
-                    writer.writeAttribute( "maxy", Double.toString( max.get1() ) );
+                    writer.writeAttribute( "minx", formatter.format( min.get0() ) );
+                    writer.writeAttribute( "miny", formatter.format( min.get1() ) );
+                    writer.writeAttribute( "maxx", formatter.format( max.get0() ) );
+                    writer.writeAttribute( "maxy", formatter.format( max.get1() ) );
                     writer.writeEndElement();
                 }
             }

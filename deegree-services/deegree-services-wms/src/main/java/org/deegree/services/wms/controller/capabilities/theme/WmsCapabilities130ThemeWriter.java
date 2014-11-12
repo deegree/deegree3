@@ -47,6 +47,8 @@ import static org.deegree.services.wms.controller.capabilities.Capabilities130XM
 import static org.deegree.services.wms.controller.capabilities.WmsCapabilities130SpatialMetadataWriter.writeSrsAndEnvelope;
 import static org.deegree.theme.Themes.getAllLayers;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -93,6 +95,8 @@ public class WmsCapabilities130ThemeWriter {
 
     private final String mdUrlTemplate;
 
+    private final DecimalFormat scaleFormat;
+
     /**
      * Creates a new {@link WmsCapabilities130ThemeWriter} instance.
      *
@@ -109,6 +113,9 @@ public class WmsCapabilities130ThemeWriter {
         this.metadataProvider = metadataProvider;
         this.styleWriter = styleWriter;
         this.mdUrlTemplate = mdUrlTemplate;
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator( '.' );
+        this.scaleFormat = new DecimalFormat( "0.0#######", symbols );
     }
 
     /**
@@ -424,11 +431,11 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         final Double min = scaleDenominators.first;
         if ( !min.isInfinite() ) {
-            writeElement( writer, WMSNS, "MinScaleDenominator", min + "" );
+            writeElement( writer, WMSNS, "MinScaleDenominator", scaleFormat.format( min ) );
         }
         final Double max = scaleDenominators.second;
         if ( !max.isInfinite() ) {
-            writeElement( writer, WMSNS, "MaxScaleDenominator", max + "" );
+            writeElement( writer, WMSNS, "MaxScaleDenominator", scaleFormat.format( max ) );
         }
     }
 

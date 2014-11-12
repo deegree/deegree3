@@ -49,6 +49,8 @@ import static org.deegree.services.wms.controller.capabilities.Capabilities111XM
 import static org.deegree.services.wms.controller.capabilities.WmsCapabilities111SpatialMetadataWriter.writeSrsAndEnvelope;
 import static org.deegree.theme.Themes.getAllLayers;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,6 +96,8 @@ public class WmsCapabilities111ThemeWriter {
 
     private final String mdUrlTemplate;
 
+    private final DecimalFormat scaleFormat;
+
     /**
      * Creates a new {@link WmsCapabilities111ThemeWriter} instance.
      *
@@ -110,6 +114,9 @@ public class WmsCapabilities111ThemeWriter {
         this.metadataProvider = metadataProvider;
         this.styleWriter = styleWriter;
         this.mdUrlTemplate = mdUrlTemplate;
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator( '.' );
+        this.scaleFormat = new DecimalFormat( "0.0#######", symbols );
     }
 
     /**
@@ -307,7 +314,7 @@ public class WmsCapabilities111ThemeWriter {
             for ( final Entry<String, String> authorityNameAndUrl : authorityNameToUrl.entrySet() ) {
                 writer.writeStartElement( "AuthorityURL" );
                 writer.writeAttribute( "name", authorityNameAndUrl.getKey() );
-                writeOnlineResource (writer, authorityNameAndUrl.getValue());
+                writeOnlineResource( writer, authorityNameAndUrl.getValue() );
                 writer.writeEndElement();
             }
         }
@@ -410,8 +417,8 @@ public class WmsCapabilities111ThemeWriter {
         if ( !hint.first.isInfinite() || !hint.second.isInfinite() ) {
             double fac = 0.00028;
             writer.writeStartElement( "ScaleHint" );
-            writer.writeAttribute( "min", Double.toString( hint.first.isInfinite() ? MIN_VALUE : hint.first * fac ) );
-            writer.writeAttribute( "max", Double.toString( hint.second.isInfinite() ? MAX_VALUE : hint.second * fac ) );
+            writer.writeAttribute( "min", scaleFormat.format( hint.first.isInfinite() ? MIN_VALUE : hint.first * fac ) );
+            writer.writeAttribute( "max", scaleFormat.format( hint.second.isInfinite() ? MAX_VALUE : hint.second * fac ) );
             writer.writeEndElement();
         }
     }
