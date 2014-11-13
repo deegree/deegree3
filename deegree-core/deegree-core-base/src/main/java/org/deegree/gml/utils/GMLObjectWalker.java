@@ -133,10 +133,11 @@ public class GMLObjectWalker {
                     traverseGeometry( g );
                 }
             } else {
-                traverseGMLObject( node );
+                if ( visitor.visitObject( node ) ) {
+                    traverseGMLObject( node );
+                }
             }
         }
-
     }
 
     private void traverseGMLObject( GMLObject node ) {

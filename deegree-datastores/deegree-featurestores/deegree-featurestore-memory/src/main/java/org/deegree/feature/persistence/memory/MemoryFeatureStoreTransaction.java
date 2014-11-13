@@ -83,13 +83,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreTransaction} implementation used by the {@link MemoryFeatureStore}.
- * 
+ *
  * @see MemoryFeatureStore
  * @see StoredFeatures
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
@@ -108,7 +108,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     /**
      * Creates a new {@link MemoryFeatureStoreTransaction} instance.
-     * 
+     *
      * @param fs
      *            invoking feature store instance, must not be <code>null</code>
      * @param sf
@@ -277,6 +277,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             }
 
             @Override
+            public boolean visitObject( GMLObject o ) {
+                return true;
+            }
+
+            @Override
             public boolean visitReference( Reference<?> ref ) {
                 return true;
             }
@@ -290,7 +295,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
     /**
      * Assigns an id to every {@link Feature} / {@link Geometry} in the given collection.
-     * 
+     *
      * @param fc
      *            feature collection, must not be <code>null</code>
      * @param mode
@@ -334,6 +339,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             public boolean visitReference( Reference<?> ref ) {
                 return true;
             }
+
+            @Override
+            public boolean visitObject( GMLObject o ) {
+                return true;
+            }
         };
         try {
             new GMLObjectWalker( visitor ).traverse( fc );
@@ -359,6 +369,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
             @Override
             public boolean visitReference( Reference<?> ref ) {
                 fixReference( ref );
+                return true;
+            }
+
+            @Override
+            public boolean visitObject( GMLObject o ) {
                 return true;
             }
         };
