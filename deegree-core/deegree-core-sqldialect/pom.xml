@@ -41,6 +41,7 @@
 
   <modules>
     <module>deegree-sqldialect-commons</module>
+    <module>deegree-sqldialect-gpkg</module>
     <module>deegree-sqldialect-postgis</module>
   </modules>
 

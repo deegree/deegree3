@@ -651,6 +651,12 @@
         <artifactId>ojdbc6</artifactId>
         <version>11.2.0.2</version>
       </dependency>
+      <!-- SQLite -->
+      <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.7.2</version>
+      </dependency>
       <!-- Batik -->
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>

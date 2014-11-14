@@ -92,6 +92,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
         try {
             for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
                 registerDriver( new DriverWrapper( d ) );
+                registerDriver( new DriverWrapper( new org.sqlite.JDBC() ) );
                 LOG.info( "Found and loaded {}", d.getClass().getName() );
             }
         } catch ( SQLException e ) {
