@@ -37,10 +37,10 @@ package org.deegree.commons.tom.gml;
 
 /**
  * Enum for discriminating between the different categories objects and object types supported by GML.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public enum GMLObjectCategory {
@@ -53,6 +53,8 @@ public enum GMLObjectCategory {
     GEOMETRY,
     /** Time Object */
     TIME_OBJECT,
+    /** Time Slice */
+    TIME_SLICE,
     /** Topology */
     TOPOLOGY,
     /** Style */

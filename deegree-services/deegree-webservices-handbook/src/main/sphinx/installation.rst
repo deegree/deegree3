@@ -53,10 +53,10 @@ You should now see a terminal window on your screen with a lot of log messages:
 
 You may minimize this window, but don't close it as long as you want to be able to use the deegree webservices. In order to check if the services are actually running, open http://localhost:8080 in your browser. You should see the following page:
 
-.. figure:: images/console_start.jpg
+.. figure:: images/console_start.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_start.jpg
+   :target: _images/console_start.png
 
    deegree webservices administration console
 

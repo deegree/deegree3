@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static java.util.Collections.emptyList;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_EXTENSION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_LIST;
@@ -87,12 +88,12 @@ import org.w3c.dom.ls.LSInput;
  * This functionality is very handy for extracting higher-level structures defined using XML schema, such as GML feature
  * types.
  * </p>
- * 
+ *
  * @see org.deegree.gml.schema.GMLSchemaInfoSet
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class XMLSchemaInfoSet {
@@ -112,7 +113,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Creates a new <code>XSModelAnalyzer</code> for the given (Xerces) XML schema infoset.
-     * 
+     *
      * @param xmlSchema
      *            schema infoset, must not be <code>null</code>
      */
@@ -123,7 +124,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Creates a new {@link XMLSchemaInfoSet} instance that reads the schema documents from the given URLs.
-     * 
+     *
      * @param schemaUrls
      *            locations of the schema documents, must not be <code>null</code> and contain at least one entry
      * @throws ClassCastException
@@ -139,7 +140,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Creates a new {@link XMLSchemaInfoSet} instance that reads the schema documents from the given inputs.
-     * 
+     *
      * @param inputs
      *            schema documents, must not be <code>null</code> and contain at least one entry
      * @throws ClassCastException
@@ -176,7 +177,7 @@ public class XMLSchemaInfoSet {
      * NOTE: Use this method instead of XSModel#getElementDeclaration(...) -- sometimes this convenience method returns
      * null for element declarations that definitely exist (observed for XPlanGML 4.0 schemas with ADE).
      * </p>
-     * 
+     *
      * @param name
      *            qualified name, must not be <code>null</code>
      * @return the global element declaration or <code>null</code> if it does not exist
@@ -199,7 +200,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns all namespaces that participate in this infoset.
-     * 
+     *
      * @return all namespaces, never <code>null</code>
      */
     public Set<String> getSchemaNamespaces() {
@@ -208,7 +209,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns the prefix to namespace bindings used in the original XML schema documents.
-     * 
+     *
      * @return the prefix to namespace bindings, never <code>null</code> (but does not necessarily contain bindings for
      *         all namespaces)
      */
@@ -259,7 +260,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns the locations of all schema files that contributed to the given namespace.
-     * 
+     *
      * @param namespace
      *            namespace, must not be <code>null</code>
      * @return the locations of the schema files, or <code>null</code> if the namespace does not belong to the schema
@@ -294,7 +295,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns the XML schema infoset (represented as a Xerces {@link XSModel}).
-     * 
+     *
      * @return the XML schema infoset, never <code>null</code>
      */
     public XSModel getXSModel() {
@@ -303,7 +304,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns the declarations of all elements that are substitutable for a given element declaration.
-     * 
+     *
      * @param elementDecl
      *            element declaration, must not be <code>null</code>
      * @param namespace
@@ -316,6 +317,9 @@ public class XMLSchemaInfoSet {
      */
     public List<XSElementDeclaration> getSubstitutions( XSElementDeclaration elementDecl, String namespace,
                                                         boolean transitive, boolean onlyConcrete ) {
+        if ( elementDecl == null ) {
+            return emptyList();
+        }
 
         // NOTE: XSModel#getSubstitutionGroup() would be much easier, but doesn't seem to work correctly for XSModels
         // that have been loaded from multiple files which have overlapping includes
@@ -366,7 +370,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns the subtypes for the given type definition.
-     * 
+     *
      * @param typeDef
      *            type definition, must not be <code>null</code>
      * @param namespace
@@ -415,7 +419,7 @@ public class XMLSchemaInfoSet {
 
     /**
      * Returns the declarations of all elements that are substitutable for a given element name.
-     * 
+     *
      * @param elementName
      *            qualified name of the element, must not be <code>null</code>
      * @param namespace
@@ -439,7 +443,7 @@ public class XMLSchemaInfoSet {
     /**
      * Creates a Xerces {@link XSModel} from the schemas at the given URLs, using the {@link RedirectingEntityResolver},
      * so OGC schemas URLs are redirected to a local copy.
-     * 
+     *
      * @param schemaUrls
      *            locations of the schema documents, must not be <code>null</code> and contain at least one entry
      * @return the XML schema infoset, never <code>null</code>
@@ -493,7 +497,7 @@ public class XMLSchemaInfoSet {
     /**
      * Creates a Xerces {@link XSModel} from the given input schemas, using the {@link RedirectingEntityResolver}, so
      * OGC schemas URLs are redirected to a local copy.
-     * 
+     *
      * @param inputs
      *            schema document inputs, must not be <code>null</code> and contain at least one entry
      * @return the XML schema infoset, never <code>null</code>
@@ -545,11 +549,6 @@ public class XMLSchemaInfoSet {
         // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
-        
-        for (LSInput input : redirectedInputs) {
-            System.out.println (input);
-        }
-        
         LSInputListImpl inputList = new LSInputListImpl( redirectedInputs );
         XSModel model = schemaLoader.loadInputList( inputList );
         if ( !errorHandler.getErrors().isEmpty() ) {
@@ -576,6 +575,7 @@ class ErrorHandler implements DOMErrorHandler {
         return errors;
     }
 
+    @Override
     public boolean handleError( DOMError domError ) {
         switch ( domError.getSeverity() ) {
         case SEVERITY_WARNING: {

@@ -36,14 +36,15 @@
 package org.deegree.gml.schema;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.feature.types.property.ValueRepresentation;
 
 /**
  * An {@link XSElementDeclaration} with complex GML property semantics (encapsulates or references another element).
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: markus $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class GMLPropertySemantics {
@@ -54,26 +55,31 @@ public class GMLPropertySemantics {
 
     private final ValueRepresentation valueRepresentations;
 
+    private final GMLObjectCategory category;
+
     /**
      * Creates a new {@link GMLPropertySemantics} instance.
-     * 
+     *
      * @param propertyElDecl
      *            declaration of the property element, must not be <code>null</code>
      * @param valueElDecl
      *            declaration of the value element, must not be <code>null</code>
      * @param valueRepresentations
      *            allowed representations for the value, must not be <code>null</code>
+     * @param category
+     *            GML object category, can be <code>null</code>
      */
     public GMLPropertySemantics( XSElementDeclaration propertyElDecl, XSElementDeclaration valueElDecl,
-                                ValueRepresentation valueRepresentations ) {
+                                 ValueRepresentation valueRepresentations, final GMLObjectCategory category ) {
         this.propertyElDecl = propertyElDecl;
         this.valueElDecl = valueElDecl;
         this.valueRepresentations = valueRepresentations;
+        this.category = category;
     }
 
     /**
      * Returns the declaration of the property element.
-     * 
+     *
      * @return declaration of the property element, never <code>null</code>
      */
     public XSElementDeclaration getPropertyElDecl() {
@@ -82,7 +88,7 @@ public class GMLPropertySemantics {
 
     /**
      * Returns the declaration of the value element.
-     * 
+     *
      * @return declaration of the value element, never <code>null</code>
      */
     public XSElementDeclaration getValueElDecl() {
@@ -91,10 +97,17 @@ public class GMLPropertySemantics {
 
     /**
      * Returns the allowed representations for the value element (by reference, inline or both).
-     * 
+     *
      * @return allowed representations, never <code>null</code>
      */
     public ValueRepresentation getRepresentations() {
         return valueRepresentations;
+    }
+
+    /**
+     * @return can be <code>null</code>
+     */
+    public GMLObjectCategory getValueCategory() {
+        return category;
     }
 }

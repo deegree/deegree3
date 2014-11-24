@@ -1089,28 +1089,28 @@ Click **Reload** to force a reinitialization of the other workspace resources. W
 
 Use the third drop-down menu to select an example request. Entries "Insert_200.xml" or "Insert_110.xml" can be used to insert a small number of INSPIRE Address features using WFS-T insert requests:
 
-.. figure:: images/console_workspace_inspire3.jpg
+.. figure:: images/console_workspace_inspire3.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire3.jpg
+   :target: _images/console_workspace_inspire3.png
 
    WFS-T example requests
 
 Click **Send** to execute the request. After successful insertion, the database contains a few addresses, and you may want to move back to the layer overview (**see layers**). If you activate the AD.Address layer, the newly inserted features will be rendered by the deegree WMS (look for them in the area of Enkhuizen):
 
-.. figure:: images/console_workspace_inspire4.jpg
+.. figure:: images/console_workspace_inspire4.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire4.jpg
+   :target: _images/console_workspace_inspire4.png
 
    Ad.Address layer after insertion of example Address features
 
 Of course, you can also perform WFS queries against the database backend, such as requesting of INSPIRE Addresses by street name:
 
-.. figure:: images/console_workspace_inspire5.jpg
+.. figure:: images/console_workspace_inspire5.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_workspace_inspire5.jpg
+   :target: _images/console_workspace_inspire5.png
 
    More WFS examples
 

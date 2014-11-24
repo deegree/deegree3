@@ -50,7 +50,7 @@ import java.util.Calendar;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
-import org.deegree.commons.tom.datetime.TimeInstant;
+import org.deegree.commons.tom.datetime.Temporal;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -178,7 +178,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     }
 
     protected PrimitiveValue toDateParticle( Object sqlValue ) {
-        TimeInstant value = null;
+        Temporal value = null;
         if ( sqlValue instanceof java.util.Date ) {
             Calendar cal = Calendar.getInstance();
             cal.setTime( (java.util.Date) sqlValue );
@@ -191,7 +191,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     }
 
     protected PrimitiveValue toDateTimeParticle( Object sqlValue ) {
-        TimeInstant value = null;
+        Temporal value = null;
         if ( sqlValue instanceof java.util.Date ) {
             Calendar cal = Calendar.getInstance();
             cal.setTime( (java.util.Date) sqlValue );
@@ -204,7 +204,7 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     }
 
     protected PrimitiveValue toTimeParticle( Object sqlValue ) {
-        TimeInstant value = null;
+        Temporal value = null;
         if ( sqlValue instanceof java.util.Date ) {
             Calendar cal = Calendar.getInstance();
             cal.setTime( (java.util.Date) sqlValue );
@@ -317,8 +317,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         if ( input instanceof java.util.Date ) {
             java.util.Date date = (java.util.Date) input;
             value = new java.sql.Date( date.getTime() );
-        } else if ( input instanceof TimeInstant ) {
-            TimeInstant timeInstant = (TimeInstant) input;
+        } else if ( input instanceof Temporal ) {
+            Temporal timeInstant = (Temporal) input;
             value = new java.sql.Date( timeInstant.getTimeInMilliseconds() );
         } else {
             String s = input.toString();
@@ -342,8 +342,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         if ( input instanceof java.util.Date ) {
             java.util.Date date = (java.util.Date) input;
             value = new Timestamp( date.getTime() );
-        } else if ( input instanceof TimeInstant ) {
-            TimeInstant timeInstant = (TimeInstant) input;
+        } else if ( input instanceof Temporal ) {
+            Temporal timeInstant = (Temporal) input;
             value = new Timestamp( timeInstant.getTimeInMilliseconds() );
         } else {
             String s = input.toString();
@@ -401,8 +401,8 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
         if ( input instanceof java.util.Date ) {
             java.util.Date date = (java.util.Date) input;
             value = new java.sql.Time( date.getTime() );
-        } else if ( input instanceof TimeInstant ) {
-            TimeInstant timeInstant = (TimeInstant) input;
+        } else if ( input instanceof Temporal ) {
+            Temporal timeInstant = (Temporal) input;
             value = new java.sql.Time( timeInstant.getTimeInMilliseconds() );
         } else {
             String s = input.toString();

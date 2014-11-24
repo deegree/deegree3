@@ -49,9 +49,9 @@ import org.slf4j.Logger;
 
 /**
  * This class is responsible for reading any existing main.xml and metadata.xml upon startup.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
+ *
  * @since 3.4
  */
 public class OwsGlobalConfigLoader implements Initializable {
@@ -60,11 +60,13 @@ public class OwsGlobalConfigLoader implements Initializable {
 
     private static final String CONTROLLER_JAXB_PACKAGE = "org.deegree.services.jaxb.controller";
 
-    private static final URL CONTROLLER_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/controller/3.2.0/controller.xsd" );
+    private static final URL CONTROLLER_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/controller/3.4.0/controller.xsd" );
 
     private static final String METADATA_JAXB_PACKAGE = "org.deegree.services.jaxb.metadata";
 
-    private static final URL METADATA_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/metadata.xsd" );
+    private static final URL METADATA_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.4.0/metadata.xsd" );
+
+    private static final URL METADATA_CONFIG_EXAMPLE = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.4.0/example.xml" );
 
     private DeegreeServicesMetadataType metadataConfig;
 
@@ -83,7 +85,7 @@ public class OwsGlobalConfigLoader implements Initializable {
         try {
             URL mdurl;
             if ( !metadata.exists() ) {
-                mdurl = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.2.0/example.xml" );
+                mdurl = METADATA_CONFIG_EXAMPLE;
                 String msg = "No 'services/metadata.xml' file, assuming defaults.";
                 LOG.debug( msg );
             } else {

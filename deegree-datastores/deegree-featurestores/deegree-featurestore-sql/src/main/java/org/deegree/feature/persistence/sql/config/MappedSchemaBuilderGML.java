@@ -121,10 +121,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Generates {@link MappedAppSchema} instances from JAXB {@link BLOBMapping} and JAXB {@link FeatureTypeMapping}
  * instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
@@ -154,7 +154,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, StorageCRS storageCRS,
                                    List<NamespaceHint> nsHints, BLOBMapping blobConf,
                                    List<FeatureTypeMappingJAXB> ftMappingConfs, boolean deleteCascadingByDB )
-                                                           throws FeatureStoreException {
+                            throws FeatureStoreException {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
 
@@ -210,7 +210,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                             String oldPrefix = nsBindings.getPrefix( nsUri );
                             if ( oldPrefix != null && !oldPrefix.equals( prefix ) ) {
                                 LOG.debug( "Multiple prefices for namespace '" + nsUri + "': " + prefix + " / "
-                                                        + oldPrefix );
+                                           + oldPrefix );
                             } else {
                                 nsBindings.addNamespace( prefix, nsUri );
                             }
@@ -258,7 +258,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     /**
      * Returns the {@link MappedAppSchema} derived from GML application schemas / configuration.
-     * 
+     *
      * @return mapped application schema, never <code>null</code>
      */
     @Override
@@ -274,7 +274,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         GMLSchemaInfoSet xsModel = gmlSchema.getGMLSchema();
         return new MappedAppSchema( fts, ftToSuperFt, prefixToNs, xsModel, ftMappings, bboxMapping, blobMapping,
-                                    geometryParams, deleteCascadingByDB, null, gmlSchema.getGeometryTypes(),
+                                    geometryParams, deleteCascadingByDB, null, gmlSchema.getGmlObjectTypes(),
                                     gmlSchema.getGeometryToSuperType() );
     }
 
@@ -312,7 +312,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
     private Pair<BlobMapping, BBoxTableMapping> buildBlobMapping( BLOBMapping blobMappingConf, GMLVersion gmlVersion ) {
         String ftTable = blobMappingConf.getFeatureTypeTable() == null ? FEATURE_TYPE_TABLE
-                                                                       : blobMappingConf.getFeatureTypeTable();
+                                                                      : blobMappingConf.getFeatureTypeTable();
         BBoxTableMapping bboxMapping = new BBoxTableMapping( ftTable, geometryParams.getCrs() );
         String blobTable = blobMappingConf.getBlobTable() == null ? GML_OBJECTS_TABLE : blobMappingConf.getBlobTable();
         BlobMapping blobMapping = new BlobMapping( blobTable, geometryParams.getCrs(), new BlobCodec( gmlVersion, NONE ) );
@@ -380,7 +380,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             return buildMapping( currentTable, elDecl, (ComplexParticleJAXB) value );
         }
         throw new RuntimeException( "Internal error. Unhandled particle mapping JAXB bean '"
-                                + value.getClass().getName() + "'." );
+                                    + value.getClass().getName() + "'." );
     }
 
     private Mapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -430,7 +430,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-        return new GeometryMapping( path, escalateVoid, me, type, geometryParams, joinedTable, config.getCustomConverter() );
+        return new GeometryMapping( path, escalateVoid, me, type, geometryParams, joinedTable,
+                                    config.getCustomConverter() );
     }
 
     private FeatureMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -469,14 +470,15 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
 
-        return new CompoundMapping( path, escalateVoid, particles, joinedTable, elDecl.first, config.getCustomConverter() );
+        return new CompoundMapping( path, escalateVoid, particles, joinedTable, elDecl.first,
+                                    config.getCustomConverter() );
     }
 
     private boolean determineParticleVoidability( boolean fromSchema, NullEscalationType config ) {
-        if (config == null || config == AUTO ) {
+        if ( config == null || config == AUTO ) {
             return fromSchema;
         }
-        if (config == FALSE) {
+        if ( config == FALSE ) {
             return true;
         }
         return false;

@@ -38,6 +38,7 @@ package org.deegree.metadata.iso.persistence;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,9 @@ import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspecto
 import org.deegree.metadata.iso.persistence.inspectors.NamespaceNormalizationInspector;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.iso.persistence.queryable.QueryableConverter;
+import org.deegree.metadata.iso.persistence.sql.QueryService;
+import org.deegree.metadata.iso.persistence.sql.ServiceManager;
+import org.deegree.metadata.iso.persistence.sql.ServiceManagerProvider;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
@@ -99,7 +103,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
 
     private final String connectionId;
 
-    private ISOMetadataStoreConfig config;
+    private final ISOMetadataStoreConfig config;
 
     private final List<RecordInspector<ISORecord>> inspectorChain = new ArrayList<RecordInspector<ISORecord>>();
 
@@ -216,13 +220,12 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     }
 
     @Override
-    public MetadataResultSet<ISORecord> getRecords( MetadataQuery query )
+    public MetadataResultSet<ISORecord> getRecords( final MetadataQuery query )
                             throws MetadataStoreException {
-        String operationName = "getRecords";
+        final String operationName = "getRecords";
         LOG.debug( Messages.getMessage( "INFO_EXEC", operationName ) );
-
-        QueryHelper exe = new QueryHelper( dialect, getQueryables() );
-        return exe.execute( query, getConnection() );
+        QueryService queryService = getReadOnlySqlService();
+        return queryService.execute( query, getConnection() );
     }
 
     /**
@@ -230,25 +233,30 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
      * 
      * @throws MetadataStoreException
      */
-    public int getRecordCount( MetadataQuery query )
+    public int getRecordCount( final MetadataQuery query )
                             throws MetadataStoreException {
-        String resultTypeName = "hits";
+        final String resultTypeName = "hits";
         LOG.debug( Messages.getMessage( "INFO_EXEC", "do " + resultTypeName + " on getRecords" ) );
         try {
-            return new QueryHelper( dialect, getQueryables() ).executeCounting( query, getConnection() );
+            QueryService queryService = getReadOnlySqlService();
+            return queryService.executeCounting( query, getConnection() );
         } catch ( Throwable t ) {
             LOG.debug( t.getMessage(), t );
             String msg = Messages.getMessage( "ERROR_REQUEST_TYPE", ResultType.results.name(), t.getMessage() );
             LOG.debug( msg );
             throw new MetadataStoreException( msg );
+        } finally {
+            // Don't close the ResultSet or PreparedStatement if no error occurs, the ResultSet is needed in the
+            // ISOMetadataResultSet and both will be closed by
+            // org.deegree.metadata.persistence.XMLMetadataResultSet#close().
         }
     }
 
     @Override
-    public MetadataResultSet<ISORecord> getRecordById( List<String> idList, QName[] recordTypeNames )
+    public MetadataResultSet<ISORecord> getRecordById( final List<String> idList, final QName[] recordTypeNames )
                             throws MetadataStoreException {
         LOG.debug( Messages.getMessage( "INFO_EXEC", "getRecordsById" ) );
-        QueryHelper qh = new QueryHelper( dialect, getQueryables() );
+        QueryService qh = getReadOnlySqlService();
         return qh.executeGetRecordById( idList, getConnection() );
     }
 
@@ -256,12 +264,12 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public MetadataStoreTransaction acquireTransaction()
                             throws MetadataStoreException {
         ISOMetadataStoreTransaction ta = null;
-        Connection conn = getConnection();
         try {
+            Connection conn = getConnection();
             ta = new ISOMetadataStoreTransaction( conn, dialect, inspectorChain, getQueryables(), config.getAnyText() );
-        } catch ( Throwable e ) {
+        } catch ( SQLException e ) {
             LOG.error( "error " + e.getMessage(), e );
-            throw new MetadataStoreException( e.getMessage() );
+            throw new MetadataStoreException( e.getMessage(), e );
         }
         return ta;
     }
@@ -306,4 +314,11 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public ResourceMetadata<? extends Resource> getMetadata() {
         return metadata;
     }
+    
+    private QueryService getReadOnlySqlService()
+                            throws MetadataStoreException {
+        ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
+        return serviceManager.getQueryService( dialect, queryables );
+    }
+    
 }

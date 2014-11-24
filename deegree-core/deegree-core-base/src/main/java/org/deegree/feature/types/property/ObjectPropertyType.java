@@ -42,43 +42,59 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.Object;
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.property.PropertyType;
 
 /**
  * {@link PropertyType} that defines a property with an {@link Object} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
-public abstract class ObjectPropertyType extends AbstractPropertyType {
+public class ObjectPropertyType extends AbstractPropertyType {
 
     private final ValueRepresentation representation;
 
+    private final GMLObjectCategory category;
+
     /**
      * Creates a new {@link ObjectPropertyType} instance.
-     * 
+     *
      * @param name
      * @param minOccurs
      * @param maxOccurs
      * @param isAbstract
-     * @param isNillable
      * @param substitutions
+     * @param isNillable
      * @param representation
+     * @param category
      */
-    protected ObjectPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
-                                  List<PropertyType> substitutions, ValueRepresentation representation ) {
+    public ObjectPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
+                               List<PropertyType> substitutions, ValueRepresentation representation,
+                               GMLObjectCategory category ) {
         super( name, minOccurs, maxOccurs, elDecl, substitutions );
         this.representation = representation;
+        this.category = category;
     }
 
     /**
      * Returns the allowed representation form of the value object.
-     * 
+     *
      * @return the allowed representation form, never <code>null</code>
      */
     public ValueRepresentation getAllowedRepresentation() {
         return representation;
     }
+
+    /**
+     * Returns the category of the value object.
+     *
+     * @return category, can be <code>null</code>
+     */
+    public GMLObjectCategory getCategory() {
+        return category;
+    }
+
 }

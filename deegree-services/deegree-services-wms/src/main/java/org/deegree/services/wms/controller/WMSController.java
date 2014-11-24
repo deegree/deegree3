@@ -123,6 +123,7 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
+import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -165,6 +166,10 @@ public class WMSController extends AbstractOWS {
 
     private OWSMetadataProvider metadataProvider;
 
+    private DeegreeWMS conf;
+
+    private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
+
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
 
@@ -178,6 +183,15 @@ public class WMSController extends AbstractOWS {
         }
 
         featureInfoManager = new FeatureInfoManager( addDefaultFormats );
+    }
+
+    /**
+     * Returns the configuration.
+     * 
+     * @return the configuration, after successful initialization, this is never <code>null</code>
+     */
+    public DeegreeWMS getConfig() {
+        return conf;
     }
 
     /**
@@ -201,7 +215,7 @@ public class WMSController extends AbstractOWS {
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
-        DeegreeWMS conf = (DeegreeWMS) controllerConf;
+        conf = (DeegreeWMS) controllerConf;
 
         if ( conf.getExtendedCapabilities() != null ) {
             this.extendedCaps = new HashMap<String, List<OMElement>>();
@@ -260,7 +274,7 @@ public class WMSController extends AbstractOWS {
                         throw new IllegalArgumentException( "Unknown GetFeatureInfoFormat" );
                     }
                 }
-            }            
+            }
 
             // if ( pi.getImageFormat() != null ) {
             // for ( ImageFormat f : pi.getImageFormat() ) {
@@ -594,6 +608,7 @@ public class WMSController extends AbstractOWS {
             // this makes it possible to request srs that are not advertised, which may be useful
             controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
         }
+        getMapLimitChecker.checkRequestedSizeAndLayerCount( gm, conf );
     }
 
     protected void getCapabilities( Map<String, String> map, HttpResponseBuffer response )

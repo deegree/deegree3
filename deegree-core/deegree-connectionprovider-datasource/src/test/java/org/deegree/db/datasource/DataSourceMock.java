@@ -34,7 +34,7 @@ public class DataSourceMock implements DataSource {
     public int getIntConstructorArg() {
         return intConstructorArg;
     }
-    
+
     public String getStringProperty() {
         return stringProperty;
     }
@@ -63,7 +63,7 @@ public class DataSourceMock implements DataSource {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    // Overrides a method of the CommonDataSource interface in Java 1.7.
     public Logger getParentLogger()
                             throws SQLFeatureNotSupportedException {
         throw new UnsupportedOperationException();
