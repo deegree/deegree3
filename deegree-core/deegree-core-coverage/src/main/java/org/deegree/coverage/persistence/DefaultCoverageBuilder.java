@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
+import static org.deegree.coverage.raster.utils.RasterBuilder.setNoDataValue;
 import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 
 import java.io.File;
@@ -274,6 +275,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                     if ( raster != null ) {
                         raster.setCoordinateSystem( crs );
                     }
+                    setNoDataValue( raster, config.getNodata() );
                     return raster;
                 }
             } catch ( IOException e ) {
