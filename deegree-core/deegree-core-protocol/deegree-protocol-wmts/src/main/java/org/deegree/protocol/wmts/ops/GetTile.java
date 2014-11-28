@@ -112,6 +112,24 @@ public class GetTile {
      *             if TILEROW/COL are missing or not integers.
      */
     public GetTile( Map<String, String> map ) throws OWSException {
+        if ( map.get( "VERSION" ) == null ) {
+            throw new OWSException( "The VERSION parameter is missing.", MISSING_PARAMETER_VALUE, "version" );
+        }
+        if ( map.get( "LAYER" ) == null ) {
+            throw new OWSException( "The LAYER parameter is missing.", MISSING_PARAMETER_VALUE, "layer" );
+        }
+        if ( map.get( "STYLE" ) == null ) {
+            throw new OWSException( "The STYLE parameter is missing.", MISSING_PARAMETER_VALUE, "style" );
+        }
+        if ( map.get( "FORMAT" ) == null ) {
+            throw new OWSException( "The FORMAT parameter is missing.", MISSING_PARAMETER_VALUE, "format" );
+        }
+        if ( map.get( "TILEMATRIXSET" ) == null ) {
+            throw new OWSException( "The TILEMATRIXSET parameter is missing.", MISSING_PARAMETER_VALUE, "tileMatrixSet" );
+        }
+        if ( map.get( "TILEMATRIX" ) == null ) {
+            throw new OWSException( "The TILEMATRIX parameter is missing.", MISSING_PARAMETER_VALUE, "tileMatrix" );
+        }
         this.layer = map.get( "LAYER" );
         this.style = map.get( "STYLE" );
         this.format = map.get( "FORMAT" );
@@ -119,7 +137,7 @@ public class GetTile {
         this.tileMatrix = map.get( "TILEMATRIX" );
         String row = map.get( "TILEROW" );
         if ( row == null ) {
-            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "GetTile" );
+            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "tilerow" );
         }
         try {
             this.tileRow = Integer.parseInt( row );
@@ -129,7 +147,7 @@ public class GetTile {
         }
         String col = map.get( "TILECOL" );
         if ( col == null ) {
-            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "GetTile" );
+            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "tilecol" );
         }
         try {
             this.tileCol = Integer.parseInt( col );
