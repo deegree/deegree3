@@ -137,23 +137,23 @@ public class GetTile {
         this.tileMatrix = map.get( "TILEMATRIX" );
         String row = map.get( "TILEROW" );
         if ( row == null ) {
-            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "tilerow" );
+            throw new OWSException( "The TILEROW parameter is missing.", MISSING_PARAMETER_VALUE, "tileRow" );
         }
         try {
             this.tileRow = Integer.parseInt( row );
         } catch ( NumberFormatException e ) {
             throw new OWSException( "The TILEROW parameter value of '" + row + "' is not a valid index.",
-                                    INVALID_PARAMETER_VALUE, "GetTile" );
+                                    INVALID_PARAMETER_VALUE, "tileRow" );
         }
         String col = map.get( "TILECOL" );
         if ( col == null ) {
-            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "tilecol" );
+            throw new OWSException( "The TILECOL parameter is missing.", MISSING_PARAMETER_VALUE, "tileCol" );
         }
         try {
             this.tileCol = Integer.parseInt( col );
         } catch ( NumberFormatException e ) {
             throw new OWSException( "The TILECOL parameter value of '" + col + "' is not a valid index.",
-                                    INVALID_PARAMETER_VALUE, "GetTile" );
+                                    INVALID_PARAMETER_VALUE, "tileCol" );
         }
     }
 
