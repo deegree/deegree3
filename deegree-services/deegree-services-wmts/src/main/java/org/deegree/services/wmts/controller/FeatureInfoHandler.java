@@ -120,10 +120,10 @@ class FeatureInfoHandler {
         double width = tdl.getMetadata().getTilePixelsX();
         double height = tdl.getMetadata().getTilePixelsY();
         if ( gfi.getI() >= width || gfi.getI() < 0 ) {
-            throw new OWSException( "The I parameter does not fit in the image dimension.", INVALID_PARAMETER_VALUE, "I" );
+            throw new OWSException( "The I parameter does not fit in the image dimension.", "TileOutOfRange", "I" );
         }
         if ( gfi.getJ() >= height || gfi.getJ() < 0 ) {
-            throw new OWSException( "The J parameter does not fit in the image dimension.", INVALID_PARAMETER_VALUE, "J" );
+            throw new OWSException( "The J parameter does not fit in the image dimension.", "TileOutOfRange", "J" );
         }
         return l;
     }
