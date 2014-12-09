@@ -34,9 +34,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.transaction;
 
+import static java.util.Collections.emptyList;
 import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REMOVE;
 import static org.deegree.protocol.wfs.transaction.action.UpdateAction.REPLACE;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -44,12 +46,16 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.gml.utils.GMLObjectWalker;
@@ -74,24 +80,36 @@ public class FeatureUpdater {
     public void update( final Feature feature, final List<ParsedPropertyReplacement> replacementProps )
                             throws FeatureStoreException {
         for ( final ParsedPropertyReplacement replacement : replacementProps ) {
-            Property prop = replacement.getNewValue();
-            UpdateAction updateAction = replacement.getUpdateAction();
-            GenericProperty newProp = new GenericProperty( prop.getType(), null );
-            if ( prop.getValue() != null ) {
-                newProp.setValue( prop.getValue() );
-            } else if ( !prop.getChildren().isEmpty() && prop.getChildren().get( 0 ) != null ) {
-                newProp.setChildren( prop.getChildren() );
-            } else if ( updateAction == null ) {
-                updateAction = REMOVE;
-            }
-            if ( updateAction == null ) {
-                updateAction = REPLACE;
-            }
-            int idx = replacement.getIndex();
-            switch ( updateAction ) {
-            case INSERT_AFTER:
-                List<Property> ps = feature.getProperties();
-                ListIterator<Property> iter = ps.listIterator();
+            update( feature, replacement );
+        }
+    }
+
+    private void update( final Feature feature, final ParsedPropertyReplacement replacement )
+                            throws FeatureStoreException {
+        final List<Property> targetProps = getTargetProperties( feature, replacement.getValueReference() );
+        Property prop = replacement.getNewValue();
+        UpdateAction updateAction = replacement.getUpdateAction();
+        GenericProperty newProp = new GenericProperty( prop.getType(), null );
+        if ( prop.getValue() != null ) {
+            newProp.setValue( prop.getValue() );
+        } else if ( !prop.getChildren().isEmpty() && prop.getChildren().get( 0 ) != null ) {
+            newProp.setChildren( prop.getChildren() );
+        } else if ( updateAction == null ) {
+            updateAction = REMOVE;
+        }
+        if ( updateAction == null ) {
+            updateAction = REPLACE;
+        }
+        int idx = replacement.getIndex();
+        final List<Property> ps = feature.getProperties();
+        switch ( updateAction ) {
+        case INSERT_AFTER:
+            if ( !targetProps.isEmpty() ) {
+                idx = ps.indexOf( targetProps.get( targetProps.size() - 1 ) );
+                ps.add( idx + 1, newProp );
+            } else {
+                // old code path, still needed?
+                final ListIterator<Property> iter = ps.listIterator();
                 while ( iter.hasNext() ) {
                     if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
                         --idx;
@@ -101,10 +119,15 @@ public class FeatureUpdater {
                         break;
                     }
                 }
-                break;
-            case INSERT_BEFORE:
-                ps = feature.getProperties();
-                iter = ps.listIterator();
+            }
+            break;
+        case INSERT_BEFORE:
+            if ( !targetProps.isEmpty() ) {
+                idx = ps.indexOf( targetProps.get( 0 ) );
+                ps.add( idx, newProp );
+            } else {
+                // old code path, still needed?
+                final ListIterator<Property> iter = ps.listIterator();
                 while ( iter.hasNext() ) {
                     if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
                         --idx;
@@ -114,19 +137,19 @@ public class FeatureUpdater {
                         break;
                     }
                 }
-                break;
-            case REMOVE:
-                ps = feature.getProperties();
-                iter = ps.listIterator();
-                while ( iter.hasNext() ) {
-                    if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
-                        iter.remove();
-                    }
-                }
-                break;
-            case REPLACE:
-                ps = feature.getProperties();
-                iter = ps.listIterator();
+            }
+            break;
+        case REMOVE:
+            ps.removeAll( targetProps );
+            break;
+        case REPLACE:
+            if ( !targetProps.isEmpty() ) {
+                idx = ps.indexOf( targetProps.get( 0 ) );
+                ps.removeAll( targetProps );
+                ps.add( idx, newProp );
+            } else {
+                // old code path, still needed?
+                final ListIterator<Property> iter = ps.listIterator();
                 while ( iter.hasNext() ) {
                     if ( iter.next().getType().getName().equals( prop.getType().getName() ) ) {
                         --idx;
@@ -136,10 +159,34 @@ public class FeatureUpdater {
                         break;
                     }
                 }
-                break;
             }
-            validateProperties( feature, feature.getProperties() );
-            checkForDuplicateIds( feature );
+            break;
+        }
+        validateProperties( feature, feature.getProperties() );
+        checkForDuplicateIds( feature );
+    }
+
+    private List<Property> getTargetProperties( final Feature feature, final ValueReference propName )
+                            throws FeatureStoreException {
+        if (propName ==  null) {
+            return emptyList();
+        }
+        try {
+            final TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
+            final TypedObjectNode[] nodes = evaluator.eval( feature, propName );
+            final List<Property> props = new ArrayList<Property>();
+            if ( nodes != null ) {
+                for ( final TypedObjectNode node : nodes ) {
+                    if ( !( node instanceof Property ) ) {
+                        final String msg = propName + " does not refer to a property.";
+                        throw new FeatureStoreException( msg );
+                    }
+                    props.add( (Property) node );
+                }
+            }
+            return props;
+        } catch ( FilterEvaluationException e ) {
+            throw new FeatureStoreException( e.getMessage(), e );
         }
     }
 
