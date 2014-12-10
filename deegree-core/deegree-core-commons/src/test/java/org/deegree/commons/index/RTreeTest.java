@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.File;
 
 import org.deegree.commons.index.RTree.NodeEntry;
 import org.junit.Before;
@@ -169,9 +170,15 @@ public class RTreeTest {
     @Test
     public void testFromStorage()
                             throws IOException {
-        tree.writeTreeToDisk( "/tmp/rtree.txt" );
 
-        tree = RTree.loadFromDisk( "/tmp/rtree.txt" );
+        File tempFile = File.createTempFile( "rtree", "txt");
+        tempFile.deleteOnExit();
+
+        String tempFileName = tempFile.getCanonicalPath();
+
+        tree.writeTreeToDisk( tempFileName );
+
+        tree = RTree.loadFromDisk( tempFileName );
         printOut( tree );
     }
 }
