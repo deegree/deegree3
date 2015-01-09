@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-pre15-SNAPSHOT</version>
+    <version>3.4-pre17-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -46,7 +46,6 @@
     <module>deegree-core-style</module>
     <module>deegree-core-theme</module>
     <module>deegree-core-tile</module>    
-    <module>deegree-core-time</module>
     <module>deegree-core-protocol</module>
     <module>deegree-core-workspace</module>
     <module>deegree-connectionprovider-datasource</module>

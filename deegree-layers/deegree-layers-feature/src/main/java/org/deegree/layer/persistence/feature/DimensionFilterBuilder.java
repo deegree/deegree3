@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.tom.datetime.TimeInstant;
+import org.deegree.commons.tom.datetime.Temporal;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
@@ -257,8 +257,8 @@ class DimensionFilterBuilder {
                 theVal = new Date( currentTimeMillis() );
             } else if ( o instanceof Date ) {
                 theVal = (Date) o;
-            } else if ( o instanceof TimeInstant ) {
-                theVal = ( (TimeInstant) o ).getDate();
+            } else if ( o instanceof Temporal ) {
+                theVal = ( (Temporal) o ).getDate();
             } else {
                 throw new RuntimeException( "Unexpected dimension value class: " + o.getClass() );
             }

@@ -67,6 +67,7 @@ import org.deegree.layer.persistence.LayerStoreProvider;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.jaxb.ThemeType;
+import org.deegree.theme.persistence.standard.jaxb.ThemeType.Identifier;
 import org.deegree.theme.persistence.standard.jaxb.Themes;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
@@ -162,8 +163,12 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
         SpatialMetadata smd = SpatialMetadataConverter.fromJaxb( current.getEnvelope(), current.getCRS() );
         Description desc = DescriptionConverter.fromJaxb( current.getTitle(), current.getAbstract(),
                                                           current.getKeywords() );
-
-        LayerMetadata md = new LayerMetadata( current.getIdentifier(), desc, smd );
+        final Identifier identifier = current.getIdentifier();
+        final String name = identifier != null ? identifier.getValue() : null;
+        final LayerMetadata md = new LayerMetadata( name, desc, smd );
+        if ( identifier != null && !identifier.isRequestable() ) {
+            md.setRequestable( false );
+        }
         md.setDimensions( dims );
         md.setStyles( styles );
         md.setLegendStyles( legendStyles );

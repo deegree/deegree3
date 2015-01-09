@@ -212,8 +212,8 @@ public class Query {
                     for ( OMElement sortPropertyEl : sortPropertyElements ) {
                         OMElement propNameEl = adapter.getRequiredElement( sortPropertyEl,
                                                                            new XPath( "ogc:PropertyName", nsContext ) );
-                        String sortOrder = adapter.getNodeAsString( sortPropertyEl, new XPath( "ogc:SortOrder",
-                                                                                               nsContext ), "ASC" );
+                        String sortOrder = adapter.getNodeAsString( sortPropertyEl, new XPath( "following-sibling::ogc:SortOrder",
+                                                                                              nsContext ), "ASC" );
                         SortProperty sortProp = new SortProperty(
                                                                   new ValueReference(
                                                                                       propNameEl.getText(),

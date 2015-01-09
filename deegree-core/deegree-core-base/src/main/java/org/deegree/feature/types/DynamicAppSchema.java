@@ -49,20 +49,17 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSTerm;
+import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 
 /**
  * {@link AppSchema} that allows to add {@link FeatureTypes} during runtime.
- * 
+ *
  * @author <a href="schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class DynamicAppSchema implements AppSchema {
@@ -76,7 +73,7 @@ public class DynamicAppSchema implements AppSchema {
 
     /**
      * Adds a new {@link DynamicFeatureType} for the given feature type name.
-     * 
+     *
      * @param ftName
      *            feature type name, must not be <code>null</code>
      * @return new (and added) feature type instance, never <code>null</code>
@@ -155,11 +152,6 @@ public class DynamicAppSchema implements AppSchema {
     }
 
     @Override
-    public Map<QName, XSTerm> getAllowedChildElementDecls( XSComplexTypeDefinition type ) {
-        return emptyMap();
-    }
-
-    @Override
     public Set<String> getAppNamespaces() {
         return namespaces;
     }
@@ -167,11 +159,6 @@ public class DynamicAppSchema implements AppSchema {
     @Override
     public List<String> getNamespacesDependencies( String ns ) {
         return emptyList();
-    }
-
-    @Override
-    public ObjectPropertyType getCustomElDecl( XSElementDeclaration elDecl ) {
-        return null;
     }
 
     @Override
@@ -204,6 +191,24 @@ public class DynamicAppSchema implements AppSchema {
 
     @Override
     public Map<GMLObjectType, GMLObjectType> getGeometryToSuperType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public GMLObjectType getGmlObjectType( QName name ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<GMLObjectType> getGmlObjectTypes( GMLObjectCategory timeObject ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<GMLObjectType> getGmlObjectTypes() {
         // TODO Auto-generated method stub
         return null;
     }

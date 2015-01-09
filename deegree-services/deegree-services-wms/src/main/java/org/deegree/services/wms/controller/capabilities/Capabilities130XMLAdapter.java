@@ -65,6 +65,7 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
+import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities130ThemeWriter;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
@@ -80,6 +81,8 @@ import org.slf4j.Logger;
  */
 @LoggingNotes(warn = "logs problems with CRS when outputting 1.3.0 capabilities", trace = "logs stack traces")
 public class Capabilities130XMLAdapter {
+
+    private static final String MD_URL_REQUEST_CSW = "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
 
     private static final Logger LOG = getLogger( Capabilities130XMLAdapter.class );
 
@@ -108,7 +111,20 @@ public class Capabilities130XMLAdapter {
         this.service = service;
         this.controller = controller;
         metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
-        themeWriter = new WmsCapabilities130ThemeWriter( controller, this, getUrl, metadata );
+        final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
+        themeWriter = new WmsCapabilities130ThemeWriter( metadata, this, mdUrlTemplate );
+    }
+
+    private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
+        String mdUrlTemplate = controller.getMetadataURLTemplate();
+        if ( mdUrlTemplate == null || mdUrlTemplate.isEmpty() ) {
+            mdUrlTemplate = getUrl;
+            if ( !( mdUrlTemplate.endsWith( "?" ) || mdUrlTemplate.endsWith( "&" ) ) ) {
+                mdUrlTemplate += "?";
+            }
+            mdUrlTemplate += MD_URL_REQUEST_CSW;
+        }
+        return mdUrlTemplate;
     }
 
     /**
@@ -208,7 +224,7 @@ public class Capabilities130XMLAdapter {
         }
     }
 
-    static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
+    public static void writeDimensions( XMLStreamWriter writer, Map<String, Dimension<?>> dims )
                             throws XMLStreamException {
         for ( Entry<String, Dimension<?>> entry : dims.entrySet() ) {
             writer.writeStartElement( WMSNS, "Dimension" );
@@ -234,7 +250,7 @@ public class Capabilities130XMLAdapter {
         }
     }
 
-    void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
+    public void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
                      String layerName, Style style )
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Style" );

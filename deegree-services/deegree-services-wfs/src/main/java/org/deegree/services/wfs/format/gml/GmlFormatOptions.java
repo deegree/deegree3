@@ -36,6 +36,7 @@ package org.deegree.services.wfs.format.gml;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.io.CoordinateFormatter;
@@ -77,6 +78,8 @@ public class GmlFormatOptions {
 
     private final SFSProfiler geometrySimplifier;
 
+    private final NamespaceBindings prebindNamespaces;
+
     /**
      * Creates a new {@link GmlFormatOptions} instance.
      * 
@@ -98,12 +101,16 @@ public class GmlFormatOptions {
      * @param exportOriginalSchema
      * @param geometrySimplifier
      *            simplifier to apply to exported geometries, can be <code>null</code> (no simplification performed)
+     * @param prebindNamespaces
+     *            namespaces to bind in the root element of GetFeature responses, can be <code>null</code>
      */
-    public GmlFormatOptions( GMLVersion gmlVersion, QName responseContainerEl, QName responseFeatureMemberEl,
-                             String schemaLocation, boolean disableStreaming, boolean generateBoundedByForFeatures,
-                             int queryMaxFeatures, boolean checkAreaOfUse, CoordinateFormatter formatter,
-                             String appSchemaBaseURL, String mimeType, boolean exportOriginalSchema,
-                             SFSProfiler geometrySimplifier ) {
+    public GmlFormatOptions( final GMLVersion gmlVersion, final QName responseContainerEl,
+                             final QName responseFeatureMemberEl, final String schemaLocation,
+                             final boolean disableStreaming, final boolean generateBoundedByForFeatures,
+                             final int queryMaxFeatures, final boolean checkAreaOfUse,
+                             final CoordinateFormatter formatter, final String appSchemaBaseURL, final String mimeType,
+                             final boolean exportOriginalSchema, final SFSProfiler geometrySimplifier,
+                             final NamespaceBindings prebindNamespaces ) {
         this.gmlVersion = gmlVersion;
         this.responseContainerEl = responseContainerEl;
         this.responseFeatureMemberEl = responseFeatureMemberEl;
@@ -117,6 +124,7 @@ public class GmlFormatOptions {
         this.mimeType = mimeType;
         this.exportOriginalSchema = exportOriginalSchema;
         this.geometrySimplifier = geometrySimplifier;
+        this.prebindNamespaces = prebindNamespaces;
     }
 
     /**
@@ -210,6 +218,13 @@ public class GmlFormatOptions {
      */
     public SFSProfiler getGeometrySimplifier() {
         return geometrySimplifier;
+    }
+
+    /**
+     * @return namespaces to bind in the root element of GetFeature responses, can be <code>null</code>
+     */
+    public NamespaceBindings getPrebindNamespaces() {
+        return prebindNamespaces;
     }
 
 }

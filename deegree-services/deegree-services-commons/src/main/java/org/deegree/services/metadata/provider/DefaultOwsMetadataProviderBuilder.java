@@ -43,19 +43,28 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.ows.metadata.layer.Attribution;
+import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
+import org.deegree.commons.ows.metadata.layer.LogoUrl;
+import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.services.jaxb.metadata.DatasetMetadataType;
+import org.deegree.services.jaxb.metadata.DatasetMetadataType.Attribution.LogoURL;
+import org.deegree.services.jaxb.metadata.DatasetMetadataType.DataURL;
+import org.deegree.services.jaxb.metadata.DatasetMetadataType.FeatureListURL;
+import org.deegree.services.jaxb.metadata.DatasetMetadataType.MetadataURL;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataAuthorityType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataSetIdType;
+import org.deegree.services.jaxb.metadata.KeywordsType;
 import org.deegree.services.jaxb.metadata.LanguageStringType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.workspace.ResourceBuilder;
@@ -64,16 +73,16 @@ import org.deegree.workspace.ResourceMetadata;
 
 /**
  * This class is responsible for building web service metadata providers.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * 
+ *
  * @since 3.4
  */
 public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMetadataProvider> {
 
-    private JAXBElement<DeegreeServicesMetadataType> md;
+    private final JAXBElement<DeegreeServicesMetadataType> md;
 
-    private ResourceMetadata<OWSMetadataProvider> metadata;
+    private final ResourceMetadata<OWSMetadataProvider> metadata;
 
     public DefaultOwsMetadataProviderBuilder( JAXBElement<DeegreeServicesMetadataType> md,
                                               ResourceMetadata<OWSMetadataProvider> metadata ) {
@@ -107,7 +116,7 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
                     list.add( new XMLAdapter( xmlStream ).getRootElement() );
                 }
             }
-            List<DatasetMetadata> datasets = convertDatasetMetadataFromJAXB( md.getValue().getDatasetMetadata() );
+            List<DatasetMetadata> datasets = fromJaxb( md.getValue().getDatasetMetadata() );
             Map<String, String> authorities = new HashMap<String, String>();
             if ( md.getValue().getDatasetMetadata() != null ) {
                 for ( ExternalMetadataAuthorityType at : md.getValue().getDatasetMetadata().getExternalMetadataAuthority() ) {
@@ -121,27 +130,47 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         }
     }
 
-    private List<DatasetMetadata> convertDatasetMetadataFromJAXB( org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType.DatasetMetadata jaxbDatasetMetadata ) {
+    private List<DatasetMetadata> fromJaxb( org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType.DatasetMetadata jaxbDatasetMetadata ) {
         List<DatasetMetadata> datasets = new ArrayList<DatasetMetadata>();
         if ( jaxbDatasetMetadata != null ) {
             for ( DatasetMetadataType jaxbEl : jaxbDatasetMetadata.getDataset() ) {
-                datasets.add( convertDatasetMetadataFromJAXB( jaxbEl, jaxbDatasetMetadata.getMetadataUrlTemplate() ) );
+                datasets.add( fromJaxb( jaxbEl, jaxbDatasetMetadata.getMetadataUrlTemplate() ) );
             }
         }
         return datasets;
     }
 
-    private DatasetMetadata convertDatasetMetadataFromJAXB( DatasetMetadataType jaxbEl, String metadataUrlPattern ) {
-        QName name = jaxbEl.getName();
-        List<LanguageString> titles = convertToLanguageStrings( jaxbEl.getTitle() );
-        List<LanguageString> abstracts = convertToLanguageStrings( jaxbEl.getAbstract() );
-        List<Pair<List<LanguageString>, CodeType>> keywords = emptyList();
-        String url = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
-        List<StringPair> externalUrls = new ArrayList<StringPair>();
-        for ( ExternalMetadataSetIdType tp : jaxbEl.getExternalMetadataSetId() ) {
-            externalUrls.add( new StringPair( tp.getAuthority(), tp.getValue() ) );
+    private DatasetMetadata fromJaxb( final DatasetMetadataType jaxbEl, final String metadataUrlPattern ) {
+        final QName name = jaxbEl.getName();
+        final List<LanguageString> titles = fromJaxb( jaxbEl.getTitle() );
+        final List<LanguageString> abstracts = fromJaxb( jaxbEl.getAbstract() );
+        final List<Pair<List<LanguageString>, CodeType>> keywords = fromJaxbKeywords( jaxbEl.getKeywords() );
+        final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+        final String metadataUrl = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
+        if ( metadataUrl != null ) {
+            metadataUrls.add( new MetadataUrl( metadataUrl, null, null ) );
         }
-        return new DatasetMetadata( name, titles, abstracts, keywords, url, externalUrls );
+        if ( jaxbEl.getMetadataURL() != null ) {
+            for ( final MetadataURL jaxbMetadataUrl : jaxbEl.getMetadataURL() ) {
+                metadataUrls.add( new MetadataUrl( jaxbMetadataUrl.getValue(), jaxbMetadataUrl.getType(),
+                                                   jaxbMetadataUrl.getFormat() ) );
+            }
+        }
+        final List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+        for ( ExternalMetadataSetIdType metadatsetIdType : jaxbEl.getExternalMetadataSetId() ) {
+            externalIds.add( fromJaxb( metadatsetIdType ) );
+        }
+        final List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+        for ( final DataURL jaxbDataUrl : jaxbEl.getDataURL() ) {
+            dataUrls.add( new UrlWithFormat( jaxbDataUrl.getValue(), jaxbDataUrl.getFormat() ) );
+        }
+        final List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+        for ( final FeatureListURL jaxbFeatureListUrl : jaxbEl.getFeatureListURL() ) {
+            featureListUrls.add( new UrlWithFormat( jaxbFeatureListUrl.getValue(), jaxbFeatureListUrl.getFormat() ) );
+        }
+        final Attribution attribution = fromJaxb( jaxbEl.getAttribution() );
+        return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
+                                    featureListUrls, attribution );
     }
 
     private String buildMetadataUrl( String pattern, String datasetId ) {
@@ -151,7 +180,18 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         return StringUtils.replaceAll( pattern, "${metadataSetId}", datasetId );
     }
 
-    private List<LanguageString> convertToLanguageStrings( List<LanguageStringType> strings ) {
+    private List<Pair<List<LanguageString>, CodeType>> fromJaxbKeywords( final List<KeywordsType> jaxbEls ) {
+        if ( jaxbEls == null ) {
+            return emptyList();
+        }
+        final List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+        for ( final KeywordsType jaxbEl : jaxbEls ) {
+            keywords.add( fromJaxb( jaxbEl ) );
+        }
+        return keywords;
+    }
+
+    private List<LanguageString> fromJaxb( List<LanguageStringType> strings ) {
         List<LanguageString> languageStrings = new ArrayList<LanguageString>();
         if ( strings != null ) {
             for ( LanguageStringType string : strings ) {
@@ -161,4 +201,27 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         return languageStrings;
     }
 
+    private ExternalIdentifier fromJaxb( final ExternalMetadataSetIdType jaxbEl ) {
+        return new ExternalIdentifier( jaxbEl.getValue(), jaxbEl.getAuthority() );
+    }
+
+    private Attribution fromJaxb( final org.deegree.services.jaxb.metadata.DatasetMetadataType.Attribution jaxbEl ) {
+        if ( jaxbEl == null ) {
+            return null;
+        }
+        LogoUrl logoUrl = null;
+        if ( jaxbEl.getLogoURL() != null ) {
+            LogoURL jaxbLogoUrl = jaxbEl.getLogoURL();
+            logoUrl = new LogoUrl( jaxbLogoUrl.getValue(), jaxbLogoUrl.getFormat(), jaxbLogoUrl.getWidth(),
+                                   jaxbLogoUrl.getHeight() );
+        }
+        return new Attribution( jaxbEl.getTitle(), jaxbEl.getURL(), logoUrl );
+    }
+
+    private Pair<List<LanguageString>, CodeType> fromJaxb( final KeywordsType jaxbEl ) {
+        final CodeType type = jaxbEl.getType() == null ? null : new CodeType( jaxbEl.getType().getValue(),
+                                                                              jaxbEl.getType().getCodeSpace() );
+        final List<LanguageString> languageStrings = fromJaxb( jaxbEl.getKeyword() );
+        return new Pair<List<LanguageString>, CodeType>( languageStrings, type );
+    }
 }

@@ -88,6 +88,8 @@ public class LayerMetadata {
 
     private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
 
+    private boolean requestable = true;
+    
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
         this.description = description;
@@ -107,6 +109,14 @@ public class LayerMetadata {
 
     public Description getDescription() {
         return description;
+    }
+
+    public boolean isRequestable() {
+        return requestable;
+    }
+
+    public void setRequestable( boolean requestable ) {
+        this.requestable = requestable;
     }
 
     /**

@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
+<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-web-app http://xmlns.oracle.com/weblogic/weblogic-web-app/1.2/weblogic-web-app.xsd">
 
   <security-role-assignment>
     <role-name>deegree</role-name>
     <principal-name>deegree</principal-name>
   </security-role-assignment>
 
-  <library-ref>
-    <library-name>jsf</library-name>
-    <specification-version>2.0</specification-version>
-    <implementation-version>1.0.0.0_2-0-2</implementation-version>
-    <exact-match>true</exact-match>
-  </library-ref>
-
-</weblogic-web-app>
+</weblogic-web-app> 
