@@ -165,11 +165,6 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-tomcat</artifactId>
-      <version>${project.version}</version>
-    </dependency>  
-    <dependency>
-      <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wmts</artifactId>
       <version>${project.version}</version>
     </dependency>
