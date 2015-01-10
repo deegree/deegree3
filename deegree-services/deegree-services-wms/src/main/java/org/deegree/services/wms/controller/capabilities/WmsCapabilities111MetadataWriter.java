@@ -145,7 +145,7 @@ class WmsCapabilities111MetadataWriter {
 
     void writeImageFormats( XMLStreamWriter writer )
                             throws XMLStreamException {
-        for ( String f : controller.supportedImageFormats ) {
+        for ( String f : controller.getSupportedImageFormats() ) {
             writeElement( writer, "Format", f );
         }
     }
