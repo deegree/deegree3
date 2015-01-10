@@ -35,13 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.plugins;
 
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.deegree.rendering.r2d.context.DefaultRenderContext;
+import org.deegree.rendering.r2d.context.ImageRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
+import org.deegree.rendering.r2d.context.SvgRenderContext;
 
 /**
  * 
@@ -55,12 +57,16 @@ public class DefaultOutputFormatProvider implements OutputFormatProvider {
     @Override
     public Collection<String> getSupportedOutputFormats() {
         return new HashSet<String>( Arrays.asList( "image/png", "image/png; subtype=8bit", "image/png; mode=8bit",
-                                                   "image/gif", "image/jpeg", "image/tiff", "image/x-ms-bmp" ) );
+                                                   "image/gif", "image/jpeg", "image/tiff", "image/x-ms-bmp", "image/svg+xml" ) );
     }
 
     @Override
-    public RenderContext getRenderers( RenderingInfo info ) {
-        return new DefaultRenderContext( info );
+    public RenderContext getRenderers( RenderingInfo info, OutputStream outputStream ) {
+        if ( "image/svg+xml".equals( info.getFormat () ) ) {
+            return SvgRenderContext.createInstance( info, outputStream );
+        } else {
+            return ImageRenderContext.createInstance( info, outputStream );
+        }
     }
 
 }

@@ -61,7 +61,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.layer.LayerData;
-import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
@@ -110,7 +109,7 @@ class GdalLayerData implements LayerData {
             img = extractAndReprojectRegion( nativeCrs );
         }
         if ( img != null ) {
-            ( (DefaultRenderContext) context ).setImage( img );
+            context.paintImage( img );
         }
     }
 

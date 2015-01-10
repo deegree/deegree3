@@ -537,8 +537,7 @@ public class WMSController extends AbstractOWS {
 
         RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
                                                 gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
-        RenderContext ctx = ouputFormatProvider.getRenderers( info );
-        ctx.setOutput( response.getOutputStream() );
+        RenderContext ctx = ouputFormatProvider.getRenderers( info, response.getOutputStream() );
         LinkedList<String> headers = new LinkedList<String>();
         service.getMap( gm2, headers, ctx );
         response.setContentType( gm2.getFormat() );
