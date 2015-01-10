@@ -79,11 +79,15 @@ public class ImageRenderContext extends Java2DRenderContext {
         this.format = info.getFormat();
     }
     
+    public static RenderContext createInstance( RenderingInfo info, BufferedImage image, OutputStream outputStream ) {
+        return new ImageRenderContext( info, image, image.createGraphics(), outputStream );
+    }
+    
     public static RenderContext createInstance( RenderingInfo info, OutputStream outputStream ) {
         BufferedImage image = ImageUtils.prepareImage( info.getFormat(), info.getWidth(), info.getHeight(), info.getTransparent(),
                                                                 info.getBgColor() );
         
-        return new ImageRenderContext( info, image, image.createGraphics(), outputStream );
+        return createInstance( info, image, outputStream);
     }
     
     @Override

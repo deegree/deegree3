@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.deegree.rendering.r2d.context.ImageRenderContext;
+import org.deegree.rendering.r2d.context.LazyImageRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.rendering.r2d.context.SvgRenderContext;
@@ -65,7 +65,7 @@ public class DefaultOutputFormatProvider implements OutputFormatProvider {
         if ( "image/svg+xml".equals( info.getFormat () ) ) {
             return SvgRenderContext.createInstance( info, outputStream );
         } else {
-            return ImageRenderContext.createInstance( info, outputStream );
+            return new LazyImageRenderContext( info, outputStream );
         }
     }
 
