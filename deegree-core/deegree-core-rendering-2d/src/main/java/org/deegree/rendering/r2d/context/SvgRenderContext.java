@@ -2,6 +2,7 @@ package org.deegree.rendering.r2d.context;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -14,15 +15,17 @@ import org.w3c.dom.Document;
 
 public class SvgRenderContext extends Java2DRenderContext {
         
-    private SvgRenderContext ( RenderingInfo info, Document document, OutputStream outputStream ) {
-        super( info, new SVGGraphics2D( document ), outputStream );
+    private SvgRenderContext ( RenderingInfo info, SVGGraphics2D graphics, OutputStream outputStream ) {
+        super( info, graphics, outputStream );
     }
     
     public static RenderContext createInstance( RenderingInfo info, OutputStream outputStream ) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
         Document document = domImpl.createDocument( "http://www.w3.org/2000/svg", "svg", null );
-        
-        return new SvgRenderContext( info, document, outputStream );
+                
+        SVGGraphics2D graphics = new SVGGraphics2D( document );
+        graphics.setSVGCanvasSize( new Dimension( info.getWidth(), info.getHeight() ) );
+        return new SvgRenderContext( info, graphics, outputStream );
     }
     
     @Override
@@ -30,7 +33,7 @@ public class SvgRenderContext extends Java2DRenderContext {
         try {
             if ( outputStream != null ) {
                 final Writer writer = new OutputStreamWriter( outputStream, "UTF-8" );
-                ((SVGGraphics2D)graphics).stream( writer, true );
+                ( ( SVGGraphics2D ) graphics ).stream( writer, true );
             }
             graphics.dispose();
             return outputStream != null;
