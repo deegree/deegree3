@@ -40,37 +40,51 @@ public class LazyImageRenderContext implements RenderContext {
 
     @Override
     public Renderer getVectorRenderer() {
+        LOG.trace( "Obtaining vector renderer" );
+        
         return getRenderContext().getVectorRenderer();
     }
 
     @Override
     public TextRenderer getTextRenderer() {
+        LOG.trace( "Obtaining text renderer" );
+        
         return getRenderContext().getTextRenderer();
     }
 
     @Override
     public LabelRenderer getLabelRenderer() {
+        LOG.trace( "Obtaining label renderer" );
+        
         return getRenderContext().getLabelRenderer();
     }
 
     @Override
     public RasterRenderer getRasterRenderer() {
+        LOG.trace( "Obtaining raster renderer" );
+        
        return getRenderContext().getRasterRenderer();
     }
 
     @Override
     public TileRenderer getTileRenderer() {
+        LOG.trace( "Obtaining tile renderer" );
+        
         return getRenderContext().getTileRenderer();
     }
 
     @Override
     public void optimizeAndDrawLabels() {
+        LOG.trace( "Optimize and draw labels" );
+        
         getRenderContext().optimizeAndDrawLabels();
         
     }
 
     @Override
     public void paintImage( BufferedImage img ) {
+        LOG.trace( "Paint image" );
+        
         if(renderContext == null) {
             LOG.debug( "Constructing ImageRenderContext with provided image" );
             
@@ -83,11 +97,15 @@ public class LazyImageRenderContext implements RenderContext {
     @Override
     public boolean close()
                             throws IOException {
+        LOG.trace( "Closing render context" );
+        
         return getRenderContext().close();
     }
 
     @Override
     public void applyOptions( MapOptions options ) {
+        LOG.trace( "Applying options" );
+        
         getRenderContext().applyOptions( options );        
     }
 }
