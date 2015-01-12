@@ -1,5 +1,7 @@
 package org.deegree.rendering.r2d.context;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,8 +11,11 @@ import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.TileRenderer;
+import org.slf4j.Logger;
 
 public class LazyImageRenderContext implements RenderContext {
+    
+    private static final Logger LOG = getLogger( LazyImageRenderContext.class );
 
     private RenderContext renderContext;
     
@@ -23,8 +28,10 @@ public class LazyImageRenderContext implements RenderContext {
         this.outputStream = outputStream;
     }
     
-    public RenderContext getRenderContext() {
+    private RenderContext getRenderContext() {
         if(renderContext == null) {
+            LOG.debug( "Constructing ImageRenderContext with empty image" );
+            
             renderContext = ImageRenderContext.createInstance( info, outputStream );
         }
         
@@ -65,6 +72,8 @@ public class LazyImageRenderContext implements RenderContext {
     @Override
     public void paintImage( BufferedImage img ) {
         if(renderContext == null) {
+            LOG.debug( "Constructing ImageRenderContext with provided image" );
+            
             renderContext = ImageRenderContext.createInstance( info, img, outputStream );
         } else {
             renderContext.paintImage( img );
