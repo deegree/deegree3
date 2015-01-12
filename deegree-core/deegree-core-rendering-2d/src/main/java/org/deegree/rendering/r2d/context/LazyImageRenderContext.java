@@ -19,6 +19,8 @@ public class LazyImageRenderContext implements RenderContext {
 
     private RenderContext renderContext;
     
+    private MapOptions options;
+    
     private final RenderingInfo info;
     
     private final OutputStream outputStream;
@@ -33,6 +35,7 @@ public class LazyImageRenderContext implements RenderContext {
             LOG.debug( "Constructing ImageRenderContext with empty image" );
             
             renderContext = ImageRenderContext.createInstance( info, outputStream );
+            applyOptions();
         }
         
         return renderContext;
@@ -89,6 +92,7 @@ public class LazyImageRenderContext implements RenderContext {
             LOG.debug( "Constructing ImageRenderContext with provided image" );
             
             renderContext = ImageRenderContext.createInstance( info, img, outputStream );
+            applyOptions();
         } else {
             renderContext.paintImage( img );
         }
@@ -101,11 +105,25 @@ public class LazyImageRenderContext implements RenderContext {
         
         return getRenderContext().close();
     }
+    
+    private void applyOptions() {
+        if( options != null ) {
+            LOG.trace( "Delayed applying options" );
+            
+            renderContext.applyOptions( options );
+        }
+    }
 
     @Override
     public void applyOptions( MapOptions options ) {
-        LOG.trace( "Applying options" );
-        
-        getRenderContext().applyOptions( options );        
+        if( renderContext == null ) {
+            LOG.trace( "Delaying apply options" );
+            
+            this.options = options; 
+        } else {
+            LOG.trace( "Applying options" );
+            
+            renderContext.applyOptions( options );
+        }        
     }
 }
