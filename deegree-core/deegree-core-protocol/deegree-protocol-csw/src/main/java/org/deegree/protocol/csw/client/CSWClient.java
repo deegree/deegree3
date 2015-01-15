@@ -37,6 +37,7 @@ package org.deegree.protocol.csw.client;
 
 import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetRecords;
 import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.Transaction;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -80,6 +81,8 @@ import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * API-level client for accessing servers that implement the <a
@@ -108,6 +111,27 @@ import org.deegree.protocol.ows.http.OwsHttpResponse;
  * @version $Revision: $, $Date: $
  */
 public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
+
+    private static final Logger LOG = LoggerFactory.getLogger( CSWClient.class );
+
+    public enum GetRecordsRequestType { GET, POST, SOAP };
+
+    public static class GetRecordsBuilder {
+        private int startPosition = 1;
+        private int numberOfRecords = 50;
+        public GetRecordsBuilder() {}
+        public GetRecordsBuilder startingAt(int startPosition) { this.startPosition = startPosition; return this;}
+        public GetRecordsBuilder withMax(int numberOfRecords) { this.numberOfRecords = numberOfRecords; return this;}
+        public GetRecords build() { return new GetRecords(
+              VERSION_202, startPosition, numberOfRecords,
+              "application/xml",
+              ISO_19115_NS,
+              Collections.singletonList( new QName(
+                    CommonNamespaces.ISOAP10GMDNS,
+                    GMD_LOCAL_PART,
+                    CommonNamespaces.ISOAP10GMD_PREFIX ) ),
+              ResultType.results, ReturnableElement.full, null ); }
+    }
 
     /**
      * Creates a new {@link CSWClient} instance with infinite timeout.
@@ -154,63 +178,106 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     public GetRecordsResponse getIsoRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
-        GetRecords getRecords = new GetRecords(
-                                                new Version( 2, 0, 2 ),
-                                                10,
-                                                15,
-                                                "application/xml",
-                                                "http://www.isotc211.org/2005/gmd",
-                                                Collections.singletonList( new QName(
-                                                                                      CommonNamespaces.ISOAP10GMDNS,
-                                                                                      "MD_Metadata",
-                                                                                      CommonNamespaces.ISOAP10GMD_PREFIX ) ),
-                                                ResultType.results, ReturnableElement.full, null );
-        return this.getRecords( getRecords );
+        final GetRecords getRecords = new GetRecordsBuilder().startingAt( 10 ).withMax( 15 ).build();
+        return getRecords( getRecords );
     }
 
     public GetRecordsResponse getIsoRecords( int startPosition, int maxRecords, ResultType resultType,
                                              ReturnableElement elementSetName, Filter constraint )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
-        GetRecords getRecords = new GetRecords(
-                                                new Version( 2, 0, 2 ),
-                                                startPosition,
-                                                maxRecords,
-                                                "application/xml",
-                                                "http://www.isotc211.org/2005/gmd",
-                                                Collections.singletonList( new QName(
-                                                                                      CommonNamespaces.ISOAP10GMDNS,
-                                                                                      "MD_Metadata",
-                                                                                      CommonNamespaces.ISOAP10GMD_PREFIX ) ),
-                                                ResultType.results, ReturnableElement.full, null );
-        return this.getRecords( getRecords );
+        final GetRecords getRecords = new GetRecordsBuilder().startingAt( startPosition ).withMax( maxRecords ).build();
+        return getRecords( getRecords );
     }
 
     public GetRecordsResponse getRecords( int startPosition, int maxRecords, String outputFormat, String outputSchema,
                                           List<QName> typeNames, ResultType resultType,
                                           ReturnableElement elementSetName, Filter constraint )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
-        GetRecords getRecords = new GetRecords( new Version( 2, 0, 2 ), startPosition, maxRecords, outputFormat,
+        GetRecords getRecords = new GetRecords( VERSION_202, startPosition, maxRecords, outputFormat,
                                                 outputSchema, typeNames, resultType, elementSetName, constraint );
         return getRecords( getRecords );
     }
 
-    public GetRecordsResponse getRecords( GetRecords getRecords )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
-
-        URL endPoint = getXMLPostUrl();
-
-        StreamBufferStore request = new StreamBufferStore();
-        try {
-            XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( request );
-            GetRecordsXMLEncoder.export( getRecords, xmlWriter );
-            xmlWriter.close();
-            request.close();
-        } catch ( Throwable t ) {
-            throw new RuntimeException( "Error creating XML request: " + getRecords );
+    public GetRecordsResponse getRecords( final GetRecords request ) throws XMLStreamException, IOException, OWSExceptionReport {
+        GetRecordsRequestType preferredRequestType = null;
+        if (getEndpointUrlByType( "soap" ) !=null ) {
+            preferredRequestType = GetRecordsRequestType.SOAP;
         }
-        OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
-        return new GetRecordsResponse( response );
+        if (getEndpointUrlByType( "xml" ) !=null ) {
+            preferredRequestType = GetRecordsRequestType.POST;
+        }
+        if (getGetUrl( "GetRecords" ) !=null) {
+            preferredRequestType = GetRecordsRequestType.GET;
+        }
+        LOG.debug("Using "+preferredRequestType+" for GetRecords request ["+request+"]");
+        return performGetRecordsRequest(request, preferredRequestType);
+    }
 
+    final GetRecordsResponse performGetRecordsRequest( final GetRecords request, final GetRecordsRequestType requestType )
+                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+        GetRecordsResponse response = null;
+        switch (requestType) {
+            case GET: response = performGetRecordsRequestWithGet( request );
+                break;
+            case SOAP: response = performGetRecordsRequestWithSoap( request );
+                break;
+            default:   response = performGetRecordsRequestWithPost( request );
+                break;
+        }
+        return response;
+
+    }
+
+    private GetRecordsResponse performGetRecordsRequestWithSoap(final GetRecords request) throws XMLStreamException, IOException, OWSExceptionReport {
+        final URL endPoint = getEndpointUrlByType( "soap" );
+        final StreamBufferStore requestOutputStream = new StreamBufferStore();
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( requestOutputStream );
+            GetRecordsXMLEncoder.exportAsSoapMessage( request, xmlWriter );
+        } catch ( Throwable t ) {
+            throw new RuntimeException( "Error creating SOAP message: " + request );
+        } finally {
+            if (xmlWriter!=null) xmlWriter.close();
+            requestOutputStream.close();
+        }
+        OwsHttpResponse response = httpClient.doPost( endPoint, "application/soap+xml", requestOutputStream, null );
+        return new GetRecordsResponse( response );
+    }
+
+    private GetRecordsResponse performGetRecordsRequestWithGet(final GetRecords request) throws IOException, XMLStreamException, OWSExceptionReport {
+        final URL endPoint = getGetUrl( "GetRecords" );
+        final Map<String, String> params = new HashMap<String, String>();
+        params.put( "SERVICE", "CSW" );
+        params.put( "VERSION", "2.0.2" );
+        params.put( "REQUEST", "GetRecords" );
+        params.put( "resultType", request.getResultType().name());
+        params.put( "maxRecords", Integer.toString( request.getMaxRecords() ));
+        params.put( "startPosition", Integer.toString( request.getStartPosition() ));
+        params.put( "constraintLanguage", "CQL_TEXT" );
+        params.put( "typeNames", "gmd:MD_Metadata" );
+        params.put( "namespace", "xmlns(csw=http://www.opengis.net/cat/csw/2.0.2),(gmd=http://www.isotc211.org/2005/gmd)" );
+
+        final OwsHttpResponse response = httpClient.doGet( endPoint, params, null );
+        return new GetRecordsResponse( response );
+    }
+
+    private GetRecordsResponse performGetRecordsRequestWithPost( final GetRecords request ) throws IOException, OWSExceptionReport, XMLStreamException {
+        final URL endPoint = getEndpointUrlByType( "xml" );
+
+        final StreamBufferStore requestOutputStream = new StreamBufferStore();
+        XMLStreamWriter xmlWriter = null;
+        try {
+            xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( requestOutputStream );
+            GetRecordsXMLEncoder.export( request, xmlWriter );
+        } catch ( Throwable t ) {
+            throw new RuntimeException( "Error creating XML request: " + request );
+        } finally {
+            if (xmlWriter!=null) xmlWriter.close();
+            requestOutputStream.close();
+        }
+        final OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", requestOutputStream, null );
+        return new GetRecordsResponse( response );
     }
 
     public List<MetadataRecord> getRecordById( List<String> fileIdentifiers ) {
@@ -274,7 +341,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             xmlWriter.close();
             request.close();
         } catch ( Throwable t ) {
-            throw new RuntimeException( "Error insering " + records.size() + " records" );
+            throw new RuntimeException( "Error inserting " + records.size() + " records" );
         }
         OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
         return new TransactionResponse( response );
@@ -327,9 +394,9 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      *  &lt;/ows:DCP&gt;
      * </pre>
      * 
-     * @return endpoint URL for XML post requests, never <code>null</code>
+     * @return endpoint URL for post requests, never <code>null</code>
      */
-    private URL getXMLPostUrl() {
+    private URL getEndpointUrlByType(String type) {
         Operation operation = getOperations().getOperation( GetRecords.name() );
         for ( DCP dcp : operation.getDCPs() ) {
             for ( Pair<URL, List<Domain>> pe : dcp.getPostEndpoints() ) {
@@ -339,7 +406,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
                         if ( pv instanceof AllowedValues ) {
                             AllowedValues av = (AllowedValues) pv;
                             for ( Values value : av.getValues() ) {
-                                if ( value instanceof Value && "XML".equalsIgnoreCase( ( (Value) value ).getValue() ) ) {
+                                if ( value instanceof Value && type.equalsIgnoreCase( ( (Value) value ).getValue() ) ) {
                                     return pe.first;
                                 }
                             }
@@ -350,4 +417,5 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         }
         return getPostUrl( GetRecords.name() );
     }
+
 }

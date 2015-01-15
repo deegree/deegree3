@@ -74,6 +74,10 @@ public class GetRecordsXMLEncoder {
     public static void export( GetRecords getRecords, XMLStreamWriter writer )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         writer.writeStartDocument();
+        writePayload( getRecords, writer );
+    }
+
+    private static void writePayload(GetRecords getRecords, XMLStreamWriter writer) throws XMLStreamException, TransformationException, UnknownCRSException {
         writer.writeStartElement( CSW_202_PREFIX, "GetRecords", CSW_202_NS );
         writeNamespacesAndNamespaceDeclaration( getRecords, writer );
         writer.writeAttribute( "service", "CSW" );
@@ -86,6 +90,21 @@ public class GetRecordsXMLEncoder {
         writer.writeAttribute( "maxRecords", Integer.toString( getRecords.getMaxRecords() ) );
         writeDistributedSearch( getRecords, writer );
         writeQueryElementWithFilter( getRecords, writer );
+    }
+
+    public static void exportAsSoapMessage( GetRecords getRecords, XMLStreamWriter writer )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        writer.writeStartDocument();
+        writer.writeStartElement( "env", "Envelope", "http://www.w3.org/2003/05/soap-envelope" );
+        writer.writeNamespace( "env", "http://www.w3.org/2003/05/soap-envelope" );
+        // wrap payload into soap envelope
+        //<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+        writer.writeStartElement( "env", "Body", "http://www.w3.org/2003/05/soap-envelope" );
+        //  <env:Body>
+        writePayload( getRecords, writer);
+        // close soap envelope
+        //  </env:Body>
+        //</env:Envelope>
     }
 
     private static void writeNamespacesAndNamespaceDeclaration( GetRecords getRecords, XMLStreamWriter writer )
