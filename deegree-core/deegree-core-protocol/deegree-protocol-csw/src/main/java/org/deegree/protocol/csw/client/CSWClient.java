@@ -201,6 +201,14 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         return cswCapAdapter;
     }
 
+    @Override
+    protected URL getPostUrl( String operationName ) {
+        List<URL> postUrls = getPostUrls( operationName );
+        if ( postUrls.isEmpty() )
+            return null;
+        return postUrls.get( 0 );
+    }
+
     public GetRecordsResponse getIsoRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint )
                             throws IOException, OWSExceptionReport, XMLStreamException, OWSException {
         final GetRecords getRecords = new GetRecordsBuilder().startingAt( 10 ).withMax( 15 ).build();
@@ -229,11 +237,11 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         if ( getEndpointUrlByType( "soap" ) != null ) {
             preferredRequestType = GetRecordsRequestType.SOAP;
         }
-        if ( getEndpointUrlByType( "xml" ) != null ) {
-            preferredRequestType = GetRecordsRequestType.POST;
-        }
         if ( getGetUrl( "GetRecords" ) != null ) {
             preferredRequestType = GetRecordsRequestType.GET;
+        }
+        if ( getEndpointUrlByType( "xml" ) != null ) {
+            preferredRequestType = GetRecordsRequestType.POST;
         }
         LOG.debug( "Using " + preferredRequestType + " for GetRecords request [" + request + "]" );
         return performGetRecordsRequest( request, preferredRequestType );

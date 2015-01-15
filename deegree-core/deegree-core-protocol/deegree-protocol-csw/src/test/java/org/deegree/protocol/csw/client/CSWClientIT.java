@@ -59,13 +59,13 @@ import org.junit.Test;
  */
 public class CSWClientIT {
 
-    // finish csw supports POST, SOAP, GET (only with cql)
-    // private final String capabilitiesUrl =
-    // "http://www.paikkatietohakemisto.fi/geonetwork/srv/csw?service=CSW&request=GetCapabilities&version=2.0.2";
-    // inspire csw supports GET
-    private final String capabilitiesUrl = "http://inspire-geoportal.ec.europa.eu/GeoportalProxyWebServices/resources/OGCCSW202/sandbox/INSPIRE-88351fbe-05f3-11e1-b7de-52540004b857_20140918-194100/services/1?service=CSW&request=GetCapabilities&version=2.0.2&preserveTemplateEndpoints=true";
+    private final String capabilitiesUrlWithSoapAndPostSupport = "http://www.paikkatietohakemisto.fi/geonetwork/srv/csw?service=CSW&request=GetCapabilities&version=2.0.2";
 
-    private CSWClient client;
+    private final String capabilitiesUrlWithGetSupport = "http://inspire-geoportal.ec.europa.eu/GeoportalProxyWebServices/resources/OGCCSW202/sandbox/INSPIRE-88351fbe-05f3-11e1-b7de-52540004b857_20140918-194100/services/1?service=CSW&request=GetCapabilities&version=2.0.2&preserveTemplateEndpoints=true";
+
+    private CSWClient clientWithSoapAndPostSupport;
+
+    private CSWClient clientWithGetSupport;
 
     private GetRecords requestWithDefaultValues;
 
@@ -74,7 +74,8 @@ public class CSWClientIT {
     @Before
     public void setUp()
                             throws IOException, XMLStreamException, OWSExceptionReport {
-        client = new CSWClient( new URL( capabilitiesUrl ) );
+        clientWithSoapAndPostSupport = new CSWClient( new URL( capabilitiesUrlWithSoapAndPostSupport ) );
+        clientWithGetSupport = new CSWClient( new URL( capabilitiesUrlWithGetSupport ) );
         requestWithDefaultValues = new CSWClient.GetRecordsBuilder().startingAt( 1 ).withMax( 20 ).build();
         Filter contraint = readFilter();
         requestWithFilter = new CSWClient.GetRecordsBuilder().startingAt( 1 ).withMax( 20 ).withConstraint( contraint ).build();
@@ -83,39 +84,39 @@ public class CSWClientIT {
     @Test
     public void verifyThatGetRecordsRequestWithHttpPostWorks()
                             throws Exception {
-        GetRecordsResponse response = client.performGetRecordsRequest( requestWithDefaultValues,
-                                                                       CSWClient.GetRecordsRequestType.POST );
+        GetRecordsResponse response = clientWithSoapAndPostSupport.performGetRecordsRequest( requestWithDefaultValues,
+                                                                                             CSWClient.GetRecordsRequestType.POST );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
     @Test
     public void verifyThatGetRecordsRequestWithHttpGetWorks()
                             throws Exception {
-        GetRecordsResponse response = client.performGetRecordsRequest( requestWithDefaultValues,
-                                                                       CSWClient.GetRecordsRequestType.GET );
+        GetRecordsResponse response = clientWithGetSupport.performGetRecordsRequest( requestWithDefaultValues,
+                                                                                     CSWClient.GetRecordsRequestType.GET );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
     @Test
     public void verifyThatGetRecordsRequestWithSoapWorks()
                             throws Exception {
-        GetRecordsResponse response = client.performGetRecordsRequest( requestWithDefaultValues,
-                                                                       CSWClient.GetRecordsRequestType.SOAP );
+        GetRecordsResponse response = clientWithSoapAndPostSupport.performGetRecordsRequest( requestWithDefaultValues,
+                                                                                             CSWClient.GetRecordsRequestType.SOAP );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
     @Test
     public void verifyThatGetRecordsRequestWithHttpGetAndConstraintWorks()
                             throws Exception {
-        GetRecordsResponse response = client.performGetRecordsRequest( requestWithFilter,
-                                                                       CSWClient.GetRecordsRequestType.GET );
+        GetRecordsResponse response = clientWithGetSupport.performGetRecordsRequest( requestWithFilter,
+                                                                                     CSWClient.GetRecordsRequestType.GET );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
     @Test
     public void verifyThatGetRecordsRequestWithPreferredEncodingWorks()
                             throws Exception {
-        GetRecordsResponse response = client.getRecords( requestWithDefaultValues );
+        GetRecordsResponse response = clientWithSoapAndPostSupport.getRecords( requestWithDefaultValues );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
