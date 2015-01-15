@@ -142,7 +142,7 @@ public class GetRecordsXMLEncoder {
         writer.writeStartElement( CSW_202_PREFIX, "Query", CSW_202_NS );
         writer.writeAttribute( "typeNames", appendTypeNamesToString( getRecords ) );
         writeElementSetNameElement( getRecords, writer );
-        writeFilterFilter( getRecords, writer );
+        writeConstraintWithFilter( getRecords, writer );
     }
 
     private static void writeElementSetNameElement( GetRecords getRecords, XMLStreamWriter writer )
@@ -152,7 +152,7 @@ public class GetRecordsXMLEncoder {
         writer.writeEndElement();
     }
 
-    private static void writeFilterFilter( GetRecords getRecords, XMLStreamWriter writer )
+    public static void writeConstraintWithFilter( GetRecords getRecords, XMLStreamWriter writer )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( getRecords.getConstraint() != null ) {
             writer.writeStartElement( CSW_202_PREFIX, "Constraint", CSW_202_NS );

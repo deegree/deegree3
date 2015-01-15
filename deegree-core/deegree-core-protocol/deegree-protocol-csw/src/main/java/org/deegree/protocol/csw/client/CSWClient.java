@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.csw.client;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
 import static org.deegree.protocol.csw.CSWConstants.ISO_19115_NS;
 import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
@@ -49,12 +50,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.AllowedValues;
 import org.deegree.commons.ows.metadata.domain.Domain;
@@ -66,8 +71,9 @@ import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.Filter;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
@@ -124,6 +130,8 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
         private int numberOfRecords = 50;
 
+        private Filter contraint;
+
         public GetRecordsBuilder() {
         }
 
@@ -137,11 +145,16 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             return this;
         }
 
+        public GetRecordsBuilder withConstraint( Filter contraint ) {
+            this.contraint = contraint;
+            return this;
+        }
+
         public GetRecords build() {
             return new GetRecords( VERSION_202, startPosition, numberOfRecords, "application/xml", ISO_19115_NS,
                                    Collections.singletonList( new QName( CommonNamespaces.ISOAP10GMDNS, GMD_LOCAL_PART,
                                                                          CommonNamespaces.ISOAP10GMD_PREFIX ) ),
-                                   ResultType.results, ReturnableElement.full, null );
+                                   ResultType.results, ReturnableElement.full, contraint );
         }
     }
 
@@ -189,14 +202,14 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     public GetRecordsResponse getIsoRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+                            throws IOException, OWSExceptionReport, XMLStreamException, OWSException {
         final GetRecords getRecords = new GetRecordsBuilder().startingAt( 10 ).withMax( 15 ).build();
         return getRecords( getRecords );
     }
 
     public GetRecordsResponse getIsoRecords( int startPosition, int maxRecords, ResultType resultType,
                                              ReturnableElement elementSetName, Filter constraint )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+                            throws IOException, OWSExceptionReport, XMLStreamException, OWSException {
         final GetRecords getRecords = new GetRecordsBuilder().startingAt( startPosition ).withMax( maxRecords ).build();
         return getRecords( getRecords );
     }
@@ -204,14 +217,14 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     public GetRecordsResponse getRecords( int startPosition, int maxRecords, String outputFormat, String outputSchema,
                                           List<QName> typeNames, ResultType resultType,
                                           ReturnableElement elementSetName, Filter constraint )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+                            throws IOException, OWSExceptionReport, XMLStreamException, OWSException {
         GetRecords getRecords = new GetRecords( VERSION_202, startPosition, maxRecords, outputFormat, outputSchema,
                                                 typeNames, resultType, elementSetName, constraint );
         return getRecords( getRecords );
     }
 
     public GetRecordsResponse getRecords( final GetRecords request )
-                            throws XMLStreamException, IOException, OWSExceptionReport {
+                            throws XMLStreamException, IOException, OWSExceptionReport, OWSException {
         GetRecordsRequestType preferredRequestType = null;
         if ( getEndpointUrlByType( "soap" ) != null ) {
             preferredRequestType = GetRecordsRequestType.SOAP;
@@ -227,7 +240,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     final GetRecordsResponse performGetRecordsRequest( final GetRecords request, final GetRecordsRequestType requestType )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+                            throws IOException, OWSExceptionReport, XMLStreamException, OWSException {
         GetRecordsResponse response = null;
         switch ( requestType ) {
         case GET:
@@ -263,7 +276,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     private GetRecordsResponse performGetRecordsRequestWithGet( final GetRecords request )
-                            throws IOException, XMLStreamException, OWSExceptionReport {
+                            throws IOException, XMLStreamException, OWSExceptionReport, OWSException {
         final URL endPoint = getGetUrl( "GetRecords" );
         final Map<String, String> params = new HashMap<String, String>();
         params.put( "SERVICE", "CSW" );
@@ -272,10 +285,12 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         params.put( "resultType", request.getResultType().name() );
         params.put( "maxRecords", Integer.toString( request.getMaxRecords() ) );
         params.put( "startPosition", Integer.toString( request.getStartPosition() ) );
-        params.put( "constraintLanguage", "CQL_TEXT" );
         params.put( "typeNames", "gmd:MD_Metadata" );
         params.put( "namespace",
                     "xmlns(csw=http://www.opengis.net/cat/csw/2.0.2),(gmd=http://www.isotc211.org/2005/gmd)" );
+        params.put( "constraintlanguage", "filter" );
+        if ( request.getConstraint() != null )
+            params.put( "constraint", createConstraint( request ) );
         final OwsHttpResponse response = httpClient.doGet( endPoint, params, null );
         return new GetRecordsResponse( response );
     }
@@ -345,12 +360,12 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     public TransactionResponse insert( OMElement record )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+                            throws IOException, OWSExceptionReport, XMLStreamException {
         return insert( Collections.singletonList( record ) );
     }
 
     public TransactionResponse insert( List<OMElement> records )
-                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+                            throws IOException, OWSExceptionReport, XMLStreamException {
         ckeckOperationSupported( Transaction.name() );
         URL endPoint = getPostUrl( Transaction.name() );
 
@@ -436,6 +451,27 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             }
         }
         return getPostUrl( GetRecords.name() );
+    }
+
+    private String createConstraint( GetRecords getRecords )
+                            throws IOException, XMLStreamException, OWSException {
+        ByteArrayOutputStream constraintStream = new ByteArrayOutputStream();
+        XMLStreamWriter constraintWriter = null;
+        try {
+            constraintWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( constraintStream );
+            GetRecordsXMLEncoder.writeConstraintWithFilter( getRecords, constraintWriter );
+        } catch ( FactoryConfigurationError e ) {
+            throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
+        } catch ( UnknownCRSException e ) {
+            throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
+        } catch ( TransformationException e ) {
+            throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
+        } finally {
+            if ( constraintWriter != null )
+                constraintWriter.close();
+            IOUtils.closeQuietly( constraintStream );
+        }
+        return constraintStream.toString();
     }
 
 }

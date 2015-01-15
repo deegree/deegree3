@@ -38,10 +38,16 @@ package org.deegree.protocol.csw.client;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.filter.Filter;
+import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.protocol.csw.client.getrecords.GetRecords;
 import org.deegree.protocol.csw.client.getrecords.GetRecordsResponse;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
@@ -51,26 +57,32 @@ import org.junit.Test;
 /**
  * Created by tf on 14.01.15.
  */
-public class CSWClientTest {
+public class CSWClientIT {
 
+    // finish csw supports POST, SOAP, GET (only with cql)
     // private final String capabilitiesUrl =
     // "http://www.paikkatietohakemisto.fi/geonetwork/srv/csw?service=CSW&request=GetCapabilities&version=2.0.2";
+    // inspire csw supports GET
     private final String capabilitiesUrl = "http://inspire-geoportal.ec.europa.eu/GeoportalProxyWebServices/resources/OGCCSW202/sandbox/INSPIRE-88351fbe-05f3-11e1-b7de-52540004b857_20140918-194100/services/1?service=CSW&request=GetCapabilities&version=2.0.2&preserveTemplateEndpoints=true";
 
     private CSWClient client;
 
     private GetRecords requestWithDefaultValues;
 
+    private GetRecords requestWithFilter;
+
     @Before
     public void setUp()
                             throws IOException, XMLStreamException, OWSExceptionReport {
         client = new CSWClient( new URL( capabilitiesUrl ) );
         requestWithDefaultValues = new CSWClient.GetRecordsBuilder().startingAt( 1 ).withMax( 20 ).build();
+        Filter contraint = readFilter();
+        requestWithFilter = new CSWClient.GetRecordsBuilder().startingAt( 1 ).withMax( 20 ).withConstraint( contraint ).build();
     }
 
     @Test
     public void verifyThatGetRecordsRequestWithHttpPostWorks()
-                            throws XMLStreamException, IOException, OWSExceptionReport {
+                            throws Exception {
         GetRecordsResponse response = client.performGetRecordsRequest( requestWithDefaultValues,
                                                                        CSWClient.GetRecordsRequestType.POST );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
@@ -78,7 +90,7 @@ public class CSWClientTest {
 
     @Test
     public void verifyThatGetRecordsRequestWithHttpGetWorks()
-                            throws XMLStreamException, IOException, OWSExceptionReport {
+                            throws Exception {
         GetRecordsResponse response = client.performGetRecordsRequest( requestWithDefaultValues,
                                                                        CSWClient.GetRecordsRequestType.GET );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
@@ -86,17 +98,33 @@ public class CSWClientTest {
 
     @Test
     public void verifyThatGetRecordsRequestWithSoapWorks()
-                            throws XMLStreamException, IOException, OWSExceptionReport {
+                            throws Exception {
         GetRecordsResponse response = client.performGetRecordsRequest( requestWithDefaultValues,
                                                                        CSWClient.GetRecordsRequestType.SOAP );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
     @Test
+    public void verifyThatGetRecordsRequestWithHttpGetAndConstraintWorks()
+                            throws Exception {
+        GetRecordsResponse response = client.performGetRecordsRequest( requestWithFilter,
+                                                                       CSWClient.GetRecordsRequestType.GET );
+        assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
+    }
+
+    @Test
     public void verifyThatGetRecordsRequestWithPreferredEncodingWorks()
-                            throws XMLStreamException, IOException, OWSExceptionReport {
+                            throws Exception {
         GetRecordsResponse response = client.getRecords( requestWithDefaultValues );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
+    }
+
+    private Filter readFilter()
+                            throws XMLStreamException, FactoryConfigurationError {
+        InputStream filterAsStream = CSWClientIT.class.getResourceAsStream( "getrecords/simpleFilter.xml" );
+        XMLStreamReader filterReader = XMLInputFactory.newInstance().createXMLStreamReader( filterAsStream );
+        filterReader.nextTag();
+        return Filter100XMLDecoder.parse( filterReader );
     }
 
 }
