@@ -57,12 +57,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.deegree.rendering.r2d.Java2DLabelRenderer;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
-import org.deegree.rendering.r2d.Java2DLabelRenderer;
 import org.deegree.rendering.r2d.Java2DTileRenderer;
 import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
+import org.deegree.style.utils.ColorQuantizer;
 import org.deegree.style.utils.ImageUtils;
 
 /**
@@ -160,6 +161,7 @@ public class DefaultRenderContext implements RenderContext {
                     format = "bmp";
                 }
                 if ( format.equals( "png; subtype=8bit" ) || format.equals( "png; mode=8bit" ) ) {
+                    image = ColorQuantizer.quantizeImage( image, 256, false, false );
                     format = "png";
                 }
                 return write( image, format, out );
