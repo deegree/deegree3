@@ -44,11 +44,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
@@ -79,47 +79,35 @@ public class DefaultTileDataSet implements TileDataSet {
      * Creates a new {@link DefaultTileDataSet} instance.
      * 
      * @param levels
-     *            data levels, must not be <code>null</code> (ordering of resolutions is irrelevant)
+     *            data levels, must not be <code>null</code>
      * @param tileMatrixSet
      *            corresponding matrix set metadata, must not be <code>null</code>
      * @param format
      *            native image format, must not be <code>null</code>
      */
     public DefaultTileDataSet( List<TileDataLevel> levels, TileMatrixSet tileMatrixSet, String format ) {
-        List<TileDataLevel> sortedLevels = sortLevelsByResolutionFinestFirst( levels );
         this.levels = new LinkedHashMap<String, TileDataLevel>();
-        for ( TileDataLevel m : sortedLevels ) {
+        for ( TileDataLevel m : levels ) {
             this.levels.put( m.getMetadata().getIdentifier(), m );
         }
         this.metadata = tileMatrixSet;
         this.format = format;
     }
 
-    private List<TileDataLevel> sortLevelsByResolutionFinestFirst( List<TileDataLevel> levels ) {
-        List<TileDataLevel> sortedLevels = new ArrayList<TileDataLevel>( levels );
-        Collections.sort( sortedLevels, new Comparator<TileDataLevel>() {
-            @Override
-            public int compare( TileDataLevel level1, TileDataLevel level2 ) {
-                Double res1 = level1.getMetadata().getResolution();
-                Double res2 = level2.getMetadata().getResolution();
-                return res1.compareTo( res2 );
-            }
-        } );
-        return sortedLevels;
-    }
-
     @Override
     public Iterator<Tile> getTiles( Envelope envelope, double resolution ) {
         // select correct matrix
-        Iterator<TileDataLevel> iter = levels.values().iterator();
-        TileDataLevel matrix = iter.next();
-        TileDataLevel next = matrix;
-        while ( next.getMetadata().getResolution() <= resolution && iter.hasNext() ) {
-            matrix = next;
-            next = iter.next();
+        List<TileDataLevel> levels = new ArrayList<TileDataLevel>();
+        TreeMap<Double, TileDataLevel> map = new TreeMap<Double, TileDataLevel>();
+        for ( TileDataLevel l : this.levels.values() ) {
+            map.put( l.getMetadata().getResolution(), l );
         }
-        if ( next.getMetadata().getResolution() <= resolution ) {
-            matrix = next;
+        levels.addAll( map.values() );
+        Collections.reverse( levels );
+        Iterator<TileDataLevel> iter = levels.iterator();
+        TileDataLevel matrix = iter.next();
+        while ( matrix.getMetadata().getResolution() > resolution && iter.hasNext() ) {
+            matrix = iter.next();
         }
 
         final long[] idxs = Tiles.getTileIndexRange( matrix, envelope );
@@ -130,9 +118,8 @@ public class DefaultTileDataSet implements TileDataSet {
 
         final TileDataLevel fmatrix = matrix;
 
-        LOG.info( "Selected tile matrix {}, resolution {}, from {}x{} to {}x{}.",
-                  new Object[] { matrix.getMetadata().getIdentifier(), matrix.getMetadata().getResolution(), idxs[0],
-                                idxs[1], idxs[2], idxs[3] } );
+        LOG.debug( "Selected tile matrix with resolution {}, from {}x{} to {}x{}.",
+                   new Object[] { matrix.getMetadata().getResolution(), idxs[0], idxs[1], idxs[2], idxs[3] } );
 
         // fetch tiles lazily
         return new Iterator<Tile>() {
