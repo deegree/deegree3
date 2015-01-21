@@ -1,0 +1,19 @@
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+  <ogc:Or>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">apiso:Type
+      </ogc:PropertyName>
+      <ogc:Literal>dataset</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">apiso:Type
+      </ogc:PropertyName>
+      <ogc:Literal>series</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">apiso:Type
+      </ogc:PropertyName>
+      <ogc:Literal>service</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+  </ogc:Or>
+</ogc:Filter>

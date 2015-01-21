@@ -41,11 +41,16 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.Filter;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.client.AbstractDiscoveryRequest;
+
+import static org.deegree.protocol.csw.CSWConstants.GMD_LOCAL_PART;
+import static org.deegree.protocol.csw.CSWConstants.ISO_19115_NS;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * Represents a <code>GetRecords</code> request to a CSW.
@@ -98,15 +103,7 @@ public class GetRecords extends AbstractDiscoveryRequest {
      */
     public GetRecords( Version version, int startPosition, int maxRecords, String outputFormat, String outputSchema,
                        List<QName> typeNames, ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
-        super( version, elementSetName, outputFormat, outputSchema );
-        if ( startPosition <= 0 ) {
-            throw new IllegalArgumentException( "StartPosition mus be greater than or equal to 1!" );
-        }
-        this.startPosition = startPosition;
-        this.maxRecords = maxRecords;
-        this.typeNames = typeNames;
-        this.resultType = resultType;
-        this.constraint = constraint;
+       this(version, startPosition, maxRecords, outputFormat, outputSchema, typeNames, resultType, elementSetName, constraint, 0);
     }
 
     /**
@@ -138,7 +135,7 @@ public class GetRecords extends AbstractDiscoveryRequest {
                        Filter constraint, int hopCount ) {
         super( version, elementSetName, outputFormat, outputSchema );
         if ( startPosition <= 0 ) {
-            throw new IllegalArgumentException( "StartPosition mus be greater than or equal to 1!" );
+            throw new IllegalArgumentException( "The value of 'startPosition' must be greater than or equal to 1!" );
         }
         this.startPosition = startPosition;
         this.maxRecords = maxRecords;
@@ -169,7 +166,6 @@ public class GetRecords extends AbstractDiscoveryRequest {
      *            never <code>null</code>
      * @param constraint
      *            may be <code>null</code> if the response should not be filtered
-     * @param hopCount
      */
     public GetRecords( Version version, ResultType resultType, ReturnableElement elementSetName, Filter constraint ) {
         super( version, elementSetName, "application/xml", "http://www.opengis.net/cat/csw/2.0.2." );
