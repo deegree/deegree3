@@ -514,7 +514,7 @@ public class SQLFeatureStore implements FeatureStore {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 BlobCodec codec = blobMapping.getCodec();
                 geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
-                                              blobMapping.getCRS(), new FeatureStoreGMLIdResolver( this ) );
+                                              blobMapping.getCRS(), resolver );
                 if ( getCache() != null ) {
                     getCache().add( geomOrFeature );
                 }
