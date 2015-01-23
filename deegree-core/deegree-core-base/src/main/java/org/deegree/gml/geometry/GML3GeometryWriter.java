@@ -47,10 +47,12 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.uom.Measure;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -1292,28 +1294,26 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
     private void exportCircleByCenterPoint( CircleByCenterPoint circleCenterP )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         writer.writeStartElement( "gml", "CircleByCenterPoint", gmlNs );
-
         writer.writeAttribute( "interpolation", "circularArcCenterPointWithRadius" );
         writer.writeAttribute( "numArc", "1" );
-
         exportAsPos( circleCenterP.getMidPoint() );
-
-        writer.writeStartElement( "gml", "radius", gmlNs );
-        writer.writeAttribute( "uom", circleCenterP.getRadius( null ).getUomUri() );
-        writer.writeCharacters( String.valueOf( circleCenterP.getRadius( null ).getValue() ) );
+        exportMeasure( writer, circleCenterP.getRadius( null ), "gml", "radius", gmlNs );
+        exportMeasure( writer, circleCenterP.getStartAngle(), "gml", "startAngle", gmlNs );
+        exportMeasure( writer, circleCenterP.getEndAngle(), "gml", "endAngle", gmlNs );
         writer.writeEndElement();
+    }
 
-        writer.writeStartElement( "gml", "startAngle", gmlNs );
-        writer.writeAttribute( "uom", circleCenterP.getStartAngle().getUomUri() );
-        writer.writeCharacters( String.valueOf( circleCenterP.getStartAngle().getValue() ) );
-        writer.writeEndElement();
-
-        writer.writeStartElement( "gml", "endAngle", gmlNs );
-        writer.writeAttribute( "uom", circleCenterP.getEndAngle().getUomUri() );
-        writer.writeCharacters( String.valueOf( circleCenterP.getEndAngle().getValue() ) );
-        writer.writeEndElement();
-
-        writer.writeEndElement();
+    private void exportMeasure( final XMLStreamWriter writer, final Measure value, final String nsPrefix,
+                                final String localName, final String namespace )
+                            throws XMLStreamException {
+        if ( value != null ) {
+            writer.writeStartElement( nsPrefix, localName, namespace );
+            if ( value.getUomUri() != null ) {
+                writer.writeAttribute( "uom", value.getUomUri() );
+            }
+            writer.writeCharacters( String.valueOf( value.getValue() ) );
+            writer.writeEndElement();
+        }
     }
 
     private void exportCircle( Circle circle )
