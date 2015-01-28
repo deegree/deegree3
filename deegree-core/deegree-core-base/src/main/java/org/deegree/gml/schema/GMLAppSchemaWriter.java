@@ -397,11 +397,11 @@ public class GMLAppSchemaWriter {
 
     private void export( XMLStreamWriter writer, FeatureType ft )
                             throws XMLStreamException {
-
-        if ( exportedElements.contains( ft.getName().getLocalPart() ) ) {
+        QName ftName = ft.getName();
+        if ( exportedElements.contains( ftName.getLocalPart() ) ) {
             return;
         }
-        exportedElements.add( ft.getName().getLocalPart() );
+        exportedElements.add( ftName.getLocalPart() );
 
         // export parent feature types
         AppSchema schema = ft.getSchema();
@@ -413,10 +413,21 @@ public class GMLAppSchemaWriter {
             }
         }
 
-        LOG.debug( "Exporting feature type declaration: " + ft.getName() );
+        LOG.debug( "Exporting feature type declaration: " + ftName );
         LOG.debug( "Parent: " + ft.getSchema().getParent( ft ) );
         writer.writeStartElement( "element" );
-        writer.writeAttribute( "name", ft.getName().getLocalPart() );
+
+        String prefix = null;
+        if ( ftName.getNamespaceURI() != "" ) {
+            prefix = ftName.getPrefix();
+            if ( ftName.getPrefix() == null || ftName.getPrefix().equals( "" ) ) {
+                LOG.warn( "Feature type '" + ftName + "' has no prefix!? This should not happen." );
+                prefix = "app";
+            }
+            writer.writeAttribute( "name", prefix + ":" + ftName.getLocalPart() );
+        } else {
+            writer.writeAttribute( "name", ftName.getLocalPart() );
+        }
 
         // export type name
         QName typeName = getXSTypeName( ft );
