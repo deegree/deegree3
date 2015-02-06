@@ -29,19 +29,20 @@ package org.deegree.console.webservices;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.services.OwsManager;
 
 /**
  * JSF backing bean for "Create new webservice" view.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class CreateServiceBean extends AbstractCreateResourceBean {
 
     public CreateServiceBean() {

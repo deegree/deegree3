@@ -29,19 +29,20 @@ package org.deegree.console.layer.style;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.style.persistence.StyleStoreManager;
 
 /**
  * JSF backing bean for "Create new style" view.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class CreateStyleBean extends AbstractCreateResourceBean {
 
     public CreateStyleBean() {
