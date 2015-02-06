@@ -82,4 +82,9 @@ class MergingTileDataLevel implements TileDataLevel {
         }
         return new MergingTile( tiles );
     }
+
+    @Override
+    public List<String> getStyles() {
+        return null;
+    }
 }

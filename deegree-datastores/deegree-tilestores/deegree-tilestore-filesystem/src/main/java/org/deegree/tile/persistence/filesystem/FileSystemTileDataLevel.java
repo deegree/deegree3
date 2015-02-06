@@ -38,6 +38,7 @@ package org.deegree.tile.persistence.filesystem;
 import static org.deegree.tile.Tiles.calcTileEnvelope;
 
 import java.io.File;
+import java.util.List;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
@@ -124,5 +125,10 @@ class FileSystemTileDataLevel implements TileDataLevel {
 
     public DiskLayout getLayout() {
         return layout;
+    }
+
+    @Override
+    public List<String> getStyles() {
+        return null;
     }
 }

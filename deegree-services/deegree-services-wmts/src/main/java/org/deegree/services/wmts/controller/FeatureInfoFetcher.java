@@ -41,8 +41,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -81,7 +84,21 @@ class FeatureInfoFetcher {
     void fetch( FeatureInfoManager featureInfoManager, HttpResponseBuffer response )
                             throws OWSException, IOException, XMLStreamException {
         TileDataSet tds = layer.getTileDataSet( gfi.getTileMatrixSet() );
+        if ( tds == null ) {
+            throw new OWSException( "The TileMatrixSet parameter value of '" + gfi.getTileMatrixSet() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrixSet" );
+        }
         TileDataLevel tdl = tds.getTileDataLevel( gfi.getTileMatrix() );
+        if ( tdl == null ) {
+            throw new OWSException( "The TileMatrix parameter value of '" + gfi.getTileMatrix() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrix" );
+        }
+        List<String> styles = tdl.getStyles();
+        if ( styles != null ) {
+            for (String style : styles) {
+                if ( !style.equals( gfi.getStyle() ) ) {
+                    throw new OWSException( "The STYLE parameter value of '" + gfi.getStyle() + "' is not valid.", INVALID_PARAMETER_VALUE, "style" );
+                }
+            } 
+        }
         Tile t = tdl.getTile( gfi.getTileCol(), gfi.getTileRow() );
         FeatureCollection col = t.getFeatures( gfi.getI(), gfi.getJ(), 10 );
         ICRS crs = tds.getTileMatrixSet().getSpatialMetadata().getEnvelope().getCoordinateSystem();
