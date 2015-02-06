@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
+import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.rendering.r2d.OrientationFixer.fixOrientation;
 
 import org.deegree.geometry.Envelope;
@@ -51,6 +52,9 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.style.styling.LineStyling;
+import org.deegree.style.styling.PolygonStyling;
+import org.deegree.style.styling.components.Stroke;
 
 /**
  * Responsible for clipping geometries to the area of the viewport.
@@ -108,4 +112,27 @@ class GeometryClipper {
         return geom;
     }
 
+    public static boolean isGenerationExpensive( PolygonStyling styling ) {
+        if ( styling == null )
+            return false;
+        
+        return ( !isZero( styling.perpendicularOffset ) || isGenerationExpensive( styling.stroke ));
+    }
+
+    public static boolean isGenerationExpensive( LineStyling styling ) {
+        if ( styling == null )
+            return false;
+        
+        return ( !isZero( styling.perpendicularOffset ) || isGenerationExpensive( styling.stroke ) );
+    }
+
+    private static boolean isGenerationExpensive( Stroke styling ) {
+        if ( styling == null )
+            return false;
+
+        if ( styling.dasharray != null || styling.stroke != null )
+            return true;
+
+        return false;
+    }
 }
