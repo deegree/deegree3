@@ -140,6 +140,7 @@ import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.model.layers.Layer;
 import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
+import org.deegree.style.utils.ColorQuantizer;
 import org.slf4j.Logger;
 
 /**
@@ -831,6 +832,7 @@ public class WMSController extends AbstractOWS {
             format = "bmp";
         }
         if ( format.equals( "png; subtype=8bit" ) || format.equals( "png; mode=8bit" ) ) {
+            img = ColorQuantizer.quantizeImage( img, 256, false, false );
             format = "png";
         }
         LOG.debug( "Sending in format " + format );
