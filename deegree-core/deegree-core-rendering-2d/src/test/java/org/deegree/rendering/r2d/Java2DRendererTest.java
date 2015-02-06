@@ -287,7 +287,7 @@ public class Java2DRendererTest {
         style.graphic.displacementX = 16;
         style.graphic.displacementY = 16;
         r.render( style, geomFac.createPoint( null, new double[] { 4000, 4000 }, mapcs ) );
-        
+
         g.dispose();
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
@@ -884,5 +884,45 @@ public class Java2DRendererTest {
         List<String> texts = new LinkedList<String>();
         texts.add( "polygon: white rectangle with red triangle stroke and perpendicular offest of -4. Expected: triangles points to the INSIDE of the geometry!" );
         writeTestImage( img, texts, time2 - time );
+    }
+
+    /**
+     * Prevent reintroducing of a clipping error on extra large geometries
+     * 
+     * Prevent endless dash generation in rendering of strokes (or JVM Crashes in Tomcat) 
+     * if one of the coordinates of a geometry has an invalid value (which is out of bounds)
+     * and the clipper does not clip the geometry
+     * 
+     * A timeout is required to prevent a endless runtime in JUnit test runner 
+     * 
+     * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
+     * @throws Exception
+     */
+    @Test(timeout=30000)
+    public void testClipperJvmCrash() throws Exception {
+        BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        
+        double cen0 = 642800d;
+        double cen1 = 5600049000d;
+        
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 50d, 50d }, mapcs ) );
+        Point p1 = geomFac.createPoint( "testP1", 0, 0, null );
+        Point p2 = geomFac.createPoint( "testP1", cen0, cen1, null );
+        Points points = new PointsArray( p1, p2 );
+        
+        LineString lineString = geomFac.createLineString( "testLineString", null, points );
+
+        LineStyling styling = new LineStyling();
+        styling.stroke.color = red;
+        styling.stroke.width = 3;
+        styling.stroke.dasharray = new double[] { 10.0d, 10.0d };
+
+        r.render( styling, lineString );
+
+        g.dispose();
     }
 }
