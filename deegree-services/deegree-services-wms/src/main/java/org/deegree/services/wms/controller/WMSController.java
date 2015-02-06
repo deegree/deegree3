@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -98,7 +99,6 @@ import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
-import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
@@ -122,7 +122,9 @@ import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
+import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
 import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
 import org.deegree.workspace.ResourceInitException;
@@ -145,9 +147,6 @@ public class WMSController extends AbstractOWS {
 
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
 
-    /** The list of supported image formats. */
-    public final LinkedList<String> supportedImageFormats = new LinkedList<String>();
-
     protected MapService service;
 
     protected ServiceIdentification identification;
@@ -163,6 +162,8 @@ public class WMSController extends AbstractOWS {
     private String metadataURLTemplate;
 
     private FeatureInfoManager featureInfoManager;
+    
+    private OutputFormatProvider ouputFormatProvider;
 
     private OWSMetadataProvider metadataProvider;
 
@@ -183,6 +184,12 @@ public class WMSController extends AbstractOWS {
         }
 
         featureInfoManager = new FeatureInfoManager( addDefaultFormats );
+        
+        ouputFormatProvider = new DefaultOutputFormatProvider();
+    }
+    
+    public Collection<String> getSupportedImageFormats() {
+        return ouputFormatProvider.getSupportedOutputFormats();
     }
 
     /**
@@ -234,15 +241,6 @@ public class WMSController extends AbstractOWS {
         }
 
         try {
-            // put in the default formats
-            supportedImageFormats.add( "image/png" );
-            supportedImageFormats.add( "image/png; subtype=8bit" );
-            supportedImageFormats.add( "image/png; mode=8bit" );
-            supportedImageFormats.add( "image/gif" );
-            supportedImageFormats.add( "image/jpeg" );
-            supportedImageFormats.add( "image/tiff" );
-            supportedImageFormats.add( "image/x-ms-bmp" );
-
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     if ( t.getFile() != null ) {
@@ -437,7 +435,7 @@ public class WMSController extends AbstractOWS {
                             throws OWSException, IOException {
         GetLegendGraphic glg = new GetLegendGraphic( map );
 
-        if ( !supportedImageFormats.contains( glg.getFormat() ) ) {
+        if ( !getSupportedImageFormats().contains( glg.getFormat() ) ) {
             throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", glg.getFormat() ), OWSException.INVALID_FORMAT );
         }
         BufferedImage img = service.getLegend( glg );
@@ -539,8 +537,7 @@ public class WMSController extends AbstractOWS {
 
         RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
                                                 gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
-        RenderContext ctx = new DefaultRenderContext( info );
-        ctx.setOutput( response.getOutputStream() );
+        RenderContext ctx = ouputFormatProvider.getRenderers( info, response.getOutputStream() );
         LinkedList<String> headers = new LinkedList<String>();
         service.getMap( gm2, headers, ctx );
         response.setContentType( gm2.getFormat() );
@@ -581,7 +578,7 @@ public class WMSController extends AbstractOWS {
 
     private void checkGetMap( Version version, org.deegree.protocol.wms.ops.GetMap gm )
                             throws OWSException {
-        if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
+        if ( !getSupportedImageFormats().contains( gm.getFormat() ) ) {
             throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), OWSException.INVALID_FORMAT );
         }
         for ( LayerRef lr : gm.getLayers() ) {

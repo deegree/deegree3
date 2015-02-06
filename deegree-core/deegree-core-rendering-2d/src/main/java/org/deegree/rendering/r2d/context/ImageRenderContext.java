@@ -57,12 +57,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.deegree.rendering.r2d.Java2DRasterRenderer;
-import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.rendering.r2d.Java2DTextRenderer;
-import org.deegree.rendering.r2d.Java2DLabelRenderer;
-import org.deegree.rendering.r2d.Java2DTileRenderer;
-import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
 import org.deegree.style.utils.ImageUtils;
 
 /**
@@ -72,89 +66,35 @@ import org.deegree.style.utils.ImageUtils;
  * 
  * @version $Revision$, $Date$
  */
-public class DefaultRenderContext implements RenderContext {
-
-    private BufferedImage image;
-
-    private Graphics2D graphics;
-
-    private Java2DRenderer renderer;
-
-    private Java2DTextRenderer textRenderer;
+public class ImageRenderContext extends Java2DRenderContext {
     
-    private Java2DLabelRenderer labelRenderer;
+    private final BufferedImage image;
 
-    private Java2DRasterRenderer rasterRenderer;
+    private final String format;
 
-    private Java2DTileRenderer tileRenderer;
-
-    private OutputStream out;
-
-    private String format;
-
-    public DefaultRenderContext( RenderingInfo info ) {
-        format = info.getFormat();
-        image = ImageUtils.prepareImage( format, info.getWidth(), info.getHeight(), info.getTransparent(),
-                                         info.getBgColor() );
-        graphics = image.createGraphics();
-        renderer = new Java2DRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope(),
-                                       info.getPixelSize() * 1000 );
-        textRenderer = new Java2DTextRenderer( renderer );
-        labelRenderer = new Java2DLabelRenderer( renderer, textRenderer );
-        rasterRenderer = new Java2DRasterRenderer( graphics );
-        tileRenderer = new Java2DTileRenderer( graphics, info.getWidth(), info.getHeight(), info.getEnvelope() );
-    }
-
-    @Override
-    public Java2DRenderer getVectorRenderer() {
-        return renderer;
-    }
-
-    @Override
-    public Java2DTextRenderer getTextRenderer() {
-        return textRenderer;
-    }
-
-    @Override
-    public Java2DLabelRenderer getLabelRenderer() {
-        return labelRenderer;
-    }
-
-    @Override
-    public Java2DRasterRenderer getRasterRenderer() {
-        return rasterRenderer;
-    }
-
-    @Override
-    public Java2DTileRenderer getTileRenderer() {
-        return tileRenderer;
-    }
-
-    @Override
-    public void setOutput( OutputStream out ) {
-        this.out = out;
+    private ImageRenderContext( RenderingInfo info, BufferedImage image, Graphics2D graphics, OutputStream outputStream ) {
+        super( info, graphics, outputStream );
+        
+        this.image = image;
+        this.format = info.getFormat();
     }
     
-    /**
-     * To be called after all Renderings are done, to render and maybe optimize the labels.
-     */
-    @Override
-    public void optimizeAndDrawLabels() {
-        //Optimize Label Placement here, if pointplacement set to auto=true
-        try{
-            new AutoLabelPlacement(labelRenderer.getLabels(), renderer );
-        } catch ( Throwable e ) {
-            e.printStackTrace();
-        }
-        labelRenderer.render( );
+    public static RenderContext createInstance( RenderingInfo info, BufferedImage image, OutputStream outputStream ) {
+        return new ImageRenderContext( info, image, image.createGraphics(), outputStream );
     }
-
+    
+    public static RenderContext createInstance( RenderingInfo info, OutputStream outputStream ) {
+        BufferedImage image = ImageUtils.prepareImage( info.getFormat(), info.getWidth(), info.getHeight(), info.getTransparent(),
+                                                                info.getBgColor() );
+        
+        return createInstance( info, image, outputStream);
+    }
+    
     @Override
-    public boolean close()
-                            throws IOException {
+    public boolean close() throws IOException {        
         try {
             graphics.dispose();
-            if ( out != null ) {
+            if ( outputStream != null ) {
                 String format = this.format.substring( this.format.indexOf( "/" ) + 1 );
                 if ( format.equals( "x-ms-bmp" ) ) {
                     format = "bmp";
@@ -162,17 +102,12 @@ public class DefaultRenderContext implements RenderContext {
                 if ( format.equals( "png; subtype=8bit" ) || format.equals( "png; mode=8bit" ) ) {
                     format = "png";
                 }
-                return write( image, format, out );
+                return write( image, format, outputStream );
             }
         } finally {
-            closeQuietly( out );
+            closeQuietly( outputStream );
         }
         return false;
-    }
-
-    @Override
-    public void paintImage( BufferedImage img ) {
-        graphics.drawImage( img, 0, 0, null );
     }
 
     @Override
@@ -180,11 +115,6 @@ public class DefaultRenderContext implements RenderContext {
         applyQuality( options );
         applyInterpolation( options );
         applyAntialias( options );
-    }
-
-    public void setImage( BufferedImage img ) {
-        this.image = img;
-        this.graphics = img.createGraphics();
     }
 
     private void applyAntialias( MapOptions options ) {

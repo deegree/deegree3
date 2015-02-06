@@ -1,5 +1,5 @@
 //$HeadURL$
-/*---------------------------------------------------------------------------- 
+/*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2013 by:
  Department of Geography, University of Bonn
@@ -86,10 +86,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates stored feature instances plus index structures for id and spatial queries.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 class StoredFeatures {
@@ -110,7 +110,7 @@ class StoredFeatures {
 
     /**
      * Creates a new {@link StoredFeatures} instance.
-     * 
+     *
      * @param schema
      *            application schema, must not be <code>null</code>
      * @param storageCRS
@@ -143,7 +143,7 @@ class StoredFeatures {
 
     /**
      * Returns the stored features of the given type.
-     * 
+     *
      * @param ft
      *            feature type, must not be <code>null</code>
      * @return stored features of the given type, never <code>null</code>
@@ -154,7 +154,7 @@ class StoredFeatures {
 
     /**
      * Performs the given {@link Query} on the stored features.
-     * 
+     *
      * @param query
      *            query to be performed, must not be <code>null</code>
      * @return resulting features, never <code>null</code>
@@ -234,7 +234,7 @@ class StoredFeatures {
 
     /**
      * Returns the {@link Envelope} for the stored features of the specified type.
-     * 
+     *
      * @param ftName
      *            feature type name, must not be <code>null</code>
      * @return envelope, can be <code>null</code>
@@ -245,7 +245,7 @@ class StoredFeatures {
 
     /**
      * Adds the given {@link Feature} instance and updates the index structures.
-     * 
+     *
      * @param features
      *            feature to be added, must not be <code>null</code> and must have an id (as well as every geometry)
      */
@@ -270,7 +270,7 @@ class StoredFeatures {
 
     /**
      * Removes the given {@link Feature} instance and updates the index structures.
-     * 
+     *
      * @param feature
      *            feature to be removed, must not be <code>null</code>
      */
@@ -289,9 +289,10 @@ class StoredFeatures {
 
     /**
      * Updates the given {@link Feature} instance and updates the index structures.
-     * 
-     * TODO Use a copy of the original feature to avoid modifications on rollback. Difficult part: Consider updating of references.
-     * 
+     *
+     * TODO Use a copy of the original feature to avoid modifications on rollback. Difficult part: Consider updating of
+     * references.
+     *
      * @param feature
      *            feature to be updated, must not be <code>null</code>
      * @param replacementProps
@@ -299,7 +300,7 @@ class StoredFeatures {
      */
     void updateFeature( Feature feature, List<ParsedPropertyReplacement> replacementProps )
                             throws FeatureStoreException {
-       
+
         for ( ParsedPropertyReplacement replacement : replacementProps ) {
             Property prop = replacement.getNewValue();
             UpdateAction updateAction = replacement.getUpdateAction();
@@ -481,6 +482,11 @@ class StoredFeatures {
                     return false;
                 }
                 idToObject.put( feature.getId(), feature );
+                return true;
+            }
+
+            @Override
+            public boolean visitObject( GMLObject o ) {
                 return true;
             }
 

@@ -28,20 +28,20 @@
 package org.deegree.console.datastore.coverage;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.coverage.persistence.CoverageManager;
 
 /**
  * JSF backing bean for "Create new coverage" view.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class CreateCoverageBean extends AbstractCreateResourceBean {
 
     public CreateCoverageBean() {

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import static java.util.Collections.emptyIterator;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.jaxen.JaxenConstants.EMPTY_ITERATOR;
@@ -252,13 +253,15 @@ class GMLObjectNavigator extends DefaultNavigator {
                 }
                 iter = xpathNodes.iterator();
             } else {
-                Object propValue = prop.getValue();
+                final Object propValue = prop.getValue();
                 if ( propValue instanceof GMLObject ) {
                     GMLObject castNode = (GMLObject) propValue;
                     iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode ) );
                 } else if ( propValue instanceof PrimitiveValue ) {
                     iter = new SingleObjectIterator( new PrimitiveNode<Property>( (PropertyNode) node,
                                                                                   (PrimitiveValue) propValue ) );
+                } else if ( propValue == null ) {
+                    iter = emptyIterator();
                 } else {
                     // TODO remove this case
                     iter = new SingleObjectIterator(

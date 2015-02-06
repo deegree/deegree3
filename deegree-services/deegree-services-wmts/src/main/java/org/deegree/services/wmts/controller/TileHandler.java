@@ -119,6 +119,15 @@ class TileHandler {
                                     + op.getTileMatrixSet() + ".", INVALID_PARAMETER_VALUE );
         }
 
+        List<String> styles = level.getStyles();
+        if ( styles != null ) {
+            for ( String style : styles ) {
+                if ( !style.equals( op.getStyle() ) ) {
+                    throw new OWSException( "The STYLE parameter value of '" + op.getStyle() + "' is not valid.", INVALID_PARAMETER_VALUE, "Style" );
+                }
+            }
+        }
+
         final Tile t = level.getTile( op.getTileCol(), op.getTileRow() );
         if ( t == null ) {
             // exception or empty tile?

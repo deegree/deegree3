@@ -29,19 +29,20 @@ package org.deegree.console.layer.theme;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 
 import org.deegree.console.AbstractCreateResourceBean;
 import org.deegree.theme.persistence.ThemeManager;
 
 /**
  * JSF backing bean for "Create new theme" view.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.3
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class CreateThemeBean extends AbstractCreateResourceBean {
 
     public CreateThemeBean() {
