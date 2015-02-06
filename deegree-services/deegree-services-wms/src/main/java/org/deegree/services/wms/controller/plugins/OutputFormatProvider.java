@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.plugins;
 
+import java.io.OutputStream;
 import java.util.Collection;
 
 import org.deegree.rendering.r2d.context.RenderContext;
@@ -58,6 +59,6 @@ public interface OutputFormatProvider {
      * @param info
      * @return the render context that produces the output formats
      */
-    RenderContext getRenderers( RenderingInfo info );
+    RenderContext getRenderers( RenderingInfo info, OutputStream outputStream );
 
 }
