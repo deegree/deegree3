@@ -91,20 +91,7 @@
 
   <complexType name="GetMapFormatsType">
     <sequence>
-      <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded">
-        <simpleType>
-          <restriction base="string">
-            <enumeration value="image/png" />
-            <enumeration value="image/png; subtype=8bit" />
-            <enumeration value="image/png; mode=8bit" />
-            <enumeration value="image/gif" />
-            <enumeration value="image/jpeg" />
-            <enumeration value="image/tiff" />
-            <enumeration value="image/x-ms-bmp" />
-            <enumeration value="image/svg+xml" />
-          </restriction>
-        </simpleType>
-      </element>
+      <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded" type="string" />        
     </sequence>
   </complexType>
   

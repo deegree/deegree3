@@ -735,15 +735,20 @@ public class WMSController extends AbstractOWS {
         return featureInfoManager;
     }
     
-    private void addSupportedImageFormats( DeegreeWMS conf ) {
+    private void addSupportedImageFormats( DeegreeWMS conf ) {        
         if ( conf.getGetMapFormats() != null ) {
             GetMapFormatsType getMapFormats = conf.getGetMapFormats();
             List<String> getMapFormatList = getMapFormats.getGetMapFormat();
+            
+            Collection<String> providedFormats = ouputFormatProvider.getSupportedOutputFormats();
             for ( String getMapFormat : getMapFormatList ) {
-                supportedImageFormats.add( getMapFormat );
+                if ( providedFormats.contains ( getMapFormat ) ) {                
+                    supportedImageFormats.add( getMapFormat );
+                } else {
+                    LOG.warn( "Unsupported GetMapFormat configured: {}", getMapFormat );
+                }
             }
-        }
-        if ( supportedImageFormats.isEmpty() ) {
+        } else {
             supportedImageFormats.addAll( ouputFormatProvider.getSupportedOutputFormats() );
         }
     }
