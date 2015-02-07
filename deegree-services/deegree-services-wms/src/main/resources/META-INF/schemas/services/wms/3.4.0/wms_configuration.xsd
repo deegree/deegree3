@@ -101,6 +101,7 @@
             <enumeration value="image/jpeg" />
             <enumeration value="image/tiff" />
             <enumeration value="image/x-ms-bmp" />
+            <enumeration value="image/svg+xml" />
           </restriction>
         </simpleType>
       </element>
