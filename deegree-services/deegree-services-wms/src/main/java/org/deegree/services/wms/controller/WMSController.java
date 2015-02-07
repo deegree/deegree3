@@ -113,6 +113,7 @@ import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
+import org.deegree.services.jaxb.wms.GetMapFormatsType;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
@@ -147,6 +148,9 @@ public class WMSController extends AbstractOWS {
     private static final Logger LOG = getLogger( WMSController.class );
 
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
+
+    /** The list of supported image formats. */
+    private final LinkedList<String> supportedImageFormats = new LinkedList<String>();
 
     protected MapService service;
 
@@ -190,7 +194,7 @@ public class WMSController extends AbstractOWS {
     }
     
     public Collection<String> getSupportedImageFormats() {
-        return ouputFormatProvider.getSupportedOutputFormats();
+        return supportedImageFormats;
     }
 
     /**
@@ -242,6 +246,8 @@ public class WMSController extends AbstractOWS {
         }
 
         try {
+            addSupportedImageFormats( conf );
+            
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     if ( t.getFile() != null ) {
@@ -436,7 +442,7 @@ public class WMSController extends AbstractOWS {
                             throws OWSException, IOException {
         GetLegendGraphic glg = new GetLegendGraphic( map );
 
-        if ( !getSupportedImageFormats().contains( glg.getFormat() ) ) {
+        if ( !supportedImageFormats.contains( glg.getFormat() ) ) {
             throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", glg.getFormat() ), OWSException.INVALID_FORMAT );
         }
         BufferedImage img = service.getLegend( glg );
@@ -579,7 +585,7 @@ public class WMSController extends AbstractOWS {
 
     private void checkGetMap( Version version, org.deegree.protocol.wms.ops.GetMap gm )
                             throws OWSException {
-        if ( !getSupportedImageFormats().contains( gm.getFormat() ) ) {
+        if ( !supportedImageFormats.contains( gm.getFormat() ) ) {
             throw new OWSException( get( "WMS.UNSUPPORTED_IMAGE_FORMAT", gm.getFormat() ), OWSException.INVALID_FORMAT );
         }
         for ( LayerRef lr : gm.getLayers() ) {
@@ -727,6 +733,19 @@ public class WMSController extends AbstractOWS {
 
     public FeatureInfoManager getFeatureInfoManager() {
         return featureInfoManager;
+    }
+    
+    private void addSupportedImageFormats( DeegreeWMS conf ) {
+        if ( conf.getGetMapFormats() != null ) {
+            GetMapFormatsType getMapFormats = conf.getGetMapFormats();
+            List<String> getMapFormatList = getMapFormats.getGetMapFormat();
+            for ( String getMapFormat : getMapFormatList ) {
+                supportedImageFormats.add( getMapFormat );
+            }
+        }
+        if ( supportedImageFormats.isEmpty() ) {
+            supportedImageFormats.addAll( ouputFormatProvider.getSupportedOutputFormats() );
+        }
     }
 
     /**
