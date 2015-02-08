@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.deegree.commons.tom.Reference;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.utils.GMLObjectVisitor;
@@ -55,6 +56,11 @@ class IdChecker implements GMLObjectVisitor {
     @Override
     public boolean visitFeature( final Feature feature ) {
         checkForDuplication( feature.getId() );
+        return true;
+    }
+
+    @Override
+    public boolean visitObject( GMLObject o ) {
         return true;
     }
 
