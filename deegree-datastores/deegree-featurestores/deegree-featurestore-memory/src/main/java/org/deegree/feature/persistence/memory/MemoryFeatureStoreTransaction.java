@@ -61,6 +61,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.transaction.FeatureUpdater;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
@@ -546,7 +547,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
                 for ( Feature feature : update ) {
                     updatedFids.add( feature.getId() );
-                    sf.updateFeature( feature, replacementProps );
+                    new FeatureUpdater().update( feature, replacementProps );
                     if ( lock != null ) {
                         lock.release( feature.getId() );
                     }

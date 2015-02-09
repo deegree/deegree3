@@ -967,14 +967,18 @@ public class SQLFeatureStore implements FeatureStore {
             for ( int i = 1; i < filter.getMatchingIds().size(); ++i ) {
                 sb.append( ",?" );
             }
+            long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                           + " A WHERE A.gml_id in (" + sb + ")" );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );            
             stmt.setFetchSize( fetchSize );
             int idx = 0;
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( ++idx, id );
             }
+            begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );            
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
