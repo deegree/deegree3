@@ -58,10 +58,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An {@link AppSchema} augmented with relational and / or BLOB mapping information.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class MappedAppSchema extends GenericAppSchema {
@@ -90,7 +90,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Creates a new {@link MappedAppSchema} from the given parameters.
-     * 
+     *
      * @param fts
      *            all application feature types (abstract and non-abstract), this must not include the GML base feature
      *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>), must not be
@@ -120,10 +120,10 @@ public class MappedAppSchema extends GenericAppSchema {
                             Map<String, String> prefixToNs, GMLSchemaInfoSet xsModel, FeatureTypeMapping[] ftMappings,
                             BBoxTableMapping bboxMapping, BlobMapping blobMapping,
                             GeometryStorageParams geometryParams, boolean deleteCascadingByDB,
-                            RelationalModel relationalModel, List<GMLObjectType> geometryTypes,
+                            RelationalModel relationalModel, List<GMLObjectType> gmlObjectTypes,
                             Map<GMLObjectType, GMLObjectType> typeToSuperType ) {
 
-        super( fts, ftToSuperFt, prefixToNs, xsModel, geometryTypes, typeToSuperType );
+        super( fts, ftToSuperFt, prefixToNs, xsModel, gmlObjectTypes, typeToSuperType );
         if ( ftMappings != null ) {
             for ( FeatureTypeMapping ftMapping : ftMappings ) {
                 ftNameToFtMapping.put( ftMapping.getFeatureType(), ftMapping );
@@ -158,7 +158,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns all relational feature type mappings.
-     * 
+     *
      * @return relational mappings, never <code>null</code>
      */
     public Map<QName, FeatureTypeMapping> getFtMappings() {
@@ -167,7 +167,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the relational mapping for the specified feature type.
-     * 
+     *
      * @param ftName
      *            name of the feature type, must not be <code>null</code>
      * @return the corresponding mapping, may be <code>null</code> (if the feature type does not have a relational
@@ -179,7 +179,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the id of the specified (non-abstract) feature type.
-     * 
+     *
      * @param ftName
      *            name of the feature type, must denote a non-abstract feature type that's part of the schema and not
      *            <code>null</code>
@@ -191,7 +191,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the name of the (non-abstract) feature type with the given id.
-     * 
+     *
      * @param ftId
      *            id of the feature type
      * @return name of the feature type, denotes a non-abstract feature type that's part of the schema
@@ -213,7 +213,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the BLOB mapping parameters.
-     * 
+     *
      * @return the BLOB mapping parameters, may be <code>null</code> (for RELATIONAL-only mappings)
      */
     public BlobMapping getBlobMapping() {
@@ -222,7 +222,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the parameters used for storing geometries in the backend.
-     * 
+     *
      * @return the storage parameters, never <code>null</code>
      */
     public GeometryStorageParams getGeometryParams() {
@@ -231,7 +231,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the name of the global id lookup table (that allows the lookup of features / geometries by id).
-     * 
+     *
      * @return the name of the lookup table, can be <code>null</code> (no global lookup table, only per feature type)
      */
     public String getIdLookupTable() {
@@ -243,7 +243,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns an analysis of the given feature or geometry id.
-     * 
+     *
      * @param featureOrGeomId
      *            id to be analyzed, must not be <code>null</code>
      * @return id analysis, never <code>null</code>
@@ -257,7 +257,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns the dependencies between key columns for the involved database tables.
-     * 
+     *
      * @return dependencies between key columns, never <code>null</code>
      */
     public TableDependencies getKeyDependencies() {
@@ -266,7 +266,7 @@ public class MappedAppSchema extends GenericAppSchema {
 
     /**
      * Returns details on the relational model.
-     * 
+     *
      * @return details on the relational model, may be <code>null</code>
      */
     public RelationalModel getRelationalModel() {

@@ -36,17 +36,17 @@
 package org.deegree.gml.schema;
 
 import static javax.xml.namespace.QName.valueOf;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
-
-import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.gml.GMLObjectType;
@@ -57,14 +57,15 @@ import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.gml.GMLVersion;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Tests that check the correct extraction of {@link GMLObjectType}s from various GML application schemas.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class GMLAppSchemaReaderTest {
@@ -276,6 +277,28 @@ public class GMLAppSchemaReaderTest {
     }
 
     @Test
+    public void testAIXMNumberOfTimeObjectTypes()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+        final String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
+        final GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        final AppSchema schema = adapter.extractAppSchema();
+        final List<GMLObjectType> objectTypes = schema.getGmlObjectTypes( TIME_OBJECT );
+        assertEquals( 10, objectTypes.size() );
+    }
+
+    @Test
+    public void testAIXMNumberOfTimeSliceTypes()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+        final String schemaUrl = this.getClass().getResource( "../aixm/schema/message/AIXM_BasicMessage.xsd" ).toString();
+        final GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        final AppSchema schema = adapter.extractAppSchema();
+        final List<GMLObjectType> objectTypes = schema.getGmlObjectTypes( TIME_SLICE );
+        assertEquals( 127, objectTypes.size() );
+    }
+
+    @Test
     public void testAIXMCustomGeometryHierarchy()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
@@ -435,7 +458,7 @@ public class GMLAppSchemaReaderTest {
         XSElementDeclaration propDecl = pt.getElementDecl();
         GMLPropertySemantics propertySemantics = gmlSchema.getTimeSlicePropertySemantics( propDecl );
         assertNotNull( propertySemantics );
-        
+
         propName = new QName( GML3_2_NS, "identifier" );
         pt = ft.getPropertyDeclaration( propName );
         propDecl = pt.getElementDecl();

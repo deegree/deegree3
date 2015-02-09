@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4-pre15-SNAPSHOT</version>
+  <version>3.4-pre17-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -288,6 +288,21 @@
           <goals>install</goals>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <!-- extend default manifest with deegree build information -->
+            <manifestEntries>
+              <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
+              <deegree-build-by>${user.name}</deegree-build-by>
+              <deegree-build-date>${buildTimestamp}</deegree-build-date>
+              <deegree-build-rev>${buildNumber}</deegree-build-rev>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -333,6 +348,12 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.8.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -343,6 +364,12 @@
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
         <version>2.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -364,6 +391,12 @@
         <artifactId>httpclient</artifactId>
         <version>4.2.3</version>
         <scope>compile</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -515,16 +548,38 @@
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
         <version>1.2.14</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-api</artifactId>
         <version>1.2.14</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
         <version>1.2.12</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jsr173_api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
@@ -688,8 +743,8 @@
         <version>1.7</version>
         <exclusions>
           <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <groupId>fop</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -733,6 +788,10 @@
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -984,12 +1043,6 @@
         <artifactId>deegree-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>buildinfo</id>
-            <goals>
-              <goal>generate-buildinfo</goal>
-            </goals>
-          </execution>
-          <execution>
             <id>jaxbcatalog</id>
             <phase>generate-sources</phase>
             <goals>
@@ -1080,8 +1133,8 @@
   </licenses>
 
   <issueManagement>
-    <system>Trac</system>
-    <url>http://tracker.deegree.org/deegree-services/</url>
+    <system>github</system>
+    <url>https://github.com/deegree/deegree3/issues</url>
   </issueManagement>
 
   <developers>

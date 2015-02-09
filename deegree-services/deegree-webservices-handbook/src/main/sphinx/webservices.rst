@@ -182,12 +182,15 @@ Option ``GetFeatureResponse`` has the following sub-options:
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
 | DisableStreaming         | 0..1         | Boolean   | Disables output streaming, include numberOfFeature information/gml:boundedBy |
 +--------------------------+--------------+-----------+------------------------------------------------------------------------------+
+| PrebindNamespace         | 0..n         | Complex   | Pre-bind namespaces in the root element                                      |
++--------------------------+--------------+-----------+------------------------------------------------------------------------------+
 
 * ``ContainerElement``: By default, the container element of a GetFeature response is ``wfs:FeatureCollection``. Using this option, you can specify an alternative element name. In order to bind the namespace prefix, use standard XML namespace mechanisms (xmlns attribute). This option is ignored for WFS 2.0.0.
 * ``FeatureMemberElement``: By default, the member features are included in ``gml:featureMember`` (WFS 1.0.0/1.1.0) or ``wfs:member`` elements (WFS 2.0.0). Using this option, you can specify an alternative element name. In order to bind the namespace prefix, use standard XML namespace mechanisms (xmlns attribute). This option is ignored for WFS 2.0.0.
 * ``AdditionalSchemaLocation``: By default, the ``xsi:schemaLocation`` attribute in a GetFeature response is auto-generated and refers to all schemas necessary for validation of the response. Using this option, you can add additional namespace/URL pairs for adding additional schemas. This may be required when you override the returned container or feature member elements in order to achieve schema-valid output.
 * ``DisableDynamicSchema``: By default, the GML application schema returned in DescribeFeatureType reponses (and referenced in the ``xsi:schemaLocation`` of query responses) will be generated dynamically from the internal feature type representation. This allows generation of application schemas for different GML versions and is fine for simple feature models (e.g. feature types served from shapefiles or flat database tables). However, valid re-encoding of complex GML application schema (such as INSPIRE Data Themes) is technically not feasible. In these cases, you will have to set this option to ``false``, so the WFS will produce a response that refers to the original schema files used for configuring the feature store. If you want the references to point to an external copy of your GML application schema files (instead of pointing back to the deegree WFS), use the optional attribute ``baseURL`` that this element provides.
 * ``DisableStreaming``: By default, returned features are not collected in memory, but directly streamed from the backend (e.g. an SQL database) and individually encoded as GML. This enables the querying of huge numbers of features with only minimal memory footprint. However, by using this strategy, the number of features and their bounding box is not known when the WFS starts to write out the response. Therefore, this information is omitted from the response (which is perfectly valid according to WFS 1.0.0 and 1.1.0, and a change request for WFS 2.0.0 has been accepted). If you find that your WFS client has problems with the response, you may set this option to ``false``. Features will be collected in memory first and the generated response will include numberOfFeature information and gml:boundedBy for the collection. However, for huge response and heavy server load, this is not recommended as it introduces significant overhead and may result in out-of-memory errors.
+* ``PrebindNamespace``: By default, XML namespaces are bound when they are needed. This will result in valid output, but may lead to the same namespace being bound again and again in different parts of the response document. Using this option, namespaces can be bound in the root element, so they are defined for the full scope of the response document and do not need re-definition at several positions in the document. This option has the required attributes ``prefix`` and ``uri``.
 
 """""""""""""""""""""
 Coordinate formatters
@@ -320,8 +323,17 @@ The following table shows what top level options are available.
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | FeatureInfoFormats       | 0..1         | Complex | Configures additional feature info output formats                            |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| GetMapFormats            | 0..1         | Complex | Configures additional image output formats                                   |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| LayerLimit               | 0..1         | Integer | Maximum number of layers in a GetMap request, default: unlimited             |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| MaxWidth                 | 0..1         | Integer | Maximum width in a GetMap request, default: unlimited                        |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| MaxHeight                | 0..1         | Integer | Maximum height in a GetMap request, default: unlimited                       |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+
 
 ^^^^^^^^^^^^^
 Basic options
@@ -569,6 +581,32 @@ The selector for properties and features is a kind of pattern matching on the ob
 +--------------------------+----------------------------------------------------------+
 | *selector1*, *selector2* | matches all objects matching *selector1* and *selector2* |
 +--------------------------+----------------------------------------------------------+
+
+.. _anchor-image-output-configuration:
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Custom image output formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Any mime type of the following output formats can be configured to be available as response format for GetMap requests.
+
+ * ``image/png``
+ * ``image/png; subtype=8bit``
+ * ``image/png; mode=8bit``
+ * ``image/gif``
+ * ``image/jpeg``
+ * ``image/tiff``
+ * ``image/x-ms-bmp``
+
+If no format has been configured, all formats are supported.
+
+This is how the configuration section looks like for configuring only ``image/png`` as image output format:
+
+.. code-block:: xml
+
+  <GetMapFormats>
+    <GetMapFormat>image/png</GetMapFormat>
+  </GetMapFormats>
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
@@ -998,31 +1036,33 @@ Service controller
 
 The controller configuration is used to configure various global aspects that affect all services.
 
-Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, if you want the default behaviour, just omit the file completely.
+Since it's a global configuration file for all services, it's called ``main.xml``, and located in the ``services`` directory. All of the options are optional, and you can also omit the file completely.
 
 An empty example file looks like follows:
 
 .. code-block:: xml
 
   <?xml version='1.0'?>
-  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.2.0'>
+  <deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.4.0'>
   </deegreeServiceController>
 
 The following table lists all available configuration options. When specifiying them, their order must be respected.
 
 .. table:: Options for ``deegreeServiceController``
 
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| Option                  | Cardinality  | Value   | Description                                                                                  |
-+=========================+==============+=========+==============================================================================================+
-| ReportedUrls            | 0..1         | Complex | Hardcode reported URLs in service responses                                                  |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| PreventClassloaderLeaks | 0..1         | Boolean | TODO                                                                                         |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| RequestLogging          | 0..1         | Complex | TODO                                                                                         |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
-| ValidateResponses       | 0..1         | Boolean | TODO                                                                                         |
-+-------------------------+--------------+---------+----------------------------------------------------------------------------------------------+
++----------------------------+-------------+---------+---------------------------------------------+
+| Option                     | Cardinality | Value   | Description                                 |
++============================+=============+=========+=============================================+
+| ReportedUrls               | 0..1        | Complex | Hardcode reported URLs in service responses |
++----------------------------+-------------+---------+---------------------------------------------+
+| PreventClassloaderLeaks    | 0..1        | Boolean | TODO                                        |
++----------------------------+-------------+---------+---------------------------------------------+
+| RequestLogging             | 0..1        | Complex | TODO                                        |
++----------------------------+-------------+---------+---------------------------------------------+
+| ValidateResponses          | 0..1        | Boolean | TODO                                        |
++----------------------------+-------------+---------+---------------------------------------------+
+| RequestTimeoutMilliseconds | 0..n        | Complex | Maximum request execution time              |
++----------------------------+-------------+---------+---------------------------------------------+
 
 The following sections describe the available options in detail.
 
@@ -1048,4 +1088,37 @@ For this example, deegree would report ``http://www.mygeoportal.com/ows`` as ser
 
 The URL configured by ``Resources`` relates to the reported URL of the ``resources`` servlet, which allows to access parts of the active deegree workspace via HTTP. Currently, this is only used in WFS DescribeFeatureType responses that access GML application schema directories.
 
+^^^^^^^^^^^^^^^^
+Request timeouts
+^^^^^^^^^^^^^^^^
 
+By default, the execution time of a request to a web service is not constrained. It depends on the complexity of the request and the configuration -- it's well possible to create a WMS configuration and a GetMap request that will require hours of processing time. Generally, it is the responsibility of the configuration creator to ensure that service requests will return in a reasonable time (e.g. by applying scale limitations in the layer configuration).
+
+Nevertheless, it is sometimes desirable to enforce an execution time limit. This can be achieved by using the RequestTimeoutMilliseconds option:
+
+.. code-block:: xml
+
+  ...
+    <RequestTimeoutMilliseconds serviceId="wms1" request="GetMap">1000</RequestTimeoutMilliseconds>
+    <RequestTimeoutMilliseconds serviceId="wms2" request="GetMap">2500</RequestTimeoutMilliseconds>
+  ...
+
+This example enforces the following time-out behaviour:
+
+* GetMap requests to WMS instance wms1 will be interrupted after an execution time of 1000 milliseconds
+* GetMap requests to WMS instance wms2 will be interrupted after an execution time of 2500 milliseconds
+
+Besides the time-out value in milliseconds, the following sub-options are supported by RequestTimeoutMilliseconds:
+
+.. table:: Options for ``RequestTimeoutMilliseconds``
+
++------------+-------------+---------+------------------------------------+
+| Option     | Cardinality | Value   | Description                        |
++============+=============+=========+====================================+
+| @serviceId | 1           | String  | Resource identifier of the service |
++------------+-------------+---------+------------------------------------+
+| @request   | 1           | String  | Service request                    |
++------------+-------------+---------+------------------------------------+
+
+.. note::
+  A time-out value can be configured for any service type and request. However, a correct termination of requests requires that the relevant Java code is actually interruptible. So far, this has only been verified for GetMap requests to WMS based on feature layers.

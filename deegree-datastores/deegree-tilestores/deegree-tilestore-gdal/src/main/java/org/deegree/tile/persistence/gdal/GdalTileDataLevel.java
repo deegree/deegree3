@@ -28,6 +28,7 @@
 package org.deegree.tile.persistence.gdal;
 
 import java.io.File;
+import java.util.List;
 
 import org.deegree.commons.gdal.GdalDataset;
 import org.deegree.commons.gdal.GdalSettings;
@@ -116,5 +117,10 @@ class GdalTileDataLevel implements TileDataLevel {
 
     private boolean isWithinLimits( long x, long y ) {
         return x >= xMin && x <= xMax && y >= yMin && y <= yMax;
+    }
+
+    @Override
+    public List<String> getStyles() {
+        return null;
     }
 }

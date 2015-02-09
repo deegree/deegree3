@@ -82,6 +82,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
@@ -313,13 +314,14 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
 
             // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-            String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
-            if ( metadataUrl != null ) {
-                writer.writeStartElement( WFS_NS, "MetadataURL" );
-                writer.writeAttribute( "type", "TC211" );
-                writer.writeAttribute( "format", "XML" );
-                writer.writeCharacters( metadataUrl );
-                writer.writeEndElement();
+            if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
+                for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
+                    writer.writeStartElement( WFS_NS, "MetadataURL" );
+                    writer.writeAttribute( "type", "TC211" );
+                    writer.writeAttribute( "format", "XML" );
+                    writer.writeCharacters( metadataUrl.getUrl() );
+                    writer.writeEndElement();
+                }
             }
 
             writer.writeEndElement();
@@ -687,13 +689,14 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // TODO Operations
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
-                if ( metadataUrl != null ) {
-                    writer.writeStartElement( WFS_NS, "MetadataURL" );
-                    writer.writeAttribute( "type", "19139" );
-                    writer.writeAttribute( "format", "text/xml" );
-                    writer.writeCharacters( metadataUrl );
-                    writer.writeEndElement();
+                if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
+                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
+                        writer.writeStartElement( WFS_NS, "MetadataURL" );
+                        writer.writeAttribute( "type", "19139" );
+                        writer.writeAttribute( "format", "text/xml" );
+                        writer.writeCharacters( metadataUrl.getUrl() );
+                        writer.writeEndElement();
+                    }
                 }
 
                 writer.writeEndElement();
@@ -807,10 +810,10 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 constraints.add( new Domain( "AutomaticDataLocking", "TRUE" ) );
                 constraints.add( new Domain( "PreservesSiblingOrder", "TRUE" ) );
                 operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
-                
+
                 // GetFeatureWithLock
                 operations.add( new Operation( GetFeatureWithLock.name(), getAndPost, null, null, null ) );
-                
+
                 // LockFeature
                 operations.add( new Operation( LockFeature.name(), getAndPost, null, null, null ) );
             }
@@ -850,7 +853,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             } else {
                 constraints.add( new Domain( "ImplementsTransactionalWFS", "FALSE" ) );
                 constraints.add( new Domain( "ImplementsLockingWFS", "FALSE" ) );
-            }            
+            }
             constraints.add( new Domain( "KVPEncoding", "TRUE" ) );
             constraints.add( new Domain( "XMLEncoding", "TRUE" ) );
             constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
@@ -991,10 +994,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
-                if ( metadataUrl != null ) {
-                    writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
-                    writer.writeAttribute( XLN_NS, "href", metadataUrl );
+                if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
+                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
+                        writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
+                        writer.writeAttribute( XLN_NS, "href", metadataUrl.getUrl() );
+                    }
                 }
 
                 writer.writeEndElement();

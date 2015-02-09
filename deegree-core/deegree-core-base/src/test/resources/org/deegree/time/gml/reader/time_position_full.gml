@@ -1,0 +1,1 @@
+<timePosition frame="http://my.big.org/TRS/calendars/japanese" calendarEraName="Meiji" indeterminatePosition="before">0025-03</timePosition>

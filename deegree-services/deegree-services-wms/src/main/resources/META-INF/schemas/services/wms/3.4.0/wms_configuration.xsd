@@ -28,6 +28,7 @@
         <element name="MetadataURLTemplate" minOccurs="0" type="string" />
         <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
+        <element name="GetMapFormats" minOccurs="0" type="wms:GetMapFormatsType" />
         <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <sequence>
@@ -41,6 +42,9 @@
             </sequence>
           </complexType>
         </element>
+        <element name="LayerLimit" minOccurs="0" type="positiveInteger"/>
+        <element name="MaxWidth" minOccurs="0" type="positiveInteger"/>
+        <element name="MaxHeight" minOccurs="0" type="positiveInteger"/>        
       </sequence>
       <attribute name="configVersion" use="required" type="wms:ConfigVersionType" />
     </complexType>
@@ -85,6 +89,25 @@
     <attribute name="enableDefaultFormats" type="boolean" default="true"/>
   </complexType>
 
+  <complexType name="GetMapFormatsType">
+    <sequence>
+      <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded">
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="image/png" />
+            <enumeration value="image/png; subtype=8bit" />
+            <enumeration value="image/png; mode=8bit" />
+            <enumeration value="image/gif" />
+            <enumeration value="image/jpeg" />
+            <enumeration value="image/tiff" />
+            <enumeration value="image/x-ms-bmp" />
+            <enumeration value="image/svg+xml" />
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+  
   <complexType name="LayerOptionsType">
     <sequence>
       <element name="AntiAliasing" type="string" minOccurs="0" />

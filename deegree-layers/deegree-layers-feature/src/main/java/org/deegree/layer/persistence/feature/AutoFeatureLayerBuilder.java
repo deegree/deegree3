@@ -95,7 +95,10 @@ class AutoFeatureLayerBuilder {
                                              + " is not available." );
         }
         id = auto.getStyleStoreId();
-        StyleStore sstore = workspace.getResource( StyleStoreProvider.class, id );
+        StyleStore sstore = null;
+        if ( id != null ) {
+            sstore = workspace.getResource( StyleStoreProvider.class, id );
+        }
         if ( id != null && sstore == null ) {
             throw new ResourceInitException( "Feature layer config was invalid, style store with id " + id
                                              + " is not available." );

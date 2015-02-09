@@ -35,20 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.csw.client.getrecords;
 
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
 import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_PREFIX;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202_STRING;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.filter.xml.Filter110XMLEncoder;
-import org.deegree.protocol.csw.CSWConstants;
 
 /**
- * TODO add class documentation here
+ * Writes {@link GetRecords} requests, valid to http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -58,54 +61,40 @@ import org.deegree.protocol.csw.CSWConstants;
 public class GetRecordsXMLEncoder {
 
     /**
+     * Writes a {@link GetRecords} request as XML, valid to http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd.
+     * 
      * @param getRecords
-     * @param object
-     * @param xmlWriter
+     *            never <code>null</code>
+     * @param writer
+     *            never <code>null</code>
      * @throws XMLStreamException
-     * @throws TransformationException
      * @throws UnknownCRSException
+     * @throws TransformationException
      */
     public static void export( GetRecords getRecords, XMLStreamWriter writer )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
         writer.writeStartDocument();
-        writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "GetRecords", CSW_202_NS );
-        writer.writeNamespace( CSWConstants.CSW_202_PREFIX, CSW_202_NS );
-        writer.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
-        writer.writeAttribute( CommonNamespaces.XSINS, "schemaLocation", CSW_202_NS + " "
-                                                                         + CSWConstants.CSW_202_DISCOVERY_SCHEMA );
-        for ( QName tn : getRecords.getTypeNames() ) {
-            writeNamespaceDeclaration( tn, writer );
-        }
+        writer.writeStartElement( CSW_202_PREFIX, "GetRecords", CSW_202_NS );
+        writeNamespacesAndNamespaceDeclaration( getRecords, writer );
         writer.writeAttribute( "service", "CSW" );
-        writer.writeAttribute( "version", CSWConstants.VERSION_202_STRING );
+        writer.writeAttribute( "version", VERSION_202_STRING );
         writer.writeAttribute( "outputSchema", getRecords.getOutputSchema() );
         writer.writeAttribute( "outputFormat", getRecords.getOutputFormat() );
         writer.writeAttribute( "resultType", getRecords.getResultType().toString() );
 
         writer.writeAttribute( "startPosition", Integer.toString( getRecords.getStartPosition() ) );
         writer.writeAttribute( "maxRecords", Integer.toString( getRecords.getMaxRecords() ) );
-        writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "Query", CSW_202_NS );
-        String typeNames = "";
-        boolean isFirst = true;
+        writeDistributedSearch( getRecords, writer );
+        writeQueryElementWithFilter( getRecords, writer );
+    }
+
+    private static void writeNamespacesAndNamespaceDeclaration( GetRecords getRecords, XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeNamespace( CSW_202_PREFIX, CSW_202_NS );
+        writer.writeNamespace( XSI_PREFIX, XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation", CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA );
         for ( QName tn : getRecords.getTypeNames() ) {
-            if ( !isFirst )
-                typeNames += ',';
-            if ( tn.getNamespaceURI() != null ) {
-                typeNames += tn.getPrefix() + ":";
-            }
-            typeNames += tn.getLocalPart();
-            isFirst = false;
-        }
-        writer.writeAttribute( "typeNames", typeNames );
-        writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "ElementSetName", CSW_202_NS );
-        writer.writeCharacters( getRecords.getElementSetName().toString() );
-        writer.writeEndElement();
-        
-        if ( getRecords.getConstraint() != null ) {
-            writer.writeStartElement( CSWConstants.CSW_202_PREFIX, "Constraint", CSW_202_NS );
-            writer.writeAttribute( "version", "1.1.0" );
-            Filter110XMLEncoder.export( getRecords.getConstraint(), writer );
-            writer.writeEndElement();    
+            writeNamespaceDeclaration( tn, writer );
         }
     }
 
@@ -117,6 +106,56 @@ public class GetRecordsXMLEncoder {
                 writer.writeNamespace( qname.getPrefix(), qname.getNamespaceURI() );
             }
         }
+    }
+
+    private static void writeDistributedSearch( GetRecords getRecords, XMLStreamWriter writer )
+                            throws XMLStreamException {
+        int hopCount = getRecords.getHopCount();
+        if ( hopCount > 0 ) {
+            writer.writeStartElement( CSW_202_PREFIX, "DistributedSearch", CSW_202_NS );
+            writer.writeAttribute( "hopCount", Integer.toString( hopCount ) );
+            writer.writeEndElement();
+        }
+    }
+
+    private static void writeQueryElementWithFilter( GetRecords getRecords, XMLStreamWriter writer )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        writer.writeStartElement( CSW_202_PREFIX, "Query", CSW_202_NS );
+        writer.writeAttribute( "typeNames", appendTypeNamesToString( getRecords ) );
+        writeElementSetNameElement( getRecords, writer );
+        writeFilterFilter( getRecords, writer );
+    }
+
+    private static void writeElementSetNameElement( GetRecords getRecords, XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( CSW_202_PREFIX, "ElementSetName", CSW_202_NS );
+        writer.writeCharacters( getRecords.getElementSetName().toString() );
+        writer.writeEndElement();
+    }
+
+    private static void writeFilterFilter( GetRecords getRecords, XMLStreamWriter writer )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        if ( getRecords.getConstraint() != null ) {
+            writer.writeStartElement( CSW_202_PREFIX, "Constraint", CSW_202_NS );
+            writer.writeAttribute( "version", "1.1.0" );
+            Filter110XMLEncoder.export( getRecords.getConstraint(), writer );
+            writer.writeEndElement();
+        }
+    }
+
+    private static String appendTypeNamesToString( GetRecords getRecords ) {
+        String typeNames = "";
+        boolean isFirst = true;
+        for ( QName tn : getRecords.getTypeNames() ) {
+            if ( !isFirst )
+                typeNames += ',';
+            if ( tn.getNamespaceURI() != null ) {
+                typeNames += tn.getPrefix() + ":";
+            }
+            typeNames += tn.getLocalPart();
+            isFirst = false;
+        }
+        return typeNames;
     }
 
 }

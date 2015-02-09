@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -98,7 +99,6 @@ import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
-import org.deegree.rendering.r2d.context.DefaultRenderContext;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
@@ -113,6 +113,7 @@ import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
+import org.deegree.services.jaxb.wms.GetMapFormatsType;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
@@ -122,8 +123,12 @@ import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
+import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
+import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
+import org.deegree.style.utils.ColorQuantizer;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -145,7 +150,7 @@ public class WMSController extends AbstractOWS {
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
 
     /** The list of supported image formats. */
-    public final LinkedList<String> supportedImageFormats = new LinkedList<String>();
+    private final LinkedList<String> supportedImageFormats = new LinkedList<String>();
 
     protected MapService service;
 
@@ -162,8 +167,14 @@ public class WMSController extends AbstractOWS {
     private String metadataURLTemplate;
 
     private FeatureInfoManager featureInfoManager;
+    
+    private OutputFormatProvider ouputFormatProvider;
 
     private OWSMetadataProvider metadataProvider;
+
+    private DeegreeWMS conf;
+
+    private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
 
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -178,6 +189,21 @@ public class WMSController extends AbstractOWS {
         }
 
         featureInfoManager = new FeatureInfoManager( addDefaultFormats );
+        
+        ouputFormatProvider = new DefaultOutputFormatProvider();
+    }
+    
+    public Collection<String> getSupportedImageFormats() {
+        return supportedImageFormats;
+    }
+
+    /**
+     * Returns the configuration.
+     * 
+     * @return the configuration, after successful initialization, this is never <code>null</code>
+     */
+    public DeegreeWMS getConfig() {
+        return conf;
     }
 
     /**
@@ -201,7 +227,7 @@ public class WMSController extends AbstractOWS {
         NamespaceBindings nsContext = new NamespaceBindings();
         nsContext.addNamespace( "wms", "http://www.deegree.org/services/wms" );
 
-        DeegreeWMS conf = (DeegreeWMS) controllerConf;
+        conf = (DeegreeWMS) controllerConf;
 
         if ( conf.getExtendedCapabilities() != null ) {
             this.extendedCaps = new HashMap<String, List<OMElement>>();
@@ -220,15 +246,8 @@ public class WMSController extends AbstractOWS {
         }
 
         try {
-            // put in the default formats
-            supportedImageFormats.add( "image/png" );
-            supportedImageFormats.add( "image/png; subtype=8bit" );
-            supportedImageFormats.add( "image/png; mode=8bit" );
-            supportedImageFormats.add( "image/gif" );
-            supportedImageFormats.add( "image/jpeg" );
-            supportedImageFormats.add( "image/tiff" );
-            supportedImageFormats.add( "image/x-ms-bmp" );
-
+            addSupportedImageFormats( conf );
+            
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     if ( t.getFile() != null ) {
@@ -260,7 +279,7 @@ public class WMSController extends AbstractOWS {
                         throw new IllegalArgumentException( "Unknown GetFeatureInfoFormat" );
                     }
                 }
-            }            
+            }
 
             // if ( pi.getImageFormat() != null ) {
             // for ( ImageFormat f : pi.getImageFormat() ) {
@@ -525,8 +544,7 @@ public class WMSController extends AbstractOWS {
 
         RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
                                                 gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
-        RenderContext ctx = new DefaultRenderContext( info );
-        ctx.setOutput( response.getOutputStream() );
+        RenderContext ctx = ouputFormatProvider.getRenderers( info, response.getOutputStream() );
         LinkedList<String> headers = new LinkedList<String>();
         service.getMap( gm2, headers, ctx );
         response.setContentType( gm2.getFormat() );
@@ -594,6 +612,7 @@ public class WMSController extends AbstractOWS {
             // this makes it possible to request srs that are not advertised, which may be useful
             controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
         }
+        getMapLimitChecker.checkRequestedSizeAndLayerCount( gm, conf );
     }
 
     protected void getCapabilities( Map<String, String> map, HttpResponseBuffer response )
@@ -655,6 +674,7 @@ public class WMSController extends AbstractOWS {
             format = "bmp";
         }
         if ( format.equals( "png; subtype=8bit" ) || format.equals( "png; mode=8bit" ) ) {
+            img = ColorQuantizer.quantizeImage( img, 256, false, false );
             format = "png";
         }
         LOG.debug( "Sending in format " + format );
@@ -713,6 +733,19 @@ public class WMSController extends AbstractOWS {
 
     public FeatureInfoManager getFeatureInfoManager() {
         return featureInfoManager;
+    }
+    
+    private void addSupportedImageFormats( DeegreeWMS conf ) {
+        if ( conf.getGetMapFormats() != null ) {
+            GetMapFormatsType getMapFormats = conf.getGetMapFormats();
+            List<String> getMapFormatList = getMapFormats.getGetMapFormat();
+            for ( String getMapFormat : getMapFormatList ) {
+                supportedImageFormats.add( getMapFormat );
+            }
+        }
+        if ( supportedImageFormats.isEmpty() ) {
+            supportedImageFormats.addAll( ouputFormatProvider.getSupportedOutputFormats() );
+        }
     }
 
     /**

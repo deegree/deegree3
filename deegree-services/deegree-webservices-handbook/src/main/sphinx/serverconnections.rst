@@ -1,4 +1,4 @@
-.. _anchor-configuration-serverconnections:
+    .. _anchor-configuration-serverconnections:
 
 ==================
 Server connections
@@ -43,17 +43,17 @@ This example defines a basic connection pool for a PostgreSQL/PostGIS database:
   <DataSourceConnectionProvider configVersion="3.4.0"
     xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
-  
+
     <!-- Creation / lookup of javax.sql.DataSource instance -->
     <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
-  
+
     <!-- Configuration of DataSource properties -->
     <Property name="driverClassName" value="org.postgresql.Driver" />
     <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
     <Property name="username" value="kelvin" />
     <Property name="password" value="s3cr3t" />
     <Property name="maxActive" value="10" />
-    
+
   </DataSourceConnectionProvider>
 
 * The DataSource object uses Java class ``org.apache.commons.dbcp.BasicDataSource`` (a connection pool class provided by `Apache Commons DBCP <http://commons.apache.org/proper/commons-dbcp/index.html>`_.). If you don't know what this means, then this is most likely what you want to use.
@@ -84,8 +84,8 @@ This example defines a connection pool for an Oracle database:
     <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
   
     <!-- Configuration of DataSource properties -->
-    <Property name="driverClassName" value="org.postgresql.Driver" />
-    <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
+    <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+    <Property name="url" value="jdbc:oracle:thin:@localhost:1521:deegree" />
     <Property name="username" value="kelvin" />
     <Property name="password" value="s3cr3t" />
     <Property name="poolPreparedStatements" value="true" />
@@ -97,8 +97,8 @@ This example defines a connection pool for an Oracle database:
 This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class ``org.apache.commons.dbcp.BasicDataSource`` (a connection pool class provided by Apache DBCP). If you are not familiar with J2EE containers, this is most likely what you want to use.
-* The JDBC driver class is ``org.postgresql.Driver``. This is the Java class name to use for PostgreSQL/PostGIS.
-* The so-called JDBC URL is ``jdbc:postgresql://localhost:5432/deegree-db``. This means that PostgreSQL is running on the local machine, port 5432 (adapt host name and port as required). The database identifier is ``deegree-db``.
+* The JDBC driver class is ``oracle.jdbc.OracleDriver``. This is the Java class name to use for Oracle.
+* The so-called JDBC URL is ``jdbc:oracle:thin:@localhost:1521:deegree``. This means that Oracle is running on the local machine, port 1521 (adapt host name and port as required). The database identifier is ``deegree``.
 * The database username is ``kelvin``, password is ``s3cr3t``.
 * The maximum number of simultaneous connections is 10.
 
