@@ -6,7 +6,7 @@
  and
  - lat/lon GmbH -
  and
- - Occam Labs UG (haftungsbeschr‰nkt) -
+ - Occam Labs UG (haftungsbeschr√§nkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,7 +33,7 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs UG (haftungsbeschr‰nkt)
+ Occam Labs UG (haftungsbeschr√§nkt)
  Godesberger Allee 139, 53175 Bonn
  Germany
 
