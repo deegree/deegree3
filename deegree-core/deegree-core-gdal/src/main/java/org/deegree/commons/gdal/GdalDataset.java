@@ -196,7 +196,7 @@ public class GdalDataset implements KeyedResource {
      */
     public BufferedImage extractRegion( Envelope region, int pixelsX, int pixelsY, boolean withAlpha )
                             throws IOException {
-
+        region = switchYValues( region );
         int numBands = dataset.GetRasterCount();
         if ( numBands == 4 && !withAlpha ) {
             numBands = 3;
@@ -249,6 +249,7 @@ public class GdalDataset implements KeyedResource {
      */
     public byte[][] extractRegionAsByteArray( Envelope region, int pixelsX, int pixelsY, boolean withAlpha )
                             throws IOException {
+        region = switchYValues( region );
 
         int numBands = dataset.GetRasterCount();
         if ( numBands == 4 && !withAlpha ) {
@@ -414,6 +415,15 @@ public class GdalDataset implements KeyedResource {
             throw new IllegalArgumentException( "Unsupported number of bands: " + numberOfBands );
         }
         return new BufferedImage( cm, raster, false, null );
+    }
+
+    private DefaultEnvelope switchYValues( Envelope envelope ) {
+        ICRS crs = envelope.getCoordinateSystem();
+        Point min = new DefaultPoint( null, crs, null, new double[] { envelope.getMin().get0(),
+                                                                     envelope.getMax().get1() } );
+        Point max = new DefaultPoint( null, crs, null, new double[] { envelope.getMax().get0(),
+                                                                     envelope.getMin().get1() } );
+        return new DefaultEnvelope( min, max );
     }
 
     private int detectDataType( Band band, int dataType ) {
