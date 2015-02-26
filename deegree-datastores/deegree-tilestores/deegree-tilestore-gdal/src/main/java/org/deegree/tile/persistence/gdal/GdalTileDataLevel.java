@@ -101,8 +101,8 @@ class GdalTileDataLevel implements TileDataLevel {
 		Envelope matrixEnvelope = metadata.getSpatialMetadata().getEnvelope();
 		double minX = tileWidth * x + matrixEnvelope.getMin().get0();
 		double maxX = minX + tileWidth;
-		double maxY = matrixEnvelope.getMax().get1() - tileHeight * y;
-		double minY = maxY - tileHeight;
+		double minY = matrixEnvelope.getMax().get1() - tileHeight * y;
+		double maxY = minY - tileHeight;
 		ICRS crs = metadata.getSpatialMetadata().getEnvelope().getCoordinateSystem();
 		Point min = new DefaultPoint(null, crs, null, new double[] { minX, minY });
 		Point max = new DefaultPoint(null, crs, null, new double[] { maxX, maxY });
