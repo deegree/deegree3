@@ -62,7 +62,7 @@ public class OracleGeorasterMetadata extends AbstractResourceMetadata<Coverage> 
         OracleGeorasterConfig config;
         try {
             config = (OracleGeorasterConfig) unmarshall( "org.deegree.coverage.persistence.oraclegeoraster.jaxb",
-                                                         provider.getSchema(), location, workspace );
+                                                         provider.getSchema(), location.getAsStream(), workspace );
 
             dependencies.add( new DefaultResourceIdentifier<ConnectionProvider>( ConnectionProviderProvider.class,
                                                                                  config.getJDBCConnId() ) );

@@ -303,9 +303,13 @@ public class OracleGeorasterReader implements RasterReader {
                                              "GeoRaster could not calculate Spatial extend. Please correct config or db." );
         }
 
-        if ( envelope == null || maxLevel < 0 || rasterRect == null )
+        if ( envelope == null || rasterRect == null )
             throw new ResourceInitException(
-                                             "GeoRaster has no Spatial / Pyramid / Size information. Please correct config or db." );
+                                             "GeoRaster has no Spatial and/or Size information. Please correct config or db." );
+        if ( maxLevel <= 0 ) {
+            maxLevel = 0;
+            LOG.warn( "Raster {}.{}:{} has no Pyramid, this is not recommended", rasterTable, rasterColumn, rasterId );
+        }
 
         if ( info.mbr != null && info.mbr.length > 3 ) {
             LOG.info( "Raster {}.{}:{} Size: {}x{} Levels:  0 - {} BBOX: {} {} - {} {}", rasterTable, rasterColumn,
