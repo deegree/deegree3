@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.deegree</groupId>
 		<artifactId>deegree</artifactId>
-	  <version>3.4-pre16-xplanbox-1.0-SNAPSHOT</version>
+	  <version>3.4-pre16-xplanbox-1.0.1</version>
 	</parent>
 	<artifactId>deegree-spring</artifactId>
 	<description>deegree Spring framework integration module</description>
