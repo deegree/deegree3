@@ -75,7 +75,7 @@ public class WMSClientTest {
     public void testWMS111InstantiationFromUrl()
                             throws OWSExceptionReport, XMLStreamException, MalformedURLException, IOException {
         URL capaUrl = new URL(
-                               "http://deegree3-demo.deegree.org:80/utah-workspace/services?request=GetCapabilities&service=WMS&version=1.1.1" );
+                               "http://demo.deegree.org:80/utah-workspace/services?request=GetCapabilities&service=WMS&version=1.1.1" );
         // TODO: check if demo WMS available
         new WMSClient( capaUrl );
     }
