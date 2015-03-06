@@ -306,7 +306,7 @@ public class OracleGeorasterReader implements RasterReader {
         if ( envelope == null || rasterRect == null )
             throw new ResourceInitException(
                                              "GeoRaster has no Spatial and/or Size information. Please correct config or db." );
-        if ( maxLevel <= 0 ) {
+        if ( maxLevel < 0 ) {
             maxLevel = 0;
             LOG.warn( "Raster {}.{}:{} has no Pyramid, this is not recommended", rasterTable, rasterColumn, rasterId );
         }

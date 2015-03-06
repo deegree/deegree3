@@ -713,7 +713,7 @@
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>xmlparserv2</artifactId>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
         <version>11.2.0.2</version>
       </dependency>
       <!-- Batik -->
