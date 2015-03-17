@@ -166,7 +166,11 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter() );
 
-        final Envelope clickBox = query.calcClickBox( query.getLayerRadius() );
+        int layerRadius = -1;
+        if ( getMetadata().getMapOptions() != null ) {
+            layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
+        }
+        final Envelope clickBox = query.calcClickBox( layerRadius > -1 ? layerRadius : query.getLayerRadius() );
 
         filter = (OperatorFilter) addBBoxConstraint( clickBox, filter, null, false );
 
