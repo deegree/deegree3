@@ -458,15 +458,7 @@ public class MapService {
             LayerRef lr = layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-            int layerRadius = 0;
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                if ( l.getMetadata().getMapOptions() != null
-                     && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
-                    layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
-                } else {
-                    layerRadius = defaultLayerOptions.getFeatureInfoRadius();
-                }
-            }
+            final int layerRadius = defaultLayerOptions.getFeatureInfoRadius();
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
                                                gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(),
@@ -562,7 +554,7 @@ public class MapService {
         return getLegendHandler.getLegendSize( style );
     }
 
-    public BufferedImage getLegend( GetLegendGraphic req ) {
+    public BufferedImage getLegend( GetLegendGraphic req ) throws OWSException {
         return getLegendHandler.getLegend( req );
     }
 
