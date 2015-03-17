@@ -420,6 +420,11 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
+                
+                if (!l.getMetadata().isQueryable()) {
+                    continue;
+                }
+                
                 list.add( l.infoQuery( query, headers ) );
             }
         }
