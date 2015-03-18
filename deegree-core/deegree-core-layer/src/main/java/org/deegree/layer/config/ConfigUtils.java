@@ -208,7 +208,7 @@ public class ConfigUtils {
         Quality quali = null;
         Interpolation interpol = null;
         int maxFeats = -1;
-        int rad = 1;
+        int rad = -1;
         try {
             alias = Antialias.valueOf( cfg.getAntiAliasing() );
         } catch ( Throwable e ) {

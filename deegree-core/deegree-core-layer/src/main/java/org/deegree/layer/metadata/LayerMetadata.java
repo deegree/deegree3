@@ -155,13 +155,16 @@ public class LayerMetadata {
     }
 
     /**
-     * @return the queryable
+     * @return true if the layer can be queried
+     * @see MapOptions#getFeatureInfoRadius()
      */
     public boolean isQueryable() {
         if ( mapOptions == null ) {
             return true;
         }
-        return mapOptions.getFeatureInfoRadius() > 0;
+        
+        //TRICKY assume that, the service is query able by default (<0) 
+        return mapOptions.getFeatureInfoRadius() != 0;
     }
 
     /**
