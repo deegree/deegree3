@@ -66,6 +66,7 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.controller.WMSController;
+import org.deegree.services.wms.controller.capabilities.theme.LayerMetadataQueryable;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
@@ -101,7 +102,9 @@ class WmsCapabilities130ThemeWriter {
         LayerMetadata md = theme.getMetadata();
         // TODO think about a push approach instead of a pull approach
         LayerMetadata lmd = null;
+        int layerQueryable = 0;
         for ( org.deegree.layer.Layer l : Themes.getAllLayers( theme ) ) {
+            layerQueryable |= LayerMetadataQueryable.analyseQueryable( l.getMetadata() );
             if ( lmd == null ) {
                 lmd = l.getMetadata();
             } else {
@@ -109,6 +112,7 @@ class WmsCapabilities130ThemeWriter {
             }
         }
         md.merge( lmd );
+        LayerMetadataQueryable.applyQueryable( md, layerQueryable );
 
         writer.writeStartElement( WMSNS, "Layer" );
 
