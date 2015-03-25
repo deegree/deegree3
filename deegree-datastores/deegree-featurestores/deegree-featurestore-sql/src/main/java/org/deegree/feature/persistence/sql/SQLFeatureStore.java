@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -143,13 +142,12 @@ import org.slf4j.Logger;
 
 /**
  * {@link FeatureStore} that is backed by a spatial SQL database.
- * 
+ *
  * @see SQLDialect
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ *
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ *
+ * @since 3.2
  */
 @LoggingNotes(info = "logs particle converter initialization", debug = "logs the SQL statements sent to the SQL server and startup/shutdown information")
 public class SQLFeatureStore implements FeatureStore {
@@ -200,9 +198,11 @@ public class SQLFeatureStore implements FeatureStore {
 
     private ConnectionProvider connProvider;
 
+    private final ThreadLocal<SQLFeatureStoreTransaction> transaction = new ThreadLocal<SQLFeatureStoreTransaction>();
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
-     * 
+     *
      * @param config
      *            jaxb configuration object
      * @param configURL
@@ -328,7 +328,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns the relational mapping for the given feature type name.
-     * 
+     *
      * @param ftName
      *            name of the feature type, must not be <code>null</code>
      * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
@@ -340,7 +340,7 @@ public class SQLFeatureStore implements FeatureStore {
     /**
      * Returns a {@link ParticleConverter} for the given {@link Mapping} instance from the served
      * {@link MappedAppSchema}.
-     * 
+     *
      * @param mapping
      *            particle mapping, must not be <code>null</code>
      * @return particle converter, never <code>null</code>
@@ -365,10 +365,12 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         Connection conn = null;
         try {
-            conn = connProvider.getConnection();
+            conn = getConnection();
             env = calcEnvelope( ftName, conn );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( e.getMessage() );
         } finally {
-            JDBCUtils.close( conn );
+            release( null, null, conn );
         }
         return env;
     }
@@ -428,7 +430,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, null, LOG );
+            release( rs, stmt, null );
         }
         return env;
     }
@@ -463,7 +465,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, null, LOG );
+            release( rs, stmt, null );
         }
         return env;
     }
@@ -505,7 +507,7 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( blobMapping.getGMLIdColumn() );
             sql.append( "=?" );
 
-            conn = connProvider.getConnection();
+            conn = getConnection();
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setFetchSize( fetchSize );
             stmt.setString( 1, id );
@@ -524,7 +526,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
         }
         return geomOrFeature;
     }
@@ -561,20 +563,31 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-        FeatureStoreTransaction ta = null;
+        SQLFeatureStoreTransaction ta = null;
         try {
-            Connection conn = getConnection();
+            final Connection conn = getConnection();
             conn.setAutoCommit( false );
             ta = new SQLFeatureStoreTransaction( this, conn, getSchema(), inspectors );
+            transaction.set( ta );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
         }
         return ta;
     }
 
+    void closeAndDetachTransactionConnection() throws FeatureStoreException {
+        try {
+            transaction.get().getConnection().close();
+        } catch ( final SQLException e ) {
+            LOG.error( "Error closing connection/removing it from the pool: " + e.getMessage() );
+        } finally {
+            transaction.remove();
+        }
+    }
+
     /**
      * Returns the {@link FeatureStoreCache}.
-     * 
+     *
      * @return feature store cache, can be <code>null</code> (no cache configured)
      */
     public FeatureStoreCache getCache() {
@@ -583,7 +596,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns a resolver instance for resolving references to objects that are stored in this feature store.
-     * 
+     *
      * @return resolver, never <code>null</code>
      */
     public GMLReferenceResolver getResolver() {
@@ -659,7 +672,6 @@ public class SQLFeatureStore implements FeatureStore {
             AbstractWhereBuilder wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
 
             if ( wb.getPostFilter() != null ) {
-                conn.close();
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
                 hits = queryByOperatorFilter( query, ftName, filter ).count();
             } else {
@@ -732,7 +744,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
-            JDBCUtils.close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
         }
 
         return hits;
@@ -798,7 +810,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
         }
 
         return hits;
@@ -826,7 +838,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns a transformed version of the given {@link Geometry} in the specified CRS.
-     * 
+     *
      * @param literal
      * @param crs
      * @return transformed version of the geometry, never <code>null</code>
@@ -970,7 +982,7 @@ public class SQLFeatureStore implements FeatureStore {
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                           + " A WHERE A.gml_id in (" + sb + ")" );
-            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );            
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             stmt.setFetchSize( fetchSize );
             int idx = 0;
             for ( String id : filter.getMatchingIds() ) {
@@ -978,11 +990,11 @@ public class SQLFeatureStore implements FeatureStore {
             }
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
-            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );            
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing id query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1088,7 +1100,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query by id filter (relational mode): " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1098,9 +1110,24 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
-        Connection conn = connProvider.getConnection();
+        if ( isTransactionActive() ) {
+            return transaction.get().getConnection();
+        }
+        final Connection conn = connProvider.getConnection();
         conn.setAutoCommit( readAutoCommit );
         return conn;
+    }
+
+    private void release( final ResultSet rs, final Statement stmt, final Connection conn ) {
+        if ( isTransactionActive() ) {
+            JDBCUtils.close( rs, stmt, null, LOG );
+        } else {
+            JDBCUtils.close( rs, stmt, conn, LOG );
+        }
+    }
+
+    private boolean isTransactionActive () {
+        return transaction.get() != null;
     }
 
     private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
@@ -1229,7 +1256,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1344,7 +1371,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1413,7 +1440,7 @@ public class SQLFeatureStore implements FeatureStore {
             final FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query: " + e.getMessage();
             LOG.debug( msg );
             LOG.trace( "Stack trace:", e );
@@ -1475,9 +1502,23 @@ public class SQLFeatureStore implements FeatureStore {
 
         private final FeatureBuilder builder;
 
+        private final ResultSet rs;
+
+        private final Connection conn;
+
+        private final Statement stmt;
+
         public FeatureResultSetIterator( FeatureBuilder builder, ResultSet rs, Connection conn, Statement stmt ) {
             super( rs, conn, stmt );
             this.builder = builder;
+            this.rs = rs;
+            this.conn = conn;
+            this.stmt = stmt;
+        }
+
+        @Override
+        public void close() {
+            release( rs, stmt, conn );
         }
 
         @Override
