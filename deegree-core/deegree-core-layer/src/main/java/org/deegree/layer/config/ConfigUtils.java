@@ -233,12 +233,12 @@ public class ConfigUtils {
         }
         if ( cfg.getFeatureInfo() != null ) {
             if ( cfg.getFeatureInfo().isEnabled() ) {
-                rad = cfg.getFeatureInfo().getPixelRadius().intValue();
+                rad = Math.max( 0, cfg.getFeatureInfo().getPixelRadius().intValue() );
             } else {
                 rad = 0;
             }
         } else if ( cfg.getFeatureInfoRadius() != null ) {
-            rad = cfg.getFeatureInfoRadius();
+            rad = Math.max( 0, cfg.getFeatureInfoRadius() );
         }
         return new MapOptions( quali, interpol, alias, maxFeats, rad );
     }
