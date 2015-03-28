@@ -90,6 +90,9 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
     @Override
     public String getSelectSnippet( String tableAlias ) {
         if ( tableAlias != null ) {
+            if (column.startsWith( "'" ) || column.contains( " " )) {
+                return column.replace( "$0", tableAlias );
+            }
             return tableAlias + "." + column;
         }
         return column;

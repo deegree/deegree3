@@ -141,7 +141,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     // private final GMLVersion gmlVersion;
 
-    private final LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
+    private final LinkedHashMap<String, Integer> qualifiedSqlExprToRsIdx = new LinkedHashMap<String, Integer>();
 
     private final boolean nullEscalation;
 
@@ -180,15 +180,15 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     @Override
-    public List<String> getInitialSelectColumns() {
+    public List<String> getInitialSelectList() {
         for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-            addColumn( colToRsIdx, tableAlias + "." + fidColumn.first.getName() );
+            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "." + fidColumn.first.getName() );
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
-            addSelectColumns( mapping, colToRsIdx, true );
+            addSelectColumns( mapping, qualifiedSqlExprToRsIdx, true );
         }
-        LOG.debug( "Initial select columns: " + colToRsIdx );
-        return new ArrayList<String>( colToRsIdx.keySet() );
+        LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
+        return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
     }
 
     private void addColumn( LinkedHashMap<String, Integer> colToRsIdx, String column ) {
@@ -204,7 +204,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     private void addSelectColumns( Mapping mapping, LinkedHashMap<String, Integer> colToRsIdx, boolean initial ) {
-
         List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null && initial ) {
             if ( mapping instanceof FeatureMapping ) {
@@ -222,7 +221,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         } else {
             ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
-                if ( particleConverter != null ) {
+                if ( particleConverter != null ) {                    
                     addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
@@ -244,7 +243,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 for ( Mapping particle : cm.getParticles() ) {
                     addSelectColumns( particle, colToRsIdx, true );
                 }
-            } else if ( mapping instanceof ConstantMapping<?> ) {
+            } else if ( mapping instanceof SqlExpressionMapping<?> ) {
                 // nothing to do
             } else {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
@@ -260,10 +259,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         try {
             String gmlId = ftMapping.getFidMapping().getPrefix();
             List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
-            gmlId += rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
+            gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
             for ( int i = 1; i < fidColumns.size(); i++ ) {
                 gmlId += ftMapping.getFidMapping().getDelimiter()
-                         + rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
+                         + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
             }
             if ( fs.getCache() != null ) {
                 feature = (Feature) fs.getCache().get( gmlId );
@@ -311,7 +310,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
                                 String idPrefix )
                             throws SQLException {
-        List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx, idPrefix );
+        List<TypedObjectNode> particles = buildParticles( propMapping, rs, qualifiedSqlExprToRsIdx, idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
             if ( pt.isNillable() ) {
                 Map<QName, PrimitiveValue> attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
@@ -377,16 +376,20 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             gmlWriter.getFeatureWriter().export( particle, resolveState );
             gmlWriter.close();
             xmlWriter.close();
-            bos.close();            
+            bos.close();
+            System.out.println("HUHU: " + bos.toString());
             final InputStream is = new ByteArrayInputStream( bos.toByteArray() );
             final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );
             gmlReader.setApplicationSchema( ft.getSchema() );
             gmlReader.setLaxMode( true );
-            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper( xmlReader, null ), pt, null );
+            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper(
+                                                                                                              xmlReader,
+                                                                                                              null ),
+                                                                                  pt, null );
             return property;
         } catch ( final Exception e ) {
-            LOG.error (e.getMessage(), e);
+            LOG.error( e.getMessage(), e );
         }
         return new GenericProperty( pt, particle.getName(), null, particle.getAttributes(), particle.getChildren() );
     }
@@ -436,11 +439,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
-            if ( me instanceof DBField ) {
-                String col = converter.getSelectSnippet( tableAlias );
-                int colIndex = colToRsIdx.get( col );
-                particle = converter.toParticle( rs, colIndex );
-            }
+            String col = converter.getSelectSnippet( tableAlias );
+            int colIndex = colToRsIdx.get( col );
+            particle = converter.toParticle( rs, colIndex );
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
@@ -460,8 +461,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             int colIndex = colToRsIdx.get( col );
             particle = converter.toParticle( rs, colIndex );
             // }
-        } else if ( mapping instanceof ConstantMapping<?> ) {
-            particle = ( (ConstantMapping<?>) mapping ).getValue();
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
 
@@ -642,7 +641,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 LOG.warn( "Unhandled particle: " + child );
             }
         }
-
+        if ( geom == null ) {
+            return null;
+        }
         AppSchemaGeometryHierarchy hierarchy = fs.getSchema().getGeometryHierarchy();
 
         if ( hierarchy != null ) {

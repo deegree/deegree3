@@ -459,7 +459,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     return;
                 }
             }
-            exportGenericObjectProperty( objectPt, (GMLObject) value, resolveState );
+            exportGenericObjectProperty( property, (GMLObject) value, resolveState );
         } else {
             throw new RuntimeException( "Internal error. Unhandled property type '" + pt.getClass() + "'" );
         }
@@ -615,7 +615,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         QName propName = pt.getName();
         LOG.debug( "Exporting feature property '" + propName + "'" );
         if ( subFeature == null ) {
-            exportEmptyProperty( propName );
+            exportEmptyProperty( propName, null );
         } else if ( subFeature instanceof FeatureReference ) {
             exportFeatureProperty( pt, (FeatureReference) subFeature, resolveState, propName );
         } else {
@@ -638,13 +638,14 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void exportGenericObjectProperty( final ObjectPropertyType pt, final GMLObject object,
+    private void exportGenericObjectProperty( final Property prop, final GMLObject object,
                                               final GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+        final ObjectPropertyType pt = (ObjectPropertyType) prop.getType();
         final QName propName = pt.getName();
         LOG.debug( "Exporting object property '" + propName + "'" );
         if ( object == null ) {
-            exportEmptyProperty( propName );
+            exportEmptyProperty( propName, prop.getAttributes() );
         } else {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             switch ( pt.getCategory() ) {
@@ -661,9 +662,10 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void exportEmptyProperty( QName propName )
+    private void exportEmptyProperty( final QName propName, final Map<QName,PrimitiveValue> attrs)
                             throws XMLStreamException {
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        writeAttributes( attrs );
         endEmptyElement();
     }
 
@@ -745,19 +747,23 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
 
         writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
-
-        if ( xmlContent.getAttributes() != null ) {
-            for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
-                writeAttributeWithNS( attr.getKey().getNamespaceURI(), attr.getKey().getLocalPart(),
-                                      attr.getValue().getAsText() );
-            }
-        }
+        writeAttributes (xmlContent.getAttributes());
         if ( xmlContent.getChildren() != null ) {
             for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
                 export( childNode, resolveState );
             }
         }
         writer.writeEndElement();
+    }
+
+    private void writeAttributes( final Map<QName, PrimitiveValue> attrs )
+                            throws XMLStreamException {
+        if ( attrs != null ) {
+            for ( final Entry<QName, PrimitiveValue> attr : attrs.entrySet() ) {
+                writeAttributeWithNS( attr.getKey().getNamespaceURI(), attr.getKey().getLocalPart(),
+                                      attr.getValue().getAsText() );
+            }
+        }
     }
 
     private boolean isPropertyRequested( QName propName ) {

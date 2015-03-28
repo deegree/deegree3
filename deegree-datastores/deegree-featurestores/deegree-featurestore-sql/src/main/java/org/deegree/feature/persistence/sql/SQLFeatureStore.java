@@ -135,6 +135,7 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -1036,7 +1037,7 @@ public class SQLFeatureStore implements FeatureStore {
             String tableAlias = "X1";
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
                                                                    nullEscalation );
-            List<String> columns = builder.getInitialSelectColumns();
+            List<String> columns = builder.getInitialSelectList();
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( columns.get( 0 ) );
             for ( int i = 1; i < columns.size(); i++ ) {
@@ -1120,16 +1121,11 @@ public class SQLFeatureStore implements FeatureStore {
             FeatureTypeMapping ftMapping = getMapping( ftName );
             BlobMapping blobMapping = getSchema().getBlobMapping();
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-
-            List<String> columns = builder.getInitialSelectColumns();
-
-            if ( query.getPrefilterBBox() != null ) {
-                OperatorFilter bboxFilter = new OperatorFilter( query.getPrefilterBBox() );
-                wb = getWhereBuilderBlob( bboxFilter, conn );
-                LOG.debug( "WHERE clause: " + wb.getWhere() );
-                // LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
-            }
-            String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
+            List<String> columns = builder.getInitialSelectList();
+            wb = getWhereBuilderBlob( filter, conn );
+            final SQLExpression where = wb.getWhere();
+            LOG.debug( "WHERE clause: " + where );
+            String alias = wb.getAliasManager().getRootTableAlias();
 
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( columns.get( 0 ) );
@@ -1279,7 +1275,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias,
                                                                    nullEscalation );
-            List<String> columns = builder.getInitialSelectColumns();
+            List<String> columns = builder.getInitialSelectList();
 
             BlobMapping blobMapping = getSchema().getBlobMapping();
 

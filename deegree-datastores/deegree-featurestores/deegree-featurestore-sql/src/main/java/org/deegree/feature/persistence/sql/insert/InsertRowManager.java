@@ -66,7 +66,7 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.KeyPropagation;
 import org.deegree.feature.persistence.sql.id.TableDependencies;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.ConstantMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -398,7 +398,7 @@ public class InsertRowManager {
                 for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
                     buildInsertRows( value, child, currentRow, additionalRows );
                 }
-            } else if ( mapping instanceof ConstantMapping ) {
+            } else if ( mapping instanceof SqlExpressionMapping ) {
                 // nothing to do
             } else {
                 LOG.warn( "Unhandled mapping type '" + mapping.getClass() + "'." );
