@@ -41,6 +41,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
@@ -55,9 +56,11 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.gdal.gdal.Band;
+import org.gdal.gdal.ColorTable;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.Driver;
 import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconstConstants;
 import org.slf4j.Logger;
 
 /**
@@ -381,22 +384,48 @@ public class GdalDataset implements KeyedResource {
         }
     }
 
-    private BufferedImage toImage( byte[][] bands, int xSize, int ySize )
-                            throws IOException {
-        int numBytes = xSize * ySize * bands.length;
+    private BufferedImage toImage( byte[][] bands, int xSize, int ySize ) {
+        int numberOfBands = bands.length;
+        int numBytes = xSize * ySize * numberOfBands;
         DataBuffer imgBuffer = new DataBufferByte( bands, numBytes );
-        SampleModel sampleModel = new BandedSampleModel( TYPE_BYTE, xSize, ySize, bands.length );
+        SampleModel sampleModel = new BandedSampleModel( TYPE_BYTE, xSize, ySize, numberOfBands );
         WritableRaster raster = Raster.createWritableRaster( sampleModel, imgBuffer, null );
+        if ( numberOfBands == 1 ) {
+            Band band = dataset.GetRasterBand( 1 );
+            int bufType = band.getDataType();
+            int dataType = detectDataType( band, bufType );
+            BufferedImage img;
+            if ( BufferedImage.TYPE_BYTE_INDEXED == dataType ) {
+                ColorTable ct = band.GetRasterColorTable();
+                IndexColorModel cm = ct.getIndexColorModel( gdal.GetDataTypeSize( bufType ) );
+                img = new BufferedImage( xSize, ySize, dataType, cm );
+            } else {
+                img = new BufferedImage( xSize, ySize, dataType );
+            }
+            img.setData( raster );
+            return img;
+        }
         ColorSpace cs = ColorSpace.getInstance( CS_sRGB );
         ColorModel cm;
-        if ( bands.length == 3 ) {
+        if ( numberOfBands == 3 ) {
             cm = new ComponentColorModel( cs, false, false, ColorModel.OPAQUE, TYPE_BYTE );
-        } else if ( bands.length == 4 ) {
+        } else if ( numberOfBands == 4 ) {
             cm = new ComponentColorModel( cs, true, false, ColorModel.TRANSLUCENT, TYPE_BYTE );
         } else {
-            throw new IllegalArgumentException( "Unsupported number of bands: " + bands.length );
+            throw new IllegalArgumentException( "Unsupported number of bands: " + numberOfBands );
         }
         return new BufferedImage( cm, raster, false, null );
+    }
+
+    private int detectDataType( Band band, int dataType ) {
+        if ( dataType == gdalconstConstants.GDT_Byte )
+            return ( band.GetRasterColorInterpretation() == gdalconstConstants.GCI_PaletteIndex ) ? BufferedImage.TYPE_BYTE_INDEXED
+                                                                                                 : BufferedImage.TYPE_BYTE_GRAY;
+        else if ( dataType == gdalconstConstants.GDT_Int16 )
+            return BufferedImage.TYPE_USHORT_GRAY;
+        else if ( dataType == gdalconstConstants.GDT_Int32 )
+            return BufferedImage.TYPE_CUSTOM;
+        return BufferedImage.TYPE_CUSTOM;
     }
 
     private DefaultEnvelope switchYValues( Envelope envelope ) {
