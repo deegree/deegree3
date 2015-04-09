@@ -49,6 +49,7 @@ import static org.deegree.theme.Themes.getAllLayers;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,10 +82,10 @@ import org.deegree.theme.Theme;
  * <p>
  * Data/Metadata is considered from the Theme/Layer tree as well as from the {@link OWSMetadataProvider}.
  * </p>
- *
+ * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriter {
@@ -99,7 +100,7 @@ public class WmsCapabilities130ThemeWriter {
 
     /**
      * Creates a new {@link WmsCapabilities130ThemeWriter} instance.
-     *
+     * 
      * @param metadataProvider
      *            provider for metadata on OWS datasets, can be <code>null</code>
      * @param styleWriter
@@ -120,7 +121,7 @@ public class WmsCapabilities130ThemeWriter {
 
     /**
      * Writes the given {@link Theme} as a WMS 1.3.0 Layer element.
-     *
+     * 
      * @param writer
      *            used to write the XML, must not be <code>null</code>
      * @param theme
@@ -131,20 +132,22 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         final LayerMetadata layerMetadata = new LayerMetadataMerger().merge( theme );
         final DatasetMetadataFactory factory = new DatasetMetadataFactory();
-        final DatasetMetadata dsMd1 = getDatasetMetadataFromProvider( theme );
+        final List<DatasetMetadata> dsMd1 = getDatasetMetadataFromProvider( theme );
         final DatasetMetadata dsMd2 = factory.buildDatasetMetadata( layerMetadata, theme, mdUrlTemplate );
-        final DatasetMetadata datasetMetadata = new DatasetMetadataMerger().merge( dsMd1, dsMd2 );
+        if ( dsMd1 != null && dsMd2 != null )
+            dsMd1.add( dsMd2 );
+        final DatasetMetadata datasetMetadata = new DatasetMetadataMerger().merge( dsMd1 );
         final DoublePair scaleDenominators = new LayerMetadataMerger().mergeScaleDenominators( theme );
         final Map<String, String> authorityNameToUrl = getExternalAuthorityNameToUrlMap( metadataProvider );
         writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, theme.getThemes() );
     }
 
-    private DatasetMetadata getDatasetMetadataFromProvider( final Theme theme ) {
+    private List<DatasetMetadata> getDatasetMetadataFromProvider( final Theme theme ) {
         final String datasetName = getNameFromThemeOrFirstNamedLayer( theme );
         if ( metadataProvider != null && datasetName != null ) {
-            return metadataProvider.getDatasetMetadata( new QName( datasetName ) );
+            return metadataProvider.getAllDatasetMetadata( new QName( datasetName ) );
         }
-        return null;
+        return new ArrayList<DatasetMetadata>();
     }
 
     private Map<String, String> getExternalAuthorityNameToUrlMap( final OWSMetadataProvider metadataProvider ) {
