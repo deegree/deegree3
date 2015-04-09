@@ -198,6 +198,9 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     // required since GML 3.2
     private boolean isGmlIdRequired() {
+        if ( gmlStreamReader.getLaxMode() ) {
+            return false;
+        }
         return version != GML_2 && version != GML_30 || version != GML_31;
     }
 
