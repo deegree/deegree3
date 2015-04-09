@@ -106,4 +106,13 @@ public interface OWSMetadataProvider extends Resource {
      */
     DatasetMetadata getDatasetMetadata( QName name );
 
+    /**
+     * Returns a list of data metadata for the specified dataset.
+     * 
+     * @param name
+     *            for layers, a qname with only a local name is used, for feature types its qname
+     * @return metadata, may be empty but never <code>null</code> (no metadata available)
+     */
+    List<DatasetMetadata> getAllDatasetMetadata( QName name );
+    
 }
