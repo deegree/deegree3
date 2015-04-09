@@ -687,13 +687,16 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // TODO Operations
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                String metadataUrl = ftMd != null ? ftMd.getUrl() : null;
-                if ( metadataUrl != null ) {
-                    writer.writeStartElement( WFS_NS, "MetadataURL" );
-                    writer.writeAttribute( "type", "19139" );
-                    writer.writeAttribute( "format", "text/xml" );
-                    writer.writeCharacters( metadataUrl );
-                    writer.writeEndElement();
+                List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+                if ( ftMds != null ) {
+                    for ( DatasetMetadata datasetMetadata : ftMds ) {
+                        String metadataUrl = datasetMetadata.getUrl();
+                        writer.writeStartElement( WFS_NS, "MetadataURL" );
+                        writer.writeAttribute( "type", "19139" );
+                        writer.writeAttribute( "format", "text/xml" );
+                        writer.writeCharacters( metadataUrl );
+                        writer.writeEndElement();
+                    }
                 }
 
                 writer.writeEndElement();
