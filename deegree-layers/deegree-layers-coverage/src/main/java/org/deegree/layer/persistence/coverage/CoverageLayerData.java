@@ -48,10 +48,12 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.utils.CoverageTransform;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.layer.LayerData;
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.context.RenderContext;
@@ -102,14 +104,36 @@ public class CoverageLayerData implements LayerData {
     @Override
     public void render( RenderContext context ) {
         try {
+            // prevent transformation if not intersects
+            ICRS bboxCRS = bbox.getCoordinateSystem();
+            ICRS rasterCRS = raster.getCoordinateSystem();
+            Envelope rasterBBox = raster.getEnvelope();
+            Envelope workEnv = rasterBBox;
+
+            if ( rasterBBox == null || rasterCRS == null || bboxCRS == null ) {
+                // do not render, if no data is available for intersection check
+                return;
+            }
+
+            if ( !rasterCRS.equals( bboxCRS ) ) {
+                GeometryTransformer dstTransf = new GeometryTransformer( bboxCRS );
+                workEnv = dstTransf.transform( rasterBBox, rasterCRS );
+            }
+
+            if ( !workEnv.intersects( bbox ) ) {
+                // intersection is empty or no overlap
+                return;
+            }
+
             RasterRenderer renderer = context.getRasterRenderer();
 
-            raster = CoverageTransform.transform( this.raster, bbox, Grid.fromSize( width, height, MAX_VALUE, bbox ),
+            AbstractRaster result;
+            result = CoverageTransform.transform( raster, bbox, Grid.fromSize( width, height, MAX_VALUE, bbox ),
                                                   interpol.toString() );
 
             if ( filter != null ) {
-                RangeSet cbr = createBandRangeSetFromRaster( null, null, raster );
-                raster = new RasterFilter( raster ).apply( cbr, filter );
+                RangeSet cbr = createBandRangeSetFromRaster( null, null, result );
+                result = new RasterFilter( result ).apply( cbr, filter );
             }
 
             LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null || style.isDefault() ? null
@@ -117,10 +141,10 @@ public class CoverageLayerData implements LayerData {
                                                                                                                                  null );
             if ( list != null && list.size() > 0 ) {
                 for ( Triple<Styling, LinkedList<Geometry>, String> t : list ) {
-                    renderer.render( (RasterStyling) t.first, raster );
+                    renderer.render( (RasterStyling) t.first, result );
                 }
             } else {
-                renderer.render( null, raster );
+                renderer.render( null, result );
             }
         } catch ( Throwable e ) {
             LOG.trace( "Stack trace:", e );
