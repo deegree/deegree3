@@ -45,7 +45,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter.writeDimensions;
 import static org.deegree.services.wms.controller.capabilities.WmsCapabilities130SpatialMetadataWriter.writeSrsAndEnvelope;
-import static org.deegree.theme.Themes.getAllLayers;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -69,7 +68,6 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -143,7 +141,7 @@ public class WmsCapabilities130ThemeWriter {
     }
 
     private List<DatasetMetadata> getDatasetMetadataFromProvider( final Theme theme ) {
-        final String datasetName = getNameFromThemeOrFirstNamedLayer( theme );
+        final String datasetName = getNameFromTheme( theme );
         if ( metadataProvider != null && datasetName != null ) {
             return metadataProvider.getAllDatasetMetadata( new QName( datasetName ) );
         }
@@ -157,14 +155,9 @@ public class WmsCapabilities130ThemeWriter {
         return null;
     }
 
-    private String getNameFromThemeOrFirstNamedLayer( final Theme theme ) {
+    private String getNameFromTheme( final Theme theme ) {
         if ( theme.getLayerMetadata().getName() != null ) {
             return theme.getLayerMetadata().getName();
-        }
-        for ( final Layer layer : getAllLayers( theme ) ) {
-            if ( layer.getMetadata().getName() != null ) {
-                return layer.getMetadata().getName();
-            }
         }
         return null;
     }
