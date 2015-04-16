@@ -43,6 +43,7 @@ package org.deegree.services.wms.controller.capabilities;
 
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
+import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
@@ -53,17 +54,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.legends.Legends;
+import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
@@ -85,10 +90,14 @@ class WmsCapabilities111ThemeWriter {
 
     private Capabilities111XMLAdapter capWriter;
 
-    WmsCapabilities111ThemeWriter( WMSController controller, String getUrl, Capabilities111XMLAdapter capWriter ) {
+    private OWSMetadataProvider metadata;
+
+    WmsCapabilities111ThemeWriter( WMSController controller, String getUrl, Capabilities111XMLAdapter capWriter,
+                                   OWSMetadataProvider metadata ) {
         this.controller = controller;
         this.getUrl = getUrl;
         this.capWriter = capWriter;
+        this.metadata = metadata;
     }
 
     void writeTheme( XMLStreamWriter writer, Theme theme )
@@ -118,7 +127,7 @@ class WmsCapabilities111ThemeWriter {
         writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
         writeDimensions( writer, md.getDimensions() );
 
-        writeMetadataUrl( writer, theme );
+        writeMetadataUrls( writer, theme );
         writeStyles( writer, md );
         writeScaleDenominators( writer, md, theme );
 
@@ -159,21 +168,23 @@ class WmsCapabilities111ThemeWriter {
         }
     }
 
-    private void writeMetadataUrl( XMLStreamWriter writer, Theme theme )
+    private void writeMetadataUrls( XMLStreamWriter writer, Theme theme )
                             throws XMLStreamException {
+        String id = null, name = null;
+
+        inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
+            if ( l.getMetadata().getName() != null ) {
+                name = l.getMetadata().getName();
+            }
+            if ( l.getMetadata().getMetadataId() != null ) {
+                id = l.getMetadata().getMetadataId();
+                break inner;
+            }
+        }
+
+        writeMetadataFromProvider( writer, name );
+
         if ( controller.getMetadataURLTemplate() != null ) {
-            String id = null;
-
-            inner: for ( org.deegree.layer.Layer l : theme.getLayers() ) {
-                if ( l.getMetadata().getMetadataId() != null ) {
-                    id = l.getMetadata().getMetadataId();
-                    break inner;
-                }
-            }
-
-            if ( id == null ) {
-                return;
-            }
             String mdurlTemplate = controller.getMetadataURLTemplate();
             if ( mdurlTemplate.isEmpty() ) {
                 mdurlTemplate = getUrl;
@@ -182,17 +193,59 @@ class WmsCapabilities111ThemeWriter {
                 }
                 mdurlTemplate += "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
             }
-
-            writer.writeStartElement( "MetadataURL" );
-            writer.writeAttribute( "type", "ISO19115:2003" );
-            writeElement( writer, "Format", "application/xml" );
-            writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
-            writer.writeEndElement();
-            writer.writeEndElement();
+            if ( id != null ) {
+                writeMetadataUrl( writer, StringUtils.replaceAll( mdurlTemplate, "${metadataSetId}", id ) );
+            }
         }
+    }
+
+    // please note that this does NOT support writing of description metadata at the moment!
+    private void writeMetadataFromProvider( XMLStreamWriter writer, String name )
+                            throws XMLStreamException {
+        if ( name == null || metadata == null ) {
+            return;
+        }
+
+        Map<String, String> auths = metadata.getExternalMetadataAuthorities();
+        DatasetMetadata md = metadata.getDatasetMetadata( new QName( name ) );
+
+        if ( md != null ) {
+            for ( StringPair ext : md.getExternalUrls() ) {
+                String url = auths.get( ext.first );
+                writer.writeStartElement( WMSNS, "AuthorityURL" );
+                writer.writeAttribute( "name", ext.first );
+                writer.writeStartElement( WMSNS, "OnlineResource" );
+                writer.writeAttribute( XLNNS, "type", "simple" );
+                writer.writeAttribute( XLNNS, "href", url );
+                writer.writeEndElement();
+                writer.writeEndElement();
+            }
+            for ( StringPair ext : md.getExternalUrls() ) {
+                writer.writeStartElement( WMSNS, "Identifier" );
+                writer.writeAttribute( "authority", ext.first );
+                writer.writeCharacters( ext.second );
+                writer.writeEndElement();
+            }
+
+            List<DatasetMetadata> mds = metadata.getAllDatasetMetadata( new QName( name ) );
+            for ( DatasetMetadata datasetMetadata : mds ) {
+                String url = datasetMetadata.getUrl();
+                writeMetadataUrl( writer, url );
+            }
+        }
+    }
+
+    private void writeMetadataUrl( XMLStreamWriter writer, String url )
+                            throws XMLStreamException {
+        writer.writeStartElement( "MetadataURL" );
+        writer.writeAttribute( "type", "ISO19115:2003" );
+        writeElement( writer, "Format", "application/xml" );
+        writer.writeStartElement( "OnlineResource" );
+        writer.writeNamespace( XLINK_PREFIX, XLNNS );
+        writer.writeAttribute( XLNNS, "type", "simple" );
+        writer.writeAttribute( XLNNS, "href", url );
+        writer.writeEndElement();
+        writer.writeEndElement();
     }
 
     private void writeStyles( XMLStreamWriter writer, LayerMetadata md )
