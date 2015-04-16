@@ -45,13 +45,10 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.metadata.DatasetMetadata;
-import org.deegree.commons.ows.metadata.MetadataUrl;
-import org.deegree.commons.ows.metadata.layer.Attribution;
-import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
-import org.deegree.commons.ows.metadata.layer.UrlWithFormat;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringPair;
 import org.junit.Test;
 
 /**
@@ -94,25 +91,17 @@ public class DefaultOWSMetadataProviderTest {
     private DefaultOWSMetadataProvider createProvider() {
         List<DatasetMetadata> datasetMetadata = new ArrayList<DatasetMetadata>();
         datasetMetadata.add( createDatasetMetadata( "name1", "http:/url.org/1" ) );
-        datasetMetadata.add( createDatasetMetadata( "name1", "http:/url.org/2", "http:/url.org/3" ) );
-        datasetMetadata.add( createDatasetMetadata( "name2", "http:/url.org/4" ) );
-        return new DefaultOWSMetadataProvider( null, null, null, datasetMetadata, null, null );
+        datasetMetadata.add( createDatasetMetadata( "name1", "http:/url.org/2" ) );
+        datasetMetadata.add( createDatasetMetadata( "name2", "http:/url.org/3" ) );
+        return new DefaultOWSMetadataProvider( null, null, null, datasetMetadata, null );
     }
 
-    private DatasetMetadata createDatasetMetadata( String name, String... urls ) {
+    private DatasetMetadata createDatasetMetadata( String name, String url ) {
         List<LanguageString> titles = new ArrayList<LanguageString>();
         List<LanguageString> abstracts = new ArrayList<LanguageString>();
         List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
-        List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
-        List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
-        List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
-        List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
-        Attribution attribution = null;
-        for ( String url : urls ) {
-            metadataUrls.add( new MetadataUrl( url, "ISO19115:2003", "application/xml" ) );
-        }
-        return new DatasetMetadata( new QName( name ), titles, abstracts, keywords, metadataUrls, externalIds,
-                                    dataUrls, featureListUrls, attribution );
+        List<StringPair> externalIds = new ArrayList<StringPair>();
+        return new DatasetMetadata( new QName( name ), titles, abstracts, keywords, url, externalIds );
     }
 
 }
