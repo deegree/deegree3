@@ -226,8 +226,11 @@ class WmsCapabilities130ThemeWriter {
                 writer.writeEndElement();
             }
 
-            String url = md.getUrl();
-            writeMetadataUrl( writer, url );
+            List<DatasetMetadata> mds = metadata.getAllDatasetMetadata( new QName( name ) );
+            for ( DatasetMetadata datasetMetadata : mds ) {
+                String url = datasetMetadata.getUrl();
+                writeMetadataUrl( writer, url );
+            }
         }
     }
 
