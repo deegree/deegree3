@@ -255,7 +255,7 @@ public class OGCFrontController extends HttpServlet {
      * @return URL, never <code>null</code> (without trailing slash or question mark)
      */
     public static String getHttpPostURL() {
-        return getContext().getServiceUrl();
+        return getHttpURL();
     }
 
     /**
@@ -271,7 +271,7 @@ public class OGCFrontController extends HttpServlet {
      * @return URL (for GET requests), never <code>null</code> (with trailing question mark)
      */
     public static String getHttpGetURL() {
-        return getContext().getServiceUrl() + "?";
+        return getHttpURL() + "?";
     }
 
     /**
@@ -1571,6 +1571,14 @@ public class OGCFrontController extends HttpServlet {
         if ( requestWatchdog != null ) {
             requestWatchdog.unwatchCurrentThread();
         }
+    }
+
+    private static String getHttpURL() {
+        RequestContext context = getContext();
+        String xForwardedHost = context.getXForwardedHost();
+        if ( xForwardedHost != null && xForwardedHost != "" )
+            return xForwardedHost;
+        return context.getServiceUrl();
     }
 
 }
