@@ -212,7 +212,7 @@ public class ConfigUtils {
         Quality quali = null;
         Interpolation interpol = null;
         int maxFeats = -1;
-        int rad = 1;
+        int rad = -1;
         try {
             alias = Antialias.valueOf( cfg.getAntiAliasing() );
         } catch ( Throwable e ) {
@@ -231,10 +231,14 @@ public class ConfigUtils {
         if ( cfg.getMaxFeatures() != null ) {
             maxFeats = cfg.getMaxFeatures();
         }
-        if ( cfg.getFeatureInfo() != null && cfg.getFeatureInfo().isEnabled() ) {
-            rad = cfg.getFeatureInfo().getPixelRadius().intValue();
+        if ( cfg.getFeatureInfo() != null ) {
+            if ( cfg.getFeatureInfo().isEnabled() ) {
+                rad = Math.max( 0, cfg.getFeatureInfo().getPixelRadius().intValue() );
+            } else {
+                rad = 0;
+            }
         } else if ( cfg.getFeatureInfoRadius() != null ) {
-            rad = cfg.getFeatureInfoRadius();
+            rad = Math.max( 0, cfg.getFeatureInfoRadius() );
         }
         return new MapOptions( quali, interpol, alias, maxFeats, rad );
     }
