@@ -130,7 +130,11 @@ public class CoverageLayer extends AbstractLayer {
     public CoverageLayerData infoQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
         try {
-            Envelope bbox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
+            int layerRadius = -1;
+            if ( getMetadata().getMapOptions() != null ) {
+                layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
+            }
+            final Envelope bbox = query.calcClickBox( layerRadius > -1 ? layerRadius : query.getLayerRadius() );
 
             RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
 

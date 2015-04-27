@@ -56,6 +56,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.AbstractSQLDialect;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -90,13 +91,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
-public class PostGISDialect implements SQLDialect {
+public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialect.class );
 
     private final String undefinedSrid;
 
     private final boolean useLegacyPredicates;
+
+    private final char escapeChar = '"';
 
     /**
      * Creates a new {@link PostGISDialect} instance.
@@ -282,6 +285,16 @@ public class PostGISDialect implements SQLDialect {
     @Override
     public String getSelectSequenceNextVal( String sequence ) {
         return "SELECT nextval('" + sequence + "')";
+    }
+
+    @Override
+    public char getLeadingEscapeChar() {
+        return escapeChar;
+    }
+
+    @Override
+    public char getTailingEscapeChar() {
+        return escapeChar;
     }
 
 }
