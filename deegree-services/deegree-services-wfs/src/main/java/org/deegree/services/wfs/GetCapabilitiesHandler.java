@@ -558,7 +558,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             try {
                 getAndPost = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
                 post = singletonList( new DCP( null, new URL( getHttpPostURL() ) ) );
-                get = singletonList( new DCP( null, new URL( getHttpGetURL() ) ) );
+                get = singletonList( new DCP( new URL( getHttpGetURL() ), null ) );
             } catch ( MalformedURLException e ) {
                 // should never happen
             }
@@ -811,7 +811,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             try {
                 getAndPost = singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
                 post = singletonList( new DCP( null, new URL( getHttpPostURL() ) ) );
-                get = singletonList( new DCP( null, new URL( getHttpGetURL() ) ) );
+                get = singletonList( new DCP( new URL( getHttpGetURL() ), null ) );
             } catch ( MalformedURLException e ) {
                 // should never happen
             }
@@ -1086,7 +1086,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private boolean isHttpMethodSupported( WFSRequestType requestType, String httpMethod ) {
         if ( disabledHttpMethodsPerType.containsKey( requestType ) )
-            return httpMethod.equalsIgnoreCase( disabledHttpMethodsPerType.get( requestType ) );
+            return !httpMethod.equalsIgnoreCase( disabledHttpMethodsPerType.get( requestType ) );
         return true;
     }
 
