@@ -74,6 +74,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | EnableResponseBuffering | 0..1        | Boolean | Enable response buffering (expensive), default: false            |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
+| Encodings               | 0..1        | Complex | Disable encodings, default: all encodings supported              |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryCRS                | 1..n        | String  | Announced CRS, first element is the default CRS                  |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryMaxFeatures        | 0..1        | Integer | Limit of features returned in a response, default: 15000         |
@@ -122,6 +124,25 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 .. hint::
    In a WFS 1.1.0 insert, the id generation mode can be overridden by attribute *idGenMode* of the ``Insert`` element. WFS 1.0.0 and WFS 2.0.0 don't support to specify the id generation mode on a request basis.
 
+^^^^^^^^^
+Encodings
+^^^^^^^^^
+
+By default XML and KVP encodings are activated. SOAP encoding is only available if EnableResponseBuffering is true. Support of XML, KVP and SOAP can be deactivated by configuration per request type.  
+
++------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
+| Option                       | Cardinality  | Value   | Description                                                                              |
++==============================+==============+=========+==========================================================================================+
+| @active                      | 0..1         | Boolean | true if the encoding is activated, false otherwise. Default: true                        |
++------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
+| @requestName                 | 1..1         | String  | Name of the request as named in the specification (case-sensitive), e.g. GetCapabilities |
++------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
+| @encoding                    | 1..1         | String  | Encoding to deactivate, one of KVP, XML, SOAP                                            |
++------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
+
+.. hint::
+   It is not checked if the configuration is valid against the WFS specification! 
+  
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
