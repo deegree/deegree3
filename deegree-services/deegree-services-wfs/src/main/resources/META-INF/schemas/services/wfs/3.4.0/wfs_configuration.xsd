@@ -33,7 +33,27 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
-        <element name="HttpMethods" type="wfs:HttpMethodsType" minOccurs="0" maxOccurs="1"/>
+        <element name="Encodings" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element name="Encoding" maxOccurs="unbounded">
+                <complexType>
+                  <attribute name="active" type="boolean" use="optional" default="true" />
+                  <attribute name="requestName" type="string" use="required" />
+                  <attribute name="encoding" use="required">
+                    <simpleType>
+                      <restriction base="string">
+                        <enumeration value="KVP" />
+                        <enumeration value="XML" />
+                        <enumeration value="SOAP" />
+                      </restriction>
+                    </simpleType>
+                  </attribute>
+                </complexType>
+              </element>
+            </sequence>
+          </complexType>
+        </element>
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
@@ -256,25 +276,5 @@
       </enumeration>
     </restriction>
   </simpleType>
-
-  <complexType name="HttpMethodsType">
-    <sequence>
-      <element name="HttpMethod" maxOccurs="unbounded">
-        <complexType>
-          <attribute name="active" type="boolean" use="optional" default="true" />
-          <attribute name="requestName" type="string" use="required" />
-          <attribute name="encoding" use="required">
-            <simpleType>
-              <restriction base="string">
-                <enumeration value="GET" />
-                <enumeration value="POST" />
-                <enumeration value="SOAP" />
-              </restriction>
-            </simpleType>
-          </attribute>
-        </complexType>
-      </element>
-    </sequence>
-  </complexType>
   
 </schema>

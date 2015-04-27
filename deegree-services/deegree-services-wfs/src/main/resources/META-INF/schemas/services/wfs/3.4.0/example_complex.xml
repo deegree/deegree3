@@ -14,10 +14,10 @@
   <EnableTransactions idGen="UseExisting">true</EnableTransactions>
   <EnableResponseBuffering>false</EnableResponseBuffering>
 
-  <HttpMethods>
-    <!-- methods are activated by default! Example to disable a method: -->
-    <HttpMethod active="false" encoding="POST" requestName="GetCapabilities"/>
-  </HttpMethods>
+  <Encodings>
+    <!-- Encodings are active by default! Example to disable a method: -->
+    <Encoding active="false" encoding="XML" requestName="GetCapabilities"/>
+  </Encodings>
   
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
