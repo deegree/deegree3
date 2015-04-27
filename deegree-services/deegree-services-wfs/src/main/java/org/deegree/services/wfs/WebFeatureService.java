@@ -562,6 +562,11 @@ public class WebFeatureService extends AbstractOWS {
             String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
+            if ( !isHttpMethodSupported( requestType, "GET" ) ) {
+                throw new OWSException( "GET is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
+
             // check if requested version is supported and offered (except for GetCapabilities)
             if ( requestType != WFSRequestType.GetCapabilities ) {
                 if ( requestVersion == null ) {
@@ -691,6 +696,11 @@ public class WebFeatureService extends AbstractOWS {
         try {
             String requestName = xmlStream.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            if ( !isHttpMethodSupported( requestType, "POST" ) ) {
+                throw new OWSException( "POST is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
 
             // check if requested version is supported and offered (except for GetCapabilities)
             requestVersion = getVersion( XMLStreamUtils.getAttributeValue( xmlStream, "version" ) );
@@ -1227,6 +1237,12 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    private boolean isHttpMethodSupported( WFSRequestType requestType, String httpMethod ) {
+        if ( disabledHttpMethodsPerType.containsKey( requestType ) )
+            return !httpMethod.equalsIgnoreCase( disabledHttpMethodsPerType.get( requestType ) );
+        return true;
     }
 
 }
