@@ -261,8 +261,8 @@
     <sequence>
       <element name="HttpMethod" maxOccurs="unbounded">
         <complexType>
-          <attribute name="isActivated" type="boolean" use="optional" default="true" />
-          <attribute name="requestType" type="string" use="required" />
+          <attribute name="active" type="boolean" use="optional" default="true" />
+          <attribute name="requestName" type="string" use="required" />
           <attribute name="encoding" use="required">
             <simpleType>
               <restriction base="string">

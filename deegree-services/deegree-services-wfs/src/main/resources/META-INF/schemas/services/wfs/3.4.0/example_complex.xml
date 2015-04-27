@@ -16,7 +16,7 @@
 
   <HttpMethods>
     <!-- methods are activated by default! Example to disable a method: -->
-    <HttpMethod isActivated="false" encoding="POST" requestType="GetCapabilities"/>
+    <HttpMethod active="false" encoding="POST" requestName="GetCapabilities"/>
   </HttpMethods>
   
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
