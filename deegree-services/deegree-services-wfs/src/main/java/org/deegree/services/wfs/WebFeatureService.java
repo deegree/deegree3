@@ -159,6 +159,7 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.HttpMethodsType.HttpMethod;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
 import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -223,6 +224,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private final Map<GMLVersion, Format> gmlVersionToFormat = new HashMap<GMLVersion, Format>();
 
+    private final Map<WFSRequestType, String> disabledHttpMethodsPerType = new HashMap<WFSRequestType, String>();
+
     private int queryMaxFeatures;
 
     private boolean checkAreaOfUse;
@@ -279,6 +282,28 @@ public class WebFeatureService extends AbstractOWS {
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
         mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
+
+        disabledHttpMethodsPerType.putAll( parseAllDisabledMethods( jaxbConfig ) );
+    }
+
+    private Map<WFSRequestType, String> parseAllDisabledMethods( DeegreeWFS jaxbConfig ) {
+        Map<WFSRequestType, String> typeToHttpMethods = new HashMap<WFSRequestType, String>();
+        if ( jaxbConfig.getHttpMethods() != null && jaxbConfig.getHttpMethods().getHttpMethod() != null ) {
+            List<HttpMethod> httpMethods = jaxbConfig.getHttpMethods().getHttpMethod();
+            for ( HttpMethod httpMethod : httpMethods ) {
+                if ( httpMethod != null && !httpMethod.isActive() ) {
+                    String requestName = httpMethod.getRequestName();
+                    try {
+                        WFSRequestType requestType = getRequestTypeByName( requestName );
+                        String encoding = httpMethod.getEncoding();
+                        typeToHttpMethods.put( requestType, encoding );
+                    } catch ( OWSException e ) {
+                        LOG.warn( "RequestName '{}' is not supported and will be ignored.", requestName );
+                    }
+                }
+            }
+        }
+        return typeToHttpMethods;
     }
 
     private IDGenMode parseIdGenMode( IdentifierGenerationOptionType idGen ) {
@@ -994,7 +1019,7 @@ public class WebFeatureService extends AbstractOWS {
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      sortedFts, sectionsUC, enableTransactions,
-                                                                     queryCRS, mdProvider );
+                                                                     queryCRS, disabledHttpMethodsPerType, mdProvider );
         adapter.export();
         xmlWriter.flush();
     }

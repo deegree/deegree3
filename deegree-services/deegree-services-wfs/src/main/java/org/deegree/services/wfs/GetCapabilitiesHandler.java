@@ -59,6 +59,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
 import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
@@ -150,6 +151,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final List<ICRS> querySRS;
 
+    private Map<WFSRequestType, String> disabledHttpMethodsPerType;
+
     private final WfsFeatureStoreManager service;
 
     private final WebFeatureService master;
@@ -158,7 +161,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     GetCapabilitiesHandler( WebFeatureService master, WfsFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
-                            boolean enableTransactions, List<ICRS> querySRS, OWSMetadataProvider mdProvider ) {
+                            boolean enableTransactions, List<ICRS> querySRS,
+                            Map<WFSRequestType, String> disabledHttpMethodsPerType, OWSMetadataProvider mdProvider ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -167,6 +171,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.sections = sections;
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
+        this.disabledHttpMethodsPerType = disabledHttpMethodsPerType;
         this.mdProvider = mdProvider;
 
         List<String> offeredVersions = master.getOfferedVersions();
@@ -345,53 +350,82 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         String postURL = OGCFrontController.getHttpPostURL();
 
         // wfs:GetCapabilities
-        writer.writeStartElement( WFS_NS, WFSRequestType.GetCapabilities.name() );
-        exportGetDCPType100( getURL );
-        exportPostDCPType100( postURL );
-        writer.writeEndElement();
+        if ( isHttpMethodSupported( WFSRequestType.GetCapabilities, "POST" )
+             || isHttpMethodSupported( WFSRequestType.GetCapabilities, "GET" ) ) {
+            writer.writeStartElement( WFS_NS, WFSRequestType.GetCapabilities.name() );
+            if ( isHttpMethodSupported( WFSRequestType.GetCapabilities, "GET" ) )
+                exportGetDCPType100( getURL );
+            if ( isHttpMethodSupported( WFSRequestType.GetCapabilities, "POST" ) )
+                exportPostDCPType100( postURL );
+            writer.writeEndElement();
+        }
 
         // wfs:DescribeFeatureType
-        writer.writeStartElement( WFS_NS, WFSRequestType.DescribeFeatureType.name() );
-        writer.writeStartElement( WFS_NS, "SchemaDescriptionLanguage" );
-        writer.writeStartElement( WFS_NS, "XMLSCHEMA" );
-        writer.writeEndElement();
-        writer.writeEndElement();
-        exportGetDCPType100( getURL );
-        exportPostDCPType100( postURL );
-        writer.writeEndElement();
+        if ( isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "POST" )
+             || isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "GET" ) ) {
+            writer.writeStartElement( WFS_NS, WFSRequestType.DescribeFeatureType.name() );
+            writer.writeStartElement( WFS_NS, "SchemaDescriptionLanguage" );
+            writer.writeStartElement( WFS_NS, "XMLSCHEMA" );
+            writer.writeEndElement();
+            writer.writeEndElement();
+            if ( isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "GET" ) )
+                exportGetDCPType100( getURL );
+            if ( isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "POST" ) )
+                exportPostDCPType100( postURL );
+            writer.writeEndElement();
+        }
 
-        if ( enableTransactions ) {
+        if ( enableTransactions
+             && ( isHttpMethodSupported( WFSRequestType.Transaction, "POST" ) || isHttpMethodSupported( WFSRequestType.Transaction,
+                                                                                                        "GET" ) ) ) {
             // wfs:Transaction
             writer.writeStartElement( WFS_NS, WFSRequestType.Transaction.name() );
-            exportGetDCPType100( getURL );
-            exportPostDCPType100( postURL );
+            if ( isHttpMethodSupported( WFSRequestType.Transaction, "GET" ) )
+                exportGetDCPType100( getURL );
+            if ( isHttpMethodSupported( WFSRequestType.Transaction, "POST" ) )
+                exportPostDCPType100( postURL );
             writer.writeEndElement();
         }
 
         // wfs:GetFeature
-        writer.writeStartElement( WFS_NS, WFSRequestType.GetFeature.name() );
-        writer.writeStartElement( WFS_NS, "ResultFormat" );
-        writer.writeEmptyElement( WFS_NS, "GML2" );
-        writer.writeEndElement();
-        exportGetDCPType100( getURL );
-        exportPostDCPType100( postURL );
-        writer.writeEndElement();
-
-        if ( enableTransactions ) {
-            // wfs:GetFeatureWithLock
-            writer.writeStartElement( WFS_NS, WFSRequestType.GetFeatureWithLock.name() );
+        if ( isHttpMethodSupported( WFSRequestType.GetFeature, "POST" )
+             || isHttpMethodSupported( WFSRequestType.GetFeature, "GET" ) ) {
+            writer.writeStartElement( WFS_NS, WFSRequestType.GetFeature.name() );
             writer.writeStartElement( WFS_NS, "ResultFormat" );
             writer.writeEmptyElement( WFS_NS, "GML2" );
             writer.writeEndElement();
-            exportGetDCPType100( getURL );
-            exportPostDCPType100( postURL );
+            if ( isHttpMethodSupported( WFSRequestType.GetFeature, "GET" ) )
+                exportGetDCPType100( getURL );
+            if ( isHttpMethodSupported( WFSRequestType.GetFeature, "POST" ) )
+                exportPostDCPType100( postURL );
             writer.writeEndElement();
+        }
+
+        if ( enableTransactions ) {
+            // wfs:GetFeatureWithLock
+            if ( isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "POST" )
+                 || isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "GET" ) ) {
+                writer.writeStartElement( WFS_NS, WFSRequestType.GetFeatureWithLock.name() );
+                writer.writeStartElement( WFS_NS, "ResultFormat" );
+                writer.writeEmptyElement( WFS_NS, "GML2" );
+                writer.writeEndElement();
+                if ( isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "GET" ) )
+                    exportGetDCPType100( getURL );
+                if ( isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "POST" ) )
+                    exportPostDCPType100( postURL );
+                writer.writeEndElement();
+            }
 
             // wfs:LockFeature
-            writer.writeStartElement( WFS_NS, WFSRequestType.LockFeature.name() );
-            exportGetDCPType100( getURL );
-            exportPostDCPType100( postURL );
-            writer.writeEndElement();
+            if ( isHttpMethodSupported( WFSRequestType.LockFeature, "POST" )
+                 || isHttpMethodSupported( WFSRequestType.LockFeature, "GET" ) ) {
+                writer.writeStartElement( WFS_NS, WFSRequestType.LockFeature.name() );
+                if ( isHttpMethodSupported( WFSRequestType.LockFeature, "GET" ) )
+                    exportGetDCPType100( getURL );
+                if ( isHttpMethodSupported( WFSRequestType.LockFeature, "POST" ) )
+                    exportPostDCPType100( postURL );
+                writer.writeEndElement();
+            }
         }
 
         writer.writeEndElement();
@@ -518,9 +552,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         // ows:OperationsMetadata
         if ( sections == null || sections.contains( "OPERATIONSMETADATA" ) ) {
             List<Operation> operations = new ArrayList<Operation>();
-            List<DCP> dcps = null;
+            List<DCP> getAndPost = null;
+            List<DCP> get = null;
+            List<DCP> post = null;
             try {
-                dcps = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
+                getAndPost = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
+                post = singletonList( new DCP( null, new URL( getHttpPostURL() ) ) );
+                get = singletonList( new DCP( null, new URL( getHttpGetURL() ) ) );
             } catch ( MalformedURLException e ) {
                 // should never happen
             }
@@ -529,7 +567,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             List<Domain> params = new ArrayList<Domain>();
             List<String> outputFormats = new ArrayList<String>( master.getOutputFormats() );
             params.add( new Domain( "outputFormat", outputFormats ) );
-            operations.add( new Operation( WFSRequestType.DescribeFeatureType.name(), dcps, params, null, null ) );
+            addOperation( DescribeFeatureType, params, getAndPost, post, get, operations );
 
             // GetCapabilities
             params = new ArrayList<Domain>();
@@ -542,33 +580,33 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // sections.add( "FeatureTypeList" );
             // sections.add( "Filter_Capabilities" );
             // params.add( new Domain( "Sections", sections ) );
-            operations.add( new Operation( WFSRequestType.GetCapabilities.name(), dcps, params, null, null ) );
+            addOperation( GetCapabilities, params, getAndPost, post, get, operations );
 
             // GetFeature
             params = new ArrayList<Domain>();
             params.add( new Domain( "resultType", Arrays.asList( new String[] { "results", "hits" } ) ) );
             params.add( new Domain( "outputFormat", outputFormats ) );
-            operations.add( new Operation( WFSRequestType.GetFeature.name(), dcps, params, null, null ) );
+            addOperation( GetFeature, params, getAndPost, post, get, operations );
 
             // GetFeatureWithLock
             if ( enableTransactions ) {
                 params = new ArrayList<Domain>();
                 params.add( new Domain( "resultType", Arrays.asList( new String[] { "results", "hits" } ) ) );
                 params.add( new Domain( "outputFormat", outputFormats ) );
-                operations.add( new Operation( WFSRequestType.GetFeatureWithLock.name(), dcps, params, null, null ) );
+                addOperation( GetFeatureWithLock, params, getAndPost, post, get, operations );
             }
 
             // GetGmlObject
             params = new ArrayList<Domain>();
             params.add( new Domain( "outputFormat", outputFormats ) );
-            operations.add( new Operation( WFSRequestType.GetGmlObject.name(), dcps, params, null, null ) );
+            addOperation( GetGmlObject, params, getAndPost, post, get, operations );
 
             if ( enableTransactions ) {
 
                 // LockFeature
                 params = new ArrayList<Domain>();
                 params.add( new Domain( "lockAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
-                operations.add( new Operation( WFSRequestType.LockFeature.name(), dcps, params, null, null ) );
+                addOperation( LockFeature, params, getAndPost, post, get, operations );
 
                 // Transaction
                 params = new ArrayList<Domain>();
@@ -576,7 +614,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 params.add( new Domain( "idgen", Arrays.asList( new String[] { "GenerateNew", "UseExisting",
                                                                               "ReplaceDuplicate" } ) ) );
                 params.add( new Domain( "releaseAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
-                operations.add( new Operation( WFSRequestType.Transaction.name(), dcps, params, null, null ) );
+                addOperation( Transaction, params, getAndPost, post, get, operations );
             }
             Map<String, List<OMElement>> versionToExtendedCaps = mdProvider.getExtendedCapabilities();
             exportOperationsMetadata100( writer,
@@ -769,9 +807,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             List<Operation> operations = new ArrayList<Operation>();
             List<DCP> getAndPost = null;
             List<DCP> post = null;
+            List<DCP> get = null;
             try {
                 getAndPost = singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
                 post = singletonList( new DCP( null, new URL( getHttpPostURL() ) ) );
+                get = singletonList( new DCP( null, new URL( getHttpGetURL() ) ) );
             } catch ( MalformedURLException e ) {
                 // should never happen
             }
@@ -787,35 +827,38 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             sections.add( "FeatureTypeList" );
             sections.add( "Filter_Capabilities" );
             params.add( new Domain( "Sections", sections ) );
-            operations.add( new Operation( GetCapabilities.name(), getAndPost, params, null, null ) );
+
+            // GetCapabilities
+            addOperation( GetCapabilities, params, getAndPost, post, get, operations );
 
             // DescribeFeatureType
-            operations.add( new Operation( DescribeFeatureType.name(), getAndPost, null, null, null ) );
+            addOperation( DescribeFeatureType, getAndPost, post, get, operations );
 
             // ListStoredQueries
-            operations.add( new Operation( ListStoredQueries.name(), getAndPost, null, null, null ) );
+            addOperation( ListStoredQueries, getAndPost, post, get, operations );
 
             // DescribeStoredQueries
-            operations.add( new Operation( DescribeStoredQueries.name(), getAndPost, null, null, null ) );
+            addOperation( DescribeStoredQueries, getAndPost, post, get, operations );
 
             // GetFeature
-            operations.add( new Operation( GetFeature.name(), getAndPost, null, null, null ) );
+            addOperation( GetFeature, getAndPost, post, get, operations );
 
             // GetPropertyValue
-            operations.add( new Operation( GetPropertyValue.name(), getAndPost, null, null, null ) );
+            addOperation( GetPropertyValue, getAndPost, post, get, operations );
 
             if ( enableTransactions ) {
                 // Transaction
                 List<Domain> constraints = new ArrayList<Domain>();
                 constraints.add( new Domain( "AutomaticDataLocking", "TRUE" ) );
                 constraints.add( new Domain( "PreservesSiblingOrder", "TRUE" ) );
-                operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
+                if ( isHttpMethodSupported( Transaction, "POST" ) )
+                    operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
 
                 // GetFeatureWithLock
-                operations.add( new Operation( GetFeatureWithLock.name(), getAndPost, null, null, null ) );
+                addOperation( GetFeatureWithLock, getAndPost, post, get, operations );
 
                 // LockFeature
-                operations.add( new Operation( LockFeature.name(), getAndPost, null, null, null ) );
+                addOperation( LockFeature, getAndPost, post, get, operations );
             }
 
             // global parameter domains
@@ -1015,6 +1058,21 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndDocument();
     }
 
+    private void addOperation( WFSRequestType wfsRequestType, List<DCP> getAndPost, List<DCP> post, List<DCP> get,
+                               List<Operation> operations ) {
+        addOperation( wfsRequestType, null, getAndPost, post, get, operations );
+    }
+
+    private void addOperation( WFSRequestType wfsRequestType, List<Domain> params, List<DCP> getAndPost,
+                               List<DCP> post, List<DCP> get, List<Operation> operations ) {
+        if ( isHttpMethodSupported( wfsRequestType, "POST" ) && isHttpMethodSupported( wfsRequestType, "GET" ) )
+            operations.add( new Operation( wfsRequestType.name(), getAndPost, params, null, null ) );
+        else if ( isHttpMethodSupported( wfsRequestType, "POST" ) )
+            operations.add( new Operation( wfsRequestType.name(), post, params, null, null ) );
+        else if ( isHttpMethodSupported( wfsRequestType, "GET" ) )
+            operations.add( new Operation( wfsRequestType.name(), get, params, null, null ) );
+    }
+
     private void writeOutputFormats200( XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( WFS_200_NS, "OutputFormats" );
@@ -1025,4 +1083,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
         writer.writeEndElement();
     }
+
+    private boolean isHttpMethodSupported( WFSRequestType requestType, String httpMethod ) {
+        if ( disabledHttpMethodsPerType.containsKey( requestType ) )
+            return httpMethod.equalsIgnoreCase( disabledHttpMethodsPerType.get( requestType ) );
+        return true;
+    }
+
 }
