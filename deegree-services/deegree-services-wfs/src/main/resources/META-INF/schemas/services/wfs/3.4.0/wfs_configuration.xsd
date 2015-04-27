@@ -33,6 +33,7 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
+        <element name="HttpMethods" type="wfs:HttpMethodsType" minOccurs="0" maxOccurs="1"/>
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
@@ -225,4 +226,55 @@
       </enumeration>
     </restriction>
   </simpleType>
+  
+  <simpleType name="EncodingsType">
+    <restriction base="string">
+      <enumeration value="UseExisting">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            raise an exception.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="ReplaceDuplicate">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            replace the existing feature instance with the one encoded in the Insert action.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="GenerateNew">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will generate new and unique feature identifiers for inserted features.
+          </documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+
+  <complexType name="HttpMethodsType">
+    <sequence>
+      <element name="HttpMethod" maxOccurs="unbounded">
+        <complexType>
+          <attribute name="isActivated" type="boolean" use="optional" default="true" />
+          <attribute name="requestType" type="string" use="required" />
+          <attribute name="encoding" use="required">
+            <simpleType>
+              <restriction base="string">
+                <enumeration value="GET" />
+                <enumeration value="POST" />
+                <enumeration value="SOAP" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  
 </schema>
