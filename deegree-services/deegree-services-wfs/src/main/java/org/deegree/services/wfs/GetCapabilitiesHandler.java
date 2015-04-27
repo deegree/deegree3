@@ -89,6 +89,7 @@ import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
@@ -151,7 +152,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final List<ICRS> querySRS;
 
-    private Map<WFSRequestType, String> disabledHttpMethodsPerType;
+    private Map<WFSRequestType, List<String>> disabledEncodingsPerRequestType;
 
     private final WfsFeatureStoreManager service;
 
@@ -162,7 +163,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     GetCapabilitiesHandler( WebFeatureService master, WfsFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
                             boolean enableTransactions, List<ICRS> querySRS,
-                            Map<WFSRequestType, String> disabledHttpMethodsPerType, OWSMetadataProvider mdProvider ) {
+                            Map<WFSRequestType, List<String>> disabledEncodingsPerRequestType, OWSMetadataProvider mdProvider ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -171,7 +172,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.sections = sections;
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
-        this.disabledHttpMethodsPerType = disabledHttpMethodsPerType;
+        this.disabledEncodingsPerRequestType = disabledEncodingsPerRequestType;
         this.mdProvider = mdProvider;
 
         List<String> offeredVersions = master.getOfferedVersions();
@@ -350,79 +351,74 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         String postURL = OGCFrontController.getHttpPostURL();
 
         // wfs:GetCapabilities
-        if ( isHttpMethodSupported( WFSRequestType.GetCapabilities, "POST" )
-             || isHttpMethodSupported( WFSRequestType.GetCapabilities, "GET" ) ) {
+        if ( isPostSupported( GetCapabilities ) || isGetSupported( GetCapabilities ) ) {
             writer.writeStartElement( WFS_NS, WFSRequestType.GetCapabilities.name() );
-            if ( isHttpMethodSupported( WFSRequestType.GetCapabilities, "GET" ) )
+            if ( isGetSupported( WFSRequestType.GetCapabilities ) )
                 exportGetDCPType100( getURL );
-            if ( isHttpMethodSupported( WFSRequestType.GetCapabilities, "POST" ) )
+            if ( isPostSupported( WFSRequestType.GetCapabilities ) )
                 exportPostDCPType100( postURL );
             writer.writeEndElement();
         }
 
         // wfs:DescribeFeatureType
-        if ( isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "POST" )
-             || isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "GET" ) ) {
+        if ( isPostSupported( DescribeFeatureType ) || isGetSupported( DescribeFeatureType ) ) {
             writer.writeStartElement( WFS_NS, WFSRequestType.DescribeFeatureType.name() );
             writer.writeStartElement( WFS_NS, "SchemaDescriptionLanguage" );
             writer.writeStartElement( WFS_NS, "XMLSCHEMA" );
             writer.writeEndElement();
             writer.writeEndElement();
-            if ( isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "GET" ) )
+            if ( isGetSupported( WFSRequestType.DescribeFeatureType ) )
                 exportGetDCPType100( getURL );
-            if ( isHttpMethodSupported( WFSRequestType.DescribeFeatureType, "POST" ) )
+            if ( isPostSupported( WFSRequestType.DescribeFeatureType ) )
                 exportPostDCPType100( postURL );
             writer.writeEndElement();
         }
 
         if ( enableTransactions
-             && ( isHttpMethodSupported( WFSRequestType.Transaction, "POST" ) || isHttpMethodSupported( WFSRequestType.Transaction,
-                                                                                                        "GET" ) ) ) {
+             && ( isPostSupported( WFSRequestType.Transaction ) || isGetSupported( WFSRequestType.Transaction ) ) ) {
             // wfs:Transaction
             writer.writeStartElement( WFS_NS, WFSRequestType.Transaction.name() );
-            if ( isHttpMethodSupported( WFSRequestType.Transaction, "GET" ) )
+            if ( isGetSupported( WFSRequestType.Transaction ) )
                 exportGetDCPType100( getURL );
-            if ( isHttpMethodSupported( WFSRequestType.Transaction, "POST" ) )
+            if ( isPostSupported( WFSRequestType.Transaction ) )
                 exportPostDCPType100( postURL );
             writer.writeEndElement();
         }
 
         // wfs:GetFeature
-        if ( isHttpMethodSupported( WFSRequestType.GetFeature, "POST" )
-             || isHttpMethodSupported( WFSRequestType.GetFeature, "GET" ) ) {
+        if ( isPostSupported( WFSRequestType.GetFeature ) || isGetSupported( WFSRequestType.GetFeature ) ) {
             writer.writeStartElement( WFS_NS, WFSRequestType.GetFeature.name() );
             writer.writeStartElement( WFS_NS, "ResultFormat" );
             writer.writeEmptyElement( WFS_NS, "GML2" );
             writer.writeEndElement();
-            if ( isHttpMethodSupported( WFSRequestType.GetFeature, "GET" ) )
+            if ( isGetSupported( WFSRequestType.GetFeature ) )
                 exportGetDCPType100( getURL );
-            if ( isHttpMethodSupported( WFSRequestType.GetFeature, "POST" ) )
+            if ( isPostSupported( WFSRequestType.GetFeature ) )
                 exportPostDCPType100( postURL );
             writer.writeEndElement();
         }
 
         if ( enableTransactions ) {
             // wfs:GetFeatureWithLock
-            if ( isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "POST" )
-                 || isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "GET" ) ) {
+            if ( isPostSupported( WFSRequestType.GetFeatureWithLock )
+                 || isGetSupported( WFSRequestType.GetFeatureWithLock ) ) {
                 writer.writeStartElement( WFS_NS, WFSRequestType.GetFeatureWithLock.name() );
                 writer.writeStartElement( WFS_NS, "ResultFormat" );
                 writer.writeEmptyElement( WFS_NS, "GML2" );
                 writer.writeEndElement();
-                if ( isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "GET" ) )
+                if ( isGetSupported( WFSRequestType.GetFeatureWithLock ) )
                     exportGetDCPType100( getURL );
-                if ( isHttpMethodSupported( WFSRequestType.GetFeatureWithLock, "POST" ) )
+                if ( isPostSupported( WFSRequestType.GetFeatureWithLock ) )
                     exportPostDCPType100( postURL );
                 writer.writeEndElement();
             }
 
             // wfs:LockFeature
-            if ( isHttpMethodSupported( WFSRequestType.LockFeature, "POST" )
-                 || isHttpMethodSupported( WFSRequestType.LockFeature, "GET" ) ) {
+            if ( isPostSupported( WFSRequestType.LockFeature ) || isGetSupported( WFSRequestType.LockFeature ) ) {
                 writer.writeStartElement( WFS_NS, WFSRequestType.LockFeature.name() );
-                if ( isHttpMethodSupported( WFSRequestType.LockFeature, "GET" ) )
+                if ( isGetSupported( WFSRequestType.LockFeature ) )
                     exportGetDCPType100( getURL );
-                if ( isHttpMethodSupported( WFSRequestType.LockFeature, "POST" ) )
+                if ( isPostSupported( WFSRequestType.LockFeature ) )
                     exportPostDCPType100( postURL );
                 writer.writeEndElement();
             }
@@ -851,7 +847,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 List<Domain> constraints = new ArrayList<Domain>();
                 constraints.add( new Domain( "AutomaticDataLocking", "TRUE" ) );
                 constraints.add( new Domain( "PreservesSiblingOrder", "TRUE" ) );
-                if ( isHttpMethodSupported( Transaction, "POST" ) )
+                if ( isEncodingSupported( Transaction, "POST" ) )
                     operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
 
                 // GetFeatureWithLock
@@ -1065,11 +1061,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private void addOperation( WFSRequestType wfsRequestType, List<Domain> params, List<DCP> getAndPost,
                                List<DCP> post, List<DCP> get, List<Operation> operations ) {
-        if ( isHttpMethodSupported( wfsRequestType, "POST" ) && isHttpMethodSupported( wfsRequestType, "GET" ) )
+        if ( isGetSupported( wfsRequestType ) && isPostSupported( wfsRequestType ) )
             operations.add( new Operation( wfsRequestType.name(), getAndPost, params, null, null ) );
-        else if ( isHttpMethodSupported( wfsRequestType, "POST" ) )
+        else if ( isPostSupported( wfsRequestType ) )
             operations.add( new Operation( wfsRequestType.name(), post, params, null, null ) );
-        else if ( isHttpMethodSupported( wfsRequestType, "GET" ) )
+        else if ( isGetSupported( wfsRequestType ) )
             operations.add( new Operation( wfsRequestType.name(), get, params, null, null ) );
     }
 
@@ -1084,9 +1080,22 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         writer.writeEndElement();
     }
 
-    private boolean isHttpMethodSupported( WFSRequestType requestType, String httpMethod ) {
-        if ( disabledHttpMethodsPerType.containsKey( requestType ) )
-            return !httpMethod.equalsIgnoreCase( disabledHttpMethodsPerType.get( requestType ) );
+    private boolean isGetSupported( WFSRequestType requestType ) {
+        return isEncodingSupported( requestType, "KVP" );
+    }
+
+    private boolean isPostSupported( WFSRequestType requestType ) {
+        return isEncodingSupported( requestType, "XML" ) || isEncodingSupported( requestType, "SOAP" );
+    }
+
+    private boolean isEncodingSupported( WFSRequestType requestType, String encoding ) {
+        if ( disabledEncodingsPerRequestType.containsKey( requestType ) ) {
+            List<String> disabledEncodings = disabledEncodingsPerRequestType.get( requestType );
+            for ( String disabledEncoding : disabledEncodings ) {
+                if ( disabledEncoding.equalsIgnoreCase( encoding ) )
+                    return false;
+            }
+        }
         return true;
     }
 

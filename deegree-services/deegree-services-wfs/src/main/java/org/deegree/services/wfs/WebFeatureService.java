@@ -155,11 +155,11 @@ import org.deegree.services.jaxb.wfs.AbstractFormatType;
 import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.EnableTransactions;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.Encodings.Encoding;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
-import org.deegree.services.jaxb.wfs.HttpMethodsType.HttpMethod;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
 import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -224,7 +224,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private final Map<GMLVersion, Format> gmlVersionToFormat = new HashMap<GMLVersion, Format>();
 
-    private final Map<WFSRequestType, String> disabledHttpMethodsPerType = new HashMap<WFSRequestType, String>();
+    private final Map<WFSRequestType, List<String>> disabledEncodingsPerRequestType = new HashMap<WFSRequestType, List<String>>();
 
     private int queryMaxFeatures;
 
@@ -283,27 +283,31 @@ public class WebFeatureService extends AbstractOWS {
         initFormats( jaxbConfig.getAbstractFormat() );
         mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
 
-        disabledHttpMethodsPerType.putAll( parseAllDisabledMethods( jaxbConfig ) );
+        parseAllDisabledEncodings( jaxbConfig );
     }
 
-    private Map<WFSRequestType, String> parseAllDisabledMethods( DeegreeWFS jaxbConfig ) {
-        Map<WFSRequestType, String> typeToHttpMethods = new HashMap<WFSRequestType, String>();
-        if ( jaxbConfig.getHttpMethods() != null && jaxbConfig.getHttpMethods().getHttpMethod() != null ) {
-            List<HttpMethod> httpMethods = jaxbConfig.getHttpMethods().getHttpMethod();
-            for ( HttpMethod httpMethod : httpMethods ) {
-                if ( httpMethod != null && !httpMethod.isActive() ) {
-                    String requestName = httpMethod.getRequestName();
-                    try {
-                        WFSRequestType requestType = getRequestTypeByName( requestName );
-                        String encoding = httpMethod.getEncoding();
-                        typeToHttpMethods.put( requestType, encoding );
-                    } catch ( OWSException e ) {
-                        LOG.warn( "RequestName '{}' is not supported and will be ignored.", requestName );
-                    }
+    private void parseAllDisabledEncodings( DeegreeWFS jaxbConfig ) {
+        if ( jaxbConfig.getEncodings() != null && jaxbConfig.getEncodings().getEncoding() != null ) {
+            List<Encoding> encodings = jaxbConfig.getEncodings().getEncoding();
+            for ( Encoding encoding : encodings ) {
+                if ( encoding != null && !encoding.isActive() ) {
+                    addDisabledEncoding( encoding );
                 }
             }
         }
-        return typeToHttpMethods;
+    }
+
+    private void addDisabledEncoding( Encoding encoding ) {
+        String requestName = encoding.getRequestName();
+        try {
+            WFSRequestType requestType = getRequestTypeByName( requestName );
+            if ( !disabledEncodingsPerRequestType.containsKey( requestType ) )
+                disabledEncodingsPerRequestType.put( requestType, new ArrayList<String>() );
+            String encodingName = encoding.getEncoding();
+            disabledEncodingsPerRequestType.get( requestType ).add( encodingName );
+        } catch ( OWSException e ) {
+            LOG.warn( "RequestName '{}' is not supported and will be ignored.", requestName );
+        }
     }
 
     private IDGenMode parseIdGenMode( IdentifierGenerationOptionType idGen ) {
@@ -562,8 +566,8 @@ public class WebFeatureService extends AbstractOWS {
             String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
-            if ( !isHttpMethodSupported( requestType, "GET" ) ) {
-                throw new OWSException( "GET is not supported for " + requestName + " requests.",
+            if ( !isEncodingSupported( requestType, "KVP" ) ) {
+                throw new OWSException( "GET/KVP is not supported for " + requestName + " requests.",
                                         OWSException.OPERATION_NOT_SUPPORTED );
             }
 
@@ -697,8 +701,8 @@ public class WebFeatureService extends AbstractOWS {
             String requestName = xmlStream.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
-            if ( !isHttpMethodSupported( requestType, "POST" ) ) {
-                throw new OWSException( "POST is not supported for " + requestName + " requests.",
+            if ( !isEncodingSupported( requestType, "XML" ) ) {
+                throw new OWSException( "POST/XML is not supported for " + requestName + " requests.",
                                         OWSException.OPERATION_NOT_SUPPORTED );
             }
 
@@ -856,6 +860,11 @@ public class WebFeatureService extends AbstractOWS {
 
             String requestName = body.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            if ( !isEncodingSupported( requestType, "SOAP" ) ) {
+                throw new OWSException( "POST/SOAP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
 
             // check if requested version is supported and offered (except for GetCapabilities)
             requestVersion = getVersion( body.getAttributeValue( new QName( "version" ) ) );
@@ -1029,7 +1038,8 @@ public class WebFeatureService extends AbstractOWS {
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      sortedFts, sectionsUC, enableTransactions,
-                                                                     queryCRS, disabledHttpMethodsPerType, mdProvider );
+                                                                     queryCRS, disabledEncodingsPerRequestType,
+                                                                     mdProvider );
         adapter.export();
         xmlWriter.flush();
     }
@@ -1239,9 +1249,14 @@ public class WebFeatureService extends AbstractOWS {
         return version;
     }
 
-    private boolean isHttpMethodSupported( WFSRequestType requestType, String httpMethod ) {
-        if ( disabledHttpMethodsPerType.containsKey( requestType ) )
-            return !httpMethod.equalsIgnoreCase( disabledHttpMethodsPerType.get( requestType ) );
+    private boolean isEncodingSupported( WFSRequestType requestType, String encoding ) {
+        if ( disabledEncodingsPerRequestType.containsKey( requestType ) ) {
+            List<String> disabledEncodings = disabledEncodingsPerRequestType.get( requestType );
+            for ( String disabledEncoding : disabledEncodings ) {
+                if ( disabledEncoding.equalsIgnoreCase( encoding ) )
+                    return false;
+            }
+        }
         return true;
     }
 
