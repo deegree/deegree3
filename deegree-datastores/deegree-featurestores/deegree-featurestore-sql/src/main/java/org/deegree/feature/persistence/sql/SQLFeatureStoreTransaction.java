@@ -642,8 +642,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 for ( Feature feature : features ) {
                     FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
                     if ( ftMapping == null ) {
-                        throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
-                                                         + "'. No mapping defined and BLOB mode is off." );
+                        continue;
+//                        throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
+//                                                         + "'. No mapping defined and BLOB mode is off." );
                     }
                     idAssignments.add( insertManager.insertFeature( feature, ftMapping ) );
                     Pair<TableName, GeometryMapping> mapping = ftMapping.getDefaultGeometryMapping();

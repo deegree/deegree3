@@ -35,46 +35,37 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.filter.expression.ValueReference;
 
 /**
- * {@link Mapping} of a particle to a fixed value.
+ * {@link Mapping} of a particle to an SQL expression (e.g. a constant or a CASE statement).
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: markus $
- * 
- * @version $Revision: $, $Date: $
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ *
+ * @since 3.4
  */
-public class ConstantMapping<T extends TypedObjectNode> extends Mapping {
+public class SqlExpressionMapping<T extends TypedObjectNode> extends Mapping {
 
-    private final T value;
+    private final String sql;
 
     /**
-     * Creates a new {@link ConstantMapping} instance.
+     * Creates a new {@link SqlExpressionMapping} instance.
      * 
      * @param path
      *            relative xpath expression, must not be <code>null</code>
-     * @param value
-     *            the value of the particle, must not be <code>null</code>
+     * @param sql
+     *            the SQL expression, must not be <code>null</code>
      */
-    public ConstantMapping( ValueReference path, T value, CustomConverterJAXB converter ) {
+    public SqlExpressionMapping( ValueReference path, final String sql, CustomConverterJAXB converter ) {
         super( path, false, null, converter );
-        this.value = value;
+        this.sql = sql;
     }
 
-    public ConstantMapping( ValueReference path, T value ) {
+    public SqlExpressionMapping( ValueReference path, final String sql ) {
         super( path, false, null, null );
-        this.value = value;
+        this.sql = sql;
     }
 
-    /**
-     * Returns the value that the particle is mapped to.
-     * 
-     * @return the value of the particle, never <code>null</code>
-     */
-    public T getValue() {
-        return value;
-    }
 }

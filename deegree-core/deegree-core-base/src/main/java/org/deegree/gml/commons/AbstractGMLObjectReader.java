@@ -429,10 +429,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             if ( xmlStream.nextTag() == START_ELEMENT ) {
                 final GmlTimeGeometricPrimitiveReader timeReader = new GmlTimeGeometricPrimitiveReader( gmlStreamReader );
                 final TimeGeometricPrimitive timeObject = timeReader.read( xmlStream );
-                property = new GenericProperty( propDecl, propName, timeObject, isNilled );
+                property = new GenericProperty( propDecl, propName, timeObject, attrs );
                 xmlStream.nextTag();
             } else {
-                property = new GenericProperty( propDecl, propName, null, isNilled );
+                property = new GenericProperty( propDecl, propName, null, attrs );
             }
         }
         return property;
