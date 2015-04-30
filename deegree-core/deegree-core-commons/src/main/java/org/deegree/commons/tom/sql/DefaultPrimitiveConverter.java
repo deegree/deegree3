@@ -49,8 +49,8 @@ import java.util.Calendar;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.Time;
 import org.deegree.commons.tom.datetime.Temporal;
+import org.deegree.commons.tom.datetime.Time;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -347,6 +347,9 @@ public class DefaultPrimitiveConverter implements PrimitiveParticleConverter {
             value = new Timestamp( timeInstant.getTimeInMilliseconds() );
         } else {
             String s = input.toString();
+            if ( s.isEmpty() ) {
+                return null;
+            }
             DateTime timeInstant = parseDateTime( s );
             value = toSqlTimestamp( timeInstant );
         }
