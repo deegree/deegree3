@@ -683,6 +683,8 @@ public class SQLFeatureStore implements FeatureStore {
                 } else {
                     sql.append( "COUNT(*) FROM (SELECT DISTINCT " );
 
+                    String ftTableAlias = wb.getAliasManager().getRootTableAlias();
+                    
                     FIDMapping fidMapping = ftMapping.getFidMapping();
                     List<Pair<SQLIdentifier, BaseType>> fidCols = fidMapping.getColumns();
                     boolean first = true;
@@ -692,12 +694,11 @@ public class SQLFeatureStore implements FeatureStore {
                         } else {
                             first = false;
                         }
-                        sql.append( fidCol.first );
+                        sql.append( ftTableAlias ).append( '.' ).append( fidCol.first );
                     }
 
                     sql.append( " FROM " );
 
-                    String ftTableAlias = wb.getAliasManager().getRootTableAlias();
 
                     // pure relational query
                     sql.append( ftMapping.getFtTable() );
