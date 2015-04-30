@@ -406,7 +406,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
             } else {
                 // current property element is not equal to active declaration
                 while ( declIter.hasNext() && findConcretePropertyType( propName, activeDecl ) == null ) {
-                    if ( propOccurences < activeDecl.getMinOccurs() ) {
+                    if ( !gmlStreamReader.getLaxMode() && propOccurences < activeDecl.getMinOccurs() ) {
                         String msg = null;
                         if ( activeDecl.getMinOccurs() == 1 ) {
                             msg = Messages.getMessage( "ERROR_PROPERTY_MANDATORY", activeDecl.getName(), type.getName() );
