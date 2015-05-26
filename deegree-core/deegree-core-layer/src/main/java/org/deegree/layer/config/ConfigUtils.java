@@ -172,10 +172,10 @@ public class ConfigUtils {
                     st = st.copy();
                     st.setName( name );
                 }
-                legendStyleMap.put( name, st );
-                if ( defaultLegendStyle == null ) {
-                    defaultLegendStyle = st;
-                }
+            }
+            legendStyleMap.put( name, st );
+            if ( defaultLegendStyle == null ) {
+                defaultLegendStyle = st;
             }
         }
         return new Pair<Style, Style>( defaultStyle, defaultLegendStyle );
