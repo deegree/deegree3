@@ -60,7 +60,8 @@ class IdChecker implements GMLObjectVisitor {
     }
 
     @Override
-    public boolean visitObject( GMLObject o ) {
+    public boolean visitObject( final GMLObject o ) {
+        checkForDuplication( o.getId() );
         return true;
     }
 

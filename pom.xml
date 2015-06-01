@@ -133,9 +133,9 @@
           <version>1.1</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>tomcat-maven-plugin</artifactId>
-          <version>1.1</version>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>org.antlr</groupId>
@@ -683,6 +683,37 @@
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>ojdbc6</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <!-- Oracle GeoRaster -->
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdoapi</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdotype</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdogr</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdoutl</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>xdb</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
         <version>11.2.0.2</version>
       </dependency>
       <!-- Batik -->

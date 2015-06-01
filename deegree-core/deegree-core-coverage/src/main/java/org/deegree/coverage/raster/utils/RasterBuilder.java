@@ -40,6 +40,8 @@ package org.deegree.coverage.raster.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +56,8 @@ import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.DiskBasedTileContainer;
 import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
+import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -94,6 +98,48 @@ public class RasterBuilder {
             return null;
         }
         return buildMultiResolutionRaster( findResolutionDirs( resolutionDirectory ), recursive, options );
+    }
+
+    /**
+     * Sets the no data value of the raster to the passed no data value if the no data value is not null. The no data
+     * value is converted to the byte array consistent to raster {@link DataType}.
+     * 
+     * @param raster
+     *            to update the no data values, never <code>null</code>
+     * @param noDataValue
+     *            the no data value to set, may be <code>null</code> (nothing is updated then)
+     */
+    public static void setNoDataValue( AbstractRaster raster, BigDecimal noDataValue ) {
+        if ( noDataValue != null ) {
+            RasterDataInfo rasterDataInfo = raster.getRasterDataInfo();
+            DataType dataType = rasterDataInfo.getDataType();
+            byte[] noData = null;
+            switch ( dataType ) {
+            case DOUBLE:
+                noData = ByteBuffer.allocate( dataType.getSize() ).putDouble( noDataValue.doubleValue() ).array();
+                break;
+            case FLOAT:
+                noData = ByteBuffer.allocate( dataType.getSize() ).putFloat( noDataValue.floatValue() ).array();
+                break;
+            case INT:
+                noData = ByteBuffer.allocate( dataType.getSize() ).putInt( noDataValue.intValue() ).array();
+                break;
+            case SHORT:
+            case USHORT:
+                noData = ByteBuffer.allocate( dataType.getSize() ).putShort( noDataValue.shortValue() ).array();
+                break;
+            case BYTE:
+                noData = ByteBuffer.allocate( dataType.getSize() ).put( noDataValue.byteValue() ).array();
+                break;
+            case UNDEFINED:
+            default:
+                LOG.warn( "No data values are not configurable for data type {}", dataType );
+                break;
+            }
+            if ( noData != null ) {
+                rasterDataInfo.setNoDataPixel( noData );
+            }
+        }
     }
 
     /**

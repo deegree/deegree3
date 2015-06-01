@@ -117,8 +117,7 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
         try {
             return new SDOGeometryConverter().toGeometry( (STRUCT) sqlValue, crs );
         } catch ( Throwable t ) {
-            LOG.trace( t.getMessage(), t );
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(t);
         }
     }
 
@@ -142,8 +141,7 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
                 stmt.setObject( paramIndex, struct );
             }
         } catch ( Throwable t ) {
-            t.printStackTrace();
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(t);
         }
     }
 

@@ -41,10 +41,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
+import static org.deegree.coverage.raster.utils.RasterBuilder.setNoDataValue;
 import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,7 +111,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
             return fromJAXB( (MultiResolutionRasterConfig) config, null );
         }
         if ( config instanceof RasterConfig ) {
-            return fromJAXB( (RasterConfig) config, null, null );
+            return fromJAXB( (RasterConfig) config, null, null, ( (RasterConfig) config ).getNodata() );
         }
         LOG.warn( "An unknown object '{}' came out of JAXB parsing. This is probably a bug.", config.getClass() );
         return null;
@@ -203,7 +205,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
             mrr.setCoordinateSystem( crs );
             for ( Resolution resolution : mrrConfig.getResolution() ) {
                 if ( resolution != null ) {
-                    AbstractRaster rasterLevel = fromJAXB( resolution, options, crs );
+                    AbstractRaster rasterLevel = fromJAXB( resolution, options, crs, mrrConfig.getNodata() );
                     mrr.addRaster( rasterLevel );
                 }
             }
@@ -227,7 +229,8 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
      * @param adapter
      * @return a corresponding raster, null if files could not be fund
      */
-    private AbstractRaster fromJAXB( AbstractRasterType config, RasterIOOptions options, ICRS parentCrs ) {
+    private AbstractRaster fromJAXB( AbstractRasterType config, RasterIOOptions options, ICRS parentCrs,
+                                     BigDecimal noData ) {
         if ( config != null ) {
             String defCRS = config.getStorageCRS();
             ICRS crs = null;
@@ -274,6 +277,7 @@ public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
                     if ( raster != null ) {
                         raster.setCoordinateSystem( crs );
                     }
+                    setNoDataValue( raster, noData );
                     return raster;
                 }
             } catch ( IOException e ) {

@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>deegree-coveragestores</artifactId>
+  <packaging>pom</packaging>
+  <name>deegree-coveragestores</name>
+  <description>Abstraction layer for coverage persistence and backend implementations</description>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-datastores</artifactId>
+    <version>3.4-pre18-SNAPSHOT</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://repo.deegree.org/content/groups/public</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <profiles>
+    <profile>
+      <id>oracle</id>
+      <modules>
+        <module>deegree-coveragestore-oracle-georaster</module>
+      </modules>
+    </profile>
+  </profiles>
+  
+</project>
+

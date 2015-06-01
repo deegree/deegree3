@@ -90,6 +90,36 @@ In order to enable Oracle connectivity for these resources, you need to add two 
 * A compatible Oracle JDBC6-type driver (e.g. ``ojdbc6-11.2.0.2.jar``) [#f2]_
 * Module deegree-sqldialect-oracle [#f3]_
 
+"""""""""""""""""""""""""""""""
+Adding Oracle GeoRaster support
+"""""""""""""""""""""""""""""""
+
+The ``OracleGeoraster`` coverage store supports GeoRaster Objects stored in Oracle databases (10g, 11g).
+
+In order to enable Oracle connectivity for these resources, you need to add the following JAR files (see :ref:`anchor-adding-jars`):
+
+* A compatible Oracle JDBC6-type driver [#f2]_
+  * ojdbc6-11.2.0.2.jar
+* The Oracle Spatial and GeoRaster libraries and their dependencies
+  * sdoapi-11.2.0.2.jar
+  * sdogr-11.2.0.2.jar
+  * sdotype-11.2.0.2.jar
+  * sdoutl-11.2.0.2.jar
+  * xdb-11.2.0.2.jar
+  * xmlparserv2_sans_jaxp_services-11.2.0.2.jar
+* Module deegree-coveragestore-oracle-georaster [#f6]_
+
+.. hint:: 
+  The Oracle Spatial and GeoRaster libraries can be found, without version number in filename, inside the Oracle Database installation directory.
+  The ``sdo*`` files can be found at ``ORACLE_HOME/md/jlib``, xdb.jar at ``ORACLE_HOME/rdbms/jlib`` and xmlparserv2_sans_jaxp_services or xmlparserv2 at ``ORACLE_HOME/xdk/lib``.
+  
+
+.. note::
+  The ``xmlparserv2_sans_jaxp_services`` is the recommended library, as it does not contain  ``META-INF/services/`` entries. 
+  But if this library is not available the ``xmlparserv2`` can be used instead.
+  (In rare conditions this could set the oracle library as default XML parser, which could lead to unexpected behavior).
+
+
 """""""""""""""""""""""""""""""""""
 Adding Microsoft SQL server support
 """""""""""""""""""""""""""""""""""
@@ -112,4 +142,5 @@ In order to enable Microsoft SQL Server connectivity for these resources, you ne
 .. [#f3] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar
 .. [#f4] http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx
 .. [#f5] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/${project.version}/deegree-sqldialect-mssql-${project.version}.jar
+.. [#f6] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-coveragestore-oracle-georaster/${project.version}/deegree-coveragestore-oracle-georaster-${project.version}.jar
 

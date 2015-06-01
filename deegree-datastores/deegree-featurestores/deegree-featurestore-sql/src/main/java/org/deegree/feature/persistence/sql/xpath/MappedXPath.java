@@ -49,7 +49,7 @@ import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.ConstantMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -174,9 +174,6 @@ public class MappedXPath {
                 } else if ( mapping instanceof FeatureMapping ) {
                     // not following joins
                     map( (FeatureMapping) mapping, steps );
-                } else if ( mapping instanceof ConstantMapping<?> ) {
-                    followJoins( mapping.getJoinedTable() );
-                    map( (ConstantMapping<?>) mapping, steps );
                 } else {
                     String msg = "Handling of '" + mapping.getClass() + " not implemented yet.";
                     LOG.warn( msg );
@@ -229,21 +226,18 @@ public class MappedXPath {
         return found;
     }
 
-    private void map( ConstantMapping<?> mapping, List<MappableStep> steps ) {
-        propMapping = new ConstantPropertyNameMapping( mapping.getValue() );
-    }
-
     private void map( PrimitiveMapping mapping, List<MappableStep> remaining )
                             throws UnmappableException {
-
-        PrimitiveMapping primMapping = mapping;
-        MappingExpression me = primMapping.getMapping();
-        if ( !( me instanceof DBField ) ) {
-            throw new UnmappableException( "Mappings to non-DBField primitives is currently not supported." );
-        }
+        final PrimitiveMapping primMapping = mapping;
+        final MappingExpression me = primMapping.getMapping();
         ParticleConverter<?> converter = null;
         if ( fs != null ) {
             converter = fs.getConverter( primMapping );
+        }
+        if ( !( me instanceof DBField ) ) {
+            final String qualifiedExpr = me.toString().replace( "$0", currentTableAlias );
+            propMapping = new PropertyNameMapping( converter, joins, qualifiedExpr, null );
+            return;
         }
         propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
     }
