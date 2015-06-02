@@ -1603,7 +1603,7 @@ public class OGCFrontController extends HttpServlet {
         if ( port != null )
             urlBuilder.append( ":" ).append( port );
         if ( path != null && !"".equals( path ) )
-            urlBuilder.append( "/" ).append( path );
+            urlBuilder.append( path );
         return urlBuilder.toString();
     }
 
