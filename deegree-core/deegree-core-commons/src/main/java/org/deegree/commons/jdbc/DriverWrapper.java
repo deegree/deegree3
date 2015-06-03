@@ -94,6 +94,11 @@ public class DriverWrapper implements Driver {
         return d.jdbcCompliant();
     }
 
+    @Override
+    public String toString() {
+        return "Wrapped: " + d.toString();
+    }
+
     public Logger getParentLogger()
                             throws SQLFeatureNotSupportedException {
         Logger logger = null;
