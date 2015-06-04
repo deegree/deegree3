@@ -107,6 +107,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
         while ( enumer.hasMoreElements() ) {
             Driver d = enumer.nextElement();
             try {
+                LOG.info( "Try to deregister driver " + d );
                 deregisterDriver( d );
             } catch ( SQLException e ) {
                 LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
@@ -124,13 +125,17 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
             ListIterator<?> iter = list.listIterator();
             while ( iter.hasNext() ) {
                 Object o = iter.next();
+                LOG.debug( "Candidate to deregister: Driver " + o + " with classloader "
+                           + o.getClass().getClassLoader() );
                 if ( o.getClass().getClassLoader() == workspace.getModuleClassLoader()
                      || o.getClass().getClassLoader() == null ) {
+                    LOG.debug( "   ... will be removed" + o );
                     // iter.remove not supported by used list
                     toRemove.add( o );
                 }
             }
             for ( Object o : toRemove ) {
+                LOG.info( "Deregister driver " + o );
                 list.remove( o );
             }
         } catch ( Exception ex ) {
