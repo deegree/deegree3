@@ -377,7 +377,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             gmlWriter.close();
             xmlWriter.close();
             bos.close();
-            System.out.println("HUHU: " + bos.toString());
             final InputStream is = new ByteArrayInputStream( bos.toByteArray() );
             final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );
