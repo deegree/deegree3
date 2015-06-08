@@ -46,15 +46,10 @@ import static java.sql.DriverManager.getDrivers;
 import static java.sql.DriverManager.registerDriver;
 
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.ServiceLoader;
 
 import javax.management.MBeanServer;
@@ -92,7 +87,7 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
         try {
             for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
                 registerDriver( new DriverWrapper( d ) );
-                LOG.info( "Found and loaded {}", d.getClass().getName() );
+                LOG.info( "Found and loaded driver {}", d.getClass().getName() );
             }
         } catch ( SQLException e ) {
             LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
@@ -107,39 +102,11 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
         while ( enumer.hasMoreElements() ) {
             Driver d = enumer.nextElement();
             try {
-                LOG.info( "Try to deregister driver " + d );
+                LOG.info( "Deregister driver " + d );
                 deregisterDriver( d );
             } catch ( SQLException e ) {
                 LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
             }
-        }
-
-        // manually remove drivers via reflection if loaded by module class loader (else the driver manager won't let us
-        // remove them)
-        // Yes, this is DangerousStuff.
-        try {
-            List<Object> toRemove = new ArrayList<Object>();
-            Field f = DriverManager.class.getDeclaredField( "registeredDrivers" );
-            f.setAccessible( true );
-            List<?> list = (List<?>) f.get( null );
-            ListIterator<?> iter = list.listIterator();
-            while ( iter.hasNext() ) {
-                Object o = iter.next();
-                LOG.debug( "Candidate to deregister: Driver " + o + " with classloader "
-                           + o.getClass().getClassLoader() );
-                if ( o.getClass().getClassLoader() == workspace.getModuleClassLoader()
-                     || o.getClass().getClassLoader() == null ) {
-                    LOG.debug( "   ... will be removed" + o );
-                    // iter.remove not supported by used list
-                    toRemove.add( o );
-                }
-            }
-            for ( Object o : toRemove ) {
-                LOG.info( "Deregister driver " + o );
-                list.remove( o );
-            }
-        } catch ( Exception ex ) {
-            // well...
         }
 
         // Oracle managed beans: Enterprise to the rescue (but expect classloader leaks)
