@@ -109,8 +109,13 @@ class MergingTile implements Tile {
         try {
             BufferedImage img = getAsImage();
             if ( img.getTransparency() != BufferedImage.OPAQUE ) {
-                BufferedImage noTransparency = new BufferedImage( img.getWidth(), img.getHeight(), TYPE_3BYTE_BGR );
+                final int width = img.getWidth();
+                final int height = img.getHeight();
+                
+                BufferedImage noTransparency = new BufferedImage( width, height, TYPE_3BYTE_BGR );
                 Graphics g = noTransparency.getGraphics();
+                g.setColor( Color.WHITE );
+                g.fillRect( 0, 0, width, height );
                 g.drawImage( img, 0, 0, null );
                 img = noTransparency;
             }
