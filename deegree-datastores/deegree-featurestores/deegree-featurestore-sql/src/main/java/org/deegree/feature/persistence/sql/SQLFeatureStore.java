@@ -332,10 +332,13 @@ public class SQLFeatureStore implements FeatureStore {
      * Returns the relational mapping for the given feature type name.
      *
      * @param ftName
-     *            name of the feature type, must not be <code>null</code>
+     *            name of the feature type, can be <code>null</code>
      * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
      */
     public FeatureTypeMapping getMapping( QName ftName ) {
+        if ( ftName == null ) {
+            return null;
+        }
         return schema.getFtMapping( ftName );
     }
 
@@ -877,30 +880,25 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-
         if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-            String msg = "Join queries between multiple feature types are not by SQLFeatureStore (yet).";
+            String msg = "Join queries between multiple feature types are not supported by SQLFeatureStore (yet).";
             throw new UnsupportedOperationException( msg );
         }
-
         FeatureInputStream result = null;
-        Filter filter = query.getFilter();
-
-        if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
-            QName ftName = query.getTypeNames()[0].getFeatureTypeName();
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            if ( ft == null ) {
-                String msg = "Feature store is not configured to serve feature type '" + ftName + "'.";
-                throw new FeatureStoreException( msg );
+        final Filter filter = query.getFilter();
+        if ( query.getFilter() instanceof IdFilter ) {
+            result = queryByIdFilter( (IdFilter) filter, query.getSortProperties() );
+        } else {
+            QName ftName = null;
+            if ( query.getTypeNames().length == 1 ) {
+                ftName = query.getTypeNames()[0].getFeatureTypeName();
+                final FeatureType ft = getSchema().getFeatureType( ftName );
+                if ( ft == null ) {
+                    String msg = "Feature store is not configured to serve feature type '" + ftName + "'.";
+                    throw new FeatureStoreException( msg );
+                }
             }
             result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
-        } else {
-            // must be an id filter based query
-            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
-                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
-                throw new FilterEvaluationException( msg );
-            }
-            result = queryByIdFilter( (IdFilter) filter, query.getSortProperties() );
         }
         return result;
     }
@@ -1202,14 +1200,20 @@ public class SQLFeatureStore implements FeatureStore {
                     }
                 }
             }
-            sql.append( " WHERE " );
-            sql.append( alias );
-            sql.append( "." );
-            sql.append( blobMapping.getTypeColumn() );
-            sql.append( "=?" );
-            if ( wb != null ) {
-                sql.append( " AND " );
-                sql.append( wb.getWhere().getSQL() );
+            if ( ftName != null || wb != null ) {
+                sql.append( " WHERE " );
+                if ( ftName != null ) {
+                    sql.append( alias );
+                    sql.append( "." );
+                    sql.append( blobMapping.getTypeColumn() );
+                    sql.append( "=?" );
+                    if ( wb != null ) {
+                        sql.append( " AND " );
+                    }
+                }
+                if ( wb != null ) {
+                    sql.append( wb.getWhere().getSQL() );
+                }
             }
 
             // if ( wb != null && wb.getWhere() != null ) {
@@ -1232,7 +1236,9 @@ public class SQLFeatureStore implements FeatureStore {
 
             int i = 1;
             // if ( blobMapping != null ) {
-            stmt.setShort( i++, getSchema().getFtId( ftName ) );
+            if ( ftName != null ) {
+                stmt.setShort( i++, getSchema().getFtId( ftName ) );
+            }
             if ( wb != null ) {
                 for ( SQLArgument o : wb.getWhere().getArguments() ) {
                     o.setArgument( stmt, i++ );
@@ -1275,15 +1281,42 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureInputStream queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilter( final Query query, final QName ftName, final OperatorFilter filter )
                             throws FeatureStoreException {
-
         LOG.debug( "Performing query by operator filter" );
-
         if ( getSchema().getBlobMapping() != null ) {
             return queryByOperatorFilterBlob( query, ftName, filter );
         }
+        if ( ftName != null ) {
+            return queryByOperatorFilterRelational( query, ftName, filter );
+        }
+        final Iterator<QName> ftIter = schema.getFtMappings().keySet().iterator();
+        final Iterator<FeatureInputStream> resultSetIter = new Iterator<FeatureInputStream>() {
+            @Override
+            public boolean hasNext() {
+                return ftIter.hasNext();
+            }
 
+            @Override
+            public FeatureInputStream next() {
+                try {
+                    final QName ftName = ftIter.next();
+                    return queryByOperatorFilterRelational( query, ftName, filter );
+                } catch ( FeatureStoreException e ) {
+                    throw new RuntimeException( e.getMessage(), e );
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return new CombinedFeatureInputStream( resultSetIter );
+    }
+
+    private FeatureInputStream queryByOperatorFilterRelational( Query query, QName ftName, OperatorFilter filter )
+                            throws FeatureStoreException {
         AbstractWhereBuilder wb = null;
         Connection conn = null;
         FeatureInputStream result = null;

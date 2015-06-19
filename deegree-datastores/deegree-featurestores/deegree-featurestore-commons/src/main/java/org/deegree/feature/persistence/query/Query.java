@@ -103,7 +103,7 @@ public class Query {
      * Creates a new {@link Query} instance.
      * 
      * @param ftName
-     *            name of the requested feature type, must not be <code>null</code>
+     *            name of the requested feature type, can be <code>null</code> (query can match any feature type)
      * @param filter
      *            additional filter constraints, may be <code>null</code>, if not <code>null</code>, all contained
      *            geometry operands must have a non-null {@link CRS}
@@ -115,7 +115,11 @@ public class Query {
      *            if resolution is positive, a pixel resolution hint will be used
      */
     public Query( QName ftName, Filter filter, int scale, int maxFeatures, double resolution ) {
-        this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
+        if ( ftName != null ) {
+            this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
+        } else {
+            this.typeNames = new TypeName[0];
+        }
         this.filter = filter;
         this.maxFeatures = maxFeatures;
         if ( scale > 0 ) {
@@ -132,7 +136,7 @@ public class Query {
      * Creates a new {@link Query} instance.
      * 
      * @param typeNames
-     *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
+     *            feature type names to be queried, must not be <code>null</code>, but may be empty
      * @param filter
      *            filter to be applied, can be <code>null</code>, if not <code>null</code>, all contained geometry
      *            operands must have a non-null {@link CRS}
@@ -158,7 +162,7 @@ public class Query {
      * Creates a new {@link Query} instance.
      * 
      * @param typeNames
-     *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
+     *            feature type names to be queried, must not be <code>null</code>, but may be empty
      * @param filter
      *            filter to be applied, can be <code>null</code>, if not <code>null</code>, all contained geometry
      *            operands must have a non-null {@link CRS}
@@ -237,8 +241,7 @@ public class Query {
     /**
      * Returns the names of the requested feature types.
      * 
-     * @return the names of the requested feature types, never <code>null</code> (but may be empty for id filter
-     *         queries)
+     * @return names of the requested feature types, never <code>null</code>, but may be empty
      */
     public TypeName[] getTypeNames() {
         return typeNames;
