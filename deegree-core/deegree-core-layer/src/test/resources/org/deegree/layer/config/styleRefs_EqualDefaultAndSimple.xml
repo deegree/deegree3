@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<StyleRef xmlns="http://www.deegree.org/layers/base">
+  <StyleStoreId>sldStoreId</StyleStoreId>
+  <Style>
+    <StyleName>simpleStyle</StyleName>
+    <LayerNameRef>layer</LayerNameRef>
+    <StyleNameRef>simpleStyle</StyleNameRef>
+    <LegendGraphic outputGetLegendGraphicUrl="false">http://test.de/legende.png</LegendGraphic>
+  </Style>
+  <Style>
+    <StyleName>default</StyleName>
+    <LayerNameRef>layer</LayerNameRef>
+    <StyleNameRef>simpleStyle</StyleNameRef>
+    <LegendGraphic outputGetLegendGraphicUrl="false">http://test.de/legende.png</LegendGraphic>
+  </Style>
+  <Style>
+    <StyleName>legendStyle</StyleName>
+    <LayerNameRef>layer</LayerNameRef>
+    <StyleNameRef>legende</StyleNameRef>
+    <LegendStyle>
+      <LayerNameRef>layer</LayerNameRef>
+      <StyleNameRef>legende</StyleNameRef>
+    </LegendStyle>
+  </Style>
+</StyleRef>
