@@ -2,8 +2,8 @@
   xmlns="http://www.deegree.org/services/wfs"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wfs
-  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
-
+  wfs_configuration.xsd">
+<!-- http://schemas.deegree.org/services/wfs/3.4.0/ -->
   <SupportedVersions>
     <Version>2.0.0</Version>
     <Version>1.1.0</Version>
@@ -14,10 +14,16 @@
   <EnableTransactions idGen="UseExisting">true</EnableTransactions>
   <EnableResponseBuffering>false</EnableResponseBuffering>
 
-  <Encodings>
-    <!-- Encodings are active by default! Example to disable a method: -->
-    <Encoding active="false" encoding="XML" requestName="GetCapabilities"/>
-  </Encodings>
+  <SupportedRequests>
+    <SupportedEncodings>kvp</SupportedEncodings>
+     <GetCapabilities>
+      <SupportedEncodings>xml soap</SupportedEncodings>
+    </GetCapabilities>
+    <DescribeFeatureType/>
+    <GetFeature>
+      <SupportedEncodings>xml</SupportedEncodings>
+    </GetFeature>
+  </SupportedRequests>
   
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>

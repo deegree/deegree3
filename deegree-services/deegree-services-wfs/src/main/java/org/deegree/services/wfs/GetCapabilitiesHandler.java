@@ -89,7 +89,6 @@ import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
@@ -107,6 +106,7 @@ import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
+import org.deegree.services.wfs.encoding.SupportedEncodings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +152,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final List<ICRS> querySRS;
 
-    private Map<WFSRequestType, List<String>> disabledEncodingsPerRequestType;
+    private SupportedEncodings supportedEncodings;
 
     private final WfsFeatureStoreManager service;
 
@@ -162,8 +162,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     GetCapabilitiesHandler( WebFeatureService master, WfsFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
-                            boolean enableTransactions, List<ICRS> querySRS,
-                            Map<WFSRequestType, List<String>> disabledEncodingsPerRequestType, OWSMetadataProvider mdProvider ) {
+                            boolean enableTransactions, List<ICRS> querySRS, SupportedEncodings supportedEncodings,
+                            OWSMetadataProvider mdProvider ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -172,7 +172,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.sections = sections;
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
-        this.disabledEncodingsPerRequestType = disabledEncodingsPerRequestType;
+        this.supportedEncodings = supportedEncodings;
         this.mdProvider = mdProvider;
 
         List<String> offeredVersions = master.getOfferedVersions();
@@ -847,7 +847,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 List<Domain> constraints = new ArrayList<Domain>();
                 constraints.add( new Domain( "AutomaticDataLocking", "TRUE" ) );
                 constraints.add( new Domain( "PreservesSiblingOrder", "TRUE" ) );
-                if ( isEncodingSupported( Transaction, "POST" ) )
+                if ( supportedEncodings.isEncodingSupported( Transaction, "POST" ) )
                     operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
 
                 // GetFeatureWithLock
@@ -1081,22 +1081,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     }
 
     private boolean isGetSupported( WFSRequestType requestType ) {
-        return isEncodingSupported( requestType, "KVP" );
+        return supportedEncodings.isEncodingSupported( requestType, "KVP" );
     }
 
     private boolean isPostSupported( WFSRequestType requestType ) {
-        return isEncodingSupported( requestType, "XML" ) || isEncodingSupported( requestType, "SOAP" );
-    }
-
-    private boolean isEncodingSupported( WFSRequestType requestType, String encoding ) {
-        if ( disabledEncodingsPerRequestType.containsKey( requestType ) ) {
-            List<String> disabledEncodings = disabledEncodingsPerRequestType.get( requestType );
-            for ( String disabledEncoding : disabledEncodings ) {
-                if ( disabledEncoding.equalsIgnoreCase( encoding ) )
-                    return false;
-            }
-        }
-        return true;
+        return supportedEncodings.isEncodingSupported( requestType, "XML" )
+               || supportedEncodings.isEncodingSupported( requestType, "SOAP" );
     }
 
 }

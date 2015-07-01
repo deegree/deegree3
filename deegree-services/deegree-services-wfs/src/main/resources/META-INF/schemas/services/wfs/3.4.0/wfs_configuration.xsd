@@ -33,24 +33,22 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
-        <element name="Encodings" minOccurs="0" maxOccurs="1">
+        <element name="SupportedRequests" minOccurs="0" maxOccurs="1">
           <complexType>
             <sequence>
-              <element name="Encoding" maxOccurs="unbounded">
-                <complexType>
-                  <attribute name="active" type="boolean" use="optional" default="true" />
-                  <attribute name="requestName" type="string" use="required" />
-                  <attribute name="encoding" use="required">
-                    <simpleType>
-                      <restriction base="string">
-                        <enumeration value="KVP" />
-                        <enumeration value="XML" />
-                        <enumeration value="SOAP" />
-                      </restriction>
-                    </simpleType>
-                  </attribute>
-                </complexType>
-              </element>
+              <element name="SupportedEncodings" type="wfs:Encodings" minOccurs="0" />
+              <element name="GetCapabilities" minOccurs="0" type="wfs:RequestType"/>
+              <element name="DescribeFeatureType" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetFeature" minOccurs="0" type="wfs:RequestType"/>
+              <element name="Transaction" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetFeatureWithLock" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetGmlObject" minOccurs="0" type="wfs:RequestType"/>
+              <element name="LockFeature" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetPropertyValue" minOccurs="0" type="wfs:RequestType"/>
+              <element name="CreateStoredQuery" minOccurs="0" type="wfs:RequestType"/>
+              <element name="DropStoredQuery" minOccurs="0" type="wfs:RequestType" />
+              <element name="ListStoredQueries" minOccurs="0" type="wfs:RequestType"/>
+              <element name="DescribeStoredQueries" minOccurs="0" type="wfs:RequestType"/>
             </sequence>
           </complexType>
         </element>
@@ -199,6 +197,12 @@
       </sequence>
     </complexType>
   </element>
+  
+  <complexType name="RequestType">
+    <sequence>
+      <element name="SupportedEncodings" minOccurs="0" type="wfs:Encodings" />
+    </sequence>
+  </complexType>
 
   <simpleType name="WFSVersionType">
     <restriction base="string">
@@ -216,7 +220,19 @@
       <enumeration value="GML_32" />
     </restriction>
   </simpleType>
-
+  
+  <simpleType name="Encodings">
+    <list>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="kvp" />
+          <enumeration value="xml" />
+          <enumeration value="soap" />
+        </restriction>
+      </simpleType>
+    </list>
+  </simpleType>    
+                    
   <simpleType name="IdentifierGenerationOptionType">
     <restriction base="string">
       <enumeration value="UseExisting">
