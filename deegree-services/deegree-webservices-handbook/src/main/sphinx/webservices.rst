@@ -74,7 +74,7 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | EnableResponseBuffering | 0..1        | Boolean | Enable response buffering (expensive), default: false            |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
-| Encodings               | 0..1        | Complex | Disable encodings, default: all encodings supported              |
+| SupportedRequests       | 0..1        | Complex | Configuration of WFS requests                                    |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryCRS                | 1..n        | String  | Announced CRS, first element is the default CRS                  |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
@@ -124,21 +124,50 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 .. hint::
    In a WFS 1.1.0 insert, the id generation mode can be overridden by attribute *idGenMode* of the ``Insert`` element. WFS 1.0.0 and WFS 2.0.0 don't support to specify the id generation mode on a request basis.
 
-^^^^^^^^^
-Encodings
-^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+SupportedRequests
+^^^^^^^^^^^^^^^^^^
 
-By default XML and KVP encodings are activated. SOAP encoding is only available if EnableResponseBuffering is true. Support of XML, KVP and SOAP can be deactivated by configuration per request type.  
+This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:  
 
-+------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
-| Option                       | Cardinality  | Value   | Description                                                                              |
-+==============================+==============+=========+==========================================================================================+
-| @active                      | 0..1         | Boolean | true if the encoding is activated, false otherwise. Default: true                        |
-+------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
-| @requestName                 | 1..1         | String  | Name of the request as named in the specification (case-sensitive), e.g. GetCapabilities |
-+------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
-| @encoding                    | 1..1         | String  | Encoding to deactivate, one of KVP, XML, SOAP                                            |
-+------------------------------+--------------+---------+------------------------------------------------------------------------------------------+
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| Option                | Cardinality  | Value   | Description                                                                                                                         |
++=======================+==============+=========+=====================================================================================================================================+
+| SupportedEncodings    | 0..1         | String  | Enable encodings for all request types, 'kvp', xml and 'soap' are valid values. Multiple values must be seperated by a white space. |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| GetCapabilities       | 0..1         | Complex | Configuration of GetCapabilties requests                                                                                            |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| DescribeFeatureType   | 0..1         | Complex | Configuration of DescribeFeatureType requests                                                                                       |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| GetFeature            | 0..1         | Complex | Configuration of GetFeature requests                                                                                                |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| Transaction           | 0..1         | Complex | Configuration of Transaction requests                                                                                               |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| GetFeatureWithLock    | 0..1         | Complex | Configuration of GetFeatureWithLock requests                                                                                        |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| GetGmlObject          | 0..1         | Complex | Configuration of GetGmlObject requests                                                                                              |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| LockFeature           | 0..1         | Complex | Configuration of LockFeature requests                                                                                               |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| GetPropertyValue      | 0..1         | Complex | Configuration of GetPropertyValue requests                                                                                          |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| CreateStoredQuery     | 0..1         | Complex | Configuration of CreateStoredQuery requests                                                                                         |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| DropStoredQuery       | 0..1         | Complex | Configuration of DropStoredQuery requests                                                                                           |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| ListStoredQueries     | 0..1         | Complex | Configuration of ListStoredQueries requests                                                                                         |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+| DescribeStoredQueries | 0..1         | Complex | Configuration of DescribeStoredQueries requests                                                                                     |
++-----------------------+--------------+---------+-------------------------------------------------------------------------------------------------------------------------------------+
+
+Each request type has the following sup-option:
+
++---------------------+--------------+---------+--------------------------------------------------------------------------------------------------------------------------------------+
+| Option              | Cardinality  | Value   | Description                                                                                                                          |
++=====================+==============+=========+======================================================================================================================================+
+| SupportedEncodings  | 0..1         | String  | Enable encodings for this request types, 'kvp', xml and 'soap' are valid values. Multiple values must be seperated by a white space. |
++---------------------+--------------+---------+--------------------------------------------------------------------------------------------------------------------------------------+
+
 
 .. hint::
    It is not checked if the configuration is valid against the WFS specification! 
