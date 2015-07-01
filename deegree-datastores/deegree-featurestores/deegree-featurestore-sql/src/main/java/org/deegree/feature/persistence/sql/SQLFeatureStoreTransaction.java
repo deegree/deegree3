@@ -113,11 +113,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link FeatureStoreTransaction} implementation for {@link SQLFeatureStore}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
@@ -141,7 +141,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     /**
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
-     * 
+     *
      * @param store
      *            corresponding feature store instance, must not be <code>null</code>
      * @param conn
@@ -181,11 +181,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( t.getMessage(), t );
             throw new FeatureStoreException( "Unable to commit SQL transaction: " + t.getMessage() );
         } finally {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                LOG.error( "Error closing connection/removing it from the pool." );
-            }
+            fs.closeAndDetachTransactionConnection();
         }
     }
 
@@ -237,11 +233,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( "Unable to rollback SQL transaction: " + e.getMessage() );
         } finally {
-            try {
-                conn.close();
-            } catch ( SQLException e ) {
-                LOG.error( "Error closing connection/removing it from the pool." );
-            }
+            fs.closeAndDetachTransactionConnection();
         }
     }
 
@@ -253,7 +245,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     /**
      * Returns the underlying JDBC connection. Can be used for performing other operations in the same transaction
      * context.
-     * 
+     *
      * @return the underlying JDBC connection, never <code>null</code>
      */
     public Connection getConnection() {
@@ -377,7 +369,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
      * <p>
      * Deletes all joined rows and transitive join rows, but stops at joins to subfeature tables.
      * </p>
-     * 
+     *
      * @param fid
      *            feature id, must not be <code>null</code>
      * @throws FeatureStoreException
@@ -650,8 +642,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 for ( Feature feature : features ) {
                     FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
                     if ( ftMapping == null ) {
-                        throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
-                                                         + "'. No mapping defined and BLOB mode is off." );
+                        continue;
+//                        throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
+//                                                         + "'. No mapping defined and BLOB mode is off." );
                     }
                     idAssignments.add( insertManager.insertFeature( feature, ftMapping ) );
                     Pair<TableName, GeometryMapping> mapping = ftMapping.getDefaultGeometryMapping();
@@ -689,7 +682,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     /**
      * Inserts the given feature into BLOB table and returns the generated primary key.
-     * 
+     *
      * @param stmt
      * @param feature
      * @return primary key of the feature
@@ -764,7 +757,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             blobUpdateStmt = conn.prepareStatement( sql.toString() );
             features = fs.query( query );
             for ( final Feature feature : features ) {
-                new FeatureUpdater().update( feature, replacementProps );               
+                new FeatureUpdater().update( feature, replacementProps );
                 updateFeatureBlob( blobUpdateStmt, feature );
                 updatedFids.add( feature.getId() );
             }

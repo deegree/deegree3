@@ -50,7 +50,7 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.ConstantMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -217,7 +217,7 @@ public abstract class DDLCreator {
             for ( Mapping childMapping : compoundMapping.getParticles() ) {
                 ddls.addAll( process( sql, table, childMapping ) );
             }
-        } else if ( mapping instanceof ConstantMapping ) {
+        } else if ( mapping instanceof SqlExpressionMapping ) {
             // skip
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );

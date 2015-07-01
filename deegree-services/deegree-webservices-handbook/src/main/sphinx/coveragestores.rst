@@ -104,3 +104,82 @@ The following example shows, how to configure a coverage pyramid:
 
 * A Pyramid contains a PyramidFile parameter with the path to the pyramid as its value.
 * A Pyramid contains a CRS parameter describing the source CRS of the pyramid as EPSG code.
+* As in Raster, the nodata attribute can be optionally used to declare a nodata value.
+
+----------------
+Oracle GeoRaster
+----------------
+
+A <OracleGeoraster> is used to wrap a connection information to a singe Oracle GeoRaster element inside a Oracle Database.
+
+To be able to use the module it is required that the Oracle GeoRaster libraries are available, see :ref:`anchor-db-libraries` for details.
+
+The following example shows, how to configure a GeoRaster coverage (minmal required options):
+
+.. code-block:: xml
+  <OracleGeoraster configVersion="3.4.0"
+    xmlns="http://www.deegree.org/datasource/coverage/oraclegeoraster"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/datasource/coverage/oraclegeoraster/3.4.0/oraclegeoraster.xsd">
+
+    <JDBCConnId>oracle</JDBCConnId>
+    <StorageCRS>EPSG:25832</StorageCRS>
+    
+    <Raster id="17" />
+  
+  </OracleGeoraster>
+
+The second example shows a complete configuration, which will load faster because no database lookups are required to initiate the coverage store.
+
+.. code-block:: xml
+
+  <OracleGeoraster configVersion="3.4.0"
+    xmlns="http://www.deegree.org/datasource/coverage/oraclegeoraster"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/datasource/coverage/oraclegeoraster/3.4.0/oraclegeoraster.xsd">
+
+    <JDBCConnId>oracle</JDBCConnId>
+    <StorageCRS>EPSG:31468</StorageCRS>
+    
+    <StorageBBox>
+      <LowerCorner>4508000.0 5652000.0</LowerCorner>
+      <UpperCorner>4518000.0 5642000.0</UpperCorner>
+    </StorageBBox>
+    
+    <Raster id="17" maxLevel="7" rows="10000" columns="10000">
+      <Table>RASTER</Table>
+      <RDTTable>RASTER_RDT</RDTTable>
+      <Column>IMAGE</Column>
+    </Raster>
+    
+    <Bands>
+      <RGB red="1" green="2" blue="3" />
+    </Bands>
+  </OracleGeoraster>
+
+If your GeoRaster coverage only consist in a greyscale coverage or you only want to server a single band you could specifiy the following:
+
+.. code-block:: xml
+    <Bands>
+      <Single>1</Single>
+    </Bands>
+
+.. table:: Options for ``<Raster>``
+
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| Option                | Cardinality | Value   | Description                                                                  |
++=======================+=============+=========+==============================================================================+
+| ``@id``               | 1           | integer | Identifier of the specified Oracle GeoRaster object                          |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``@maxLevel``         | 0..1        | integer | The number of pyramid levels, specify zero if no pyramid is available        |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``@rows``             | 0..1        | integer | Number of rows of the GeoRaster                                              |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``@columns``          | 0..1        | integer | Number of columns of the GeoRaster                                           |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Table>``           | 0..1        | String  | Defines the name of table name which contains the GeoRaster object           |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<RDTTable>``        | 0..1        | String  | The name of the corresponding raster data table.                             |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+
+| ``<Column>``          | 0..1        | String  | The column name of the ``<Table>`` in which the ``SDO_GEORASTER`` is stored  |
++-----------------------+-------------+---------+------------------------------------------------------------------------------+

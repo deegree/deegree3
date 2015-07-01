@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
-import static java.util.Collections.emptyIterator;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.jaxen.JaxenConstants.EMPTY_ITERATOR;
@@ -65,7 +64,6 @@ import org.deegree.feature.xpath.node.PropertyNode;
 import org.deegree.feature.xpath.node.XMLElementNode;
 import org.deegree.feature.xpath.node.XPathNode;
 import org.jaxen.DefaultNavigator;
-import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
 import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
@@ -147,7 +145,7 @@ class GMLObjectNavigator extends DefaultNavigator {
                 return attrNodes.iterator();
             }
         }
-        return JaxenConstants.EMPTY_ITERATOR;
+        return EMPTY_ITERATOR;
     }
 
     /**
@@ -261,7 +259,7 @@ class GMLObjectNavigator extends DefaultNavigator {
                     iter = new SingleObjectIterator( new PrimitiveNode<Property>( (PropertyNode) node,
                                                                                   (PrimitiveValue) propValue ) );
                 } else if ( propValue == null ) {
-                    iter = emptyIterator();
+                    iter = EMPTY_ITERATOR;
                 } else {
                     // TODO remove this case
                     iter = new SingleObjectIterator(

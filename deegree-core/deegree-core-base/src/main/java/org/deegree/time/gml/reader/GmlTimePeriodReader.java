@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.gml.GMLStreamReader;
+import org.deegree.time.position.TimePosition;
 import org.deegree.time.primitive.GenericTimePeriod;
 import org.deegree.time.primitive.RelatedTime;
 import org.deegree.time.primitive.TimeInstant;
@@ -97,7 +98,6 @@ public class GmlTimePeriodReader extends AbstractGmlTimeGeometricPrimitiveReader
         final List<RelatedTime> relatedTimes = readRelatedTimes( xmlStream );
         // <choice>
         final TimePositionOrInstant begin = readRequiredBeginOrBeginPosition( xmlStream );
-        nextElement( xmlStream );
         // <choice>
         final TimePositionOrInstant end = readRequiredEndOrEndPosition( xmlStream );
         // <group ref="gml:timeLength" minOccurs="0"/>
@@ -109,14 +109,23 @@ public class GmlTimePeriodReader extends AbstractGmlTimeGeometricPrimitiveReader
 
     private TimePositionOrInstant readRequiredBeginOrBeginPosition( final XMLStreamReader xmlStream )
                             throws XMLStreamException {
-        final List<QName> expected = getQnames( BEGIN, BEGIN_POSITION );
-        requireStartElement( xmlStream, expected );
+        if ( !gmlStreamReader.getLaxMode() ) {
+            final List<QName> expected = getQnames( BEGIN, BEGIN_POSITION );
+            requireStartElement( xmlStream, expected );
+        }
         if ( xmlStream.getLocalName().equals( BEGIN ) ) {
             // <element name="begin" type="gml:TimeInstantPropertyType"/>
-            return readTimeInstantPropertyType( xmlStream );
+            final TimeInstant instant = readTimeInstantPropertyType( xmlStream );
+            nextElement( xmlStream );
+            return instant;
+            
+        } else if ( xmlStream.getLocalName().equals( BEGIN_POSITION ) ) {
+            // <element name="beginPosition" type="gml:TimePositionType"/>
+            final TimePosition pos = new GmlTimePositionTypeReader().read( xmlStream );
+            nextElement( xmlStream );
+            return pos;
         }
-        // <element name="beginPosition" type="gml:TimePositionType"/>
-        return new GmlTimePositionTypeReader().read( xmlStream );
+        return null;
     }
 
     private TimePositionOrInstant readRequiredEndOrEndPosition( final XMLStreamReader xmlStream )

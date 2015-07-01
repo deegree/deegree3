@@ -45,6 +45,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.feature.Feature;
 import org.deegree.feature.xpath.node.GMLObjectNode;
 import org.deegree.feature.xpath.node.PropertyNode;
 import org.deegree.feature.xpath.node.XMLElementNode;
@@ -109,7 +110,7 @@ public class TypedObjectNodeXPathEvaluator implements XPathEvaluator<TypedObject
                 simplePropName = altName;
             }
         }
-        if ( simplePropName != null ) {
+        if ( simplePropName != null && context instanceof Feature ) {
             List<Property> props = context.getProperties( simplePropName );
             TypedObjectNode[] propArray = new TypedObjectNode[props.size()];
             return props.toArray( propArray );

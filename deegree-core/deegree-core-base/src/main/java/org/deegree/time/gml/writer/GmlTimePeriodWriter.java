@@ -86,7 +86,7 @@ public class GmlTimePeriodWriter {
                             throws XMLStreamException {
         if ( timePositionOrInstant instanceof TimeInstant ) {
             writeBegin( writer, (org.deegree.time.primitive.TimeInstant) timePositionOrInstant );
-        } else {
+        } else if ( timePositionOrInstant instanceof TimePosition ) {
             writeBeginPosition( writer, (TimePosition) timePositionOrInstant );
         }
     }
@@ -95,7 +95,7 @@ public class GmlTimePeriodWriter {
                             throws XMLStreamException {
         if ( timePositionOrInstant instanceof TimeInstant ) {
             writeEnd( writer, (org.deegree.time.primitive.TimeInstant) timePositionOrInstant );
-        } else {
+        } else if ( timePositionOrInstant instanceof TimePosition ) {
             writeEndPosition( writer, (TimePosition) timePositionOrInstant );
         }
     }
