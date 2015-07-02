@@ -353,13 +353,20 @@ public class WebFeatureService extends AbstractOWS {
         return limitedSupportedEncodings;
     }
 
-    private List<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
-                                                  List<String> supportedEncodingsForAllTypes ) {
-        List<String> allEnabledEncodingForThisType = new ArrayList<String>();
+    private Set<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
+                                                 List<String> supportedEncodingsForAllTypes ) {
+        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
         allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
-        if ( supportedEncodingsForThisType != null )
-            allEnabledEncodingForThisType.addAll( supportedEncodingsForThisType.getSupportedEncodings() );
-
+        if ( supportedEncodingsForThisType != null ) {
+            List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
+            if ( encodingsForThisType != null && encodingsForThisType.size() > 0 ) {
+                allEnabledEncodingForThisType.addAll( encodingsForThisType );
+            } else {
+                allEnabledEncodingForThisType.add( "kvp" );
+                allEnabledEncodingForThisType.add( "xml" );
+                allEnabledEncodingForThisType.add( "soap" );
+            }
+        }
         return allEnabledEncodingForThisType;
     }
 

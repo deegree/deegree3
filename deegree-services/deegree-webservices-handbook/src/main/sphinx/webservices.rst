@@ -169,6 +169,11 @@ Each request type has the following sup-option:
 +---------------------+--------------+---------+--------------------------------------------------------------------------------------------------------------------------------------+
 
 
+By default deegree will provide all supported requests type with all available encodings (kvp, xml, soap). To limit the provided request types to GetCapabilties and GetFeature this request types can be added without SupportedEncodings sub-option:
+
+   .. literalinclude:: xml/supportedRequests.xml
+      :language: xml
+
 .. hint::
    It is not checked if the configuration is valid against the WFS specification! 
   

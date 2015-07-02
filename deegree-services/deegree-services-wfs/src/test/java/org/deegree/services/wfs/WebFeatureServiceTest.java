@@ -43,8 +43,8 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
@@ -65,18 +65,18 @@ public class WebFeatureServiceTest {
     public void testParseEncodings() {
         SupportedRequests supportedRequests = prepareSupportedEncodings();
 
-        Map<WFSRequestType, List<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
+        Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
 
-        List<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
+        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( capabilitiesEncodings, hasItems( "xml", "soap" ) );
 
-        List<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
+        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
         assertThat( describeFeatureTypeEncodings, hasItems( "xml" ) );
 
-        List<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
+        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
         assertThat( getFeatureEncodings, hasItems( "xml" ) );
 
-        List<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
+        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
         assertThat( getPropertyValueEncodings.size(), is( 0 ) );
     }
 
@@ -84,20 +84,58 @@ public class WebFeatureServiceTest {
     public void testParseEncodingsKvpForAll() {
         SupportedRequests supportedRequests = prepareSupportedEncodingsKvpForAll();
 
-        Map<WFSRequestType, List<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
+        Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
         assertThat( enabledEncodings, hasEncodingForAllWfsRequestTypes( "kvp" ) );
 
-        List<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
+        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( capabilitiesEncodings, hasItems( "kvp", "xml", "soap" ) );
 
-        List<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
+        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
         assertThat( describeFeatureTypeEncodings, hasItems( "kvp", "xml" ) );
 
-        List<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
+        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
         assertThat( getFeatureEncodings, hasItems( "kvp", "xml" ) );
 
-        List<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
+        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
         assertThat( getPropertyValueEncodings, hasItems( "kvp" ) );
+    }
+
+    @Test
+    public void testParseEncodingsWithSupportedRequestsAndEncodings() {
+        SupportedRequests supportedRequests = prepareSupportedEncodingsWithSupportedRequestsAndEncodings();
+
+        Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
+
+        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
+        assertThat( capabilitiesEncodings, hasItems( "kvp", "xml", "soap" ) );
+
+        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
+        assertThat( describeFeatureTypeEncodings, hasItems( "kvp", "xml", "soap" ) );
+
+        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
+        assertThat( getFeatureEncodings, hasItems( "kvp", "xml" ) );
+
+        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
+        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
+    }
+
+    @Test
+    public void testParseEncodingsWithSupportedRequests() {
+        SupportedRequests supportedRequests = prepareSupportedEncodingsWithSupportedRequests();
+
+        Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
+
+        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
+        assertThat( capabilitiesEncodings, hasItems( "kvp", "xml", "soap" ) );
+
+        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
+        assertThat( getFeatureEncodings, hasItems( "kvp", "xml", "soap" ) );
+
+        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
+        assertThat( describeFeatureTypeEncodings.size(), is( 0 ) );
+
+        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
+        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
     }
 
     private SupportedRequests prepareSupportedEncodings() {
@@ -131,13 +169,34 @@ public class WebFeatureServiceTest {
         return supportedRequests;
     }
 
-    private Matcher<Map<WFSRequestType, List<String>>> hasEncodingForAllWfsRequestTypes( final String encoding ) {
-        return new BaseMatcher<Map<WFSRequestType, List<String>>>() {
+    private SupportedRequests prepareSupportedEncodingsWithSupportedRequestsAndEncodings() {
+        SupportedRequests supportedRequests = new SupportedRequests();
+
+        supportedRequests.setGetCapabilities( new RequestType() );
+        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "xml" );
+        supportedRequests.getGetCapabilities().getSupportedEncodings().add( "soap" );
+
+        supportedRequests.setDescribeFeatureType( new RequestType() );
+
+        supportedRequests.setGetFeature( new RequestType() );
+        supportedRequests.getGetFeature().getSupportedEncodings().add( "xml" );
+        return supportedRequests;
+    }
+
+    private SupportedRequests prepareSupportedEncodingsWithSupportedRequests() {
+        SupportedRequests supportedRequests = new SupportedRequests();
+        supportedRequests.setGetCapabilities( new RequestType() );
+        supportedRequests.setGetFeature( new RequestType() );
+        return supportedRequests;
+    }
+
+    private Matcher<Map<WFSRequestType, Set<String>>> hasEncodingForAllWfsRequestTypes( final String encoding ) {
+        return new BaseMatcher<Map<WFSRequestType, Set<String>>>() {
 
             @Override
             public boolean matches( Object item ) {
                 @SuppressWarnings("unchecked")
-                Map<WFSRequestType, List<String>> encodings = (Map<WFSRequestType, List<String>>) item;
+                Map<WFSRequestType, Set<String>> encodings = (Map<WFSRequestType, Set<String>>) item;
                 WFSRequestType[] wfsRequestTypes = WFSRequestType.values();
                 if ( encodings.size() != wfsRequestTypes.length )
                     return false;
