@@ -107,13 +107,13 @@ public class WebFeatureServiceTest {
         Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
 
         Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
-        assertThat( capabilitiesEncodings, hasItems( "kvp", "xml", "soap" ) );
+        assertThat( capabilitiesEncodings, hasItems( "xml", "soap" ) );
 
         Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
-        assertThat( describeFeatureTypeEncodings, hasItems( "kvp", "xml", "soap" ) );
+        assertThat( describeFeatureTypeEncodings, hasItems( "xml", "soap" ) );
 
         Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
-        assertThat( getFeatureEncodings, hasItems( "kvp", "xml" ) );
+        assertThat( getFeatureEncodings, hasItems( "xml" ) );
 
         Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
         assertThat( getPropertyValueEncodings.size(), is( 0 ) );
