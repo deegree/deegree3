@@ -44,6 +44,8 @@ import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
+
 import org.junit.Test;
 
 /**
@@ -76,9 +78,11 @@ public class LimitedSupportedEncodingsTest {
 
     private LimitedSupportedEncodings prepareLimitedSupportedEncodings() {
         LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
-        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery, singletonList( "kvp" ) );
-        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType, asList( "kvp", "soap" ) );
-        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities, asList( "kvp", "soap", "xml" ) );
+        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery, new HashSet<String>( singletonList( "kvp" ) ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
+                                                       new HashSet<String>( asList( "kvp", "soap" ) ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
+                                                       new HashSet<String>( asList( "kvp", "soap", "xml" ) ) );
         return limitedSupportedEncodings;
     }
 
