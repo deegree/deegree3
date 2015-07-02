@@ -356,8 +356,8 @@ public class WebFeatureService extends AbstractOWS {
     private Set<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
                                                  List<String> supportedEncodingsForAllTypes ) {
         Set<String> allEnabledEncodingForThisType = new HashSet<String>();
-        allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
         if ( supportedEncodingsForThisType != null ) {
+            allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
             List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
             if ( encodingsForThisType != null && encodingsForThisType.size() > 0 ) {
                 allEnabledEncodingForThisType.addAll( encodingsForThisType );

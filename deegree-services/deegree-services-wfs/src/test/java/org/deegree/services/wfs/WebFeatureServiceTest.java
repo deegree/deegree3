@@ -49,9 +49,6 @@ import java.util.Set;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
 import org.deegree.services.jaxb.wfs.RequestType;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 /**
@@ -85,7 +82,6 @@ public class WebFeatureServiceTest {
         SupportedRequests supportedRequests = prepareSupportedEncodingsKvpForAll();
 
         Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
-        assertThat( enabledEncodings, hasEncodingForAllWfsRequestTypes( "kvp" ) );
 
         Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( capabilitiesEncodings, hasItems( "kvp", "xml", "soap" ) );
@@ -97,7 +93,7 @@ public class WebFeatureServiceTest {
         assertThat( getFeatureEncodings, hasItems( "kvp", "xml" ) );
 
         Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
-        assertThat( getPropertyValueEncodings, hasItems( "kvp" ) );
+        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
     }
 
     @Test
@@ -188,32 +184,6 @@ public class WebFeatureServiceTest {
         supportedRequests.setGetCapabilities( new RequestType() );
         supportedRequests.setGetFeature( new RequestType() );
         return supportedRequests;
-    }
-
-    private Matcher<Map<WFSRequestType, Set<String>>> hasEncodingForAllWfsRequestTypes( final String encoding ) {
-        return new BaseMatcher<Map<WFSRequestType, Set<String>>>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                @SuppressWarnings("unchecked")
-                Map<WFSRequestType, Set<String>> encodings = (Map<WFSRequestType, Set<String>>) item;
-                WFSRequestType[] wfsRequestTypes = WFSRequestType.values();
-                if ( encodings.size() != wfsRequestTypes.length )
-                    return false;
-                for ( WFSRequestType wfsRequestType : wfsRequestTypes ) {
-                    if ( !encodings.containsKey( wfsRequestType ) )
-                        return false;
-                    if ( !encodings.get( wfsRequestType ).contains( encoding ) )
-                        return false;
-                }
-                return true;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Checks if the list of enabled encodings contains one entry for each featuretype" );
-            }
-        };
     }
 
 }
