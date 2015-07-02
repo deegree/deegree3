@@ -9,14 +9,9 @@
     <Version>1.1.0</Version>
   </SupportedVersions>
 
-  <FeatureStoreId>inspire-ad</FeatureStoreId>
-
-  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
-  <EnableResponseBuffering>false</EnableResponseBuffering>
-
   <SupportedRequests>
     <SupportedEncodings>kvp</SupportedEncodings>
-     <GetCapabilities>
+    <GetCapabilities>
       <SupportedEncodings>xml soap</SupportedEncodings>
     </GetCapabilities>
     <DescribeFeatureType/>
@@ -24,7 +19,12 @@
       <SupportedEncodings>xml</SupportedEncodings>
     </GetFeature>
   </SupportedRequests>
-  
+
+  <FeatureStoreId>inspire-ad</FeatureStoreId>
+
+  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
+  <EnableResponseBuffering>false</EnableResponseBuffering>
+
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
   <QueryMaxFeatures>-1</QueryMaxFeatures>

@@ -18,21 +18,6 @@
             </sequence>
           </complexType>
         </element>
-        <element name="FeatureStoreId" minOccurs="0" maxOccurs="unbounded" type="string" />
-        <element name="EnableTransactions" minOccurs="0" default="false">
-          <complexType>
-            <simpleContent>
-              <extension base="boolean">
-                <attribute name="idGen" type="wfs:IdentifierGenerationOptionType" use="optional" default="GenerateNew" />
-              </extension>
-            </simpleContent>
-          </complexType>
-        </element>
-        <choice>
-          <element name="EnableResponseBuffering" type="boolean" minOccurs="0" default="false" />
-          <!-- DisableResponseBuffering is deprecated -->
-          <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
-        </choice>
         <element name="SupportedRequests" minOccurs="0" maxOccurs="1">
           <complexType>
             <sequence>
@@ -52,6 +37,21 @@
             </sequence>
           </complexType>
         </element>
+        <element name="FeatureStoreId" minOccurs="0" maxOccurs="unbounded" type="string" />
+        <element name="EnableTransactions" minOccurs="0" default="false">
+          <complexType>
+            <simpleContent>
+              <extension base="boolean">
+                <attribute name="idGen" type="wfs:IdentifierGenerationOptionType" use="optional" default="GenerateNew" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <choice>
+          <element name="EnableResponseBuffering" type="boolean" minOccurs="0" default="false" />
+          <!-- DisableResponseBuffering is deprecated -->
+          <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
+        </choice>
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
