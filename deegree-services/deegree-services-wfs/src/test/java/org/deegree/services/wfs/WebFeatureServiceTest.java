@@ -41,6 +41,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.Map;
@@ -91,6 +92,27 @@ public class WebFeatureServiceTest {
 
         Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
         assertThat( getFeatureEncodings, hasItems( "kvp", "xml" ) );
+
+        Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
+        assertThat( getPropertyValueEncodings.size(), is( 0 ) );
+    }
+
+    @Test
+    public void testParseEncodingsKvpForAllWithEmptySupportedRequests() {
+        SupportedRequests supportedRequests = prepareSupportedEncodingsKvpForAllWithEmptySupportedRequests();
+
+        Map<WFSRequestType, Set<String>> enabledEncodings = webFeatureService.parseEncodings( supportedRequests ).getEnabledEncodingsPerRequestType();
+
+        Set<String> capabilitiesEncodings = enabledEncodings.get( GetCapabilities );
+        assertThat( capabilitiesEncodings, hasItems( "kvp" ) );
+        assertThat( capabilitiesEncodings, not( hasItems( "xml", "soap" ) ) );
+
+        Set<String> describeFeatureTypeEncodings = enabledEncodings.get( DescribeFeatureType );
+        assertThat( describeFeatureTypeEncodings, hasItems( "kvp" ) );
+        assertThat( capabilitiesEncodings, not( hasItems( "xml", "soap" ) ) );
+
+        Set<String> getFeatureEncodings = enabledEncodings.get( GetFeature );
+        assertThat( getFeatureEncodings.size(), is( 0 ) );
 
         Set<String> getPropertyValueEncodings = enabledEncodings.get( GetPropertyValue );
         assertThat( getPropertyValueEncodings.size(), is( 0 ) );
@@ -162,6 +184,15 @@ public class WebFeatureServiceTest {
 
         supportedRequests.setGetFeature( new RequestType() );
         supportedRequests.getGetFeature().getSupportedEncodings().add( "xml" );
+        return supportedRequests;
+    }
+
+    private SupportedRequests prepareSupportedEncodingsKvpForAllWithEmptySupportedRequests() {
+        SupportedRequests supportedRequests = new SupportedRequests();
+        supportedRequests.getSupportedEncodings().add( "kvp" );
+
+        supportedRequests.setGetCapabilities( new RequestType() );
+        supportedRequests.setDescribeFeatureType( new RequestType() );
         return supportedRequests;
     }
 

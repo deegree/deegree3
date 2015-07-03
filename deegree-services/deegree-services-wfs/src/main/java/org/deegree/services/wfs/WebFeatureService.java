@@ -361,7 +361,7 @@ public class WebFeatureService extends AbstractOWS {
             List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
             if ( encodingsForThisType != null && encodingsForThisType.size() > 0 ) {
                 allEnabledEncodingForThisType.addAll( encodingsForThisType );
-            } else {
+            } else if ( supportedEncodingsForAllTypes == null || supportedEncodingsForAllTypes.isEmpty() ) {
                 allEnabledEncodingForThisType.add( "kvp" );
                 allEnabledEncodingForThisType.add( "xml" );
                 allEnabledEncodingForThisType.add( "soap" );
