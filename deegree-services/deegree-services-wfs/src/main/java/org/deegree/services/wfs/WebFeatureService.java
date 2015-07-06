@@ -314,13 +314,10 @@ public class WebFeatureService extends AbstractOWS {
 
     private LimitedSupportedEncodings parseEncodings( SupportedRequests supportedRequests ) {
         List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
-        if ( isAtLeastOneRequestTypeConfigured( supportedRequests ) ) {
+        if ( isAtLeastOneRequestTypeConfigured( supportedRequests ) )
             return parseEncodingsWithSpecifiedRequestTypes( supportedRequests, supportedEncodingsForAllRequestTypes );
-        } else {
-
+        else
             return parseEncodingWithSupportedEncodings( supportedEncodingsForAllRequestTypes );
-
-        }
     }
 
     private LimitedSupportedEncodings parseEncodingWithSupportedEncodings( List<String> supportedEncodingsForAllRequestTypes ) {
