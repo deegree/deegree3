@@ -247,15 +247,35 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         } else {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
-            WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
-            if ( options.isExportOriginalSchema() && storeManager.getStores().length == 1
-                 && storeManager.getStores()[0].getSchema().getGMLSchema() != null
-                 && storeManager.getStores()[0].getSchema().getGMLSchema().getVersion() == version ) {
-                exportOriginalInfoSet( writer, storeManager.getStores()[0].getSchema().getGMLSchema(), targetNs );
+            if ( options.isExportOriginalSchema() ) {
+                GMLSchemaInfoSet gmlSchema = findGmlSchema( namespaces, version );
+                if ( gmlSchema != null )
+                    exportOriginalInfoSet( writer, gmlSchema, targetNs );
+                else
+                    reencodeSchema( request, writer, targetNs, namespaces, version );
+
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
             }
         }
+    }
+
+    private GMLSchemaInfoSet findGmlSchema( Collection<String> namespaces, GMLVersion version ) {
+        WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+        for ( FeatureStore store : storeManager.getStores() ) {
+            if ( storeSupportsAllRequestedNamespaces( store, namespaces ) ) {
+                GMLSchemaInfoSet gmlSchema = store.getSchema().getGMLSchema();
+                if ( gmlSchema.getVersion() == version ) {
+                    return gmlSchema;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean storeSupportsAllRequestedNamespaces( FeatureStore store, Collection<String> namespaces ) {
+        Set<String> appNamespaces = store.getSchema().getAppNamespaces();
+        return appNamespaces.containsAll( namespaces );
     }
 
     private void reencodeSchema( DescribeFeatureType request, XMLStreamWriter writer, String targetNs,
@@ -273,7 +293,6 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                 fts.add( ft );
             }
         }
-
         exporter.export( writer, fts );
     }
 
