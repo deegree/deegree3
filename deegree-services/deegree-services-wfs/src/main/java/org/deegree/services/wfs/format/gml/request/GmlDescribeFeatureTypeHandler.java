@@ -249,11 +249,12 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
             String targetNs = namespaces.iterator().next();
             if ( options.isExportOriginalSchema() ) {
                 GMLSchemaInfoSet gmlSchema = findGmlSchema( namespaces, version );
-                if ( gmlSchema != null )
+                if ( gmlSchema != null ) {
                     exportOriginalInfoSet( writer, gmlSchema, targetNs );
-                else
+                } else {
+                    LOG.warn( "Could not find original schema corresponding to the requested schema, try to reencode the schema!" );
                     reencodeSchema( request, writer, targetNs, namespaces, version );
-
+                }
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
             }
@@ -261,13 +262,13 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
     }
 
     private GMLSchemaInfoSet findGmlSchema( Collection<String> namespaces, GMLVersion version ) {
+        LOG.debug( "Try to find GML schema from store supporting namespaces {}", namespaces );
         WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
         for ( FeatureStore store : storeManager.getStores() ) {
             if ( storeSupportsAllRequestedNamespaces( store, namespaces ) ) {
                 GMLSchemaInfoSet gmlSchema = store.getSchema().getGMLSchema();
-                if ( gmlSchema.getVersion() == version ) {
+                if ( gmlSchema.getVersion() == version )
                     return gmlSchema;
-                }
             }
         }
         return null;
