@@ -43,6 +43,7 @@ import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -106,12 +107,6 @@ public class StoredQueryHandler {
             xmlAdapter.load( u );
             addStoredQuery( xmlAdapter.parse(), u );
         }
-    }
-
-    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
-        LOG.info( "Adding stored query definition with id '" + queryDefinition.getId() + "'" );
-        idToQuery.put( queryDefinition.getId(), queryDefinition );
-        idToUrl.put( queryDefinition.getId(), u );
     }
 
     /**
@@ -236,36 +231,7 @@ public class StoredQueryHandler {
                 writer.writeStartElement( WFS_200_NS, "QueryExpressionText" );
 
                 // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
-                List<QName> ftNames = new ArrayList<QName>( wfs.getStoreManager().getFeatureTypes().size() );
-                for ( FeatureType ft : wfs.getStoreManager().getFeatureTypes() ) {
-                    ftNames.add( ft.getName() );
-                }
-                Collections.sort( ftNames, new Comparator<QName>() {
-                    @Override
-                    public int compare( QName arg0, QName arg1 ) {
-                        String s0 = arg0.toString();
-                        String s1 = arg1.toString();
-                        return s0.compareTo( s1 );
-                    }
-                } );
-
-                StringBuilder returnFeatureTypes = new StringBuilder();
-                Set<String> exportedPrefixes = new HashSet<String>();
-                for ( QName ftName : ftNames ) {
-                    if ( returnFeatureTypes.length() != 0 ) {
-                        returnFeatureTypes.append( ' ' );
-                    }
-                    String prefixedName = ftName.getLocalPart();
-                    if ( ftName.getPrefix() != null ) {
-                        prefixedName = ftName.getPrefix() + ":" + ftName.getLocalPart();
-                        if ( !exportedPrefixes.contains( ftName.getPrefix() ) ) {
-                            writer.writeNamespace( ftName.getPrefix(), ftName.getNamespaceURI() );
-                            exportedPrefixes.add( ftName.getPrefix() );
-                        }
-                        returnFeatureTypes.append( prefixedName );
-                    }
-                }
-                writer.writeAttribute( "returnFeatureTypes", returnFeatureTypes.toString() );
+                writer.writeAttribute( "returnFeatureTypes", collectReturnFeatureTypesAndTransformToString( writer ) );
 
                 writer.writeAttribute( "language", queryExprText.getLanguage() );
                 if ( queryExprText.isPrivate() ) {
@@ -374,4 +340,50 @@ public class StoredQueryHandler {
     public URL getStoredQueryTemplate( String id ) {
         return idToUrl.get( id );
     }
+
+    List<QName> collectAndSortFeatureTypesToExport() {
+        Collection<FeatureType> featureTypes = wfs.getStoreManager().getFeatureTypes();
+        List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
+        for ( FeatureType ft : featureTypes ) {
+            ftNames.add( ft.getName() );
+        }
+        Collections.sort( ftNames, new Comparator<QName>() {
+            @Override
+            public int compare( QName arg0, QName arg1 ) {
+                String s0 = arg0.toString();
+                String s1 = arg1.toString();
+                return s0.compareTo( s1 );
+            }
+        } );
+        return ftNames;
+    }
+
+    private String collectReturnFeatureTypesAndTransformToString( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        List<QName> ftNames = collectAndSortFeatureTypesToExport();
+        StringBuilder returnFeatureTypes = new StringBuilder();
+        Set<String> exportedPrefixes = new HashSet<String>();
+        for ( QName ftName : ftNames ) {
+            if ( returnFeatureTypes.length() != 0 ) {
+                returnFeatureTypes.append( ' ' );
+            }
+            String prefixedName = ftName.getLocalPart();
+            if ( ftName.getPrefix() != null ) {
+                prefixedName = ftName.getPrefix() + ":" + ftName.getLocalPart();
+                if ( !exportedPrefixes.contains( ftName.getPrefix() ) ) {
+                    writer.writeNamespace( ftName.getPrefix(), ftName.getNamespaceURI() );
+                    exportedPrefixes.add( ftName.getPrefix() );
+                }
+                returnFeatureTypes.append( prefixedName );
+            }
+        }
+        return returnFeatureTypes.toString();
+    }
+
+    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
+        LOG.info( "Adding stored query definition with id '" + queryDefinition.getId() + "'" );
+        idToQuery.put( queryDefinition.getId(), queryDefinition );
+        idToUrl.put( queryDefinition.getId(), u );
+    }
+
 }
