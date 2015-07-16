@@ -267,7 +267,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         for ( FeatureStore store : storeManager.getStores() ) {
             if ( storeSupportsAllRequestedNamespaces( store, namespaces ) ) {
                 GMLSchemaInfoSet gmlSchema = store.getSchema().getGMLSchema();
-                if ( gmlSchema.getVersion() == version )
+                if ( gmlSchema != null && gmlSchema.getVersion() == version )
                     return gmlSchema;
             }
         }
