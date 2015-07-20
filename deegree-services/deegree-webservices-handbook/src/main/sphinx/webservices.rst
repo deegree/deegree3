@@ -266,6 +266,8 @@ Besides standard ('ad hoc') queries, WFS 2.0.0 introduces so-called stored queri
 
 This example is actually usable if your WFS is set up to serve the ad:Address feature type from INSPIRE Annex I. It defines the stored query ``urn:x-inspire:storedQuery:GetAddressesForStreet`` for retrieving ad:Address features that are located in the specified street. The street name is passed using parameter ``streetName``. If your WFS instance can be reached at ``http://localhost:8080/services``, you could use the request ``http://localhost:8080/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat`` to fetch the ad:Address features in street Madame Curiestraat.
 
+The attribute returnFeatureTypes of QueryExpressionText can be left empty, in the DescribeStoredQueries request the element will be filled with all feature types served by the WFS. Same for the value ${deegreewfs:ServedFeatureTypes}. Otherwise the one configuring deegree is responsible to configure the returnFeatureTypes as expected: Usually the values from the typeNames of the Query-Elements should be the configured. An exception is thrown as DescribeStoredQueries response if the configured feature type is not served by the WFS.   
+
 .. tip::
   deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries`` and the ``DescribeStoredQueries`` operations. However, there is no support for ``CreateStoredQuery`` and ``DropStoredQuery`` at the moment.
 
