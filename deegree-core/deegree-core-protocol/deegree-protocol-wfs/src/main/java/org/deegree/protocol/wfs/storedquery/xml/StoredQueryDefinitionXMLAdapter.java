@@ -156,12 +156,7 @@ public class StoredQueryDefinitionXMLAdapter extends XMLAdapter {
     private QueryExpressionText parseQueryExpressionText( OMElement el ) {
 
         // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
-        String returnFtsStr = getRequiredNodeAsString( el, new XPath( "@returnFeatureTypes", nsContext ) );
-        String[] tokens = StringUtils.split( returnFtsStr, " " );
-        List<QName> returnFtNames = new ArrayList<QName>( tokens.length );
-        for ( String token : tokens ) {
-            returnFtNames.add( parseQName( token, el ) );
-        }
+        List<QName> returnFtNames = parseFeatureTypes( el );
 
         // <xsd:attribute name="language" type="xsd:anyURI" use="required"/>
         String language = getRequiredNodeAsString( el, new XPath( "@language", nsContext ) );
@@ -174,5 +169,18 @@ public class StoredQueryDefinitionXMLAdapter extends XMLAdapter {
         List<OMElement> childEls = getElements( el, new XPath( "*", nsContext ) );
 
         return new QueryExpressionText( returnFtNames, language, isPrivate, childEls );
+    }
+
+    private List<QName> parseFeatureTypes( OMElement el ) {
+        String returnFtsStr = getRequiredNodeAsString( el, new XPath( "@returnFeatureTypes", nsContext ) );
+        String[] tokens = StringUtils.split( returnFtsStr, " " );
+        if ( tokens.length == 1 && "${deegreewfs:ServedFeatureTypes}".equals( tokens[0] ) )
+            return new ArrayList<QName>();
+
+        List<QName> returnFtNames = new ArrayList<QName>( tokens.length );
+        for ( String token : tokens ) {
+            returnFtNames.add( parseQName( token, el ) );
+        }
+        return returnFtNames;
     }
 }

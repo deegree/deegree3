@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,7 +52,6 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WfsFeatureStoreManager;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 /**
@@ -60,14 +60,16 @@ import org.junit.Test;
 public class StoredQueryHandlerTest {
 
     @Test
-    public void testCollectAndSortFeatureTypesToExport() {
-        List<FeatureType> featureTypes = featureTypeList();
+    public void testCollectAndSortFeatureTypesToExport_AllFeatureTypes() {
+        List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
-        List<QName> featureTypesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport();
 
-        assertThat( featureTypesToExport.size(), is( featureTypes.size() ) );
+        List<QName> configuredFeatureTypeNames = Collections.emptyList();
+        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
+
+        assertThat( featureTypeNamesToExport.size(), is( featureTypes.size() ) );
         for ( FeatureType featureType : featureTypes ) {
-            assertThat( featureTypesToExport, CoreMatchers.hasItems( featureType.getName() ) );
+            assertThat( featureTypeNamesToExport, hasItems( featureType.getName() ) );
         }
     }
 
@@ -75,16 +77,40 @@ public class StoredQueryHandlerTest {
     public void testCollectAndSortFeatureTypesToExport_EmptyFeatureTypeList() {
         List<FeatureType> featureTypes = Collections.emptyList();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
-        List<QName> featureTypesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport();
 
-        assertThat( featureTypesToExport.size(), is( 0 ) );
+        List<QName> configuredFeatureTypeNames = Collections.emptyList();
+        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
+
+        assertThat( featureTypeNamesToExport.size(), is( 0 ) );
     }
 
-    private List<FeatureType> featureTypeList() {
+    @Test
+    public void testCollectAndSortFeatureTypesToExport_LimitedConfiguredFeatureTypes() {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
+
+        List<QName> configuredFeatureTypeNames = configuredFeatureTypeNames();
+        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
+
+        assertThat( featureTypeNamesToExport.size(), is( 1 ) );
+
+        QName featureTypeNameToExport = featureTypeNamesToExport.get( 0 );
+        assertThat( featureTypeNameToExport.getLocalPart(), is( "one" ) );
+        assertThat( featureTypeNameToExport.getNamespaceURI(), is( "" ) );
+        assertThat( featureTypeNameToExport.getPrefix(), is( "" ) );
+    }
+
+    private List<FeatureType> featureTypes() {
         List<FeatureType> featureTypes = new ArrayList<FeatureType>();
         featureTypes.add( mockFeatureType( "one" ) );
         featureTypes.add( mockFeatureType( "two" ) );
         return featureTypes;
+    }
+
+    private List<QName> configuredFeatureTypeNames() {
+        List<QName> configuredFeatureTypes = new ArrayList<QName>();
+        configuredFeatureTypes.add( new QName( "one" ) );
+        return configuredFeatureTypes;
     }
 
     private FeatureType mockFeatureType( String name ) {

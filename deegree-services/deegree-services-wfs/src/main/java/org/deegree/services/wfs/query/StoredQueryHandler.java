@@ -231,7 +231,9 @@ public class StoredQueryHandler {
                 writer.writeStartElement( WFS_200_NS, "QueryExpressionText" );
 
                 // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
-                writer.writeAttribute( "returnFeatureTypes", collectReturnFeatureTypesAndTransformToString( writer ) );
+                List<QName> returnFeatureTypes = queryExprText.getReturnFeatureTypes();
+                writer.writeAttribute( "returnFeatureTypes",
+                                       collectReturnFeatureTypesAndTransformToString( writer, returnFeatureTypes ) );
 
                 writer.writeAttribute( "language", queryExprText.getLanguage() );
                 if ( queryExprText.isPrivate() ) {
@@ -341,12 +343,9 @@ public class StoredQueryHandler {
         return idToUrl.get( id );
     }
 
-    List<QName> collectAndSortFeatureTypesToExport() {
+    List<QName> collectAndSortFeatureTypesToExport( List<QName> configuredReturnFeatureTypes ) {
         Collection<FeatureType> featureTypes = wfs.getStoreManager().getFeatureTypes();
-        List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
-        for ( FeatureType ft : featureTypes ) {
-            ftNames.add( ft.getName() );
-        }
+        List<QName> ftNames = collectFeatureTypes( configuredReturnFeatureTypes, featureTypes );
         Collections.sort( ftNames, new Comparator<QName>() {
             @Override
             public int compare( QName arg0, QName arg1 ) {
@@ -358,9 +357,54 @@ public class StoredQueryHandler {
         return ftNames;
     }
 
-    private String collectReturnFeatureTypesAndTransformToString( XMLStreamWriter writer )
+    private List<QName> collectFeatureTypes( List<QName> configuredReturnFeatureTypes,
+                                             Collection<FeatureType> featureTypes ) {
+        if ( configuredReturnFeatureTypes != null && configuredReturnFeatureTypes.size() > 0 ) {
+            return collectConfiguredFeatureTypes( featureTypes, configuredReturnFeatureTypes );
+        } else
+            return collectAllFeatureTypes( featureTypes );
+    }
+
+    private List<QName> collectAllFeatureTypes( Collection<FeatureType> featureTypes ) {
+        List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
+        for ( FeatureType ft : featureTypes ) {
+            ftNames.add( ft.getName() );
+        }
+        return ftNames;
+    }
+
+    private List<QName> collectConfiguredFeatureTypes( Collection<FeatureType> featureTypes,
+                                                       List<QName> configuredReturnFeatureTypeNames ) {
+
+        List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
+        for ( QName configuredReturnFeatureTypeName : configuredReturnFeatureTypeNames ) {
+            FeatureType featureType = findFeatureType( configuredReturnFeatureTypeName, featureTypes );
+            if ( featureType == null )
+                throw new IllegalArgumentException( "The FeatureType name " + configuredReturnFeatureTypeName
+                                                    + " configured in the stored query is not supported by this WFS!" );
+            ftNames.add( featureType.getName() );
+            ftNames.addAll( findAllDependentFeatureTypes( featureType ) );
+        }
+        return ftNames;
+    }
+
+    private List<QName> findAllDependentFeatureTypes( FeatureType featureType ) {
+        // TODO
+        return new ArrayList<QName>();
+    }
+
+    private FeatureType findFeatureType( QName configuredReturnFeatureTypeName, Collection<FeatureType> featureTypes ) {
+        for ( FeatureType featureType : featureTypes ) {
+            if ( configuredReturnFeatureTypeName.equals( featureType.getName() ) )
+                return featureType;
+        }
+        return null;
+    }
+
+    private String collectReturnFeatureTypesAndTransformToString( XMLStreamWriter writer,
+                                                                  List<QName> configuredReturnFeatureTypes )
                             throws XMLStreamException {
-        List<QName> ftNames = collectAndSortFeatureTypesToExport();
+        List<QName> ftNames = collectAndSortFeatureTypesToExport( configuredReturnFeatureTypes );
         StringBuilder returnFeatureTypes = new StringBuilder();
         Set<String> exportedPrefixes = new HashSet<String>();
         for ( QName ftName : ftNames ) {
@@ -381,7 +425,7 @@ public class StoredQueryHandler {
     }
 
     private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
-        LOG.info( "Adding stored query definition with id '" + queryDefinition.getId() + "'" );
+        LOG.info( "Adding stored query definition with id '{}' from {}", queryDefinition.getId(), u );
         idToQuery.put( queryDefinition.getId(), queryDefinition );
         idToUrl.put( queryDefinition.getId(), u );
     }
