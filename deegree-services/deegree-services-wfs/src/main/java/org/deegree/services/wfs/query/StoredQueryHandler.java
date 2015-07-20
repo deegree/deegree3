@@ -375,7 +375,6 @@ public class StoredQueryHandler {
 
     private List<QName> collectConfiguredFeatureTypes( Collection<FeatureType> featureTypes,
                                                        List<QName> configuredReturnFeatureTypeNames ) {
-
         List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
         for ( QName configuredReturnFeatureTypeName : configuredReturnFeatureTypeNames ) {
             FeatureType featureType = findFeatureType( configuredReturnFeatureTypeName, featureTypes );
@@ -383,14 +382,8 @@ public class StoredQueryHandler {
                 throw new IllegalArgumentException( "The FeatureType name " + configuredReturnFeatureTypeName
                                                     + " configured in the stored query is not supported by this WFS!" );
             ftNames.add( featureType.getName() );
-            ftNames.addAll( findAllDependentFeatureTypes( featureType ) );
         }
         return ftNames;
-    }
-
-    private List<QName> findAllDependentFeatureTypes( FeatureType featureType ) {
-        // TODO
-        return new ArrayList<QName>();
     }
 
     private FeatureType findFeatureType( QName configuredReturnFeatureTypeName, Collection<FeatureType> featureTypes ) {
