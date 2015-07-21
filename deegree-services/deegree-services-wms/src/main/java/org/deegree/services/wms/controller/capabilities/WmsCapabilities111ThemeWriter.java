@@ -212,16 +212,17 @@ class WmsCapabilities111ThemeWriter {
         if ( md != null ) {
             for ( StringPair ext : md.getExternalUrls() ) {
                 String url = auths.get( ext.first );
-                writer.writeStartElement( WMSNS, "AuthorityURL" );
+                writer.writeStartElement( "AuthorityURL" );
                 writer.writeAttribute( "name", ext.first );
-                writer.writeStartElement( WMSNS, "OnlineResource" );
+                writer.writeStartElement( "OnlineResource" );
+                writer.writeNamespace( XLINK_PREFIX, XLNNS );
                 writer.writeAttribute( XLNNS, "type", "simple" );
                 writer.writeAttribute( XLNNS, "href", url );
                 writer.writeEndElement();
                 writer.writeEndElement();
             }
             for ( StringPair ext : md.getExternalUrls() ) {
-                writer.writeStartElement( WMSNS, "Identifier" );
+                writer.writeStartElement( "Identifier" );
                 writer.writeAttribute( "authority", ext.first );
                 writer.writeCharacters( ext.second );
                 writer.writeEndElement();
@@ -238,7 +239,7 @@ class WmsCapabilities111ThemeWriter {
     private void writeMetadataUrl( XMLStreamWriter writer, String url )
                             throws XMLStreamException {
         writer.writeStartElement( "MetadataURL" );
-        writer.writeAttribute( "type", "ISO19115:2003" );
+        writer.writeAttribute( "type", "TC211" );
         writeElement( writer, "Format", "application/xml" );
         writer.writeStartElement( "OnlineResource" );
         writer.writeNamespace( XLINK_PREFIX, XLNNS );
