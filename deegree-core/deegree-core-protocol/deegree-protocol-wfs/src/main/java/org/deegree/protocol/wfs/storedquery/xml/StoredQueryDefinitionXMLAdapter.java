@@ -172,7 +172,9 @@ public class StoredQueryDefinitionXMLAdapter extends XMLAdapter {
     }
 
     private List<QName> parseFeatureTypes( OMElement el ) {
-        String returnFtsStr = getRequiredNodeAsString( el, new XPath( "@returnFeatureTypes", nsContext ) );
+        String returnFtsStr = getRequiredNodeAsString( el, new XPath( "@returnFeatureTypes", nsContext ) ).trim();
+        if ( "".equals( returnFtsStr ) )
+            return new ArrayList<QName>();
         String[] tokens = StringUtils.split( returnFtsStr, " " );
         if ( tokens.length == 1 && "${deegreewfs:ServedFeatureTypes}".equals( tokens[0] ) )
             return new ArrayList<QName>();
