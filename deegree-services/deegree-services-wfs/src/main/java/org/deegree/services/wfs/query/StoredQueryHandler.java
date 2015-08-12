@@ -294,19 +294,8 @@ public class StoredQueryHandler {
                 writer.writeCharacters( title.getString() );
                 writer.writeEndElement();
 
-                List<QName> ftNames = new ArrayList<QName>( wfs.getStoreManager().getFeatureTypes().size() );
-                for ( FeatureType ft : wfs.getStoreManager().getFeatureTypes() ) {
-                    ftNames.add( ft.getName() );
-                }
-                Collections.sort( ftNames, new Comparator<QName>() {
-                    @Override
-                    public int compare( QName arg0, QName arg1 ) {
-                        String s0 = arg0.toString();
-                        String s1 = arg1.toString();
-                        return s0.compareTo( s1 );
-                    }
-                } );
-
+                List<QName> configuredReturnFeatureTypes = collectFeatureTypes( queryDef );
+                List<QName> ftNames = collectAndSortFeatureTypesToExport( configuredReturnFeatureTypes );
                 for ( QName ftName : ftNames ) {
                     writer.writeStartElement( WFS_200_NS, "ReturnFeatureType" );
                     String prefix = ftName.getPrefix();
@@ -365,6 +354,21 @@ public class StoredQueryHandler {
             return collectAllFeatureTypes( featureTypes );
     }
 
+    private List<QName> collectFeatureTypes( StoredQueryDefinition queryDef ) {
+        Collection<FeatureType> featureTypes = wfs.getStoreManager().getFeatureTypes();
+        List<QueryExpressionText> queryExpressionTextEls = queryDef.getQueryExpressionTextEls();
+        List<QName> allConfiguredReturnFeatureTypes = new ArrayList<QName>();
+        for ( QueryExpressionText queryExpressionTextEl : queryExpressionTextEls ) {
+            List<QName> configuredReturnFeatureTypes = queryExpressionTextEl.getReturnFeatureTypes();
+            List<QName> featureTypesToExport = collectFeatureTypes( configuredReturnFeatureTypes, featureTypes );
+            for ( QName featureTypeToExport : featureTypesToExport ) {
+                if ( !allConfiguredReturnFeatureTypes.contains( featureTypeToExport ) )
+                    allConfiguredReturnFeatureTypes.add( featureTypeToExport );
+            }
+        }
+        return allConfiguredReturnFeatureTypes;
+    }
+
     private List<QName> collectAllFeatureTypes( Collection<FeatureType> featureTypes ) {
         List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
         for ( FeatureType ft : featureTypes ) {
@@ -381,7 +385,9 @@ public class StoredQueryHandler {
             if ( featureType == null )
                 throw new IllegalArgumentException( "The FeatureType name " + configuredReturnFeatureTypeName
                                                     + " configured in the stored query is not supported by this WFS!" );
-            ftNames.add( featureType.getName() );
+            QName name = featureType.getName();
+            if ( !ftNames.contains( name ) )
+                ftNames.add( name );
         }
         return ftNames;
     }
