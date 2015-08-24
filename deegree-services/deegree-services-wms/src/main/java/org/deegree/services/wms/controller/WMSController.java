@@ -55,6 +55,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -99,8 +100,10 @@ import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.capabilities.GetCapabilitiesXMLAdapter;
+import org.deegree.protocol.wms.map.GetMapParser;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
@@ -543,16 +546,7 @@ public class WMSController extends AbstractOWS {
         org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
                                                                                            service.getExtensions() );
 
-        checkGetMap( version, gm2 );
-
-        RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
-                                                gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
-        RenderContext ctx = ouputFormatProvider.getRenderers( info, response.getOutputStream() );
-        LinkedList<String> headers = new LinkedList<String>();
-        service.getMap( gm2, headers, ctx );
-        response.setContentType( gm2.getFormat() );
-        ctx.close();
-        addHeaders( response, headers );
+        doGetMap( map, response, version, gm2 );
     }
 
     private void checkGetFeatureInfo( Version version, org.deegree.protocol.wms.ops.GetFeatureInfo gfi )
@@ -649,6 +643,12 @@ public class WMSController extends AbstractOWS {
                 String updateSequence = getCapabilities.getUpdateSequence();
                 doGetCapabilities( null, response, updateSequence, getCapabilities );
                 break;
+            case GetMap:
+                GetMapParser getMapParser = new GetMapParser();
+                GetMap getMap = getMapParser.parse( xmlStream );
+                Map<String, String> map = new HashMap<String, String>();
+                doGetMap( map, response, VERSION_130, getMap );
+                break;
             default:
                 String msg = "XML request handling is currently not supported for operation " + requestName;
                 throw new UnsupportedOperationException( msg );
@@ -656,6 +656,10 @@ public class WMSController extends AbstractOWS {
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
             sendServiceException( response, requestVersion, e );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage(), e );
+            OWSException owsException = new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
+            sendServiceException( response, requestVersion, owsException );
         }
     }
 
@@ -777,6 +781,21 @@ public class WMSController extends AbstractOWS {
         }
 
         response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
+    }
+
+    private void doGetMap( Map<String, String> map, HttpResponseBuffer response, Version version,
+                           org.deegree.protocol.wms.ops.GetMap gm2 )
+                            throws OWSException, IOException {
+        checkGetMap( version, gm2 );
+
+        RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
+                                                gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
+        RenderContext ctx = ouputFormatProvider.getRenderers( info, response.getOutputStream() );
+        LinkedList<String> headers = new LinkedList<String>();
+        service.getMap( gm2, headers, ctx );
+        response.setContentType( gm2.getFormat() );
+        ctx.close();
+        addHeaders( response, headers );
     }
 
     private void sendServiceException( HttpResponseBuffer response, Version requestVersion, OWSException e )
