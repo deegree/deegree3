@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,8 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.protocol.ows.capabilities;
+ ----------------------------------------------------------------------------*/
+package org.deegree.protocol.ows.getcapabilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,16 +43,14 @@ import static org.junit.Assert.assertTrue;
 import java.net.URL;
 
 import org.deegree.commons.tom.ows.Version;
-import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
-import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesXMLParser;
 import org.junit.Test;
 
 /**
  * Test cases for {@link GetCapabilitiesXMLParser}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GetCapabilitiesXMLParserTest {
@@ -62,7 +60,7 @@ public class GetCapabilitiesXMLParserTest {
      */
     @Test
     public void testParsing100() {
-        URL docURL = GetCapabilitiesXMLParserTest.class.getResource( "GetCapabilitiesOWS100.xml" );
+        URL docURL = GetCapabilitiesXMLParserTest.class.getResource( "../capabilities/GetCapabilitiesOWS100.xml" );
         GetCapabilitiesXMLParser parser = new GetCapabilitiesXMLParser();
         parser.load( docURL );
         GetCapabilities request = parser.parse100();
@@ -71,8 +69,8 @@ public class GetCapabilitiesXMLParserTest {
         // check accept versions
         assertNotNull( request.getAcceptVersions() );
         assertEquals( 2, request.getAcceptVersions().size() );
-        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersionsAsVersions().get(1) );
-        assertEquals( Version.parseVersion( "1.1.0" ), request.getAcceptVersionsAsVersions().get(0) );
+        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersionsAsVersions().get( 1 ) );
+        assertEquals( Version.parseVersion( "1.1.0" ), request.getAcceptVersionsAsVersions().get( 0 ) );
 
         // check sections
         assertNotNull( request.getSections() );
@@ -94,7 +92,7 @@ public class GetCapabilitiesXMLParserTest {
      */
     @Test
     public void testParsing110() {
-        URL docURL = GetCapabilitiesXMLParserTest.class.getResource( "GetCapabilitiesOWS110.xml" );
+        URL docURL = GetCapabilitiesXMLParserTest.class.getResource( "../capabilities/GetCapabilitiesOWS110.xml" );
         GetCapabilitiesXMLParser parser = new GetCapabilitiesXMLParser();
         parser.load( docURL );
         GetCapabilities request = parser.parse110();
@@ -103,8 +101,8 @@ public class GetCapabilitiesXMLParserTest {
         // check accept versions
         assertNotNull( request.getAcceptVersions() );
         assertEquals( 3, request.getAcceptVersions().size() );
-        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersionsAsVersions().get(0) );
-        assertEquals( Version.parseVersion( "2.0.0" ), request.getAcceptVersionsAsVersions().get(1) );
+        assertEquals( Version.parseVersion( "1.0.0" ), request.getAcceptVersionsAsVersions().get( 0 ) );
+        assertEquals( Version.parseVersion( "2.0.0" ), request.getAcceptVersionsAsVersions().get( 1 ) );
 
         // check sections
         assertNotNull( request.getSections() );
