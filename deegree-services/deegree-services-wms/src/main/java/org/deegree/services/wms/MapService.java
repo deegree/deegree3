@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms;
 
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
@@ -43,7 +44,7 @@ import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOp
 import static org.deegree.theme.Themes.getAllLayers;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -231,7 +232,7 @@ public class MapService {
     private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
                                                                   List<String> headers, double scale,
                                                                   ListIterator<LayerQuery> queryIter )
-                            throws OWSException {
+                                                                                          throws OWSException {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
@@ -292,11 +293,12 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                
-                if (!l.getMetadata().isQueryable()) {
-                    continue;
+
+                if ( !l.getMetadata().isQueryable() ) {
+                    throw new OWSException( "GetFeatureInfo is requested on a Layer (name: " + l.getMetadata().getName()
+                                            + ") that is not queryable.", LAYER_NOT_QUERYABLE );
                 }
-                
+
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -373,7 +375,8 @@ public class MapService {
         return getLegendHandler.getLegendSize( style );
     }
 
-    public BufferedImage getLegend( GetLegendGraphic req ) throws OWSException {
+    public BufferedImage getLegend( GetLegendGraphic req )
+                            throws OWSException {
         return getLegendHandler.getLegend( req );
     }
 
