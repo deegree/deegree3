@@ -35,12 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.getcapabilities;
 
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 import org.deegree.commons.tom.ows.Version;
 import org.junit.Test;
@@ -118,4 +123,38 @@ public class GetCapabilitiesXMLParserTest {
 
         assertNull( request.getUpdateSequence() );
     }
+
+    /**
+     * Tests the parsing of an OWS 2.0.0 GetCapabilities document.
+     */
+    @Test
+    public void testParsing200() {
+        URL docURL = GetCapabilitiesXMLParserTest.class.getResource( "../capabilities/GetCapabilitiesOWS200.xml" );
+        GetCapabilitiesXMLParser parser = new GetCapabilitiesXMLParser();
+        parser.load( docURL );
+        GetCapabilities request = parser.parse200();
+
+        // check accept versions
+        List<String> acceptVersions = request.getAcceptVersions();
+        assertThat( acceptVersions.size(), is( 3 ) );
+        assertThat( acceptVersions, hasItems( "1.0.0", "2.0.0", "1.1.0" ) );
+
+        // check sections
+        Set<String> sections = request.getSections();
+        assertThat( sections.size(), is( 3 ) );
+        assertThat( sections, hasItems( "ServiceIdentification", "ServiceProvider", "OperationsMetadata" ) );
+
+        // check accept formats
+        Set<String> acceptFormats = request.getAcceptFormats();
+        assertThat( acceptFormats.size(), is( 1 ) );
+        assertThat( acceptFormats, hasItems( "text/xml" ) );
+
+        // check accept formats
+        List<String> acceptLanguages = request.getAcceptLanguages();
+        assertThat( acceptLanguages.size(), is( 2 ) );
+        assertThat( acceptLanguages, hasItems( "en", "de" ) );
+
+        assertThat( request.getUpdateSequence(), is( "2" ) );
+    }
+
 }
