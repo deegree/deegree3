@@ -228,6 +228,8 @@ public class WmsCapabilities111ThemeWriter {
                             throws XMLStreamException {
         if ( queryable ) {
             writer.writeAttribute( "queryable", "1" );
+        } else {
+            writer.writeAttribute( "queryable", "0" );
         }
     }
 
