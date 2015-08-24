@@ -38,7 +38,6 @@ package org.deegree.services.wms.controller;
 
 import static javax.imageio.ImageIO.write;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
@@ -81,8 +80,10 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.FeatureCollection;
@@ -97,6 +98,7 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.capabilities.GetCapabilitiesXMLAdapter;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.rendering.r2d.context.RenderContext;
@@ -107,18 +109,20 @@ import org.deegree.services.OwsManager;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.StandardFeatureInfoContext;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
-import org.deegree.services.jaxb.wms.GetMapFormatsType;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wms.DeegreeWMS.SupportedVersions;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.Serializer;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
+import org.deegree.services.jaxb.wms.GetMapFormatsType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
@@ -167,7 +171,7 @@ public class WMSController extends AbstractOWS {
     private String metadataURLTemplate;
 
     private FeatureInfoManager featureInfoManager;
-    
+
     private OutputFormatProvider ouputFormatProvider;
 
     private OWSMetadataProvider metadataProvider;
@@ -189,10 +193,10 @@ public class WMSController extends AbstractOWS {
         }
 
         featureInfoManager = new FeatureInfoManager( addDefaultFormats );
-        
         ouputFormatProvider = new DefaultOutputFormatProvider();
+        initOfferedVersions( jaxbConfig.getSupportedVersions() );
     }
-    
+
     public Collection<String> getSupportedImageFormats() {
         return supportedImageFormats;
     }
@@ -220,7 +224,6 @@ public class WMSController extends AbstractOWS {
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
                       Object controllerConf ) {
-
         identification = convertFromJAXB( serviceMetadata.getServiceIdentification() );
         provider = convertFromJAXB( serviceMetadata.getServiceProvider() );
 
@@ -247,7 +250,7 @@ public class WMSController extends AbstractOWS {
 
         try {
             addSupportedImageFormats( conf );
-            
+
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
                     if ( t.getFile() != null ) {
@@ -333,11 +336,11 @@ public class WMSController extends AbstractOWS {
         if ( v == null ) {
             v = map.get( "WMTVER" );
         }
-        Version version = v == null ? highestVersion : parseVersion( v );
+        Version version = v == null ? highestVersion : Version.parseVersion( v );
 
         WMSRequestType req;
         try {
-            req = (WMSRequestType) ( (ImplementationMetadata) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
@@ -617,7 +620,6 @@ public class WMSController extends AbstractOWS {
 
     protected void getCapabilities( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException {
-
         String version = map.get( "VERSION" );
         // not putting it into the bean, why should I? It's used just a few lines below...
 
@@ -626,30 +628,35 @@ public class WMSController extends AbstractOWS {
             version = map.get( "WMTVER" );
         }
         GetCapabilities req = new GetCapabilities( version );
-
-        Version myVersion = negotiateVersion( req );
-
-        String getUrl = OGCFrontController.getHttpGetURL();
-        String postUrl = OGCFrontController.getHttpPostURL();
-
-        if ( metadataProvider != null ) {
-            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                          metadataProvider.getServiceIdentification(),
-                                                          metadataProvider.getServiceProvider(), map, this,
-                                                          metadataProvider );
-        } else {
-            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                          identification, provider, map, this, null );
-        }
-
-        response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
+        doGetCapabilities( map, response, updateSequence, req );
     }
 
     @Override
     public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
-        throw new UnsupportedOperationException( "XML request handling is currently not supported for the wms" );
+        Version requestVersion = null;
+        try {
+            String requestName = xmlStream.getLocalName();
+            WMSRequestType requestType = detectWmsRequestType( requestName );
+            requestVersion = parseAndCheckVersion( xmlStream );
+
+            switch ( requestType ) {
+            case GetCapabilities:
+                GetCapabilitiesXMLAdapter getCapabilitiesXMLAdapter = new GetCapabilitiesXMLAdapter();
+                getCapabilitiesXMLAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                GetCapabilities getCapabilities = getCapabilitiesXMLAdapter.parse( requestVersion );
+                String updateSequence = getCapabilities.getUpdateSequence();
+                doGetCapabilities( null, response, updateSequence, getCapabilities );
+                break;
+            default:
+                String msg = "XML request handling is currently not supported for operation " + requestName;
+                throw new UnsupportedOperationException( msg );
+            }
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendServiceException( response, requestVersion, e );
+        }
     }
 
     /**
@@ -734,7 +741,50 @@ public class WMSController extends AbstractOWS {
     public FeatureInfoManager getFeatureInfoManager() {
         return featureInfoManager;
     }
-    
+
+    private void initOfferedVersions( SupportedVersions supportedVersions ) {
+        List<String> versions = null;
+        if ( supportedVersions != null ) {
+            versions = supportedVersions.getVersion();
+        }
+        if ( versions == null || versions.isEmpty() ) {
+            LOG.info( "No protocol versions specified. Activating all implemented versions." );
+            ImplementationMetadata<?> md = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+            versions = new ArrayList<String>( md.getImplementedVersions().size() );
+            for ( Version version : md.getImplementedVersions() ) {
+                versions.add( version.toString() );
+            }
+        }
+        validateAndSetOfferedVersions( versions );
+    }
+
+    private void doGetCapabilities( Map<String, String> map, HttpResponseBuffer response, String updateSequence,
+                                    GetCapabilities req )
+                            throws OWSException, IOException {
+        Version myVersion = negotiateVersion( req );
+
+        String getUrl = OGCFrontController.getHttpGetURL();
+        String postUrl = OGCFrontController.getHttpPostURL();
+
+        if ( metadataProvider != null ) {
+            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                          metadataProvider.getServiceIdentification(),
+                                                          metadataProvider.getServiceProvider(), map, this,
+                                                          metadataProvider );
+        } else {
+            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                          identification, provider, map, this, null );
+        }
+
+        response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
+    }
+
+    private void sendServiceException( HttpResponseBuffer response, Version requestVersion, OWSException e )
+                            throws ServletException {
+        ExceptionSerializer serializer = getExceptionSerializer( requestVersion );
+        sendException( null, serializer, e, response );
+    }
+
     private void addSupportedImageFormats( DeegreeWMS conf ) {
         if ( conf.getGetMapFormats() != null ) {
             GetMapFormatsType getMapFormats = conf.getGetMapFormats();
@@ -746,6 +796,35 @@ public class WMSController extends AbstractOWS {
         if ( supportedImageFormats.isEmpty() ) {
             supportedImageFormats.addAll( ouputFormatProvider.getSupportedOutputFormats() );
         }
+    }
+
+    private WMSRequestType detectWmsRequestType( String requestName )
+                            throws OWSException {
+        for ( WMSRequestType wmsRequestType : WMSRequestType.values() ) {
+            if ( wmsRequestType.name().equals( requestName ) )
+                return wmsRequestType;
+        }
+        String msg = "Request type '" + requestName + "' is not supported.";
+        throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );
+    }
+
+    private Version parseAndCheckVersion( XMLStreamReader xmlStream )
+                            throws OWSException {
+        String version = XMLStreamUtils.getAttributeValue( xmlStream, "version" );
+        Version parsedVersion = parseVersion( version );
+        return checkVersion( parsedVersion );
+    }
+
+    private Version parseVersion( String versionString )
+                            throws OWSException {
+        if ( versionString != null && !"".equals( versionString ) ) {
+            try {
+                return Version.parseVersion( versionString );
+            } catch ( InvalidParameterValueException e ) {
+                throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "version" );
+            }
+        }
+        return null;
     }
 
     /**
