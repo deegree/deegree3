@@ -170,13 +170,19 @@ public class WmsCapabilities111ThemeWriter {
     void writeTheme( final XMLStreamWriter writer, final LayerMetadata layerMetadata,
                      final DatasetMetadata datasetMetadata, final Map<String, String> authorityNameToUrl,
                      final DoublePair scaleDenominators, final List<Theme> subThemes )
-                            throws XMLStreamException {
+                                             throws XMLStreamException {
         writer.writeStartElement( "Layer" );
         // queryable (0 | 1) "0"
         writeQueryable( writer, layerMetadata.isRequestable() && layerMetadata.isQueryable()
                                 && layerMetadata.getName() != null );
         // cascaded CDATA #IMPLIED
         writeCascaded( writer, layerMetadata.getCascaded() );
+        // noSubsets (0 | 1) "0"
+        writeNoSubset( writer );
+        // fixedWidth CDATA #IMPLIED
+        writeFixedWidth( writer );
+        // fixedHeight CDATA #IMPLIED
+        writeFixedHeight( writer );
         // Name?
         if ( layerMetadata.isRequestable() ) {
             writeName( writer, layerMetadata.getName() );
@@ -232,6 +238,22 @@ public class WmsCapabilities111ThemeWriter {
         }
     }
 
+    private void writeNoSubset( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "noSubsets", "0" );
+
+    }
+
+    private void writeFixedWidth( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "fixedWidth", "0" );
+    }
+
+    private void writeFixedHeight( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "fixedHeight", "0" );
+    }
+
     private void writeName( final XMLStreamWriter writer, final String name )
                             throws XMLStreamException {
         if ( name != null ) {
@@ -257,7 +279,7 @@ public class WmsCapabilities111ThemeWriter {
 
     private void writeKeywordList( final XMLStreamWriter writer,
                                    final List<Pair<List<LanguageString>, CodeType>> keywordList )
-                            throws XMLStreamException {
+                                                           throws XMLStreamException {
         if ( keywordList != null && !keywordList.isEmpty() ) {
             writer.writeStartElement( "KeywordList" );
             for ( final Pair<List<LanguageString>, CodeType> kws : keywordList ) {
@@ -393,7 +415,7 @@ public class WmsCapabilities111ThemeWriter {
 
     private void writeStyles( final XMLStreamWriter writer, final String name, final Map<String, Style> legends,
                               final Map<String, Style> styles )
-                            throws XMLStreamException {
+                                                      throws XMLStreamException {
         if ( styleWriter != null ) {
             for ( final Entry<String, Style> e : styles.entrySet() ) {
                 if ( e.getKey() == null || e.getKey().isEmpty() ) {
@@ -417,8 +439,10 @@ public class WmsCapabilities111ThemeWriter {
         if ( !hint.first.isInfinite() || !hint.second.isInfinite() ) {
             double fac = 0.00028;
             writer.writeStartElement( "ScaleHint" );
-            writer.writeAttribute( "min", scaleFormat.format( hint.first.isInfinite() ? MIN_VALUE : hint.first * fac ) );
-            writer.writeAttribute( "max", scaleFormat.format( hint.second.isInfinite() ? MAX_VALUE : hint.second * fac ) );
+            writer.writeAttribute( "min",
+                                   scaleFormat.format( hint.first.isInfinite() ? MIN_VALUE : hint.first * fac ) );
+            writer.writeAttribute( "max",
+                                   scaleFormat.format( hint.second.isInfinite() ? MAX_VALUE : hint.second * fac ) );
             writer.writeEndElement();
         }
     }
