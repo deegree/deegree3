@@ -55,7 +55,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,7 +99,9 @@ import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
 import org.deegree.protocol.wms.capabilities.GetCapabilitiesXMLAdapter;
+import org.deegree.protocol.wms.featureinfo.GetFeatureInfoParser;
 import org.deegree.protocol.wms.map.GetMapParser;
+import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.protocol.wms.ops.GetMap;
@@ -457,57 +458,8 @@ public class WMSController extends AbstractOWS {
 
     private void getFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
-
-        Pair<FeatureCollection, LinkedList<String>> pair;
-        String format;
-        List<String> queryLayers;
-        boolean geometries;
-        FeatureType type = null;
-        ICRS crs;
-        Map<String, String> nsBindings = new HashMap<String, String>();
-
-        LinkedList<String> headers = new LinkedList<String>();
         org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map, version );
-        checkGetFeatureInfo( version, fi );
-        crs = fi.getCoordinateSystem();
-        geometries = fi.returnGeometries();
-        queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
-
-        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
-                                                fi.getEnvelope(), 0.28, map );
-        format = fi.getInfoFormat();
-        info.setFormat( format );
-        info.setFeatureCount( fi.getFeatureCount() );
-        info.setX( fi.getX() );
-        info.setY( fi.getY() );
-        pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, headers ), headers );
-
-        FeatureCollection col = pair.first;
-        addHeaders( response, pair.second );
-        format = format == null ? "application/vnd.ogc.gml" : format;
-        response.setContentType( format );
-        response.setCharacterEncoding( "UTF-8" );
-
-        Map<String, String> fismap = new HashMap<String, String>();
-        fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
-        GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
-        List<FeatureType> schema = service.getSchema( fis );
-        for ( FeatureType ft : schema ) {
-            type = ft;
-            if ( ft.getSchema() != null ) {
-                nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
-            }
-        }
-
-        String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
-
-        try {
-            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, geometries, loc, type, crs );
-            featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
-            response.flushBuffer();
-        } catch ( XMLStreamException e ) {
-            throw new IOException( e.getLocalizedMessage(), e );
-        }
+        doGetFeatureInfo( map, response, version, fi );
     }
 
     private void getFeatureInfoSchema( Map<String, String> map, HttpResponseBuffer response )
@@ -648,6 +600,12 @@ public class WMSController extends AbstractOWS {
                 GetMap getMap = getMapParser.parse( xmlStream );
                 Map<String, String> map = new HashMap<String, String>();
                 doGetMap( map, response, VERSION_130, getMap );
+                break;
+            case GetFeatureInfo:
+                GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
+                GetFeatureInfo getFeatureInfo = getFeatureInfoParser.parse( xmlStream );
+                Map<String, String> gfiMap = new HashMap<String, String>();
+                doGetFeatureInfo( gfiMap, response, VERSION_130, getFeatureInfo );
                 break;
             default:
                 String msg = "XML request handling is currently not supported for operation " + requestName;
@@ -796,6 +754,58 @@ public class WMSController extends AbstractOWS {
         response.setContentType( gm2.getFormat() );
         ctx.close();
         addHeaders( response, headers );
+    }
+
+    private void doGetFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version,
+                                   org.deegree.protocol.wms.ops.GetFeatureInfo fi )
+                            throws OWSException, IOException {
+        checkGetFeatureInfo( version, fi );
+        ICRS crs = fi.getCoordinateSystem();
+        boolean geometries = fi.returnGeometries();
+        List<String> queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
+
+        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
+                                                fi.getEnvelope(), 0.28, map );
+        String format = fi.getInfoFormat();
+        info.setFormat( format );
+        info.setFeatureCount( fi.getFeatureCount() );
+        info.setX( fi.getX() );
+        info.setY( fi.getY() );
+        LinkedList<String> headers = new LinkedList<String>();
+        Pair<FeatureCollection, LinkedList<String>> pair = new Pair<FeatureCollection, LinkedList<String>>(
+                                                                                                            service.getFeatures( fi,
+                                                                                                                                 headers ),
+                                                                                                            headers );
+
+        FeatureCollection col = pair.first;
+        addHeaders( response, pair.second );
+        format = format == null ? "application/vnd.ogc.gml" : format;
+        response.setContentType( format );
+        response.setCharacterEncoding( "UTF-8" );
+
+        Map<String, String> fismap = new HashMap<String, String>();
+        fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
+        GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
+
+        FeatureType type = null;
+        Map<String, String> nsBindings = new HashMap<String, String>();
+        List<FeatureType> schema = service.getSchema( fis );
+        for ( FeatureType ft : schema ) {
+            type = ft;
+            if ( ft.getSchema() != null ) {
+                nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
+            }
+        }
+
+        String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
+
+        try {
+            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, geometries, loc, type, crs );
+            featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
+            response.flushBuffer();
+        } catch ( XMLStreamException e ) {
+            throw new IOException( e.getLocalizedMessage(), e );
+        }
     }
 
     private void sendServiceException( HttpResponseBuffer response, Version requestVersion, OWSException e )
