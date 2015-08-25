@@ -74,6 +74,7 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -87,6 +88,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAP11Version;
+import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
@@ -655,7 +657,7 @@ public class WMSController extends AbstractOWS {
             requestVersion = parseAndCheckVersion( xmlStream );
 
             if ( WMSRequestType.GetMap.equals( requestType ) ) {
-                doSoapGetMap( response, xmlStream );
+                doSoapGetMap( soapDoc.getVersion(), response, xmlStream );
             } else {
                 beginSoapResponse( soapDoc, response );
                 switch ( requestType ) {
@@ -937,10 +939,13 @@ public class WMSController extends AbstractOWS {
         return null;
     }
 
-    private void doSoapGetMap( HttpResponseBuffer response, XMLStreamReader xmlStream )
+    private void doSoapGetMap( SOAPVersion soapVersion, HttpResponseBuffer response, XMLStreamReader xmlStream )
                             throws OWSException, XMLStreamException, IOException, SOAPException {
-        response.setContentType( "application/soap+xml" );
-        
+        if ( isSoap11( soapVersion ) )
+            response.setContentType( "text/xml" );
+        else
+            response.setContentType( "application/soap+xml" );
+
         GetMapParser getMapParser = new GetMapParser();
         GetMap getMap = getMapParser.parse( xmlStream );
         Map<String, String> map = new HashMap<String, String>();
@@ -950,16 +955,19 @@ public class WMSController extends AbstractOWS {
 
         String contentId = UUID.randomUUID().toString();
 
-        SOAPMessage message = createSoapMessage( contentId );
+        SOAPMessage message = createSoapMessage( soapVersion, contentId );
 
         AttachmentPart attachmentPart = createAttachment( getMap, stream, message, contentId );
         message.addAttachmentPart( attachmentPart );
         message.writeTo( response.getOutputStream() );
     }
 
-    private SOAPMessage createSoapMessage( String contentId )
+    private SOAPMessage createSoapMessage( SOAPVersion soapVersion, String contentId )
                             throws SOAPException {
-        MessageFactory messageFactory = MessageFactory.newInstance();
+        String soapProtocol = SOAPConstants.SOAP_1_2_PROTOCOL;
+        if ( isSoap11( soapVersion ) )
+            soapProtocol = SOAPConstants.SOAP_1_1_PROTOCOL;
+        MessageFactory messageFactory = MessageFactory.newInstance( soapProtocol );
 
         SOAPMessage message = messageFactory.createMessage();
         SOAPPart soapPart = message.getSOAPPart();
@@ -986,11 +994,15 @@ public class WMSController extends AbstractOWS {
 
     private void beginSoapResponse( org.apache.axiom.soap.SOAPEnvelope soapDoc, HttpResponseBuffer response )
                             throws IOException, XMLStreamException {
-        if ( soapDoc.getVersion() instanceof SOAP11Version ) {
+        if ( isSoap11( soapDoc.getVersion() ) ) {
             beginSoap11Response( response );
         } else {
             beginSOAPResponse( response );
         }
+    }
+
+    private boolean isSoap11( SOAPVersion soapVersion ) {
+        return soapVersion instanceof SOAP11Version;
     }
 
     private void beginSoap11Response( HttpResponseBuffer response )
