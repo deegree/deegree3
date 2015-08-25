@@ -13,7 +13,7 @@
     <NamedLayer>
       <se:Name>counties</se:Name>
       <NamedStyle>
-        <se:Name>countyboundaries</se:Name>
+        <se:Name>CountyBoundary</se:Name>
       </NamedStyle>
     </NamedLayer>
     <NamedLayer>
