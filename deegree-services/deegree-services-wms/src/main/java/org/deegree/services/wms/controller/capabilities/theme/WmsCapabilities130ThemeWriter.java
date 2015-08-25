@@ -239,6 +239,8 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         if ( cascaded > 0 ) {
             writer.writeAttribute( "cascaded", cascaded + "" );
+        } else {
+            writer.writeAttribute( "cascaded", "0" );
         }
     }
 
