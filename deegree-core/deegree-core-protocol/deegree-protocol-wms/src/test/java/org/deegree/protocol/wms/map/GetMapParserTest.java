@@ -89,7 +89,7 @@ public class GetMapParserTest {
         LinkedList<StyleRef> styles = getMap.getStyles();
         assertThat( styles.size(), is( 3 ) );
         assertThat( styles, hasStyleRef( "Municipalities" ) );
-        assertThat( styles, hasStyleRef( "countyboundaries" ) );
+        assertThat( styles, hasStyleRef( "CountyBoundary" ) );
         assertThat( styles, hasStyleRef( "default" ) );
 
         assertThat( getMap.getWidth(), is( 1024 ) );
