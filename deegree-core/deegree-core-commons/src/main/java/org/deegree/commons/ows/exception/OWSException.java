@@ -113,7 +113,7 @@ public class OWSException extends Exception {
     public static final String CURRENT_UPDATE_SEQUENCE = "CurrentUpdateSequence";
 
     /**
-     * the parameter value of the format parameter is invalid
+     * the layer is not queryable by get feature info
      */
     public static final String LAYER_NOT_QUERYABLE = "LayerNotQueryable";
 
