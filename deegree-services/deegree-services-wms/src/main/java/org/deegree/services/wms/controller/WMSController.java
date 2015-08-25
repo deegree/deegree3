@@ -42,6 +42,7 @@ import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
@@ -50,6 +51,7 @@ import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -61,16 +63,30 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAP11Version;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
@@ -81,6 +97,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -621,6 +638,63 @@ public class WMSController extends AbstractOWS {
         }
     }
 
+    @Override
+    public void doSOAP( org.apache.axiom.soap.SOAPEnvelope soapDoc, HttpServletRequest request,
+                        HttpResponseBuffer response, java.util.List<FileItem> multiParts,
+                        org.apache.axiom.soap.SOAPFactory factory )
+                            throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
+        Version requestVersion = null;
+        try {
+
+            OMElement body = soapDoc.getBody().getFirstElement().cloneOMElement();
+            XMLStreamReader xmlStream = body.getXMLStreamReaderWithoutCaching();
+            nextElement( xmlStream );
+
+            String requestName = xmlStream.getLocalName();
+            WMSRequestType requestType = detectWmsRequestType( requestName );
+            requestVersion = parseAndCheckVersion( xmlStream );
+
+            if ( WMSRequestType.GetMap.equals( requestType ) ) {
+                doSoapGetMap( response, xmlStream );
+            } else {
+                beginSoapResponse( soapDoc, response );
+                switch ( requestType ) {
+                case GetCapabilities:
+                    GetCapabilitiesXMLAdapter getCapabilitiesXMLAdapter = new GetCapabilitiesXMLAdapter();
+                    getCapabilitiesXMLAdapter.setRootElement( body );
+                    GetCapabilities getCapabilities = getCapabilitiesXMLAdapter.parse( requestVersion );
+                    String updateSequence = getCapabilities.getUpdateSequence();
+                    doGetCapabilities( null, response, updateSequence, getCapabilities );
+                    break;
+                case GetFeatureInfo:
+                    GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
+                    GetFeatureInfo getFeatureInfo = getFeatureInfoParser.parse( xmlStream );
+                    Map<String, String> gfiMap = new HashMap<String, String>();
+                    doGetFeatureInfo( gfiMap, response, VERSION_130, getFeatureInfo );
+                    break;
+                default:
+                    String msg = "SOAP request handling is currently not supported for operation " + requestName;
+                    throw new UnsupportedOperationException( msg );
+                }
+                endSOAPResponse( response );
+            }
+
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendSOAPException( soapDoc.getHeader(), factory, response, e, null, null, null, request.getServerName(),
+                               request.getCharacterEncoding() );
+            sendServiceException( response, requestVersion, e );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage(), e );
+            OWSException owsException = new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
+            sendSOAPException( soapDoc.getHeader(), factory, response, owsException, null, null, null,
+                               request.getServerName(), request.getCharacterEncoding() );
+        } catch ( SOAPException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @param img
      * @param response
@@ -744,16 +818,23 @@ public class WMSController extends AbstractOWS {
     private void doGetMap( Map<String, String> map, HttpResponseBuffer response, Version version,
                            org.deegree.protocol.wms.ops.GetMap gm2 )
                             throws OWSException, IOException {
-        checkGetMap( version, gm2 );
-
-        RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
-                                                gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
-        RenderContext ctx = ouputFormatProvider.getRenderers( info, response.getOutputStream() );
-        LinkedList<String> headers = new LinkedList<String>();
-        service.getMap( gm2, headers, ctx );
+        LinkedList<String> headers = doGetMap( gm2, map, response.getOutputStream() );
         response.setContentType( gm2.getFormat() );
-        ctx.close();
         addHeaders( response, headers );
+    }
+
+    private LinkedList<String> doGetMap( GetMap getMap, Map<String, String> map, OutputStream stream )
+                            throws OWSException, IOException {
+        checkGetMap( VERSION_130, getMap );
+
+        RenderingInfo info = new RenderingInfo( getMap.getFormat(), getMap.getWidth(), getMap.getHeight(),
+                                                getMap.getTransparent(), getMap.getBgColor(), getMap.getBoundingBox(),
+                                                getMap.getPixelSize(), map );
+        RenderContext ctx = ouputFormatProvider.getRenderers( info, stream );
+        LinkedList<String> headers = new LinkedList<String>();
+        service.getMap( getMap, headers, ctx );
+        ctx.close();
+        return headers;
     }
 
     private void doGetFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version,
@@ -854,6 +935,76 @@ public class WMSController extends AbstractOWS {
             }
         }
         return null;
+    }
+
+    private void doSoapGetMap( HttpResponseBuffer response, XMLStreamReader xmlStream )
+                            throws OWSException, XMLStreamException, IOException, SOAPException {
+        response.setContentType( "application/soap+xml" );
+        
+        GetMapParser getMapParser = new GetMapParser();
+        GetMap getMap = getMapParser.parse( xmlStream );
+        Map<String, String> map = new HashMap<String, String>();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        doGetMap( getMap, map, stream );
+
+        String contentId = UUID.randomUUID().toString();
+
+        SOAPMessage message = createSoapMessage( contentId );
+
+        AttachmentPart attachmentPart = createAttachment( getMap, stream, message, contentId );
+        message.addAttachmentPart( attachmentPart );
+        message.writeTo( response.getOutputStream() );
+    }
+
+    private SOAPMessage createSoapMessage( String contentId )
+                            throws SOAPException {
+        MessageFactory messageFactory = MessageFactory.newInstance();
+
+        SOAPMessage message = messageFactory.createMessage();
+        SOAPPart soapPart = message.getSOAPPart();
+        SOAPEnvelope envelope = soapPart.getEnvelope();
+        SOAPBody body = envelope.getBody();
+
+        envelope.createName( "response", CommonNamespaces.WMS_PREFIX, CommonNamespaces.WMSNS );
+        Name name = envelope.createName( "response", CommonNamespaces.WMS_PREFIX, CommonNamespaces.WMSNS );
+
+        SOAPBodyElement bodyElement = body.addBodyElement( name );
+        bodyElement.setTextContent( contentId );
+        return message;
+    }
+
+    private AttachmentPart createAttachment( GetMap getMap, ByteArrayOutputStream stream, SOAPMessage message,
+                                             String contentId ) {
+        DataSource ds = new ByteArrayDataSource( stream.toByteArray() );
+        DataHandler dataHandler = new DataHandler( ds );
+        AttachmentPart attachmentPart = message.createAttachmentPart( dataHandler );
+        attachmentPart.setContentId( contentId );
+        attachmentPart.setContentType( getMap.getFormat() );
+        return attachmentPart;
+    }
+
+    private void beginSoapResponse( org.apache.axiom.soap.SOAPEnvelope soapDoc, HttpResponseBuffer response )
+                            throws IOException, XMLStreamException {
+        if ( soapDoc.getVersion() instanceof SOAP11Version ) {
+            beginSoap11Response( response );
+        } else {
+            beginSOAPResponse( response );
+        }
+    }
+
+    private void beginSoap11Response( HttpResponseBuffer response )
+                            throws IOException, XMLStreamException {
+        response.setContentType( "application/soap+xml" );
+        XMLStreamWriter xmlWriter = response.getXMLWriter();
+        String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
+        String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
+        xmlWriter.writeStartElement( "soap", "Envelope", soapEnvNS );
+        xmlWriter.writeNamespace( "soap", soapEnvNS );
+        xmlWriter.writeNamespace( "xsi", xsiNS );
+        xmlWriter.writeAttribute( xsiNS, "schemaLocation",
+                                  "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
+        xmlWriter.writeStartElement( soapEnvNS, "Body" );
     }
 
     /**
