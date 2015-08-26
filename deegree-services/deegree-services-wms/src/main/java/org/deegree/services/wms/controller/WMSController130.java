@@ -52,12 +52,15 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
 import org.deegree.services.wms.controller.capabilities.serialize.CapabilitiesManager;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 
 /**
  * <code>WMSController130</code>
@@ -76,9 +79,11 @@ public class WMSController130 extends WMSControllerBase {
     /**
      * @param capabilitiesManager
      *            handling export of capabilities, never <code>null</code>
-     * 
+     * @param exceptionsManager
+     *            used to serialize exceptions, never <code>null</code>
      */
-    public WMSController130( CapabilitiesManager capabilitiesManager ) {
+    public WMSController130( CapabilitiesManager capabilitiesManager, ExceptionsManager exceptionsManager ) {
+        super( exceptionsManager );
         this.capabilitiesManager = capabilitiesManager;
         EXCEPTION_DEFAULT = "XML";
         EXCEPTION_BLANK = "BLANK";
@@ -116,11 +121,16 @@ public class WMSController130 extends WMSControllerBase {
                 XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
                 new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
                 capabilitiesManager.serializeCapabilities( format, new ByteArrayInputStream( stream.toByteArray() ),
-                                                          response.getOutputStream() );
+                                                           response.getOutputStream() );
             }
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }
+    }
+
+    @Override
+    protected Version getVersion() {
+        return WMSConstants.VERSION_130;
     }
 
     private String detectFormat( Map<String, String> customParameters )
