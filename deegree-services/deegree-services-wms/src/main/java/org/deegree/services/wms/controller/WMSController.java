@@ -941,10 +941,7 @@ public class WMSController extends AbstractOWS {
 
     private void doSoapGetMap( SOAPVersion soapVersion, HttpResponseBuffer response, XMLStreamReader xmlStream )
                             throws OWSException, XMLStreamException, IOException, SOAPException {
-        if ( isSoap11( soapVersion ) )
-            response.setContentType( "text/xml" );
-        else
-            response.setContentType( "application/soap+xml" );
+        response.setContentType( "application/xop+xml" );
 
         GetMapParser getMapParser = new GetMapParser();
         GetMap getMap = getMapParser.parse( xmlStream );
@@ -1007,7 +1004,7 @@ public class WMSController extends AbstractOWS {
 
     private void beginSoap11Response( HttpResponseBuffer response )
                             throws IOException, XMLStreamException {
-        response.setContentType( "application/soap+xml" );
+        response.setContentType( "text/xml" );
         XMLStreamWriter xmlWriter = response.getXMLWriter();
         String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
         String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
