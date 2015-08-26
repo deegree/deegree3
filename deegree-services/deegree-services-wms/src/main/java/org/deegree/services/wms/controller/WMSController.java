@@ -697,6 +697,10 @@ public class WMSController extends AbstractOWS {
         return metadataURLTemplate;
     }
 
+    public CapabilitiesManager getCapabilitiesManager() {
+        return capabilitiesManager;
+    }
+
     public FeatureInfoManager getFeatureInfoManager() {
         return featureInfoManager;
     }

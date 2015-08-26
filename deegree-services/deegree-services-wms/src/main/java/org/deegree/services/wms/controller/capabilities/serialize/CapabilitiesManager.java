@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.workspace.Workspace;
@@ -95,6 +96,13 @@ public class CapabilitiesManager {
      */
     public boolean isSupported( String format ) {
         return capabilitiesSerializers.containsKey( format );
+    }
+
+    /**
+     * @return all supported formats, never <code>null</code>
+     */
+    public Set<String> getSupportedFormats() {
+        return capabilitiesSerializers.keySet();
     }
 
     /**
