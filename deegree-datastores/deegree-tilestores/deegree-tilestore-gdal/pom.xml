@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tilestores</artifactId>
-    <version>3.4-pre18-SNAPSHOT</version>
+    <version>3.4-wmsWfsEnhancements-0.1-SNAPSHOT</version>
   </parent>
 
   <repositories>
