@@ -56,10 +56,12 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities111ThemeWriter;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
@@ -75,8 +77,8 @@ import org.deegree.theme.Themes;
 @LoggingNotes(warn = "logs problems with CRS when outputting 1.1.1 capabilities", trace = "logs stack traces")
 public class Capabilities111XMLAdapter extends XMLAdapter {
 
-    private static final String MD_URL_REQUEST_CSW = "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";    
-    
+    private static final String MD_URL_REQUEST_CSW = "service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http%3A//www.isotc211.org/2005/gmd&elementSetName=full&id=${metadataSetId}";
+
     // private static final Logger LOG = getLogger( Capabilities111XMLAdapter.class );
 
     private final String getUrl;
@@ -86,6 +88,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
     private WmsCapabilities111MetadataWriter metadataWriter;
 
     private WmsCapabilities111ThemeWriter themeWriter;
+
+    private final WMSController controller;
 
     /**
      * @param identification
@@ -100,6 +104,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                                       WMSController controller ) {
         this.getUrl = getUrl;
         this.service = service;
+        this.controller = controller;
         metadataWriter = new WmsCapabilities111MetadataWriter( identification, provider, getUrl, postUrl, controller );
         final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
         themeWriter = new WmsCapabilities111ThemeWriter( metadata, this, mdUrlTemplate );
@@ -148,9 +153,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 
         metadataWriter.writeRequest( writer );
         writer.writeStartElement( "Exception" );
-        writeElement( writer, "Format", "application/vnd.ogc.se_xml" );
-        writeElement( writer, "Format", "application/vnd.ogc.se_inimage" );
-        writeElement( writer, "Format", "application/vnd.ogc.se_blank" );
+        writeFormats( writer );
         writer.writeEndElement();
 
         writeThemes( writer, service.getThemes() );
@@ -244,6 +247,14 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
             writer.writeEndElement();
         }
         writer.writeEndElement();
+    }
+
+    private void writeFormats( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        ExceptionsManager exceptionsManager = controller.getExceptionsManager();
+        for ( String format : exceptionsManager.getSupportedFormats( WMSConstants.VERSION_111 ) ) {
+            writeElement( writer, "Format", format );
+        }
     }
 
 }

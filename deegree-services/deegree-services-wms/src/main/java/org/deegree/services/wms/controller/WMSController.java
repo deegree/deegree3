@@ -115,6 +115,8 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wms.ExceptionFormatsType;
+import org.deegree.services.jaxb.wms.ExceptionFormatsType.ExceptionFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.Serializer;
@@ -127,6 +129,7 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.serialize.CapabilitiesManager;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
@@ -174,6 +177,8 @@ public class WMSController extends AbstractOWS {
 
     private CapabilitiesManager capabilitiesManager;
 
+    private ExceptionsManager exceptionsManager;
+
     private OutputFormatProvider ouputFormatProvider;
 
     private OWSMetadataProvider metadataProvider;
@@ -187,6 +192,7 @@ public class WMSController extends AbstractOWS {
 
         capabilitiesManager = new CapabilitiesManager( isAddCapabilitiesDefaultFormatsEnabled( jaxbConfig ) );
         featureInfoManager = new FeatureInfoManager( isAddFeatureInfoDefaultFormatsEnabled( jaxbConfig ) );
+        exceptionsManager = new ExceptionsManager( isAddExceptionsDefaultFormatsEnabled( jaxbConfig ), this );
         ouputFormatProvider = new DefaultOutputFormatProvider();
     }
 
@@ -246,6 +252,7 @@ public class WMSController extends AbstractOWS {
             addSupportedCapabilitiesFormats( conf );
             addSupportedImageFormats( conf );
             addSupportedFeatureInfoFormats( conf );
+            addSupportedExceptionFormats( conf );
 
             // if ( pi.getImageFormat() != null ) {
             // for ( ImageFormat f : pi.getImageFormat() ) {
@@ -265,10 +272,10 @@ public class WMSController extends AbstractOWS {
 
             for ( Version v : offeredVersions ) {
                 if ( v.equals( VERSION_111 ) ) {
-                    controllers.put( VERSION_111, new WMSController111() );
+                    controllers.put( VERSION_111, new WMSController111( exceptionsManager ) );
                 }
                 if ( v.equals( VERSION_130 ) ) {
-                    controllers.put( VERSION_130, new WMSController130( capabilitiesManager ) );
+                    controllers.put( VERSION_130, new WMSController130( capabilitiesManager, exceptionsManager ) );
                 }
             }
 
@@ -705,6 +712,10 @@ public class WMSController extends AbstractOWS {
         return featureInfoManager;
     }
 
+    public ExceptionsManager getExceptionsManager() {
+        return exceptionsManager;
+    }
+
     private void addSupportedImageFormats( DeegreeWMS conf ) {
         if ( conf.getGetMapFormats() != null ) {
             GetMapFormatsType getMapFormats = conf.getGetMapFormats();
@@ -768,6 +779,20 @@ public class WMSController extends AbstractOWS {
         }
     }
 
+    private void addSupportedExceptionFormats( DeegreeWMS conf )
+                            throws InstantiationException, IllegalAccessException {
+        if ( conf.getExceptionFormats() != null ) {
+            for ( ExceptionFormat exceptionFormat : conf.getExceptionFormats().getExceptionFormat() ) {
+                if ( exceptionFormat.getXSLTFile() != null ) {
+                    String format = exceptionFormat.getFormat();
+                    String xsltFile = exceptionFormat.getXSLTFile();
+                    URL xsltUrl = metadata.getLocation().resolveToUrl( xsltFile );
+                    exceptionsManager.addOrReplaceXsltFormat( format, xsltUrl, workspace );
+                }
+            }
+        }
+    }
+
     private boolean isAddFeatureInfoDefaultFormatsEnabled( DeegreeWMS jaxbConfig ) {
         FeatureInfoFormatsType featureInfoFormats = jaxbConfig.getFeatureInfoFormats();
         if ( featureInfoFormats != null ) {
@@ -781,6 +806,15 @@ public class WMSController extends AbstractOWS {
         GetCapabilitiesFormatsType capbilitiesFormats = jaxbConfig.getGetCapabilitiesFormats();
         if ( capbilitiesFormats != null ) {
             Boolean enableDefaultFormats = capbilitiesFormats.isEnableDefaultFormats();
+            return enableDefaultFormats == null || enableDefaultFormats;
+        }
+        return true;
+    }
+
+    private boolean isAddExceptionsDefaultFormatsEnabled( DeegreeWMS jaxbConfig ) {
+        ExceptionFormatsType exceptionsFormats = jaxbConfig.getExceptionFormats();
+        if ( exceptionsFormats != null ) {
+            Boolean enableDefaultFormats = exceptionsFormats.isEnableDefaultFormats();
             return enableDefaultFormats == null || enableDefaultFormats;
         }
         return true;
