@@ -201,13 +201,14 @@ public abstract class WMSControllerBase implements Controller {
 
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( IS_REPAIRING_NAMESPACES, true );
-        exportCapas( getUrl, postUrl, service, response, identification, provider, controller, metadata );
+        exportCapas( getUrl, postUrl, service, response, identification, provider, customParameters, controller,
+                     metadata );
     }
 
     protected abstract void exportCapas( String getUrl, String postUrl, MapService service,
                                          HttpResponseBuffer response, ServiceIdentification identification,
-                                         ServiceProvider provider, WMSController controller,
-                                         OWSMetadataProvider metadata )
-                            throws IOException;
+                                         ServiceProvider provider, Map<String, String> customParameters,
+                                         WMSController controller, OWSMetadataProvider metadata )
+                            throws IOException, OWSException;
 
 }

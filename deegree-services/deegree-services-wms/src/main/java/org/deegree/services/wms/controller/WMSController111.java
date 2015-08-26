@@ -96,8 +96,9 @@ public class WMSController111 extends WMSControllerBase {
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
                                 ServiceIdentification identification, ServiceProvider provider,
-                                WMSController controller, OWSMetadataProvider metadata )
-                            throws IOException {
+                                Map<String, String> customParameters, WMSController controller,
+                                OWSMetadataProvider metadata )
+                            throws IOException, OWSException {
         response.setContentType( "application/vnd.ogc.wms_xml" );
         String userAgent = OGCFrontController.getContext().getUserAgent();
 
