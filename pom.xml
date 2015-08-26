@@ -10,9 +10,9 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
     <tag>HEAD</tag>
   </scm>
 
