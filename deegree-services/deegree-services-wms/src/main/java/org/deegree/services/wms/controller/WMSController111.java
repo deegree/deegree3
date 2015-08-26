@@ -50,11 +50,14 @@ import javax.xml.stream.XMLStreamWriter;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapter;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 
 /**
  * <code>WMSController111</code>
@@ -67,9 +70,11 @@ import org.deegree.services.wms.controller.capabilities.Capabilities111XMLAdapte
 public class WMSController111 extends WMSControllerBase {
 
     /**
-     * 
+     * @param exceptionsManager
+     *            used to serialize exceptions, never <code>null</code>
      */
-    public WMSController111() {
+    public WMSController111( ExceptionsManager exceptionsManager ) {
+        super( exceptionsManager );
         EXCEPTION_DEFAULT = "application/vnd.ogc.se_xml";
         EXCEPTION_BLANK = "application/vnd.ogc.se_blank";
         EXCEPTION_INIMAGE = "application/vnd.ogc.se_inimage";
@@ -113,6 +118,11 @@ public class WMSController111 extends WMSControllerBase {
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }
+    }
+
+    @Override
+    protected Version getVersion() {
+        return WMSConstants.VERSION_111;
     }
 
 }

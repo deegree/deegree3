@@ -35,22 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller;
 
-import static java.awt.Color.black;
-import static java.awt.Color.decode;
-import static java.awt.Color.white;
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.style.utils.ImageUtils.prepareImage;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.font.TextLayout;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -59,12 +49,16 @@ import javax.xml.stream.XMLOutputFactory;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController.Controller;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
+import org.deegree.services.wms.controller.exceptions.SerializingException;
+import org.slf4j.Logger;
 
 /**
  * <code>WMSControllerBase</code>
@@ -76,103 +70,27 @@ import org.deegree.services.wms.controller.WMSController.Controller;
  */
 public abstract class WMSControllerBase implements Controller {
 
+    private static final Logger LOG = getLogger( WMSControllerBase.class );
+
     protected String EXCEPTION_DEFAULT, EXCEPTION_INIMAGE, EXCEPTION_BLANK;
 
     protected XMLExceptionSerializer exceptionSerializer;
 
     protected String EXCEPTION_MIME = "text/xml";
 
+    private final ExceptionsManager exceptionsManager;
+
+    public WMSControllerBase( ExceptionsManager exceptionsManager ) {
+        this.exceptionsManager = exceptionsManager;
+    }
+
     @Override
     public void handleException( Map<String, String> map, WMSRequestType req, OWSException e,
                                  HttpResponseBuffer response, WMSController controller )
                             throws ServletException {
-        String exceptions = map.get( "EXCEPTIONS" );
-        switch ( req ) {
-        case DescribeLayer:
-        case GetCapabilities:
-        case capabilities:
-        case GetFeatureInfo:
-        case GetFeatureInfoSchema:
-        case GetStyles:
-        case PutStyles:
-            exceptions = "XML";
-            break;
-        case map:
-        case GetMap:
-        case GetLegendGraphic:
-            exceptions = getExceptions( exceptions );
-            break;
-        case DTD:
-            break;
-        }
+        String exceptionFormat = detectExceptionsParameter( map, req );
 
-        checkParameters( map, e, response, exceptions, controller );
-    }
-
-    private String getExceptions( String exceptions ) {
-        return exceptions == null ? EXCEPTION_DEFAULT : exceptions;
-    }
-
-    private void checkParameters( Map<String, String> map, OWSException e, HttpResponseBuffer response,
-                                  String exceptions, WMSController controller )
-                            throws ServletException {
-        try {
-            int width = Integer.parseInt( map.get( "WIDTH" ) );
-            int height = Integer.parseInt( map.get( "HEIGHT" ) );
-            boolean transparent = map.get( "TRANSPARENT" ) != null
-                                  && map.get( "TRANSPARENT" ).equalsIgnoreCase( "true" );
-            String format = map.get( "FORMAT" );
-            Color color = map.get( "BGCOLOR" ) == null ? white : decode( map.get( "BGCOLOR" ) );
-            sendException( e, response, exceptions, width, height, color, transparent, format, controller );
-        } catch ( NumberFormatException _ ) {
-            sendException( e, response, controller );
-        }
-    }
-
-    private void sendException( OWSException ex, HttpResponseBuffer response, String type, int width, int height,
-                                Color color, boolean transparent, String format, WMSController controller )
-                            throws ServletException {
-        if ( type.equalsIgnoreCase( EXCEPTION_DEFAULT ) ) {
-            controller.sendException( null, exceptionSerializer, ex, response );
-        } else if ( type.equalsIgnoreCase( EXCEPTION_INIMAGE ) ) {
-            BufferedImage img = prepareImage( format, width, height, transparent, color );
-            Graphics2D g = img.createGraphics();
-            g.setColor( black );
-            LinkedList<String> words = new LinkedList<String>( asList( ex.getMessage().split( "\\s" ) ) );
-            String text = words.poll();
-            TextLayout layout = new TextLayout( ex.getMessage(), g.getFont(), g.getFontRenderContext() );
-            int pos = round( layout.getBounds().getHeight() );
-            while ( words.size() > 0 ) {
-                layout = new TextLayout( text + " " + words.peek(), g.getFont(), g.getFontRenderContext() );
-                if ( layout.getBounds().getWidth() > width ) {
-                    g.drawString( text, 0, pos );
-                    text = words.poll();
-                    pos += layout.getBounds().getHeight() * 1.5;
-                    continue;
-                }
-                text += " " + words.poll();
-            }
-            g.drawString( text, 0, pos );
-            g.dispose();
-            try {
-                controller.sendImage( img, response, format );
-            } catch ( OWSException e ) {
-                controller.sendException( null, exceptionSerializer, ex, response );
-            } catch ( IOException e ) {
-                controller.sendException( null, exceptionSerializer, ex, response );
-            }
-        } else if ( type.equalsIgnoreCase( EXCEPTION_BLANK ) ) {
-            BufferedImage img = prepareImage( format, width, height, transparent, color );
-            try {
-                controller.sendImage( img, response, format );
-            } catch ( OWSException e ) {
-                controller.sendException( null, exceptionSerializer, ex, response );
-            } catch ( IOException e ) {
-                controller.sendException( null, exceptionSerializer, ex, response );
-            }
-        } else {
-            controller.sendException( null, exceptionSerializer, ex, response );
-        }
+        writeException( map, e, response, exceptionFormat, controller );
     }
 
     @Override
@@ -210,5 +128,51 @@ public abstract class WMSControllerBase implements Controller {
                                          ServiceProvider provider, Map<String, String> customParameters,
                                          WMSController controller, OWSMetadataProvider metadata )
                             throws IOException, OWSException;
+
+    protected abstract Version getVersion();
+
+    private String detectExceptionsParameter( Map<String, String> map, WMSRequestType req ) {
+        String exceptionFormatParameter = map.get( "EXCEPTIONS" );
+        String notNullExceptionFormat = exceptionFormatParameter == null ? EXCEPTION_DEFAULT : exceptionFormatParameter;
+        if ( isSupportedFormatForRequestType( req, notNullExceptionFormat ) )
+            return notNullExceptionFormat;
+        return EXCEPTION_DEFAULT;
+    }
+
+    private void writeException( Map<String, String> map, OWSException e, HttpResponseBuffer response,
+                                 String exceptionsFormat, WMSController controller )
+                            throws ServletException {
+        try {
+            writeExceptionCatchExceptions( map, e, response, exceptionsFormat, controller );
+        } catch ( ServletException _ ) {
+            sendException( e, response, controller );
+        }
+    }
+
+    private void writeExceptionCatchExceptions( Map<String, String> map, OWSException e, HttpResponseBuffer response,
+                                                String exceptionsFormat, WMSController controller )
+                            throws ServletException {
+        try {
+            exceptionsManager.serializeCapabilities( getVersion(), exceptionsFormat, response, e, exceptionSerializer,
+                                                     map );
+        } catch ( SerializingException se ) {
+            LOG.info( "An exception occured during serializing the exception, default serializer is used. Exception: {}",
+                      se.getMessage() );
+            controller.sendException( null, exceptionSerializer, e, response );
+        }
+    }
+
+    private boolean isSupportedFormatForRequestType( WMSRequestType req, String exceptions ) {
+        switch ( req ) {
+        case map:
+        case GetMap:
+        case GetLegendGraphic:
+            return true;
+        default:
+            if ( EXCEPTION_BLANK.equals( exceptions ) || EXCEPTION_INIMAGE.equals( exceptions ) )
+                return false;
+            return true;
+        }
+    }
 
 }
