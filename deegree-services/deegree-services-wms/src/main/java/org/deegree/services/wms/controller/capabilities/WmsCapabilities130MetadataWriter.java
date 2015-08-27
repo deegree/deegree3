@@ -120,7 +120,7 @@ class WmsCapabilities130MetadataWriter {
         writer.writeStartElement( WMSNS, "Request" );
 
         writer.writeStartElement( WMSNS, "GetCapabilities" );
-        writeElement( writer, WMSNS, "Format", "text/xml" );
+        writeCapabilitiesFormats( writer );
         writeDCP( writer, true, true );
         writer.writeEndElement();
 
@@ -140,6 +140,13 @@ class WmsCapabilities130MetadataWriter {
         writer.writeEndElement();
 
         writer.writeEndElement();
+    }
+
+    private void writeCapabilitiesFormats( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        for ( String f : controller.getCapabilitiesManager().getSupportedFormats() ) {
+            writeElement( writer, WMSNS, "Format", f );
+        }
     }
 
     private void writeImageFormats( XMLStreamWriter writer )
