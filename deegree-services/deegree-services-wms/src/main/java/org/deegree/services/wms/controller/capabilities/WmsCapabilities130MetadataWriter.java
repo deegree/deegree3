@@ -44,7 +44,6 @@ package org.deegree.services.wms.controller.capabilities;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.XMLAdapter.maybeWriteElement;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElementNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
