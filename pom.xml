@@ -38,13 +38,6 @@
       <id>unibwservices-snapshot</id>
       <url>http://repo.lat-lon/nexus/content/repositories/unibwservices-snapshot/</url>
     </snapshotRepository>
-    <site>
-      <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
-      <url>file:///${site.dir}/${project.version}/</url>
-    </site>
   </distributionManagement>
 
   <prerequisites>
