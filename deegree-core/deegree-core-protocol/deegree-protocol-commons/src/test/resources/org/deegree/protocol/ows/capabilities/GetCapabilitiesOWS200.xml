@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GetCapabilities xmlns="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd"
+  updateSequence="2">
+  <AcceptVersions>
+    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
+    <Version>1.1.0</Version>
+  </AcceptVersions>
+  <Sections>
+    <Section>ServiceIdentification</Section>
+    <Section>ServiceProvider</Section>
+    <Section>OperationsMetadata</Section>
+  </Sections>
+  <AcceptFormats>
+    <OutputFormat>text/xml</OutputFormat>
+  </AcceptFormats>
+  <AcceptLanguages>
+    <Language>en</Language>
+    <Language>de</Language>
+  </AcceptLanguages>
+</GetCapabilities>

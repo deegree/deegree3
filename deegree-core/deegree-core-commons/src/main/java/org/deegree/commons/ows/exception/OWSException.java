@@ -60,12 +60,12 @@ public class OWSException extends Exception {
      * a required parameter is missing
      */
     public static final String MISSING_PARAMETER_VALUE = "MissingParameterValue";
-    
+
     /**
      * Server processing failed
      */
     public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
-            
+
     /**
      * the parameter value is invalid
      */
@@ -112,6 +112,11 @@ public class OWSException extends Exception {
      */
     public static final String CURRENT_UPDATE_SEQUENCE = "CurrentUpdateSequence";
 
+    /**
+     * the layer is not queryable by get feature info
+     */
+    public static final String LAYER_NOT_QUERYABLE = "LayerNotQueryable";
+
     // OSW standard exceptions (+GetCapabilities exceptions)
     /**
      * the requested operation is not supported
@@ -132,7 +137,7 @@ public class OWSException extends Exception {
      * exception code for all not known exceptions
      */
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
-        
+
     private final String exceptionCode;
 
     private final String locator;

@@ -62,10 +62,12 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities130ThemeWriter;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
@@ -88,13 +90,17 @@ public class Capabilities130XMLAdapter {
 
     private final String getUrl;
 
-    private MapService service;
+    private final String postUrl;
+
+    private final MapService service;
 
     private final WMSController controller;
 
-    private WmsCapabilities130MetadataWriter metadataWriter;
+    private final WmsCapabilities130MetadataWriter metadataWriter;
 
-    private WmsCapabilities130ThemeWriter themeWriter;
+    private final WmsCapabilities130ThemeWriter themeWriter;
+
+    private final Wms130SoapExtendedCapabilitesWriter soapExtendedCapabilitesWriter = new Wms130SoapExtendedCapabilitesWriter();
 
     /**
      * @param identification
@@ -108,11 +114,13 @@ public class Capabilities130XMLAdapter {
                                       OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
                                       WMSController controller ) {
         this.getUrl = getUrl;
+        this.postUrl = postUrl;
         this.service = service;
         this.controller = controller;
-        metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
+        this.metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl,
+                                                                    controller );
         final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
-        themeWriter = new WmsCapabilities130ThemeWriter( metadata, this, mdUrlTemplate );
+        this.themeWriter = new WmsCapabilities130ThemeWriter( metadata, this, mdUrlTemplate );
     }
 
     private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
@@ -180,12 +188,11 @@ public class Capabilities130XMLAdapter {
 
         metadataWriter.writeRequest( writer );
         writer.writeStartElement( WMSNS, "Exception" );
-        writeElement( writer, "Format", "XML" );
-        writeElement( writer, "Format", "INIMAGE" );
-        writeElement( writer, "Format", "BLANK" );
+        writeExceptionFormats( writer );
         writer.writeEndElement();
 
         writeExtendedCapabilities( writer );
+        soapExtendedCapabilitesWriter.writeSoapWmsExtendedCapabilites( writer, postUrl );
 
         writeThemes( writer, service.getThemes() );
 
@@ -251,7 +258,7 @@ public class Capabilities130XMLAdapter {
     }
 
     public void writeStyle( XMLStreamWriter writer, String name, String title, Pair<Integer, Integer> legendSize,
-                     String layerName, Style style )
+                            String layerName, Style style )
                             throws XMLStreamException {
         writer.writeStartElement( WMSNS, "Style" );
         writeElement( writer, WMSNS, "Name", name );
@@ -275,6 +282,14 @@ public class Capabilities130XMLAdapter {
             writer.writeEndElement();
         }
         writer.writeEndElement();
+    }
+
+    private void writeExceptionFormats( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        ExceptionsManager exceptionsManager = controller.getExceptionsManager();
+        for ( String format : exceptionsManager.getSupportedFormats( WMSConstants.VERSION_130 ) ) {
+            writeElement( writer, "Format", format );
+        }
     }
 
 }

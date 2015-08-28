@@ -213,6 +213,7 @@ public class ConfigUtils {
         Interpolation interpol = null;
         int maxFeats = -1;
         int rad = -1;
+        boolean opaque = false;
         try {
             alias = Antialias.valueOf( cfg.getAntiAliasing() );
         } catch ( Throwable e ) {
@@ -240,7 +241,10 @@ public class ConfigUtils {
         } else if ( cfg.getFeatureInfoRadius() != null ) {
             rad = Math.max( 0, cfg.getFeatureInfoRadius() );
         }
-        return new MapOptions( quali, interpol, alias, maxFeats, rad );
+        if ( cfg.isOpaque() != null ) {
+            opaque = cfg.isOpaque();
+        }
+        return new MapOptions( quali, interpol, alias, maxFeats, rad, opaque );
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {

@@ -44,7 +44,6 @@ package org.deegree.services.wms.controller.capabilities;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.XMLAdapter.maybeWriteElement;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElementNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
@@ -121,18 +120,18 @@ class WmsCapabilities130MetadataWriter {
         writer.writeStartElement( WMSNS, "Request" );
 
         writer.writeStartElement( WMSNS, "GetCapabilities" );
-        writeElement( writer, WMSNS, "Format", "text/xml" );
-        writeDCP( writer, true, false );
+        writeCapabilitiesFormats( writer );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetFeatureInfo" );
         writeInfoFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( SLDNS, "GetLegendGraphic" );
@@ -141,6 +140,13 @@ class WmsCapabilities130MetadataWriter {
         writer.writeEndElement();
 
         writer.writeEndElement();
+    }
+
+    private void writeCapabilitiesFormats( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        for ( String f : controller.getCapabilitiesManager().getSupportedFormats() ) {
+            writeElement( writer, WMSNS, "Format", f );
+        }
     }
 
     private void writeImageFormats( XMLStreamWriter writer )
