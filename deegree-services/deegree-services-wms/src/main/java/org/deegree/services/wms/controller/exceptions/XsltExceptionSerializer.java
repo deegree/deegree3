@@ -65,11 +65,14 @@ public class XsltExceptionSerializer implements ExceptionsSerializer {
 
     private static final Logger LOG = getLogger( ExceptionsManager.class );
 
-    private Workspace workspace;
+    private final String contenType;
 
-    private URL xsltUrl;
+    private final URL xsltUrl;
 
-    public XsltExceptionSerializer( URL xsltUrl, Workspace workspace ) {
+    private final Workspace workspace;
+
+    public XsltExceptionSerializer( String contentType, URL xsltUrl, Workspace workspace ) {
+        contenType = contentType;
         this.xsltUrl = xsltUrl;
         this.workspace = workspace;
     }
@@ -79,6 +82,7 @@ public class XsltExceptionSerializer implements ExceptionsSerializer {
                                     XMLExceptionSerializer exceptionSerializer, Map<String, String> map )
                             throws SerializingException {
         try {
+            response.setContentType( contenType );
             ByteArrayOutputStream stream = writeToStream( ex, exceptionSerializer );
             transform( new ByteArrayInputStream( stream.toByteArray() ), response );
         } catch ( XMLStreamException e ) {

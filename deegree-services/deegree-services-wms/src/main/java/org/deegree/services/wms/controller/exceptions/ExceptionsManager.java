@@ -98,8 +98,8 @@ public class ExceptionsManager {
      */
     public void addOrReplaceXsltFormat( String format, URL xsltUrl, Workspace workspace ) {
         LOG.debug( "Adding xslt exception format {}", format );
-        addSerializer( VERSION_111, format, new XsltExceptionSerializer( xsltUrl, workspace ) );
-        addSerializer( VERSION_130, format, new XsltExceptionSerializer( xsltUrl, workspace ) );
+        addSerializer( VERSION_111, format, new XsltExceptionSerializer( format, xsltUrl, workspace ) );
+        addSerializer( VERSION_130, format, new XsltExceptionSerializer( format, xsltUrl, workspace ) );
     }
 
     /**
