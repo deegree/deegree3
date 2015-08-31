@@ -38,7 +38,9 @@ package org.deegree.services.wms.controller.exceptions;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
@@ -59,6 +61,8 @@ import org.junit.Test;
  */
 public class XsltExceptionSerializerTest {
 
+    private static final String CONTENT_TYPE = "text/html";
+
     private static final String EXCEPTION = "EXCEPTION";
 
     @Test
@@ -77,18 +81,44 @@ public class XsltExceptionSerializerTest {
         assertThat( htmlException, containsString( NO_APPLICABLE_CODE ) );
     }
 
+    @Test
+    public void testSerializeException_ContentType()
+                            throws Exception {
+        XsltExceptionSerializer xsltExceptionSerializer = createXsltExceptionSerializer();
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        OWSException ex = new OWSException( EXCEPTION, NO_APPLICABLE_CODE );
+
+        XMLExceptionSerializer exceptionSerializer = exceptionSerializer();
+        HttpResponseBuffer response = responseBuffer( os );
+        xsltExceptionSerializer.serializeException( response, ex, exceptionSerializer, null );
+
+        serialize( xsltExceptionSerializer, os, ex );
+
+        verify( response ).setContentType( eq( CONTENT_TYPE ) );
+    }
+
     private void serialize( XsltExceptionSerializer xsltExceptionSerializer, ByteArrayOutputStream os, OWSException ex )
                             throws Exception {
-        XMLExceptionSerializer exceptionSerializer = new PreOWSExceptionReportSerializer( "text/xml" );
-        ServletOutputStream outputStream = createServletStream( os );
-        HttpResponseBuffer response = mockResponse( outputStream );
+        XMLExceptionSerializer exceptionSerializer = exceptionSerializer();
+        HttpResponseBuffer response = responseBuffer( os );
         xsltExceptionSerializer.serializeException( response, ex, exceptionSerializer, null );
+    }
+
+    private HttpResponseBuffer responseBuffer( ByteArrayOutputStream os )
+                            throws IOException {
+        ServletOutputStream outputStream = createServletStream( os );
+        return mockResponse( outputStream );
+    }
+
+    private XMLExceptionSerializer exceptionSerializer() {
+        return new PreOWSExceptionReportSerializer( "text/xml" );
     }
 
     private XsltExceptionSerializer createXsltExceptionSerializer() {
         URL xsltUrl = XsltExceptionSerializerTest.class.getResource( "exceptions2html.xsl" );
         Workspace workspace = mockWorkspace();
-        return new XsltExceptionSerializer( xsltUrl, workspace );
+        return new XsltExceptionSerializer( CONTENT_TYPE, xsltUrl, workspace );
     }
 
     private HttpResponseBuffer mockResponse( ServletOutputStream outputStream )
