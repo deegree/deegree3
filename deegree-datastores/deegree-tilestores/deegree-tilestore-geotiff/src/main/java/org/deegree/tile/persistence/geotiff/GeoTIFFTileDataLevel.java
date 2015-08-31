@@ -41,6 +41,7 @@
 package org.deegree.tile.persistence.geotiff;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
@@ -109,5 +110,10 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
         Envelope envelope = fac.createEnvelope( minx, miny, minx + width, miny - height, env.getCoordinateSystem() );
         return new GeoTIFFTile( readerPool, imageIndex, (int) x, (int) y, envelope, (int) metadata.getTilePixelsX(),
                                 (int) metadata.getTilePixelsY() );
+    }
+
+    @Override
+    public List<String> getStyles() {
+        return null;
     }
 }

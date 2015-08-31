@@ -57,9 +57,9 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
-import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 
@@ -96,9 +96,6 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     public DefaultRing( String id, ICRS crs, PrecisionModel pm, List<Curve> members ) {
         super( id, crs, pm );
         this.members = members;
-        for ( Curve curve : members ) {
-            segments.addAll( curve.getCurveSegments() );
-        }
     }
 
     /**
@@ -170,7 +167,12 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     @Override
-    public List<CurveSegment> getCurveSegments() {
+    public synchronized List<CurveSegment> getCurveSegments() {
+        if ( segments.isEmpty() ) {
+            for ( final Curve curve : members ) {
+                segments.addAll( curve.getCurveSegments() );
+            }
+        }
         return segments;
     }
 
@@ -198,18 +200,19 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     @Override
     public Point getStartPoint() {
-        return segments.get( 0 ).getStartPoint();
+        return getCurveSegments().get( 0 ).getStartPoint();
     }
 
     @Override
     public Point getEndPoint() {
-        return segments.get( segments.size() - 1 ).getEndPoint();
+        return getCurveSegments().get( getCurveSegments().size() - 1 ).getEndPoint();
     }
 
     @Override
     public Points getControlPoints() {
+        final List<CurveSegment> segments = getCurveSegments();
         if ( segments.size() == 1 ) {
-            CurveSegment segment = segments.get( 0 );
+            final CurveSegment segment = segments.get( 0 );
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
                 return ( (LineStringSegment) segment ).getControlPoints();
             }
@@ -238,7 +241,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
         // TODO how to determine a feasible linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );
         List<Coordinate> coords = new LinkedList<Coordinate>();
-        for ( CurveSegment segment : segments ) {
+        for ( final CurveSegment segment : getCurveSegments() ) {
             LineStringSegment lsSegment = linearizer.linearize( segment, crit );
             coords.addAll( getCoordinates( lsSegment ) );
         }

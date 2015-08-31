@@ -64,7 +64,6 @@ import org.deegree.feature.xpath.node.PropertyNode;
 import org.deegree.feature.xpath.node.XMLElementNode;
 import org.deegree.feature.xpath.node.XPathNode;
 import org.jaxen.DefaultNavigator;
-import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
 import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
@@ -146,7 +145,7 @@ class GMLObjectNavigator extends DefaultNavigator {
                 return attrNodes.iterator();
             }
         }
-        return JaxenConstants.EMPTY_ITERATOR;
+        return EMPTY_ITERATOR;
     }
 
     /**
@@ -252,13 +251,15 @@ class GMLObjectNavigator extends DefaultNavigator {
                 }
                 iter = xpathNodes.iterator();
             } else {
-                Object propValue = prop.getValue();
+                final Object propValue = prop.getValue();
                 if ( propValue instanceof GMLObject ) {
                     GMLObject castNode = (GMLObject) propValue;
                     iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode ) );
                 } else if ( propValue instanceof PrimitiveValue ) {
                     iter = new SingleObjectIterator( new PrimitiveNode<Property>( (PropertyNode) node,
                                                                                   (PrimitiveValue) propValue ) );
+                } else if ( propValue == null ) {
+                    iter = EMPTY_ITERATOR;
                 } else {
                     // TODO remove this case
                     iter = new SingleObjectIterator(

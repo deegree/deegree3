@@ -169,6 +169,12 @@ public class GenericProperty implements Property {
         this.children = Collections.singletonList( value );
     }
 
+    public GenericProperty( PropertyType declaration, QName name, TypedObjectNode value, Map<QName,PrimitiveValue> attrs ) {
+        this( declaration, name, value );
+        this.attrs = attrs;
+        this.children = Collections.singletonList( value );
+    }    
+    
     @Override
     public QName getName() {
         return name;

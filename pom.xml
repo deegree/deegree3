@@ -133,9 +133,9 @@
           <version>1.1</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>tomcat-maven-plugin</artifactId>
-          <version>1.1</version>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>org.antlr</groupId>
@@ -338,6 +338,12 @@
         <version>1.9.5</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.xmlmatchers</groupId>
+        <artifactId>xml-matchers</artifactId>
+        <version>1.0-RC1</version>
+      <scope>test</scope>
+      </dependency>
       <!-- apache commons -->
       <dependency>
         <groupId>commons-io</groupId>
@@ -348,6 +354,12 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.8.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -358,6 +370,12 @@
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
         <version>2.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -379,6 +397,12 @@
         <artifactId>httpclient</artifactId>
         <version>4.2.3</version>
         <scope>compile</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -530,11 +554,27 @@
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
         <version>1.2.14</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-api</artifactId>
         <version>1.2.14</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
@@ -651,6 +691,37 @@
         <artifactId>ojdbc6</artifactId>
         <version>11.2.0.2</version>
       </dependency>
+      <!-- Oracle GeoRaster -->
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdoapi</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdotype</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdogr</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdoutl</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>xdb</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
+        <version>11.2.0.2</version>
+      </dependency>
       <!-- Batik -->
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
@@ -709,8 +780,8 @@
         <version>1.7</version>
         <exclusions>
           <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <groupId>fop</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -754,6 +825,10 @@
           <exclusion>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

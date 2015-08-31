@@ -1,3 +1,8 @@
+# cache for public repo on container-based infrastructure see:
+# http://docs.travis-ci.com/user/workers/container-based-infrastructure
+# http://docs.travis-ci.com/user/caching
+#
+sudo: false
 language: java
 jdk:
   - openjdk7
@@ -5,3 +10,6 @@ jdk:
 install: "travis_retry mvn install -Pintegration-tests -DskipTests=true -B -V"
 script: "travis_retry mvn verify -Pintegration-tests -B -V"
 env: MAVEN_OPTS="-XX:MaxPermSize=128m"
+cache:
+  directories:
+    - $HOME/.m2/repository/

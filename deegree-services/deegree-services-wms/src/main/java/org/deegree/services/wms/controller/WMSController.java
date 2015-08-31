@@ -38,11 +38,11 @@ package org.deegree.services.wms.controller;
 
 import static javax.imageio.ImageIO.write;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
 import static org.deegree.commons.utils.CollectionUtils.map;
 import static org.deegree.commons.utils.CollectionUtils.reduce;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
@@ -51,26 +51,44 @@ import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAP11Version;
+import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
@@ -80,8 +98,11 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.FeatureCollection;
@@ -96,9 +117,13 @@ import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.protocol.wms.WMSException.InvalidDimensionValue;
 import org.deegree.protocol.wms.WMSException.MissingDimensionValue;
+import org.deegree.protocol.wms.capabilities.GetCapabilitiesXMLAdapter;
+import org.deegree.protocol.wms.featureinfo.GetFeatureInfoParser;
+import org.deegree.protocol.wms.map.GetMapParser;
+import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
-import org.deegree.rendering.r2d.context.DefaultRenderContext;
+import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
@@ -107,6 +132,7 @@ import org.deegree.services.OwsManager;
 import org.deegree.services.controller.AbstractOWS;
 import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.StandardFeatureInfoContext;
@@ -114,17 +140,22 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.jaxb.wms.DeegreeWMS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wms.DeegreeWMS.SupportedVersions;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.Serializer;
 import org.deegree.services.jaxb.wms.FeatureInfoFormatsType.GetFeatureInfoFormat.XSLTFile;
+import org.deegree.services.jaxb.wms.GetMapFormatsType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
+import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
 import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
+import org.deegree.style.utils.ColorQuantizer;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -146,7 +177,7 @@ public class WMSController extends AbstractOWS {
     private final HashMap<String, ImageSerializer> imageSerializers = new HashMap<String, ImageSerializer>();
 
     /** The list of supported image formats. */
-    public final LinkedList<String> supportedImageFormats = new LinkedList<String>();
+    private final LinkedList<String> supportedImageFormats = new LinkedList<String>();
 
     protected MapService service;
 
@@ -163,6 +194,8 @@ public class WMSController extends AbstractOWS {
     private String metadataURLTemplate;
 
     private FeatureInfoManager featureInfoManager;
+
+    private OutputFormatProvider ouputFormatProvider;
 
     private OWSMetadataProvider metadataProvider;
 
@@ -183,6 +216,12 @@ public class WMSController extends AbstractOWS {
         }
 
         featureInfoManager = new FeatureInfoManager( addDefaultFormats );
+        ouputFormatProvider = new DefaultOutputFormatProvider();
+        initOfferedVersions( jaxbConfig.getSupportedVersions() );
+    }
+
+    public Collection<String> getSupportedImageFormats() {
+        return supportedImageFormats;
     }
 
     /**
@@ -208,7 +247,6 @@ public class WMSController extends AbstractOWS {
     @Override
     public void init( DeegreeServicesMetadataType serviceMetadata, DeegreeServiceControllerType mainConfig,
                       Object controllerConf ) {
-
         identification = convertFromJAXB( serviceMetadata.getServiceIdentification() );
         provider = convertFromJAXB( serviceMetadata.getServiceProvider() );
 
@@ -234,14 +272,7 @@ public class WMSController extends AbstractOWS {
         }
 
         try {
-            // put in the default formats
-            supportedImageFormats.add( "image/png" );
-            supportedImageFormats.add( "image/png; subtype=8bit" );
-            supportedImageFormats.add( "image/png; mode=8bit" );
-            supportedImageFormats.add( "image/gif" );
-            supportedImageFormats.add( "image/jpeg" );
-            supportedImageFormats.add( "image/tiff" );
-            supportedImageFormats.add( "image/x-ms-bmp" );
+            addSupportedImageFormats( conf );
 
             if ( conf.getFeatureInfoFormats() != null ) {
                 for ( GetFeatureInfoFormat t : conf.getFeatureInfoFormats().getGetFeatureInfoFormat() ) {
@@ -328,11 +359,11 @@ public class WMSController extends AbstractOWS {
         if ( v == null ) {
             v = map.get( "WMTVER" );
         }
-        Version version = v == null ? highestVersion : parseVersion( v );
+        Version version = v == null ? highestVersion : Version.parseVersion( v );
 
         WMSRequestType req;
         try {
-            req = (WMSRequestType) ( (ImplementationMetadata) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
                                                                              map.get( "REQUEST" ) ),
@@ -446,57 +477,8 @@ public class WMSController extends AbstractOWS {
 
     private void getFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
-
-        Pair<FeatureCollection, LinkedList<String>> pair;
-        String format;
-        List<String> queryLayers;
-        boolean geometries;
-        FeatureType type = null;
-        ICRS crs;
-        Map<String, String> nsBindings = new HashMap<String, String>();
-
-        LinkedList<String> headers = new LinkedList<String>();
         org.deegree.protocol.wms.ops.GetFeatureInfo fi = new org.deegree.protocol.wms.ops.GetFeatureInfo( map, version );
-        checkGetFeatureInfo( version, fi );
-        crs = fi.getCoordinateSystem();
-        geometries = fi.returnGeometries();
-        queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
-
-        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
-                                                fi.getEnvelope(), 0.28, map );
-        format = fi.getInfoFormat();
-        info.setFormat( format );
-        info.setFeatureCount( fi.getFeatureCount() );
-        info.setX( fi.getX() );
-        info.setY( fi.getY() );
-        pair = new Pair<FeatureCollection, LinkedList<String>>( service.getFeatures( fi, headers ), headers );
-
-        FeatureCollection col = pair.first;
-        addHeaders( response, pair.second );
-        format = format == null ? "application/vnd.ogc.gml" : format;
-        response.setContentType( format );
-        response.setCharacterEncoding( "UTF-8" );
-
-        Map<String, String> fismap = new HashMap<String, String>();
-        fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
-        GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
-        List<FeatureType> schema = service.getSchema( fis );
-        for ( FeatureType ft : schema ) {
-            type = ft;
-            if ( ft.getSchema() != null ) {
-                nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
-            }
-        }
-
-        String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
-
-        try {
-            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, geometries, loc, type, crs );
-            featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
-            response.flushBuffer();
-        } catch ( XMLStreamException e ) {
-            throw new IOException( e.getLocalizedMessage(), e );
-        }
+        doGetFeatureInfo( map, response, version, fi );
     }
 
     private void getFeatureInfoSchema( Map<String, String> map, HttpResponseBuffer response )
@@ -535,17 +517,7 @@ public class WMSController extends AbstractOWS {
         org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
                                                                                            service.getExtensions() );
 
-        checkGetMap( version, gm2 );
-
-        RenderingInfo info = new RenderingInfo( gm2.getFormat(), gm2.getWidth(), gm2.getHeight(), gm2.getTransparent(),
-                                                gm2.getBgColor(), gm2.getBoundingBox(), gm2.getPixelSize(), map );
-        RenderContext ctx = new DefaultRenderContext( info );
-        ctx.setOutput( response.getOutputStream() );
-        LinkedList<String> headers = new LinkedList<String>();
-        service.getMap( gm2, headers, ctx );
-        response.setContentType( gm2.getFormat() );
-        ctx.close();
-        addHeaders( response, headers );
+        doGetMap( map, response, version, gm2 );
     }
 
     private void checkGetFeatureInfo( Version version, org.deegree.protocol.wms.ops.GetFeatureInfo gfi )
@@ -613,7 +585,6 @@ public class WMSController extends AbstractOWS {
 
     protected void getCapabilities( Map<String, String> map, HttpResponseBuffer response )
                             throws OWSException, IOException {
-
         String version = map.get( "VERSION" );
         // not putting it into the bean, why should I? It's used just a few lines below...
 
@@ -622,30 +593,108 @@ public class WMSController extends AbstractOWS {
             version = map.get( "WMTVER" );
         }
         GetCapabilities req = new GetCapabilities( version );
-
-        Version myVersion = negotiateVersion( req );
-
-        String getUrl = OGCFrontController.getHttpGetURL();
-        String postUrl = OGCFrontController.getHttpPostURL();
-
-        if ( metadataProvider != null ) {
-            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                          metadataProvider.getServiceIdentification(),
-                                                          metadataProvider.getServiceProvider(), map, this,
-                                                          metadataProvider );
-        } else {
-            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
-                                                          identification, provider, map, this, null );
-        }
-
-        response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
+        doGetCapabilities( map, response, updateSequence, req );
     }
 
     @Override
     public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
-        throw new UnsupportedOperationException( "XML request handling is currently not supported for the wms" );
+        Version requestVersion = null;
+        try {
+            String requestName = xmlStream.getLocalName();
+            WMSRequestType requestType = detectWmsRequestType( requestName );
+            requestVersion = parseAndCheckVersion( xmlStream );
+
+            switch ( requestType ) {
+            case GetCapabilities:
+                GetCapabilitiesXMLAdapter getCapabilitiesXMLAdapter = new GetCapabilitiesXMLAdapter();
+                getCapabilitiesXMLAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
+                GetCapabilities getCapabilities = getCapabilitiesXMLAdapter.parse( requestVersion );
+                String updateSequence = getCapabilities.getUpdateSequence();
+                doGetCapabilities( null, response, updateSequence, getCapabilities );
+                break;
+            case GetMap:
+                GetMapParser getMapParser = new GetMapParser();
+                GetMap getMap = getMapParser.parse( xmlStream );
+                Map<String, String> map = new HashMap<String, String>();
+                doGetMap( map, response, VERSION_130, getMap );
+                break;
+            case GetFeatureInfo:
+                GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
+                GetFeatureInfo getFeatureInfo = getFeatureInfoParser.parse( xmlStream );
+                Map<String, String> gfiMap = new HashMap<String, String>();
+                doGetFeatureInfo( gfiMap, response, VERSION_130, getFeatureInfo );
+                break;
+            default:
+                String msg = "XML request handling is currently not supported for operation " + requestName;
+                throw new UnsupportedOperationException( msg );
+            }
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendServiceException( response, requestVersion, e );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage(), e );
+            OWSException owsException = new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
+            sendServiceException( response, requestVersion, owsException );
+        }
+    }
+
+    @Override
+    public void doSOAP( org.apache.axiom.soap.SOAPEnvelope soapDoc, HttpServletRequest request,
+                        HttpResponseBuffer response, java.util.List<FileItem> multiParts,
+                        org.apache.axiom.soap.SOAPFactory factory )
+                            throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
+        Version requestVersion = null;
+        try {
+
+            OMElement body = soapDoc.getBody().getFirstElement().cloneOMElement();
+            XMLStreamReader xmlStream = body.getXMLStreamReaderWithoutCaching();
+            nextElement( xmlStream );
+
+            String requestName = xmlStream.getLocalName();
+            WMSRequestType requestType = detectWmsRequestType( requestName );
+            requestVersion = parseAndCheckVersion( xmlStream );
+
+            if ( WMSRequestType.GetMap.equals( requestType ) ) {
+                doSoapGetMap( soapDoc.getVersion(), response, xmlStream );
+            } else {
+                beginSoapResponse( soapDoc, response );
+                switch ( requestType ) {
+                case GetCapabilities:
+                    GetCapabilitiesXMLAdapter getCapabilitiesXMLAdapter = new GetCapabilitiesXMLAdapter();
+                    getCapabilitiesXMLAdapter.setRootElement( body );
+                    GetCapabilities getCapabilities = getCapabilitiesXMLAdapter.parse( requestVersion );
+                    String updateSequence = getCapabilities.getUpdateSequence();
+                    doGetCapabilities( null, response, updateSequence, getCapabilities );
+                    break;
+                case GetFeatureInfo:
+                    GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
+                    GetFeatureInfo getFeatureInfo = getFeatureInfoParser.parse( xmlStream );
+                    Map<String, String> gfiMap = new HashMap<String, String>();
+                    doGetFeatureInfo( gfiMap, response, VERSION_130, getFeatureInfo );
+                    break;
+                default:
+                    String msg = "SOAP request handling is currently not supported for operation " + requestName;
+                    throw new UnsupportedOperationException( msg );
+                }
+                endSOAPResponse( response );
+            }
+
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendSOAPException( soapDoc.getHeader(), factory, response, e, null, null, null, request.getServerName(),
+                               request.getCharacterEncoding() );
+            sendServiceException( response, requestVersion, e );
+        } catch ( XMLStreamException e ) {
+            LOG.debug( e.getMessage(), e );
+            OWSException owsException = new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
+            sendSOAPException( soapDoc.getHeader(), factory, response, owsException, null, null, null,
+                               request.getServerName(), request.getCharacterEncoding() );
+        } catch ( SOAPException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -670,6 +719,7 @@ public class WMSController extends AbstractOWS {
             format = "bmp";
         }
         if ( format.equals( "png; subtype=8bit" ) || format.equals( "png; mode=8bit" ) ) {
+            img = ColorQuantizer.quantizeImage( img, 256, false, false );
             format = "png";
         }
         LOG.debug( "Sending in format " + format );
@@ -728,6 +778,242 @@ public class WMSController extends AbstractOWS {
 
     public FeatureInfoManager getFeatureInfoManager() {
         return featureInfoManager;
+    }
+
+    private void initOfferedVersions( SupportedVersions supportedVersions ) {
+        List<String> versions = null;
+        if ( supportedVersions != null ) {
+            versions = supportedVersions.getVersion();
+        }
+        if ( versions == null || versions.isEmpty() ) {
+            LOG.info( "No protocol versions specified. Activating all implemented versions." );
+            ImplementationMetadata<?> md = ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata();
+            versions = new ArrayList<String>( md.getImplementedVersions().size() );
+            for ( Version version : md.getImplementedVersions() ) {
+                versions.add( version.toString() );
+            }
+        }
+        validateAndSetOfferedVersions( versions );
+    }
+
+    private void doGetCapabilities( Map<String, String> map, HttpResponseBuffer response, String updateSequence,
+                                    GetCapabilities req )
+                            throws OWSException, IOException {
+        Version myVersion = negotiateVersion( req );
+
+        String getUrl = OGCFrontController.getHttpGetURL();
+        String postUrl = OGCFrontController.getHttpPostURL();
+
+        if ( metadataProvider != null ) {
+            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                          metadataProvider.getServiceIdentification(),
+                                                          metadataProvider.getServiceProvider(), map, this,
+                                                          metadataProvider );
+        } else {
+            controllers.get( myVersion ).getCapabilities( getUrl, postUrl, updateSequence, service, response,
+                                                          identification, provider, map, this, null );
+        }
+
+        response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
+    }
+
+    private void doGetMap( Map<String, String> map, HttpResponseBuffer response, Version version,
+                           org.deegree.protocol.wms.ops.GetMap gm2 )
+                            throws OWSException, IOException {
+        LinkedList<String> headers = doGetMap( gm2, map, response.getOutputStream() );
+        response.setContentType( gm2.getFormat() );
+        addHeaders( response, headers );
+    }
+
+    private LinkedList<String> doGetMap( GetMap getMap, Map<String, String> map, OutputStream stream )
+                            throws OWSException, IOException {
+        checkGetMap( VERSION_130, getMap );
+
+        RenderingInfo info = new RenderingInfo( getMap.getFormat(), getMap.getWidth(), getMap.getHeight(),
+                                                getMap.getTransparent(), getMap.getBgColor(), getMap.getBoundingBox(),
+                                                getMap.getPixelSize(), map );
+        RenderContext ctx = ouputFormatProvider.getRenderers( info, stream );
+        LinkedList<String> headers = new LinkedList<String>();
+        service.getMap( getMap, headers, ctx );
+        ctx.close();
+        return headers;
+    }
+
+    private void doGetFeatureInfo( Map<String, String> map, final HttpResponseBuffer response, Version version,
+                                   org.deegree.protocol.wms.ops.GetFeatureInfo fi )
+                            throws OWSException, IOException {
+        checkGetFeatureInfo( version, fi );
+        ICRS crs = fi.getCoordinateSystem();
+        boolean geometries = fi.returnGeometries();
+        List<String> queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
+
+        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
+                                                fi.getEnvelope(), 0.28, map );
+        String format = fi.getInfoFormat();
+        info.setFormat( format );
+        info.setFeatureCount( fi.getFeatureCount() );
+        info.setX( fi.getX() );
+        info.setY( fi.getY() );
+        LinkedList<String> headers = new LinkedList<String>();
+        Pair<FeatureCollection, LinkedList<String>> pair = new Pair<FeatureCollection, LinkedList<String>>(
+                                                                                                            service.getFeatures( fi,
+                                                                                                                                 headers ),
+                                                                                                            headers );
+
+        FeatureCollection col = pair.first;
+        addHeaders( response, pair.second );
+        format = format == null ? "application/vnd.ogc.gml" : format;
+        response.setContentType( format );
+        response.setCharacterEncoding( "UTF-8" );
+
+        Map<String, String> fismap = new HashMap<String, String>();
+        fismap.put( "LAYERS", reduce( "", queryLayers, getStringJoiner( "," ) ) );
+        GetFeatureInfoSchema fis = new GetFeatureInfoSchema( fismap );
+
+        FeatureType type = null;
+        Map<String, String> nsBindings = new HashMap<String, String>();
+        List<FeatureType> schema = service.getSchema( fis );
+        for ( FeatureType ft : schema ) {
+            type = ft;
+            if ( ft.getSchema() != null ) {
+                nsBindings.putAll( ft.getSchema().getNamespaceBindings() );
+            }
+        }
+
+        String loc = getHttpGetURL() + "request=GetFeatureInfoSchema&layers=" + join( ",", queryLayers );
+
+        try {
+            FeatureInfoParams params = new FeatureInfoParams( nsBindings, col, format, geometries, loc, type, crs );
+            featureInfoManager.serializeFeatureInfo( params, new StandardFeatureInfoContext( response ) );
+            response.flushBuffer();
+        } catch ( XMLStreamException e ) {
+            throw new IOException( e.getLocalizedMessage(), e );
+        }
+    }
+
+    private void sendServiceException( HttpResponseBuffer response, Version requestVersion, OWSException e )
+                            throws ServletException {
+        ExceptionSerializer serializer = getExceptionSerializer( requestVersion );
+        sendException( null, serializer, e, response );
+    }
+
+    private void addSupportedImageFormats( DeegreeWMS conf ) {
+        if ( conf.getGetMapFormats() != null ) {
+            GetMapFormatsType getMapFormats = conf.getGetMapFormats();
+            List<String> getMapFormatList = getMapFormats.getGetMapFormat();
+            for ( String getMapFormat : getMapFormatList ) {
+                supportedImageFormats.add( getMapFormat );
+            }
+        }
+        if ( supportedImageFormats.isEmpty() ) {
+            supportedImageFormats.addAll( ouputFormatProvider.getSupportedOutputFormats() );
+        }
+    }
+
+    private WMSRequestType detectWmsRequestType( String requestName )
+                            throws OWSException {
+        for ( WMSRequestType wmsRequestType : WMSRequestType.values() ) {
+            if ( wmsRequestType.name().equals( requestName ) )
+                return wmsRequestType;
+        }
+        String msg = "Request type '" + requestName + "' is not supported.";
+        throw new OWSException( msg, OWSException.OPERATION_NOT_SUPPORTED, "request" );
+    }
+
+    private Version parseAndCheckVersion( XMLStreamReader xmlStream )
+                            throws OWSException {
+        String version = XMLStreamUtils.getAttributeValue( xmlStream, "version" );
+        Version parsedVersion = parseVersion( version );
+        return checkVersion( parsedVersion );
+    }
+
+    private Version parseVersion( String versionString )
+                            throws OWSException {
+        if ( versionString != null && !"".equals( versionString ) ) {
+            try {
+                return Version.parseVersion( versionString );
+            } catch ( InvalidParameterValueException e ) {
+                throw new OWSException( e.getMessage(), OWSException.INVALID_PARAMETER_VALUE, "version" );
+            }
+        }
+        return null;
+    }
+
+    private void doSoapGetMap( SOAPVersion soapVersion, HttpResponseBuffer response, XMLStreamReader xmlStream )
+                            throws OWSException, XMLStreamException, IOException, SOAPException {
+        response.setContentType( "application/xop+xml" );
+
+        GetMapParser getMapParser = new GetMapParser();
+        GetMap getMap = getMapParser.parse( xmlStream );
+        Map<String, String> map = new HashMap<String, String>();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        doGetMap( getMap, map, stream );
+
+        String contentId = UUID.randomUUID().toString();
+
+        SOAPMessage message = createSoapMessage( soapVersion, contentId );
+
+        AttachmentPart attachmentPart = createAttachment( getMap, stream, message, contentId );
+        message.addAttachmentPart( attachmentPart );
+        message.writeTo( response.getOutputStream() );
+    }
+
+    private SOAPMessage createSoapMessage( SOAPVersion soapVersion, String contentId )
+                            throws SOAPException {
+        String soapProtocol = SOAPConstants.SOAP_1_2_PROTOCOL;
+        if ( isSoap11( soapVersion ) )
+            soapProtocol = SOAPConstants.SOAP_1_1_PROTOCOL;
+        MessageFactory messageFactory = MessageFactory.newInstance( soapProtocol );
+
+        SOAPMessage message = messageFactory.createMessage();
+        SOAPPart soapPart = message.getSOAPPart();
+        SOAPEnvelope envelope = soapPart.getEnvelope();
+        SOAPBody body = envelope.getBody();
+
+        envelope.createName( "response", CommonNamespaces.WMS_PREFIX, CommonNamespaces.WMSNS );
+        Name name = envelope.createName( "response", CommonNamespaces.WMS_PREFIX, CommonNamespaces.WMSNS );
+
+        SOAPBodyElement bodyElement = body.addBodyElement( name );
+        bodyElement.setTextContent( contentId );
+        return message;
+    }
+
+    private AttachmentPart createAttachment( GetMap getMap, ByteArrayOutputStream stream, SOAPMessage message,
+                                             String contentId ) {
+        DataSource ds = new ByteArrayDataSource( stream.toByteArray() );
+        DataHandler dataHandler = new DataHandler( ds );
+        AttachmentPart attachmentPart = message.createAttachmentPart( dataHandler );
+        attachmentPart.setContentId( contentId );
+        attachmentPart.setContentType( getMap.getFormat() );
+        return attachmentPart;
+    }
+
+    private void beginSoapResponse( org.apache.axiom.soap.SOAPEnvelope soapDoc, HttpResponseBuffer response )
+                            throws IOException, XMLStreamException {
+        if ( isSoap11( soapDoc.getVersion() ) ) {
+            beginSoap11Response( response );
+        } else {
+            beginSOAPResponse( response );
+        }
+    }
+
+    private boolean isSoap11( SOAPVersion soapVersion ) {
+        return soapVersion instanceof SOAP11Version;
+    }
+
+    private void beginSoap11Response( HttpResponseBuffer response )
+                            throws IOException, XMLStreamException {
+        response.setContentType( "text/xml" );
+        XMLStreamWriter xmlWriter = response.getXMLWriter();
+        String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
+        String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
+        xmlWriter.writeStartElement( "soap", "Envelope", soapEnvNS );
+        xmlWriter.writeNamespace( "soap", soapEnvNS );
+        xmlWriter.writeNamespace( "xsi", xsiNS );
+        xmlWriter.writeAttribute( xsiNS, "schemaLocation",
+                                  "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
+        xmlWriter.writeStartElement( soapEnvNS, "Body" );
     }
 
     /**

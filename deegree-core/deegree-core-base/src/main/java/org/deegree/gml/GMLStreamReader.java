@@ -147,6 +147,8 @@ public class GMLStreamReader {
 
     private GMLDictionaryReader dictReader;
 
+    private boolean laxMode;
+
     /**
      * Creates a new {@link GMLStreamReader} instance.
      * 
@@ -249,6 +251,25 @@ public class GMLStreamReader {
      */
     public void setResolver( GMLReferenceResolver resolver ) {
         this.resolver = resolver;
+    }
+
+    /**
+     * Enables or disables lax parsing (disable syntactical checks).
+     * 
+     * @param laxMode
+     *            <code>true</code>, if syntacical issues shall be ignored, <code>false</code> otherwise
+     */
+    public void setLaxMode( final boolean laxMode ) {
+        this.laxMode = laxMode;
+    }
+
+    /**
+     * Returns the state of lax parsing.
+     * 
+     * @return <code>true</code>, if syntacical issues shall be ignored, <code>false</code> otherwise
+     */
+    public boolean getLaxMode() {
+        return laxMode;
     }
 
     /**

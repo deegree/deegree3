@@ -73,6 +73,11 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
     public static final String OWS110_NS = "http://www.opengis.net/ows/1.1";
 
     /**
+     * ows 2.0 version
+     */
+    public static final String OWS200_NS = "http://www.opengis.net/ows/2.0";
+
+    /**
      * normal xml namespace
      */
     public static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
@@ -88,6 +93,11 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
     public static final String OWS110_PREFIX = "ows110";
 
     /**
+     * the ows 2.0.0 prefix
+     */
+    public static final String OWS200_PREFIX = "ows200";
+
+    /**
      * the xml prefix
      */
     public static final String XML_PREFIX = "xml";
@@ -98,9 +108,10 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
         // add to common namespaces from xml adapter
         nsContext.addNamespace( OWS_PREFIX, OWS_NS );
         nsContext.addNamespace( OWS110_PREFIX, OWS110_NS );
+        nsContext.addNamespace( OWS200_PREFIX, OWS200_NS );
         nsContext.addNamespace( XML_PREFIX, XML_NS );
     }
-    
+
     /**
      * Parses the given element of type <code>ows:BoundingBoxType</code>.
      * 
@@ -282,5 +293,5 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
             writer.writeCharacters( "" + coord );
             needsDelim = true;
         }
-    }    
+    }
 }

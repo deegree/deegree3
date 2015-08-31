@@ -37,7 +37,9 @@ package org.deegree.tile.persistence.remotewmts;
 
 import static org.deegree.tile.Tiles.calcTileEnvelope;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.utils.RequestUtils;
@@ -135,5 +137,12 @@ class RemoteWMTSTileDataLevel implements TileDataLevel {
                                        overriddenParameters );
         return new RemoteWMTSTile( client, request, outputFormat, tileEnvelope, defaultGetFeatureInfo,
                                    hardGetFeatureInfo );
+    }
+
+    @Override
+    public List<String> getStyles() {
+        List<String> styles = new ArrayList<String>();
+        styles.add( style );
+        return styles;
     }
 }
