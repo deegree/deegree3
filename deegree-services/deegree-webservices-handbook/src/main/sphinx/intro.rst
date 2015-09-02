@@ -44,6 +44,7 @@ deegree WMS is an implementation of the `OGC Web Map Service specification <http
 * Official OGC reference implementation for WMS 1.1.1
 * Implements WMS standards 1.1.1 and 1.3.0 [#f2]_
 * Extensive support for styling languages SLD/SE versions 1.0.0 and 1.1.0
+* Supports KVP, XML and SOAP requests
 * High performance and excellent scalability
 * High quality rendering
 * Scale dependent styling
