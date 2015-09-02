@@ -640,7 +640,7 @@ Using the QUERYBOXSIZE parameter you can include features when rendering that wo
 XML request encoding
 ^^^^^^^^^^^^^^^^^^^^
 
-A WMS can be requested by HTTP POST (without any KVP) containing XML in request body. The provided XML has to be compliant to a specific XML schema depending on the requested operation.
+A WMS 1.3.0 can be requested by HTTP POST (without any KVP) containing XML in request body. The provided XML has to be compliant to a specific XML schema depending on the requested operation.
 
 The operations GetCapabilities, GetMap and GetFeatureInfo support XML request encoding.
 
@@ -688,7 +688,7 @@ The GetFeatureInfo XML request body has to be compliant to following schema:
 SOAP request encoding
 ^^^^^^^^^^^^^^^^^^^^^
 
-The SOAP protocol can be used to request a WMS. SOAP 1.1 and 1.2 are supported.
+The SOAP protocol can be used to request a WMS 1.3.0. SOAP 1.1 and 1.2 are supported.
 
 A SOAP request is send via HTTP POST (without any KVP) and contains a XML request body. The request body consists of a SOAP envelope and a XML request body as described in chapter :ref:`anchor-xml-request-encoding`.
 
