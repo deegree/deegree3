@@ -817,17 +817,16 @@ public class WMSController extends AbstractOWS {
         response.flushBuffer(); // TODO remove this to enable validation, enable validation on a DTD basis...
     }
 
-    private void doGetMap( Map<String, String> map, HttpResponseBuffer response, Version version,
-                           org.deegree.protocol.wms.ops.GetMap gm2 )
+    private void doGetMap( Map<String, String> map, HttpResponseBuffer response, Version version, GetMap gm )
                             throws OWSException, IOException {
-        LinkedList<String> headers = doGetMap( gm2, map, response.getOutputStream() );
-        response.setContentType( gm2.getFormat() );
+        LinkedList<String> headers = doGetMap( gm, map, version, response.getOutputStream() );
+        response.setContentType( gm.getFormat() );
         addHeaders( response, headers );
     }
 
-    private LinkedList<String> doGetMap( GetMap getMap, Map<String, String> map, OutputStream stream )
+    private LinkedList<String> doGetMap( GetMap getMap, Map<String, String> map, Version version, OutputStream stream )
                             throws OWSException, IOException {
-        checkGetMap( VERSION_130, getMap );
+        checkGetMap( version, getMap );
 
         RenderingInfo info = new RenderingInfo( getMap.getFormat(), getMap.getWidth(), getMap.getHeight(),
                                                 getMap.getTransparent(), getMap.getBgColor(), getMap.getBoundingBox(),
@@ -948,7 +947,7 @@ public class WMSController extends AbstractOWS {
         Map<String, String> map = new HashMap<String, String>();
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        doGetMap( getMap, map, stream );
+        doGetMap( getMap, map, VERSION_130, stream );
 
         String contentId = UUID.randomUUID().toString();
 
