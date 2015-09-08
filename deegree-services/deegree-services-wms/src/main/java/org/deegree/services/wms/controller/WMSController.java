@@ -598,7 +598,7 @@ public class WMSController extends AbstractOWS {
                 getCapabilitiesXMLAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetCapabilities getCapabilities = getCapabilitiesXMLAdapter.parse( requestVersion );
                 String updateSequence = getCapabilities.getUpdateSequence();
-                doGetCapabilities( null, response, updateSequence, getCapabilities );
+                doGetCapabilities( new HashMap<String, String>(), response, updateSequence, getCapabilities );
                 break;
             case GetMap:
                 GetMapParser getMapParser = new GetMapParser();
@@ -652,7 +652,7 @@ public class WMSController extends AbstractOWS {
                     getCapabilitiesXMLAdapter.setRootElement( body );
                     GetCapabilities getCapabilities = getCapabilitiesXMLAdapter.parse( requestVersion );
                     String updateSequence = getCapabilities.getUpdateSequence();
-                    doGetCapabilities( null, response, updateSequence, getCapabilities );
+                    doGetCapabilities( new HashMap<String, String>(), response, updateSequence, getCapabilities );
                     break;
                 case GetFeatureInfo:
                     GetFeatureInfoParser getFeatureInfoParser = new GetFeatureInfoParser();
