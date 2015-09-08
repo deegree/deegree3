@@ -208,6 +208,11 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             return null;
         return postUrls.get( 0 );
     }
+    
+    @Override
+    public URL getGetUrl( String operationName ) {
+        return super.getGetUrl( operationName );
+    }
 
     public GetRecordsResponse getIsoRecords( ResultType resultType, ReturnableElement elementSetName, Filter constraint )
                             throws IOException, OWSExceptionReport, XMLStreamException, OWSException {
@@ -233,18 +238,23 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     public GetRecordsResponse getRecords( final GetRecords request )
                             throws XMLStreamException, IOException, OWSExceptionReport, OWSException {
+        GetRecordsRequestType preferredRequestType = detectType();
+        LOG.debug( "Using " + preferredRequestType + " for GetRecords request [" + request + "]" );
+        return performGetRecordsRequest( request, preferredRequestType );
+    }
+
+    GetRecordsRequestType detectType() {
         GetRecordsRequestType preferredRequestType = null;
-        if ( getEndpointUrlByType( "soap" ) != null ) {
-            preferredRequestType = GetRecordsRequestType.SOAP;
-        }
         if ( getGetUrl( "GetRecords" ) != null ) {
             preferredRequestType = GetRecordsRequestType.GET;
+        }
+        if ( getEndpointUrlByType( "soap" ) != null ) {
+            preferredRequestType = GetRecordsRequestType.SOAP;
         }
         if ( getEndpointUrlByType( "xml" ) != null ) {
             preferredRequestType = GetRecordsRequestType.POST;
         }
-        LOG.debug( "Using " + preferredRequestType + " for GetRecords request [" + request + "]" );
-        return performGetRecordsRequest( request, preferredRequestType );
+        return preferredRequestType;
     }
 
     final GetRecordsResponse performGetRecordsRequest( final GetRecords request, final GetRecordsRequestType requestType )
@@ -439,7 +449,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      * 
      * @return endpoint URL for post requests, never <code>null</code>
      */
-    private URL getEndpointUrlByType( String type ) {
+    URL getEndpointUrlByType( String type ) {
         Operation operation = getOperations().getOperation( GetRecords.name() );
         for ( DCP dcp : operation.getDCPs() ) {
             for ( Pair<URL, List<Domain>> pe : dcp.getPostEndpoints() ) {
