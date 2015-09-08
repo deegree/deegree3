@@ -61,7 +61,7 @@ public class CSWClientIT {
 
     private final String capabilitiesUrlWithSoapAndPostSupport = "http://www.paikkatietohakemisto.fi/geonetwork/srv/csw?service=CSW&request=GetCapabilities&version=2.0.2";
 
-    private final String capabilitiesUrlWithGetSupport = "http://inspire-geoportal.ec.europa.eu/GeoportalProxyWebServices/resources/OGCCSW202/sandbox/INSPIRE-88351fbe-05f3-11e1-b7de-52540004b857_20140918-194100/services/1?service=CSW&request=GetCapabilities&version=2.0.2&preserveTemplateEndpoints=true";
+    private final String capabilitiesUrlWithGetSupport = "http://srv-aaashib-ext.jrc.it/GeoportalProxyWebServices/resources/OGCCSW202/sandbox/INSPIRE-1b978242-062b-11e1-b7de-52540004b857_20140919-001049/services/1?service=CSW&request=GetCapabilities&version=2.0.2&preserveTemplateEndpoints=true";
 
     private CSWClient clientWithSoapAndPostSupport;
 
