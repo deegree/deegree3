@@ -208,7 +208,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             return null;
         return postUrls.get( 0 );
     }
-    
+
     @Override
     public URL getGetUrl( String operationName ) {
         return super.getGetUrl( operationName );
@@ -243,18 +243,21 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         return performGetRecordsRequest( request, preferredRequestType );
     }
 
-    GetRecordsRequestType detectType() {
-        GetRecordsRequestType preferredRequestType = null;
-        if ( getGetUrl( "GetRecords" ) != null ) {
-            preferredRequestType = GetRecordsRequestType.GET;
-        }
-        if ( getEndpointUrlByType( "soap" ) != null ) {
-            preferredRequestType = GetRecordsRequestType.SOAP;
-        }
-        if ( getEndpointUrlByType( "xml" ) != null ) {
-            preferredRequestType = GetRecordsRequestType.POST;
-        }
-        return preferredRequestType;
+    GetRecordsRequestType detectType()
+                            throws OWSException {
+        if ( getPostEndpointUrlByType( "xml" ) != null )
+            return GetRecordsRequestType.POST;
+
+        if ( getPostEndpointUrlByType( "soap" ) != null )
+            return GetRecordsRequestType.SOAP;
+
+        if ( getPostUrl( GetRecords.name() ) != null )
+            return GetRecordsRequestType.POST;
+
+        if ( getGetUrl( "GetRecords" ) != null )
+            return GetRecordsRequestType.GET;
+        throw new OWSException( "Could not detect supported encoding for GetRecords request.",
+                                OWSException.NO_APPLICABLE_CODE );
     }
 
     final GetRecordsResponse performGetRecordsRequest( final GetRecords request, final GetRecordsRequestType requestType )
@@ -276,7 +279,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     private GetRecordsResponse performGetRecordsRequestWithSoap( final GetRecords request )
                             throws XMLStreamException, IOException, OWSExceptionReport {
-        final URL endPoint = getEndpointUrlByType( "soap" );
+        final URL endPoint = getPostEndpointUrlByType( "soap" );
         final StreamBufferStore requestOutputStream = new StreamBufferStore();
         XMLStreamWriter xmlWriter = null;
         try {
@@ -315,7 +318,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     private GetRecordsResponse performGetRecordsRequestWithPost( final GetRecords request )
                             throws IOException, OWSExceptionReport, XMLStreamException {
-        final URL endPoint = getEndpointUrlByType( "xml" );
+        final URL endPoint = getPostXmlEndpointUrl();
 
         final StreamBufferStore requestOutputStream = new StreamBufferStore();
         XMLStreamWriter xmlWriter = null;
@@ -331,6 +334,13 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         }
         final OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", requestOutputStream, null );
         return new GetRecordsResponse( response );
+    }
+
+    private URL getPostXmlEndpointUrl() {
+        URL endPoint = getPostEndpointUrlByType( "xml" );
+        if ( endPoint != null )
+            return endPoint;
+        return getPostUrl( GetRecords.name() );
     }
 
     public List<MetadataRecord> getRecordById( List<String> fileIdentifiers ) {
@@ -449,7 +459,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
      * 
      * @return endpoint URL for post requests, never <code>null</code>
      */
-    URL getEndpointUrlByType( String type ) {
+    URL getPostEndpointUrlByType( String type ) {
         Operation operation = getOperations().getOperation( GetRecords.name() );
         for ( DCP dcp : operation.getDCPs() ) {
             for ( Pair<URL, List<Domain>> pe : dcp.getPostEndpoints() ) {
@@ -468,7 +478,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
                 }
             }
         }
-        return getPostUrl( GetRecords.name() );
+        return null;
     }
 
     private String createConstraint( GetRecords getRecords )

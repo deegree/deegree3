@@ -59,13 +59,17 @@ import org.junit.Test;
  */
 public class CSWClientIT {
 
-    private final String capabilitiesUrlWithSoapAndPostSupport = "http://www.paikkatietohakemisto.fi/geonetwork/srv/csw?service=CSW&request=GetCapabilities&version=2.0.2";
+    private final String capabilitiesUrlWithGetAndPostSupport = "http://www.paikkatietohakemisto.fi/geonetwork/srv/csw?service=CSW&request=GetCapabilities&version=2.0.2";
 
     private final String capabilitiesUrlWithGetSupport = "http://srv-aaashib-ext.jrc.it/GeoportalProxyWebServices/resources/OGCCSW202/sandbox/INSPIRE-1b978242-062b-11e1-b7de-52540004b857_20140919-001049/services/1?service=CSW&request=GetCapabilities&version=2.0.2&preserveTemplateEndpoints=true";
 
-    private CSWClient clientWithSoapAndPostSupport;
+    private final String capabilitiesUrlWithGetAndSoapSupport = "https://geometadaten.lfrz.at/at.lfrz.discoveryservices/srv/de/csw202?request=GetCapabilities&service=CSW&version=2.0.2";
+
+    private CSWClient clientWithGetAndPostSupport;
 
     private CSWClient clientWithGetSupport;
+
+    private CSWClient clientWithGetAndSoapSupport;
 
     private GetRecords requestWithDefaultValues;
 
@@ -74,8 +78,10 @@ public class CSWClientIT {
     @Before
     public void setUp()
                             throws IOException, XMLStreamException, OWSExceptionReport {
-        clientWithSoapAndPostSupport = new CSWClient( new URL( capabilitiesUrlWithSoapAndPostSupport ) );
+        clientWithGetAndPostSupport = new CSWClient( new URL( capabilitiesUrlWithGetAndPostSupport ) );
         clientWithGetSupport = new CSWClient( new URL( capabilitiesUrlWithGetSupport ) );
+        clientWithGetAndSoapSupport = new CSWClient( new URL( capabilitiesUrlWithGetAndSoapSupport ) );
+
         requestWithDefaultValues = new CSWClient.GetRecordsBuilder().startingAt( 1 ).withMax( 20 ).build();
         Filter contraint = readFilter();
         requestWithFilter = new CSWClient.GetRecordsBuilder().startingAt( 1 ).withMax( 20 ).withConstraint( contraint ).build();
@@ -84,8 +90,8 @@ public class CSWClientIT {
     @Test
     public void verifyThatGetRecordsRequestWithHttpPostWorks()
                             throws Exception {
-        GetRecordsResponse response = clientWithSoapAndPostSupport.performGetRecordsRequest( requestWithDefaultValues,
-                                                                                             CSWClient.GetRecordsRequestType.POST );
+        GetRecordsResponse response = clientWithGetAndPostSupport.performGetRecordsRequest( requestWithDefaultValues,
+                                                                                            CSWClient.GetRecordsRequestType.POST );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
@@ -100,8 +106,8 @@ public class CSWClientIT {
     @Test
     public void verifyThatGetRecordsRequestWithSoapWorks()
                             throws Exception {
-        GetRecordsResponse response = clientWithSoapAndPostSupport.performGetRecordsRequest( requestWithDefaultValues,
-                                                                                             CSWClient.GetRecordsRequestType.SOAP );
+        GetRecordsResponse response = clientWithGetAndSoapSupport.performGetRecordsRequest( requestWithDefaultValues,
+                                                                                            CSWClient.GetRecordsRequestType.SOAP );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 
@@ -114,9 +120,16 @@ public class CSWClientIT {
     }
 
     @Test
-    public void verifyThatGetRecordsRequestWithPreferredEncodingWorks()
+    public void verifyThatGetRecordsRequestWithPreferredEncodingWorksForClientWithPostAndSoapSupport()
                             throws Exception {
-        GetRecordsResponse response = clientWithSoapAndPostSupport.getRecords( requestWithDefaultValues );
+        GetRecordsResponse response = clientWithGetAndPostSupport.getRecords( requestWithDefaultValues );
+        assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
+    }
+
+    @Test
+    public void verifyThatGetRecordsRequestWithPreferredEncodingWorksForServiceWithGetAndSoapSupport()
+                            throws Exception {
+        GetRecordsResponse response = clientWithGetAndSoapSupport.getRecords( requestWithDefaultValues );
         assertEquals( 200, response.getResponse().getAsHttpResponse().getStatusLine().getStatusCode() );
     }
 

@@ -41,14 +41,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.xml.stream.XMLStreamException;
-
 import org.deegree.protocol.csw.client.CSWClient.GetRecordsRequestType;
-import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.junit.Test;
 
 /**
@@ -120,11 +116,11 @@ public class CSWClientTest {
     }
 
     private CSWClient mockClient( String soapUrl, String postUrl, String getUrl )
-                            throws OWSExceptionReport, XMLStreamException, IOException, MalformedURLException {
+                            throws Exception {
         CSWClient mockedClient = mock( CSWClient.class );
         when( mockedClient.detectType() ).thenCallRealMethod();
-        doReturn( asUrl( soapUrl ) ).when( mockedClient ).getEndpointUrlByType( "soap" );
-        doReturn( asUrl( postUrl ) ).when( mockedClient ).getEndpointUrlByType( "xml" );
+        doReturn( asUrl( soapUrl ) ).when( mockedClient ).getPostEndpointUrlByType( "soap" );
+        doReturn( asUrl( postUrl ) ).when( mockedClient ).getPostEndpointUrlByType( "xml" );
         doReturn( asUrl( getUrl ) ).when( mockedClient ).getGetUrl( "GetRecords" );
         return mockedClient;
     }
