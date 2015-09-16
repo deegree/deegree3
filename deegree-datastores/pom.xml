@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-pre16-jrcportal-1-SNAPSHOT</version>
+    <version>3.4-pre16-jrcportal-2</version>
   </parent>
 
   <repositories>
