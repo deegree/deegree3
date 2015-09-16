@@ -47,7 +47,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.metadata.iso.ISORecord;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -65,7 +64,6 @@ public class MetadataRecordFactoryTest {
         assertThat( record.getIdentifier(), is( "655e5998-a20e-66b5-c888-00005553421" ) );
     }
 
-    @Ignore
     @Test
     public void testCreate_DuplicatedNamespace()
                             throws Exception {
@@ -75,7 +73,7 @@ public class MetadataRecordFactoryTest {
         assertThat( record, instanceOf( ISORecord.class ) );
         assertThat( record.getIdentifier(), is( "655e5998-a20e-66b5-c888-00005553499" ) );
     }
-    
+
     private XMLStreamReader createStream( String name )
                             throws XMLStreamException, FactoryConfigurationError {
         InputStream resourceAsStream = MetadataRecordFactoryTest.class.getResourceAsStream( name );
