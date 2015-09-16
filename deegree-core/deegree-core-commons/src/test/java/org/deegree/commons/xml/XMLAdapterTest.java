@@ -37,12 +37,20 @@ package org.deegree.commons.xml;
 
 import static junit.framework.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+
+import junit.framework.AssertionFailedError;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -175,4 +183,52 @@ public class XMLAdapterTest {
         XMLStreamWriter writer = new IndentingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
         adapter.getRootElement().serializeAndConsume( writer );
     }
+
+    @Test
+    public void testWriteElement_SimpleNamespaceBinding()
+                            throws Exception {
+        ByteArrayOutputStream writeIn = new ByteArrayOutputStream();
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( writeIn );
+
+        String xmlToWrite = "<test:me xmlns:test='http://deegree.org/test' ><test:abc/></test:me>";
+        XMLStreamReader readFrom = createReader( xmlToWrite );
+
+        XMLAdapter.writeElement( writer, readFrom );
+        writer.close();
+
+        assertThatXmlIsReadable( writeIn );
+    }
+
+    @Test
+    public void testWriteElement_NamespaceBindingToDefaultAndPrefix()
+                            throws Exception {
+        ByteArrayOutputStream writeIn = new ByteArrayOutputStream();
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( writeIn );
+
+        String xmlToWrite = "<test:me xmlns:test='http://deegree.org/test' xmlns='http://deegree.org/test' ><test:abc/></test:me>";
+        XMLStreamReader readFrom = createReader( xmlToWrite );
+
+        XMLAdapter.writeElement( writer, readFrom );
+        writer.close();
+
+        assertThatXmlIsReadable( writeIn );
+    }
+
+    private XMLStreamReader createReader( String s )
+                            throws XMLStreamException, FactoryConfigurationError {
+        StringReader stringReader = new StringReader( s );
+        XMLStreamReader inStream = XMLInputFactory.newInstance().createXMLStreamReader( stringReader );
+        inStream.nextTag();
+        return inStream;
+    }
+
+    private void assertThatXmlIsReadable( ByteArrayOutputStream stringWriter ) {
+        try {
+            String writtenXml = new String( stringWriter.toByteArray() );
+            new XMLAdapter( new ByteArrayInputStream( writtenXml.getBytes() ) );
+        } catch ( Exception e ) {
+            throw new AssertionFailedError( "XML is not readable!" );
+        }
+    }
+
 }
