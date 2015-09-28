@@ -68384,4 +68384,26 @@
                 <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:4648</crs:UsedProjection>
         </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>epsg:5650</crs:Id>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#5650</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::5650</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::5650</crs:Id>
+                <crs:Name>ETRS89 / UTM zone 33N (zE-N)</crs:Name>
+                <crs:Version>2012-11-26</crs:Version>
+                <crs:AreaOfUse>11.57,47.46,15.04,55.03</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - onshore and offshore east of 12°E, including Brandenburg (all state, including that part west of 12°E) and Mecklenburg-Vorpommern east of 12°E.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:5648</crs:UsedProjection>
+        </crs:ProjectedCRS>
 </crs:CRSDefinitions>
