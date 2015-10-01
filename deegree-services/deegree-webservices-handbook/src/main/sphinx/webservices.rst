@@ -74,6 +74,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | EnableResponseBuffering | 0..1        | Boolean | Enable response buffering (expensive), default: false            |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
+| SupportedRequests       | 0..1        | Complex | Configuration of WFS requests                                    |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryCRS                | 1..n        | String  | Announced CRS, first element is the default CRS                  |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryMaxFeatures        | 0..1        | Integer | Limit of features returned in a response, default: 15000         |
@@ -122,6 +124,59 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 .. hint::
    In a WFS 1.1.0 insert, the id generation mode can be overridden by attribute *idGenMode* of the ``Insert`` element. WFS 1.0.0 and WFS 2.0.0 don't support to specify the id generation mode on a request basis.
 
+^^^^^^^^^^^^^^^^^^
+SupportedRequests
+^^^^^^^^^^^^^^^^^^
+
+This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:  
+
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Option                | Cardinality  | Value   | Description                                                                                                                                  |
++=======================+==============+=========+==============================================================================================================================================+
+| SupportedEncodings    | 0..1         | String  | Enable encodings for all configured request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be seperated by a white space. |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetCapabilities       | 0..1         | Complex | Configuration of GetCapabilties requests                                                                                                     |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| DescribeFeatureType   | 0..1         | Complex | Configuration of DescribeFeatureType requests                                                                                                |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetFeature            | 0..1         | Complex | Configuration of GetFeature requests                                                                                                         |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Transaction           | 0..1         | Complex | Configuration of Transaction requests                                                                                                        |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetFeatureWithLock    | 0..1         | Complex | Configuration of GetFeatureWithLock requests                                                                                                 |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetGmlObject          | 0..1         | Complex | Configuration of GetGmlObject requests                                                                                                       |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| LockFeature           | 0..1         | Complex | Configuration of LockFeature requests                                                                                                        |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetPropertyValue      | 0..1         | Complex | Configuration of GetPropertyValue requests                                                                                                   |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| CreateStoredQuery     | 0..1         | Complex | Configuration of CreateStoredQuery requests                                                                                                  |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| DropStoredQuery       | 0..1         | Complex | Configuration of DropStoredQuery requests                                                                                                    |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| ListStoredQueries     | 0..1         | Complex | Configuration of ListStoredQueries requests                                                                                                  |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| DescribeStoredQueries | 0..1         | Complex | Configuration of DescribeStoredQueries requests                                                                                              |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+Each request type has the following sup-option:
+
++---------------------+--------------+---------+------------------------------------------------------------------------------------------------------------------------------------+
+| Option              | Cardinality  | Value   | Description                                                                                                                        |
++=====================+==============+=========+====================================================================================================================================+
+| SupportedEncodings  | 0..1         | String  | Enable encodings for this request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be seperated by a white space. |
++---------------------+--------------+---------+------------------------------------------------------------------------------------------------------------------------------------+
+
+
+By default deegree will provide all supported requests type with all available encodings (kvp, xml, soap). To limit the provided request types to GetCapabilties and GetFeature this request types can be added without SupportedEncodings sub-option:
+
+   .. literalinclude:: xml/supportedRequests.xml
+      :language: xml
+
+.. hint::
+   It is not checked if the configuration is valid against the WFS specification! 
+  
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
