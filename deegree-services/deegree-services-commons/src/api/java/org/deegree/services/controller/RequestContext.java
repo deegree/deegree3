@@ -72,6 +72,12 @@ public class RequestContext {
 
     private final String userAgent;
 
+    private final String xForwardedPort;
+
+    private final String xForwardedHost;
+
+    private final String xForwardedProto;
+
     /**
      * @param request
      *            request for which the context will be created, must not be <code>null</code>
@@ -91,6 +97,9 @@ public class RequestContext {
         requestedEndpointUrl = request.getRequestURL().toString();
         webappBaseUrl = deriveWebappBaseUrl( requestedEndpointUrl, request );
         userAgent = request.getHeader( "user-agent" );
+        xForwardedPort = request.getHeader( "X-Forwarded-Port" );
+        xForwardedHost = request.getHeader( "X-Forwarded-Host" );
+        xForwardedProto = request.getHeader( "X-Forwarded-Proto" );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Request URL: " + requestedEndpointUrl );
             LOG.debug( "Webapp base URL (derived from request): " + webappBaseUrl );
@@ -161,6 +170,27 @@ public class RequestContext {
      */
     public String getUserAgent() {
         return userAgent;
+    }
+
+    /**
+     * @return the request's 'X-Forwarded-Proto' header, can be <code>null</code>
+     */
+    public String getXForwardedProto() {
+        return xForwardedProto;
+    }
+
+    /**
+     * @return the request's 'X-Forwarded-Host' header, can be <code>null</code>
+     */
+    public String getXForwardedHost() {
+        return xForwardedHost;
+    }
+
+    /**
+     * @return the request's 'X-Forwarded-Port' header, can be <code>null</code>
+     */
+    public String getXForwardedPort() {
+        return xForwardedPort;
     }
 
     @Override

@@ -1145,6 +1145,15 @@ For this example, deegree would report ``http://www.mygeoportal.com/ows`` as ser
 
 The URL configured by ``Resources`` relates to the reported URL of the ``resources`` servlet, which allows to access parts of the active deegree workspace via HTTP. Currently, this is only used in WFS DescribeFeatureType responses that access GML application schema directories.
 
+The URLs changed by this configuration option are overwritten by the URL specified by the X-Forwarded-Host, X-Forwarded-Port and X-Forwarded-Proto header values.
+For example via a request to ``http://realnameofdeegreemachine:8080/deegree-webservices/services/inspire-wfs-ad`` and the specified header values
+
+ * X-Forwarded-Host = www.mysecondgeoportal.com
+ * X-Forwarded-Port = 8088
+ * X-Forwarded-Proto = https
+
+deegree would report ``https://www.mysecondgeoportal.com:8088/deegree-webservices/services/inspire-wfs-ad``. The URL path is kept as in the request URL. Host, port and protocol are replaced by the values from the header. If X-Forwarded-Port or X-Forwarded-Proto are missing the values are taken from the request URL, deegree would report ``http://www.mysecondgeoportal.com/deegree-webservices/services/inspire-wfs-ad``. This behaviour is usefull when the deegree webservice can be requested via different URLs.
+
 ^^^^^^^^^^^^^^^^
 Request timeouts
 ^^^^^^^^^^^^^^^^
