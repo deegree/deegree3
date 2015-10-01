@@ -691,6 +691,82 @@ The PIXELSIZE parameter can be used to dynamically adjust the resolution of the 
 
 Using the QUERYBOXSIZE parameter you can include features when rendering that would normally not intersect the envelope specified in the BBOX parameter. That can be useful if you have labels at point symbols out of the envelope which would be rendered partly inside the map. Normal GetMap behaviour will exclude such a label. With the QUERYBOXSIZE parameter you can specify a factor by which to enlarge the original bounding box, which is used solely for querying the data store (the actual extent returned will not be changed!). Use values like 1.1 to enlarge the envelope by 5% in each direction (this would be 10% in total).
 
+.. _anchor-xml-request-encoding:
+
+^^^^^^^^^^^^^^^^^^^^
+XML request encoding
+^^^^^^^^^^^^^^^^^^^^
+
+A WMS 1.3.0 can be requested by HTTP POST (without any KVP) containing XML in request body. The provided XML has to be compliant to a specific XML schema depending on the requested operation.
+
+The operations GetCapabilities, GetMap and GetFeatureInfo support XML request encoding.
+
+"""""""""""""""
+GetCapabilities
+"""""""""""""""
+
+The GetCapabilities XML request body has to be compliant to following schema:
+
+* http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd
+
+.. topic:: GetCapabilities XML request body example (can be used with Utah example workspace)
+
+   .. literalinclude:: xml/wms_getcapabilities_xml_request_body.xml
+      :language: xml
+
+""""""
+GetMap
+""""""
+
+The GetMap XML request body has to be compliant to following schema:
+
+* http://schemas.opengis.net/sld/1.1/GetMap.xsd
+
+.. topic:: GetMap XML request body example (can be used with Utah example workspace)
+
+   .. literalinclude:: xml/wms_getmap_xml_request_body.xml
+      :language: xml
+
+""""""""""""""
+GetFeatureInfo
+""""""""""""""
+
+The GetFeatureInfo XML request body has to be compliant to following schema:
+
+.. literalinclude:: xsd/GFI.xsd
+   :language: xml
+
+.. topic:: GetFeatureInfo XML request body example (can be used with Utah example workspace)
+
+   .. literalinclude:: xml/wms_getfeatureinfo_xml_request_body.xml
+      :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^
+SOAP request encoding
+^^^^^^^^^^^^^^^^^^^^^
+
+The SOAP protocol can be used to request a WMS 1.3.0. SOAP 1.1 and 1.2 are supported.
+
+A SOAP request is send via HTTP POST (without any KVP) and contains a XML request body. The request body consists of a SOAP envelope and a XML request body as described in chapter :ref:`anchor-xml-request-encoding`.
+
+The operations GetCapabilities, GetMap and GetFeatureInfo support SOAP request encoding.
+
+.. topic:: GetCapabilities SOAP request body example (can be used with Utah example workspace)
+
+   .. literalinclude:: xml/wms_getcapabilities_soap_request_body.xml
+      :language: xml
+
+""""""""""""
+Capabilities
+""""""""""""
+
+The support of the SOAP protocol by the WMS is described by an ExtendedCapabilities element in namespace ``http://schemas.deegree.org/extensions/services/wms/1.3.0``.
+
+The ExtendedCapabilities are compliant to following schema:
+
+.. literalinclude:: xsd/soapwms.xsd
+   :language: xml
+
 .. _anchor-configuration-wmts:
 
 ---------------------------

@@ -44,7 +44,6 @@ package org.deegree.services.wms.controller.capabilities;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.XMLAdapter.maybeWriteElement;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElementNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 
@@ -122,17 +121,17 @@ class WmsCapabilities130MetadataWriter {
 
         writer.writeStartElement( WMSNS, "GetCapabilities" );
         writeElement( writer, WMSNS, "Format", "text/xml" );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetFeatureInfo" );
         writeInfoFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( SLDNS, "GetLegendGraphic" );
