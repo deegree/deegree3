@@ -68,9 +68,12 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ConfigUtils {
+public final class ConfigUtils {
 
     private static final Logger LOG = getLogger( ConfigUtils.class );
+
+    private ConfigUtils() {
+    }
 
     public static Pair<Map<String, Style>, Map<String, Style>> parseStyles( DeegreeWorkspace workspace,
                                                                             String layerName, List<StyleRefType> styles ) {
@@ -135,35 +138,35 @@ public class ConfigUtils {
             if ( isDefault && !styleMap.containsKey( "default" ) ) {
                 styleMap.put( "default", st );
             }
-            if ( s.getLegendGraphic() != null ) {
-                LegendGraphic g = s.getLegendGraphic();
+            if ( hasLegendGraphic( s ) || hasLegendStyle( s ) ) {
+                if ( hasLegendGraphic( s ) ) {
+                    LegendGraphic g = s.getLegendGraphic();
 
-                URL url = null;
-                try {
-                    url = new URL( g.getValue() );
-                    if ( url.toURI().isAbsolute() ) {
-                        st.setLegendURL( url );
+                    URL url = null;
+                    try {
+                        url = new URL( g.getValue() );
+                        if ( url.toURI().isAbsolute() ) {
+                            st.setLegendURL( url );
+                        }
+                        st.setPrefersGetLegendGraphicUrl( g.isOutputGetLegendGraphicUrl() );
+                    } catch ( Exception e ) {
+                        LOG.debug( "LegendGraphic was not an absolute URL." );
+                        LOG.trace( "Stack trace:", e );
                     }
-                    st.setPrefersGetLegendGraphicUrl( g.isOutputGetLegendGraphicUrl() );
-                } catch ( Exception e ) {
-                    LOG.debug( "LegendGraphic was not an absolute URL." );
-                    LOG.trace( "Stack trace:", e );
-                }
 
-                if ( url == null ) {
-                    File file = workspace.getLocation();
-                    file = new File( file, "styles" );
-                    file = new File( file, id + ".xml" );
-                    file = new File( file.toURI().resolve( g.getValue() ) );
-                    if ( file.exists() ) {
-                        st.setLegendFile( file );
-                    } else {
-                        LOG.warn( "LegendGraphic {} could not be resolved to a legend.", g.getValue() );
+                    if ( url == null ) {
+                        File file = workspace.getLocation();
+                        file = new File( file, "styles" );
+                        file = new File( file, id + ".xml" );
+                        file = new File( file.toURI().resolve( g.getValue() ) );
+                        if ( file.exists() ) {
+                            st.setLegendFile( file );
+                        } else {
+                            LOG.warn( "LegendGraphic {} could not be resolved to a legend.", g.getValue() );
+                        }
                     }
-                }
-            } else {
-                LegendStyle ls = s.getLegendStyle();
-                if ( ls != null ) {
+                } else if ( hasLegendStyle( s ) ) {
+                    LegendStyle ls = s.getLegendStyle();
                     st = store.getStyle( ls.getLayerNameRef(), ls.getStyleNameRef() );
                     st = st.copy();
                     st.setName( name );
@@ -241,6 +244,14 @@ public class ConfigUtils {
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
         return DimensionConfigBuilder.parseDimensions( layerName, dimensions );
+    }
+
+    private static boolean hasLegendGraphic( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s ) {
+        return s.getLegendGraphic() != null;
+    }
+
+    private static boolean hasLegendStyle( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s ) {
+        return s.getLegendStyle() != null;
     }
 
 }
