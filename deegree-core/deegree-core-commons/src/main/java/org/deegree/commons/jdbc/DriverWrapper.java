@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  */
 public class DriverWrapper implements Driver {
 
-    private Driver d;
+    private final Driver d;
 
     public DriverWrapper( Driver d ) {
         this.d = d;
@@ -92,6 +92,15 @@ public class DriverWrapper implements Driver {
     @Override
     public boolean jdbcCompliant() {
         return d.jdbcCompliant();
+    }
+
+    @Override
+    public String toString() {
+        return "Wrapped: " + d.toString();
+    }
+
+    public Driver getWrappedDriver() {
+        return d;
     }
 
     public Logger getParentLogger()
