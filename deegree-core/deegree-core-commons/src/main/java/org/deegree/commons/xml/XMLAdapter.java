@@ -1452,6 +1452,8 @@ public class XMLAdapter {
 
     private static void ensureBinding( XMLStreamWriter writer, String prefix, String namespaceURI )
                             throws XMLStreamException {
+        if ( isNamespaceAlreadyBound( writer, prefix, namespaceURI ) )
+            return;
         String boundPrefix = writer.getPrefix( namespaceURI );
         if ( prefix == null && !"".equals( boundPrefix ) ) {
             writer.writeDefaultNamespace( namespaceURI );
@@ -1516,4 +1518,16 @@ public class XMLAdapter {
     public String toString() {
         return rootElement == null ? "(no document)" : rootElement.toString();
     }
+
+    private static boolean isNamespaceAlreadyBound( XMLStreamWriter writer, String boundPrefix, String boundNamespaceURI ) {
+        @SuppressWarnings("unchecked")
+        Iterator<String> prefixes = writer.getNamespaceContext().getPrefixes( boundNamespaceURI );
+        while ( prefixes.hasNext() ) {
+            String prefix = prefixes.next();
+            if ( prefix.equals( boundPrefix ) )
+                return true;
+        }
+        return false;
+    }
+
 }
