@@ -83,9 +83,9 @@ import org.deegree.theme.Theme;
  * <p>
  * Data/Metadata is considered from the Theme/Layer tree as well as from the {@link OWSMetadataProvider}.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.4
  */
 public class WmsCapabilities111ThemeWriter {
@@ -100,7 +100,7 @@ public class WmsCapabilities111ThemeWriter {
 
     /**
      * Creates a new {@link WmsCapabilities111ThemeWriter} instance.
-     *
+     * 
      * @param metadataProvider
      *            provider for metadata on OWS datasets, can be <code>null</code>
      * @param styleWriter
@@ -121,7 +121,7 @@ public class WmsCapabilities111ThemeWriter {
 
     /**
      * Writes the given {@link Theme} as a WMS 1.1,1 Layer element.
-     *
+     * 
      * @param writer
      *            used to write the XML, must not be <code>null</code>
      * @param theme
@@ -415,10 +415,13 @@ public class WmsCapabilities111ThemeWriter {
             return;
         }
         if ( !hint.first.isInfinite() || !hint.second.isInfinite() ) {
-            double fac = 0.00028;
             writer.writeStartElement( "ScaleHint" );
-            writer.writeAttribute( "min", scaleFormat.format( hint.first.isInfinite() ? MIN_VALUE : hint.first * fac ) );
-            writer.writeAttribute( "max", scaleFormat.format( hint.second.isInfinite() ? MAX_VALUE : hint.second * fac ) );
+            writer.writeAttribute( "min",
+                                   scaleFormat.format( hint.first.isInfinite() ? MIN_VALUE
+                                                                              : calculateScaleHint( hint.first ) ) );
+            writer.writeAttribute( "max",
+                                   scaleFormat.format( hint.second.isInfinite() ? MAX_VALUE
+                                                                               : calculateScaleHint( hint.second ) ) );
             writer.writeEndElement();
         }
     }
@@ -431,6 +434,11 @@ public class WmsCapabilities111ThemeWriter {
             writer.writeAttribute( XLNNS, "type", "simple" );
             writer.writeAttribute( XLNNS, "href", url );
         }
+    }
+
+    private double calculateScaleHint( double scaleDenominator ) {
+        double pixelSize = 0.00028;
+        return Math.sqrt( Math.pow( ( scaleDenominator * pixelSize ), 2 ) * 2 );
     }
 
 }
