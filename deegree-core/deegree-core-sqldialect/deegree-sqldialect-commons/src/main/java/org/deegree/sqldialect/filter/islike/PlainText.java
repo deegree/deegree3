@@ -95,9 +95,13 @@ final class PlainText implements IsLikeStringPart {
             case '%':
             case '_':
             case '"':
-            case '\'':
             case '\\': {
                 sqlEscaped.append( '\\' );
+                sqlEscaped.append( currentChar );
+                break;
+            }
+            case '\'': {
+                sqlEscaped.append( '\'' );
                 sqlEscaped.append( currentChar );
                 break;
             }
