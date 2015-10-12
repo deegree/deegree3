@@ -41,29 +41,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db;
 
-import static java.sql.DriverManager.deregisterDriver;
-import static java.sql.DriverManager.getDrivers;
-import static java.sql.DriverManager.registerDriver;
-
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.ServiceLoader;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
-import org.deegree.commons.jdbc.DriverWrapper;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
+import org.deegree.workspace.standard.DefaultWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * Resource manager for connection providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * 
  * @version $Revision: $, $Date: $
  */
@@ -89,75 +79,87 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
     @Override
     public void startup( Workspace workspace ) {
         this.workspace = workspace;
-        try {
-            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
-                registerDriver( new DriverWrapper( d ) );
-                LOG.info( "Found and loaded {}", d.getClass().getName() );
+
+        // Check for legacy JDBC drivers and warn if some are found in modules directory
+        ClassLoader modulesClassloader = buildModulesOnlyClassloader();
+
+        if ( modulesClassloader != null ) {
+            for ( Driver d : ServiceLoader.load( Driver.class, modulesClassloader ) ) {
+                final String clsName = d.getClass().getName();
+                String clsFile;
+                try {
+                    clsFile = modulesClassloader.getResource( clsName.replace( '.', '/' ) + ".class" ).toString();
+                } catch ( Exception ign ) {
+                    clsFile = "";
+                }
+                int jarpos = clsFile.indexOf( ".jar" );
+                if ( jarpos != -1 ) {
+                    clsFile = clsFile.substring( 0, jarpos + 4 );
+                }
+
+                LOG.warn( "The JDBC driver {} has been found in the modules directory.", clsName );
+                LOG.warn( "This method of loading JDBC drivers is not supported in deegree any more." );
+                LOG.warn( "Please check the webservices handbook for more infomation." );
+                if ( clsFile.length() > 0 ) {
+                    LOG.warn( "The jdbc driver has been found at {}", clsFile );
+                }
             }
-        } catch ( SQLException e ) {
-            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         }
         super.startup( workspace );
     }
 
     @Override
     public void shutdown() {
-        // unload drivers
-        Enumeration<Driver> enumer = getDrivers();
-        while ( enumer.hasMoreElements() ) {
-            Driver d = enumer.nextElement();
-            try {
-                deregisterDriver( d );
-            } catch ( SQLException e ) {
-                LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
-            }
-        }
+        // nothing to do
+    }
 
-        // manually remove drivers via reflection if loaded by module class loader (else the driver manager won't let us
-        // remove them)
-        // Yes, this is DangerousStuff.
-        try {
-            List<Object> toRemove = new ArrayList<Object>();
-            Field f = DriverManager.class.getDeclaredField( "registeredDrivers" );
-            f.setAccessible( true );
-            List<?> list = (List<?>) f.get( null );
-            ListIterator<?> iter = list.listIterator();
-            while ( iter.hasNext() ) {
-                Object o = iter.next();
-                if ( o.getClass().getClassLoader() == workspace.getModuleClassLoader()
-                     || o.getClass().getClassLoader() == null ) {
-                    // iter.remove not supported by used list
-                    toRemove.add( o );
+    /**
+     * Create a ClassLoader which does not include the systems classloader
+     * 
+     * @see org.deegree.workspace.standard.DefaultWorkspace#initClassloader()
+     * @return a classloader or null if no jars / classes are available in the workspace
+     */
+    private ClassLoader buildModulesOnlyClassloader() {
+        if ( !( workspace instanceof DefaultWorkspace ) )
+            return null;
+
+        File directory = ( (DefaultWorkspace) workspace ).getLocation();
+        if ( directory == null || !directory.isDirectory() )
+            return null;
+
+        File modules = new File( directory, "modules" );
+        File classes = new File( modules, "classes" );
+        if ( !modules.isDirectory() )
+            return null;
+
+        File[] fs = modules.listFiles();
+        if ( fs != null && fs.length > 0 ) {
+            List<URL> urls = new ArrayList<URL>( fs.length );
+            if ( classes.isDirectory() ) {
+                try {
+                    urls.add( classes.toURI().toURL() );
+                } catch ( MalformedURLException e ) {
+                    LOG.warn( "Could not add modules/classes/ to classpath: {}", e.getLocalizedMessage() );
+                    LOG.trace( "Stack trace:", e );
                 }
             }
-            for ( Object o : toRemove ) {
-                list.remove( o );
+            for ( int i = 0; i < fs.length; ++i ) {
+                if ( fs[i].isFile() ) {
+                    try {
+                        URL url = fs[i].toURI().toURL();
+                        if ( url.getFile().endsWith( ".jar" ) ) {
+                            urls.add( url );
+                        }
+                    } catch ( Exception e ) {
+                        LOG.warn( "Module {} could not be loaded: {}", fs[i].getName(), e.getLocalizedMessage() );
+                        LOG.trace( "Stack trace:", e );
+                    }
+                }
             }
-        } catch ( Exception ex ) {
-            // well...
+            return new URLClassLoader( urls.toArray( new URL[urls.size()] ) );
         }
 
-        // Oracle managed beans: Enterprise to the rescue (but expect classloader leaks)
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try {
-            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            final Hashtable<String, String> keys = new Hashtable<String, String>();
-            keys.put( "type", "diagnosability" );
-            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
-            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
-        } catch ( Exception ex ) {
-            // perhaps no oracle, or other classloader
-        }
-        cl = workspace.getModuleClassLoader();
-        try {
-            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            final Hashtable<String, String> keys = new Hashtable<String, String>();
-            keys.put( "type", "diagnosability" );
-            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
-            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
-        } catch ( Exception ex ) {
-            // perhaps no oracle, or other classloader
-        }
+        return null;
     }
 
 }
