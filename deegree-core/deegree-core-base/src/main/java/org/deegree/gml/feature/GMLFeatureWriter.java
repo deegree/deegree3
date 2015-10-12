@@ -62,7 +62,6 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
@@ -318,12 +317,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 PrimitiveValue pValue = (PrimitiveValue) value;
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( pValue != null ) {
-                    // TODO
-                    if ( pValue.getType().getBaseType() == BaseType.DECIMAL ) {
-                        writer.writeCharacters( pValue.getValue().toString() );
-                    } else {
-                        writer.writeCharacters( pValue.getAsText() );
-                    }
+                    writer.writeCharacters( pValue.getAsText() );
                 }
                 writer.writeEndElement();
             }
