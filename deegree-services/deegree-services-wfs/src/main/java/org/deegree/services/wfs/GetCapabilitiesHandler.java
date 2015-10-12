@@ -320,13 +320,16 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
 
             // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-            if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
-                    writer.writeStartElement( WFS_NS, "MetadataURL" );
-                    writer.writeAttribute( "type", "TC211" );
-                    writer.writeAttribute( "format", "XML" );
-                    writer.writeCharacters( metadataUrl.getUrl() );
-                    writer.writeEndElement();
+            List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+            if ( ftMds != null ) {
+                for ( DatasetMetadata datasetMetadata : ftMds ) {
+                    for ( final MetadataUrl metadataUrl : datasetMetadata.getMetadataUrls() ) {
+                        writer.writeStartElement( WFS_NS, "MetadataURL" );
+                        writer.writeAttribute( "type", "TC211" );
+                        writer.writeAttribute( "format", "XML" );
+                        writer.writeCharacters( metadataUrl.getUrl() );
+                        writer.writeEndElement();
+                    }
                 }
             }
 
@@ -723,13 +726,18 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // TODO Operations
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
-                        writer.writeStartElement( WFS_NS, "MetadataURL" );
-                        writer.writeAttribute( "type", "19139" );
-                        writer.writeAttribute( "format", "text/xml" );
-                        writer.writeCharacters( metadataUrl.getUrl() );
-                        writer.writeEndElement();
+                List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+                if ( ftMds != null ) {
+                    for ( DatasetMetadata datasetMetadata : ftMds ) {
+                        for ( final MetadataUrl metadataUrl : datasetMetadata.getMetadataUrls() ) {
+                            writer.writeStartElement( WFS_NS, "MetadataURL" );
+                            String type = metadataUrl.getType() != null ? metadataUrl.getType() : "19139";
+                            String format = metadataUrl.getFormat() != null ? metadataUrl.getFormat() : "text/xml";
+                            writer.writeAttribute( "type", type );
+                            writer.writeAttribute( "format", format );
+                            writer.writeCharacters( metadataUrl.getUrl() );
+                            writer.writeEndElement();
+                        }
                     }
                 }
 
@@ -1033,10 +1041,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
-                        writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
-                        writer.writeAttribute( XLN_NS, "href", metadataUrl.getUrl() );
+                List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+                if ( ftMds != null ) {
+                    for ( DatasetMetadata datasetMetadata : ftMds ) {
+                        for ( final MetadataUrl metadataUrl : datasetMetadata.getMetadataUrls() ) {
+                            writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
+                            writer.writeAttribute( XLN_NS, "href", metadataUrl.getUrl() );
+                        }
                     }
                 }
 

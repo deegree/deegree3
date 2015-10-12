@@ -56,16 +56,36 @@ import org.deegree.commons.utils.Pair;
 
 /**
  * Merges {@link DatasetMetadata} instances.
- *
+ * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.3
  */
 class DatasetMetadataMerger {
 
     /**
+     * Merges a list of {@link DatasetMetadata} instances.
+     * 
+     * @param metadata
+     *            list of metadata to merge, can be <code>null</code> or empty
+     * @return merged metadata, can be <code>null</code>
+     */
+    DatasetMetadata merge( final List<DatasetMetadata> metadata ) {
+        if ( metadata == null || metadata.isEmpty() )
+            return null;
+        DatasetMetadata mergedMetadata = null;
+        for ( DatasetMetadata datasetMetadata : metadata ) {
+            if ( mergedMetadata == null )
+                mergedMetadata = datasetMetadata;
+            else
+                mergedMetadata = merge( mergedMetadata, datasetMetadata );
+        }
+        return mergedMetadata;
+    }
+
+    /**
      * Merges two {@link DatasetMetadata} instances.
-     *
+     * 
      * @param providerMetadata
      *            metadata from provider (takes precedence), can be <code>null</code>
      * @param layerMetadata
