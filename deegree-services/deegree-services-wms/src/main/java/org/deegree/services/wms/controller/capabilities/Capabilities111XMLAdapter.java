@@ -104,7 +104,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         this.service = service;
         this.controller = controller;
         metadataWriter = new WmsCapabilities111MetadataWriter( identification, provider, getUrl, postUrl, controller );
-        themeWriter = new WmsCapabilities111ThemeWriter( controller, getUrl, this );
+        themeWriter = new WmsCapabilities111ThemeWriter( controller, getUrl, this, metadata );
     }
 
     /**
