@@ -78,7 +78,9 @@ COMMENT ON COLUMN IDXTB_MAIN.SpecTitle IS 'Title of the specification dataQualit
 
 
 --Geospatial column in idxtb_main.bbox
-SELECT AddGeometryColumn('public','idxtb_main','bbox','-1','GEOMETRY','2');
+SELECT AddGeometryColumn('public','idxtb_main','bbox',0,'GEOMETRY',2);
+--If you are using PostGis 1.5, please uncomment and use the following command:
+-- SELECT AddGeometryColumn('public','idxtb_main','bbox',-1,'GEOMETRY',2);
 
 CREATE TABLE IDXTB_Constraint ( 
 	id integer NOT NULL,
