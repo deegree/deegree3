@@ -586,7 +586,8 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
             for ( OMElement getEl : getEls ) {
                 xpath = new XPath( getPrefix() + "OnlineResource/@xlink:href", nsContext );
                 URL href = getNodeAsURL( getEl, xpath, null );
-                getEndpoints.add( new Pair<URL, List<Domain>>( href, new ArrayList<Domain>() ) );
+                if ( href != null && !"".equals( href.toString() ) )
+                    getEndpoints.add( new Pair<URL, List<Domain>>( href, new ArrayList<Domain>() ) );
             }
         }
 
@@ -597,8 +598,8 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
             for ( OMElement postEl : postEls ) {
                 xpath = new XPath( getPrefix() + "OnlineResource/@xlink:href", nsContext );
                 URL href = getNodeAsURL( postEl, xpath, null );
-
-                postEndpoints.add( new Pair<URL, List<Domain>>( href, new ArrayList<Domain>() ) );
+                if ( href != null && !"".equals( href.toString() ) )
+                    postEndpoints.add( new Pair<URL, List<Domain>>( href, new ArrayList<Domain>() ) );
             }
         }
 

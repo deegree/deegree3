@@ -883,7 +883,7 @@ public class XMLAdapter {
                             throws XMLParsingException {
         URL value = defaultValue;
         String s = getNodeAsString( context, xpath, null );
-        if ( s != null ) {
+        if ( s != null && s.length() > 0 ) {
             value = parseURL( s );
         }
         return value;
