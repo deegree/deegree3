@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2015 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,37 +33,42 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.temporal;
+package org.deegree.time.operator;
 
-import org.deegree.filter.Expression;
-import org.deegree.time.operator.AfterOperator;
+import static org.deegree.time.operator.TimeCompareUtils.compareBeginWithEnd;
+
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
- * {@link TemporalOperator} that evaluates After.
+ * Time operator to evaluate 'After'.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public class After extends TemporalOperator {
+public class AfterOperator {
 
     /**
-     * Creates a new instance of {@link After}.
+     * Evaluates if self is after other or not. TimeInstant and TimePeriods are allowed and handled as followed:
      * 
-     * @param param1
-     *            first temporal expression (time instant or period), must not be <code>null</code>
-     * @param param2
-     *            second temporal expression (time instant or period), must not be <code>null</code>
+     * <ul>
+     * <li>self.position > other.position</li>
+     * <li>self.position > other.end.position</li>
+     * <li>self.begin.position > other.position</li>
+     * <li>self.begin.position > other.end.position</li>
+     * </ul>
+     * 
+     * @param self
+     *            may be <code>null</code> (evaluation results in <code>false</code>)
+     * @param other
+     *            may be <code>null</code> (evaluation results in <code>false</code>)
+     * @return <code>true</code> if self is temporal after other, <code>false</code> if self is before or equal to other
+     *         or self and/or other are <code>null</code>
      */
-    public After( Expression param1, Expression param2 ) {
-        super( param1, param2 );
-    }
+    public boolean evaluate( final TimeGeometricPrimitive self, final TimeGeometricPrimitive other ) {
+        if ( self == null || other == null )
+            return false;
 
-    @Override
-    protected boolean evaluate( final TimeGeometricPrimitive t1, final TimeGeometricPrimitive t2 ) {
-        return new AfterOperator().evaluate( t1, t2 );
+        int compareBeginWithEnd = compareBeginWithEnd( self, other );
+        return compareBeginWithEnd > 0;
     }
 
 }
