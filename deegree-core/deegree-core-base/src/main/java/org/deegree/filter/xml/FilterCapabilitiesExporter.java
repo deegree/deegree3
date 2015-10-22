@@ -295,17 +295,17 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( FES_20_NS, "TemporalOperators" );
         exportTemporalOperator( writer, "After" );
         exportTemporalOperator( writer, "Before" );
-        exportTemporalOperator( writer, "Begins" );
-        exportTemporalOperator( writer, "BegunBy" );
-        exportTemporalOperator( writer, "TContains" );
+        // exportTemporalOperator( writer, "Begins" );
+        // exportTemporalOperator( writer, "BegunBy" );
+        // exportTemporalOperator( writer, "TContains" );
         exportTemporalOperator( writer, "During" );
         exportTemporalOperator( writer, "TEquals" );
-        exportTemporalOperator( writer, "TOverlaps" );
-        exportTemporalOperator( writer, "Meets" );
-        exportTemporalOperator( writer, "OverlappedBy" );
-        exportTemporalOperator( writer, "MetBy" );
-        exportTemporalOperator( writer, "Ends" );
-        exportTemporalOperator( writer, "EndedBy" );
+        // exportTemporalOperator( writer, "TOverlaps" );
+        // exportTemporalOperator( writer, "Meets" );
+        // exportTemporalOperator( writer, "OverlappedBy" );
+        // exportTemporalOperator( writer, "MetBy" );
+        // exportTemporalOperator( writer, "Ends" );
+        // exportTemporalOperator( writer, "EndedBy" );
         writer.writeEndElement();
         writer.writeEndElement();
     }
