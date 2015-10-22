@@ -85,19 +85,23 @@ public class AfterOperatorTest {
     public void evaluateInstantPeriod() {
         assertFalse( after.evaluate( instant( "2014-01-01T00:00:01" ),
                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ) ) );
+        assertFalse( after.evaluate( instant( "2014-01-01T00:00:00" ),
+                                     period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
         assertFalse( after.evaluate( instant( "2014-01-01T00:00:01" ),
-                                     period( "2014-01-01T00:00:00", "2014-01-01T00:00:01" ) ) );
-        assertFalse( after.evaluate( instant( "2014-01-01T00:00:01" ),
-                                     period( "2014-01-01T00:00:02", "2014-01-01T00:00:03" ) ) );
-        assertFalse( after.evaluate( instant( "2014-01-01T00:00:01" ),
-                                     period( "2014-01-01T00:00:00", "2014-01-01T00:00:03" ) ) );
+                                     period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
+        assertFalse( after.evaluate( instant( "2014-01-01T00:00:02" ),
+                                     period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
+        assertFalse( after.evaluate( instant( "2014-01-01T00:00:03" ),
+                                     period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
 
-        assertTrue( after.evaluate( instant( "2014-01-01T00:00:03" ),
-                                    period( "2014-01-01T00:00:00", "2014-01-01T00:00:02" ) ) );
+        assertTrue( after.evaluate( instant( "2014-01-01T00:00:04" ),
+                                    period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ) ) );
     }
 
     @Test
     public void evaluatePeriodInstant() {
+        assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ),
+                                     instant( "2014-01-01T00:00:01" ) ) );
         assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
                                      instant( "2014-01-01T00:00:01" ) ) );
         assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:03" ),
@@ -113,8 +117,11 @@ public class AfterOperatorTest {
 
     @Test
     public void evaluatePeriodPeriod() {
+        assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ),
+                                     period( "2014-01-01T00:00:01", "2014-01-01T00:00:01" ) ) );
         assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ),
                                      period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ) ) );
+
         assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ),
                                      period( "2014-01-01T00:00:00", "2014-01-01T00:00:01" ) ) );
         assertFalse( after.evaluate( period( "2014-01-01T00:00:01", "2014-01-01T00:00:02" ),
