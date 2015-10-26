@@ -341,7 +341,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         FilterCapabilitiesExporter.export100( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void exportCapability100()
@@ -760,7 +759,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         FilterCapabilitiesExporter.export110( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void writeOutputFormats110( XMLStreamWriter writer )
@@ -1062,7 +1060,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void addOperation( WFSRequestType wfsRequestType, List<DCP> getAndPost, List<DCP> post, List<DCP> get,
