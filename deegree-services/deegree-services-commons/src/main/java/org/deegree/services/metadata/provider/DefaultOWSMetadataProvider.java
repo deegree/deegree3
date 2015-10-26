@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.metadata.provider;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +73,7 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
     private final List<DatasetMetadata> datasetMetadata;
 
-    private final Map<QName, DatasetMetadata> datasetNameToMetadata = new HashMap<QName, DatasetMetadata>();
+    private final Map<QName, List<DatasetMetadata>> datasetNameToMetadata = new HashMap<QName, List<DatasetMetadata>>();
 
     private final Map<String, List<OMElement>> extendedCapabilities;
 
@@ -94,7 +95,10 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
             this.datasetMetadata = Collections.emptyList();
         }
         for ( DatasetMetadata dsMd : this.datasetMetadata ) {
-            this.datasetNameToMetadata.put( dsMd.getQName(), dsMd );
+            QName dsMdName = dsMd.getQName();
+            if ( !this.datasetNameToMetadata.containsKey( dsMdName ) )
+                this.datasetNameToMetadata.put( dsMdName, new ArrayList<DatasetMetadata>() );
+            this.datasetNameToMetadata.get( dsMdName ).add( dsMd );
         }
         this.authorities = authorities;
     }
@@ -131,15 +135,34 @@ public class DefaultOWSMetadataProvider implements OWSMetadataProvider {
 
     @Override
     public DatasetMetadata getDatasetMetadata( QName name ) {
-        DatasetMetadata md = datasetNameToMetadata.get( name );
-        if ( md == null ) {
-            for ( Entry<QName, DatasetMetadata> e : datasetNameToMetadata.entrySet() ) {
+        List<DatasetMetadata> md = datasetNameToMetadata.get( name );
+        if ( md == null || md.isEmpty() ) {
+            for ( Entry<QName, List<DatasetMetadata>> e : datasetNameToMetadata.entrySet() ) {
                 if ( e.getKey().getLocalPart().equalsIgnoreCase( name.getLocalPart() ) ) {
-                    return e.getValue();
+                    List<DatasetMetadata> dsMd = e.getValue();
+                    if ( !dsMd.isEmpty() )
+                        return dsMd.get( 0 );
                 }
             }
+            return null;
         }
-        return md;
+        return md.get( 0 );
+    }
+
+    @Override
+    public List<DatasetMetadata> getAllDatasetMetadata( QName name ) {
+        List<DatasetMetadata> datasetMetadata = new ArrayList<DatasetMetadata>();
+        List<DatasetMetadata> mds = datasetNameToMetadata.get( name );
+        if ( mds == null || mds.isEmpty() ) {
+            for ( Entry<QName, List<DatasetMetadata>> e : datasetNameToMetadata.entrySet() ) {
+                if ( e.getKey().getLocalPart().equalsIgnoreCase( name.getLocalPart() ) ) {
+                    datasetMetadata.addAll( e.getValue() );
+                }
+            }
+        } else {
+            datasetMetadata.addAll( mds );
+        }
+        return datasetMetadata;
     }
 
     @Override

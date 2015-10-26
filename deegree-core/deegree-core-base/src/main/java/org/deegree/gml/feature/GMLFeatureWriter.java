@@ -62,7 +62,6 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
@@ -318,12 +317,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 PrimitiveValue pValue = (PrimitiveValue) value;
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( pValue != null ) {
-                    // TODO
-                    if ( pValue.getType().getBaseType() == BaseType.DECIMAL ) {
-                        writer.writeCharacters( pValue.getValue().toString() );
-                    } else {
-                        writer.writeCharacters( pValue.getAsText() );
-                    }
+                    writer.writeCharacters( pValue.getAsText() );
                 }
                 writer.writeEndElement();
             }
@@ -737,7 +731,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             ObjectPropertyType gmlPropertyDecl = schemaInfoset.getGMLPropertyDecl( elDecl, elName, 0, 1, null );
             if ( gmlPropertyDecl instanceof FeaturePropertyType ) {
                 List<TypedObjectNode> children = xmlContent.getChildren();
-                if ( children.size() == 1 && children.get( 0 ) instanceof Feature ) {
+                if ( children != null && children.size() == 1 && children.get( 0 ) instanceof Feature ) {
                     LOG.debug( "Exporting as nested feature property." );
                     exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ),
                                            resolveState );

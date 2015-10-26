@@ -10799,4 +10799,13 @@
     <crs:FalseEasting>32500000.0</crs:FalseEasting>
     <crs:FalseNorthing>0.0</crs:FalseNorthing>
   </crs:TransverseMercator>
+	<crs:TransverseMercator>
+		<crs:Id>epsg:5648</crs:Id>
+		<crs:Name>UTM zone 33N with prefix</crs:Name>
+		<crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+		<crs:LongitudeOfNaturalOrigin>15.0</crs:LongitudeOfNaturalOrigin>
+		<crs:ScaleFactor>0.9996</crs:ScaleFactor>
+		<crs:FalseEasting>33500000.0</crs:FalseEasting>
+		<crs:FalseNorthing>0.0</crs:FalseNorthing>
+	</crs:TransverseMercator>
 </crs:ProjectionDefinitions>

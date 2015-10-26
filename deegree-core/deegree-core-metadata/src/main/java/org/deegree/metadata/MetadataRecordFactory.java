@@ -94,6 +94,7 @@ public class MetadataRecordFactory {
         if ( !xmlStream.isStartElement() ) {
             throw new XMLParsingException( xmlStream, "XMLStreamReader does not point to a START_ELEMENT." );
         }
+        
         String ns = xmlStream.getNamespaceURI();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -101,7 +102,9 @@ public class MetadataRecordFactory {
         XMLStreamReader recordAsXmlStream;
         InputStream in = null;
         try {
-            writer = XMLOutputFactory.newInstance().createXMLStreamWriter( out );
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
+            writer = factory.createXMLStreamWriter( out );
 
             writer.writeStartDocument();
             XMLAdapter.writeElement( writer, xmlStream );
@@ -118,6 +121,7 @@ public class MetadataRecordFactory {
             IOUtils.closeQuietly( in );
             IOUtils.closeQuietly( out );
         }
+        
         if ( ISO_RECORD_NS.equals( ns ) ) {
             return new ISORecord( recordAsXmlStream );
         }

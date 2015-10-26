@@ -159,7 +159,7 @@ abstract class AbstractGmlRequestHandler {
             Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = additionalObjects.getResolveStates();
             additionalObjects.clear();
             for ( GMLReference<?> ref : nextLevelObjects ) {
-                if ( isResolvable( ref ) ) {
+                if ( isResolvable( ref ) && !isObjectAlreadySerialized( gmlStream, ref.getId() ) ) {
                     GmlXlinkOptions resolveState = refToResolveState.get( ref );
                     Feature feature = (Feature) ref;
                     if ( !wroteStartSection ) {
@@ -174,6 +174,10 @@ abstract class AbstractGmlRequestHandler {
         if ( wroteStartSection ) {
             writeAdditionalObjectsEnd( xmlStream, requestVersion );
         }
+    }
+
+    private boolean isObjectAlreadySerialized( final GMLStreamWriter gmlStream, final String id ) {
+        return gmlStream.getReferenceResolveStrategy().isObjectExported( id );
     }
 
     private void writeAdditionalObjectsStart( XMLStreamWriter xmlStream, Version requestVersion )

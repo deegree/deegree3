@@ -60,6 +60,26 @@ public class TimeCompareUtils {
         return compared;
     }
 
+    /**
+     * Compares the end of a with the begin of b.
+     * 
+     * @param a
+     *            never <code>null</code>
+     * @param b
+     *            never <code>null</code>
+     * @return -1 if the end of a is before the begin of b; 0 if a and b are the equal or a and/or b are UNKNOWN; 1 if
+     *         the end of a is after the begin of b
+     * @throws NullPointerException
+     *             if a and/or b is <code>null</code>
+     */
+    public static int compareEndWithBegin( final TimeGeometricPrimitive a, final TimeGeometricPrimitive b ) {
+        final Temporal endA = new TemporalConverter().convert( end( a ) );
+        final Temporal beginB = new TemporalConverter().convert( begin( b ) );
+        if ( endA == null || beginB == null )
+            return 0;
+        return endA.compareTo( beginB );
+    }
+
     public static TimePosition begin( final TimeGeometricPrimitive t ) {
         if ( t instanceof TimeInstant ) {
             return ( (TimeInstant) t ).getPosition();
