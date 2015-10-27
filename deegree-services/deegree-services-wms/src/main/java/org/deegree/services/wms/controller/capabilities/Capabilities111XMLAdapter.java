@@ -144,7 +144,6 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
         writeCapability( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void writeCapability( XMLStreamWriter writer )

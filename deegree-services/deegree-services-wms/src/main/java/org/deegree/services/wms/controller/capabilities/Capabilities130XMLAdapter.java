@@ -163,7 +163,6 @@ public class Capabilities130XMLAdapter {
         writeCapability( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void writeExtendedCapabilities( XMLStreamWriter writer ) {
