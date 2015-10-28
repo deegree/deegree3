@@ -133,6 +133,25 @@ public class GetFeatureInfo extends RequestBase {
         scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
     }
 
+    public GetFeatureInfo( List<LayerRef> layers, List<StyleRef> styles, List<String> queryLayers, int width,
+                           int height, int x, int y, Envelope envelope, ICRS crs, int featureCount, String infoFormat,
+                           HashMap<String, String> parameterMap, Map<String, List<?>> dimensions ) throws OWSException {
+        this.layers.addAll( layers );
+        this.styles.addAll( styles );
+        cleanUpLayers( queryLayers );
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        this.bbox = envelope;
+        this.crs = crs;
+        this.featureCount = featureCount;
+        this.infoFormat = infoFormat;
+        this.dimensions.putAll( dimensions );
+        this.parameterMap.putAll( parameterMap );
+        this.scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+    }
+
     private void parse111( Map<String, String> map )
                             throws OWSException {
         double[] vals = handleCommon( map );
@@ -254,22 +273,7 @@ public class GetFeatureInfo extends RequestBase {
             handleSLD( sld, sldBody );
         }
 
-        ListIterator<LayerRef> lays = this.layers.listIterator();
-        ListIterator<StyleRef> stys = this.styles.listIterator();
-
-        while ( lays.hasNext() ) {
-            String name = lays.next().getName();
-            stys.next();
-            if ( !qlayers.contains( name ) ) {
-                lays.remove();
-                stys.remove();
-            }
-        }
-
-        if ( layers.isEmpty() ) {
-            throw new OWSException( "An invalid combination of LAYERS and QUERY_LAYERS was specified.",
-                                    "LayerNotDefined" );
-        }
+        cleanUpLayers( qlayers );
 
         String format = map.get( "INFO_FORMAT" );
         if ( format != null ) {
@@ -416,6 +420,29 @@ public class GetFeatureInfo extends RequestBase {
     @Override
     public List<LayerRef> getLayers() {
         return layers;
+    }
+
+    /*
+     * Styles and Layers must be set before!
+     */
+    private void cleanUpLayers( List<String> qlayers )
+                            throws OWSException {
+        ListIterator<LayerRef> lays = this.layers.listIterator();
+        ListIterator<StyleRef> stys = this.styles.listIterator();
+
+        while ( lays.hasNext() ) {
+            String name = lays.next().getName();
+            stys.next();
+            if ( !qlayers.contains( name ) ) {
+                lays.remove();
+                stys.remove();
+            }
+        }
+
+        if ( layers.isEmpty() ) {
+            throw new OWSException( "An invalid combination of LAYERS and QUERY_LAYERS was specified.",
+                                    "LayerNotDefined" );
+        }
     }
 
 }

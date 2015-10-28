@@ -113,4 +113,17 @@ public class IsLikeStringTest extends TestCase {
         String output = specialString.toSQL();
         assertEquals( "_Paul\\_Sartre_", output );
     }
+
+    @Test
+    public void testLiteral7()
+                            throws Exception {
+        String wildCard = "%";
+        String singleChar = "*";
+        String escape = "_";
+        String inputString = "Sartre's";
+        IsLikeString specialString = new IsLikeString( inputString, wildCard, singleChar, escape );
+        String output = specialString.toSQL();
+        assertEquals( "Sartre''s", output );
+    }
+    
 }

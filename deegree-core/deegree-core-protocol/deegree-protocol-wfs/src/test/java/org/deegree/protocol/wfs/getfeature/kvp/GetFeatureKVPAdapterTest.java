@@ -46,6 +46,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.deegree.commons.utils.kvp.KVPUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.Operator;
@@ -987,6 +988,15 @@ public class GetFeatureKVPAdapterTest extends TestCase {
     public void test200Example17()
                             throws Exception {
         GetFeature request = parse( "wfs200/example17.kvp" );
+    }
+
+    @Test
+    public void test200ExampleBboxExplicitCrs()
+                            throws Exception {
+        final GetFeature request = parse( "wfs200/example_bbox_explicit_crs.kvp" );
+        final BBoxQuery query = (BBoxQuery) request.getQueries().get( 0 );
+        final ICRS crs = query.getBBox().getCoordinateSystem();
+        assertEquals( "EPSG:4326", crs.getAlias() );
     }
 
     private GetFeature parse( String resource )

@@ -201,6 +201,26 @@ If you specify an HTTP URL instead of a relative path the behaviour is the same 
     <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
   </l:Style>
 
+A full example you will find below:
+
+.. code-block:: xml
+
+  <l:StyleRef>
+  <l:StyleStoreId>road_styles</l:StyleStoreId>
+    <l:Style>
+      <l:StyleName>highways</l:StyleName>
+      <l:LayerNameRef>highways</l:LayerNameRef>
+      <l:StyleNameRef>highways</l:StyleNameRef>
+      <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
+    </l:Style>
+    <l:Style>
+      <l:LegendStyle>
+        <l:LayerNameRef>highways</l:LayerNameRef>
+        <l:StyleNameRef>highways_legend</l:StyleNameRef>
+      </l:LegendStyle>
+    </l:Style>
+  </l:StyleRef>
+
 ^^^^^^^^^^^^^^^^^
 Rendering options
 ^^^^^^^^^^^^^^^^^
