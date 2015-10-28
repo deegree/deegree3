@@ -149,10 +149,10 @@ public abstract class RequestBase {
                 }
             }
 
-            this.layers.clear();
             this.styles.clear();
-            
             this.filters = new LinkedList<OperatorFilter>();
+            
+            LinkedList<LayerRef> tmpLayers = new LinkedList<LayerRef>();
             
             // to get the order right, in case it's different from the SLD order
             for ( LayerRef lRef : layers ) {
@@ -163,10 +163,12 @@ public abstract class RequestBase {
                 }
                 
                 Triple<ArrayList<LayerRef>, ArrayList<StyleRef>, ArrayList<OperatorFilter>> t = unzip( l );
-                this.layers.addAll( t.first );
+                tmpLayers.addAll( t.first );
                 this.styles.addAll( t.second );
                 this.filters.addAll( t.third );
             }
+            this.layers.clear();
+            this.layers.addAll( tmpLayers );
         } else {
             if ( triple != null ) {
                 this.layers = triple.first;

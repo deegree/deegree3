@@ -48,11 +48,13 @@ import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.services.wms.controller.capabilities.theme.XMLAssert.assertValidity;
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,15 +79,20 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.metadata.SpatialMetadata;
+import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.theme.Theme;
+import org.deegree.theme.persistence.standard.StandardTheme;
 import org.h2.util.IOUtils;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link WmsCapabilities130ThemeWriter}.
- *
+ * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriterTest {
@@ -136,6 +143,38 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.flush();
         bos.close();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" );
+        final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
+        assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
+        assertArrayEquals( expected, bos.toByteArray() );
+    }
+
+    @Test
+    public void testWriteThemeMultipleMetadataUrls()
+                            throws Exception {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final XMLStreamWriter writer = newInstance().createXMLStreamWriter( bos );
+        writer.writeStartElement( "Layer" );
+        writer.writeNamespace( "", WMSNS );
+        writer.writeNamespace( "xlink", XLNNS );
+        XMLAdapter.writeElement( writer, "Title", "Container" );
+        final LayerMetadata layerMetadata = createLayerMetadata();
+
+        String mdurlTemplate = "http://md.url.org/template";
+        OWSMetadataProvider provider = Mockito.mock( OWSMetadataProvider.class );
+        List<DatasetMetadata> mds = new ArrayList<DatasetMetadata>();
+        mds.add( createDatasetMetadata( "http://url1", "http://url2" ) );
+        mds.add( createDatasetMetadata( "http://url3" ) );
+        when( provider.getAllDatasetMetadata( Mockito.any( QName.class ) ) ).thenReturn( mds );
+        
+        WmsCapabilities130ThemeWriter themeWriter = new WmsCapabilities130ThemeWriter( provider, null, mdurlTemplate );
+
+        Theme theme = new StandardTheme( layerMetadata, Collections.<Theme> emptyList(),
+                                         Collections.<Layer> emptyList(), null );
+        themeWriter.writeTheme( writer, theme );
+        writer.writeEndElement();
+        writer.flush();
+        bos.close();
+        final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_multipleMetadataUrls.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
         assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
         assertArrayEquals( expected, bos.toByteArray() );
@@ -214,6 +253,22 @@ public class WmsCapabilities130ThemeWriterTest {
         final LayerMetadata themeMetadata = new LayerMetadata( "SimpleTheme", description, spatialMetadata );
         themeMetadata.setCascaded( 5 );
         return themeMetadata;
+    }
+
+    private DatasetMetadata createDatasetMetadata( String... urls ) {
+        List<LanguageString> titles = new ArrayList<LanguageString>();
+        List<LanguageString> abstracts = new ArrayList<LanguageString>();
+        List<Pair<List<LanguageString>, CodeType>> keywords = new ArrayList<Pair<List<LanguageString>, CodeType>>();
+        List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+        List<ExternalIdentifier> externalIds = new ArrayList<ExternalIdentifier>();
+        List<UrlWithFormat> dataUrls = new ArrayList<UrlWithFormat>();
+        List<UrlWithFormat> featureListUrls = new ArrayList<UrlWithFormat>();
+        Attribution attribution = null;
+        for ( String url : urls ) {
+            metadataUrls.add( new MetadataUrl( url, "ISO19115:2003", "application/xml" ) );
+        }
+        return new DatasetMetadata( new QName( "provider" ), titles, abstracts, keywords, metadataUrls, externalIds,
+                                    dataUrls, featureListUrls, attribution );
     }
 
 }

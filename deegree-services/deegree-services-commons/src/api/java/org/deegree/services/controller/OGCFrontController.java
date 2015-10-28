@@ -255,7 +255,7 @@ public class OGCFrontController extends HttpServlet {
      * @return URL, never <code>null</code> (without trailing slash or question mark)
      */
     public static String getHttpPostURL() {
-        return getContext().getServiceUrl();
+        return getHttpURL();
     }
 
     /**
@@ -271,7 +271,7 @@ public class OGCFrontController extends HttpServlet {
      * @return URL (for GET requests), never <code>null</code> (with trailing question mark)
      */
     public static String getHttpGetURL() {
-        return getContext().getServiceUrl() + "?";
+        return getHttpURL() + "?";
     }
 
     /**
@@ -1571,6 +1571,55 @@ public class OGCFrontController extends HttpServlet {
         if ( requestWatchdog != null ) {
             requestWatchdog.unwatchCurrentThread();
         }
+    }
+
+    private static String getHttpURL() {
+        RequestContext context = getContext();
+        String xForwardedHost = context.getXForwardedHost();
+        if ( xForwardedHost != null && xForwardedHost != "" ) {
+            String contextServiceUrl = context.getServiceUrl();
+            try {
+                URL serviceUrl = new URL( contextServiceUrl );
+                return buildUrlFromForwardedHeader( context, serviceUrl );
+            } catch ( MalformedURLException e ) {
+                LOG.warn( "Could not parse service URL as URL: " + contextServiceUrl );
+            }
+        }
+        return context.getServiceUrl();
+    }
+
+    private static String buildUrlFromForwardedHeader( RequestContext context, URL serviceUrl )
+                            throws MalformedURLException {
+        String xForwardedPort = context.getXForwardedPort();
+        String xForwardedHost = context.getXForwardedHost();
+        String xForwardedProto = context.getXForwardedProto();
+
+        String protocol = parseProtocol( xForwardedProto, serviceUrl );
+        String port = parsePort( xForwardedPort, serviceUrl );
+        String path = serviceUrl.getPath();
+
+        StringBuffer urlBuilder = new StringBuffer();
+        urlBuilder.append( protocol ).append( "://" ).append( xForwardedHost );
+        if ( port != null )
+            urlBuilder.append( ":" ).append( port );
+        if ( path != null && !"".equals( path ) )
+            urlBuilder.append( path );
+        return urlBuilder.toString();
+    }
+
+    private static String parseProtocol( String xForwardedProto, URL serviceUrl ) {
+        if ( xForwardedProto != null && !"".equals( xForwardedProto ) )
+            return xForwardedProto;
+        else
+            return serviceUrl.getProtocol();
+    }
+
+    private static String parsePort( String xForwardedPort, URL serviceUrl ) {
+        if ( xForwardedPort != null && !"".equals( xForwardedPort ) )
+            return xForwardedPort;
+        else if ( serviceUrl.getPort() > -1 )
+            return Integer.toString( serviceUrl.getPort() );
+        return null;
     }
 
 }

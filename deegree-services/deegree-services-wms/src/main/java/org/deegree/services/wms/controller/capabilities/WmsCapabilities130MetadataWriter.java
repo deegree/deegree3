@@ -121,17 +121,17 @@ class WmsCapabilities130MetadataWriter {
 
         writer.writeStartElement( WMSNS, "GetCapabilities" );
         writeCapabilitiesFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetFeatureInfo" );
         writeInfoFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, true, true );
         writer.writeEndElement();
 
         writer.writeStartElement( SLDNS, "GetLegendGraphic" );

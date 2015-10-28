@@ -14,6 +14,17 @@
   <EnableTransactions idGen="UseExisting">true</EnableTransactions>
   <EnableResponseBuffering>false</EnableResponseBuffering>
 
+  <SupportedRequests>
+    <SupportedEncodings>kvp</SupportedEncodings>
+     <GetCapabilities>
+      <SupportedEncodings>xml soap</SupportedEncodings>
+    </GetCapabilities>
+    <DescribeFeatureType/>
+    <GetFeature>
+      <SupportedEncodings>xml</SupportedEncodings>
+    </GetFeature>
+  </SupportedRequests>
+  
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
   <QueryMaxFeatures>-1</QueryMaxFeatures>

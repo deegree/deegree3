@@ -69,6 +69,8 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.layer.LayerRef;
+import org.deegree.protocol.wms.sld.StyleContainer;
+import org.deegree.protocol.wms.sld.StylesContainer;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
@@ -97,17 +99,49 @@ public class SLDParser {
      * @throws OWSException
      * @throws ParseException
      */
+    @Deprecated
     public static Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>> parse( XMLStreamReader in,
                                                                                                         RequestBase gm )
+                            throws XMLStreamException, OWSException, ParseException {
+        StylesContainer styleInformations = parse( in );
+
+        for ( Pair<String, List<?>> dimension : styleInformations.getDimensions() ) {
+            gm.addDimensionValue( dimension.first, dimension.second );
+        }
+
+        LinkedList<LayerRef> layerRefs = new LinkedList<LayerRef>();
+        LinkedList<StyleRef> styleRefs = new LinkedList<StyleRef>();
+        LinkedList<OperatorFilter> filters = new LinkedList<OperatorFilter>();
+
+        List<StyleContainer> styles = styleInformations.getStyles();
+        for ( StyleContainer styleInformation : styles ) {
+            layerRefs.add( styleInformation.getLayerRef() );
+            styleRefs.add( styleInformation.getStyleRef() );
+            filters.add( styleInformation.getFilter() );
+        }
+        return new Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>>( layerRefs,
+                                                                                                   styleRefs, filters );
+    }
+
+    /**
+     * @param in
+     *            the StyledLayerDescriptor to parse, never <code>null</code>
+     * @return the parsed SLD, never <code>null</code>
+     * @throws XMLStreamException
+     *             if an error occurred during parsing
+     * @throws OWSException
+     *             if an error occurred during parsing
+     * @throws ParseException
+     *             if an error occurred during parsing
+     */
+    public static StylesContainer parse( XMLStreamReader in )
                             throws XMLStreamException, OWSException, ParseException {
         while ( !in.isStartElement() || in.getLocalName() == null
                 || !( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) ) {
             in.nextTag();
         }
 
-        LinkedList<LayerRef> layers = new LinkedList<LayerRef>();
-        LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
-        LinkedList<OperatorFilter> filters = new LinkedList<OperatorFilter>();
+        StylesContainer stylesContainer = new StylesContainer();
 
         while ( in.getLocalName().equals( "NamedLayer" ) || in.getLocalName().equals( "UserLayer" ) ) {
             if ( in.getLocalName().equals( "NamedLayer" ) ) {
@@ -183,10 +217,10 @@ public class SLDParser {
 
                                 List<?> list = parseDimensionValues( value, name.toLowerCase() );
                                 if ( name.toUpperCase().equals( "TIME" ) ) {
-                                    gm.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
+                                    stylesContainer.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
                                 } else {
                                     List<?> values = (List<?>) parseTyped( list, false );
-                                    gm.addDimensionValue( name, values );
+                                    stylesContainer.addDimensionValue( name, values );
                                 }
 
                             }
@@ -200,9 +234,10 @@ public class SLDParser {
                 if ( in.getLocalName().equals( "NamedStyle" ) ) {
                     in.nextTag();
                     String name = in.getElementText();
-                    layers.add( new LayerRef( layerName ) );
-                    styles.add( new StyleRef( name ) );
-                    filters.add( operatorFilter );
+
+                    StyleContainer styleContainer = new StyleContainer( new LayerRef( layerName ),
+                                                                        new StyleRef( name ), operatorFilter );
+                    stylesContainer.addStyle( styleContainer );
 
                     in.nextTag(); // out of name
                     in.nextTag(); // out of named style
@@ -242,9 +277,10 @@ public class SLDParser {
                              || in.getLocalName().equals( "CoverageStyle" )
                              || in.getLocalName().equals( "OnlineResource" ) ) {
                             Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
-                            layers.add( new LayerRef( layerName ) );
-                            styles.add( new StyleRef( style ) );
-                            filters.add( operatorFilter );
+
+                            StyleContainer styleContainer = new StyleContainer( new LayerRef( layerName ),
+                                                                                new StyleRef( style ), operatorFilter );
+                            stylesContainer.addStyle( styleContainer );
                         }
                     }
 
@@ -259,8 +295,7 @@ public class SLDParser {
             }
         }
 
-        return new Triple<LinkedList<LayerRef>, LinkedList<StyleRef>, LinkedList<OperatorFilter>>( layers, styles,
-                                                                                                   filters );
+        return stylesContainer;
     }
 
     /**

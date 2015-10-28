@@ -749,6 +749,29 @@ public class XMLStreamUtils {
     }
 
     /**
+     * Returns the text in the required element as a inz. If the name of the reader does not match the given qName, an
+     * exception will be thrown. If the value is not a double, an exception will be thrown. Post: reader will be
+     * unchanged or at {@link XMLStreamConstants #END_ELEMENT} of the matching element or at
+     * {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * @param reader
+     * @param elementName
+     * @param nextElemOnSucces
+     *            if true the reader will be move to the next element if the operation was successful.
+     * @return the double value of the required element.
+     * @throws XMLStreamException
+     */
+    public static int getRequiredElementTextAsInteger( XMLStreamReader reader, QName elementName,
+                                                       boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        if ( !elementName.equals( reader.getName() ) ) {
+            throw new XMLParsingException( reader, "The current element: " + reader.getName() + " is not expected: "
+                                                   + elementName );
+        }
+        return getElementTextAsInteger( reader );
+    }
+
+    /**
      * Move the reader to the first element which matches the given name. The reader will be positioned on the
      * {@link XMLStreamConstants#START_ELEMENT} event or after the {@link XMLStreamConstants#END_DOCUMENT} which ever
      * comes first.

@@ -100,7 +100,6 @@ public abstract class WMSControllerBase implements Controller {
                                  WMSController controller, OWSMetadataProvider metadata )
                             throws OWSException, IOException {
         getUrl = getUrl.substring( 0, getUrl.length() - 1 );
-        postUrl = postUrl.substring( 0, getUrl.length() - 1 );
         if ( updateSequence != null && updateSequence.trim().length() > 0 ) {
             try {
                 int seq = parseInt( updateSequence );

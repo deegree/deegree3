@@ -90,13 +90,17 @@ public class Capabilities130XMLAdapter {
 
     private final String getUrl;
 
-    private MapService service;
+    private final String postUrl;
+
+    private final MapService service;
 
     private final WMSController controller;
 
-    private WmsCapabilities130MetadataWriter metadataWriter;
+    private final WmsCapabilities130MetadataWriter metadataWriter;
 
-    private WmsCapabilities130ThemeWriter themeWriter;
+    private final WmsCapabilities130ThemeWriter themeWriter;
+
+    private final Wms130SoapExtendedCapabilitesWriter soapExtendedCapabilitesWriter = new Wms130SoapExtendedCapabilitesWriter();
 
     /**
      * @param identification
@@ -110,11 +114,13 @@ public class Capabilities130XMLAdapter {
                                       OWSMetadataProvider metadata, String getUrl, String postUrl, MapService service,
                                       WMSController controller ) {
         this.getUrl = getUrl;
+        this.postUrl = postUrl;
         this.service = service;
         this.controller = controller;
-        metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl, controller );
+        this.metadataWriter = new WmsCapabilities130MetadataWriter( identification, provider, getUrl, postUrl,
+                                                                    controller );
         final String mdUrlTemplate = getMetadataUrlTemplate( controller, getUrl );
-        themeWriter = new WmsCapabilities130ThemeWriter( metadata, this, mdUrlTemplate );
+        this.themeWriter = new WmsCapabilities130ThemeWriter( metadata, this, mdUrlTemplate );
     }
 
     private String getMetadataUrlTemplate( final WMSController controller, final String getUrl ) {
@@ -186,6 +192,7 @@ public class Capabilities130XMLAdapter {
         writer.writeEndElement();
 
         writeExtendedCapabilities( writer );
+        soapExtendedCapabilitesWriter.writeSoapWmsExtendedCapabilites( writer, postUrl );
 
         writeThemes( writer, service.getThemes() );
 
