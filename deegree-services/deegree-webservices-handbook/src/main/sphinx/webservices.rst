@@ -80,6 +80,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryMaxFeatures        | 0..1        | Integer | Limit of features returned in a response, default: 15000         |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
+| ResolveTimeOutInSeconds | 0..1        | Integer | Expiry time in seconds                                           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 | QueryCheckAreaOfUse     | 0..1        | Boolean | Check spatial query constraints against CRS area, default: false |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | StoredQuery             | 0..n        | String  | File name of StoredQueryDefinition                               |
@@ -100,6 +102,7 @@ General options
 * ``EnableResponseBuffering``: By default, WFS responses are directly streamed to the client. This is very much recommended and even a requirement for transferring large responses efficiently. The only drawback happens if exceptions occur, after a partial response has already been transferred. In this case, the client will receive part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response could be generated successfully, it will be transferred. If an exception happens at any time the buffer will be discarded, and an exception report will be sent to the client. Buffering is performed in memory, but switches to a temp file in case the buffer grows bigger than 1 MiB.
 * ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 * ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
+* ''ResolveTimeOutInSeconds'': Use this option to specify a default value for ResolveTimeOut, used in ``GetFeature`` request if the ResolveTimeOut option is not set.
 * ``QueryCheckAreaOfUse``: By default, spatial query constraints are not checked with regard to the area of validity of the CRS. Set this option to ``true`` to enforce this check.
 
 ^^^^^^^^^^^^
