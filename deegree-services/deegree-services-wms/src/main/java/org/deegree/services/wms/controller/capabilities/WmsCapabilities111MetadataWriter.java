@@ -111,13 +111,6 @@ class WmsCapabilities111MetadataWriter {
             writer.writeAttribute( XLNNS, "href", postUrl );
             writer.writeEndElement();
             writer.writeEndElement();
-            writer.writeStartElement( "Soap" );
-            writer.writeStartElement( "OnlineResource" );
-            writer.writeNamespace( XLINK_PREFIX, XLNNS );
-            writer.writeAttribute( XLNNS, "type", "simple" );
-            writer.writeAttribute( XLNNS, "href", postUrl );
-            writer.writeEndElement();
-            writer.writeEndElement();
         }
         writer.writeEndElement();
         writer.writeEndElement();
@@ -129,17 +122,17 @@ class WmsCapabilities111MetadataWriter {
 
         writer.writeStartElement( "GetCapabilities" );
         writeElement( writer, "Format", "application/vnd.ogc.wms_xml" );
-        writeDCP( writer, true, true );
+        writeDCP( writer, true, false );
         writer.writeEndElement();
 
         writer.writeStartElement( "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, true );
+        writeDCP( writer, true, false );
         writer.writeEndElement();
 
         writer.writeStartElement( "GetFeatureInfo" );
         writeInfoFormats( writer );
-        writeDCP( writer, true, true );
+        writeDCP( writer, true, false );
         writer.writeEndElement();
 
         writer.writeStartElement( "GetLegendGraphic" );
