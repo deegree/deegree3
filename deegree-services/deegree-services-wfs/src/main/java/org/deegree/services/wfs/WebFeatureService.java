@@ -278,7 +278,9 @@ public class WebFeatureService extends AbstractOWS {
 
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
-        resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds();
+        resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds() != null
+                                  && jaxbConfig.getResolveTimeOutInSeconds().intValue() > 0 ? jaxbConfig.getResolveTimeOutInSeconds()
+                                                                                           : null;
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
 
         service = new WfsFeatureStoreManager();
