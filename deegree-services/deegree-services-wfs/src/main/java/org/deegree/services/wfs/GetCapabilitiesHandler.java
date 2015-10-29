@@ -160,12 +160,10 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final OWSMetadataProvider mdProvider;
 
-    private final boolean enableResultPaging;
-
     GetCapabilitiesHandler( WebFeatureService master, WfsFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
                             boolean enableTransactions, List<ICRS> querySRS, SupportedEncodings supportedEncodings,
-                            OWSMetadataProvider mdProvider, boolean enableResultPaging ) {
+                            OWSMetadataProvider mdProvider ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -176,7 +174,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.querySRS = querySRS;
         this.supportedEncodings = supportedEncodings;
         this.mdProvider = mdProvider;
-        this.enableResultPaging = enableResultPaging;
 
         List<String> offeredVersions = master.getOfferedVersions();
         for ( int i = offeredVersions.size() - 1; i >= 0; i-- ) {
@@ -909,9 +906,10 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
             constraints.add( new Domain( "ImplementsInheritance", "FALSE" ) );
             constraints.add( new Domain( "ImplementsRemoteResolve", "FALSE" ) );
-            if ( enableResultPaging )
+            if ( master.isEnableResponsePaging() ) {
                 constraints.add( new Domain( "ImplementsResultPaging", "TRUE" ) );
-            else
+                constraints.add( new Domain( "PagingIsTransactionSafe", "FALSE" ) );
+            } else
                 constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
             constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
