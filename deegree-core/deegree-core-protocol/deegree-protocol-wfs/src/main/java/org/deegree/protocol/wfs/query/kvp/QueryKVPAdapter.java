@@ -203,7 +203,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                             throws Exception {
 
         // optional: 'NAMESPACE'
-        Map<String, String> nsBindings = extractNamespaceBindings200( kvpUC.get( "NAMESPACE" ) );
+        Map<String, String> nsBindings = extractNamespaceBindings200( kvpUC.get( "NAMESPACES" ) );
         NamespaceBindings nsContext = new NamespaceBindings();
         if ( nsBindings != null ) {
             for ( String key : nsBindings.keySet() ) {
