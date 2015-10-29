@@ -362,8 +362,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             } else {
                 numQueries = params.size();
             }
-            for ( int i = 0; i < sortByList.size(); i++ ) {
-                String param = params.get( i );
+            for ( String param : params ) {
                 sortByList.add( getSortBy( param, nsContext ) );
             }
         }
