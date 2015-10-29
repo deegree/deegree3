@@ -275,7 +275,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             writeSingleFeatureMember( gmlStream, analyzer, resolveOptions );
         } else if ( options.isDisableStreaming() ) {
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
-                                       startIndex, memberElementName, lock );
+                                       startIndex, memberElementName, lock, null, null );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
                                        startIndex, memberElementName, lock );
@@ -465,7 +465,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     private void writeFeatureMembersCached( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
-                                            QName featureMemberEl, Lock lock )
+                                            QName featureMemberEl, Lock lock, String nextUri, String previousUri )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError {
 
@@ -505,6 +505,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
             xmlStream.writeAttribute( "numberReturned", "" + allFeatures.size() );
+            if ( nextUri != null )
+                xmlStream.writeAttribute( "next", "" + nextUri );
+            if ( previousUri != null )
+                xmlStream.writeAttribute( "previous", "" + previousUri );
         } else if ( !wfsVersion.equals( VERSION_100 ) && options.getResponseContainerEl() == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
