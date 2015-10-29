@@ -43,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -238,6 +239,7 @@ public class GetFeature200KVPEncoder {
         if ( typeNames != null && typeNames.length > 0 ) {
             StringBuilder typeNameBuilder = new StringBuilder();
             StringBuilder aliasBuilder = new StringBuilder();
+            Map<String, String> prefixToNamespaceUrls = new HashMap<String, String>();
             boolean atLeastOneAliasIsSet = isAtLeastOneAliasSet( typeNames );
             for ( TypeName typeName : typeNames ) {
                 if ( typeNameBuilder.length() > 0 ) {
@@ -257,10 +259,16 @@ public class GetFeature200KVPEncoder {
                 typeNameBuilder.append( featureTypeName.getLocalPart() );
                 if ( isSchemaElement )
                     typeNameBuilder.append( ')' );
+
+                String namespaceUri = featureTypeName.getNamespaceURI();
+                if ( prefix != null && prefix.length() > 0 && namespaceUri != null && namespaceUri.length() > 0 )
+                    prefixToNamespaceUrls.put( prefix, namespaceUri );
             }
             kvp.put( "TYPENAMES", typeNameBuilder.toString() );
             if ( atLeastOneAliasIsSet )
                 kvp.put( "ALIASES", aliasBuilder.toString() );
+            if ( prefixToNamespaceUrls.size() > 0 )
+                kvp.put( "NAMESPACES", retrieveNamespaces( prefixToNamespaceUrls ) );
         }
     }
 
@@ -361,6 +369,20 @@ public class GetFeature200KVPEncoder {
         XMLAdapter adapter = new XMLAdapter();
         XPath xpath = new XPath( "//" + FES_PREFIX + ":Literal", NS_CONTEXT );
         return adapter.getNodeAsString( value, xpath, null );
+    }
+
+    private static String retrieveNamespaces( Map<String, String> prefixToNamespaceUrls ) {
+        StringBuilder namespacesBuilder = new StringBuilder();
+        for ( Entry<String, String> prefixToNamespaceUrl : prefixToNamespaceUrls.entrySet() ) {
+            if ( namespacesBuilder.length() > 0 )
+                namespacesBuilder.append( ',' );
+            namespacesBuilder.append( "xmlns(" );
+            namespacesBuilder.append( prefixToNamespaceUrl.getKey() );
+            namespacesBuilder.append( ',' );
+            namespacesBuilder.append( prefixToNamespaceUrl.getValue() );
+            namespacesBuilder.append( ')' );
+        }
+        return namespacesBuilder.toString();
     }
 
     private static boolean isAtLeastOneAliasSet( TypeName[] typeNames ) {

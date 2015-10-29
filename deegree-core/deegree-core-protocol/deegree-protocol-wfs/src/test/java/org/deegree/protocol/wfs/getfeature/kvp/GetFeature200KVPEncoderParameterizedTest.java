@@ -85,8 +85,7 @@ public class GetFeature200KVPEncoderParameterizedTest {
         // kvpMaps.add( new Object[] { "example14.kvp", asKvp( "wfs200/example14.kvp" ) } );
         kvpMaps.add( new Object[] { "example16.kvp", asKvp( "wfs200/example16.kvp" ) } );
         kvpMaps.add( new Object[] { "example17.kvp", asKvp( "wfs200/example17.kvp" ) } );
-        // TODO: implement namespace export
-        // kvpMaps.add( new Object[] { "example18.kvp", asKvp( "wfs200/example18.kvp" ) } );
+        kvpMaps.add( new Object[] { "example18.kvp", asKvp( "wfs200/example18.kvp" ) } );
         kvpMaps.add( new Object[] { "example19.kvp", asKvp( "wfs200/example19.kvp" ) } );
         kvpMaps.add( new Object[] { "example20.kvp", asKvp( "wfs200/example20.kvp" ) } );
         // TODO: implement export of epsg in bbox
