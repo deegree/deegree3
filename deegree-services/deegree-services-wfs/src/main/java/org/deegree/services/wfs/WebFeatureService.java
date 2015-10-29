@@ -1161,8 +1161,7 @@ public class WebFeatureService extends AbstractOWS {
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      sortedFts, sectionsUC, enableTransactions,
-                                                                     queryCRS, supportedEncodings, mdProvider,
-                                                                     enableResponsePaging );
+                                                                     queryCRS, supportedEncodings, mdProvider );
         adapter.export();
         xmlWriter.flush();
     }
