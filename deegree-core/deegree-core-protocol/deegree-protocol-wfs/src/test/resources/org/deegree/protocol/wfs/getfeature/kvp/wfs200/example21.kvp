@@ -1,0 +1,6 @@
+SERVICE=WFS
+VERSION=2.0.0
+REQUEST=GetFeature
+PROPERTYNAME=InWaterA_1M/wkbGeom,InWaterA_1M/tileId
+TYPENAMES=InWaterA_1M
+FILTER=<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd"><fes:PropertyIsEqualTo matchCase="true"><fes:ValueReference xmlns:app="http://www.deegree.org" xmlns:xml="http://www.w3.org/XML/1998/namespace">app:InwaterA_1M/app:tileId</fes:ValueReference><fes:Literal>100</fes:Literal></fes:PropertyIsEqualTo></fes:Filter>

@@ -75,19 +75,16 @@ public class GetFeature200KVPEncoderParameterizedTest {
         kvpMaps.add( new Object[] { "example3.kvp", asKvp( "wfs200/example2.kvp" ) } );
         kvpMaps.add( new Object[] { "example4.kvp", asKvp( "wfs200/example4.kvp" ) } );
         kvpMaps.add( new Object[] { "example5.kvp", asKvp( "wfs200/example5.kvp" ) } );
-        // TODO: WFS 2.0.0 filter encoder required....
-        // kvpMaps.add( new Object[] { "example6.kvp", asKvp( "wfs200/example6.kvp" ) } );
         kvpMaps.add( new Object[] { "example7.kvp", asKvp( "wfs200/example7.kvp" ) } );
         kvpMaps.add( new Object[] { "example11.kvp", asKvp( "wfs200/example11.kvp" ) } );
         kvpMaps.add( new Object[] { "example12.kvp", asKvp( "wfs200/example12.kvp" ) } );
         kvpMaps.add( new Object[] { "example13.kvp", asKvp( "wfs200/example13.kvp" ) } );
-        // TODO: WFS 2.0.0 filter encoder required....
-        // kvpMaps.add( new Object[] { "example14.kvp", asKvp( "wfs200/example14.kvp" ) } );
         kvpMaps.add( new Object[] { "example16.kvp", asKvp( "wfs200/example16.kvp" ) } );
         kvpMaps.add( new Object[] { "example17.kvp", asKvp( "wfs200/example17.kvp" ) } );
         kvpMaps.add( new Object[] { "example18.kvp", asKvp( "wfs200/example18.kvp" ) } );
         kvpMaps.add( new Object[] { "example19.kvp", asKvp( "wfs200/example19.kvp" ) } );
         kvpMaps.add( new Object[] { "example20.kvp", asKvp( "wfs200/example20.kvp" ) } );
+        kvpMaps.add( new Object[] { "example21.kvp", asKvp( "wfs200/example21.kvp" ) } );
         // TODO: implement export of epsg in bbox
         // kvpMaps.add( new Object[] { "example_bbox_explicit_crs.kvp", asKvp( "wfs200/example_bbox_explicit_crs.kvp" )
         // } );

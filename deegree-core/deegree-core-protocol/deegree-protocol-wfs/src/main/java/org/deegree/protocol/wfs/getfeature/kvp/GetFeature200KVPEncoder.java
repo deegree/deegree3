@@ -71,7 +71,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.xml.Filter110XMLEncoder;
+import org.deegree.filter.xml.Filter200XMLEncoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.protocol.wfs.WFSVersion;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
@@ -356,8 +356,7 @@ public class GetFeature200KVPEncoder {
         XMLStreamWriter xmlWriter = null;
         try {
             xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( bos, "UTF-8" );
-            // TODO: use 200 Encoder!
-            Filter110XMLEncoder.export( filter, xmlWriter );
+            Filter200XMLEncoder.export( filter, xmlWriter );
         } finally {
             if ( xmlWriter != null )
                 xmlWriter.close();
