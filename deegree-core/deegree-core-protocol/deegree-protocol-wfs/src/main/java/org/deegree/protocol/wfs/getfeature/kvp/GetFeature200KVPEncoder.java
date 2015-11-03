@@ -323,6 +323,8 @@ public class GetFeature200KVPEncoder {
             sb.append( DECIMAL_FORMAT.format( bbox.getMin().get1() ) ).append( "," );
             sb.append( DECIMAL_FORMAT.format( bbox.getMax().get0() ) ).append( "," );
             sb.append( DECIMAL_FORMAT.format( bbox.getMax().get1() ) );
+            if ( bbox.getCoordinateSystem() != null )
+                sb.append( ',' ).append( bbox.getCoordinateSystem().getName() );
             kvp.put( "BBOX", sb.toString() );
         }
     }
