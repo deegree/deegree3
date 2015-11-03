@@ -109,6 +109,7 @@ import org.deegree.services.wfs.WfsFeatureStoreManager;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.deegree.services.wfs.query.QueryAnalyzer;
+import org.deegree.services.wfs.util.ResponsePagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -308,7 +309,6 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                             OWSException {
         if ( count != null ) {
             Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
-            // String getUrl = createGetUrlWithoutStartIndex( request );
             String nextUri = createNextUri( count, startIndex, kvpGetFeature, request );
             String previousUri = createPreviousUri( count, startIndex, kvpGetFeature );
             return new ResponsePagingUris( nextUri, previousUri );
@@ -319,21 +319,19 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
     private String createNextUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature,
                                   GetFeature request )
                             throws OWSException, FeatureStoreException, FilterEvaluationException {
-        int nextStartIndex = startIndex + count.intValue();
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), format.getMaster(),
                                                     format.getMaster().getStoreManager(), options.isCheckAreaOfUse() );
         Hits hits = retrieveHits( request, analyzer );
-        if ( nextStartIndex < hits.hitsTotal ) {
+        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( startIndex, count.intValue(), hits.hitsTotal );
+        if ( nextStartIndex >= 0 )
             return createUrlWithStartindex( kvpGetFeature, nextStartIndex );
-        }
         return null;
     }
 
     private String createPreviousUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature ) {
-        int previousStartIndex = startIndex - count.intValue();
-        if ( previousStartIndex >= 0 ) {
+        int previousStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( startIndex, count.intValue() );
+        if ( previousStartIndex >= 0 )
             return createUrlWithStartindex( kvpGetFeature, previousStartIndex );
-        }
         return null;
     }
 
