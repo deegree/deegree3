@@ -57,6 +57,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,6 +100,7 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.kvp.GetFeature200KVPEncoder;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.protocol.wfs.query.StoredQuery;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.wfs.WebFeatureService;
@@ -246,9 +248,9 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         int returnMaxFeatures = options.getQueryMaxFeatures();
-        if ( request.getPresentationParams().getCount() != null
-             && ( options.getQueryMaxFeatures() < 1 || request.getPresentationParams().getCount().intValue() < options.getQueryMaxFeatures() ) ) {
-            returnMaxFeatures = request.getPresentationParams().getCount().intValue();
+        BigInteger count = request.getPresentationParams().getCount();
+        if ( count != null && ( options.getQueryMaxFeatures() < 1 || count.intValue() < options.getQueryMaxFeatures() ) ) {
+            returnMaxFeatures = count.intValue();
         }
 
         int startIndex = 0;
@@ -275,16 +277,12 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( isGetFeatureById ) {
             writeSingleFeatureMember( gmlStream, analyzer, resolveOptions );
         } else if ( options.isDisableStreaming() ) {
-            String nextUri = null;
-            String previousUri = null;
-            if ( options.isEnableResponsePaging() ) {
-                // TODO: Fill nextUri and previousUri!
-                Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
-                nextUri = null;
-                previousUri = null;
-            }
+            ResponsePagingUris responsePagingUris = new ResponsePagingUris( null, null );
+            if ( options.isEnableResponsePaging() )
+                responsePagingUris = createResponsePagingUris( request, count, startIndex );
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
-                                       startIndex, memberElementName, lock, nextUri, previousUri );
+                                       startIndex, memberElementName, lock, responsePagingUris.nextUri,
+                                       responsePagingUris.previousUri );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
                                        startIndex, memberElementName, lock );
@@ -302,6 +300,46 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( ( (BufferableXMLStreamWriter) xmlStream ).hasBuffered() ) {
             ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
         }
+    }
+
+    private ResponsePagingUris createResponsePagingUris( GetFeature request, BigInteger count, int startIndex )
+                            throws UnsupportedEncodingException, XMLStreamException, UnknownCRSException,
+                            TransformationException {
+        if ( count != null ) {
+            String getUrl = createGetUrlWithoutStartIndex( request );
+            String nextUri = createNextUri( count, startIndex, getUrl );
+            String previousUri = createPreviousUri( count, startIndex, getUrl );
+            return new ResponsePagingUris( nextUri, previousUri );
+        }
+        return new ResponsePagingUris( null, null );
+    }
+
+    private String createGetUrlWithoutStartIndex( GetFeature request )
+                            throws UnsupportedEncodingException, XMLStreamException, UnknownCRSException,
+                            TransformationException {
+        Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
+        kvpGetFeature.remove( "STARTINDEX" );
+        String getUrl = OGCFrontController.getHttpGetURL();
+        if ( !getUrl.endsWith( "?" ) )
+            getUrl += "?";
+        for ( Map.Entry<String, String> kvp : kvpGetFeature.entrySet() ) {
+            if ( !getUrl.endsWith( "?" ) )
+                getUrl += "&";
+            getUrl += kvp.getKey() + "=" + kvp.getValue();
+        }
+        return getUrl;
+    }
+
+    private String createNextUri( BigInteger count, int startIndex, String getUrl ) {
+        int nextStartIndex = startIndex + count.intValue();
+        return getUrl + "&startindex=" + nextStartIndex;
+    }
+
+    private String createPreviousUri( BigInteger count, int startIndex, String getUrl ) {
+        int previousStartIndex = startIndex - count.intValue();
+        if ( previousStartIndex >= 0 )
+            return getUrl + "&startindex=" + previousStartIndex;
+        return null;
     }
 
     public void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
@@ -689,4 +727,18 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             break;
         }
     }
+
+    private class ResponsePagingUris {
+
+        private final String nextUri;
+
+        private final String previousUri;
+
+        private ResponsePagingUris( String nextUri, String previousUri ) {
+            this.nextUri = nextUri;
+            this.previousUri = previousUri;
+        }
+
+    }
+
 }
