@@ -71,7 +71,7 @@ public final class ResponsePagingUtils {
      *            the start index of the request, must be >= 0
      * @param count
      *            the number of features requested, must be > 0
-     * @return a value > 0 if a previous page is available; -1 if there is no previous page
+     * @return a value >= 0 if a previous page is available; -1 if there is no previous page
      */
     public static int calculatePreviousStartIndex( int startIndex, int count ) {
         int previousStartIndex = startIndex - count;
