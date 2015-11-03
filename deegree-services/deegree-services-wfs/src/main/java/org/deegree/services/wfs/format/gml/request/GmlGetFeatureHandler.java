@@ -76,6 +76,7 @@ import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.exceptions.TransformationException;
@@ -277,7 +278,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( isGetFeatureById ) {
             writeSingleFeatureMember( gmlStream, analyzer, resolveOptions );
         } else if ( options.isDisableStreaming() ) {
-            ResponsePagingUris responsePagingUris = new ResponsePagingUris( null, null );
+            ResponsePagingUris responsePagingUris = null;
             if ( options.isEnableResponsePaging() )
                 responsePagingUris = createResponsePagingUris( request, count, startIndex );
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
@@ -306,45 +307,33 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                             UnsupportedEncodingException, FilterEvaluationException, FeatureStoreException,
                             OWSException {
         if ( count != null ) {
-            String getUrl = createGetUrlWithoutStartIndex( request );
-            String nextUri = createNextUri( count, startIndex, getUrl, request );
-            String previousUri = createPreviousUri( count, startIndex, getUrl );
+            Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
+            // String getUrl = createGetUrlWithoutStartIndex( request );
+            String nextUri = createNextUri( count, startIndex, kvpGetFeature, request );
+            String previousUri = createPreviousUri( count, startIndex, kvpGetFeature );
             return new ResponsePagingUris( nextUri, previousUri );
         }
-        return new ResponsePagingUris( null, null );
+        return null;
     }
 
-    private String createGetUrlWithoutStartIndex( GetFeature request )
-                            throws UnsupportedEncodingException, XMLStreamException, UnknownCRSException,
-                            TransformationException {
-        Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
-        kvpGetFeature.remove( "STARTINDEX" );
-        String getUrl = OGCFrontController.getHttpGetURL();
-        if ( !getUrl.endsWith( "?" ) )
-            getUrl += "?";
-        for ( Map.Entry<String, String> kvp : kvpGetFeature.entrySet() ) {
-            if ( !getUrl.endsWith( "?" ) )
-                getUrl += "&";
-            getUrl += kvp.getKey() + "=" + kvp.getValue();
-        }
-        return getUrl;
-    }
-
-    private String createNextUri( BigInteger count, int startIndex, String getUrl, GetFeature request )
+    private String createNextUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature,
+                                  GetFeature request )
                             throws OWSException, FeatureStoreException, FilterEvaluationException {
         int nextStartIndex = startIndex + count.intValue();
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), format.getMaster(),
                                                     format.getMaster().getStoreManager(), options.isCheckAreaOfUse() );
         Hits hits = retrieveHits( request, analyzer );
-        if ( nextStartIndex < hits.hitsTotal )
-            return getUrl + "&startindex=" + nextStartIndex;
+        if ( nextStartIndex < hits.hitsTotal ) {
+            return createUrlWithStartindex( kvpGetFeature, nextStartIndex );
+        }
         return null;
     }
 
-    private String createPreviousUri( BigInteger count, int startIndex, String getUrl ) {
+    private String createPreviousUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature ) {
         int previousStartIndex = startIndex - count.intValue();
-        if ( previousStartIndex >= 0 )
-            return getUrl + "&startindex=" + previousStartIndex;
+        if ( previousStartIndex >= 0 ) {
+            return createUrlWithStartindex( kvpGetFeature, previousStartIndex );
+        }
         return null;
     }
 
@@ -564,9 +553,9 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
             xmlStream.writeAttribute( "numberReturned", "" + allFeatures.size() );
-            if ( responsePagingUris.nextUri != null )
+            if ( responsePagingUris != null && responsePagingUris.nextUri != null )
                 xmlStream.writeAttribute( "next", "" + responsePagingUris.nextUri );
-            if ( responsePagingUris.previousUri != null )
+            if ( responsePagingUris != null && responsePagingUris.previousUri != null )
                 xmlStream.writeAttribute( "previous", "" + responsePagingUris.previousUri );
         } else if ( !wfsVersion.equals( VERSION_100 ) && options.getResponseContainerEl() == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
@@ -738,6 +727,11 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             gmlStream.getFeatureWriter().export( member, resolveState );
             break;
         }
+    }
+
+    private String createUrlWithStartindex( Map<String, String> kvpGetFeature, int startIndex ) {
+        kvpGetFeature.put( "STARTINDEX", "" + startIndex );
+        return OGCFrontController.getHttpGetURL() + KVPUtils.toQueryString( kvpGetFeature );
     }
 
     private class ResponsePagingUris {
