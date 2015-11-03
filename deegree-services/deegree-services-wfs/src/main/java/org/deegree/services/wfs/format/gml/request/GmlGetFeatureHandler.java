@@ -96,6 +96,7 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeature.kvp.GetFeature200KVPEncoder;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.protocol.wfs.query.StoredQuery;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -274,8 +275,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( isGetFeatureById ) {
             writeSingleFeatureMember( gmlStream, analyzer, resolveOptions );
         } else if ( options.isDisableStreaming() ) {
+            String nextUri = null;
+            String previousUri = null;
+            if ( options.isEnableResponsePaging() ) {
+                // TODO: Fill nextUri and previousUri!
+                Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
+                nextUri = null;
+                previousUri = null;
+            }
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
-                                       startIndex, memberElementName, lock, null, null );
+                                       startIndex, memberElementName, lock, nextUri, previousUri );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
                                        startIndex, memberElementName, lock );
