@@ -103,7 +103,7 @@ import org.deegree.time.gml.writer.GmlTimeGeometricPrimitiveWriter;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
- * TODO add class documentation here
+ * Encodes {@link Filter} objects according to the Filter Encoding Specification 2.0.0.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
