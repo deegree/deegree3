@@ -907,7 +907,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
             constraints.add( new Domain( "ImplementsInheritance", "FALSE" ) );
             constraints.add( new Domain( "ImplementsRemoteResolve", "FALSE" ) );
-            constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
+            if ( master.isEnableResponsePaging() ) {
+                constraints.add( new Domain( "ImplementsResultPaging", "TRUE" ) );
+                constraints.add( new Domain( "PagingIsTransactionSafe", "FALSE" ) );
+            } else
+                constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
             constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );

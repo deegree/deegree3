@@ -1,0 +1,5 @@
+SERVICE=WFS
+VERSION=2.0.0
+REQUEST=GetFeature
+NAMESPACES=xmlns(myns,http://www.someserver.com)
+TYPENAMES=myns:InWaterA_1M
