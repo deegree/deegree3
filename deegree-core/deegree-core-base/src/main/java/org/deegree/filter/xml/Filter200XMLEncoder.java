@@ -532,7 +532,7 @@ public class Filter200XMLEncoder {
     private static void exportDistance( Measure distance, XMLStreamWriter writer )
                             throws XMLStreamException {
         if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
-            QName distanceElementName = new QName( CommonNamespaces.OGCNS, "Distance" );
+            QName distanceElementName = new QName( CommonNamespaces.FES_20_NS, "Distance" );
             writer.writeStartElement( distanceElementName.getNamespaceURI(), distanceElementName.getLocalPart() );
             writer.writeAttribute( "units", distance.getUomUri() );
             writer.writeCharacters( distance.getValue().toString() );
