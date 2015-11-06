@@ -378,9 +378,13 @@ The following table shows what top level options are available.
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | ServiceConfiguration     | 1            | Complex | Configures service content                                                   |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| GetCapabilitiesFormats   | 0..1         | Complex | Configures additional capabilities output formats                            |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | FeatureInfoFormats       | 0..1         | Complex | Configures additional feature info output formats                            |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | GetMapFormats            | 0..1         | Complex | Configures additional image output formats                                   |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| ExceptionFormats         | 0..1         | Complex | Configures additional exception output formats                               |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | ExtendedCapabilities     | 0..n         | Complex | Extended Metadata reported in GetCapabilities response                       |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
@@ -449,6 +453,23 @@ Here is an example snippet of the content section:
     <ThemeId>mytheme</ThemeId>
 
   </ServiceConfiguration>
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Custom capabilities formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``text/html`` can be configured to be available as response format for GetCapabilities requests. A XSLT script is used to generate the HTML output.
+
+This is how the configuration section looks like:
+
+.. code-block:: xml
+
+  <GetCapabilitiesFormats>
+    <GetCapabilitiesFormat>
+      <XSLTFile>capabilities2html.xsl</XSLTFile>
+      <Format>text/html</Format>
+    </GetCapabilitiesFormat>
+  </GetCapabilitiesFormats>
 
 .. _anchor-featureinfo-configuration:
 
@@ -664,6 +685,23 @@ This is how the configuration section looks like for configuring only ``image/pn
   <GetMapFormats>
     <GetMapFormat>image/png</GetMapFormat>
   </GetMapFormats>
+
+^^^^^^^^^^^^^^^^^^^^^^^^
+Custom exception formats
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+``text/html`` can be configured to be available as response format for Exceptions. A XSLT script is used to generate the HTML output.
+
+This is how the configuration section looks like:
+
+.. code-block:: xml
+
+  <ExceptionFormats>
+    <ExceptionFormat>
+      <XSLTFile>exception2html.xsl</XSLTFile>
+      <Format>text/html</Format>
+    </ExceptionFormat>
+  </ExceptionFormats>
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
