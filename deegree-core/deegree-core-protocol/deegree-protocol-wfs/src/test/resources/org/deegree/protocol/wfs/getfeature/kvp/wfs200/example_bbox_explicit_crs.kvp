@@ -1,0 +1,6 @@
+service=WFS
+version=2.0.0
+request=GetFeature
+typeNames=DominantVegetation
+bbox=-180,-90,180,90,EPSG:4326
+resultType=hits

@@ -29,6 +29,7 @@
     <module>deegree-featurestores</module>
     <module>deegree-mdstores</module>
     <module>deegree-tilestores</module>
+    <module>deegree-coveragestores</module>
   </modules>
 
 </project>

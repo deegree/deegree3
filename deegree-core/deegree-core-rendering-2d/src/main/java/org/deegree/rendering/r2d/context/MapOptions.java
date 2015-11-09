@@ -38,9 +38,7 @@ package org.deegree.rendering.r2d.context;
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class MapOptions {
 
@@ -60,7 +58,7 @@ public class MapOptions {
         this.interpol = interpol;
         this.antialias = antialias;
         this.maxFeatures = maxFeatures;
-        this.setFeatureInfoRadius( featureInfoRadius );
+        this.featureInfoRadius = featureInfoRadius;
     }
 
     /**
@@ -124,7 +122,7 @@ public class MapOptions {
     }
 
     /**
-     * @return the featureInfoRadius, a value < 1 means disabled
+     * @return the featureInfoRadius, a value < 1 means default, 0 means disabled and > 0 for the radius
      */
     public int getFeatureInfoRadius() {
         return featureInfoRadius;
@@ -132,7 +130,7 @@ public class MapOptions {
 
     /**
      * @param featureInfoRadius
-     *            the featureInfoRadius to set, a value < 1 means disabled
+     *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
      */
     public void setFeatureInfoRadius( int featureInfoRadius ) {
         this.featureInfoRadius = featureInfoRadius;
@@ -246,5 +244,4 @@ public class MapOptions {
             }
         };
     }
-
 }

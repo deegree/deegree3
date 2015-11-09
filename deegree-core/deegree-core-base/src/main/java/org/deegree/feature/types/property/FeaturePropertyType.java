@@ -36,6 +36,8 @@
 
 package org.deegree.feature.types.property;
 
+import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
+
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -49,10 +51,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link ObjectPropertyType} that defines a property with a {@link Feature} value.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class FeaturePropertyType extends ObjectPropertyType {
@@ -63,18 +65,16 @@ public class FeaturePropertyType extends ObjectPropertyType {
 
     private FeatureType valueFt;
 
-    // private final ValueRepresentation representation;
-
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                 List<PropertyType> substitutions, QName valueFtName, ValueRepresentation representation ) {
-        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation );
+        super( name, minOccurs, maxOccurs, elDecl, substitutions, representation, FEATURE );
         this.valueFtName = valueFtName;
         // this.representation = representation;
     }
 
     /**
      * Returns the name of the contained feature type.
-     * 
+     *
      * @return the name of the contained feature type, or null if unrestricted (any feature type is allowed)
      */
     public QName getFTName() {
@@ -83,7 +83,7 @@ public class FeaturePropertyType extends ObjectPropertyType {
 
     /**
      * Returns the contained feature type.
-     * 
+     *
      * @return the contained feature type, or null if unrestricted (any feature type is allowed)
      */
     public FeatureType getValueFt() {

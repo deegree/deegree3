@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Filter xmlns="http://www.opengis.net/fes/2.0" xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/temporal.xsd">
+  <TEquals>
+    <ValueReference>aixm:timeSlice/aixm:AirportHeliportTimeSlice/gml:validTime</ValueReference>
+    <gml:TimePeriod gml:id="tp_1">
+      <gml:beginPosition>2009-01-01T00:00:00.000</gml:beginPosition>
+      <gml:endPosition indeterminatePosition="unknown" />
+    </gml:TimePeriod>
+  </TEquals>
+</Filter>

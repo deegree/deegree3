@@ -1,3 +1,0 @@
-name=WFS
-example1_location=/META-INF/schemas/services/wfs/3.4.0/example_minimal.xml
-example2_location=/META-INF/schemas/services/wfs/3.4.0/example_complex.xml

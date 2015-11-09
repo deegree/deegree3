@@ -39,7 +39,7 @@ import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import org.deegree.commons.tom.datetime.TimeInstant;
+import org.deegree.commons.tom.datetime.Temporal;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.slf4j.Logger;
@@ -74,15 +74,15 @@ public class SQLValueMangler {
                 break;
             case DATE:
                 // TODO handling of SQL timezone                
-                sqlValue = new java.sql.Date( ( (TimeInstant) value ).getTimeInMilliseconds() );
+                sqlValue = new java.sql.Date( ( (Temporal) value ).getTimeInMilliseconds() );
                 break;
             case DATE_TIME:
                 // TODO handling of SQL timezone                
-                sqlValue = new Timestamp( ( (TimeInstant) value ).getTimeInMilliseconds() );
+                sqlValue = new Timestamp( ( (Temporal) value ).getTimeInMilliseconds() );
                 break;
             case TIME:
                 // TODO handling of SQL timezone                
-                sqlValue = new Time( ( (TimeInstant) value ).getTimeInMilliseconds() );
+                sqlValue = new Time( ( (Temporal) value ).getTimeInMilliseconds() );
                 break;
             case DECIMAL:
                 sqlValue = ( (BigDecimal) value ).doubleValue();

@@ -104,11 +104,13 @@ public class LinePlacement implements Copyable<LinePlacement> {
         copy.perpendicularOffset = perpendicularOffset;
         copy.perpendicularOffsetType = perpendicularOffsetType.copy();
         copy.repeat = repeat;
+        copy.center = center;
         copy.initialGap = initialGap;
         copy.gap = gap;
         copy.isAligned = isAligned;
         copy.generalizeLine = generalizeLine;
         copy.preventUpsideDown = preventUpsideDown;
+        copy.wordWise = wordWise;
         return copy;
     }
 

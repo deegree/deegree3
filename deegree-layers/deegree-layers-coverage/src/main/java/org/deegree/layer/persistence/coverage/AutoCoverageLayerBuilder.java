@@ -86,7 +86,10 @@ class AutoCoverageLayerBuilder {
         String cid = cfg.getCoverageStoreId();
         String sid = cfg.getStyleStoreId();
         Coverage cov = workspace.getResource( CoverageProvider.class, cid );
-        StyleStore sstore = workspace.getResource( StyleStoreProvider.class, sid );
+        StyleStore sstore = null;
+        if ( sid != null ) {
+            sstore = workspace.getResource( StyleStoreProvider.class, sid );
+        }
 
         SpatialMetadata smd = new SpatialMetadata( cov.getEnvelope(),
                                                    Collections.singletonList( cov.getCoordinateSystem() ) );

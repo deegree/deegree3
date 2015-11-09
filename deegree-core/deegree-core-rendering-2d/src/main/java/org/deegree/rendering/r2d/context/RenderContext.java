@@ -37,7 +37,6 @@ package org.deegree.rendering.r2d.context;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
@@ -54,8 +53,6 @@ import org.deegree.rendering.r2d.TileRenderer;
  */
 public interface RenderContext {
 
-    void setOutput( OutputStream out );
-
     Renderer getVectorRenderer();
 
     TextRenderer getTextRenderer();
@@ -66,6 +63,9 @@ public interface RenderContext {
 
     TileRenderer getTileRenderer();
     
+    /**
+     * To be called after all Renderings are done, to render and maybe optimize the labels.
+     */
     void optimizeAndDrawLabels();
 
     void paintImage( BufferedImage img );

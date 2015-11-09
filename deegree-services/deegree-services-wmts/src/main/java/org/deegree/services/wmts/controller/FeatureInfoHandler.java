@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
-import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_DEFINED;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 
 import java.io.IOException;
@@ -55,6 +55,8 @@ import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 import org.deegree.workspace.ResourceInitException;
+import org.deegree.tile.TileDataLevel;
+import org.deegree.tile.TileDataSet;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 
@@ -100,7 +102,28 @@ class FeatureInfoHandler {
                             throws OWSException {
         TileLayer l = layers.get( gfi.getLayer() );
         if ( l == null ) {
-            throw new OWSException( "No layer with name '" + gfi.getLayer() + "' configured.", LAYER_NOT_DEFINED );
+            throw new OWSException( "No layer with name '" + gfi.getLayer() + "' configured.", INVALID_PARAMETER_VALUE, "layer" );
+        }
+
+        String infoFormat = gfi.getInfoFormat();
+        if ( !featureInfoManager.getSupportedFormats().contains( infoFormat ) ) {
+            throw new OWSException( "FeatureInfo format '" + infoFormat + "' is unknown.", INVALID_PARAMETER_VALUE, "infoFormat" );
+        }
+        TileDataSet tds = l.getTileDataSet( gfi.getTileMatrixSet() );
+        if ( tds == null ) {
+            throw new OWSException( "The TileMatrixSet parameter value of '" + gfi.getTileMatrixSet() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrixSet" );
+        }
+        TileDataLevel tdl = tds.getTileDataLevel( gfi.getTileMatrix() );
+        if ( tdl == null ) {
+            throw new OWSException( "The TileMatrix parameter value of '" + gfi.getTileMatrix() + "' is not valid.", INVALID_PARAMETER_VALUE, "tileMatrix" );
+        }
+        double width = tdl.getMetadata().getTilePixelsX();
+        double height = tdl.getMetadata().getTilePixelsY();
+        if ( gfi.getI() >= width || gfi.getI() < 0 ) {
+            throw new OWSException( "The I parameter does not fit in the image dimension.", "TileOutOfRange", "I" );
+        }
+        if ( gfi.getJ() >= height || gfi.getJ() < 0 ) {
+            throw new OWSException( "The J parameter does not fit in the image dimension.", "TileOutOfRange", "J" );
         }
         return l;
     }

@@ -41,6 +41,7 @@
 
 package org.deegree.services.wmts.controller;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -88,6 +89,12 @@ class WmtsRequestDispatcher {
 
     void handleRequest( WMTSRequestType req, HttpResponseBuffer response, Map<String, String> map, Version version )
                             throws OWSException, ServletException {
+        if ( !map.get( "SERVICE" ).equals( "WMTS" ) ) {
+            throw new OWSException( "The service parameter must to be WMTS.", INVALID_PARAMETER_VALUE, "service" );
+        }
+        if ( ( !map.get( "REQUEST" ).equals( "GetCapabilities" ) && !map.get( "REQUEST" ).equals( "GetTile" ) && !map.get( "REQUEST" ).equals( "GetFeatureInfo" ) ) ) {
+            throw new OWSException( "'" + map.get( "REQUEST" ) + "' is not a supported WMTS request.", INVALID_PARAMETER_VALUE , "request" );
+        }
         switch ( req ) {
         case GetCapabilities:
             try {

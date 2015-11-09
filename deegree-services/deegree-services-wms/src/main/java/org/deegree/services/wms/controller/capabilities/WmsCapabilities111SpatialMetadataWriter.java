@@ -53,6 +53,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.io.CoordinateFormatter;
+import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.slf4j.Logger;
 
 /**
@@ -63,26 +65,27 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-class WmsCapabilities111SpatialMetadataWriter {
+public class WmsCapabilities111SpatialMetadataWriter {
 
     private static final Logger LOG = getLogger( WmsCapabilities111SpatialMetadataWriter.class );
 
-    static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv )
+    public static void writeSrsAndEnvelope( XMLStreamWriter writer, List<ICRS> srs, Envelope layerEnv )
                             throws XMLStreamException {
         for ( ICRS crs : srs ) {
             writeElement( writer, "SRS", crs.getAlias() );
         }
 
         ICRS latlon;
+        final CoordinateFormatter formatter = new DecimalCoordinateFormatter( 8 );
         try {
             latlon = CRSManager.lookup( "CRS:84" );
             if ( layerEnv != null && layerEnv.getCoordinateDimension() >= 2 ) {
                 Envelope bbox = new GeometryTransformer( latlon ).transform( layerEnv );
                 writer.writeStartElement( "LatLonBoundingBox" );
-                writer.writeAttribute( "minx", Double.toString( bbox.getMin().get0() ) );
-                writer.writeAttribute( "miny", Double.toString( bbox.getMin().get1() ) );
-                writer.writeAttribute( "maxx", Double.toString( bbox.getMax().get0() ) );
-                writer.writeAttribute( "maxy", Double.toString( bbox.getMax().get1() ) );
+                writer.writeAttribute( "minx", formatter.format( bbox.getMin().get0() ) );
+                writer.writeAttribute( "miny", formatter.format( bbox.getMin().get1() ) );
+                writer.writeAttribute( "maxx", formatter.format( bbox.getMax().get0() ) );
+                writer.writeAttribute( "maxy", formatter.format( bbox.getMax().get1() ) );
                 writer.writeEndElement();
 
                 for ( ICRS crs : srs ) {
@@ -111,10 +114,10 @@ class WmsCapabilities111SpatialMetadataWriter {
 
                     writer.writeStartElement( "BoundingBox" );
                     writer.writeAttribute( "SRS", crs.getAlias() );
-                    writer.writeAttribute( "minx", Double.toString( envelope.getMin().get0() ) );
-                    writer.writeAttribute( "miny", Double.toString( envelope.getMin().get1() ) );
-                    writer.writeAttribute( "maxx", Double.toString( envelope.getMax().get0() ) );
-                    writer.writeAttribute( "maxy", Double.toString( envelope.getMax().get1() ) );
+                    writer.writeAttribute( "minx", formatter.format( envelope.getMin().get0() ) );
+                    writer.writeAttribute( "miny", formatter.format( envelope.getMin().get1() ) );
+                    writer.writeAttribute( "maxx", formatter.format( envelope.getMax().get0() ) );
+                    writer.writeAttribute( "maxy", formatter.format( envelope.getMax().get1() ) );
                     writer.writeEndElement();
                 }
             }

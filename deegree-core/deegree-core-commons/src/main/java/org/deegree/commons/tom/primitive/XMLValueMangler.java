@@ -48,7 +48,7 @@ import java.math.BigInteger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
-import org.deegree.commons.tom.datetime.TimeInstant;
+import org.deegree.commons.tom.datetime.Temporal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +134,7 @@ public class XMLValueMangler {
                 switch ( pt ) {
                 case DATE:
                     if ( o instanceof Date ) {
-                        xml = "" + formatDate( (TimeInstant) o );
+                        xml = "" + formatDate( (Temporal) o );
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -142,7 +142,7 @@ public class XMLValueMangler {
                     break;
                 case DATE_TIME:
                     if ( o instanceof DateTime ) {
-                        xml = "" + formatDateTime( (TimeInstant) o );
+                        xml = "" + formatDateTime( (Temporal) o );
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;
@@ -150,7 +150,7 @@ public class XMLValueMangler {
                     break;
                 case TIME: {
                     if ( o instanceof Time ) {
-                        xml = "" + formatTime( (TimeInstant) o );
+                        xml = "" + formatTime( (Temporal) o );
                     } else {
                         LOG.warn( "Unhandled Date class " + o.getClass() + " -- converting via #toString()" );
                         xml = "" + o;

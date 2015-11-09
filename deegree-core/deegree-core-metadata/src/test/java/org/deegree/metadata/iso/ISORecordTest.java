@@ -35,7 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -215,4 +219,25 @@ public class ISORecordTest {
         boolean isMatching = record.eval( filter );
         assertTrue( isMatching );
     }
+
+    @Test
+    public void testInstantiationOfSpatialDataServiceRecord()
+                            throws Exception {
+        InputStream is = ISORecordTest.class.getResourceAsStream( "sds-example.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        ISORecord record = new ISORecord( xmlStream );
+
+        assertThat( record.getIdentifier(), is( "mysdsid1" ) );
+        assertThat( record.getType(), is( "service" ) );
+        assertThat( record.getAbstract().length, is( 1 ) );
+        assertThat( record.getAbstract()[0],
+                    containsString( "This Spatial Data Service supports various operations on the Digital Subsurface Models" ) );
+        assertThat( record.getParsedElement().getQueryableProperties().getKeywords().size(), is( 1 ) );
+        assertThat( record.getParsedElement().getQueryableProperties().getKeywords().get( 0 ).getKeywords().size(),
+                    is( 5 ) );
+        assertThat( record.getParsedElement().getQueryableProperties().getKeywords().get( 0 ).getKeywords(),
+                    hasItems( "infoCoverageAccessService", "subsurface", "geology", "Netherlands", "3D model" ) );
+        assertThat( record.getParsedElement().getQueryableProperties().getServiceType(), is( "other" ) );
+    }
+
 }

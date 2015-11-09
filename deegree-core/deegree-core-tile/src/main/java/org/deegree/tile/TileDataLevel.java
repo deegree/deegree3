@@ -40,6 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
+import java.util.List;
+
 /**
  * A single level of a {@link TileDataSet}.
  * 
@@ -67,4 +69,9 @@ public interface TileDataLevel {
      * @return the tile at x/y or <code>null</code> if there is no such tile
      */
     Tile getTile( long x, long y );
+    
+    /**
+     * Returns styles set in the TileStore.
+     */
+    List<String> getStyles();
 }

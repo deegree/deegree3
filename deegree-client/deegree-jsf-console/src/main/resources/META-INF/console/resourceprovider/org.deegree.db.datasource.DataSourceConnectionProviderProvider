@@ -1,4 +1,0 @@
-name=DataSource (preferred)
-example1_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_dbcp.xml
-example2_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_jndi.xml
-example3_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_ucp.xml

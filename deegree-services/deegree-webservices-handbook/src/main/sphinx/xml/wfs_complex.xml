@@ -14,6 +14,17 @@
   <EnableTransactions idGen="UseExisting">true</EnableTransactions>
   <EnableResponseBuffering>false</EnableResponseBuffering>
 
+  <SupportedRequests>
+    <SupportedEncodings>kvp</SupportedEncodings>
+     <GetCapabilities>
+      <SupportedEncodings>xml soap</SupportedEncodings>
+    </GetCapabilities>
+    <DescribeFeatureType/>
+    <GetFeature>
+      <SupportedEncodings>xml</SupportedEncodings>
+    </GetFeature>
+  </SupportedRequests>
+  
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
   <QueryMaxFeatures>-1</QueryMaxFeatures>
@@ -29,6 +40,9 @@
       <AdditionalSchemaLocation>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
       </AdditionalSchemaLocation>
       <DisableStreaming>false</DisableStreaming>
+      <PrebindNamespace prefix="ad" uri="urn:x-inspire:specification:gmlas:Addresses:3.0"/>
+      <PrebindNamespace prefix="base" uri="urn:x-inspire:specification:gmlas:BaseTypes:3.2"/>
+      <PrebindNamespace prefix="xlink" uri="http://www.w3.org/1999/xlink"/>      
     </GetFeatureResponse>
   </GMLFormat>
 

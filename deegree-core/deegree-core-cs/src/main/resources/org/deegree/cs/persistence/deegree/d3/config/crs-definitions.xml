@@ -13517,8 +13517,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25829</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 29N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>-12.0,48.15,-6.0,60.0</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 12°W and 6°W - Faroe Islands; United Kingdom (UKCS) offshore.</crs:AreaOfUse>
+                <crs:AreaOfUse>-12.0,34.91,-6.0,74.13</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 12°W and 6°W: Faroe Islands - onshore and offshore; Ireland - offshore; Jan Mayen - onshore and offshore; Portugal - onshore and offshore; Spain - onshore and offshore; United Kingdom - UKCS offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -13539,8 +13539,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25831</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 31N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>0.0,38.5,6.0,62.33</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 0°E and 6°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>0.0,37,6.01,82.41</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 0°E and 6°E: Andorra; Belgium - onshore and offshore; Denmark - offshore; Germany - offshore; Jan Mayen - offshore; Norway including Svalbard - onshore and offshore; Spain - onshore and offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -13563,8 +13563,8 @@
                 <crs:Id>urn:x-ogc:def:crs:epsg:25832</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 32N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>5.05,57.9,12.0,65.67</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 6°E and 12°E - Norway - onshore west of 12°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>6.0,38.76,12.0,83.92</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 6°E and 12°E: Austria; Belgium; Denmark - onshore and offshore; Germany - onshore and offshore; Norway including - onshore and offshore; Spain - offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -13587,8 +13587,8 @@
                 <crs:Id>urn:x-ogc-def:crs:epsg:25833</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 33N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>12.0,35.5,21.0,80.05</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 12°E and 18°E - Norway and Svalbard between 12°E and 21°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>12.0,46.4,18.01,84.01</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 12°E and 18°E: Austria; Denmark - offshore and offshore; Germany - onshore and offshore; Norway including Svalbard - onshore and offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -13609,8 +13609,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25837</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 37N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>36.0,35.75,42.0,75.0</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 36°E and 42°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>36.0,71.27,39.65,79.09</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 36°E and 42°E: Norway including Svalbard - offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -26789,8 +26789,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25830</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 30N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>-6.0,34.75,0.0,62.33</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 6°W and 0°W.</crs:AreaOfUse>
+                <crs:AreaOfUse>-6.0,35.26,0.0,80.53</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 6°W and 0°W: Faroe Islands offshore; Ireland - offshore; Jan Mayen - offshore; Norway including Svalbard - offshore; Spain - onshore and offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -26811,8 +26811,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25834</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 34N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>18.0,34.8,24.0,75.0</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 18°E and 24°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>18.0,58.84,24.0,84</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 18°E and 24°E: Finland - onshore and offshore; Norway including Svalbard - onshore and offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -26833,8 +26833,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25835</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 35N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>21.0,69.1,30.0,80.05</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 24°E and 30°E - Norway and Svalbard between 21°E and 30°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>24.0,59.64,30.0,84.01</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 24°E and 30°E: Finland - onshore and offshore; Norway including Svalbard - onshore and offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -26855,8 +26855,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25836</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 36N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>30.0,34.5,36.0,75.0</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 30°E and 36°E.</crs:AreaOfUse>
+                <crs:AreaOfUse>30.0,69.46,36.0,83.89</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 30°E and 36°E: Finland - onshore and offshore; Norway including Svalbard - onshore and offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -55702,8 +55702,8 @@
                 <crs:Id>urn:opengis:def:crs:epsg::25828</crs:Id>
                 <crs:Name>ETRS89 / UTM zone 28N</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
-                <crs:AreaOfUse>-18.0,56.83,-12.0,60.0</crs:AreaOfUse>
-                <crs:AreaOfUse>Europe - between 18°W and 12°W - United Kingdom (UKCS) offshore.</crs:AreaOfUse>
+                <crs:AreaOfUse>-16.1,34.93,-11.99,72.44</crs:AreaOfUse>
+                <crs:AreaOfUse>Europe between 18°W and 12°W: Faroe Islands - offshore; Ireland - offshore; Jan Mayen - offshore; Portugal - offshore mainland; Spain - offshore mainland; United Kingdom (UKCS) - offshore.</crs:AreaOfUse>
                 <crs:Axis>
                         <crs:Name>x</crs:Name>
                         <crs:Units>metre</crs:Units>
@@ -68383,5 +68383,27 @@
                 </crs:Axis>
                 <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
                 <crs:UsedProjection>epsg:4648</crs:UsedProjection>
+        </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>epsg:5650</crs:Id>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#5650</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::5650</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::5650</crs:Id>
+                <crs:Name>ETRS89 / UTM zone 33N (zE-N)</crs:Name>
+                <crs:Version>2012-11-26</crs:Version>
+                <crs:AreaOfUse>11.57,47.46,15.04,55.03</crs:AreaOfUse>
+                <crs:AreaOfUse>Germany - onshore and offshore east of 12°E, including Brandenburg (all state, including that part west of 12°E) and Mecklenburg-Vorpommern east of 12°E.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>epsg:4258</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:5648</crs:UsedProjection>
         </crs:ProjectedCRS>
 </crs:CRSDefinitions>

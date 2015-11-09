@@ -98,7 +98,6 @@ import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
-import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
@@ -117,9 +116,12 @@ import org.deegree.services.controller.exception.serializer.XMLExceptionSerializ
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
+import org.deegree.services.controller.watchdog.RequestWatchdog;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestTimeoutMilliseconds;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.resources.ResourcesServlet;
+import org.deegree.workspace.standard.ModuleInfo;
 import org.slf4j.Logger;
 
 /**
@@ -180,6 +182,8 @@ public class OGCFrontController extends HttpServlet {
     private transient String hardcodedResourcesUrl;
 
     private transient final ThreadLocal<RequestContext> CONTEXT = new ThreadLocal<RequestContext>();
+
+    private transient RequestWatchdog requestWatchdog;
 
     private transient SecurityConfiguration securityConfiguration;
 
@@ -251,7 +255,7 @@ public class OGCFrontController extends HttpServlet {
      * @return URL, never <code>null</code> (without trailing slash or question mark)
      */
     public static String getHttpPostURL() {
-        return getContext().getServiceUrl();
+        return getHttpURL();
     }
 
     /**
@@ -267,7 +271,7 @@ public class OGCFrontController extends HttpServlet {
      * @return URL (for GET requests), never <code>null</code> (with trailing question mark)
      */
     public static String getHttpGetURL() {
-        return getContext().getServiceUrl() + "?";
+        return getHttpURL() + "?";
     }
 
     /**
@@ -802,9 +806,11 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
             long dispatchTime = FrontControllerStats.requestDispatched();
             try {
+                watchTimeout( ows, request );
                 ows.doKVP( normalizedKVPParams, requestWrapper, response, multiParts );
             } finally {
                 FrontControllerStats.requestFinished( dispatchTime );
+                unwatchTimeout();
             }
         } catch ( SecurityException e ) {
             if ( credentialsProvider != null ) {
@@ -887,9 +893,11 @@ public class OGCFrontController extends HttpServlet {
                 LOG.debug( "Dispatching request to OWS: " + ows.getClass().getName() );
                 long dispatchTime = FrontControllerStats.requestDispatched();
                 try {
+                    watchTimeout( ows, xmlStream.getLocalName() );
                     ows.doXML( xmlStream, requestWrapper, response, multiParts );
                 } finally {
                     FrontControllerStats.requestFinished( dispatchTime );
+                    unwatchTimeout();
                 }
             }
         } catch ( SecurityException e ) {
@@ -1005,6 +1013,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.debug( "Dispatching request to OWS class: " + ows.getClass().getName() );
             long dispatchTime = FrontControllerStats.requestDispatched();
             try {
+                watchTimeout( ows, env.getSOAPBodyFirstElementLocalName() );
                 ows.doSOAP( env, requestWrapper, response, multiParts, factory );
             } finally {
                 FrontControllerStats.requestFinished( dispatchTime );
@@ -1131,6 +1140,12 @@ public class OGCFrontController extends HttpServlet {
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
         }
+        if ( mainConfig != null && !mainConfig.getRequestTimeoutMilliseconds().isEmpty() ) {
+            LOG.info( "Initializing request watchdog." );
+            initRequestWatchdog( mainConfig.getRequestTimeoutMilliseconds() );
+        } else {
+            LOG.info( "Not initializing request watchdog. No request time-outs configured." );
+        }
         LOG.info( "" );
     }
 
@@ -1155,11 +1170,19 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
+    private void initRequestWatchdog( final List<RequestTimeoutMilliseconds> timeoutConfigs ) {
+        requestWatchdog = new RequestWatchdog( timeoutConfigs );
+        requestWatchdog.init();
+    }
+
     private void destroyWorkspace() {
         LOG.info( "--------------------------------------------------------------------------------" );
         LOG.info( "Destroying workspace" );
         LOG.info( "--------------------------------------------------------------------------------" );
         workspace.destroyAll();
+        if ( requestWatchdog != null ) {
+            requestWatchdog.destroy();
+        }
         LOG.info( "" );
     }
 
@@ -1536,4 +1559,67 @@ public class OGCFrontController extends HttpServlet {
             res.setContentType( "application/xml" );
         }
     }
+
+    private void watchTimeout( final OWS ows, final String requestName ) {
+        if ( requestWatchdog != null ) {
+            final String serviceId = ows.getMetadata().getIdentifier().getId();
+            requestWatchdog.watchCurrentThread( serviceId, requestName );
+        }
+    }
+
+    private void unwatchTimeout() {
+        if ( requestWatchdog != null ) {
+            requestWatchdog.unwatchCurrentThread();
+        }
+    }
+
+    private static String getHttpURL() {
+        RequestContext context = getContext();
+        String xForwardedHost = context.getXForwardedHost();
+        if ( xForwardedHost != null && xForwardedHost != "" ) {
+            String contextServiceUrl = context.getServiceUrl();
+            try {
+                URL serviceUrl = new URL( contextServiceUrl );
+                return buildUrlFromForwardedHeader( context, serviceUrl );
+            } catch ( MalformedURLException e ) {
+                LOG.warn( "Could not parse service URL as URL: " + contextServiceUrl );
+            }
+        }
+        return context.getServiceUrl();
+    }
+
+    private static String buildUrlFromForwardedHeader( RequestContext context, URL serviceUrl )
+                            throws MalformedURLException {
+        String xForwardedPort = context.getXForwardedPort();
+        String xForwardedHost = context.getXForwardedHost();
+        String xForwardedProto = context.getXForwardedProto();
+
+        String protocol = parseProtocol( xForwardedProto, serviceUrl );
+        String port = parsePort( xForwardedPort, serviceUrl );
+        String path = serviceUrl.getPath();
+
+        StringBuffer urlBuilder = new StringBuffer();
+        urlBuilder.append( protocol ).append( "://" ).append( xForwardedHost );
+        if ( port != null )
+            urlBuilder.append( ":" ).append( port );
+        if ( path != null && !"".equals( path ) )
+            urlBuilder.append( path );
+        return urlBuilder.toString();
+    }
+
+    private static String parseProtocol( String xForwardedProto, URL serviceUrl ) {
+        if ( xForwardedProto != null && !"".equals( xForwardedProto ) )
+            return xForwardedProto;
+        else
+            return serviceUrl.getProtocol();
+    }
+
+    private static String parsePort( String xForwardedPort, URL serviceUrl ) {
+        if ( xForwardedPort != null && !"".equals( xForwardedPort ) )
+            return xForwardedPort;
+        else if ( serviceUrl.getPort() > -1 )
+            return Integer.toString( serviceUrl.getPort() );
+        return null;
+    }
+
 }

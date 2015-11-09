@@ -70,6 +70,7 @@ import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.slf4j.Logger;
+import org.deegree.sqldialect.AbstractSQLDialect;
 
 /**
  * {@link SQLDialect} for Oracle Spatial databases.
@@ -83,7 +84,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class OracleDialect implements SQLDialect {
+public class OracleDialect extends AbstractSQLDialect implements SQLDialect {
 
     private static final Logger LOG = getLogger( OracleDialect.class );
 

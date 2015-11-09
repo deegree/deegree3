@@ -88,6 +88,8 @@ public class LayerMetadata {
 
     private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
 
+    private boolean requestable = true;
+    
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
         this.description = description;
@@ -107,6 +109,14 @@ public class LayerMetadata {
 
     public Description getDescription() {
         return description;
+    }
+
+    public boolean isRequestable() {
+        return requestable;
+    }
+
+    public void setRequestable( boolean requestable ) {
+        this.requestable = requestable;
     }
 
     /**
@@ -155,13 +165,16 @@ public class LayerMetadata {
     }
 
     /**
-     * @return the queryable
+     * @return true if the layer can be queried
+     * @see MapOptions#getFeatureInfoRadius()
      */
     public boolean isQueryable() {
         if ( mapOptions == null ) {
             return true;
         }
-        return mapOptions.getFeatureInfoRadius() > 0;
+        
+        //TRICKY assume that, the service is query able by default (<0) 
+        return mapOptions.getFeatureInfoRadius() != 0;
     }
 
     /**

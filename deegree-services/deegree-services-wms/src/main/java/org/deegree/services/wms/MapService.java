@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms;
 
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
@@ -215,7 +216,12 @@ public class MapService {
         Iterator<MapOptions> optIter = mapOptions.iterator();
         for ( LayerData d : layerDataList ) {
             ctx.applyOptions( optIter.next() );
-            d.render( ctx );
+            try {
+                d.render( ctx );
+            } catch ( InterruptedException e ) {
+                String msg = "Request time-out.";
+                throw new OWSException( msg, NO_APPLICABLE_CODE );
+            }
         }
         ctx.optimizeAndDrawLabels();
 
@@ -225,7 +231,7 @@ public class MapService {
     private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
                                                                   List<String> headers, double scale,
                                                                   ListIterator<LayerQuery> queryIter )
-                                                                                          throws OWSException {
+                            throws OWSException {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
@@ -233,7 +239,7 @@ public class MapService {
             assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
-                                        || layer.getMetadata().getScaleDenominators().second < scale ) {
+                     || layer.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
                 if ( layer.isStyleApplicable( query.getStyle() ) ) {
@@ -283,9 +289,14 @@ public class MapService {
             LayerQuery query = queryIter.next();
             for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( n.getName() ) ) ) {
                 if ( l.getMetadata().getScaleDenominators().first > scale
-                                        || l.getMetadata().getScaleDenominators().second < scale ) {
+                     || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
+                
+                if (!l.getMetadata().isQueryable()) {
+                    continue;
+                }
+                
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -319,18 +330,11 @@ public class MapService {
             LayerRef lr = layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-            int layerRadius = 0;
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                if ( l.getMetadata().getMapOptions() != null
-                     && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
-                    layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
-                } else {
-                    layerRadius = defaultLayerOptions.getFeatureInfoRadius();
-                }
-            }
+            final int layerRadius = defaultLayerOptions.getFeatureInfoRadius();
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(), layerRadius );
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(),
+                                               layerRadius );
             queries.add( query );
         }
         return queries;
@@ -369,7 +373,7 @@ public class MapService {
         return getLegendHandler.getLegendSize( style );
     }
 
-    public BufferedImage getLegend( GetLegendGraphic req ) {
+    public BufferedImage getLegend( GetLegendGraphic req ) throws OWSException {
         return getLegendHandler.getLegend( req );
     }
 

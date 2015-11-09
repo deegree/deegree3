@@ -157,4 +157,9 @@ class RemoteWMSTileDataLevel implements TileDataLevel {
                                 overriddenParameters );
         return new RemoteWMSTile( client, gm, recodedOutputFormat, defaultGetFeatureInfo, hardGetFeatureInfo );
     }
+
+    @Override
+    public List<String> getStyles() {
+        return styles;
+    }
 }

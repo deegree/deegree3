@@ -237,10 +237,10 @@ Using the service console for managing resources
 
 As an alternative to dealing with the workspace resource configuration files directly on the filesystem, you can also use the service console for this task. The service console has a corresponding menu entry for every type of workspace resource. All resource menu entries are grouped in the lower menu on the left:
 
-.. figure:: images/console_resources.jpg
+.. figure:: images/console_resources.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_resources.jpg
+   :target: _images/console_resources.png
 
    Workspace resource menu entries
 
@@ -252,10 +252,10 @@ Displaying configured resources
 
 In order to display the configured workspace resources of a certain type, click on the corresponding menu entry. The following screenshot shows the metadata store resources in deegree-workspace-csw:
 
-.. figure:: images/console_metadata_stores.jpg
+.. figure:: images/console_metadata_stores.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_metadata_stores.jpg
+   :target: _images/console_metadata_stores.png
 
    Displaying metadata store resources
 
@@ -267,19 +267,19 @@ Deactivating a resource
 
 The "Deactivate" link allows to turn off a resource temporarily (while keeping the configuration):
 
-.. figure:: images/console_deactivate.jpg
+.. figure:: images/console_deactivate.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_deactivate.jpg
+   :target: _images/console_deactivate.png
 
    Deactivate action
 
 After clicking on "Deactivate", the status of the resource will be "Off", and the "Deactivate" link will change to "Activate". Also, the "Reload" link at the top will turn red to notify that there may be changes that need to be propagated to dependent resources:
 
-.. figure:: images/console_deactivated.jpg
+.. figure:: images/console_deactivated.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_deactivated.jpg
+   :target: _images/console_deactivated.png
 
    Deactivated a resource
 
@@ -292,19 +292,19 @@ Editing a resource
 
 By clicking on the "Edit" link, you can edit the corresponding XML configuration inside your browser:
 
-.. figure:: images/console_edit.jpg
+.. figure:: images/console_edit.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_edit.jpg
+   :target: _images/console_edit.png
 
    Edit action
 
 The XML configuration will be displayed:
 
-.. figure:: images/console_editing.jpg
+.. figure:: images/console_editing.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_editing.jpg
+   :target: _images/console_editing.png
 
    Editing a resource configuration
 
@@ -316,10 +316,10 @@ You can now perform configuration changes in the text area and click on "Save". 
 
 If there are no (syntactical) errors in the configuration, the "Save" link will take you back to the corresponding resource view. Before actually saving the file, the service console will perform an XML validation of the file and display any syntactical errors:
 
-.. figure:: images/console_edit_error.jpg
+.. figure:: images/console_edit_error.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_edit_error.jpg
+   :target: _images/console_edit_error.png
 
    Displaying a syntax error
 
@@ -331,10 +331,10 @@ Deleting a resource
 
 The "Delete" link will deactivate the resource and delete the corresponding configuration file from the workspace:
 
-.. figure:: images/console_delete.jpg
+.. figure:: images/console_delete.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_delete.jpg
+   :target: _images/console_delete.png
 
    Delete action
 
@@ -344,10 +344,10 @@ Creating a new resource
 
 In order to add a new resource, enter a new identifier in the text field, select a resource sub-type from the drop-down and click on "Create new":
 
-.. figure:: images/console_add.jpg
+.. figure:: images/console_add.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_add.jpg
+   :target: _images/console_add.png
 
    Adding a WMS resource with identifier "mywms"
 
@@ -361,37 +361,37 @@ Displaying error messages
 
 One of the most helpful features of the console is that it can help to detect and fix errors in a workspace setup. For example, if you delete (or deactivate) JDBC connection "conn1" in deegree-workspace-csw and click "[Reload]", you will see the following:
 
-.. figure:: images/console_error.jpg
+.. figure:: images/console_error.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_error.jpg
+   :target: _images/console_error.png
 
    Errors in resource categories
 
 The red exclamation marks near "services" and "metadata" show that these resource categories have resources with errors. Let's click on the metadata link to see what's going on:
 
-.. figure:: images/console_error2.jpg
+.. figure:: images/console_error2.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_error2.jpg
+   :target: _images/console_error2.png
 
    Resource "iso19115" has an error
 
 The metadata resource view reveals that the metadata store "iso19115" has an error. Clicking on "Show errors" leads to:
 
-.. figure:: images/console_error3.jpg
+.. figure:: images/console_error3.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_error3.jpg
+   :target: _images/console_error3.png
 
    Details on the problem with "iso19115"
 
 The error message gives an important hint: "No JDBC connection pool with id 'conn1' defined." deegree was unable to initialize the metadata store, because it refers to a JDBC connection pool "conn1". You may wonder what the error in the services category is about:
 
-.. figure:: images/console_error4.jpg
+.. figure:: images/console_error4.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_error4.jpg
+   :target: _images/console_error4.png
 
    Details on the problem with "csw"
 
@@ -456,10 +456,10 @@ Use a validating XML editor
 
 All deegree XML configuration files have a corresponding XML schema, which allows to detect syntactical errors easily. The editor built into the services console performs validation when you save a configuration file. If the contents is not valid according to the schema, the file will not be saved, but an error message will be displayed:
 
-.. figure:: images/console_edit_error.jpg
+.. figure:: images/console_edit_error.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_edit_error.jpg
+   :target: _images/console_edit_error.png
 
    The services console displays an XML syntax error
 
@@ -474,10 +474,10 @@ Check the resource status and error messages
 
 As pointed out in :ref:`anchor-console-errors`, the service console indicates errors if resources cannot be initialized. Here's an example:
 
-.. figure:: images/console_error3.jpg
+.. figure:: images/console_error3.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/console_error3.jpg
+   :target: _images/console_error3.png
 
    Error message
 

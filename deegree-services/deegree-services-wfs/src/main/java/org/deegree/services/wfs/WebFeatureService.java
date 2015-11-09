@@ -47,6 +47,18 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
+import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
+import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
 
 import java.io.IOException;
 import java.net.URL;
@@ -82,13 +94,13 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -156,10 +168,12 @@ import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.EnableTransactions;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
+import org.deegree.services.jaxb.wfs.RequestType;
 import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
@@ -167,6 +181,9 @@ import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
+import org.deegree.services.wfs.encoding.LimitedSupportedEncodings;
+import org.deegree.services.wfs.encoding.SupportedEncodings;
+import org.deegree.services.wfs.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
@@ -222,6 +239,8 @@ public class WebFeatureService extends AbstractOWS {
     private final Map<String, Format> mimeTypeToFormat = new LinkedHashMap<String, Format>();
 
     private final Map<GMLVersion, Format> gmlVersionToFormat = new HashMap<GMLVersion, Format>();
+
+    private SupportedEncodings supportedEncodings;
 
     private int queryMaxFeatures;
 
@@ -279,6 +298,135 @@ public class WebFeatureService extends AbstractOWS {
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
         mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
+
+        supportedEncodings = parseEncodings( jaxbConfig );
+    }
+
+    SupportedEncodings parseEncodings( DeegreeWFS jaxbConfig ) {
+        SupportedRequests supportedRequests = jaxbConfig.getSupportedRequests();
+        if ( supportedRequests != null ) {
+            if ( isAtLeastOneRequestTypeConfigured( supportedRequests )
+                 || isGlobalSupportedEncodingsConfigured( supportedRequests ) )
+                return parseEncodings( supportedRequests );
+        }
+        return new UnlimitedSupportedEncodings();
+    }
+
+    private LimitedSupportedEncodings parseEncodings( SupportedRequests supportedRequests ) {
+        List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
+        if ( isAtLeastOneRequestTypeConfigured( supportedRequests ) )
+            return parseEncodingsWithSpecifiedRequestTypes( supportedRequests, supportedEncodingsForAllRequestTypes );
+        else
+            return parseEncodingWithSupportedEncodings( supportedEncodingsForAllRequestTypes );
+    }
+
+    private LimitedSupportedEncodings parseEncodingWithSupportedEncodings( List<String> supportedEncodingsForAllRequestTypes ) {
+        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeStoredQueries,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DropStoredQuery,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeature,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeatureWithLock,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetGmlObject,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetPropertyValue,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( ListStoredQueries,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( LockFeature,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( Transaction,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        return limitedSupportedEncodings;
+    }
+
+    private LimitedSupportedEncodings parseEncodingsWithSpecifiedRequestTypes( SupportedRequests supportedRequests,
+                                                                               List<String> supportedEncodingsForAllRequestTypes ) {
+        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
+                                                       collectEnabledEncodings( supportedRequests.getCreateStoredQuery(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
+                                                       collectEnabledEncodings( supportedRequests.getDescribeFeatureType(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeStoredQueries,
+                                                       collectEnabledEncodings( supportedRequests.getDescribeStoredQueries(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DropStoredQuery,
+                                                       collectEnabledEncodings( supportedRequests.getDropStoredQuery(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
+                                                       collectEnabledEncodings( supportedRequests.getGetCapabilities(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeature,
+                                                       collectEnabledEncodings( supportedRequests.getGetFeature(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeatureWithLock,
+                                                       collectEnabledEncodings( supportedRequests.getGetFeatureWithLock(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetGmlObject,
+                                                       collectEnabledEncodings( supportedRequests.getGetGmlObject(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetPropertyValue,
+                                                       collectEnabledEncodings( supportedRequests.getGetPropertyValue(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( ListStoredQueries,
+                                                       collectEnabledEncodings( supportedRequests.getListStoredQueries(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( LockFeature,
+                                                       collectEnabledEncodings( supportedRequests.getLockFeature(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( Transaction,
+                                                       collectEnabledEncodings( supportedRequests.getTransaction(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        return limitedSupportedEncodings;
+    }
+
+    private boolean isGlobalSupportedEncodingsConfigured( SupportedRequests supportedRequests ) {
+        List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
+        return supportedEncodingsForAllRequestTypes != null && !supportedEncodingsForAllRequestTypes.isEmpty();
+    }
+
+    private boolean isAtLeastOneRequestTypeConfigured( SupportedRequests supportedRequests ) {
+        return supportedRequests.getCreateStoredQuery() != null || supportedRequests.getDescribeFeatureType() != null
+               || supportedRequests.getDescribeStoredQueries() != null
+               || supportedRequests.getDropStoredQuery() != null || supportedRequests.getGetCapabilities() != null
+               || supportedRequests.getGetFeature() != null || supportedRequests.getGetFeatureWithLock() != null
+               || supportedRequests.getGetGmlObject() != null || supportedRequests.getGetPropertyValue() != null
+               || supportedRequests.getListStoredQueries() != null || supportedRequests.getLockFeature() != null
+               || supportedRequests.getTransaction() != null;
+    }
+
+    private Set<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
+                                                 List<String> supportedEncodingsForAllTypes ) {
+        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
+        if ( supportedEncodingsForThisType != null ) {
+            allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
+            List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
+            if ( encodingsForThisType != null && encodingsForThisType.size() > 0 ) {
+                allEnabledEncodingForThisType.addAll( encodingsForThisType );
+            } else if ( supportedEncodingsForAllTypes == null || supportedEncodingsForAllTypes.isEmpty() ) {
+                allEnabledEncodingForThisType.add( "kvp" );
+                allEnabledEncodingForThisType.add( "xml" );
+                allEnabledEncodingForThisType.add( "soap" );
+            }
+        }
+        return allEnabledEncodingForThisType;
+    }
+
+    private Set<String> collectEnabledEncodings( List<String> supportedEncodingsForAllTypes ) {
+        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
+        allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
+        return allEnabledEncodingForThisType;
     }
 
     private IDGenMode parseIdGenMode( IdentifierGenerationOptionType idGen ) {
@@ -461,10 +609,14 @@ public class WebFeatureService extends AbstractOWS {
                 List<LanguageString> abstracts = null;
                 // TODO
                 List<Pair<List<LanguageString>, CodeType>> keywords = null;
-                String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+                final String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                if ( url != null ) {
+                    metadataUrls.add( new MetadataUrl( url, null, null ) );
+                }
                 try {
-                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords, url,
-                                                                Collections.<StringPair> emptyList() );
+                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,
+                                                                metadataUrls, null, null, null, null );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
@@ -532,6 +684,11 @@ public class WebFeatureService extends AbstractOWS {
             requestVersion = getVersion( kvpParamsUC.get( "VERSION" ) );
             String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
             WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            if ( !supportedEncodings.isEncodingSupported( requestType, "KVP" ) ) {
+                throw new OWSException( "GET/KVP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
 
             // check if requested version is supported and offered (except for GetCapabilities)
             if ( requestType != WFSRequestType.GetCapabilities ) {
@@ -662,6 +819,11 @@ public class WebFeatureService extends AbstractOWS {
         try {
             String requestName = xmlStream.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            if ( !supportedEncodings.isEncodingSupported( requestType, "XML" ) ) {
+                throw new OWSException( "POST/XML is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
 
             // check if requested version is supported and offered (except for GetCapabilities)
             requestVersion = getVersion( XMLStreamUtils.getAttributeValue( xmlStream, "version" ) );
@@ -817,6 +979,11 @@ public class WebFeatureService extends AbstractOWS {
 
             String requestName = body.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            if ( !supportedEncodings.isEncodingSupported( requestType, "SOAP" ) ) {
+                throw new OWSException( "POST/SOAP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
 
             // check if requested version is supported and offered (except for GetCapabilities)
             requestVersion = getVersion( body.getAttributeValue( new QName( "version" ) ) );
@@ -990,17 +1157,17 @@ public class WebFeatureService extends AbstractOWS {
         XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
         GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
                                                                      sortedFts, sectionsUC, enableTransactions,
-                                                                     queryCRS, mdProvider );
+                                                                     queryCRS, supportedEncodings, mdProvider );
         adapter.export();
         xmlWriter.flush();
     }
 
     private Collection<FeatureType> getFeatureTypesToExport() {
         if ( mdProvider.getDatasetMetadata() != null && !mdProvider.getDatasetMetadata().isEmpty() ) {
-            LOG.debug ("Dataset metadata available. Only announcing feature types with metadata.");
+            LOG.debug( "Dataset metadata available. Only announcing feature types with metadata." );
             return getFeatureTypesWithMetadata();
         }
-        LOG.debug ("No dataset metadata available. Announcing feature types from all feature stores.");
+        LOG.debug( "No dataset metadata available. Announcing feature types from all feature stores." );
         return getAllFeatureTypes();
     }
 

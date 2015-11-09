@@ -41,6 +41,8 @@
 
 package org.deegree.tile.persistence.cache;
 
+import java.util.List;
+
 import net.sf.ehcache.Cache;
 
 import org.deegree.tile.Tile;
@@ -83,6 +85,11 @@ public class CachingTileMatrix implements TileDataLevel {
         }
         String key = identifier + "_" + x + "_" + y;
         return new CachedTile( tile, cache, key );
+    }
+
+    @Override
+    public List<String> getStyles() {
+        return null;
     }
 
 }
