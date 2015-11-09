@@ -212,6 +212,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     xmlStream.writeAttribute( "lockId", lock.getId() );
                 }
             }
+            prebindNamespaces( xmlStream, format.getGmlFormatOptions().getPrebindNamespaces() );
         } else if ( request.getVersion().equals( VERSION_110 ) ) {
             if ( responseContainerEl != null ) {
                 xmlStream.setPrefix( responseContainerEl.getPrefix(), responseContainerEl.getNamespaceURI() );
@@ -226,6 +227,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                 }
                 xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             }
+            prebindNamespaces( xmlStream, format.getGmlFormatOptions().getPrebindNamespaces() );
         } else if ( request.getVersion().equals( VERSION_200 ) && ( !isGetFeatureById ) ) {
             xmlStream.setPrefix( "wfs", WFS_200_NS );
             xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
@@ -234,8 +236,8 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             if ( lock != null ) {
                 xmlStream.writeAttribute( "lockId", lock.getId() );
             }
+            prebindNamespaces( xmlStream, format.getGmlFormatOptions().getPrebindNamespaces() );
         }
-        prebindNamespaces( xmlStream, format.getGmlFormatOptions().getPrebindNamespaces() );
 
         if ( !isGetFeatureById ) {
             // ensure that namespace for feature member elements is bound
