@@ -467,21 +467,23 @@ public class Filter200XMLEncoder {
 
     private static void export( Expression expression, XMLStreamWriter writer )
                             throws XMLStreamException {
-        Type expressionType = expression.getType();
-        switch ( expressionType ) {
-        case VALUE_REFERENCE:
-            export( (ValueReference) expression, writer );
-            break;
-        case LITERAL:
-            export( (Literal<?>) expression, writer );
-            break;
-        case FUNCTION:
-            export( (Function) expression, writer );
-            break;
-        case CUSTOM:
-        default:
-            throw new IllegalArgumentException( "Encoding of expression type " + expressionType
-                                                + " is not supported yet!" );
+        if ( expression != null ) {
+            Type expressionType = expression.getType();
+            switch ( expressionType ) {
+            case VALUE_REFERENCE:
+                export( (ValueReference) expression, writer );
+                break;
+            case LITERAL:
+                export( (Literal<?>) expression, writer );
+                break;
+            case FUNCTION:
+                export( (Function) expression, writer );
+                break;
+            case CUSTOM:
+            default:
+                throw new IllegalArgumentException( "Encoding of expression type " + expressionType
+                                                    + " is not supported yet!" );
+            }
         }
     }
 
