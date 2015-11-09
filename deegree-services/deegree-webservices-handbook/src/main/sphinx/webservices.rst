@@ -458,7 +458,7 @@ Here is an example snippet of the content section:
 Custom capabilities formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``text/html`` can be configured to be available as response format for GetCapabilities requests. A XSLT script is used to generate the HTML output.
+Any mime type can be configured to be available as response format for GetCapabilities requests, although the most commonly used is probably ``text/html``. A XSLT script is used to generate the output.
 
 This is how the configuration section looks like:
 
@@ -470,6 +470,8 @@ This is how the configuration section looks like:
       <Format>text/html</Format>
     </GetCapabilitiesFormat>
   </GetCapabilitiesFormats>
+
+Of course it is possible to define as many custom formats as you want, as long as you use a different mime type for each (just duplicate the ``GetCapabilitiesFormat`` element). If you use one of the default formats, the default output will be overridden with your configuration.
 
 .. _anchor-featureinfo-configuration:
 
@@ -690,7 +692,7 @@ This is how the configuration section looks like for configuring only ``image/pn
 Custom exception formats
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-``text/html`` can be configured to be available as response format for Exceptions. A XSLT script is used to generate the HTML output.
+Any mime type can be configured to be available as response format for Exceptions, although the most commonly used is probably ``text/html``. A XSLT script is used to generate the output.
 
 This is how the configuration section looks like:
 
@@ -702,6 +704,8 @@ This is how the configuration section looks like:
       <Format>text/html</Format>
     </ExceptionFormat>
   </ExceptionFormats>
+
+Of course it is possible to define as many custom formats as you want, as long as you use a different mime type for each (just duplicate the ``ExceptionFormat`` element). If you use one of the default formats, the default output will be overridden with your configuration.
 
 ^^^^^^^^^^^^^^^^^^^^^
 Extended capabilities
