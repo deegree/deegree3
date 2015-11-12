@@ -50,18 +50,13 @@ import java.util.UUID;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TransactionRow;
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConversion;
 import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
-import org.deegree.feature.persistence.version.VersionMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -297,45 +292,6 @@ public abstract class InsertRow extends TransactionRow {
     @Override
     public String toString() {
         return getSql();
-    }
-
-    public String retrieveVersion( Connection conn, VersionMapping versionMapping, String fid )
-                            throws SQLException {
-        if ( versionMapping != null ) {
-            String versionSql = getVersionSql( versionMapping );
-            PreparedStatement stmt = conn.prepareStatement( versionSql );
-
-            Pair<SQLIdentifier, PrimitiveType> idColumn = versionMapping.getIdColumn();
-            DefaultPrimitiveConverter idConverter = new DefaultPrimitiveConverter( idColumn.getSecond(),
-                                                                                   idColumn.getFirst().getName() );
-            PrimitiveValue idParticle = new PrimitiveValue( columnToObject.get( idColumn.getFirst() ) );
-            idConverter.setParticle( stmt, idParticle, 1 );
-
-            ResultSet rs = stmt.executeQuery();
-            if ( rs.next() ) {
-                Pair<SQLIdentifier, PrimitiveType> versionColumn = versionMapping.getVersionColumn();
-                DefaultPrimitiveConverter versionConverter = new DefaultPrimitiveConverter(
-                                                                                            versionColumn.getSecond(),
-                                                                                            versionColumn.getFirst().getName() );
-                PrimitiveValue resultParticle = versionConverter.toParticle( rs, 1 );
-                if ( resultParticle != null )
-                    return resultParticle.getAsText();
-            }
-            stmt.close();
-        }
-        return null;
-    }
-
-    private String getVersionSql( VersionMapping versionMapping ) {
-        StringBuilder sql = new StringBuilder();
-        sql.append( "SELECT " );
-        sql.append( versionMapping.getVersionColumn().getFirst() );
-        sql.append( " FROM " );
-        sql.append( table );
-        sql.append( " WHERE " );
-        sql.append( versionMapping.getIdColumn().getFirst() );
-        sql.append( " = ? " );
-        return sql.toString();
     }
 
 }

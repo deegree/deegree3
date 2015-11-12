@@ -546,8 +546,8 @@ class TransactionHandler {
         }
 
         try {
-            List<String> updatedFids = ta.performUpdate( ftName, replacementProps, filter, lock );
-            for ( String updatedFid : updatedFids ) {
+            List<FeatureMetadata> updatedFids = ta.performUpdate( ftName, replacementProps, filter, lock );
+            for ( FeatureMetadata updatedFid : updatedFids ) {
                 this.updated.add( updatedFid, update.getHandle() );
             }
         } catch ( FeatureStoreException e ) {

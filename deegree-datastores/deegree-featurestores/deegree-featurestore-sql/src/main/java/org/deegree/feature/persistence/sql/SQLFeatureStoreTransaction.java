@@ -91,8 +91,10 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.version.VersionQueryHandler;
 import org.deegree.feature.persistence.transaction.FeatureUpdater;
 import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -139,6 +141,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     // TODO
     private ParticleConverter<Geometry> blobGeomConverter;
+
+    private VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
 
     /**
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
@@ -737,12 +741,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
-                                       Lock lock )
+    public List<FeatureMetadata> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                Filter filter, Lock lock )
                             throws FeatureStoreException {
         LOG.debug( "Updating feature type '" + ftName + "', filter: " + filter + ", replacement properties: "
                    + replacementProps.size() );
-        List<String> updatedFids = null;
+        List<FeatureMetadata> updatedFids = null;
         if ( blobMapping != null ) {
             updatedFids = performUpdateBlob( ftName, replacementProps, filter, lock );
         } else {
@@ -752,10 +756,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return updatedFids;
     }
 
-    private List<String> performUpdateBlob( final QName ftName, final List<ParsedPropertyReplacement> replacementProps,
-                                            final Filter filter, final Lock lock )
+    private List<FeatureMetadata> performUpdateBlob( final QName ftName,
+                                                     final List<ParsedPropertyReplacement> replacementProps,
+                                                     final Filter filter, final Lock lock )
                             throws FeatureStoreException {
-        final List<String> updatedFids = new ArrayList<String>();
+        final List<FeatureMetadata> updatedFids = new ArrayList<FeatureMetadata>();
         final Query query = new Query( ftName, filter, -1, -1, -1 );
         final StringBuilder sql = new StringBuilder( "UPDATE " );
         sql.append( blobMapping.getTable() );
@@ -775,7 +780,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             for ( final Feature feature : features ) {
                 new FeatureUpdater().update( feature, replacementProps );
                 updateFeatureBlob( blobUpdateStmt, feature );
-                updatedFids.add( feature.getId() );
+                updatedFids.add( new FeatureMetadata( feature.getId() ) );
             }
         } catch ( final Exception e ) {
             final String msg = "Error while performing Update (BLOB): " + e.getMessage();
@@ -831,8 +836,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return bytes;
     }
 
-    private List<String> performUpdateRelational( QName ftName, List<ParsedPropertyReplacement> replacementProps,
-                                                  Filter filter )
+    private List<FeatureMetadata> performUpdateRelational( QName ftName,
+                                                           List<ParsedPropertyReplacement> replacementProps,
+                                                           Filter filter )
                             throws FeatureStoreException {
         IdFilter idFilter = null;
         try {
@@ -844,7 +850,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
         }
-        List<String> updated = null;
+        List<FeatureMetadata> updated = null;
         if ( blobMapping != null ) {
             throw new FeatureStoreException( "Updates in SQLFeatureStore (BLOB mode) are currently not implemented." );
         } else {
@@ -863,9 +869,10 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return updated;
     }
 
-    private List<String> performUpdateRelational( QName ftName, List<ParsedPropertyReplacement> replacementProps,
-                                                  IdFilter filter )
-                            throws FeatureStoreException, FilterEvaluationException {
+    private List<FeatureMetadata> performUpdateRelational( QName ftName,
+                                                           List<ParsedPropertyReplacement> replacementProps,
+                                                           IdFilter filter )
+                            throws FeatureStoreException, FilterEvaluationException, SQLException {
 
         FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
@@ -892,7 +899,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             JDBCUtils.close( stmt );
         }
         LOG.debug( "Updated {} features.", updated );
-        return new ArrayList<String>( filter.getMatchingIds() );
+        List<ResourceId> selectedIds = filter.getSelectedIds();
+
+        VersionMapping versionMapping = ftMapping.getVersionMapping();
+        if ( versionMapping != null ) {
+            return convertToFeatureMetadataWithVersion( ftMapping, selectedIds );
+        }
+        return convertToFeatureMetadataWithoutVersion( selectedIds );
     }
 
     private void setRelationalUpdateValues( List<ParsedPropertyReplacement> replacementProps,
@@ -1045,6 +1058,34 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             Feature f = featureType.newFeature( id.getRid(), props, null );
             mgr.updateFeature( f, ftMapping, analysis.getIdKernels(), mapping, replacement );
         }
+    }
+
+    private List<FeatureMetadata> convertToFeatureMetadataWithoutVersion( List<ResourceId> selectedIds ) {
+        List<FeatureMetadata> featureMetadatas = new ArrayList<FeatureMetadata>( selectedIds.size() );
+        for ( ResourceId selectedId : selectedIds ) {
+            featureMetadatas.add( new FeatureMetadata( selectedId.getRid() ) );
+        }
+        return featureMetadatas;
+    }
+
+    private List<FeatureMetadata> convertToFeatureMetadataWithVersion( FeatureTypeMapping featureTypeMapping,
+                                                                       List<ResourceId> selectedIds )
+                            throws SQLException {
+        List<FeatureMetadata> featureMetadatas = new ArrayList<FeatureMetadata>( selectedIds.size() );
+        for ( ResourceId selectedId : selectedIds ) {
+            IdAnalysis analysis = schema.analyzeId( selectedId.getRid() );
+            String[] idKernels = analysis.getIdKernels();
+            if ( idKernels.length > 1 )
+                LOG.warn( "Versioning is not support yet for more then one FID column." );
+            if ( idKernels.length == 1 ) {
+                String idKernel = idKernels[0];
+                PrimitiveValue idValue = new PrimitiveValue( idKernel );
+                String version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping.getFtTable(),
+                                                                      featureTypeMapping.getVersionMapping(), idValue );
+                featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version ) );
+            }
+        }
+        return featureMetadatas;
     }
 
     private IdFilter getIdFilter( QName ftName, OperatorFilter filter )

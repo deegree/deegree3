@@ -516,8 +516,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
-                                       Lock lock )
+    public List<FeatureMetadata> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                Filter filter, Lock lock )
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
@@ -528,7 +528,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         FeatureCollection fc = sf.getFeatures( ft );
-        List<String> updatedFids = new ArrayList<String>();
+        List<FeatureMetadata> updatedFids = new ArrayList<FeatureMetadata>();
         if ( fc != null ) {
             try {
                 TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
@@ -547,7 +547,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
 
                 for ( Feature feature : update ) {
-                    updatedFids.add( feature.getId() );
+                    updatedFids.add( new FeatureMetadata( feature.getId() ) );
                     new FeatureUpdater().update( feature, replacementProps );
                     if ( lock != null ) {
                         lock.release( feature.getId() );

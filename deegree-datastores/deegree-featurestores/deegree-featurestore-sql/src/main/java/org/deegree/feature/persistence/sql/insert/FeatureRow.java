@@ -44,6 +44,7 @@ import java.util.Set;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -51,6 +52,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.version.VersionQueryHandler;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
@@ -131,7 +133,9 @@ public class FeatureRow extends InsertRow {
             throw new FeatureStoreException( msg );
         }
 
-        version = retrieveVersion( conn, versionMapping, origFid );
+        VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
+        PrimitiveValue idValue = new PrimitiveValue( columnToObject.get( versionMapping.getIdColumn().getFirst() ) );
+        version = versionQueryHandler.retrieveVersion( conn, table, versionMapping, idValue );
 
         // clear everything, but keep key columns (values may still be needed by referencing rows)
         Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();

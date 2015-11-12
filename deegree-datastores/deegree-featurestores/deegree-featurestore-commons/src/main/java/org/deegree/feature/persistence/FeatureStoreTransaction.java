@@ -98,7 +98,7 @@ public interface FeatureStoreTransaction {
      *            features to be inserted, must not be <code>null</code>
      * @param mode
      *            mode for deriving the ids of the inserted objects, must not be <code>null</code>
-     * @return effective {@link FeatureMetadata}s (containig at least the id) of the inserted feature and subfeatures
+     * @return effective {@link FeatureMetadata}s (containing at least the id) of the inserted feature and subfeatures
      *         (in document order)
      * @throws FeatureStoreException
      *             if the insertion fails
@@ -117,12 +117,13 @@ public interface FeatureStoreTransaction {
      *            selects the feature instances that are to be updated, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
-     * @return ids of updated feature instances, never <code>null</code>
+     * @return {@link FeatureMetadata}s (containing at least the id) of updated feature instances, never
+     *         <code>null</code>
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
-                                       Lock lock )
+    public List<FeatureMetadata> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                Filter filter, Lock lock )
                             throws FeatureStoreException;
 
     /**
