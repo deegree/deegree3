@@ -48,6 +48,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.BasicStroke;
 import java.awt.Font;
+import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
@@ -67,6 +68,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.rendering.r2d.strokes.HaloStroke;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.style.styling.TextStyling;
@@ -210,18 +212,23 @@ public class Java2DTextRenderer implements TextRenderer {
     }
 
     void render( TextStyling styling, Font font, String text, Curve c ) {
-        renderer.rendererContext.fillRenderer.applyFill( styling.fill, styling.uom );
         java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
         if ( isZero( ( (TextStroke) stroke ).getLineHeight() ) ) {
             return;
         }
-        if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
-                                       styling.linePlacement.perpendicularOffsetType );
+        stroke = applyOffset( styling, stroke );
+        Double line = renderer.rendererContext.geomHelper.fromCurve( c, false );
+        if ( styling.halo != null ) {
+            Stroke haloStroke = new HaloStroke( text, font, styling.linePlacement, styling.halo, styling.uom,
+                                                renderer.rendererContext.uomCalculator );
+            haloStroke = applyOffset( styling, haloStroke );
+            renderer.rendererContext.fillRenderer.applyFill( styling.halo.fill, styling.uom );
+            renderer.graphics.setStroke( haloStroke );
+            renderer.graphics.draw( line );
         }
 
+        renderer.rendererContext.fillRenderer.applyFill( styling.fill, styling.uom );
         renderer.graphics.setStroke( stroke );
-        Double line = renderer.rendererContext.geomHelper.fromCurve( c, false );
         renderer.graphics.draw( line );
     }
 
@@ -256,6 +263,14 @@ public class Java2DTextRenderer implements TextRenderer {
         if ( styling.font.fontStyle == Style.OBLIQUE && shear != null )
             font = font.deriveFont( shear );
         return font;
+    }
+
+    private java.awt.Stroke applyOffset( TextStyling styling, java.awt.Stroke stroke ) {
+        if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
+            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke,
+                                       styling.linePlacement.perpendicularOffsetType );
+        }
+        return stroke;
     }
 
 }
