@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -93,12 +94,16 @@ import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.FIDMappingColumnJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -150,7 +155,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     public MappedSchemaBuilderGML( String configURL, List<String> gmlSchemas, StorageCRS storageCRS,
                                    List<NamespaceHint> nsHints, BLOBMapping blobConf,
                                    List<FeatureTypeMappingJAXB> ftMappingConfs, boolean deleteCascadingByDB )
-                            throws FeatureStoreException {
+                            throws FeatureStoreException, SQLException {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
 
@@ -316,18 +321,20 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
     }
 
     private FeatureTypeMapping buildFtMapping( FeatureTypeMappingJAXB ftMappingConf )
-                            throws FeatureStoreException {
+                            throws FeatureStoreException, SQLException {
 
         QName ftName = ftMappingConf.getName();
         TableName ftTable = new TableName( ftMappingConf.getTable() );
         FIDMapping fidMapping = buildFIDMapping( ftTable, ftName, ftMappingConf.getFIDMapping() );
+        VersionMapping versionMapping = buildVersionMapping( ftMappingConf.getVersionMapping() );
+
         List<Mapping> particleMappings = new ArrayList<Mapping>();
         XSElementDeclaration elDecl = gmlSchema.getGMLSchema().getElementDecl( ftName );
         for ( JAXBElement<? extends AbstractParticleJAXB> particle : ftMappingConf.getAbstractParticle() ) {
             particleMappings.add( buildMapping( ftTable, new Pair<XSElementDeclaration, Boolean>( elDecl, TRUE ),
                                                 particle.getValue() ) );
         }
-        return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings );
+        return new FeatureTypeMapping( ftName, ftTable, fidMapping, versionMapping, particleMappings );
     }
 
     private FIDMapping buildFIDMapping( TableName table, QName ftName, FIDMappingJAXB config )
@@ -358,6 +365,25 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
         return new FIDMapping( prefix, "_", columns, generator );
+    }
+
+    private VersionMapping buildVersionMapping( VersionMappingJAXB versionMapping )
+                            throws SQLException {
+        if ( versionMapping != null ) {
+            VersionColumnJAXB configuredVersionColumn = versionMapping.getVersionColumn();
+            SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
+            PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
+            Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
+                                                                                                       versionSqlIdentifier,
+                                                                                                       versionType );
+            FIDMappingColumnJAXB configuredIdColumn = versionMapping.getFIDMappingColumn();
+            SQLIdentifier idSqlIdentifier = new SQLIdentifier( configuredIdColumn.getName() );
+            PrimitiveType idType = new PrimitiveType( getPrimitiveType( configuredIdColumn.getType() ) );
+            Pair<SQLIdentifier, PrimitiveType> idColumn = new Pair<SQLIdentifier, PrimitiveType>( idSqlIdentifier,
+                                                                                                  idType );
+            return new VersionMapping( versionColumn, idColumn );
+        }
+        return null;
     }
 
     private Mapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
@@ -470,4 +496,5 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
         return false;
     }
+
 }
