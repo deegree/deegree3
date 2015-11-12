@@ -62,10 +62,12 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController;
 import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities130ThemeWriter;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
@@ -185,9 +187,7 @@ public class Capabilities130XMLAdapter {
 
         metadataWriter.writeRequest( writer );
         writer.writeStartElement( WMSNS, "Exception" );
-        writeElement( writer, "Format", "XML" );
-        writeElement( writer, "Format", "INIMAGE" );
-        writeElement( writer, "Format", "BLANK" );
+        writeExceptionFormats( writer );
         writer.writeEndElement();
 
         writeExtendedCapabilities( writer );
@@ -281,6 +281,14 @@ public class Capabilities130XMLAdapter {
             writer.writeEndElement();
         }
         writer.writeEndElement();
+    }
+
+    private void writeExceptionFormats( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        ExceptionsManager exceptionsManager = controller.getExceptionsManager();
+        for ( String format : exceptionsManager.getSupportedFormats( WMSConstants.VERSION_130 ) ) {
+            writeElement( writer, "Format", format );
+        }
     }
 
 }

@@ -75,7 +75,7 @@ public abstract class XMLExceptionSerializer implements ExceptionSerializer {
      * @throws XMLStreamException
      *             if an error occurred while serializing the given exception.
      */
-    protected abstract void serializeExceptionToXML( XMLStreamWriter writer, OWSException exception )
+    public abstract void serializeExceptionToXML( XMLStreamWriter writer, OWSException exception )
                             throws XMLStreamException;
 
 }
