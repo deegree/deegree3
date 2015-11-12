@@ -66,6 +66,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -560,10 +561,53 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             if ( propType.derivedFrom( GML_32_NS, "FeaturePropertyType",
                                        (short) ( XSConstants.DERIVATION_RESTRICTION | XSConstants.DERIVATION_EXTENSION
                                                  | XSConstants.DERIVATION_UNION | XSConstants.DERIVATION_LIST ) ) ) {
+                XSParticle particle = getEnclosingParticle( propDecl );
+                if ( particle != null ) {
+                    int maxOccurs = particle.getMaxOccurs();
+                    boolean maxOccursUnbounded = particle.getMaxOccursUnbounded();
+                    return maxOccurs > 1 || maxOccursUnbounded;
+                }
                 return true;
             }
         }
         return false;
+    }
+    
+    private XSParticle getEnclosingParticle( XSElementDeclaration elDecl ) {
+        XSComplexTypeDefinition enclosingDef = elDecl.getEnclosingCTDefinition();
+        if ( enclosingDef != null ) {
+            List<XSParticle> particles = getAllElementParticles( enclosingDef.getParticle() );
+            for ( XSParticle xp : particles ) {
+                XSTerm term = xp.getTerm();
+                if ( term.getType() == ELEMENT_DECLARATION ) {
+                    XSElementDeclaration currentElDecl = (XSElementDeclaration) term;
+                    if ( elDecl.equals( currentElDecl ) ) {
+                        return xp;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private List<XSParticle> getAllElementParticles( XSParticle particle ) {
+        List<XSParticle> particles = new ArrayList<XSParticle>();
+        XSTerm xsTerm = particle.getTerm();
+        switch ( xsTerm.getType() ) {
+        case XSConstants.ELEMENT_DECLARATION:
+            particles.add( particle );
+            break;
+        case XSConstants.MODEL_GROUP:
+            XSModelGroup group = (XSModelGroup) xsTerm;
+            for ( Iterator<XSParticle> itr = group.getParticles().iterator(); itr.hasNext(); ) {
+                XSParticle xsParticle = itr.next();
+                particles.addAll( getAllElementParticles( xsParticle ) );
+            }
+            break;
+        default:
+            // ignore wildcard term
+        }
+        return particles;
     }
 
     private List<XSElementDeclaration> getPropertyDecls( XSComplexTypeDecl type ) {
