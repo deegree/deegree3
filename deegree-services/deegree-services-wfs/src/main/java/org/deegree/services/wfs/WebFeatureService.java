@@ -960,7 +960,6 @@ public class WebFeatureService extends AbstractOWS {
         Version requestVersion = null;
         try {
             if ( soapDoc.getVersion() instanceof SOAP11Version ) {
-                response.setContentType( "application/soap+xml" );
                 XMLStreamWriter xmlWriter = response.getXMLWriter();
                 String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
                 String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
@@ -1086,6 +1085,7 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             endSOAPResponse( response );
+            response.setContentType( "application/soap+xml" );
 
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
