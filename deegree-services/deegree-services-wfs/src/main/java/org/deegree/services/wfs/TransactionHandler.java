@@ -63,7 +63,6 @@ import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -130,6 +129,8 @@ import org.deegree.protocol.wfs.transaction.action.Update;
 import org.deegree.protocol.wfs.transaction.action.UpdateAction;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
+import org.deegree.services.wfs.version.DefaultResourceIdConverter;
+import org.deegree.services.wfs.version.ResourceIdConverter;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -157,6 +158,8 @@ class TransactionHandler {
     private final WfsFeatureStoreManager service;
 
     private final Transaction request;
+
+    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     private final Map<FeatureStore, FeatureStoreTransaction> acquiredTransactions = new HashMap<FeatureStore, FeatureStoreTransaction>();
 
@@ -406,8 +409,7 @@ class TransactionHandler {
             }
             List<FeatureMetadata> newFeatureMetadatas = ta.performInsert( fc, mode );
             for ( FeatureMetadata newFeatureMetadata : newFeatureMetadatas ) {
-                String newFid = newFeatureMetadata.getFid();
-                inserted.add( newFid, insert.getHandle() );
+                inserted.add( newFeatureMetadata, insert.getHandle() );
             }
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
@@ -716,21 +718,20 @@ class TransactionHandler {
             for ( String handle : inserted.getHandles() ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
                 writeHandle( xmlWriter, handle );
-                Collection<String> fids = inserted.getFids( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
+                for ( FeatureMetadata featureMetadata : inserted.getFids( handle ) ) {
+                    LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", fid );
+                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
             }
             if ( !inserted.getFidsWithoutHandle().isEmpty() ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
-                for ( String fid : inserted.getFidsWithoutHandle() ) {
-                    LOG.debug( "Inserted fid: " + fid );
+                for ( FeatureMetadata featureMetadata : inserted.getFidsWithoutHandle() ) {
+                    LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", fid );
+                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
@@ -783,22 +784,21 @@ class TransactionHandler {
         if ( inserted.getTotal() > 0 ) {
             xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
             for ( String handle : inserted.getHandles() ) {
-                Collection<String> fids = inserted.getFids( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
+                for ( FeatureMetadata featureMetadata : inserted.getFids( handle ) ) {
+                    LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( WFS_NS, "Feature" );
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                    xmlWriter.writeAttribute( "fid", fid );
+                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
             }
-            for ( String fid : inserted.getFidsWithoutHandle() ) {
-                LOG.debug( "Inserted fid: " + fid );
+            for ( FeatureMetadata featureMetadata : inserted.getFidsWithoutHandle() ) {
+                LOG.debug( "Inserted fid: " + featureMetadata );
                 xmlWriter.writeStartElement( WFS_NS, "Feature" );
                 xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                xmlWriter.writeAttribute( "fid", fid );
+                xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
@@ -845,21 +845,20 @@ class TransactionHandler {
         if ( results.getTotal() > 0 ) {
             xmlWriter.writeStartElement( WFS_200_NS, elName );
             for ( String handle : results.getHandles() ) {
-                Collection<String> fids = results.getFids( handle );
-                for ( String fid : fids ) {
+                for ( FeatureMetadata featureMetadata : results.getFids( handle ) ) {
                     xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                    xmlWriter.writeAttribute( "rid", fid );
+                    xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
             }
 
-            for ( String fid : results.getFidsWithoutHandle() ) {
+            for ( FeatureMetadata featureMetadata : results.getFidsWithoutHandle() ) {
                 xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                 xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                xmlWriter.writeAttribute( "rid", fid );
+                xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
@@ -894,5 +893,9 @@ class TransactionHandler {
             }
         }
         return gmlVersion;
+    }
+
+    private String createdRid( FeatureMetadata featureMetadata ) {
+        return resourceIdConverter.generateResourceId( featureMetadata );
     }
 }
