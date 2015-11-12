@@ -100,6 +100,7 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
@@ -403,8 +404,9 @@ class TransactionHandler {
                     mode = idGenMode;
                 }
             }
-            List<String> newFids = ta.performInsert( fc, mode );
-            for ( String newFid : newFids ) {
+            List<FeatureMetadata> newFeatureMetadatas = ta.performInsert( fc, mode );
+            for ( FeatureMetadata newFeatureMetadata : newFeatureMetadatas ) {
+                String newFid = newFeatureMetadata.getFid();
                 inserted.add( newFid, insert.getHandle() );
             }
         } catch ( Exception e ) {

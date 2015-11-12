@@ -76,6 +76,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
@@ -167,7 +168,7 @@ public class SQLFeatureStoreAIXMTest {
 
         FeatureStoreTransaction ta = fs.acquireTransaction();
         try {
-            List<String> fids = ta.performInsert( fc, GENERATE_NEW );
+            List<FeatureMetadata> fids = ta.performInsert( fc, GENERATE_NEW );
             Assert.assertEquals( 2, fids.size() );
             ta.commit();
         } catch ( Throwable t ) {

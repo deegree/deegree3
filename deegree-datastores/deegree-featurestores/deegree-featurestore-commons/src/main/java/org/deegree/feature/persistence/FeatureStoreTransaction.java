@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.Lock;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
@@ -97,11 +98,12 @@ public interface FeatureStoreTransaction {
      *            features to be inserted, must not be <code>null</code>
      * @param mode
      *            mode for deriving the ids of the inserted objects, must not be <code>null</code>
-     * @return effective ids of the inserted feature and subfeatures (in document order)
+     * @return effective {@link FeatureMetadata}s (containig at least the id) of the inserted feature and subfeatures
+     *         (in document order)
      * @throws FeatureStoreException
      *             if the insertion fails
      */
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<FeatureMetadata> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException;
 
     /**

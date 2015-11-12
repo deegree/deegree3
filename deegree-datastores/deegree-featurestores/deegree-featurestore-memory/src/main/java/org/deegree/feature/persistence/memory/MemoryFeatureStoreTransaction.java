@@ -62,6 +62,7 @@ import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.transaction.FeatureUpdater;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
@@ -218,7 +219,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<FeatureMetadata> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
         long begin = System.currentTimeMillis();
@@ -250,11 +251,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Adding of features took {} [ms]", elapsed );
 
-        List<String> fids = new ArrayList<String>( features.size() );
+        List<FeatureMetadata> fids = new ArrayList<FeatureMetadata>( features.size() );
         for ( Feature f : features ) {
-            fids.add( f.getId() );
+            fids.add( new FeatureMetadata( f.getId() ) );
         }
-        return new ArrayList<String>( fids );
+        return new ArrayList<FeatureMetadata>( fids );
     }
 
     private void checkCRS( FeatureCollection fc )
@@ -569,11 +570,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
-        List<String> ids = performInsert( col, idGenMode );
+        List<FeatureMetadata> ids = performInsert( col, idGenMode );
         if ( ids.isEmpty() || ids.size() > 1 ) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }
-        return ids.get( 0 );
+        return ids.get( 0 ).getFid();
     }
 
     @Override
