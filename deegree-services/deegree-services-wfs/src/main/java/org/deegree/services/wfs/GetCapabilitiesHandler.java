@@ -88,7 +88,10 @@ import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
@@ -975,10 +978,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     writer.writeEndElement();
                 }
 
-                // ows:Keywords (minOccurs=0, maxOccurs=unbounded)
-                // writer.writeStartElement( OWS_NS, "Keywords" );
-                // writer.writeCharacters( "keywords" );
-                // writer.writeEndElement();
+                exportKeywords200( ftMd );
 
                 // wfs:DefaultCRS / wfs:NoCRS
                 FeatureStore fs = service.getStore( ftName );
@@ -1060,6 +1060,24 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
 
         writer.writeEndElement();
+    }
+
+    private void exportKeywords200( DatasetMetadata ftMd )
+                            throws XMLStreamException {
+        if ( ftMd != null ) {
+            List<Pair<List<LanguageString>, CodeType>> keywords = ftMd.getKeywords();
+            if ( keywords != null && !keywords.isEmpty() ) {
+                writer.writeStartElement( OWS110_NS, "Keywords" );
+                for ( Pair<List<LanguageString>, CodeType> keywordsPerCodeType : keywords ) {
+                    for ( LanguageString keyword : keywordsPerCodeType.getFirst() ) {
+                        writer.writeStartElement( OWS110_NS, "Keyword" );
+                        writer.writeCharacters( keyword.getString() );
+                        writer.writeEndElement();
+                    }
+                }
+                writer.writeEndElement();
+            }
+        }
     }
 
     private void addOperation( WFSRequestType wfsRequestType, List<DCP> getAndPost, List<DCP> post, List<DCP> get,
