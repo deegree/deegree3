@@ -918,7 +918,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             if ( master.getQueryMaxFeatures() != -1 ) {
                 constraints.add( new Domain( "CountDefault", "" + master.getQueryMaxFeatures() ) );
             }
-
+            if ( master.getResolveTimeOutInSeconds() != null ) {
+                constraints.add( new Domain( "ResolveTimeoutDefault", master.getResolveTimeOutInSeconds().toString() ) );
+            }
             constraints.add( new Domain( "ResolveLocalScope", "*" ) );
 
             List<String> queryExprs = new ArrayList<String>();
