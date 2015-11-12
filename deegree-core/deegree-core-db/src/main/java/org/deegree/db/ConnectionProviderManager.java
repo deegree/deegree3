@@ -41,26 +41,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db;
 
-import static java.sql.DriverManager.deregisterDriver;
-import static java.sql.DriverManager.getDrivers;
-import static java.sql.DriverManager.registerDriver;
-
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.ServiceLoader;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
-import org.deegree.commons.jdbc.DriverWrapper;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
@@ -71,15 +54,13 @@ import org.slf4j.LoggerFactory;
  * Resource manager for connection providers.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * 
  * @version $Revision: $, $Date: $
  */
 public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 
     private static final Logger LOG = LoggerFactory.getLogger( ConnectionProviderManager.class );
-
-    private Workspace workspace;
 
     public ConnectionProviderManager() {
         super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class,
@@ -88,76 +69,45 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
 
     @Override
     public void startup( Workspace workspace ) {
-        this.workspace = workspace;
-        try {
-            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
-                registerDriver( new DriverWrapper( d ) );
-                LOG.info( "Found and loaded {}", d.getClass().getName() );
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
+        // Check for legacy JDBC drivers and warn if some are found in modules directory
+        ClassLoader moduleClassLoader = workspace.getModuleClassLoader();
+        for ( Driver d : ServiceLoader.load( Driver.class, moduleClassLoader ) ) {
+            warnIfDriversAreRegisteredInModulesClassLoader( moduleClassLoader, d );
         }
         super.startup( workspace );
     }
 
     @Override
     public void shutdown() {
-        // unload drivers
-        Enumeration<Driver> enumer = getDrivers();
-        while ( enumer.hasMoreElements() ) {
-            Driver d = enumer.nextElement();
-            try {
-                deregisterDriver( d );
-            } catch ( SQLException e ) {
-                LOG.debug( "Unable to deregister driver: {}", e.getLocalizedMessage() );
-            }
-        }
+        // nothing to do
+    }
 
-        // manually remove drivers via reflection if loaded by module class loader (else the driver manager won't let us
-        // remove them)
-        // Yes, this is DangerousStuff.
-        try {
-            List<Object> toRemove = new ArrayList<Object>();
-            Field f = DriverManager.class.getDeclaredField( "registeredDrivers" );
-            f.setAccessible( true );
-            List<?> list = (List<?>) f.get( null );
-            ListIterator<?> iter = list.listIterator();
-            while ( iter.hasNext() ) {
-                Object o = iter.next();
-                if ( o.getClass().getClassLoader() == workspace.getModuleClassLoader()
-                     || o.getClass().getClassLoader() == null ) {
-                    // iter.remove not supported by used list
-                    toRemove.add( o );
-                }
-            }
-            for ( Object o : toRemove ) {
-                list.remove( o );
-            }
-        } catch ( Exception ex ) {
-            // well...
-        }
+    private void warnIfDriversAreRegisteredInModulesClassLoader( ClassLoader moduleClassLoader, Driver d ) {
+        final String clsName = d.getClass().getName();
+        String clsFile = createClsFile( moduleClassLoader, clsName );
 
-        // Oracle managed beans: Enterprise to the rescue (but expect classloader leaks)
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try {
-            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            final Hashtable<String, String> keys = new Hashtable<String, String>();
-            keys.put( "type", "diagnosability" );
-            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
-            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
-        } catch ( Exception ex ) {
-            // perhaps no oracle, or other classloader
+        LOG.warn( "The JDBC driver {} has been found in the modules directory.", clsName );
+        LOG.warn( "This method of loading JDBC drivers is not supported in deegree any more." );
+        LOG.warn( "Please check the webservices handbook for more infomation." );
+        if ( clsFile != null ) {
+            LOG.warn( "The jdbc driver has been found at {}", clsFile );
         }
-        cl = workspace.getModuleClassLoader();
+    }
+
+    private String createClsFile( ClassLoader moduleClassLoader, final String clsName ) {
+        String clsFile;
         try {
-            final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            final Hashtable<String, String> keys = new Hashtable<String, String>();
-            keys.put( "type", "diagnosability" );
-            keys.put( "name", cl.getClass().getName() + "@" + Integer.toHexString( cl.hashCode() ).toLowerCase() );
-            mbs.unregisterMBean( new ObjectName( "com.oracle.jdbc", keys ) );
-        } catch ( Exception ex ) {
-            // perhaps no oracle, or other classloader
+            clsFile = moduleClassLoader.getResource( clsName.replace( '.', '/' ) + ".class" ).toString();
+        } catch ( Exception ign ) {
+            return null;
         }
+        if ( clsFile == null || clsFile.length() == 0 )
+            return null;
+        int jarpos = clsFile.indexOf( ".jar" );
+        if ( jarpos != -1 ) {
+            clsFile = clsFile.substring( 0, jarpos + 4 );
+        }
+        return clsFile;
     }
 
 }
