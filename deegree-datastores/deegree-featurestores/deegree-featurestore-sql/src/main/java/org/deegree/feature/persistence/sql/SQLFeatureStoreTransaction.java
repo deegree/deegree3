@@ -686,7 +686,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         List<FeatureMetadata> featureMetadata = new ArrayList<FeatureMetadata>();
         for ( FeatureRow assignment : idAssignments ) {
             String newId = assignment.getNewId();
-            featureMetadata.add( new FeatureMetadata( newId ) );
+            String version = assignment.getVersion();
+            featureMetadata.add( new FeatureMetadata( newId, version ) );
         }
         return featureMetadata;
     }

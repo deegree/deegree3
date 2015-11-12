@@ -51,6 +51,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
@@ -72,7 +73,11 @@ public class FeatureRow extends InsertRow {
 
     private FIDMapping fidMapping;
 
+    private VersionMapping versionMapping;
+
     private String newId;
+
+    private String version;
 
     /**
      * Creates a new {@link FeatureRow} instance.
@@ -105,6 +110,15 @@ public class FeatureRow extends InsertRow {
         return newId;
     }
 
+    /**
+     * Returns the current version of the inserted {@link Feature}, if versioning is enabled.
+     * 
+     * @return insert id, can be <code>null</code> (versioning is not supported or not assigned yet)
+     */
+    public String getVersion() {
+        return version;
+    }
+
     @Override
     void performInsert( Connection conn, boolean propagateAutoGenColumns )
                             throws SQLException, FeatureStoreException {
@@ -116,6 +130,8 @@ public class FeatureRow extends InsertRow {
             String msg = "Internal/configuration error. Feature id must be assignable after feature row INSERT.";
             throw new FeatureStoreException( msg );
         }
+
+        version = retrieveVersion( conn, versionMapping, origFid );
 
         // clear everything, but keep key columns (values may still be needed by referencing rows)
         Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();
@@ -138,6 +154,7 @@ public class FeatureRow extends InsertRow {
 
         this.table = ftMapping.getFtTable();
         this.fidMapping = ftMapping.getFidMapping();
+        this.versionMapping = ftMapping.getVersionMapping();
 
         switch ( mgr.getIdGenMode() ) {
         case GENERATE_NEW: {
