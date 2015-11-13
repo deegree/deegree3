@@ -1109,7 +1109,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( final Feature replacement, final Filter filter, final Lock lock,
+    public FeatureMetadata performReplace( final Feature replacement, final Filter filter, final Lock lock,
                                   final IDGenMode idGenMode )
                             throws FeatureStoreException {
         if ( filter instanceof IdFilter ) {
@@ -1123,7 +1123,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         if ( ids.isEmpty() || ids.size() > 1 ) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }
-        return ids.get( 0 ).getFid();
+        return ids.get( 0 );
     }
 
 }

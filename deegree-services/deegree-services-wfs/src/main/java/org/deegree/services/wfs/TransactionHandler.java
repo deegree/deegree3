@@ -680,8 +680,8 @@ class TransactionHandler {
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
         try {
-            String newFid = ta.performReplace( replacementFeature, filter, lock, idGenMode );
-            replaced.add( newFid, replace.getHandle() );
+            FeatureMetadata newFeatureMetadata = ta.performReplace( replacementFeature, filter, lock, idGenMode );
+            replaced.add( newFeatureMetadata, replace.getHandle() );
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Error performing replace: " + e.getMessage(), e, NO_APPLICABLE_CODE );
         }
