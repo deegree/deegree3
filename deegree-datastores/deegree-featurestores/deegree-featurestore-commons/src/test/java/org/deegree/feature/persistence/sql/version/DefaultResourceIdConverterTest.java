@@ -33,11 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.version;
+package org.deegree.feature.persistence.sql.version;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.deegree.feature.persistence.version.DefaultResourceIdConverter;
 import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.junit.Test;
 
@@ -50,20 +52,20 @@ public class DefaultResourceIdConverterTest {
 
     @Test
     public void generateResourceId_WithFid() {
-        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid" );
+        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid_65656" );
 
         String resourceId = resourceIdConverter.generateResourceId( featureMetadata );
 
-        assertThat( resourceId, is( "testFid" ) );
+        assertThat( resourceId, is( "testFid_65656" ) );
     }
 
     @Test
     public void generateResourceId_WithFidAndVersion() {
-        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid", "1" );
+        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid_65656", "1" );
 
         String resourceId = resourceIdConverter.generateResourceId( featureMetadata );
 
-        assertThat( resourceId, is( "testFid_1" ) );
+        assertThat( resourceId, is( "testFid_65656_version1" ) );
     }
 
     @Test(expected = NullPointerException.class)
@@ -71,4 +73,43 @@ public class DefaultResourceIdConverterTest {
         resourceIdConverter.generateResourceId( null );
     }
 
+    @Test
+    public void testHasVersion_withVersion() {
+        boolean hasVersion = resourceIdConverter.hasVersion( "testFid_65656_version1" );
+
+        assertThat( hasVersion, is( true ) );
+    }
+
+    @Test
+    public void testHasVersion_withoutVersion() {
+        boolean hasVersion = resourceIdConverter.hasVersion( "testFid_65656" );
+
+        assertThat( hasVersion, is( false ) );
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testHasVersion_Null() {
+        resourceIdConverter.hasVersion( null );
+    }
+
+    @Test
+    public void testConvertToFeatureMetadata_withVersion() {
+        FeatureMetadata fetaureMeatadata = resourceIdConverter.convertToFeatureMetadata( "testFid_65656_version1" );
+
+        assertThat( fetaureMeatadata.getFid(), is( "testFid_65656" ) );
+        assertThat( fetaureMeatadata.getVersion(), is( "1" ) );
+    }
+
+    @Test
+    public void testConvertToFeatureMetadata_withoutVersion() {
+        FeatureMetadata fetaureMeatadata = resourceIdConverter.convertToFeatureMetadata( "testFid_65656" );
+
+        assertThat( fetaureMeatadata.getFid(), is( "testFid_65656" ) );
+        assertThat( fetaureMeatadata.getVersion(), is( nullValue() ) );
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testConvertToFeatureMetadata_Null() {
+        resourceIdConverter.convertToFeatureMetadata( null );
+    }
 }

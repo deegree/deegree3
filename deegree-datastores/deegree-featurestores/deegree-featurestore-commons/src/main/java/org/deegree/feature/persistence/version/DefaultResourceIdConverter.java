@@ -33,9 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.version;
-
-import org.deegree.feature.persistence.version.FeatureMetadata;
+package org.deegree.feature.persistence.version;
 
 /**
  * A default ResourceIdConverter, pattern: &lt;fid&gt;_&lt;version&gt;
@@ -44,7 +42,7 @@ import org.deegree.feature.persistence.version.FeatureMetadata;
  */
 public class DefaultResourceIdConverter implements ResourceIdConverter {
 
-    private static final String DELIMITER = "_";
+    private static final String DELIMITER = "_version";
 
     @Override
     public String generateResourceId( FeatureMetadata featureMetadata ) {
@@ -53,6 +51,26 @@ public class DefaultResourceIdConverter implements ResourceIdConverter {
         if ( featureMetadata.getVersion() == null )
             return featureMetadata.getFid();
         return featureMetadata.getFid() + DELIMITER + featureMetadata.getVersion();
+    }
+
+    @Override
+    public boolean hasVersion( String id ) {
+        if ( id == null )
+            throw new NullPointerException( "id must never be null!" );
+        return id.contains( DELIMITER );
+    }
+
+    @Override
+    public FeatureMetadata convertToFeatureMetadata( String id ) {
+        if ( id == null )
+            throw new NullPointerException( "id must never be null!" );
+        if ( hasVersion( id ) ) {
+            int indexOf = id.indexOf( DELIMITER );
+            String fid = id.substring( 0, indexOf );
+            String version = id.substring( indexOf + DELIMITER.length(), id.length() );
+            return new FeatureMetadata( fid, version );
+        }
+        return new FeatureMetadata( id );
     }
 
 }
