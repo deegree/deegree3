@@ -48,14 +48,11 @@ public class VersionMapping {
 
     private final Pair<SQLIdentifier, PrimitiveType> versionColumn;
 
-    private final Pair<SQLIdentifier, PrimitiveType> idColumn;
-
     /**
      * 
      */
-    public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn, Pair<SQLIdentifier, PrimitiveType> idColumn ) {
+    public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn ) {
         this.versionColumn = versionColumn;
-        this.idColumn = idColumn;
     }
 
     /**
@@ -63,13 +60,6 @@ public class VersionMapping {
      */
     public Pair<SQLIdentifier, PrimitiveType> getVersionColumn() {
         return versionColumn;
-    }
-
-    /**
-     * @return the idColumn
-     */
-    public Pair<SQLIdentifier, PrimitiveType> getIdColumn() {
-        return idColumn;
     }
 
 }

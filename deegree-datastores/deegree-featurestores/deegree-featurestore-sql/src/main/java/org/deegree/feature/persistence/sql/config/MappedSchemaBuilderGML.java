@@ -94,9 +94,6 @@ import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.FIDMappingColumnJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -365,25 +362,6 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             }
         }
         return new FIDMapping( prefix, "_", columns, generator );
-    }
-
-    private VersionMapping buildVersionMapping( VersionMappingJAXB versionMapping )
-                            throws SQLException {
-        if ( versionMapping != null ) {
-            VersionColumnJAXB configuredVersionColumn = versionMapping.getVersionColumn();
-            SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
-            PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
-            Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
-                                                                                                       versionSqlIdentifier,
-                                                                                                       versionType );
-            FIDMappingColumnJAXB configuredIdColumn = versionMapping.getFIDMappingColumn();
-            SQLIdentifier idSqlIdentifier = new SQLIdentifier( configuredIdColumn.getName() );
-            PrimitiveType idType = new PrimitiveType( getPrimitiveType( configuredIdColumn.getType() ) );
-            Pair<SQLIdentifier, PrimitiveType> idColumn = new Pair<SQLIdentifier, PrimitiveType>( idSqlIdentifier,
-                                                                                                  idType );
-            return new VersionMapping( versionColumn, idColumn );
-        }
-        return null;
     }
 
     private Mapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,
