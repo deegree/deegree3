@@ -312,9 +312,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private int performDeleteRelational( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-
-        int deleted = 0;
-        for ( ResourceId id : filter.getSelectedIds() ) {
+        List<ResourceId> selectedIds = filter.getSelectedIds();
+        for ( ResourceId id : selectedIds ) {
             LOG.debug( "Analyzing id: " + id.getRid() );
             IdAnalysis analysis = null;
             try {
@@ -326,12 +325,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 } else {
                     LOG.debug( "Depending on database to delete joined rows automatically." );
                 }
-                deleted += deleteFeatureRow( analysis );
+                deleteFeatureRow( analysis );
             } catch ( IllegalArgumentException e ) {
                 throw new FeatureStoreException( "Unable to determine feature type for id '" + id + "'." );
             }
         }
-        return deleted;
+        return selectedIds.size();
     }
 
     private int deleteFeatureRow( IdAnalysis analysis )
