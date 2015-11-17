@@ -230,13 +230,18 @@ public class TextStroke implements Stroke {
             t.rotate( angle );
             t.translate( gap + length, lineHeight / 4 );
 
-            result.append( t.createTransformedShape( text ), false );
+            Shape transformedShape = t.createTransformedShape( text );
+            appendShape( result, transformedShape );
 
             length += gap + text.getBounds2D().getWidth();
 
             sog = wordsToRender.poll();
 
         }
+    }
+
+    protected void appendShape( GeneralPath result, Shape transformedShape ) {
+        result.append( transformedShape, false );
     }
 
     private LinkedList<String> extractWords() {
@@ -551,7 +556,9 @@ public class TextStroke implements Stroke {
             t.setToTranslation( x, y );
             t.rotate( angle );
             t.translate( -px - advance, -py + lineHeight / 4 );
-            result.append( t.createTransformedShape( glyph ), false );
+
+            appendShape( result, t.createTransformedShape( glyph ) );
+
             state.next += ( advance + state.nextAdvance );
             state.currentChar++;
             if ( linePlacement.repeat && state.currentChar >= length ) {

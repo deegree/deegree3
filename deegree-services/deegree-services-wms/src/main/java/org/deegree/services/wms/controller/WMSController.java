@@ -217,17 +217,6 @@ public class WMSController extends AbstractOWS {
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
 
-        final boolean addDefaultFormats;
-        final FeatureInfoFormatsType featureInfoFormats = jaxbConfig.getFeatureInfoFormats();
-        if ( featureInfoFormats != null ) {
-            final Boolean enableDefaultFormats = featureInfoFormats.isEnableDefaultFormats();
-            addDefaultFormats = enableDefaultFormats == null || enableDefaultFormats;
-        } else {
-            addDefaultFormats = true;
-        }
-
-        featureInfoManager = new FeatureInfoManager( addDefaultFormats );
-
         capabilitiesManager = new CapabilitiesManager( isAddCapabilitiesDefaultFormatsEnabled( jaxbConfig ) );
         featureInfoManager = new FeatureInfoManager( isAddFeatureInfoDefaultFormatsEnabled( jaxbConfig ) );
         exceptionsManager = new ExceptionsManager( isAddExceptionsDefaultFormatsEnabled( jaxbConfig ), this );
@@ -769,7 +758,7 @@ public class WMSController extends AbstractOWS {
     public FeatureInfoManager getFeatureInfoManager() {
         return featureInfoManager;
     }
-    
+
     public ExceptionsManager getExceptionsManager() {
         return exceptionsManager;
     }
