@@ -43,6 +43,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.ArrayPropertyType;
@@ -76,8 +77,8 @@ public class GenericFeatureCollectionType extends GenericFeatureType implements 
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
-        return new GenericFeatureCollection( this, fid, props, extraProps );
+    public Feature newFeature( String fid, FeatureState state, List<Property> props, ExtraProps extraProps ) {
+        return new GenericFeatureCollection( this, fid, state, props, extraProps );
     }
 
     @Override

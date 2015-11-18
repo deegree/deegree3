@@ -40,6 +40,7 @@ import java.util.List;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
 
@@ -65,13 +66,15 @@ public interface FeatureType extends GMLObjectType {
      * 
      * @param fid
      *            feature id, or null if the feature doesn't have an id
+     * @param state
+     *            the state of the feature, null if the feature doesn't have a state
      * @param props
      *            properties
      * @param extraProps
      *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
      * @return a new <code>Feature</code> instance
      */
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps );
+    public Feature newFeature( String fid, FeatureState state, List<Property> props, ExtraProps extraProps );
 
     /**
      * Returns the {@link AppSchema} that this feature type belongs to.

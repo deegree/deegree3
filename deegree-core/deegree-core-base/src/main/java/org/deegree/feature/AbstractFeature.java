@@ -77,18 +77,23 @@ public abstract class AbstractFeature implements Feature {
 
     private ExtraProps extraProps;
 
+    private FeatureState state;
+
     /**
      * Creates a new {@link AbstractFeature} instance.
      *
      * @param fid
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
+     * @param state
+     *            of the feature or <code>null</code> if not available
      * @param ft
      *            feature type, must not be <code>null</code>
      * @param extraProps
      *            extra properties, may be <code>null</code>
      */
-    protected AbstractFeature( String fid, FeatureType ft, ExtraProps extraProps ) {
+    protected AbstractFeature( String fid, FeatureState state, FeatureType ft, ExtraProps extraProps ) {
         this.fid = fid;
+        this.state = state;
         this.ft = ft;
         this.extraProps = extraProps;
     }
@@ -227,5 +232,10 @@ public abstract class AbstractFeature implements Feature {
     @Override
     public void setExtraProperties( ExtraProps extraProps ) {
         this.extraProps = extraProps;
+    }
+
+    @Override
+    public FeatureState getState() {
+        return state;
     }
 }

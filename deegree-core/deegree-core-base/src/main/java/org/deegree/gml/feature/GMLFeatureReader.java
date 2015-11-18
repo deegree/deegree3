@@ -241,7 +241,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
             }
         }
 
-        Feature feature = ft.newFeature( fid, props, null );
+        Feature feature = ft.newFeature( fid, null, props, null );
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getObject( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
@@ -354,7 +354,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
         if ( extraPropertyList != null ) {
             extraProps = new ExtraProps( extraPropertyList.toArray( new Property[extraPropertyList.size()] ) );
         }
-        feature = ft.newFeature( fid, propertyList, extraProps );
+        feature = ft.newFeature( fid, null, propertyList, extraProps );
 
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getObject( fid ) != null ) {
