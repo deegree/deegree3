@@ -85,9 +85,6 @@ import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.Join;
 import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.FIDMappingColumnJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -439,25 +436,6 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         }
 
         return new FIDMapping( prefix, "_", columns, generator );
-    }
-
-    private VersionMapping buildVersionMapping( VersionMappingJAXB versionMapping )
-                            throws SQLException {
-        if ( versionMapping != null ) {
-            VersionColumnJAXB configuredVersionColumn = versionMapping.getVersionColumn();
-            SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
-            PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
-            Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
-                                                                                                       versionSqlIdentifier,
-                                                                                                       versionType );
-            FIDMappingColumnJAXB configuredIdColumn = versionMapping.getFIDMappingColumn();
-            SQLIdentifier idSqlIdentifier = new SQLIdentifier( configuredIdColumn.getName() );
-            PrimitiveType idType = new PrimitiveType( getPrimitiveType( configuredIdColumn.getType() ) );
-            Pair<SQLIdentifier, PrimitiveType> idColumn = new Pair<SQLIdentifier, PrimitiveType>( idSqlIdentifier,
-                                                                                                  idType );
-            return new VersionMapping( versionColumn, idColumn );
-        }
-        return null;
     }
 
     private QName makeFullyQualified( QName qName, String defaultPrefix, String defaultNamespace ) {

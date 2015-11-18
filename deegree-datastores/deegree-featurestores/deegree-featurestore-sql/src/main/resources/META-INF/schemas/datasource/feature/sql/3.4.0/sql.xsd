@@ -115,6 +115,7 @@
     </complexType>
   </element>
   <!-- === Version mapping === -->
+  <!-- requires FIDMapping -->
   <element name="VersionMapping">
     <annotation>
       <documentation>Defines the mapping of the versions</documentation>
@@ -124,22 +125,11 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="VersionColumn" minOccurs="0" maxOccurs="1">
+        <element name="Column" minOccurs="1">
           <complexType>
             <annotation>
               <appinfo>
                 <jaxb:class name="VersionColumnJAXB" />
-              </appinfo>
-            </annotation>
-            <attribute name="name" type="string" use="required" />
-            <attribute name="type" type="sqlfs:PrimitiveType" use="required" />
-          </complexType>
-        </element>
-        <element name="FIDMappingColumn" minOccurs="0" maxOccurs="1">
-          <complexType>
-            <annotation>
-              <appinfo>
-                <jaxb:class name="FIDMappingColumnJAXB" />
               </appinfo>
             </annotation>
             <attribute name="name" type="string" use="required" />

@@ -142,7 +142,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     // TODO
     private ParticleConverter<Geometry> blobGeomConverter;
 
-    private VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
+    private final VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
 
     /**
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
@@ -312,9 +312,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private int performDeleteRelational( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-
-        int deleted = 0;
-        for ( ResourceId id : filter.getSelectedIds() ) {
+        List<ResourceId> selectedIds = filter.getSelectedIds();
+        for ( ResourceId id : selectedIds ) {
             LOG.debug( "Analyzing id: " + id.getRid() );
             IdAnalysis analysis = null;
             try {
@@ -326,12 +325,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 } else {
                     LOG.debug( "Depending on database to delete joined rows automatically." );
                 }
-                deleted += deleteFeatureRow( analysis );
+                deleteFeatureRow( analysis );
             } catch ( IllegalArgumentException e ) {
                 throw new FeatureStoreException( "Unable to determine feature type for id '" + id + "'." );
             }
         }
-        return deleted;
+        return selectedIds.size();
     }
 
     private int deleteFeatureRow( IdAnalysis analysis )
@@ -1074,16 +1073,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         List<FeatureMetadata> featureMetadatas = new ArrayList<FeatureMetadata>( selectedIds.size() );
         for ( ResourceId selectedId : selectedIds ) {
             IdAnalysis analysis = schema.analyzeId( selectedId.getRid() );
-            String[] idKernels = analysis.getIdKernels();
-            if ( idKernels.length > 1 )
-                LOG.warn( "Versioning is not support yet for more then one FID column." );
-            if ( idKernels.length == 1 ) {
-                String idKernel = idKernels[0];
-                PrimitiveValue idValue = new PrimitiveValue( idKernel );
-                String version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping.getFtTable(),
-                                                                      featureTypeMapping.getVersionMapping(), idValue );
-                featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version ) );
-            }
+            String version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping, analysis );
+            featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version ) );
         }
         return featureMetadatas;
     }
@@ -1110,7 +1101,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     @Override
     public FeatureMetadata performReplace( final Feature replacement, final Filter filter, final Lock lock,
-                                  final IDGenMode idGenMode )
+                                           final IDGenMode idGenMode )
                             throws FeatureStoreException {
         if ( filter instanceof IdFilter ) {
             performDelete( (IdFilter) filter, lock );
