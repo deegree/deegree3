@@ -42,7 +42,7 @@ package org.deegree.feature;
  */
 public enum FeatureState {
 
-    VALID( "valid" ), SUPERSEEDED( "superseeded" ), RETIRED( "retired" ), UNKNOWN( "unknown" );
+    VALID( "valid" ), SUPERSEEDED( "superseeded" ), RETIRED( "retired" ), FUTURE( "future" );
 
     private final String gmlName;
 
