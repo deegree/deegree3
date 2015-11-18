@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.version;
 
-
 /**
  * Encapsulates the creation of resource ids.
  * 
@@ -53,7 +52,7 @@ public interface ResourceIdConverter {
      * @throws NullPointerException
      *             if FeatureMetadata is <code>null</code>
      */
-    abstract String generateResourceId( FeatureMetadata featureMetadata );
+    String generateResourceId( FeatureMetadata featureMetadata );
 
     /**
      * Checks if the passed id has a version.
@@ -64,7 +63,7 @@ public interface ResourceIdConverter {
      * @throws NullPointerException
      *             if id is <code>null</code>
      */
-    abstract boolean hasVersion( String id );
+    boolean hasVersion( String id );
 
     /**
      * Splitted the passed id into FID and version (if the id has a version).
@@ -73,6 +72,6 @@ public interface ResourceIdConverter {
      *            never <code>null</code>
      * @return {@link FeatureMetadata} from the id, never <code>null</code>
      */
-    abstract FeatureMetadata convertToFeatureMetadata( String id );
+    FeatureMetadata convertToFeatureMetadata( String id );
 
 }
