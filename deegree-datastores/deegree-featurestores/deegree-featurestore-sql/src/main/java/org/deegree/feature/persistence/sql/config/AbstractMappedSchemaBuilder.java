@@ -61,6 +61,7 @@ import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
@@ -80,6 +81,9 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateColumnJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateMappings;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateMappings.StateMapping;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -240,15 +244,30 @@ public abstract class AbstractMappedSchemaBuilder {
     protected VersionMapping buildVersionMapping( VersionMappingJAXB versionMapping )
                             throws SQLException {
         if ( versionMapping != null ) {
-            VersionColumnJAXB configuredVersionColumn = versionMapping.getColumn();
+            VersionColumnJAXB configuredVersionColumn = versionMapping.getVersionColumn();
             SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
             PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
             Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
                                                                                                        versionSqlIdentifier,
                                                                                                        versionType );
-            return new VersionMapping( versionColumn );
+
+            StateColumnJAXB configuredStateColumn = versionMapping.getStateColumn();
+            SQLIdentifier stateSqlIdentifier = new SQLIdentifier( configuredStateColumn.getName() );
+            PrimitiveType stateType = new PrimitiveType( BaseType.STRING );
+            Pair<SQLIdentifier, PrimitiveType> stateColumn = new Pair<SQLIdentifier, PrimitiveType>(
+                                                                                                     stateSqlIdentifier,
+                                                                                                     stateType );
+
+            StateMappings stateMappings = versionMapping.getStateMappings();
+            Map<String, FeatureState> stateMappingMap = new HashMap<String, FeatureState>();
+            if ( stateMappings != null ) {
+                for ( StateMapping stateMapping : stateMappings.getStateMapping() ) {
+                    FeatureState state = FeatureState.valueOfByGmlName( stateMapping.getGmlState() );
+                    stateMappingMap.put( stateMapping.getDbColumnContent(), state );
+                }
+            }
+            return new VersionMapping( versionColumn, stateColumn, stateMappingMap );
         }
         return null;
     }
-
 }

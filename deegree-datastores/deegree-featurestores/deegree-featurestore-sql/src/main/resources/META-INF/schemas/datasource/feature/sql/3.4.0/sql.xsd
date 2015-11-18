@@ -125,7 +125,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="Column" minOccurs="1">
+        <element name="VersionColumn" minOccurs="1">
           <complexType>
             <annotation>
               <appinfo>
@@ -134,6 +134,41 @@
             </annotation>
             <attribute name="name" type="string" use="required" />
             <attribute name="type" type="sqlfs:PrimitiveType" use="required" />
+          </complexType>
+        </element>
+        <element name="StateColumn" minOccurs="1">
+          <complexType>
+            <annotation>
+              <documentation>Must be a text column containing the state of the feature, as described in the GML 3.2
+                Schema/Specification. Allowed values are: valid, superseeded, retired, future. Configure StateMappings
+                to map the column values to the gml values.
+              </documentation>
+              <appinfo>
+                <jaxb:class name="StateColumnJAXB" />
+              </appinfo>
+            </annotation>
+            <attribute name="name" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="StateMappings" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="StateMapping" minOccurs="0" maxOccurs="unbounded">
+                <complexType>
+                  <attribute name="dbColumnContent" type="string" use="required" />
+                  <attribute name="gmlState" use="required">
+                    <simpleType>
+                      <restriction base="string">
+                        <enumeration value="valid" />
+                        <enumeration value="superseeded" />
+                        <enumeration value="retired" />
+                        <enumeration value="future" />
+                      </restriction>
+                    </simpleType>
+                  </attribute>
+                </complexType>
+              </element>
+            </sequence>
           </complexType>
         </element>
       </sequence>

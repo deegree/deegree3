@@ -73,6 +73,7 @@ import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
@@ -80,10 +81,12 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
@@ -187,6 +190,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         for ( Mapping mapping : ftMapping.getMappings() ) {
             addSelectColumns( mapping, qualifiedSqlExprToRsIdx, true );
         }
+        if ( ftMapping.getVersionMapping() != null ) {
+            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
+                                                + ftMapping.getVersionMapping().getStateColumn().getFirst().getName() );
+        }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
         return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
     }
@@ -221,7 +228,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         } else {
             ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
-                if ( particleConverter != null ) {                    
+                if ( particleConverter != null ) {
                     addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
@@ -283,7 +290,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + " are currently supported." );
                     }
                 }
-                feature = ft.newFeature( gmlId, null, props, null );
+                FeatureState state = retrieveState( rs );
+                feature = ft.newFeature( gmlId, state, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
                 }
@@ -295,6 +303,22 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             throw new SQLException( t.getMessage(), t );
         }
         return feature;
+    }
+
+    private FeatureState retrieveState( ResultSet rs )
+                            throws SQLException {
+        VersionMapping versionMapping = ftMapping.getVersionMapping();
+        if ( versionMapping != null ) {
+            Pair<SQLIdentifier, PrimitiveType> stateColumn = versionMapping.getStateColumn();
+            int stateColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "." + stateColumn.getFirst().getName() );
+            PrimitiveValue particle = versionMapping.getStateColumnConverter().toParticle( rs, stateColumnIndex );
+            if ( particle != null ) {
+                String stateAsText = particle.getAsText();
+                FeatureState featureState = versionMapping.getStateMapping().get( stateAsText );
+                return featureState;
+            }
+        }
+        return null;
     }
 
     private String toIdPrefix( ValueReference propName ) {

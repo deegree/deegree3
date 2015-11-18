@@ -35,12 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.version;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.utils.Pair;
+import org.deegree.feature.FeatureState;
 
 /**
- * TODO add class documentation here
+ * Encapsulates the mapping of the version columns.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
@@ -48,18 +53,60 @@ public class VersionMapping {
 
     private final Pair<SQLIdentifier, PrimitiveType> versionColumn;
 
+    private final Pair<SQLIdentifier, PrimitiveType> stateColumn;
+
+    private final Map<String, FeatureState> stateMapping;
+
     /**
-     * 
+     * @param versionColumn
+     *            the column containing the version of a feature, never <code>null</code>
+     * @param stateColumn
+     *            the column containing the state of a feature, never <code>null</code>
+     * @param stateMapping
+     *            the mapping between content of the state column from db an official states, may be <code>null</code>
+     *            or empty
      */
-    public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn ) {
+    public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn,
+                           Pair<SQLIdentifier, PrimitiveType> stateColumn, Map<String, FeatureState> stateMapping ) {
         this.versionColumn = versionColumn;
+        this.stateColumn = stateColumn;
+        this.stateMapping = stateMapping != null ? stateMapping : Collections.<String, FeatureState> emptyMap();
     }
 
     /**
-     * @return the versionColumn
+     * @return the versionColumn the metadata of the column containing the version, never <code>null</code>
      */
     public Pair<SQLIdentifier, PrimitiveType> getVersionColumn() {
         return versionColumn;
+    }
+
+    /**
+     * @return the converter for the version column, never <code>null</code>
+     */
+    public DefaultPrimitiveConverter getVersionColumnConverter() {
+        return new DefaultPrimitiveConverter( versionColumn.getSecond(), versionColumn.getFirst().getName() );
+    }
+
+    /**
+     * @return the versionColumn the metadata of the column containing the version, never <code>null</code>
+     */
+    public Pair<SQLIdentifier, PrimitiveType> getStateColumn() {
+        return stateColumn;
+    }
+
+    /**
+     * @return the converter for the state column, never <code>null</code>
+     */
+    public DefaultPrimitiveConverter getStateColumnConverter() {
+        return new DefaultPrimitiveConverter( stateColumn.getSecond(), stateColumn.getFirst().getName() );
+    }
+
+    /**
+     * @return the mapping between the content of the column from db an official states, may be empty but never
+     *         <code>null</code>
+     */
+    public Map<String, FeatureState> getStateMapping() {
+        return stateMapping;
     }
 
 }
