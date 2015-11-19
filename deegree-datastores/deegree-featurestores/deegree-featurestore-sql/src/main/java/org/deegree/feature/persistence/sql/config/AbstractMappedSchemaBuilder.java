@@ -56,10 +56,11 @@ import javax.xml.bind.JAXBElement;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.mapping.antlr.FMLLexer;
 import org.deegree.feature.persistence.mapping.antlr.FMLParser;
@@ -78,6 +79,9 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -229,6 +233,20 @@ public abstract class AbstractMappedSchemaBuilder {
             TableJoin tj = new TableJoin( from, target, join.getFromColumns(), join.getToColumns(),
                                           join.getOrderColumns(), isNumbered, keyColumnToGenerator );
             return Collections.singletonList( tj );
+        }
+        return null;
+    }
+
+    protected VersionMapping buildVersionMapping( VersionMappingJAXB versionMapping )
+                            throws SQLException {
+        if ( versionMapping != null ) {
+            VersionColumnJAXB configuredVersionColumn = versionMapping.getColumn();
+            SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
+            PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
+            Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
+                                                                                                       versionSqlIdentifier,
+                                                                                                       versionType );
+            return new VersionMapping( versionColumn );
         }
         return null;
     }

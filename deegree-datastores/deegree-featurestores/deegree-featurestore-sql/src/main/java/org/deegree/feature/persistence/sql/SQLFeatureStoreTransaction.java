@@ -91,7 +91,10 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.version.VersionQueryHandler;
 import org.deegree.feature.persistence.transaction.FeatureUpdater;
+import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -138,6 +141,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     // TODO
     private ParticleConverter<Geometry> blobGeomConverter;
+
+    private final VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
 
     /**
      * Creates a new {@link SQLFeatureStoreTransaction} instance.
@@ -307,9 +312,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private int performDeleteRelational( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-
-        int deleted = 0;
-        for ( ResourceId id : filter.getSelectedIds() ) {
+        List<ResourceId> selectedIds = filter.getSelectedIds();
+        for ( ResourceId id : selectedIds ) {
             LOG.debug( "Analyzing id: " + id.getRid() );
             IdAnalysis analysis = null;
             try {
@@ -321,12 +325,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 } else {
                     LOG.debug( "Depending on database to delete joined rows automatically." );
                 }
-                deleted += deleteFeatureRow( analysis );
+                deleteFeatureRow( analysis );
             } catch ( IllegalArgumentException e ) {
                 throw new FeatureStoreException( "Unable to determine feature type for id '" + id + "'." );
             }
         }
-        return deleted;
+        return selectedIds.size();
     }
 
     private int deleteFeatureRow( IdAnalysis analysis )
@@ -531,9 +535,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<FeatureMetadata> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
-
         LOG.debug( "performInsert()" );
 
         Set<Geometry> geometries = new LinkedHashSet<Geometry>();
@@ -543,7 +546,6 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         for ( Feature member : fc ) {
             findFeaturesAndGeometries( member, geometries, features, fids, gids );
         }
-
         LOG.debug( features.size() + " features / " + geometries.size() + " geometries" );
 
         for ( FeatureInspector inspector : inspectors ) {
@@ -554,115 +556,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         long begin = System.currentTimeMillis();
-
-        String fid = null;
+        List<FeatureMetadata> featureMetadata;
         try {
-            PreparedStatement blobInsertStmt = null;
             if ( blobMapping != null ) {
-                switch ( mode ) {
-                case GENERATE_NEW: {
-                    // TODO don't change incoming features / geometries
-                    for ( Feature feature : features ) {
-                        String newFid = "FEATURE_" + generateNewId();
-                        String oldFid = feature.getId();
-                        if ( oldFid != null ) {
-                            fids.remove( oldFid );
-                        }
-                        fids.add( newFid );
-                        feature.setId( newFid );
-                    }
-                    for ( Geometry geometry : geometries ) {
-                        String newGid = "GEOMETRY_" + generateNewId();
-                        String oldGid = geometry.getId();
-                        if ( oldGid != null ) {
-                            gids.remove( oldGid );
-                        }
-                        gids.add( newGid );
-                        geometry.setId( newGid );
-                    }
-                    break;
-                }
-                case REPLACE_DUPLICATE: {
-                    throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
-                }
-                case USE_EXISTING: {
-                    // TODO don't change incoming features / geometries
-                    for ( Feature feature : features ) {
-                        if ( feature.getId() == null ) {
-                            String newFid = "FEATURE_" + generateNewId();
-                            feature.setId( newFid );
-                            fids.add( newFid );
-                        }
-                    }
-
-                    for ( Geometry geometry : geometries ) {
-                        if ( geometry.getId() == null ) {
-                            String newGid = "GEOMETRY_" + generateNewId();
-                            geometry.setId( newGid );
-                            gids.add( newGid );
-                        }
-                    }
-                    break;
-                }
-                }
-                StringBuilder sql = new StringBuilder( "INSERT INTO " );
-                sql.append( blobMapping.getTable() );
-                sql.append( " (" );
-                sql.append( blobMapping.getGMLIdColumn() );
-                sql.append( "," );
-                sql.append( blobMapping.getTypeColumn() );
-                sql.append( "," );
-                sql.append( blobMapping.getDataColumn() );
-                sql.append( "," );
-                sql.append( blobMapping.getBBoxColumn() );
-                sql.append( ") VALUES(?,?,?," );
-                sql.append( blobGeomConverter.getSetSnippet( null ) );
-                sql.append( ")" );
-                LOG.debug( "Inserting: {}", sql );
-                blobInsertStmt = conn.prepareStatement( sql.toString() );
-                for ( Feature feature : features ) {
-                    fid = feature.getId();
-                    if ( blobInsertStmt != null ) {
-                        insertFeatureBlob( blobInsertStmt, feature );
-                    }
-                    FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
-                    if ( ftMapping != null ) {
-                        throw new UnsupportedOperationException();
-                    }
-                    ICRS storageSrs = blobMapping.getCRS();
-                    bboxTracker.insert( feature, storageSrs );
-                }
-                if ( blobInsertStmt != null ) {
-                    blobInsertStmt.close();
-                }
+                featureMetadata = perfomInsertBlob( mode, geometries, features, fids, gids );
             } else {
-                // pure relational mode
-                List<FeatureRow> idAssignments = new ArrayList<FeatureRow>();
-                InsertRowManager insertManager = new InsertRowManager( fs, conn, mode );
-                for ( Feature feature : features ) {
-                    FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
-                    if ( ftMapping == null ) {
-                        continue;
-//                        throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
-//                                                         + "'. No mapping defined and BLOB mode is off." );
-                    }
-                    idAssignments.add( insertManager.insertFeature( feature, ftMapping ) );
-                    Pair<TableName, GeometryMapping> mapping = ftMapping.getDefaultGeometryMapping();
-                    if ( mapping != null ) {
-                        ICRS storageSrs = mapping.second.getCRS();
-                        bboxTracker.insert( feature, storageSrs );
-                    }
-                }
-                if ( insertManager.getDelayedRows() != 0 ) {
-                    String msg = "After insertion, " + insertManager.getDelayedRows()
-                                 + " delayed rows left uninserted. Probably a cyclic key constraint blocks insertion.";
-                    throw new RuntimeException( msg );
-                }
-                // TODO why is this necessary?
-                fids.clear();
-                for ( FeatureRow assignment : idAssignments ) {
-                    fids.add( assignment.getNewId() );
-                }
+                featureMetadata = performInsertRelational( mode, features );
             }
         } catch ( Throwable t ) {
             String msg = "Error inserting feature: " + t.getMessage();
@@ -673,7 +572,127 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Insertion of " + features.size() + " features: " + elapsed + " [ms]" );
-        return new ArrayList<String>( fids );
+        return new ArrayList<FeatureMetadata>( featureMetadata );
+    }
+
+    private List<FeatureMetadata> perfomInsertBlob( IDGenMode mode, Set<Geometry> geometries, Set<Feature> features,
+                                                    Set<String> fids, Set<String> gids )
+                            throws FeatureStoreException, SQLException {
+        PreparedStatement blobInsertStmt = null;
+        switch ( mode ) {
+        case GENERATE_NEW: {
+            // TODO don't change incoming features / geometries
+            for ( Feature feature : features ) {
+                String newFid = "FEATURE_" + generateNewId();
+                String oldFid = feature.getId();
+                if ( oldFid != null ) {
+                    fids.remove( oldFid );
+                }
+                fids.add( newFid );
+                feature.setId( newFid );
+            }
+            for ( Geometry geometry : geometries ) {
+                String newGid = "GEOMETRY_" + generateNewId();
+                String oldGid = geometry.getId();
+                if ( oldGid != null ) {
+                    gids.remove( oldGid );
+                }
+                gids.add( newGid );
+                geometry.setId( newGid );
+            }
+            break;
+        }
+        case REPLACE_DUPLICATE: {
+            throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
+        }
+        case USE_EXISTING: {
+            // TODO don't change incoming features / geometries
+            for ( Feature feature : features ) {
+                if ( feature.getId() == null ) {
+                    String newFid = "FEATURE_" + generateNewId();
+                    feature.setId( newFid );
+                    fids.add( newFid );
+                }
+            }
+
+            for ( Geometry geometry : geometries ) {
+                if ( geometry.getId() == null ) {
+                    String newGid = "GEOMETRY_" + generateNewId();
+                    geometry.setId( newGid );
+                    gids.add( newGid );
+                }
+            }
+            break;
+        }
+        }
+        StringBuilder sql = new StringBuilder( "INSERT INTO " );
+        sql.append( blobMapping.getTable() );
+        sql.append( " (" );
+        sql.append( blobMapping.getGMLIdColumn() );
+        sql.append( "," );
+        sql.append( blobMapping.getTypeColumn() );
+        sql.append( "," );
+        sql.append( blobMapping.getDataColumn() );
+        sql.append( "," );
+        sql.append( blobMapping.getBBoxColumn() );
+        sql.append( ") VALUES(?,?,?," );
+        sql.append( blobGeomConverter.getSetSnippet( null ) );
+        sql.append( ")" );
+        LOG.debug( "Inserting: {}", sql );
+        blobInsertStmt = conn.prepareStatement( sql.toString() );
+        for ( Feature feature : features ) {
+            if ( blobInsertStmt != null ) {
+                insertFeatureBlob( blobInsertStmt, feature );
+            }
+            FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
+            if ( ftMapping != null ) {
+                throw new UnsupportedOperationException();
+            }
+            ICRS storageSrs = blobMapping.getCRS();
+            bboxTracker.insert( feature, storageSrs );
+        }
+        if ( blobInsertStmt != null ) {
+            blobInsertStmt.close();
+        }
+
+        List<FeatureMetadata> featureMetadata = new ArrayList<FeatureMetadata>();
+        for ( String fid : fids ) {
+            featureMetadata.add( new FeatureMetadata( fid ) );
+        }
+        return featureMetadata;
+    }
+
+    private List<FeatureMetadata> performInsertRelational( IDGenMode mode, Set<Feature> features )
+                            throws SQLException, FeatureStoreException, FilterEvaluationException {
+        // pure relational mode
+        List<FeatureRow> idAssignments = new ArrayList<FeatureRow>();
+        InsertRowManager insertManager = new InsertRowManager( fs, conn, mode );
+        for ( Feature feature : features ) {
+            FeatureTypeMapping ftMapping = fs.getMapping( feature.getName() );
+            if ( ftMapping == null ) {
+                continue;
+                // throw new FeatureStoreException( "Cannot insert feature of type '" + feature.getName()
+                // + "'. No mapping defined and BLOB mode is off." );
+            }
+            idAssignments.add( insertManager.insertFeature( feature, ftMapping ) );
+            Pair<TableName, GeometryMapping> mapping = ftMapping.getDefaultGeometryMapping();
+            if ( mapping != null ) {
+                ICRS storageSrs = mapping.second.getCRS();
+                bboxTracker.insert( feature, storageSrs );
+            }
+        }
+        if ( insertManager.getDelayedRows() != 0 ) {
+            String msg = "After insertion, " + insertManager.getDelayedRows()
+                         + " delayed rows left uninserted. Probably a cyclic key constraint blocks insertion.";
+            throw new RuntimeException( msg );
+        }
+        List<FeatureMetadata> featureMetadata = new ArrayList<FeatureMetadata>();
+        for ( FeatureRow assignment : idAssignments ) {
+            String newId = assignment.getNewId();
+            String version = assignment.getVersion();
+            featureMetadata.add( new FeatureMetadata( newId, version ) );
+        }
+        return featureMetadata;
     }
 
     private String generateNewId() {
@@ -721,12 +740,12 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
-                                       Lock lock )
+    public List<FeatureMetadata> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                Filter filter, Lock lock )
                             throws FeatureStoreException {
         LOG.debug( "Updating feature type '" + ftName + "', filter: " + filter + ", replacement properties: "
                    + replacementProps.size() );
-        List<String> updatedFids = null;
+        List<FeatureMetadata> updatedFids = null;
         if ( blobMapping != null ) {
             updatedFids = performUpdateBlob( ftName, replacementProps, filter, lock );
         } else {
@@ -736,10 +755,11 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return updatedFids;
     }
 
-    private List<String> performUpdateBlob( final QName ftName, final List<ParsedPropertyReplacement> replacementProps,
-                                            final Filter filter, final Lock lock )
+    private List<FeatureMetadata> performUpdateBlob( final QName ftName,
+                                                     final List<ParsedPropertyReplacement> replacementProps,
+                                                     final Filter filter, final Lock lock )
                             throws FeatureStoreException {
-        final List<String> updatedFids = new ArrayList<String>();
+        final List<FeatureMetadata> updatedFids = new ArrayList<FeatureMetadata>();
         final Query query = new Query( ftName, filter, -1, -1, -1 );
         final StringBuilder sql = new StringBuilder( "UPDATE " );
         sql.append( blobMapping.getTable() );
@@ -759,7 +779,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             for ( final Feature feature : features ) {
                 new FeatureUpdater().update( feature, replacementProps );
                 updateFeatureBlob( blobUpdateStmt, feature );
-                updatedFids.add( feature.getId() );
+                updatedFids.add( new FeatureMetadata( feature.getId() ) );
             }
         } catch ( final Exception e ) {
             final String msg = "Error while performing Update (BLOB): " + e.getMessage();
@@ -815,8 +835,9 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return bytes;
     }
 
-    private List<String> performUpdateRelational( QName ftName, List<ParsedPropertyReplacement> replacementProps,
-                                                  Filter filter )
+    private List<FeatureMetadata> performUpdateRelational( QName ftName,
+                                                           List<ParsedPropertyReplacement> replacementProps,
+                                                           Filter filter )
                             throws FeatureStoreException {
         IdFilter idFilter = null;
         try {
@@ -828,7 +849,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
         }
-        List<String> updated = null;
+        List<FeatureMetadata> updated = null;
         if ( blobMapping != null ) {
             throw new FeatureStoreException( "Updates in SQLFeatureStore (BLOB mode) are currently not implemented." );
         } else {
@@ -847,9 +868,10 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         return updated;
     }
 
-    private List<String> performUpdateRelational( QName ftName, List<ParsedPropertyReplacement> replacementProps,
-                                                  IdFilter filter )
-                            throws FeatureStoreException, FilterEvaluationException {
+    private List<FeatureMetadata> performUpdateRelational( QName ftName,
+                                                           List<ParsedPropertyReplacement> replacementProps,
+                                                           IdFilter filter )
+                            throws FeatureStoreException, FilterEvaluationException, SQLException {
 
         FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
@@ -876,7 +898,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             JDBCUtils.close( stmt );
         }
         LOG.debug( "Updated {} features.", updated );
-        return new ArrayList<String>( filter.getMatchingIds() );
+        List<ResourceId> selectedIds = filter.getSelectedIds();
+
+        VersionMapping versionMapping = ftMapping.getVersionMapping();
+        if ( versionMapping != null ) {
+            return convertToFeatureMetadataWithVersion( ftMapping, selectedIds );
+        }
+        return convertToFeatureMetadataWithoutVersion( selectedIds );
     }
 
     private void setRelationalUpdateValues( List<ParsedPropertyReplacement> replacementProps,
@@ -1031,6 +1059,26 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         }
     }
 
+    private List<FeatureMetadata> convertToFeatureMetadataWithoutVersion( List<ResourceId> selectedIds ) {
+        List<FeatureMetadata> featureMetadatas = new ArrayList<FeatureMetadata>( selectedIds.size() );
+        for ( ResourceId selectedId : selectedIds ) {
+            featureMetadatas.add( new FeatureMetadata( selectedId.getRid() ) );
+        }
+        return featureMetadatas;
+    }
+
+    private List<FeatureMetadata> convertToFeatureMetadataWithVersion( FeatureTypeMapping featureTypeMapping,
+                                                                       List<ResourceId> selectedIds )
+                            throws SQLException {
+        List<FeatureMetadata> featureMetadatas = new ArrayList<FeatureMetadata>( selectedIds.size() );
+        for ( ResourceId selectedId : selectedIds ) {
+            IdAnalysis analysis = schema.analyzeId( selectedId.getRid() );
+            String version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping, analysis );
+            featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version ) );
+        }
+        return featureMetadatas;
+    }
+
     private IdFilter getIdFilter( QName ftName, OperatorFilter filter )
                             throws FeatureStoreException {
         Set<String> ids = new HashSet<String>();
@@ -1052,8 +1100,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( final Feature replacement, final Filter filter, final Lock lock,
-                                  final IDGenMode idGenMode )
+    public FeatureMetadata performReplace( final Feature replacement, final Filter filter, final Lock lock,
+                                           final IDGenMode idGenMode )
                             throws FeatureStoreException {
         if ( filter instanceof IdFilter ) {
             performDelete( (IdFilter) filter, lock );
@@ -1062,7 +1110,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         final GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
-        final List<String> ids = performInsert( col, idGenMode );
+        final List<FeatureMetadata> ids = performInsert( col, idGenMode );
         if ( ids.isEmpty() || ids.size() > 1 ) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }

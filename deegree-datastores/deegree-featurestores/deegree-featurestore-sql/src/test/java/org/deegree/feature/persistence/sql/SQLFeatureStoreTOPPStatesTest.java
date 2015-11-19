@@ -75,6 +75,7 @@ import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
@@ -170,7 +171,7 @@ public class SQLFeatureStoreTOPPStatesTest {
 
         FeatureStoreTransaction ta = fs.acquireTransaction();
         try {
-            List<String> fids = ta.performInsert( fc, GENERATE_NEW );
+            List<FeatureMetadata> fids = ta.performInsert( fc, GENERATE_NEW );
             Assert.assertEquals( 49, fids.size() );
             ta.commit();
         } catch ( Throwable t ) {

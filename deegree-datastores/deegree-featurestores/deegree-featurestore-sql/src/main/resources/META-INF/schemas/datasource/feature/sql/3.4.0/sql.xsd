@@ -12,7 +12,8 @@
   <element name="SQLFeatureStore">
     <annotation>
       <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS, Oracle
-        Spatial or MS SQL Server)
+        Spatial
+        or MS SQL Server)
       </documentation>
       <appinfo>
         <jaxb:class name="SQLFeatureStoreJAXB" />
@@ -43,7 +44,7 @@
         </element>
         <element ref="sqlfs:StorageCRS" minOccurs="0" />
         <element name="GMLSchema" type="string" minOccurs="0" maxOccurs="unbounded" />
-        <element name="NullEscalation" minOccurs="0" type="boolean" default="true" />        
+        <element name="NullEscalation" minOccurs="0" type="boolean" default="true" />
         <element name="CustomReferenceResolver" minOccurs="0" maxOccurs="unbounded" type="string" />
         <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -113,6 +114,32 @@
       <attribute name="prefix" type="string" use="optional" />
     </complexType>
   </element>
+  <!-- === Version mapping === -->
+  <!-- requires FIDMapping -->
+  <element name="VersionMapping">
+    <annotation>
+      <documentation>Defines the mapping of the versions</documentation>
+      <appinfo>
+        <jaxb:class name="VersionMappingJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Column" minOccurs="1">
+          <complexType>
+            <annotation>
+              <appinfo>
+                <jaxb:class name="VersionColumnJAXB" />
+              </appinfo>
+            </annotation>
+            <attribute name="name" type="string" use="required" />
+            <attribute name="type" type="sqlfs:PrimitiveType" use="required" />
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
   <element name="AbstractIDGenerator" abstract="true" type="sqlfs:AbstractIDGeneratorType" />
   <complexType name="AbstractIDGeneratorType" abstract="true">
     <sequence />
@@ -150,6 +177,7 @@
     <complexType>
       <sequence>
         <element ref="sqlfs:FIDMapping" minOccurs="0" />
+        <element ref="sqlfs:VersionMapping" minOccurs="0" />
         <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="table" type="string" use="required">
@@ -183,17 +211,18 @@
     </attribute>
     <attribute name="nullEscalation" type="sqlfs:NullEscalationType">
       <annotation>
-        <documentation>Defines whether NULL values for this particle lead to voiding of the parent particle.</documentation>
+        <documentation>Defines whether NULL values for this particle lead to voiding of the parent particle.
+        </documentation>
       </annotation>
-    </attribute>    
+    </attribute>
   </complexType>
   <simpleType name="NullEscalationType">
     <restriction base="string">
       <enumeration value="true" />
       <enumeration value="false" />
       <enumeration value="auto" />
-  </restriction>
-  </simpleType>  
+    </restriction>
+  </simpleType>
   <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
     <complexType>
       <annotation>

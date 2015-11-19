@@ -51,6 +51,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.version.VersionQueryHandler;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
@@ -73,6 +74,12 @@ public class FeatureRow extends InsertRow {
     private FIDMapping fidMapping;
 
     private String newId;
+
+    private String version;
+
+    private FeatureTypeMapping ftMapping;
+
+    private VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
 
     /**
      * Creates a new {@link FeatureRow} instance.
@@ -105,6 +112,15 @@ public class FeatureRow extends InsertRow {
         return newId;
     }
 
+    /**
+     * Returns the current version of the inserted {@link Feature}, if versioning is enabled.
+     * 
+     * @return insert id, can be <code>null</code> (versioning is not supported or not assigned yet)
+     */
+    public String getVersion() {
+        return version;
+    }
+
     @Override
     void performInsert( Connection conn, boolean propagateAutoGenColumns )
                             throws SQLException, FeatureStoreException {
@@ -116,6 +132,7 @@ public class FeatureRow extends InsertRow {
             String msg = "Internal/configuration error. Feature id must be assignable after feature row INSERT.";
             throw new FeatureStoreException( msg );
         }
+        version = buildVersion( conn, newId );
 
         // clear everything, but keep key columns (values may still be needed by referencing rows)
         Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();
@@ -133,9 +150,7 @@ public class FeatureRow extends InsertRow {
 
     void assign( Feature feature )
                             throws FeatureStoreException {
-
-        FeatureTypeMapping ftMapping = mgr.getSchema().getFtMapping( feature.getName() );
-
+        this.ftMapping = mgr.getSchema().getFtMapping( feature.getName() );
         this.table = ftMapping.getFtTable();
         this.fidMapping = ftMapping.getFidMapping();
 
@@ -207,7 +222,6 @@ public class FeatureRow extends InsertRow {
 
     private String buildNewFid()
                             throws FeatureStoreException {
-
         if ( get( fidMapping.getColumns().get( 0 ).getFirst() ) == null ) {
             // fid columns not available yet
             return null;
@@ -220,6 +234,12 @@ public class FeatureRow extends InsertRow {
             newId += fidMapping.getDelimiter() + checkFIDParticle( fidColumns.get( i ).first );
         }
         return newId;
+    }
+
+    private String buildVersion( Connection conn, String newId )
+                            throws SQLException {
+        IdAnalysis analyzedId = mgr.getSchema().analyzeId( newId );
+        return versionQueryHandler.retrieveVersion( conn, ftMapping, analyzedId );
     }
 
     private Object checkFIDParticle( SQLIdentifier column )
