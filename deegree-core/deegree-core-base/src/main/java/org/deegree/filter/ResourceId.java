@@ -65,7 +65,7 @@ public class ResourceId {
      * @param previousRid
      *            TODO
      * @param version
-     *            TODO
+     *            the version of the selected resource, may be <code>null</code>
      * @param startDate
      *            TODO
      * @param endDate
@@ -87,4 +87,14 @@ public class ResourceId {
     public String getRid() {
         return rid;
     }
+
+    /**
+     * Returns the version of the resource that shall be selected.
+     * 
+     * @return the version of the resource, may be <code>null</code>
+     */
+    public String getVersion() {
+        return version;
+    }
+
 }

@@ -106,6 +106,12 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.version.VersionParser;
+import org.deegree.feature.persistence.sql.version.VersionParser.VersionCode;
+import org.deegree.feature.persistence.version.DefaultResourceIdConverter;
+import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.feature.persistence.version.ResourceIdConverter;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.FilteredFeatureInputStream;
@@ -118,6 +124,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.ResourceId;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
@@ -200,6 +207,8 @@ public class SQLFeatureStore implements FeatureStore {
     private ConnectionProvider connProvider;
 
     private final ThreadLocal<SQLFeatureStoreTransaction> transaction = new ThreadLocal<SQLFeatureStoreTransaction>();
+
+    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
@@ -1039,6 +1048,15 @@ public class SQLFeatureStore implements FeatureStore {
         FIDMapping fidMapping = ftMapping.getFidMapping();
         List<IdAnalysis> idKernels = ftNameToIdAnalysis.get( ftName );
 
+        if ( ftMapping.getVersionMapping() != null ) {
+            return queryByIdFilterRelationalWithEnabledVersioning( ft, ftMapping, fidMapping, filter );
+        }
+        return queryByIdFilterRelational( ft, ftMapping, fidMapping, idKernels );
+    }
+
+    private FeatureInputStream queryByIdFilterRelational( FeatureType ft, FeatureTypeMapping ftMapping,
+                                                          FIDMapping fidMapping, List<IdAnalysis> idKernels )
+                            throws FeatureStoreException {
         FeatureInputStream result = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -1062,39 +1080,210 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( ' ' );
             sql.append( tableAlias );
             sql.append( " WHERE " );
-            boolean first = true;
-            for ( IdAnalysis idKernel : idKernels ) {
-                if ( !first ) {
-                    sql.append( " OR " );
-                }
-                sql.append( "(" );
-                boolean firstCol = true;
-                for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
-                    if ( !firstCol ) {
-                        sql.append( " AND " );
-                    }
-                    sql.append( fidColumn.first );
-                    sql.append( "=?" );
-                    firstCol = false;
-                }
-                sql.append( ")" );
-                first = false;
-            }
+            appendWhereClauseForResourceIds( fidMapping, idKernels, sql );
             LOG.debug( "SQL: {}", sql );
 
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setFetchSize( fetchSize );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
-            int i = 1;
-            for ( IdAnalysis idKernel : idKernels ) {
-                int j = 0;
-                for ( Object o : idKernel.getIdKernels() ) {
-                    PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( j++ ).getSecond() );
-                    PrimitiveValue value = new PrimitiveValue( o, pt );
-                    Object sqlValue = SQLValueMangler.internalToSQL( value );
-                    stmt.setObject( i++, sqlValue );
+            appendIdAnalysesValues( fidMapping, idKernels, stmt );
+
+            begin = System.currentTimeMillis();
+            rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( Exception e ) {
+            release( rs, stmt, conn );
+            String msg = "Error performing query by id filter (relational mode): " + e.getMessage();
+            LOG.error( msg, e );
+            throw new FeatureStoreException( msg, e );
+        }
+        return result;
+    }
+
+    private FeatureInputStream queryByIdFilterRelationalWithEnabledVersioning( final FeatureType ft,
+                                                                               final FeatureTypeMapping ftMapping,
+                                                                               final FIDMapping fidMapping,
+                                                                               final IdFilter filter )
+                            throws FeatureStoreException {
+        final List<ResourceId> resourceIds = filter.getSelectedIds();
+        Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < resourceIds.size();
+            }
+
+            @Override
+            public FeatureInputStream next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
                 }
+                FeatureInputStream rs;
+                try {
+                    rs = queryByIdFilterRelationalWithEnabledVersioning( ft, ftMapping, fidMapping,
+                                                                         resourceIds.get( i++ ) );
+                } catch ( Throwable e ) {
+                    LOG.debug( e.getMessage(), e );
+                    throw new RuntimeException( e.getMessage(), e );
+                }
+                return rs;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        return new CombinedFeatureInputStream( rsIter );
+    }
+
+    private FeatureInputStream queryByIdFilterRelationalWithEnabledVersioning( FeatureType ft,
+                                                                               FeatureTypeMapping ftMapping,
+                                                                               FIDMapping fidMapping,
+                                                                               ResourceId resourceId )
+                            throws FeatureStoreException {
+        FeatureMetadata featureMetadata = resourceIdConverter.convertToFeatureMetadata( resourceId.getRid() );
+        IdAnalysis analysis = getSchema().analyzeId( featureMetadata.getFid() );
+        VersionMapping versionMapping = ftMapping.getVersionMapping();
+        FeatureInputStream result = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
+        try {
+            long begin = System.currentTimeMillis();
+            conn = getConnection();
+
+            String tableAlias = "X1";
+            String versionTableAlias = "X2";
+            String versionTable = versionMapping.getVersionMetadataTable();
+            String versionColumn = versionMapping.getVersionColumnInMetadataTable().first.getName();
+            String globalVersionColumn = versionMapping.getVersionColumn().first.getName();
+
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
+                                                                   nullEscalation );
+            List<String> columns = builder.getInitialSelectList();
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( columns.get( 0 ) );
+            for ( int i = 1; i < columns.size(); i++ ) {
+                sql.append( ',' );
+                sql.append( columns.get( i ) );
+            }
+            sql.append( " FROM " );
+            sql.append( versionTable );
+            sql.append( ' ' );
+            sql.append( tableAlias );
+
+            String version = resourceId.getVersion();
+            VersionCode versionCode = VersionParser.getVersionCode( version );
+            int versionInteger = VersionParser.parseVersionInteger( version );
+            checkIfVersionIsSupported( version, versionCode, versionInteger );
+            if ( VersionCode.LATEST.equals( versionCode ) || versionInteger > 0 ) {
+                sql.append( ", ( SELECT max(" );
+                sql.append( globalVersionColumn );
+                sql.append( ") as max FROM " );
+                sql.append( versionTable );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
+                sql.append( ") " );
+                sql.append( versionTableAlias );
+            } else if ( VersionCode.NEXT.equals( versionCode ) || VersionCode.PREVIOUS.equals( versionCode ) ) {
+                sql.append( ", ( SELECT " );
+                sql.append( versionColumn );
+                sql.append( " FROM " );
+                sql.append( versionTable );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
+                sql.append( " AND " );
+                sql.append( globalVersionColumn );
+                sql.append( " = ? ) " );
+                sql.append( versionTableAlias );
+            }
+            sql.append( " WHERE " );
+            appendWhereClauseForFidMapping( fidMapping, sql );
+
+            if ( versionCode != null ) {
+                switch ( versionCode ) {
+                case FIRST:
+                    sql.append( " AND " );
+                    sql.append( versionColumn );
+                    // rownum = 1
+                    sql.append( " = ?" );
+                    break;
+                case LATEST:
+                    sql.append( " AND " );
+                    sql.append( globalVersionColumn );
+                    sql.append( " = " );
+                    sql.append( versionTableAlias );
+                    sql.append( ".max" );
+                    break;
+                case NEXT:
+                    sql.append( " AND " );
+                    sql.append( tableAlias ).append( '.' );
+                    sql.append( versionColumn );
+                    sql.append( " = " );
+                    sql.append( versionTableAlias ).append( '.' );
+                    sql.append( versionColumn );
+                    sql.append( " + 1" );
+                    break;
+                case PREVIOUS:
+                    sql.append( " AND " );
+                    sql.append( tableAlias ).append( '.' );
+                    sql.append( versionColumn );
+                    sql.append( " = " );
+                    sql.append( versionTableAlias ).append( '.' );
+                    sql.append( versionColumn );
+                    sql.append( " - 1" );
+                    break;
+                default:
+                    // Do nothing (all versions are requested).
+                    break;
+                }
+            } else if ( versionInteger > 0 ) {
+                sql.append( " AND (" );
+                sql.append( versionColumn );
+                sql.append( " = ?" );
+                sql.append( " OR " );
+                sql.append( globalVersionColumn );
+                sql.append( " = " );
+                sql.append( versionTableAlias );
+                sql.append( ".max )" );
+                sql.append( " ORDER BY " );
+                sql.append( versionColumn );
+                sql.append( " LIMIT 1" );
+            }
+
+            LOG.debug( "SQL: {}", sql );
+
+            stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            int currentRowNum = appendIdAnalysisValue( fidMapping, stmt, 1, analysis );
+
+            if ( versionCode != null ) {
+                switch ( versionCode ) {
+                case FIRST:
+                    stmt.setInt( currentRowNum++, 1 );
+                    break;
+                case LATEST:
+                    appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
+                    break;
+                case PREVIOUS:
+                case NEXT:
+                    PrimitiveValue primitiveValue = new PrimitiveValue( featureMetadata.getVersion() );
+                    versionMapping.getVersionColumnConverter().setParticle( stmt, primitiveValue, currentRowNum++ );
+                    appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
+                    break;
+                default:
+                    break;
+                }
+            } else if ( versionInteger > 0 ) {
+                currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
+                stmt.setInt( currentRowNum++, versionInteger );
             }
 
             begin = System.currentTimeMillis();
@@ -1108,6 +1297,57 @@ public class SQLFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
         return result;
+    }
+
+    private void checkIfVersionIsSupported( String version, VersionCode versionCode, int versionInteger ) {
+        if ( version != null && versionCode == null && versionInteger <= 0 )
+            throw new IllegalArgumentException( "Version " + version + " is not supported!" );
+    }
+
+    private void appendIdAnalysesValues( FIDMapping fidMapping, List<IdAnalysis> idKernels, PreparedStatement stmt )
+                            throws SQLException {
+        int i = 1;
+        for ( IdAnalysis idKernel : idKernels ) {
+            i = appendIdAnalysisValue( fidMapping, stmt, i, idKernel );
+        }
+    }
+
+    private int appendIdAnalysisValue( FIDMapping fidMapping, PreparedStatement stmt, int i, IdAnalysis idAnalysis )
+                            throws SQLException {
+        int j = 0;
+        for ( Object o : idAnalysis.getIdKernels() ) {
+            PrimitiveType pt = new PrimitiveType( fidMapping.getColumns().get( j++ ).getSecond() );
+            PrimitiveValue value = new PrimitiveValue( o, pt );
+            Object sqlValue = SQLValueMangler.internalToSQL( value );
+            stmt.setObject( i++, sqlValue );
+        }
+        return i;
+    }
+
+    @SuppressWarnings("unused")
+    private void appendWhereClauseForResourceIds( FIDMapping fidMapping, List<IdAnalysis> idAnalysis, StringBuilder sql ) {
+        boolean first = true;
+        for ( IdAnalysis idKernel : idAnalysis ) {
+            if ( !first ) {
+                sql.append( " OR " );
+            }
+            sql.append( "(" );
+            appendWhereClauseForFidMapping( fidMapping, sql );
+            sql.append( ")" );
+            first = false;
+        }
+    }
+
+    private void appendWhereClauseForFidMapping( FIDMapping fidMapping, StringBuilder sql ) {
+        boolean firstCol = true;
+        for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
+            if ( !firstCol ) {
+                sql.append( " AND " );
+            }
+            sql.append( fidColumn.first );
+            sql.append( "=?" );
+            firstCol = false;
+        }
     }
 
     protected Connection getConnection()
