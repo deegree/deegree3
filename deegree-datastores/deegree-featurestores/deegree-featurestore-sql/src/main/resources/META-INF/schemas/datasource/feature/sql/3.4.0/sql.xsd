@@ -171,6 +171,22 @@
             </sequence>
           </complexType>
         </element>
+        <element name="VersionMetadataTable" minOccurs="1">
+          <complexType>
+            <sequence>
+              <element name="TableName" minOccurs="1">
+                <complexType>
+                  <attribute name="name" type="string" use="required" />
+                </complexType>
+              </element>
+              <element name="VersionColumn" minOccurs="1">
+                <complexType>
+                  <attribute name="name" type="string" use="required" />
+                </complexType>
+              </element>
+            </sequence>
+          </complexType>
+        </element>
       </sequence>
     </complexType>
   </element>

@@ -57,6 +57,10 @@ public class VersionMapping {
 
     private final Map<String, FeatureState> stateMapping;
 
+    private final String versionMetadataTable;
+
+    private final Pair<SQLIdentifier, PrimitiveType> versionColumnInMetadataTable;
+
     /**
      * @param versionColumn
      *            the column containing the version of a feature, never <code>null</code>
@@ -67,9 +71,12 @@ public class VersionMapping {
      *            or empty
      */
     public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn,
-                           Pair<SQLIdentifier, PrimitiveType> stateColumn, Map<String, FeatureState> stateMapping ) {
+                           Pair<SQLIdentifier, PrimitiveType> stateColumn, Map<String, FeatureState> stateMapping,
+                           String versionMetadataTable, Pair<SQLIdentifier, PrimitiveType> versionColumnInMetadataTable ) {
         this.versionColumn = versionColumn;
         this.stateColumn = stateColumn;
+        this.versionMetadataTable = versionMetadataTable;
+        this.versionColumnInMetadataTable = versionColumnInMetadataTable;
         this.stateMapping = stateMapping != null ? stateMapping : Collections.<String, FeatureState> emptyMap();
     }
 
@@ -107,6 +114,17 @@ public class VersionMapping {
      */
     public Map<String, FeatureState> getStateMapping() {
         return stateMapping;
+    }
+
+    public String getVersionMetadataTable() {
+        return versionMetadataTable;
+    }
+
+    /**
+     * @return the versionColumnInMetadataTable
+     */
+    public Pair<SQLIdentifier, PrimitiveType> getVersionColumnInMetadataTable() {
+        return versionColumnInMetadataTable;
     }
 
 }

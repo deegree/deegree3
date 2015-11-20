@@ -85,6 +85,8 @@ import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateColumnJA
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateMappings;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateMappings.StateMapping;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionMetadataTable;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionMetadataTable.VersionColumn;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
@@ -266,7 +268,18 @@ public abstract class AbstractMappedSchemaBuilder {
                     stateMappingMap.put( stateMapping.getDbColumnContent(), state );
                 }
             }
-            return new VersionMapping( versionColumn, stateColumn, stateMappingMap );
+            VersionMetadataTable versionMetadataTable = versionMapping.getVersionMetadataTable();
+            String versionMetadataTableName = versionMetadataTable.getTableName().getName();
+
+            VersionColumn configuredVersionMetadataColumn = versionMetadataTable.getVersionColumn();
+            SQLIdentifier versionMetadataSqlIdentifier = new SQLIdentifier( configuredVersionMetadataColumn.getName() );
+            PrimitiveType versionMetadataType = new PrimitiveType( BaseType.INTEGER );
+            Pair<SQLIdentifier, PrimitiveType> versionMetadataColumn = new Pair<SQLIdentifier, PrimitiveType>(
+                                                                                                               versionMetadataSqlIdentifier,
+                                                                                                               versionMetadataType );
+
+            return new VersionMapping( versionColumn, stateColumn, stateMappingMap, versionMetadataTableName,
+                                       versionMetadataColumn );
         }
         return null;
     }
