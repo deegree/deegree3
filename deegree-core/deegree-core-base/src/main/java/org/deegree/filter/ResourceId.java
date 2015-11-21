@@ -67,9 +67,9 @@ public class ResourceId {
      * @param version
      *            the version of the selected resource, may be <code>null</code>
      * @param startDate
-     *            TODO
+     *            the start date to limit the selected resource, may be <code>null</code>
      * @param endDate
-     *            TODO
+     *            the end date to limit the selected resource, may be <code>null</code>
      */
     public ResourceId( String rid, String previousRid, String version, DateTime startDate, DateTime endDate ) {
         this.rid = rid;
@@ -95,6 +95,24 @@ public class ResourceId {
      */
     public String getVersion() {
         return version;
+    }
+
+    /**
+     * Returns the start date to limit the selected resource.
+     * 
+     * @return the start date to limit the selected resource, may be <code>null</code>
+     */
+    public DateTime getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Returns the end date to limit the selected resource.
+     * 
+     * @return the end date to limit the selected resource, may be <code>null</code>
+     */
+    public DateTime getEndDate() {
+        return endDate;
     }
 
 }

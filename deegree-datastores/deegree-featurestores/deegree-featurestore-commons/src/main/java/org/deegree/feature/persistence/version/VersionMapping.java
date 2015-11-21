@@ -61,6 +61,8 @@ public class VersionMapping {
 
     private final Pair<SQLIdentifier, PrimitiveType> versionColumnInMetadataTable;
 
+    private final Pair<SQLIdentifier, PrimitiveType> timestampColumn;
+
     /**
      * @param versionColumn
      *            the column containing the version of a feature, never <code>null</code>
@@ -72,12 +74,15 @@ public class VersionMapping {
      */
     public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn,
                            Pair<SQLIdentifier, PrimitiveType> stateColumn, Map<String, FeatureState> stateMapping,
-                           String versionMetadataTable, Pair<SQLIdentifier, PrimitiveType> versionColumnInMetadataTable ) {
+                           String versionMetadataTable,
+                           Pair<SQLIdentifier, PrimitiveType> versionColumnInMetadataTable,
+                           Pair<SQLIdentifier, PrimitiveType> timestampColumn ) {
         this.versionColumn = versionColumn;
         this.stateColumn = stateColumn;
+        this.stateMapping = stateMapping != null ? stateMapping : Collections.<String, FeatureState> emptyMap();
         this.versionMetadataTable = versionMetadataTable;
         this.versionColumnInMetadataTable = versionColumnInMetadataTable;
-        this.stateMapping = stateMapping != null ? stateMapping : Collections.<String, FeatureState> emptyMap();
+        this.timestampColumn = timestampColumn;
     }
 
     /**
@@ -125,6 +130,13 @@ public class VersionMapping {
      */
     public Pair<SQLIdentifier, PrimitiveType> getVersionColumnInMetadataTable() {
         return versionColumnInMetadataTable;
+    }
+
+    /**
+     * @return the timestampColumn
+     */
+    public Pair<SQLIdentifier, PrimitiveType> getTimestampColumn() {
+        return timestampColumn;
     }
 
 }

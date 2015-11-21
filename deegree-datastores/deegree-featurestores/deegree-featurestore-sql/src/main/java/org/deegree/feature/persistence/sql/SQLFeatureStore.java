@@ -63,11 +63,13 @@ import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.CombinedReferenceResolver;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
@@ -1161,6 +1163,7 @@ public class SQLFeatureStore implements FeatureStore {
             String versionTable = versionMapping.getVersionMetadataTable();
             String versionColumn = versionMapping.getVersionColumnInMetadataTable().first.getName();
             String globalVersionColumn = versionMapping.getVersionColumn().first.getName();
+            String timestampColumn = versionMapping.getTimestampColumn().first.getName();
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
                                                                    nullEscalation );
@@ -1180,7 +1183,14 @@ public class SQLFeatureStore implements FeatureStore {
             String version = resourceId.getVersion();
             VersionCode versionCode = VersionParser.getVersionCode( version );
             int versionInteger = VersionParser.parseVersionInteger( version );
-            checkIfVersionIsSupported( version, versionCode, versionInteger );
+            DateTime startDate = resourceId.getStartDate();
+            DateTime endDate = resourceId.getEndDate();
+            checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
+
+            DefaultPrimitiveConverter timestampConverter = new DefaultPrimitiveConverter(
+                                                                                          new PrimitiveType(
+                                                                                                             BaseType.DATE_TIME ),
+                                                                                          "systime" );
             if ( VersionCode.LATEST.equals( versionCode ) || versionInteger > 0 ) {
                 sql.append( ", ( SELECT max(" );
                 sql.append( globalVersionColumn );
@@ -1254,6 +1264,13 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( " ORDER BY " );
                 sql.append( versionColumn );
                 sql.append( " LIMIT 1" );
+            } else if ( startDate != null && endDate != null ) {
+                sql.append( " AND (" );
+                sql.append( timestampColumn );
+                sql.append( " >= ? " );
+                sql.append( " AND " );
+                sql.append( timestampColumn );
+                sql.append( " <= ? )" );
             }
 
             LOG.debug( "SQL: {}", sql );
@@ -1284,6 +1301,9 @@ public class SQLFeatureStore implements FeatureStore {
             } else if ( versionInteger > 0 ) {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                 stmt.setInt( currentRowNum++, versionInteger );
+            } else if ( startDate != null && endDate != null ) {
+                timestampConverter.setParticle( stmt, new PrimitiveValue( startDate ), currentRowNum++ );
+                timestampConverter.setParticle( stmt, new PrimitiveValue( endDate ), currentRowNum++ );
             }
 
             begin = System.currentTimeMillis();
@@ -1299,9 +1319,14 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private void checkIfVersionIsSupported( String version, VersionCode versionCode, int versionInteger ) {
+    private void checkIfRequestAttributesAreSupported( String version, VersionCode versionCode, int versionInteger,
+                                                       DateTime startDate, DateTime endDate ) {
         if ( version != null && versionCode == null && versionInteger <= 0 )
             throw new IllegalArgumentException( "Version " + version + " is not supported!" );
+        if ( version != null && ( startDate != null || endDate != null ) )
+            throw new IllegalArgumentException( "Version attribute and startDate/endDate are mutually exclusive!" );
+        if ( ( startDate != null && endDate == null ) || ( startDate == null && endDate != null ) )
+            throw new IllegalArgumentException( "startDate and endDate must be specified together!" );
     }
 
     private void appendIdAnalysesValues( FIDMapping fidMapping, List<IdAnalysis> idKernels, PreparedStatement stmt )
