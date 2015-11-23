@@ -484,7 +484,7 @@ public class ShapeFeatureStore implements FeatureStore {
             // add geometry property
             Geometry g = shp.readGeometry( recNumAndPos.second );
             props.add( new GenericProperty( ft.getDefaultGeometryPropertyDeclaration(), g ) );
-            feature = ft.newFeature( fid, null, props, null );
+            feature = ft.newFeature( fid, null, -1, props, null );
 
             cache.add( feature );
         } else {
