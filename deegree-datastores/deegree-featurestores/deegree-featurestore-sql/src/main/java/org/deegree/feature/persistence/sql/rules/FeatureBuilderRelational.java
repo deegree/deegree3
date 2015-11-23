@@ -314,8 +314,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             PrimitiveValue particle = versionMapping.getStateColumnConverter().toParticle( rs, stateColumnIndex );
             if ( particle != null ) {
                 String stateAsText = particle.getAsText();
-                FeatureState featureState = versionMapping.getStateMapping().get( stateAsText );
-                return featureState;
+                try {
+                    return FeatureState.valueOfByGmlName( stateAsText );
+                } catch ( IllegalArgumentException e ) {
+                    FeatureState featureState = versionMapping.getStateMapping().get( stateAsText );
+                    return featureState;
+                }
             }
         }
         return null;
