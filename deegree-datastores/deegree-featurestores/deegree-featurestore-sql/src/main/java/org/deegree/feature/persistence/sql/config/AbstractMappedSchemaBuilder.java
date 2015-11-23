@@ -87,7 +87,6 @@ import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.StateMappings
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionMetadataTable;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionMetadataTable.TimestampColumn;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionMetadataTable.VersionColumn;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
@@ -272,20 +271,12 @@ public abstract class AbstractMappedSchemaBuilder {
             VersionMetadataTable versionMetadataTable = versionMapping.getVersionMetadataTable();
             String versionMetadataTableName = versionMetadataTable.getTableName().getName();
 
-            VersionColumn configuredVersionMetadataColumn = versionMetadataTable.getVersionColumn();
-            SQLIdentifier versionMetadataSqlIdentifier = new SQLIdentifier( configuredVersionMetadataColumn.getName() );
-            PrimitiveType versionMetadataType = new PrimitiveType( BaseType.INTEGER );
-            Pair<SQLIdentifier, PrimitiveType> versionMetadataColumn = new Pair<SQLIdentifier, PrimitiveType>(
-                                                                                                               versionMetadataSqlIdentifier,
-                                                                                                               versionMetadataType );
-
             TimestampColumn configuredTimeColumn = versionMetadataTable.getTimestampColumn();
             SQLIdentifier timeSqlIdentifier = new SQLIdentifier( configuredTimeColumn.getName() );
             PrimitiveType timeType = new PrimitiveType( BaseType.DATE_TIME );
             Pair<SQLIdentifier, PrimitiveType> typeColumn = new Pair<SQLIdentifier, PrimitiveType>( timeSqlIdentifier,
                                                                                                     timeType );
-            return new VersionMapping( versionColumn, stateColumn, stateMappingMap, versionMetadataTableName,
-                                       versionMetadataColumn, typeColumn );
+            return new VersionMapping( versionColumn, stateColumn, stateMappingMap, versionMetadataTableName, typeColumn );
         }
         return null;
     }

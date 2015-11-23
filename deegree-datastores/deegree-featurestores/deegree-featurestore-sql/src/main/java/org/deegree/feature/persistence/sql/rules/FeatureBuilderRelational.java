@@ -193,10 +193,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         if ( ftMapping.getVersionMapping() != null ) {
             addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
                                                 + ftMapping.getVersionMapping().getStateColumn().getFirst().getName() );
-            addColumn( qualifiedSqlExprToRsIdx,
-                       tableAlias
-                                               + "."
-                                               + ftMapping.getVersionMapping().getVersionColumnInMetadataTable().getFirst().getName() );
+            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
+                                                + ftMapping.getVersionMapping().getVersionColumn().getFirst().getName() );
         }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
         return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
@@ -334,7 +332,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
-            Pair<SQLIdentifier, PrimitiveType> versionColumn = versionMapping.getVersionColumnInMetadataTable();
+            Pair<SQLIdentifier, PrimitiveType> versionColumn = versionMapping.getVersionColumn();
             int versionColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "." + versionColumn.getFirst().getName() );
             int version = rs.getInt( versionColumnIndex );
             if ( version > 0 ) {
