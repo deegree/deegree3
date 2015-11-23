@@ -1191,7 +1191,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                                                           new PrimitiveType(
                                                                                                              BaseType.DATE_TIME ),
                                                                                           "systime" );
-            if ( VersionCode.LATEST.equals( versionCode ) || versionInteger > 0 ) {
+            if ( VersionCode.LATEST.equals( versionCode ) ) {
                 sql.append( ", ( SELECT max(" );
                 sql.append( globalVersionColumn );
                 sql.append( ") as max FROM " );
@@ -1202,6 +1202,27 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( versionTableAlias );
                 sql.append( " WHERE " );
                 appendWhereClauseForFidMapping( fidMapping, sql );
+                sql.append( " AND " );
+                sql.append( globalVersionColumn );
+                sql.append( " = " );
+                sql.append( versionTableAlias );
+                sql.append( ".max" );
+            } else if ( VersionCode.FIRST.equals( versionCode ) ) {
+                sql.append( ", ( SELECT min(" );
+                sql.append( globalVersionColumn );
+                sql.append( ") as min FROM " );
+                sql.append( versionTable );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
+                sql.append( ") " );
+                sql.append( versionTableAlias );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
+                sql.append( " AND " );
+                sql.append( globalVersionColumn );
+                sql.append( " = " );
+                sql.append( versionTableAlias );
+                sql.append( ".min" );
             } else if ( VersionCode.NEXT.equals( versionCode ) ) {
                 sql.append( ", ( SELECT next FROM " );
                 sql.append( " ( SELECT *, LEAD(" );
@@ -1243,27 +1264,11 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( globalVersionColumn );
                 sql.append( " = previous" );
             } else {
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
             }
-            if ( versionCode != null ) {
-                switch ( versionCode ) {
-                case FIRST:
-                    sql.append( " AND " );
-                    sql.append( versionColumn );
-                    // rownum = 1
-                    sql.append( " = ?" );
-                    break;
-                case LATEST:
-                    sql.append( " AND " );
-                    sql.append( globalVersionColumn );
-                    sql.append( " = " );
-                    sql.append( versionTableAlias );
-                    sql.append( ".max" );
-                    break;
-                default:
-                    // Do nothing (all versions are requested).
-                    break;
-                }
-            } else if ( versionInteger > 0 ) {
+
+            if ( versionInteger > 0 ) {
                 sql.append( " AND (" );
                 sql.append( versionColumn );
                 sql.append( " = ?" );
@@ -1295,8 +1300,6 @@ public class SQLFeatureStore implements FeatureStore {
             if ( versionCode != null ) {
                 switch ( versionCode ) {
                 case FIRST:
-                    stmt.setInt( currentRowNum++, 1 );
-                    break;
                 case LATEST:
                     appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                     break;
