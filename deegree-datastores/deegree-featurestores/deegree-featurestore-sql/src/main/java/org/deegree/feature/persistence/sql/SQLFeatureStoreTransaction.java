@@ -1054,7 +1054,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         for ( ResourceId id : list ) {
             IdAnalysis analysis = schema.analyzeId( id.getRid() );
             FeatureType featureType = schema.getFeatureType( ftMapping.getFeatureType() );
-            Feature f = featureType.newFeature( id.getRid(), null, props, null );
+            Feature f = featureType.newFeature( id.getRid(), null, -1, props, null );
             mgr.updateFeature( f, ftMapping, analysis.getIdKernels(), mapping, replacement );
         }
     }
