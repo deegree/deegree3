@@ -78,14 +78,16 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      *            feature collection type, must not be <code>null</code>
      * @param state
      *            of the feature or <code>null</code> if not available
+     * @param version
+     *            of this feature, -1 if not available
      * @param fid
      *            feature id, may be <code>null</code>
      * @param props
      *            properties (including feature member/feature member array properties), must not be <code>null</code>
      */
-    public GenericFeatureCollection( FeatureCollectionType ft, String fid, FeatureState state, List<Property> props,
-                                     ExtraProps extraProps ) {
-        super( fid, state, ft, extraProps );
+    public GenericFeatureCollection( FeatureCollectionType ft, String fid, FeatureState state, int version,
+                                     List<Property> props, ExtraProps extraProps ) {
+        super( fid, state, version, ft, extraProps );
         this.props = props;
 
         // extract member features
@@ -111,7 +113,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * @param memberFeatures
      */
     public GenericFeatureCollection( String fid, Collection<Feature> memberFeatures ) {
-        super( fid, null, GML311_FEATURECOLLECTION, null );
+        super( fid, null, -1, GML311_FEATURECOLLECTION, null );
         this.memberFeatures.addAll( memberFeatures );
         this.props = null;
     }
@@ -120,7 +122,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
      * Creates a new empty {@link GenericFeatureCollection} instance without type information.
      */
     public GenericFeatureCollection() {
-        super( null, null, GML311_FEATURECOLLECTION, null );
+        super( null, null, -1, GML311_FEATURECOLLECTION, null );
         this.props = null;
     }
 

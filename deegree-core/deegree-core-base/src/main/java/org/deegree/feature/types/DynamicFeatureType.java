@@ -181,7 +181,7 @@ public class DynamicFeatureType implements FeatureType {
 
     @Override
     public Feature newFeature( String fid, FeatureState state, List<Property> props, ExtraProps extraProps ) {
-        return new GenericFeature( this, fid, state, props, extraProps );
+        return new GenericFeature( this, fid, state, -1, props, extraProps );
     }
 
     @Override

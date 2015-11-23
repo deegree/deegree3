@@ -173,4 +173,10 @@ public interface Feature extends GMLObject {
      */
     FeatureState getState();
 
+    /**
+     * @return a positive integer greater than 0 indicating the version of the resource or -1 if the feature has no
+     *         version. The first version of a resource must 1.
+     */
+    int getVersion();
+
 }
