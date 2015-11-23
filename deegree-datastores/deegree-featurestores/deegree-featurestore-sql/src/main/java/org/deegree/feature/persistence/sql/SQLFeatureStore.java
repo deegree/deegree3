@@ -1191,84 +1191,12 @@ public class SQLFeatureStore implements FeatureStore {
                                                                                           new PrimitiveType(
                                                                                                              BaseType.DATE_TIME ),
                                                                                           "systime" );
-            if ( VersionCode.LATEST.equals( versionCode ) ) {
-                sql.append( ", ( SELECT max(" );
-                sql.append( globalVersionColumn );
-                sql.append( ") as max FROM " );
-                sql.append( versionTable );
+            if ( versionCode != null ) {
+                appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable,
+                                         globalVersionColumn, sql, versionCode );
+            } else if ( versionInteger > 0 ) {
                 sql.append( " WHERE " );
                 appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( ") " );
-                sql.append( versionTableAlias );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( " AND " );
-                sql.append( globalVersionColumn );
-                sql.append( " = " );
-                sql.append( versionTableAlias );
-                sql.append( ".max" );
-            } else if ( VersionCode.FIRST.equals( versionCode ) ) {
-                sql.append( ", ( SELECT min(" );
-                sql.append( globalVersionColumn );
-                sql.append( ") as min FROM " );
-                sql.append( versionTable );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( ") " );
-                sql.append( versionTableAlias );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( " AND " );
-                sql.append( globalVersionColumn );
-                sql.append( " = " );
-                sql.append( versionTableAlias );
-                sql.append( ".min" );
-            } else if ( VersionCode.NEXT.equals( versionCode ) ) {
-                sql.append( ", ( SELECT next FROM " );
-                sql.append( " ( SELECT *, LEAD(" );
-                sql.append( globalVersionColumn );
-                sql.append( ") OVER (ORDER BY " );
-                sql.append( globalVersionColumn );
-                sql.append( " ASC) AS NEXT" );
-                sql.append( " FROM " );
-                sql.append( versionTable );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( ") t " );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql, "t" );
-                sql.append( " and t." );
-                sql.append( globalVersionColumn );
-                sql.append( " = ? ) s" );
-                sql.append( " WHERE " );
-                sql.append( globalVersionColumn );
-                sql.append( " = next" );
-            } else if ( VersionCode.PREVIOUS.equals( versionCode ) ) {
-                sql.append( ", ( SELECT previous FROM " );
-                sql.append( " ( SELECT *, LAG(" );
-                sql.append( globalVersionColumn );
-                sql.append( ") OVER (ORDER BY " );
-                sql.append( globalVersionColumn );
-                sql.append( " ASC) AS PREVIOUS" );
-                sql.append( " FROM " );
-                sql.append( versionTable );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( ") t " );
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql, "t" );
-                sql.append( " and t." );
-                sql.append( globalVersionColumn );
-                sql.append( " = ? ) s" );
-                sql.append( " WHERE " );
-                sql.append( globalVersionColumn );
-                sql.append( " = previous" );
-            } else {
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-            }
-
-            if ( versionInteger > 0 ) {
                 sql.append( " AND (" );
                 sql.append( versionColumn );
                 sql.append( " = ?" );
@@ -1281,12 +1209,10 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( versionColumn );
                 sql.append( " LIMIT 1" );
             } else if ( startDate != null && endDate != null ) {
-                sql.append( " AND (" );
-                sql.append( timestampColumn );
-                sql.append( " >= ? " );
-                sql.append( " AND " );
-                sql.append( timestampColumn );
-                sql.append( " <= ? )" );
+                appendSqlForStartEndDate( fidMapping, timestampColumn, sql );
+            } else {
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
             }
 
             LOG.debug( "SQL: {}", sql );
@@ -1331,6 +1257,130 @@ public class SQLFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
         return result;
+    }
+
+    private void appendSqlForVersionCode( FIDMapping fidMapping, FeatureMetadata featureMetadata,
+                                          String versionTableAlias, String versionTable, String globalVersionColumn,
+                                          StringBuilder sql, VersionCode versionCode ) {
+        switch ( versionCode ) {
+        case LATEST:
+            appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, globalVersionColumn, sql );
+            break;
+        case FIRST:
+            appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, globalVersionColumn, sql );
+            break;
+        case NEXT:
+            if ( featureMetadata.getVersion() == null )
+                throw new IllegalArgumentException( "Could not parse version from rid attribute." );
+            appendSelectForNextVersion( fidMapping, versionTable, globalVersionColumn, sql );
+            break;
+        case PREVIOUS:
+            if ( featureMetadata.getVersion() == null )
+                throw new IllegalArgumentException( "Could not parse version from rid attribute." );
+            appendSelectForPreviousVersion( fidMapping, versionTable, globalVersionColumn, sql );
+            break;
+        case ALL:
+            sql.append( " WHERE " );
+            appendWhereClauseForFidMapping( fidMapping, sql );
+            break;
+        default:
+            throw new IllegalArgumentException( "VersionCode " + versionCode + " is not supported yet." );
+        }
+    }
+
+    private void appendSqlForStartEndDate( FIDMapping fidMapping, String timestampColumn, StringBuilder sql ) {
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( " AND (" );
+        sql.append( timestampColumn );
+        sql.append( " >= ? " );
+        sql.append( " AND " );
+        sql.append( timestampColumn );
+        sql.append( " <= ? )" );
+    }
+
+    private void appendSelectForPreviousVersion( FIDMapping fidMapping, String versionTable,
+                                                 String globalVersionColumn, StringBuilder sql ) {
+        sql.append( ", ( SELECT previous FROM " );
+        sql.append( " ( SELECT *, LAG(" );
+        sql.append( globalVersionColumn );
+        sql.append( ") OVER (ORDER BY " );
+        sql.append( globalVersionColumn );
+        sql.append( " ASC) AS PREVIOUS" );
+        sql.append( " FROM " );
+        sql.append( versionTable );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( ") t " );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql, "t" );
+        sql.append( " and t." );
+        sql.append( globalVersionColumn );
+        sql.append( " = ? ) s" );
+        sql.append( " WHERE " );
+        sql.append( globalVersionColumn );
+        sql.append( " = previous" );
+    }
+
+    private void appendSelectForNextVersion( FIDMapping fidMapping, String versionTable, String globalVersionColumn,
+                                             StringBuilder sql ) {
+        sql.append( ", ( SELECT next FROM " );
+        sql.append( " ( SELECT *, LEAD(" );
+        sql.append( globalVersionColumn );
+        sql.append( ") OVER (ORDER BY " );
+        sql.append( globalVersionColumn );
+        sql.append( " ASC) AS NEXT" );
+        sql.append( " FROM " );
+        sql.append( versionTable );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( ") t " );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql, "t" );
+        sql.append( " and t." );
+        sql.append( globalVersionColumn );
+        sql.append( " = ? ) s" );
+        sql.append( " WHERE " );
+        sql.append( globalVersionColumn );
+        sql.append( " = next" );
+    }
+
+    private void appendSelectForFirstVersion( FIDMapping fidMapping, String versionTableAlias, String versionTable,
+                                              String globalVersionColumn, StringBuilder sql ) {
+        sql.append( ", ( SELECT min(" );
+        sql.append( globalVersionColumn );
+        sql.append( ") as min FROM " );
+        sql.append( versionTable );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( ") " );
+        sql.append( versionTableAlias );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( " AND " );
+        sql.append( globalVersionColumn );
+        sql.append( " = " );
+        sql.append( versionTableAlias );
+        sql.append( ".min" );
+    }
+
+    private void appendSelectForLatestVersion( FIDMapping fidMapping, String versionTableAlias, String versionTable,
+                                               String globalVersionColumn, StringBuilder sql ) {
+        sql.append( ", ( SELECT max(" );
+        sql.append( globalVersionColumn );
+        sql.append( ") as max FROM " );
+        sql.append( versionTable );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( ") " );
+        sql.append( versionTableAlias );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( " AND " );
+        sql.append( globalVersionColumn );
+        sql.append( " = " );
+        sql.append( versionTableAlias );
+        sql.append( ".max" );
     }
 
     private void checkIfRequestAttributesAreSupported( String version, VersionCode versionCode, int versionInteger,
