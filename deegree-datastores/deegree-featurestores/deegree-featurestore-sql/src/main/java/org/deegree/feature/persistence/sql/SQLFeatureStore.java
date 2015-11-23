@@ -1200,21 +1200,50 @@ public class SQLFeatureStore implements FeatureStore {
                 appendWhereClauseForFidMapping( fidMapping, sql );
                 sql.append( ") " );
                 sql.append( versionTableAlias );
-            } else if ( VersionCode.NEXT.equals( versionCode ) || VersionCode.PREVIOUS.equals( versionCode ) ) {
-                sql.append( ", ( SELECT " );
-                sql.append( versionColumn );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
+            } else if ( VersionCode.NEXT.equals( versionCode ) ) {
+                sql.append( ", ( SELECT next FROM " );
+                sql.append( " ( SELECT *, LEAD(" );
+                sql.append( globalVersionColumn );
+                sql.append( ") OVER (ORDER BY " );
+                sql.append( globalVersionColumn );
+                sql.append( " ASC) AS NEXT" );
                 sql.append( " FROM " );
                 sql.append( versionTable );
                 sql.append( " WHERE " );
                 appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( " AND " );
+                sql.append( ") t " );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql, "t" );
+                sql.append( " and t." );
                 sql.append( globalVersionColumn );
-                sql.append( " = ? ) " );
-                sql.append( versionTableAlias );
+                sql.append( " = ? ) s" );
+                sql.append( " WHERE " );
+                sql.append( globalVersionColumn );
+                sql.append( " = next" );
+            } else if ( VersionCode.PREVIOUS.equals( versionCode ) ) {
+                sql.append( ", ( SELECT previous FROM " );
+                sql.append( " ( SELECT *, LAG(" );
+                sql.append( globalVersionColumn );
+                sql.append( ") OVER (ORDER BY " );
+                sql.append( globalVersionColumn );
+                sql.append( " ASC) AS PREVIOUS" );
+                sql.append( " FROM " );
+                sql.append( versionTable );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql );
+                sql.append( ") t " );
+                sql.append( " WHERE " );
+                appendWhereClauseForFidMapping( fidMapping, sql, "t" );
+                sql.append( " and t." );
+                sql.append( globalVersionColumn );
+                sql.append( " = ? ) s" );
+                sql.append( " WHERE " );
+                sql.append( globalVersionColumn );
+                sql.append( " = previous" );
+            } else {
             }
-            sql.append( " WHERE " );
-            appendWhereClauseForFidMapping( fidMapping, sql );
-
             if ( versionCode != null ) {
                 switch ( versionCode ) {
                 case FIRST:
@@ -1229,24 +1258,6 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( " = " );
                     sql.append( versionTableAlias );
                     sql.append( ".max" );
-                    break;
-                case NEXT:
-                    sql.append( " AND " );
-                    sql.append( tableAlias ).append( '.' );
-                    sql.append( versionColumn );
-                    sql.append( " = " );
-                    sql.append( versionTableAlias ).append( '.' );
-                    sql.append( versionColumn );
-                    sql.append( " + 1" );
-                    break;
-                case PREVIOUS:
-                    sql.append( " AND " );
-                    sql.append( tableAlias ).append( '.' );
-                    sql.append( versionColumn );
-                    sql.append( " = " );
-                    sql.append( versionTableAlias ).append( '.' );
-                    sql.append( versionColumn );
-                    sql.append( " - 1" );
                     break;
                 default:
                     // Do nothing (all versions are requested).
@@ -1291,9 +1302,9 @@ public class SQLFeatureStore implements FeatureStore {
                     break;
                 case PREVIOUS:
                 case NEXT:
+                    currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                     PrimitiveValue primitiveValue = new PrimitiveValue( featureMetadata.getVersion() );
                     versionMapping.getVersionColumnConverter().setParticle( stmt, primitiveValue, currentRowNum++ );
-                    appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                     break;
                 default:
                     break;
@@ -1364,10 +1375,17 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void appendWhereClauseForFidMapping( FIDMapping fidMapping, StringBuilder sql ) {
+        appendWhereClauseForFidMapping( fidMapping, sql, null );
+    }
+
+    private void appendWhereClauseForFidMapping( FIDMapping fidMapping, StringBuilder sql, String alias ) {
         boolean firstCol = true;
         for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
             if ( !firstCol ) {
                 sql.append( " AND " );
+            }
+            if ( alias != null ) {
+                sql.append( alias ).append( '.' );
             }
             sql.append( fidColumn.first );
             sql.append( "=?" );
