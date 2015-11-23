@@ -179,11 +179,6 @@
                   <attribute name="name" type="string" use="required" />
                 </complexType>
               </element>
-              <element name="VersionColumn" minOccurs="1">
-                <complexType>
-                  <attribute name="name" type="string" use="required" />
-                </complexType>
-              </element>
               <element name="TimestampColumn" minOccurs="1">
                 <complexType>
                   <attribute name="name" type="string" use="required" />
