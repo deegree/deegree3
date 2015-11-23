@@ -1161,8 +1161,7 @@ public class SQLFeatureStore implements FeatureStore {
             String tableAlias = "X1";
             String versionTableAlias = "X2";
             String versionTable = versionMapping.getVersionMetadataTable();
-            String versionColumn = versionMapping.getVersionColumnInMetadataTable().first.getName();
-            String globalVersionColumn = versionMapping.getVersionColumn().first.getName();
+            String versionColumn = versionMapping.getVersionColumn().first.getName();
             String timestampColumn = versionMapping.getTimestampColumn().first.getName();
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
@@ -1192,22 +1191,10 @@ public class SQLFeatureStore implements FeatureStore {
                                                                                                              BaseType.DATE_TIME ),
                                                                                           "systime" );
             if ( versionCode != null ) {
-                appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable,
-                                         globalVersionColumn, sql, versionCode );
+                appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable, versionColumn,
+                                         sql, versionCode );
             } else if ( versionInteger > 0 ) {
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( " AND (" );
-                sql.append( versionColumn );
-                sql.append( " = ?" );
-                sql.append( " OR " );
-                sql.append( globalVersionColumn );
-                sql.append( " = " );
-                sql.append( versionTableAlias );
-                sql.append( ".max )" );
-                sql.append( " ORDER BY " );
-                sql.append( versionColumn );
-                sql.append( " LIMIT 1" );
+                appendSqlForVersion( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else if ( startDate != null && endDate != null ) {
                 appendSqlForStartEndDate( fidMapping, timestampColumn, sql );
             } else {
@@ -1240,6 +1227,7 @@ public class SQLFeatureStore implements FeatureStore {
                 }
             } else if ( versionInteger > 0 ) {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
+                currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                 stmt.setInt( currentRowNum++, versionInteger );
             } else if ( startDate != null && endDate != null ) {
                 timestampConverter.setParticle( stmt, new PrimitiveValue( startDate ), currentRowNum++ );
@@ -1260,24 +1248,24 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void appendSqlForVersionCode( FIDMapping fidMapping, FeatureMetadata featureMetadata,
-                                          String versionTableAlias, String versionTable, String globalVersionColumn,
+                                          String versionTableAlias, String versionTable, String versionColumn,
                                           StringBuilder sql, VersionCode versionCode ) {
         switch ( versionCode ) {
         case LATEST:
-            appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, globalVersionColumn, sql );
+            appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
             break;
         case FIRST:
-            appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, globalVersionColumn, sql );
+            appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
             break;
         case NEXT:
             if ( featureMetadata.getVersion() == null )
                 throw new IllegalArgumentException( "Could not parse version from rid attribute." );
-            appendSelectForNextVersion( fidMapping, versionTable, globalVersionColumn, sql );
+            appendSelectForNextVersion( fidMapping, versionTable, versionColumn, sql );
             break;
         case PREVIOUS:
             if ( featureMetadata.getVersion() == null )
                 throw new IllegalArgumentException( "Could not parse version from rid attribute." );
-            appendSelectForPreviousVersion( fidMapping, versionTable, globalVersionColumn, sql );
+            appendSelectForPreviousVersion( fidMapping, versionTable, versionColumn, sql );
             break;
         case ALL:
             sql.append( " WHERE " );
@@ -1286,6 +1274,38 @@ public class SQLFeatureStore implements FeatureStore {
         default:
             throw new IllegalArgumentException( "VersionCode " + versionCode + " is not supported yet." );
         }
+    }
+
+    private void appendSqlForVersion( FIDMapping fidMapping, String tableAlias, String versionTable,
+                                      String versionColumn, StringBuilder sql ) {
+        sql.append( ", (SELECT " );
+        sql.append( versionColumn );
+        sql.append( " FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY " );
+        sql.append( versionColumn );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumn );
+        sql.append( ") AS VERSION FROM " );
+        sql.append( versionTable );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( ") t, (SELECT max(" );
+        sql.append( versionColumn );
+        sql.append( ") as max FROM " );
+        sql.append( versionTable );
+        sql.append( " WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql );
+        sql.append( ") u WHERE " );
+        appendWhereClauseForFidMapping( fidMapping, sql, "t" );
+        sql.append( " and (t.version = ? or u.max = " );
+        sql.append( versionColumn );
+        sql.append( ") ORDER BY " );
+        sql.append( versionColumn );
+        sql.append( " ASC LIMIT 1) s WHERE s." );
+        sql.append( versionColumn );
+        sql.append( " = " );
+        sql.append( tableAlias );
+        sql.append( "." );
+        sql.append( versionColumn );
     }
 
     private void appendSqlForStartEndDate( FIDMapping fidMapping, String timestampColumn, StringBuilder sql ) {
