@@ -489,7 +489,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     }
                     if ( featuresSkipped < startIndex ) {
                         featuresSkipped++;
-                    } else if ( !fids.contains( feature.getId() ) ) {
+                    } else {
                         allFeatures.add( feature );
                         fids.add( feature.getId() );
                         featuresAdded++;
