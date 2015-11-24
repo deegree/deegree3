@@ -1161,10 +1161,10 @@ public class SQLFeatureStore implements FeatureStore {
 
             String tableAlias = "X1";
             String versionTableAlias = "X2";
-            String versionTable = versionMapping.getVersionMetadataTable();
+            String versionTable = versionMapping.getVersionMetadataTable().toString();
             String versionColumn = versionMapping.getVersionColumn().first.getName();
             String timestampColumn = versionMapping.getTimestampColumn().first.getName();
-            String actionColumn = versionMapping.getStateColumn().first.getName();
+            String actionColumn = versionMapping.getActionColumnName();
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
                                                                    nullEscalation );
@@ -1757,7 +1757,7 @@ public class SQLFeatureStore implements FeatureStore {
             String versionSubQueryAlias = null;
             if ( ftMapping.getVersionMapping() != null ) {
                 versionSubQueryAlias = wb.getAliasManager().generateNew();
-                String actionColumn = ftMapping.getVersionMapping().getStateColumn().first.getName();
+                String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
                 sql.append( ", (SELECT " );
                 appendSelectFidColumns( ftMapping.getFidMapping(), sql );
                 sql.append( ", CASE WHEN " );
