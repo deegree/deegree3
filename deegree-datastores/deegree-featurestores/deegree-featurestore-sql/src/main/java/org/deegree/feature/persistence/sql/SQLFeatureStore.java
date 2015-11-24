@@ -70,7 +70,6 @@ import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
@@ -1163,7 +1162,6 @@ public class SQLFeatureStore implements FeatureStore {
             String versionTableAlias = "X2";
             String versionTable = versionMapping.getVersionMetadataTable().toString();
             String versionColumn = versionMapping.getVersionColumn().first.getName();
-            String timestampColumn = versionMapping.getTimestampColumn().first.getName();
             String actionColumn = versionMapping.getActionColumnName();
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
@@ -1219,16 +1217,13 @@ public class SQLFeatureStore implements FeatureStore {
             DateTime endDate = resourceId.getEndDate();
             checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
 
-            DefaultPrimitiveConverter timestampConverter = new DefaultPrimitiveConverter(
-                                                                                          new PrimitiveType(
-                                                                                                             BaseType.DATE_TIME ),
-                                                                                          "systime" );
             if ( versionCode != null ) {
                 appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable, versionColumn,
                                          sql, versionCode );
             } else if ( versionInteger > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else if ( startDate != null && endDate != null ) {
+                String timestampColumn = versionMapping.getTimestampColumnName();
                 appendSqlForStartEndDate( fidMapping, timestampColumn, sql );
             } else if ( featureMetadata.getVersion() != null ) {
                 sql.append( " WHERE " );
@@ -1279,8 +1274,8 @@ public class SQLFeatureStore implements FeatureStore {
                 stmt.setInt( currentRowNum++, versionInteger );
             } else if ( startDate != null && endDate != null ) {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
-                timestampConverter.setParticle( stmt, new PrimitiveValue( startDate ), currentRowNum++ );
-                timestampConverter.setParticle( stmt, new PrimitiveValue( endDate ), currentRowNum++ );
+                stmt.setLong( currentRowNum++, startDate.getTimeInMilliseconds() );
+                stmt.setLong( currentRowNum++, endDate.getTimeInMilliseconds() );
             } else if ( featureMetadata.getVersion() != null ) {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                 PrimitiveValue primitiveValue = new PrimitiveValue( featureMetadata.getVersion() );

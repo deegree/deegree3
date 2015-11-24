@@ -52,9 +52,9 @@ public class VersionMapping {
 
     private final Pair<SQLIdentifier, PrimitiveType> versionColumn;
 
-    private final Pair<SQLIdentifier, PrimitiveType> actionColumn;
+    private final SQLIdentifier actionColumn;
 
-    private final Pair<SQLIdentifier, PrimitiveType> timestampColumn;
+    private final SQLIdentifier timestampColumn;
 
     /**
      * @param versionColumn
@@ -66,8 +66,7 @@ public class VersionMapping {
      *            or empty
      */
     public VersionMapping( TableName versionMetadataTable, Pair<SQLIdentifier, PrimitiveType> versionColumn,
-                           Pair<SQLIdentifier, PrimitiveType> actionColumn,
-                           Pair<SQLIdentifier, PrimitiveType> timestampColumn ) {
+                           SQLIdentifier actionColumn, SQLIdentifier timestampColumn ) {
         this.versionMetadataTable = versionMetadataTable;
         this.versionColumn = versionColumn;
         this.actionColumn = actionColumn;
@@ -100,14 +99,15 @@ public class VersionMapping {
      *         <code>null</code>
      */
     public String getActionColumnName() {
-        return actionColumn.getFirst().getName();
+        return actionColumn.getName();
     }
 
     /**
-     * @return the column containing the timestamp the feature was inserted/updated/deleted, never <code>null</code>
+     * @return the name of the column containing the timestamp the feature was inserted/updated/deleted, never
+     *         <code>null</code>
      */
-    public Pair<SQLIdentifier, PrimitiveType> getTimestampColumn() {
-        return timestampColumn;
+    public String getTimestampColumnName() {
+        return timestampColumn.getName();
     }
 
 }
