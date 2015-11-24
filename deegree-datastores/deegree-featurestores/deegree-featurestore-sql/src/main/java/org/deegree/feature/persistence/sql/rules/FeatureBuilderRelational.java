@@ -191,8 +191,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             addSelectColumns( mapping, qualifiedSqlExprToRsIdx, true );
         }
         if ( ftMapping.getVersionMapping() != null ) {
-            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
-                                                + ftMapping.getVersionMapping().getStateColumn().getFirst().getName() );
+            addColumn( qualifiedSqlExprToRsIdx, "state" );
             addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
                                                 + ftMapping.getVersionMapping().getVersionColumn().getFirst().getName() );
         }
@@ -312,11 +311,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
-            Pair<SQLIdentifier, PrimitiveType> stateColumn = versionMapping.getStateColumn();
-            int stateColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "." + stateColumn.getFirst().getName() );
-            PrimitiveValue particle = versionMapping.getStateColumnConverter().toParticle( rs, stateColumnIndex );
-            if ( particle != null ) {
-                String stateAsText = particle.getAsText();
+            int stateColumnIndex = qualifiedSqlExprToRsIdx.get( "state" );
+            String stateAsText = rs.getString( stateColumnIndex );
+            if ( stateAsText != null ) {
                 try {
                     return FeatureState.valueOfByGmlName( stateAsText );
                 } catch ( IllegalArgumentException e ) {
