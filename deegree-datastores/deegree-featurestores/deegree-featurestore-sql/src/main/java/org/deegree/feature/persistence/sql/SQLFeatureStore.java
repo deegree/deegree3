@@ -1747,18 +1747,27 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( ',' );
                 sql.append( columns.get( i ) );
             }
-            if ( ftMapping.getVersionMapping() != null ) {
-                Pair<SQLIdentifier, PrimitiveType> stateColumn = ftMapping.getVersionMapping().getStateColumn();
-                sql.append( ',' );
-                sql.append( ftTableAlias ).append( '.' );
-                sql.append( stateColumn.getFirst().getName() );
-            }
             sql.append( " FROM " );
 
             // pure relational query
             sql.append( ftMapping.getFtTable() );
             sql.append( ' ' );
             sql.append( ftTableAlias );
+
+            String versionSubQueryAlias = null;
+            if ( ftMapping.getVersionMapping() != null ) {
+                versionSubQueryAlias = wb.getAliasManager().generateNew();
+                String actionColumn = ftMapping.getVersionMapping().getStateColumn().first.getName();
+                sql.append( ", (SELECT " );
+                appendSelectFidColumns( ftMapping.getFidMapping(), sql );
+                sql.append( ", CASE WHEN " );
+                sql.append( actionColumn );
+                sql.append( " = 'delete' THEN 'retired' ELSE 'valid' END state " );
+                sql.append( "FROM " );
+                sql.append( ftMapping.getFtTable() );
+                sql.append( ") " );
+                sql.append( versionSubQueryAlias );
+            }
 
             for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
                 for ( Join join : mappedPropName.getJoins() ) {
@@ -1778,6 +1787,23 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( " WHERE " );
                 }
                 sql.append( wb.getWhere().getSQL() );
+            }
+            if ( ftMapping.getVersionMapping() != null ) {
+                if ( wb.getWhere() != null )
+                    sql.append( " AND " );
+                else
+                    sql.append( " WHERE " );
+                boolean first = true;
+                for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
+                    if ( !first )
+                        sql.append( " AND " );
+                    String columnName = fidColumn.first.getName();
+                    sql.append( ftTableAlias ).append( '.' ).append( columnName );
+                    sql.append( '=' );
+                    sql.append( versionSubQueryAlias ).append( '.' ).append( columnName );
+                    first = false;
+                }
+                // where X1.id = s.id;
             }
             if ( wb.getOrderBy() != null ) {
                 sql.append( " ORDER BY " );
