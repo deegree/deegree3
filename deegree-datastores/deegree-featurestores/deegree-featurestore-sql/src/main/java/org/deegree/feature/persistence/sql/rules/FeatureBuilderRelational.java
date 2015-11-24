@@ -276,6 +276,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 feature = (Feature) fs.getCache().get( gmlId );
             }
             if ( feature == null ) {
+                FeatureState state = retrieveState( rs );
+                int version = retrieveVersion( rs );
                 LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
@@ -284,6 +286,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     if ( childEl != null ) {
                         PropertyType pt = ft.getPropertyDeclaration( childEl );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
+                        if ( version > 0 )
+                            idPrefix += "_" + version;
                         addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
                         LOG.warn( "Omitting mapping '" + mapping
@@ -291,8 +295,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + " are currently supported." );
                     }
                 }
-                FeatureState state = retrieveState( rs );
-                int version = retrieveVersion( rs );
                 feature = ft.newFeature( gmlId, state, version, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
