@@ -317,8 +317,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 try {
                     return FeatureState.valueOfByGmlName( stateAsText );
                 } catch ( IllegalArgumentException e ) {
-                    FeatureState featureState = versionMapping.getStateMapping().get( stateAsText );
-                    return featureState;
                 }
             }
         }

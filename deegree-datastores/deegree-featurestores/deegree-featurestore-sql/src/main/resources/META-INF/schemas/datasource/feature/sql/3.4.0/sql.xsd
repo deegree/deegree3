@@ -125,66 +125,28 @@
     </annotation>
     <complexType>
       <sequence>
+        <element name="VersionMetadataTable" minOccurs="1">
+          <complexType>
+            <attribute name="name" type="string" use="required" />
+          </complexType>
+        </element>
         <element name="VersionColumn" minOccurs="1">
           <complexType>
-            <annotation>
-              <appinfo>
-                <jaxb:class name="VersionColumnJAXB" />
-              </appinfo>
-            </annotation>
             <attribute name="name" type="string" use="required" />
             <attribute name="type" type="sqlfs:PrimitiveType" use="required" />
           </complexType>
         </element>
-        <element name="StateColumn" minOccurs="1">
+        <element name="ActionColumn" minOccurs="1">
+          <annotation>
+            <documentation>Must be a character type, containing the values, "insert", "update", "delete".</documentation>
+          </annotation>
           <complexType>
-            <annotation>
-              <documentation>Must be a text column containing the state of the feature, as described in the GML 3.2
-                Schema/Specification. Allowed values are: valid, superseeded, retired, future. Configure StateMappings
-                to map the column values to the gml values.
-              </documentation>
-              <appinfo>
-                <jaxb:class name="StateColumnJAXB" />
-              </appinfo>
-            </annotation>
             <attribute name="name" type="string" use="required" />
           </complexType>
         </element>
-        <element name="StateMappings" minOccurs="0">
+        <element name="TimestampColumn" minOccurs="1">
           <complexType>
-            <sequence>
-              <element name="StateMapping" minOccurs="0" maxOccurs="unbounded">
-                <complexType>
-                  <attribute name="dbColumnContent" type="string" use="required" />
-                  <attribute name="gmlState" use="required">
-                    <simpleType>
-                      <restriction base="string">
-                        <enumeration value="valid" />
-                        <enumeration value="superseeded" />
-                        <enumeration value="retired" />
-                        <enumeration value="future" />
-                      </restriction>
-                    </simpleType>
-                  </attribute>
-                </complexType>
-              </element>
-            </sequence>
-          </complexType>
-        </element>
-        <element name="VersionMetadataTable" minOccurs="1">
-          <complexType>
-            <sequence>
-              <element name="TableName" minOccurs="1">
-                <complexType>
-                  <attribute name="name" type="string" use="required" />
-                </complexType>
-              </element>
-              <element name="TimestampColumn" minOccurs="1">
-                <complexType>
-                  <attribute name="name" type="string" use="required" />
-                </complexType>
-              </element>
-            </sequence>
+            <attribute name="name" type="string" use="required" />
           </complexType>
         </element>
       </sequence>

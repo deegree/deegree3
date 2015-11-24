@@ -35,14 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.version;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.deegree.commons.jdbc.SQLIdentifier;
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.utils.Pair;
-import org.deegree.feature.FeatureState;
 
 /**
  * Encapsulates the mapping of the version columns.
@@ -51,38 +48,41 @@ import org.deegree.feature.FeatureState;
  */
 public class VersionMapping {
 
+    private final TableName versionMetadataTable;
+
     private final Pair<SQLIdentifier, PrimitiveType> versionColumn;
 
-    private final Pair<SQLIdentifier, PrimitiveType> stateColumn;
-
-    private final Map<String, FeatureState> stateMapping;
-
-    private final String versionMetadataTable;
+    private final Pair<SQLIdentifier, PrimitiveType> actionColumn;
 
     private final Pair<SQLIdentifier, PrimitiveType> timestampColumn;
 
     /**
      * @param versionColumn
      *            the column containing the version of a feature, never <code>null</code>
-     * @param stateColumn
+     * @param actionColumn
      *            the column containing the state of a feature, never <code>null</code>
      * @param stateMapping
      *            the mapping between content of the state column from db an official states, may be <code>null</code>
      *            or empty
      */
-    public VersionMapping( Pair<SQLIdentifier, PrimitiveType> versionColumn,
-                           Pair<SQLIdentifier, PrimitiveType> stateColumn, Map<String, FeatureState> stateMapping,
-                           String versionMetadataTable,
+    public VersionMapping( TableName versionMetadataTable, Pair<SQLIdentifier, PrimitiveType> versionColumn,
+                           Pair<SQLIdentifier, PrimitiveType> actionColumn,
                            Pair<SQLIdentifier, PrimitiveType> timestampColumn ) {
-        this.versionColumn = versionColumn;
-        this.stateColumn = stateColumn;
-        this.stateMapping = stateMapping != null ? stateMapping : Collections.<String, FeatureState> emptyMap();
         this.versionMetadataTable = versionMetadataTable;
+        this.versionColumn = versionColumn;
+        this.actionColumn = actionColumn;
         this.timestampColumn = timestampColumn;
     }
 
     /**
-     * @return the versionColumn the metadata of the column containing the version, never <code>null</code>
+     * @return the name of the table containing all versions of all features, never <code>null</code>
+     */
+    public TableName getVersionMetadataTable() {
+        return versionMetadataTable;
+    }
+
+    /**
+     * @return the column containing the version of the features, never <code>null</code>
      */
     public Pair<SQLIdentifier, PrimitiveType> getVersionColumn() {
         return versionColumn;
@@ -96,33 +96,15 @@ public class VersionMapping {
     }
 
     /**
-     * @return the versionColumn the metadata of the column containing the version, never <code>null</code>
-     */
-    public Pair<SQLIdentifier, PrimitiveType> getStateColumn() {
-        return stateColumn;
-    }
-
-    /**
-     * @return the converter for the state column, never <code>null</code>
-     */
-    public DefaultPrimitiveConverter getStateColumnConverter() {
-        return new DefaultPrimitiveConverter( stateColumn.getSecond(), stateColumn.getFirst().getName() );
-    }
-
-    /**
-     * @return the mapping between the content of the column from db an official states, may be empty but never
+     * @return the name of the column containing the action string ("insert", "update", "delete"), never
      *         <code>null</code>
      */
-    public Map<String, FeatureState> getStateMapping() {
-        return stateMapping;
-    }
-
-    public String getVersionMetadataTable() {
-        return versionMetadataTable;
+    public String getActionColumnName() {
+        return actionColumn.getFirst().getName();
     }
 
     /**
-     * @return the timestampColumn
+     * @return the column containing the timestamp the feature was inserted/updated/deleted, never <code>null</code>
      */
     public Pair<SQLIdentifier, PrimitiveType> getTimestampColumn() {
         return timestampColumn;
