@@ -1183,7 +1183,11 @@ public class SQLFeatureStore implements FeatureStore {
 
             sql.append( ", (SELECT " );
             sql.append( versionColumn );
-            sql.append( ", state  FROM (SELECT *, CASE WHEN " );
+            sql.append( ", state  FROM (SELECT " );
+            appendSelectFidColumns( fidMapping, sql );
+            sql.append( ", " );
+            sql.append( versionColumn );
+            sql.append( ", CASE WHEN " );
             sql.append( actionColumn );
             sql.append( "= 'insert' and " );
             sql.append( versionColumn );
@@ -1223,7 +1227,7 @@ public class SQLFeatureStore implements FeatureStore {
                 appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable, versionColumn,
                                          sql, versionCode );
             } else if ( versionInteger > 0 ) {
-                appendSqlForVersion( fidMapping, tableAlias, versionTable, versionColumn, sql );
+                appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else if ( startDate != null && endDate != null ) {
                 appendSqlForStartEndDate( fidMapping, timestampColumn, sql );
             } else if ( featureMetadata.getVersion() != null ) {
@@ -1328,12 +1332,16 @@ public class SQLFeatureStore implements FeatureStore {
         }
     }
 
-    private void appendSqlForVersion( FIDMapping fidMapping, String tableAlias, String versionTable,
-                                      String versionColumn, StringBuilder sql ) {
+    private void appendSqlForVersionAsInteger( FIDMapping fidMapping, String tableAlias, String versionTable,
+                                               String versionColumn, StringBuilder sql ) {
         sql.append( ", (SELECT " );
         sql.append( versionColumn );
-        sql.append( " FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY " );
+        sql.append( " FROM (SELECT " );
+        appendSelectFidColumns( fidMapping, sql );
+        sql.append( ", " );
         sql.append( versionColumn );
+        sql.append( ", ROW_NUMBER() OVER (PARTITION BY " );
+        appendSelectFidColumns( fidMapping, sql );
         sql.append( " ORDER BY " );
         sql.append( versionColumn );
         sql.append( ") AS VERSION FROM " );
@@ -1371,10 +1379,14 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( " <= ? )" );
     }
 
-    private void appendSelectForPreviousVersion( FIDMapping fidMapping, String versionTable,
-                                                 String versionColumn, StringBuilder sql ) {
+    private void appendSelectForPreviousVersion( FIDMapping fidMapping, String versionTable, String versionColumn,
+                                                 StringBuilder sql ) {
         sql.append( ", ( SELECT previous FROM " );
-        sql.append( " ( SELECT *, LAG(" );
+        sql.append( " ( SELECT " );
+        appendSelectFidColumns( fidMapping, sql );
+        sql.append( ", " );
+        sql.append( versionColumn );
+        sql.append( ", LAG(" );
         sql.append( versionColumn );
         sql.append( ") OVER (ORDER BY " );
         sql.append( versionColumn );
@@ -1397,7 +1409,11 @@ public class SQLFeatureStore implements FeatureStore {
     private void appendSelectForNextVersion( FIDMapping fidMapping, String versionTable, String versionColumn,
                                              StringBuilder sql ) {
         sql.append( ", ( SELECT next FROM " );
-        sql.append( " ( SELECT *, LEAD(" );
+        sql.append( " ( SELECT " );
+        appendSelectFidColumns( fidMapping, sql );
+        sql.append( ", " );
+        sql.append( versionColumn );
+        sql.append( ", LEAD(" );
         sql.append( versionColumn );
         sql.append( ") OVER (ORDER BY " );
         sql.append( versionColumn );
@@ -1453,6 +1469,16 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( " = " );
         sql.append( versionTableAlias );
         sql.append( ".max" );
+    }
+
+    private void appendSelectFidColumns( FIDMapping fidMapping, StringBuilder sql ) {
+        boolean first = true;
+        for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
+            if ( !first )
+                sql.append( ',' );
+            sql.append( fidColumn.first.getName() );
+            first = false;
+        }
     }
 
     private void checkIfRequestAttributesAreSupported( String version, VersionCode versionCode, int versionInteger,
