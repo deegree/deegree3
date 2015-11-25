@@ -58,6 +58,7 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -110,12 +111,13 @@ public class FeatureStoreLoader {
         try {
             ta = fs.acquireTransaction();
             System.out.print( "- Inserting features..." );
-            List<String> fids = ta.performInsert( fc, mode );
+            List<FeatureMetadata> featureMetadatas = ta.performInsert( fc, mode );
             System.out.println( "done." );
-            for ( String fid : fids ) {
-                System.out.println( "- Inserted: " + fid );
+            for ( FeatureMetadata featureMetadata : featureMetadatas ) {
+                System.out.println( "- Inserted: " + featureMetadata );
             }
-            System.out.println( "\n- Insert succeeded (" + fids.size() + " features). Committing transaction." );
+            System.out.println( "\n- Insert succeeded (" + featureMetadatas.size()
+                                + " features). Committing transaction." );
             ta.commit();
         } catch ( Exception e ) {
             e.printStackTrace();

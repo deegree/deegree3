@@ -167,4 +167,16 @@ public interface Feature extends GMLObject {
     public ExtraProps getExtraProperties();
 
     public void setExtraProperties( ExtraProps extraProps );
+
+    /**
+     * @return the state of the feature, may be <code>null</code> if not available
+     */
+    FeatureState getState();
+
+    /**
+     * @return a positive integer greater than 0 indicating the version of the resource or -1 if the feature has no
+     *         version. The first version of a resource must 1.
+     */
+    int getVersion();
+
 }

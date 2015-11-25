@@ -45,6 +45,7 @@ import org.deegree.commons.tom.gml.GenericGMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -76,8 +77,8 @@ public class GenericFeatureType extends GenericGMLObjectType implements FeatureT
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
-        return new GenericFeature( this, fid, props, extraProps );
+    public Feature newFeature( String fid, FeatureState state, int version, List<Property> props, ExtraProps extraProps ) {
+        return new GenericFeature( this, fid, state, version, props, extraProps );
     }
 
     @Override

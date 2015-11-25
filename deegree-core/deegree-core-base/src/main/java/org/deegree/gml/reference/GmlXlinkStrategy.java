@@ -53,10 +53,26 @@ public interface GmlXlinkStrategy {
      * 
      * @return options for the resolving of references, never <code>null</code>
      */
-    public GmlXlinkOptions getResolveOptions();
+    GmlXlinkOptions getResolveOptions();
 
-    public void addExportedId( String gmlId );
-    
+    /**
+     * Marks the {@link GMLObject} with the specified gmlId as exported.
+     * 
+     * @param gmlId
+     *            of the {@link GMLObject} to mark as exported, should not be <code>null</code>
+     */
+    void addExportedId( String gmlId );
+
+    /**
+     * Marks the {@link GMLObject} with the specified gmlId and version as exported.
+     * 
+     * @param gmlId
+     *            of the {@link GMLObject} to mark as exported, should not be <code>null</code>
+     * @param version
+     *            of the {@link GMLObject} to mark as exported
+     */
+    void addExportedId( String gmlId, int version );
+
     /**
      * Returns whether a {@link GMLObject} with the specified id has already been exported.
      * 
@@ -64,7 +80,18 @@ public interface GmlXlinkStrategy {
      *            id of the object, must not be <code>null</code>
      * @return <code>true</code>, if the object has been exported, <code>false</code> otherwise
      */
-    public boolean isObjectExported( String gmlId );
+    boolean isObjectExported( String gmlId );
+
+    /**
+     * Returns whether a {@link GMLObject} with the specified id and id has already been exported.
+     * 
+     * @param gmlId
+     *            id of the object, must not be <code>null</code>
+     * @param version
+     *            of the object
+     * @return <code>true</code>, if the object has been exported, <code>false</code> otherwise
+     */
+    boolean isObjectExported( String gmlId, int version );
 
     /**
      * Invoked when the target of the given {@link GMLReference} has to be included in the exported document.
@@ -75,7 +102,7 @@ public interface GmlXlinkStrategy {
      *            resolve options for the reference, never <code>null</code>
      * @return URI to write, never <code>null</code>
      */
-    public String requireObject( GMLReference<?> ref, GmlXlinkOptions options );
+    String requireObject( GMLReference<?> ref, GmlXlinkOptions options );
 
     /**
      * Invoked when the target of the given {@link GMLReference} may be an external reference or a forward reference to
@@ -85,6 +112,6 @@ public interface GmlXlinkStrategy {
      *            reference, never <code>null</code>
      * @return URI to write, never <code>null</code>
      */
-    public String handleReference( GMLReference<?> ref );
+    String handleReference( GMLReference<?> ref );
 
 }

@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 /**
@@ -55,19 +56,24 @@ import org.deegree.protocol.wfs.transaction.TransactionAction;
  */
 class ActionResults {
 
-    private final Map<String, List<String>> handleToFids = new LinkedHashMap<String, List<String>>();
+    private final Map<String, List<FeatureMetadata>> handleToFids = new LinkedHashMap<String, List<FeatureMetadata>>();
 
-    private final List<String> fidsWithoutHandle = new LinkedList<String>();
+    private final List<FeatureMetadata> fidsWithoutHandle = new LinkedList<FeatureMetadata>();
 
     private int count;
 
+    @Deprecated
     void add( String fid, String handle ) {
+        add( new FeatureMetadata( fid ), handle );
+    }
+
+    void add( FeatureMetadata fid, String handle ) {
         if ( handle == null ) {
             fidsWithoutHandle.add( fid );
         } else {
-            List<String> fids = handleToFids.get( handle );
+            List<FeatureMetadata> fids = handleToFids.get( handle );
             if ( fids == null ) {
-                fids = new LinkedList<String>();
+                fids = new LinkedList<FeatureMetadata>();
                 handleToFids.put( handle, fids );
             }
             fids.add( fid );
@@ -83,11 +89,11 @@ class ActionResults {
         return handleToFids.keySet();
     }
 
-    List<String> getFids( String handle ) {
+    List<FeatureMetadata> getFids( String handle ) {
         return handleToFids.get( handle );
     }
 
-    List<String> getFidsWithoutHandle() {
+    List<FeatureMetadata> getFidsWithoutHandle() {
         return fidsWithoutHandle;
     }
 }

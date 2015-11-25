@@ -234,6 +234,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean disableBuffering = true;
 
+    private boolean enableFeatureVersioning = false;
+
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
 
     private List<ICRS> queryCRS = new ArrayList<ICRS>();
@@ -274,6 +276,10 @@ public class WebFeatureService extends AbstractOWS {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
         } else if ( jaxbConfig.isDisableResponseBuffering() != null ) {
             disableBuffering = jaxbConfig.isDisableResponseBuffering();
+        }
+
+        if ( jaxbConfig.isEnableFeatureVersioning() != null ) {
+            enableFeatureVersioning = jaxbConfig.isEnableFeatureVersioning();
         }
 
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
@@ -1357,6 +1363,10 @@ public class WebFeatureService extends AbstractOWS {
 
     public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
+    }
+
+    public boolean isFeatureVersioningEnabled() {
+        return enableFeatureVersioning;
     }
 
     /**
