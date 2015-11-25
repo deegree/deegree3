@@ -126,9 +126,7 @@ public class VersionQueryHandler {
 
     private String retrieveVersionFromResultSet( VersionMapping versionMapping, ResultSet rs )
                             throws SQLException {
-        Pair<SQLIdentifier, PrimitiveType> versionColumn = versionMapping.getVersionColumn();
-        DefaultPrimitiveConverter versionConverter = new DefaultPrimitiveConverter( versionColumn.getSecond(),
-                                                                                    versionColumn.getFirst().getName() );
+        DefaultPrimitiveConverter versionConverter = versionMapping.getVersionColumnConverter();
         PrimitiveValue resultParticle = versionConverter.toParticle( rs, 1 );
         if ( resultParticle != null )
             return resultParticle.getAsText();

@@ -125,15 +125,28 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="Column" minOccurs="1">
+        <element name="VersionMetadataTable" minOccurs="1">
           <complexType>
-            <annotation>
-              <appinfo>
-                <jaxb:class name="VersionColumnJAXB" />
-              </appinfo>
-            </annotation>
+            <attribute name="name" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="VersionColumn" minOccurs="1">
+          <complexType>
             <attribute name="name" type="string" use="required" />
             <attribute name="type" type="sqlfs:PrimitiveType" use="required" />
+          </complexType>
+        </element>
+        <element name="ActionColumn" minOccurs="1">
+          <annotation>
+            <documentation>Must be a character type, containing the values, "insert", "update", "delete".</documentation>
+          </annotation>
+          <complexType>
+            <attribute name="name" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="TimestampColumn" minOccurs="1">
+          <complexType>
+            <attribute name="name" type="string" use="required" />
           </complexType>
         </element>
       </sequence>

@@ -33,26 +33,33 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.version;
-
-import org.deegree.feature.persistence.version.FeatureMetadata;
+package org.deegree.feature;
 
 /**
- * A default ResourceIdConverter, pattern: &lt;fid&gt;_&lt;version&gt;
+ * Encapsulates the state of a member
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public class DefaultResourceIdConverter implements ResourceIdConverter {
+public enum FeatureState {
 
-    private static final String DELIMITER = "_";
+    VALID( "valid" ), SUPERSEEDED( "superseeded" ), RETIRED( "retired" ), FUTURE( "future" );
 
-    @Override
-    public String generateResourceId( FeatureMetadata featureMetadata ) {
-        if ( featureMetadata == null )
-            throw new NullPointerException( "FeatureMetadata must never be null!" );
-        if ( featureMetadata.getVersion() == null )
-            return featureMetadata.getFid();
-        return featureMetadata.getFid() + DELIMITER + featureMetadata.getVersion();
+    private final String gmlName;
+
+    private FeatureState( String gmlName ) {
+        this.gmlName = gmlName;
+    }
+
+    public String getGmlName() {
+        return gmlName;
+    }
+
+    public static FeatureState valueOfByGmlName( String gmlName ) {
+        for ( FeatureState featureMemberState : values() ) {
+            if ( featureMemberState.getGmlName().equals( gmlName ) )
+                return featureMemberState;
+        }
+        throw new IllegalArgumentException( "No FeatureMembetState with gmlName " + gmlName + " available." );
     }
 
 }

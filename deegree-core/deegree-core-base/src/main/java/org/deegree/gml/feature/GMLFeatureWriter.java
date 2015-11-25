@@ -496,7 +496,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         setSchema( feature );
 
         if ( feature.getId() != null ) {
-            referenceExportStrategy.addExportedId( feature.getId() );
+            referenceExportStrategy.addExportedId( feature.getId(), feature.getVersion() );
         }
         if ( feature instanceof GenericFeatureCollection ) {
             LOG.debug( "Exporting generic feature collection." );

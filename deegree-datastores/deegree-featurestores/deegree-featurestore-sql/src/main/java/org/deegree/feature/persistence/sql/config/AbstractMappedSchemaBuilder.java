@@ -80,7 +80,10 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumnJAXB;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.ActionColumn;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.TimestampColumn;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionColumn;
+import org.deegree.feature.persistence.sql.jaxb.VersionMappingJAXB.VersionMetadataTable;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
@@ -240,15 +243,24 @@ public abstract class AbstractMappedSchemaBuilder {
     protected VersionMapping buildVersionMapping( VersionMappingJAXB versionMapping )
                             throws SQLException {
         if ( versionMapping != null ) {
-            VersionColumnJAXB configuredVersionColumn = versionMapping.getColumn();
+            VersionMetadataTable versionMetadataTable = versionMapping.getVersionMetadataTable();
+            TableName versionMetadataTableName = TableName.createFromQualifiedName( versionMetadataTable.getName() );
+
+            VersionColumn configuredVersionColumn = versionMapping.getVersionColumn();
             SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
             PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
             Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
                                                                                                        versionSqlIdentifier,
                                                                                                        versionType );
-            return new VersionMapping( versionColumn );
+
+            ActionColumn configuredActionColumn = versionMapping.getActionColumn();
+            SQLIdentifier actionSqlIdentifier = new SQLIdentifier( configuredActionColumn.getName() );
+
+            TimestampColumn configuredTimeColumn = versionMapping.getTimestampColumn();
+            SQLIdentifier timeSqlIdentifier = new SQLIdentifier( configuredTimeColumn.getName() );
+
+            return new VersionMapping( versionMetadataTableName, versionColumn, actionSqlIdentifier, timeSqlIdentifier );
         }
         return null;
     }
-
 }

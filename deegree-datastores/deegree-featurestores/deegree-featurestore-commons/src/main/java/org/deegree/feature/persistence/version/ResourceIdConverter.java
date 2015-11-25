@@ -33,9 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.version;
-
-import org.deegree.feature.persistence.version.FeatureMetadata;
+package org.deegree.feature.persistence.version;
 
 /**
  * Encapsulates the creation of resource ids.
@@ -54,6 +52,26 @@ public interface ResourceIdConverter {
      * @throws NullPointerException
      *             if FeatureMetadata is <code>null</code>
      */
-    public abstract String generateResourceId( FeatureMetadata featureMetadata );
+    String generateResourceId( FeatureMetadata featureMetadata );
+
+    /**
+     * Checks if the passed id has a version.
+     * 
+     * @param id
+     *            never <code>null</code>
+     * @return <code>true</code> if the id has a version, <code>false</code> otherwise
+     * @throws NullPointerException
+     *             if id is <code>null</code>
+     */
+    boolean hasVersion( String id );
+
+    /**
+     * Splitted the passed id into FID and version (if the id has a version).
+     * 
+     * @param id
+     *            never <code>null</code>
+     * @return {@link FeatureMetadata} from the id, never <code>null</code>
+     */
+    FeatureMetadata convertToFeatureMetadata( String id );
 
 }

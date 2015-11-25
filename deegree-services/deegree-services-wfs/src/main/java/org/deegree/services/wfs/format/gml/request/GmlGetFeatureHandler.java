@@ -500,7 +500,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( featuresSkipped < startIndex ) {
                         featuresSkipped++;
                     } else {
-                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl, wfsVersion );
                         featuresAdded++;
                     }
                 }
@@ -537,7 +537,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     }
                     if ( featuresSkipped < startIndex ) {
                         featuresSkipped++;
-                    } else if ( !fids.contains( feature.getId() ) ) {
+                    } else {
                         allFeatures.add( feature );
                         fids.add( feature.getId() );
                         featuresAdded++;
@@ -568,7 +568,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         // retrieve and write result features
         GmlXlinkOptions resolveState = gmlStream.getReferenceResolveStrategy().getResolveOptions();
         for ( Feature member : allFeatures ) {
-            writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+            writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl, wfsVersion );
         }
     }
 

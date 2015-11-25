@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
+import org.deegree.commons.utils.Pair;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
@@ -68,7 +69,7 @@ class XlinkedObjectsHandler implements GmlXlinkStrategy {
 
     private final GmlXlinkOptions resolveOptions;
 
-    private final Set<String> exportedIds = new HashSet<String>();
+    private final Set<Pair<String, Integer>> exportedIds = new HashSet<Pair<String, Integer>>();
 
     XlinkedObjectsHandler( boolean localReferencesPossible, String xlinkTemplate, GmlXlinkOptions resolveOptions ) {
         this.localReferencesPossible = localReferencesPossible;
@@ -114,12 +115,22 @@ class XlinkedObjectsHandler implements GmlXlinkStrategy {
 
     @Override
     public void addExportedId( String gmlId ) {
-        exportedIds.add( gmlId );
+        exportedIds.add( new Pair<String, Integer>( gmlId, null ) );
+    }
+
+    @Override
+    public void addExportedId( String gmlId, int version ) {
+        exportedIds.add( new Pair<String, Integer>( gmlId, version ) );
     }
 
     @Override
     public boolean isObjectExported( String gmlId ) {
-        return exportedIds.contains( gmlId );
+        return exportedIds.contains( new Pair<String, Integer>( gmlId, null ) );
+    }
+
+    @Override
+    public boolean isObjectExported( String gmlId, int version ) {
+        return exportedIds.contains( new Pair<String, Integer>( gmlId, version ) );
     }
 
 }
