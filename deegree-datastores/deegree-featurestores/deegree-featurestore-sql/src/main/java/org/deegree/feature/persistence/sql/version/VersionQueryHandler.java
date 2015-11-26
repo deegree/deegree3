@@ -93,7 +93,7 @@ public class VersionQueryHandler {
     }
 
     private String getVersionSql( VersionMapping versionMapping, FIDMapping fidMapping, TableName ftTable ) {
-        String versionColumnName = versionMapping.getVersionColumn().getFirst().getName();
+        String versionColumnName = versionMapping.getVersionColumnName();
         List<Pair<SQLIdentifier, BaseType>> columns = fidMapping.getColumns();
         StringBuilder sql = new StringBuilder();
         sql.append( "SELECT ROW_NUMBER() OVER (PARTITION BY " );
