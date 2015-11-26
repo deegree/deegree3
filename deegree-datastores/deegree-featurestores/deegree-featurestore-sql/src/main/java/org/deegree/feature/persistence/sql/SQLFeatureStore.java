@@ -1155,7 +1155,7 @@ public class SQLFeatureStore implements FeatureStore {
             String tableAlias = "X1";
             String versionTableAlias = "X2";
             String versionTable = versionMapping.getVersionMetadataTable().toString();
-            String versionColumn = versionMapping.getVersionColumn().first.getName();
+            String versionColumn = versionMapping.getVersionColumnName();
             String actionColumn = versionMapping.getActionColumnName();
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,

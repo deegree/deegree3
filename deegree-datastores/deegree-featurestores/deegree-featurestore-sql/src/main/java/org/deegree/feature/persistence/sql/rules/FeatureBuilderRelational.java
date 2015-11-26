@@ -73,7 +73,6 @@ import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
@@ -193,8 +192,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         if ( ftMapping.getVersionMapping() != null ) {
             addColumn( qualifiedSqlExprToRsIdx, "state" );
-            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
-                                                + ftMapping.getVersionMapping().getVersionColumn().getFirst().getName() );
+            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "." + ftMapping.getVersionMapping().getVersionColumnName() );
         }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
         return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
@@ -330,8 +328,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
-            Pair<SQLIdentifier, PrimitiveType> versionColumn = versionMapping.getVersionColumn();
-            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "." + versionColumn.getFirst().getName() );
+            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "."
+                                                                  + versionMapping.getVersionColumnName() );
             int version = rs.getInt( versionColumnIndex );
             if ( version > 0 ) {
                 return version;

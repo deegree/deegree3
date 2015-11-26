@@ -133,7 +133,6 @@
         <element name="VersionColumn" minOccurs="1">
           <complexType>
             <attribute name="name" type="string" use="required" />
-            <attribute name="type" type="sqlfs:PrimitiveType" use="required" />
           </complexType>
         </element>
         <element name="ActionColumn" minOccurs="1">
