@@ -850,8 +850,8 @@ class TransactionHandler {
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                     xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
-                    if ( featureMetadata.getVersion() != null )
-                        xmlWriter.writeAttribute( "version", featureMetadata.getVersion() );
+                    if ( featureMetadata.getVersion() > 0 )
+                        xmlWriter.writeAttribute( "version", Integer.toString( featureMetadata.getVersion() ) );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
@@ -861,8 +861,8 @@ class TransactionHandler {
                 xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                 xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                 xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
-                if ( featureMetadata.getVersion() != null )
-                    xmlWriter.writeAttribute( "version", featureMetadata.getVersion() );
+                if ( featureMetadata.getVersion() > 0 )
+                    xmlWriter.writeAttribute( "version", Integer.toString( featureMetadata.getVersion() ) );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }

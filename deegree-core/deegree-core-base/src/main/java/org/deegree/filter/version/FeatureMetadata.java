@@ -44,23 +44,23 @@ public class FeatureMetadata {
 
     private final String fid;
 
-    private final String version;
+    private final int version;
 
     /**
      * @param fid
      *            id of the feature, never <code>null</code>
      */
     public FeatureMetadata( String fid ) {
-        this( fid, null );
+        this( fid, -1 );
     }
 
     /**
      * @param fid
      *            id of the feature, never <code>null</code>
      * @param version
-     *            current version of this feature, may be <code>null</code> if versioning is not supported
+     *            current version of this feature, -1 if versioning is not supported
      */
-    public FeatureMetadata( String fid, String version ) {
+    public FeatureMetadata( String fid, int version ) {
         this.fid = fid;
         this.version = version;
     }
@@ -75,7 +75,7 @@ public class FeatureMetadata {
     /**
      * @return the current version of this feature, may be <code>null</code> if versioning is not supported
      */
-    public String getVersion() {
+    public int getVersion() {
         return version;
     }
 
@@ -84,7 +84,7 @@ public class FeatureMetadata {
         final int prime = 31;
         int result = 1;
         result = prime * result + ( ( fid == null ) ? 0 : fid.hashCode() );
-        result = prime * result + ( ( version == null ) ? 0 : version.hashCode() );
+        result = prime * result + version;
         return result;
     }
 
@@ -102,10 +102,7 @@ public class FeatureMetadata {
                 return false;
         } else if ( !fid.equals( other.fid ) )
             return false;
-        if ( version == null ) {
-            if ( other.version != null )
-                return false;
-        } else if ( !version.equals( other.version ) )
+        if ( version != other.version )
             return false;
         return true;
     }

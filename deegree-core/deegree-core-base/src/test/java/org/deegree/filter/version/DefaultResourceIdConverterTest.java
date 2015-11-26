@@ -59,7 +59,7 @@ public class DefaultResourceIdConverterTest {
 
     @Test
     public void generateResourceId_WithFidAndVersion() {
-        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid_65656", "1" );
+        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid_65656", 1 );
 
         String resourceId = resourceIdConverter.generateResourceId( featureMetadata );
 
