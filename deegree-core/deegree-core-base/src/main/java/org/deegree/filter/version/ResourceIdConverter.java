@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.version;
 
+import org.deegree.commons.utils.Pair;
+
 /**
  * Encapsulates the creation of resource ids.
  * 
@@ -66,12 +68,13 @@ public interface ResourceIdConverter {
     boolean hasVersion( String id );
 
     /**
-     * Splitted the passed id into FID and version (if the id has a version).
+     * Splits the passed id into FID and version (if the id has a version).
      * 
      * @param id
      *            never <code>null</code>
-     * @return {@link FeatureMetadata} from the id, never <code>null</code>
+     * @return the FID (first, never <code>null</code>) and version (second, may be <code>null</code>) from the id,
+     *         never <code>null</code>
      */
-    FeatureMetadata convertToFeatureMetadata( String id );
+    Pair<String, String> parseRid( String id );
 
 }

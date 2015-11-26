@@ -35,8 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.version;
 
+import org.deegree.commons.utils.Pair;
+
 /**
- * A default ResourceIdConverter, pattern: &lt;fid&gt;_&lt;version&gt;
+ * A default ResourceIdConverter, pattern: &lt;fid&gt;_version&lt;version&gt;
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
@@ -61,16 +63,16 @@ public class DefaultResourceIdConverter implements ResourceIdConverter {
     }
 
     @Override
-    public FeatureMetadata convertToFeatureMetadata( String id ) {
+    public Pair<String, String> parseRid( String id ) {
         if ( id == null )
             throw new NullPointerException( "id must never be null!" );
         if ( hasVersion( id ) ) {
             int indexOf = id.indexOf( DELIMITER );
             String fid = id.substring( 0, indexOf );
             String version = id.substring( indexOf + DELIMITER.length(), id.length() );
-            return new FeatureMetadata( fid, version );
+            return new Pair<String, String>( fid, version );
         }
-        return new FeatureMetadata( id );
+        return new Pair<String, String>( id, null );
     }
 
 }

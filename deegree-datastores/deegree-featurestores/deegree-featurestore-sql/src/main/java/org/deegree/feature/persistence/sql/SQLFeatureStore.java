@@ -128,7 +128,6 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.version.DefaultResourceIdConverter;
-import org.deegree.filter.version.FeatureMetadata;
 import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -1147,8 +1146,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                                                FIDMapping fidMapping,
                                                                                ResourceId resourceId )
                             throws FeatureStoreException {
-        FeatureMetadata featureMetadata = resourceIdConverter.convertToFeatureMetadata( resourceId.getRid() );
-        IdAnalysis analysis = getSchema().analyzeId( featureMetadata.getFid() );
+        IdAnalysis analysis = getSchema().analyzeId( resourceId.getRid() );
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         FeatureInputStream result = null;
         PreparedStatement stmt = null;
@@ -1218,22 +1216,22 @@ public class SQLFeatureStore implements FeatureStore {
             checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
 
             if ( versionCode != null ) {
-                appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable, versionColumn,
-                                         sql, versionCode );
+                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                                         versionCode );
             } else if ( versionInteger > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else if ( startDate != null && endDate != null ) {
                 String timestampColumn = versionMapping.getTimestampColumnName();
                 appendSqlForStartEndDate( fidMapping, timestampColumn, sql );
-            } else if ( featureMetadata.getVersion() != null ) {
+            } else if ( resourceId.getVersion() != null ) {
                 sql.append( " WHERE " );
                 appendWhereClauseForFidMapping( fidMapping, sql );
                 sql.append( " and c." );
                 sql.append( versionColumn );
                 sql.append( " = ?" );
             } else {
-                appendSqlForVersionCode( fidMapping, featureMetadata, versionTableAlias, versionTable, versionColumn,
-                                         sql, LATEST );
+                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                                         LATEST );
             }
             sql.append( " and c." );
             sql.append( versionColumn );
@@ -1256,7 +1254,7 @@ public class SQLFeatureStore implements FeatureStore {
                 case NEXT:
                     currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                     currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
-                    PrimitiveValue primitiveValue = new PrimitiveValue( featureMetadata.getVersion() );
+                    PrimitiveValue primitiveValue = new PrimitiveValue( resourceId.getRidVersion() );
                     versionMapping.getVersionColumnConverter().setParticle( stmt, primitiveValue, currentRowNum++ );
                     break;
                 case ALL:
@@ -1276,9 +1274,9 @@ public class SQLFeatureStore implements FeatureStore {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                 stmt.setLong( currentRowNum++, startDate.getTimeInMilliseconds() );
                 stmt.setLong( currentRowNum++, endDate.getTimeInMilliseconds() );
-            } else if ( featureMetadata.getVersion() != null ) {
+            } else if ( resourceId.getRidVersion() != null ) {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
-                PrimitiveValue primitiveValue = new PrimitiveValue( featureMetadata.getVersion() );
+                PrimitiveValue primitiveValue = new PrimitiveValue( resourceId.getRidVersion() );
                 versionMapping.getVersionColumnConverter().setParticle( stmt, primitiveValue, currentRowNum++ );
             } else {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
@@ -1298,9 +1296,9 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private void appendSqlForVersionCode( FIDMapping fidMapping, FeatureMetadata featureMetadata,
-                                          String versionTableAlias, String versionTable, String versionColumn,
-                                          StringBuilder sql, VersionCode versionCode ) {
+    private void appendSqlForVersionCode( FIDMapping fidMapping, ResourceId resourceId, String versionTableAlias,
+                                          String versionTable, String versionColumn, StringBuilder sql,
+                                          VersionCode versionCode ) {
         switch ( versionCode ) {
         case LATEST:
             appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
@@ -1309,12 +1307,12 @@ public class SQLFeatureStore implements FeatureStore {
             appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
             break;
         case NEXT:
-            if ( featureMetadata.getVersion() == null )
+            if ( resourceId.getRidVersion() == null )
                 throw new IllegalArgumentException( "Could not parse version from rid attribute." );
             appendSelectForNextVersion( fidMapping, versionTable, versionColumn, sql );
             break;
         case PREVIOUS:
-            if ( featureMetadata.getVersion() == null )
+            if ( resourceId.getRidVersion() == null )
                 throw new IllegalArgumentException( "Could not parse version from rid attribute." );
             appendSelectForPreviousVersion( fidMapping, versionTable, versionColumn, sql );
             break;
