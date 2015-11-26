@@ -721,7 +721,7 @@ class TransactionHandler {
                 for ( FeatureMetadata featureMetadata : inserted.getFids( handle ) ) {
                     LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                    xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
@@ -731,7 +731,7 @@ class TransactionHandler {
                 for ( FeatureMetadata featureMetadata : inserted.getFidsWithoutHandle() ) {
                     LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                    xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
@@ -789,7 +789,7 @@ class TransactionHandler {
                     xmlWriter.writeStartElement( WFS_NS, "Feature" );
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                    xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
@@ -798,7 +798,7 @@ class TransactionHandler {
                 LOG.debug( "Inserted fid: " + featureMetadata );
                 xmlWriter.writeStartElement( WFS_NS, "Feature" );
                 xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
@@ -850,6 +850,8 @@ class TransactionHandler {
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                     xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
+                    if ( featureMetadata.getVersion() != null )
+                        xmlWriter.writeAttribute( "version", featureMetadata.getVersion() );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
@@ -859,6 +861,8 @@ class TransactionHandler {
                 xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                 xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                 xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
+                if ( featureMetadata.getVersion() != null )
+                    xmlWriter.writeAttribute( "version", featureMetadata.getVersion() );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
