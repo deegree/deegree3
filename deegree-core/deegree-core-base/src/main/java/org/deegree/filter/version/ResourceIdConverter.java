@@ -72,9 +72,9 @@ public interface ResourceIdConverter {
      * 
      * @param id
      *            never <code>null</code>
-     * @return the FID (first, never <code>null</code>) and version (second, may be <code>null</code>) from the id,
-     *         never <code>null</code>
+     * @return the FID (first, never <code>null</code>) and version (second, may be -1 if not specified, otherwise > 0)
+     *         from the id, never <code>null</code>
      */
-    Pair<String, String> parseRid( String id );
+    Pair<String, Integer> parseRid( String id );
 
 }

@@ -36,6 +36,8 @@
 package org.deegree.filter.version;
 
 import org.deegree.commons.utils.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default ResourceIdConverter, pattern: &lt;fid&gt;_version&lt;version&gt;
@@ -43,6 +45,8 @@ import org.deegree.commons.utils.Pair;
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class DefaultResourceIdConverter implements ResourceIdConverter {
+
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultResourceIdConverter.class );
 
     private static final String DELIMITER = "_version";
 
@@ -63,16 +67,20 @@ public class DefaultResourceIdConverter implements ResourceIdConverter {
     }
 
     @Override
-    public Pair<String, String> parseRid( String id ) {
+    public Pair<String, Integer> parseRid( String id ) {
         if ( id == null )
             throw new NullPointerException( "id must never be null!" );
         if ( hasVersion( id ) ) {
             int indexOf = id.indexOf( DELIMITER );
             String fid = id.substring( 0, indexOf );
-            String version = id.substring( indexOf + DELIMITER.length(), id.length() );
-            return new Pair<String, String>( fid, version );
+            String versionAsString = id.substring( indexOf + DELIMITER.length(), id.length() );
+            try {
+                return new Pair<String, Integer>( fid, Integer.parseInt( versionAsString ) );
+            } catch ( NumberFormatException e ) {
+                LOG.warn( "Could not parse version from rid (" + versionAsString + "). Version will be ignored" );
+            }
         }
-        return new Pair<String, String>( id, null );
+        return new Pair<String, Integer>( id, -1 );
     }
 
 }
