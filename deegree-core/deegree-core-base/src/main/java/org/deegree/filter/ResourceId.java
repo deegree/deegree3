@@ -57,7 +57,7 @@ public class ResourceId {
 
     private final DateTime endDate;
 
-    private final String ridVersion;
+    private final int ridVersion;
 
     /**
      * Creates a new {@link ResourceId} instance.
@@ -66,7 +66,7 @@ public class ResourceId {
      *            the id of the selected resource, must not be <code>null</code>
      **/
     public ResourceId( String rid ) {
-        this( rid, null, null, null, null, null );
+        this( rid, -1, null, null, null, null );
     }
 
     /**
@@ -76,7 +76,7 @@ public class ResourceId {
      *            the id of the selected resource (must not contain the version part, see ridVersion), must not be
      *            <code>null</code>
      * @param ridVersion
-     *            the version parsed from rid of the selected resource, must not be <code>null</code>
+     *            the version parsed from rid of the selected resource, -1 if not specified
      * @param previousRid
      *            TODO
      * @param version
@@ -86,7 +86,7 @@ public class ResourceId {
      * @param endDate
      *            the end date to limit the selected resource, may be <code>null</code>
      */
-    public ResourceId( String rid, String ridVersion, String previousRid, String version, DateTime startDate,
+    public ResourceId( String rid, int ridVersion, String previousRid, String version, DateTime startDate,
                        DateTime endDate ) {
         this.rid = rid;
         this.ridVersion = ridVersion;
@@ -108,9 +108,9 @@ public class ResourceId {
     /**
      * Returns the version of the resource from the rid attribute.
      * 
-     * @return the the version of the resource from the rid attribute
+     * @return the the version of the resource from the rid attribute (-1 if not specified)
      */
-    public String getRidVersion() {
+    public int getRidVersion() {
         return ridVersion;
     }
 

@@ -127,8 +127,6 @@ import org.deegree.filter.ResourceId;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
-import org.deegree.filter.version.DefaultResourceIdConverter;
-import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -208,8 +206,6 @@ public class SQLFeatureStore implements FeatureStore {
     private ConnectionProvider connProvider;
 
     private final ThreadLocal<SQLFeatureStoreTransaction> transaction = new ThreadLocal<SQLFeatureStoreTransaction>();
-
-    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
@@ -1223,12 +1219,8 @@ public class SQLFeatureStore implements FeatureStore {
             } else if ( startDate != null && endDate != null ) {
                 String timestampColumn = versionMapping.getTimestampColumnName();
                 appendSqlForStartEndDate( fidMapping, timestampColumn, sql );
-            } else if ( resourceId.getVersion() != null ) {
-                sql.append( " WHERE " );
-                appendWhereClauseForFidMapping( fidMapping, sql );
-                sql.append( " and c." );
-                sql.append( versionColumn );
-                sql.append( " = ?" );
+            } else if ( resourceId.getRidVersion() > 0 ) {
+                appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else {
                 appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
                                          LATEST );
@@ -1253,9 +1245,7 @@ public class SQLFeatureStore implements FeatureStore {
                 case PREVIOUS:
                 case NEXT:
                     currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
-                    currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
-                    PrimitiveValue primitiveValue = new PrimitiveValue( resourceId.getRidVersion() );
-                    versionMapping.getVersionColumnConverter().setParticle( stmt, primitiveValue, currentRowNum++ );
+                    stmt.setInt( currentRowNum++, resourceId.getRidVersion() );
                     break;
                 case ALL:
                     appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
@@ -1274,10 +1264,11 @@ public class SQLFeatureStore implements FeatureStore {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                 stmt.setLong( currentRowNum++, startDate.getTimeInMilliseconds() );
                 stmt.setLong( currentRowNum++, endDate.getTimeInMilliseconds() );
-            } else if ( resourceId.getRidVersion() != null ) {
+            } else if ( resourceId.getRidVersion() > 0 ) {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
-                PrimitiveValue primitiveValue = new PrimitiveValue( resourceId.getRidVersion() );
-                versionMapping.getVersionColumnConverter().setParticle( stmt, primitiveValue, currentRowNum++ );
+                currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
+                currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
+                stmt.setInt( currentRowNum++, resourceId.getRidVersion() );
             } else {
                 currentRowNum = appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
                 appendIdAnalysisValue( fidMapping, stmt, currentRowNum, analysis );
@@ -1307,13 +1298,13 @@ public class SQLFeatureStore implements FeatureStore {
             appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
             break;
         case NEXT:
-            if ( resourceId.getRidVersion() == null )
-                throw new IllegalArgumentException( "Could not parse version from rid attribute." );
+            if ( resourceId.getRidVersion() <= 0 )
+                throw new IllegalArgumentException( "Version could not be parsed from rid attribute." );
             appendSelectForNextVersion( fidMapping, versionTable, versionColumn, sql );
             break;
         case PREVIOUS:
-            if ( resourceId.getRidVersion() == null )
-                throw new IllegalArgumentException( "Could not parse version from rid attribute." );
+            if ( resourceId.getRidVersion() <= 0 )
+                throw new IllegalArgumentException( "Version could not be parsed from rid attribute." );
             appendSelectForPreviousVersion( fidMapping, versionTable, versionColumn, sql );
             break;
         case ALL:
@@ -1383,18 +1374,15 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( versionColumn );
         sql.append( ") OVER (ORDER BY " );
         sql.append( versionColumn );
-        sql.append( " ASC) AS PREVIOUS" );
-        sql.append( " FROM " );
+        sql.append( " ASC) AS PREVIOUS, ROW_NUMBER() OVER (PARTITION BY " );
+        appendSelectFidColumns( fidMapping, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumn );
+        sql.append( ") AS VERSION FROM " );
         sql.append( versionTable );
         sql.append( " WHERE " );
         appendWhereClauseForFidMapping( fidMapping, sql );
-        sql.append( ") t " );
-        sql.append( " WHERE " );
-        appendWhereClauseForFidMapping( fidMapping, sql, "t" );
-        sql.append( " and t." );
-        sql.append( versionColumn );
-        sql.append( " = ? ) s" );
-        sql.append( " WHERE c." );
+        sql.append( ") t WHERE t.version = ? ) s WHERE c." );
         sql.append( versionColumn );
         sql.append( " = previous" );
     }
@@ -1410,18 +1398,15 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( versionColumn );
         sql.append( ") OVER (ORDER BY " );
         sql.append( versionColumn );
-        sql.append( " ASC) AS NEXT" );
-        sql.append( " FROM " );
+        sql.append( " ASC) AS NEXT, ROW_NUMBER() OVER (PARTITION BY " );
+        appendSelectFidColumns( fidMapping, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumn );
+        sql.append( ") AS VERSION FROM " );
         sql.append( versionTable );
         sql.append( " WHERE " );
         appendWhereClauseForFidMapping( fidMapping, sql );
-        sql.append( ") t " );
-        sql.append( " WHERE " );
-        appendWhereClauseForFidMapping( fidMapping, sql, "t" );
-        sql.append( " and t." );
-        sql.append( versionColumn );
-        sql.append( " = ? ) s" );
-        sql.append( " WHERE c." );
+        sql.append( ") t WHERE t.version = ? ) s WHERE c." );
         sql.append( versionColumn );
         sql.append( " = next" );
     }

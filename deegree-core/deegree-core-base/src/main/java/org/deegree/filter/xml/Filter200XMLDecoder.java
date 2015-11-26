@@ -715,7 +715,7 @@ public class Filter200XMLDecoder {
         }
         nextElement( xmlStream );
 
-        Pair<String, String> fid2Version = resourceIdConverter.parseRid( rid );
+        Pair<String, Integer> fid2Version = resourceIdConverter.parseRid( rid );
         return new ResourceId( fid2Version.first, fid2Version.second, previousRid, version, startDate, endDate );
     }
 

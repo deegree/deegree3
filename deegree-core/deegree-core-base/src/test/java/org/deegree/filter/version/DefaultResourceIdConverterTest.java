@@ -36,7 +36,6 @@
 package org.deegree.filter.version;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.deegree.commons.utils.Pair;
@@ -93,18 +92,26 @@ public class DefaultResourceIdConverterTest {
 
     @Test
     public void testConvertToFeatureMetadata_withVersion() {
-        Pair<String, String> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656_version1" );
+        Pair<String, Integer> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656_version1" );
 
         assertThat( fetaureMeatadata.getFirst(), is( "testFid_65656" ) );
-        assertThat( fetaureMeatadata.getSecond(), is( "1" ) );
+        assertThat( fetaureMeatadata.getSecond(), is( 1 ) );
+    }
+
+    @Test
+    public void testConvertToFeatureMetadata_withInvalidVersion() {
+        Pair<String, Integer> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656_versionA1" );
+
+        assertThat( fetaureMeatadata.getFirst(), is( "testFid_65656_versionA1" ) );
+        assertThat( fetaureMeatadata.getSecond(), is( -1 ) );
     }
 
     @Test
     public void testConvertToFeatureMetadata_withoutVersion() {
-        Pair<String, String> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656" );
+        Pair<String, Integer> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656" );
 
         assertThat( fetaureMeatadata.getFirst(), is( "testFid_65656" ) );
-        assertThat( fetaureMeatadata.getSecond(), is( nullValue() ) );
+        assertThat( fetaureMeatadata.getSecond(), is( -1 ) );
     }
 
     @Test(expected = NullPointerException.class)
