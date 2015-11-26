@@ -39,8 +39,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.deegree.feature.persistence.version.DefaultResourceIdConverter;
-import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.FeatureMetadata;
 import org.junit.Test;
 
 /**
