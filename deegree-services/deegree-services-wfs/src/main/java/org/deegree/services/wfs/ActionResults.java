@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.filter.version.FeatureMetadata;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
 
 /**

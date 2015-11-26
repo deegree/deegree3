@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.version;
+package org.deegree.filter.version;
 
 /**
  * A default ResourceIdConverter, pattern: &lt;fid&gt;_&lt;version&gt;

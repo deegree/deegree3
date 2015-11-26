@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.version;
+package org.deegree.filter.version;
 
 /**
  * Encapsulates the feature id and version (if versioning is enabled).
