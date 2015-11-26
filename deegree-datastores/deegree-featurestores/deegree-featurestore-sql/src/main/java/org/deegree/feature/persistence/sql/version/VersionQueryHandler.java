@@ -93,18 +93,42 @@ public class VersionQueryHandler {
     }
 
     private String getVersionSql( VersionMapping versionMapping, FIDMapping fidMapping, TableName ftTable ) {
-        StringBuilder sql = new StringBuilder();
-        sql.append( "SELECT " );
-        sql.append( versionMapping.getVersionColumn().getFirst() );
-        sql.append( " FROM " );
-        sql.append( ftTable );
-        sql.append( " WHERE " );
+        String versionColumnName = versionMapping.getVersionColumn().getFirst().getName();
         List<Pair<SQLIdentifier, BaseType>> columns = fidMapping.getColumns();
-        for ( Pair<SQLIdentifier, BaseType> column : columns ) {
-            sql.append( column.getFirst() );
-        }
-        sql.append( " = ? " );
+        StringBuilder sql = new StringBuilder();
+        sql.append( "SELECT ROW_NUMBER() OVER (PARTITION BY " );
+        appendFidColumns( columns, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumnName );
+        sql.append( " ) AS VERSION FROM " );
+        sql.append( versionMapping.getVersionMetadataTable().toString() );
+        sql.append( " WHERE " );
+        appendWhereForFidColumns( columns, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumnName );
+        sql.append( " DESC LIMIT 1 " );
         return sql.toString();
+    }
+
+    private void appendFidColumns( List<Pair<SQLIdentifier, BaseType>> columns, StringBuilder sql ) {
+        boolean first = true;
+        for ( Pair<SQLIdentifier, BaseType> column : columns ) {
+            if ( !first )
+                sql.append( ',' );
+            sql.append( column.getFirst() );
+            first = false;
+        }
+    }
+
+    private void appendWhereForFidColumns( List<Pair<SQLIdentifier, BaseType>> columns, StringBuilder sql ) {
+        boolean first = true;
+        for ( Pair<SQLIdentifier, BaseType> column : columns ) {
+            if ( !first )
+                sql.append( " AND " );
+            sql.append( column.getFirst() );
+            sql.append( " = ? " );
+            first = false;
+        }
     }
 
     private PreparedStatement prepareStatement( Connection conn, FIDMapping fidMapping, IdAnalysis idAnalysis,
