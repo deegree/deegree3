@@ -70,6 +70,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
@@ -134,6 +135,8 @@ import org.deegree.filter.temporal.TContains;
 import org.deegree.filter.temporal.TEquals;
 import org.deegree.filter.temporal.TOverlaps;
 import org.deegree.filter.temporal.TemporalOperator;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
@@ -183,6 +186,8 @@ public class Filter200XMLDecoder {
     private static final Map<QName, TemporalOperator.SubType> elementNameToTemporalOperatorType = new HashMap<QName, TemporalOperator.SubType>();
 
     private static final Map<TemporalOperator.SubType, QName> temporalOperatorTypeToElementName = new HashMap<TemporalOperator.SubType, QName>();
+
+    private static final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     static {
 
@@ -709,7 +714,9 @@ public class Filter200XMLDecoder {
             }
         }
         nextElement( xmlStream );
-        return new ResourceId( rid, previousRid, version, startDate, endDate );
+
+        Pair<String, String> fid2Version = resourceIdConverter.parseRid( rid );
+        return new ResourceId( fid2Version.first, fid2Version.second, previousRid, version, startDate, endDate );
     }
 
     private static ComparisonOperator parseBinaryComparisonOperator( XMLStreamReader xmlStream, SubType type )
