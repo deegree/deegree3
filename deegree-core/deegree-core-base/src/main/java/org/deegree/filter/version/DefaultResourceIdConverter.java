@@ -54,7 +54,7 @@ public class DefaultResourceIdConverter implements ResourceIdConverter {
     public String generateResourceId( FeatureMetadata featureMetadata ) {
         if ( featureMetadata == null )
             throw new NullPointerException( "FeatureMetadata must never be null!" );
-        if ( featureMetadata.getVersion() == null )
+        if ( featureMetadata.getVersion() <= 0 )
             return featureMetadata.getFid();
         return featureMetadata.getFid() + DELIMITER + featureMetadata.getVersion();
     }
