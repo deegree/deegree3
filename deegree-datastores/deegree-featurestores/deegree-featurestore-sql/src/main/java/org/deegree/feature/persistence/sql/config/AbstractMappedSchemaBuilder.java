@@ -248,10 +248,6 @@ public abstract class AbstractMappedSchemaBuilder {
 
             VersionColumn configuredVersionColumn = versionMapping.getVersionColumn();
             SQLIdentifier versionSqlIdentifier = new SQLIdentifier( configuredVersionColumn.getName() );
-            PrimitiveType versionType = new PrimitiveType( getPrimitiveType( configuredVersionColumn.getType() ) );
-            Pair<SQLIdentifier, PrimitiveType> versionColumn = new Pair<SQLIdentifier, PrimitiveType>(
-                                                                                                       versionSqlIdentifier,
-                                                                                                       versionType );
 
             ActionColumn configuredActionColumn = versionMapping.getActionColumn();
             SQLIdentifier actionSqlIdentifier = new SQLIdentifier( configuredActionColumn.getName() );
@@ -259,7 +255,7 @@ public abstract class AbstractMappedSchemaBuilder {
             TimestampColumn configuredTimeColumn = versionMapping.getTimestampColumn();
             SQLIdentifier timeSqlIdentifier = new SQLIdentifier( configuredTimeColumn.getName() );
 
-            return new VersionMapping( versionMetadataTableName, versionColumn, actionSqlIdentifier, timeSqlIdentifier );
+            return new VersionMapping( versionMetadataTableName, versionSqlIdentifier, actionSqlIdentifier, timeSqlIdentifier );
         }
         return null;
     }

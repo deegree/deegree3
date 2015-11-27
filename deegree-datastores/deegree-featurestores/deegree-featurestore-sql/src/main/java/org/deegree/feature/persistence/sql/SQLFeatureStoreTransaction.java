@@ -93,7 +93,6 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.persistence.sql.version.VersionQueryHandler;
 import org.deegree.feature.persistence.transaction.FeatureUpdater;
-import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
@@ -103,6 +102,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.ResourceId;
+import org.deegree.filter.version.FeatureMetadata;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
@@ -689,7 +689,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         List<FeatureMetadata> featureMetadata = new ArrayList<FeatureMetadata>();
         for ( FeatureRow assignment : idAssignments ) {
             String newId = assignment.getNewId();
-            String version = assignment.getVersion();
+            int version = assignment.getVersion();
             featureMetadata.add( new FeatureMetadata( newId, version ) );
         }
         return featureMetadata;
@@ -1073,7 +1073,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         List<FeatureMetadata> featureMetadatas = new ArrayList<FeatureMetadata>( selectedIds.size() );
         for ( ResourceId selectedId : selectedIds ) {
             IdAnalysis analysis = schema.analyzeId( selectedId.getRid() );
-            String version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping, analysis );
+            int version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping, analysis );
             featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version ) );
         }
         return featureMetadatas;

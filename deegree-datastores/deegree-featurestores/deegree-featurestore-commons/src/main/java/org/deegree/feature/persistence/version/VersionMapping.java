@@ -37,9 +37,6 @@ package org.deegree.feature.persistence.version;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
-import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
-import org.deegree.commons.utils.Pair;
 
 /**
  * Encapsulates the mapping of the version columns.
@@ -50,7 +47,7 @@ public class VersionMapping {
 
     private final TableName versionMetadataTable;
 
-    private final Pair<SQLIdentifier, PrimitiveType> versionColumn;
+    private final SQLIdentifier versionColumn;
 
     private final SQLIdentifier actionColumn;
 
@@ -65,8 +62,8 @@ public class VersionMapping {
      *            the mapping between content of the state column from db an official states, may be <code>null</code>
      *            or empty
      */
-    public VersionMapping( TableName versionMetadataTable, Pair<SQLIdentifier, PrimitiveType> versionColumn,
-                           SQLIdentifier actionColumn, SQLIdentifier timestampColumn ) {
+    public VersionMapping( TableName versionMetadataTable, SQLIdentifier versionColumn, SQLIdentifier actionColumn,
+                           SQLIdentifier timestampColumn ) {
         this.versionMetadataTable = versionMetadataTable;
         this.versionColumn = versionColumn;
         this.actionColumn = actionColumn;
@@ -83,15 +80,8 @@ public class VersionMapping {
     /**
      * @return the column containing the version of the features, never <code>null</code>
      */
-    public Pair<SQLIdentifier, PrimitiveType> getVersionColumn() {
-        return versionColumn;
-    }
-
-    /**
-     * @return the converter for the version column, never <code>null</code>
-     */
-    public DefaultPrimitiveConverter getVersionColumnConverter() {
-        return new DefaultPrimitiveConverter( versionColumn.getSecond(), versionColumn.getFirst().getName() );
+    public String getVersionColumnName() {
+        return versionColumn.getName();
     }
 
     /**

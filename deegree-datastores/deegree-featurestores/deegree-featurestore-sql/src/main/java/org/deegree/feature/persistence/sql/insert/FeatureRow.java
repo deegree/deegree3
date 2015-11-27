@@ -75,7 +75,7 @@ public class FeatureRow extends InsertRow {
 
     private String newId;
 
-    private String version;
+    private int version;
 
     private FeatureTypeMapping ftMapping;
 
@@ -115,9 +115,9 @@ public class FeatureRow extends InsertRow {
     /**
      * Returns the current version of the inserted {@link Feature}, if versioning is enabled.
      * 
-     * @return insert id, can be <code>null</code> (versioning is not supported or not assigned yet)
+     * @return insert id, -1 if versioning is not supported or not assigned yet
      */
-    public String getVersion() {
+    public int getVersion() {
         return version;
     }
 
@@ -236,7 +236,7 @@ public class FeatureRow extends InsertRow {
         return newId;
     }
 
-    private String buildVersion( Connection conn, String newId )
+    private int buildVersion( Connection conn, String newId )
                             throws SQLException {
         IdAnalysis analyzedId = mgr.getSchema().analyzeId( newId );
         return versionQueryHandler.retrieveVersion( conn, ftMapping, analyzedId );

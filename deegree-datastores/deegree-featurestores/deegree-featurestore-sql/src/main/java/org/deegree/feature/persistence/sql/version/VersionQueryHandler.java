@@ -68,12 +68,12 @@ public class VersionQueryHandler {
      *            <code>null</code>
      * @param idAnalysis
      *            the analyzed id to retrieve the version for, never <code>null</code>
-     * @return the version of the feature with the analyzed id, <code>null</code> if versioning is not enabled for the
-     *         feature type or a feature with the analyzed id could not be found
+     * @return the version of the feature with the analyzed id, -1 if versioning is not enabled for the feature type or
+     *         a feature with the analyzed id could not be found
      * @throws SQLException
      *             if an error occurred during communication with the db
      */
-    public String retrieveVersion( Connection conn, FeatureTypeMapping featureTypeMapping, IdAnalysis idAnalysis )
+    public int retrieveVersion( Connection conn, FeatureTypeMapping featureTypeMapping, IdAnalysis idAnalysis )
                             throws SQLException {
         VersionMapping versionMapping = featureTypeMapping.getVersionMapping();
         if ( versionMapping != null ) {
@@ -82,29 +82,53 @@ public class VersionQueryHandler {
             PreparedStatement stmt = prepareStatement( conn, fidMapping, idAnalysis, versionSql );
 
             ResultSet rs = stmt.executeQuery();
-            String version = null;
+            int version = -1;
             if ( rs.next() ) {
-                version = retrieveVersionFromResultSet( versionMapping, rs );
+                version = rs.getInt( 1 );
             }
             stmt.close();
             return version;
         }
-        return null;
+        return -1;
     }
 
     private String getVersionSql( VersionMapping versionMapping, FIDMapping fidMapping, TableName ftTable ) {
-        StringBuilder sql = new StringBuilder();
-        sql.append( "SELECT " );
-        sql.append( versionMapping.getVersionColumn().getFirst() );
-        sql.append( " FROM " );
-        sql.append( ftTable );
-        sql.append( " WHERE " );
+        String versionColumnName = versionMapping.getVersionColumnName();
         List<Pair<SQLIdentifier, BaseType>> columns = fidMapping.getColumns();
-        for ( Pair<SQLIdentifier, BaseType> column : columns ) {
-            sql.append( column.getFirst() );
-        }
-        sql.append( " = ? " );
+        StringBuilder sql = new StringBuilder();
+        sql.append( "SELECT ROW_NUMBER() OVER (PARTITION BY " );
+        appendFidColumns( columns, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumnName );
+        sql.append( " ) AS VERSION FROM " );
+        sql.append( versionMapping.getVersionMetadataTable().toString() );
+        sql.append( " WHERE " );
+        appendWhereForFidColumns( columns, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumnName );
+        sql.append( " DESC LIMIT 1 " );
         return sql.toString();
+    }
+
+    private void appendFidColumns( List<Pair<SQLIdentifier, BaseType>> columns, StringBuilder sql ) {
+        boolean first = true;
+        for ( Pair<SQLIdentifier, BaseType> column : columns ) {
+            if ( !first )
+                sql.append( ',' );
+            sql.append( column.getFirst() );
+            first = false;
+        }
+    }
+
+    private void appendWhereForFidColumns( List<Pair<SQLIdentifier, BaseType>> columns, StringBuilder sql ) {
+        boolean first = true;
+        for ( Pair<SQLIdentifier, BaseType> column : columns ) {
+            if ( !first )
+                sql.append( " AND " );
+            sql.append( column.getFirst() );
+            sql.append( " = ? " );
+            first = false;
+        }
     }
 
     private PreparedStatement prepareStatement( Connection conn, FIDMapping fidMapping, IdAnalysis idAnalysis,
@@ -122,15 +146,6 @@ public class VersionQueryHandler {
             converter.setParticle( stmt, value, i++ );
         }
         return stmt;
-    }
-
-    private String retrieveVersionFromResultSet( VersionMapping versionMapping, ResultSet rs )
-                            throws SQLException {
-        DefaultPrimitiveConverter versionConverter = versionMapping.getVersionColumnConverter();
-        PrimitiveValue resultParticle = versionConverter.toParticle( rs, 1 );
-        if ( resultParticle != null )
-            return resultParticle.getAsText();
-        return null;
     }
 
 }

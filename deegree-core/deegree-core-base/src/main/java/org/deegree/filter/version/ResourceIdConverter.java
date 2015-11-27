@@ -33,7 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.version;
+package org.deegree.filter.version;
+
+import org.deegree.commons.utils.Pair;
 
 /**
  * Encapsulates the creation of resource ids.
@@ -66,12 +68,13 @@ public interface ResourceIdConverter {
     boolean hasVersion( String id );
 
     /**
-     * Splitted the passed id into FID and version (if the id has a version).
+     * Splits the passed id into FID and version (if the id has a version).
      * 
      * @param id
      *            never <code>null</code>
-     * @return {@link FeatureMetadata} from the id, never <code>null</code>
+     * @return the FID (first, never <code>null</code>) and version (second, may be -1 if not specified, otherwise > 0)
+     *         from the id, never <code>null</code>
      */
-    FeatureMetadata convertToFeatureMetadata( String id );
+    Pair<String, Integer> parseRid( String id );
 
 }

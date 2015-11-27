@@ -33,14 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.sql.version;
+package org.deegree.filter.version;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.deegree.feature.persistence.version.DefaultResourceIdConverter;
-import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.commons.utils.Pair;
 import org.junit.Test;
 
 /**
@@ -61,7 +59,7 @@ public class DefaultResourceIdConverterTest {
 
     @Test
     public void generateResourceId_WithFidAndVersion() {
-        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid_65656", "1" );
+        FeatureMetadata featureMetadata = new FeatureMetadata( "testFid_65656", 1 );
 
         String resourceId = resourceIdConverter.generateResourceId( featureMetadata );
 
@@ -94,22 +92,31 @@ public class DefaultResourceIdConverterTest {
 
     @Test
     public void testConvertToFeatureMetadata_withVersion() {
-        FeatureMetadata fetaureMeatadata = resourceIdConverter.convertToFeatureMetadata( "testFid_65656_version1" );
+        Pair<String, Integer> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656_version1" );
 
-        assertThat( fetaureMeatadata.getFid(), is( "testFid_65656" ) );
-        assertThat( fetaureMeatadata.getVersion(), is( "1" ) );
+        assertThat( fetaureMeatadata.getFirst(), is( "testFid_65656" ) );
+        assertThat( fetaureMeatadata.getSecond(), is( 1 ) );
+    }
+
+    @Test
+    public void testConvertToFeatureMetadata_withInvalidVersion() {
+        Pair<String, Integer> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656_versionA1" );
+
+        assertThat( fetaureMeatadata.getFirst(), is( "testFid_65656_versionA1" ) );
+        assertThat( fetaureMeatadata.getSecond(), is( -1 ) );
     }
 
     @Test
     public void testConvertToFeatureMetadata_withoutVersion() {
-        FeatureMetadata fetaureMeatadata = resourceIdConverter.convertToFeatureMetadata( "testFid_65656" );
+        Pair<String, Integer> fetaureMeatadata = resourceIdConverter.parseRid( "testFid_65656" );
 
-        assertThat( fetaureMeatadata.getFid(), is( "testFid_65656" ) );
-        assertThat( fetaureMeatadata.getVersion(), is( nullValue() ) );
+        assertThat( fetaureMeatadata.getFirst(), is( "testFid_65656" ) );
+        assertThat( fetaureMeatadata.getSecond(), is( -1 ) );
     }
 
     @Test(expected = NullPointerException.class)
     public void testConvertToFeatureMetadata_Null() {
-        resourceIdConverter.convertToFeatureMetadata( null );
+        resourceIdConverter.parseRid( null );
     }
+
 }

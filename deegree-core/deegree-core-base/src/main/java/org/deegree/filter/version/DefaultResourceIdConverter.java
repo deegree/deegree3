@@ -33,14 +33,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.persistence.version;
+package org.deegree.filter.version;
+
+import org.deegree.commons.utils.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * A default ResourceIdConverter, pattern: &lt;fid&gt;_&lt;version&gt;
+ * A default ResourceIdConverter, pattern: &lt;fid&gt;_version&lt;version&gt;
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class DefaultResourceIdConverter implements ResourceIdConverter {
+
+    private static final Logger LOG = LoggerFactory.getLogger( DefaultResourceIdConverter.class );
 
     private static final String DELIMITER = "_version";
 
@@ -48,7 +54,7 @@ public class DefaultResourceIdConverter implements ResourceIdConverter {
     public String generateResourceId( FeatureMetadata featureMetadata ) {
         if ( featureMetadata == null )
             throw new NullPointerException( "FeatureMetadata must never be null!" );
-        if ( featureMetadata.getVersion() == null )
+        if ( featureMetadata.getVersion() <= 0 )
             return featureMetadata.getFid();
         return featureMetadata.getFid() + DELIMITER + featureMetadata.getVersion();
     }
@@ -61,16 +67,20 @@ public class DefaultResourceIdConverter implements ResourceIdConverter {
     }
 
     @Override
-    public FeatureMetadata convertToFeatureMetadata( String id ) {
+    public Pair<String, Integer> parseRid( String id ) {
         if ( id == null )
             throw new NullPointerException( "id must never be null!" );
         if ( hasVersion( id ) ) {
             int indexOf = id.indexOf( DELIMITER );
             String fid = id.substring( 0, indexOf );
-            String version = id.substring( indexOf + DELIMITER.length(), id.length() );
-            return new FeatureMetadata( fid, version );
+            String versionAsString = id.substring( indexOf + DELIMITER.length(), id.length() );
+            try {
+                return new Pair<String, Integer>( fid, Integer.parseInt( versionAsString ) );
+            } catch ( NumberFormatException e ) {
+                LOG.warn( "Could not parse version from rid (" + versionAsString + "). Version will be ignored" );
+            }
         }
-        return new FeatureMetadata( id );
+        return new Pair<String, Integer>( id, -1 );
     }
 
 }

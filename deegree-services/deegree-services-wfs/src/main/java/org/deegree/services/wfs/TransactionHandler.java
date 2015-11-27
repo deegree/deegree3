@@ -99,9 +99,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
-import org.deegree.feature.persistence.version.DefaultResourceIdConverter;
-import org.deegree.feature.persistence.version.FeatureMetadata;
-import org.deegree.feature.persistence.version.ResourceIdConverter;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
@@ -110,6 +107,9 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.FeatureMetadata;
+import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.validation.CoordinateValidityInspector;
 import org.deegree.gml.GMLInputFactory;
@@ -721,7 +721,7 @@ class TransactionHandler {
                 for ( FeatureMetadata featureMetadata : inserted.getFids( handle ) ) {
                     LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                    xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
@@ -731,7 +731,7 @@ class TransactionHandler {
                 for ( FeatureMetadata featureMetadata : inserted.getFidsWithoutHandle() ) {
                     LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                    xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
@@ -789,7 +789,7 @@ class TransactionHandler {
                     xmlWriter.writeStartElement( WFS_NS, "Feature" );
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                    xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
@@ -798,7 +798,7 @@ class TransactionHandler {
                 LOG.debug( "Inserted fid: " + featureMetadata );
                 xmlWriter.writeStartElement( WFS_NS, "Feature" );
                 xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
+                xmlWriter.writeAttribute( "fid", featureMetadata.getFid() );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
@@ -850,6 +850,8 @@ class TransactionHandler {
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                     xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
+                    if ( featureMetadata.getVersion() > 0 )
+                        xmlWriter.writeAttribute( "version", Integer.toString( featureMetadata.getVersion() ) );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
@@ -859,6 +861,8 @@ class TransactionHandler {
                 xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                 xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
                 xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
+                if ( featureMetadata.getVersion() > 0 )
+                    xmlWriter.writeAttribute( "version", Integer.toString( featureMetadata.getVersion() ) );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }

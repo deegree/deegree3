@@ -64,7 +64,7 @@ public class IdFilter implements Filter {
     public IdFilter( String... selectedIds ) {
         this.selectedIds = new ArrayList<ResourceId>( selectedIds.length );
         for ( String id : selectedIds ) {
-            this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
+            this.selectedIds.add( new ResourceId( id ) );
             stringIds.add( id );
         }
     }
@@ -78,7 +78,7 @@ public class IdFilter implements Filter {
     public IdFilter( Collection<String> selectedIds ) {
         this.selectedIds = new ArrayList<ResourceId>( selectedIds.size() );
         for ( String id : selectedIds ) {
-            this.selectedIds.add( new ResourceId( id, null, null, null, null ) );
+            this.selectedIds.add( new ResourceId( id ) );
             stringIds.add( id );
         }
     }
