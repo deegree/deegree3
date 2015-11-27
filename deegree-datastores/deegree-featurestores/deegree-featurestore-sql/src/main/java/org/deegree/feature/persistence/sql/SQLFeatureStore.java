@@ -107,6 +107,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.EmptyFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.FilteredFeatureInputStream;
 import org.deegree.feature.stream.IteratorFeatureInputStream;
@@ -684,7 +685,7 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( "COUNT(*) FROM (SELECT DISTINCT " );
 
                     String ftTableAlias = wb.getAliasManager().getRootTableAlias();
-                    
+
                     FIDMapping fidMapping = ftMapping.getFidMapping();
                     List<Pair<SQLIdentifier, BaseType>> fidCols = fidMapping.getColumns();
                     boolean first = true;
@@ -1025,7 +1026,10 @@ public class SQLFeatureStore implements FeatureStore {
                 idKernels.add( analysis );
             }
         } catch ( IllegalArgumentException e ) {
-            throw new FeatureStoreException( e.getMessage(), e );
+            LOG.warn( "No features are returned, as an error occurred during mapping of feature name to id: "
+                      + e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            return new EmptyFeatureInputStream();
         }
 
         if ( ftNameToIdAnalysis.size() != 1 ) {
