@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2014 EUROPEAN UNION Licensed under the EUPL,
+Version 1.1  or - as soon they will be approved by the European Commission -
+subsequent versions of the EUPL (the "Licence"); You may not use this work
+except in compliance with the Licence. You may obtain a copy of the Licence
+at:
+
+http://ec.europa.eu/idabc/eupl
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the Licence is distributed on an "AS IS" basis, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+Licence for the specific language governing permissions and limitations under
+the Licence.
+
+Date: 12-03-2014
+-->
+<gmd:MD_Metadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:sds="http://inspire.ec.europa.eu/schemas/inspire_sds/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/inspire_sds/1.0 http://inspire-geoportal.ec.europa.eu/schemas/inspire/inspire_sds/1.0/inspire_sds.xsd">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>mysdsid1</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language>
+    <gmd:LanguageCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng">eng</gmd:LanguageCode>
+  </gmd:language>
+  <gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="service">service</gmd:MD_ScopeCode>
+  </gmd:hierarchyLevel>
+  <gmd:contact>
+    <gmd:CI_ResponsibleParty>
+      <gmd:organisationName>
+        <gco:CharacterString>TNO Geological Survey of the Netherlands</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:address>
+            <gmd:CI_Address>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>info@dinoloket.nl</gco:CharacterString>
+              </gmd:electronicMailAddress>
+            </gmd:CI_Address>
+          </gmd:address>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+    <gco:Date>2012-12-05</gco:Date>
+  </gmd:dateStamp>
+  <!--
+  <gmd:metadataStandardName>
+    <gco:CharacterString>INSPIRE Spatial Data Services Community Profile of ISO 19115:2005/19139</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>1.0</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+-->
+  <gmd:referenceSystemInfo>
+    <gmd:MD_ReferenceSystem>
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code>
+            <gco:CharacterString>http://www.opengis.net/def/crs/EPSG/0/28992</gco:CharacterString>
+          </gmd:code>
+          <gmd:codeSpace>
+            <gco:CharacterString>EPSG</gco:CharacterString>
+          </gmd:codeSpace>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:identificationInfo>
+    <sds:SV_ServiceIdentification>
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>Geo 3D Model service</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2012-08-14</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>This Spatial Data Service supports various operations on the Digital Subsurface Models (Regis, DGM and GeoTop) provided by the Geological Survey of the Netherlands. There is for example an operation to create a “virtual borehole” through one of the subsurface models for any given location in the Netherlands. The result can either be returned as Xml data or as a graphical representation. There is also supported for creating a VerticalSection a depthSection and many others. All operations and returned values are in the EPSG:28992 (RDNew)  coordinate reference system. The models have a resolution of 100x100 meters horizontally and have varying vertical resolutions. </gco:CharacterString>
+      </gmd:abstract>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:organisationName>
+            <gco:CharacterString>Geological Survey of the Netherlands</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>info@dinoloket.nl</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>infoCoverageAccessService</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>subsurface</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>geology</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Netherlands</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>3D model</gco:CharacterString>
+          </gmd:keyword>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints>
+        <gmd:MD_Constraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>Creative Commons Free Culture.</gco:CharacterString>
+          </gmd:useLimitation>
+        </gmd:MD_Constraints>
+      </gmd:resourceConstraints>
+      <gmd:resourceConstraints>
+        <gmd:MD_Constraints>
+          <gmd:useLimitation>
+            <gmx:Anchor xlink:href="http://creativecommons.org/licenses/by/3.0/deed.nl">Creative Commons - Attribution 3.0 Unported</gmx:Anchor>
+          </gmd:useLimitation>
+        </gmd:MD_Constraints>
+      </gmd:resourceConstraints>
+      <gmd:resourceConstraints>
+        <gmd:MD_LegalConstraints>
+          <gmd:accessConstraints>
+            <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+          </gmd:accessConstraints>
+          <gmd:otherConstraints>
+            <gco:CharacterString>no limitations</gco:CharacterString>
+          </gmd:otherConstraints>
+        </gmd:MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <srv:serviceType>
+        <gco:LocalName>other</gco:LocalName>
+      </srv:serviceType>
+      <srv:extent>
+        <gmd:EX_Extent>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>3.047</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>50.670</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>7.276</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>53.612</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+        </gmd:EX_Extent>
+      </srv:extent>
+      <!--Added with respect to base example-->
+      <srv:extent>
+        <gmd:EX_Extent>
+          <gmd:temporalElement>
+            <gmd:EX_TemporalExtent>
+              <gmd:extent>
+                <gml:TimeInstant gml:id="id1">
+                  <gml:timePosition>2012</gml:timePosition>
+                </gml:TimeInstant>
+              </gmd:extent>
+            </gmd:EX_TemporalExtent>
+          </gmd:temporalElement>
+        </gmd:EX_Extent>
+      </srv:extent>
+      <srv:couplingType gco:nilReason="missing"/>
+      <srv:containsOperations>
+        <srv:SV_OperationMetadata>
+          <srv:operationName>
+            <gco:CharacterString>sampleColumn</gco:CharacterString>
+          </srv:operationName>
+          <srv:DCP>
+            <srv:DCPList codeList="http://someurl#DCPList" codeListValue="HTTPGet"/>
+          </srv:DCP>
+          <srv:parameters>
+            <srv:SV_Parameter>
+              <srv:name>
+                <gco:aName>
+                  <gco:CharacterString>model</gco:CharacterString>
+                </gco:aName>
+                <gco:attributeType>
+                  <gco:TypeName>
+                    <gco:aName>
+                      <gco:CharacterString>CharacterString</gco:CharacterString>
+                    </gco:aName>
+                  </gco:TypeName>
+                </gco:attributeType>
+              </srv:name>
+              <srv:direction>
+                <srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+              </srv:direction>
+              <srv:optionality>
+                <gco:CharacterString>required</gco:CharacterString>
+              </srv:optionality>
+              <srv:repeatability>
+                <gco:Boolean>false</gco:Boolean>
+              </srv:repeatability>
+              <srv:valueType>
+                <gco:TypeName>
+                  <gco:aName>
+                    <gco:CharacterString>string</gco:CharacterString>
+                  </gco:aName>
+                </gco:TypeName>
+              </srv:valueType>
+            </srv:SV_Parameter>
+          </srv:parameters>
+          <srv:parameters>
+            <srv:SV_Parameter>
+              <srv:name>
+                <gco:aName>
+                  <gco:CharacterString>xCoordinate</gco:CharacterString>
+                </gco:aName>
+                <gco:attributeType>
+                  <gco:TypeName>
+                    <gco:aName>
+                      <gco:CharacterString>CharacterString</gco:CharacterString>
+                    </gco:aName>
+                  </gco:TypeName>
+                </gco:attributeType>
+              </srv:name>
+              <srv:direction>
+                <srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+              </srv:direction>
+              <srv:optionality>
+                <gco:CharacterString>required</gco:CharacterString>
+              </srv:optionality>
+              <srv:repeatability>
+                <gco:Boolean>false</gco:Boolean>
+              </srv:repeatability>
+              <srv:valueType>
+                <gco:TypeName>
+                  <gco:aName>
+                    <gco:CharacterString>double</gco:CharacterString>
+                  </gco:aName>
+                </gco:TypeName>
+              </srv:valueType>
+            </srv:SV_Parameter>
+          </srv:parameters>
+          <srv:parameters>
+            <srv:SV_Parameter>
+              <srv:name>
+                <gco:aName>
+                  <gco:CharacterString>yCoordinate</gco:CharacterString>
+                </gco:aName>
+                <gco:attributeType>
+                  <gco:TypeName>
+                    <gco:aName>
+                      <gco:CharacterString>CharacterString</gco:CharacterString>
+                    </gco:aName>
+                  </gco:TypeName>
+                </gco:attributeType>
+              </srv:name>
+              <srv:direction>
+                <srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+              </srv:direction>
+              <srv:optionality>
+                <gco:CharacterString>required</gco:CharacterString>
+              </srv:optionality>
+              <srv:repeatability>
+                <gco:Boolean>false</gco:Boolean>
+              </srv:repeatability>
+              <srv:valueType>
+                <gco:TypeName>
+                  <gco:aName>
+                    <gco:CharacterString>double</gco:CharacterString>
+                  </gco:aName>
+                </gco:TypeName>
+              </srv:valueType>
+            </srv:SV_Parameter>
+          </srv:parameters>
+          <srv:parameters>
+            <srv:SV_Parameter>
+              <srv:name>
+                <gco:aName>
+                  <gco:CharacterString>resolution</gco:CharacterString>
+                </gco:aName>
+                <gco:attributeType>
+                  <gco:TypeName>
+                    <gco:aName>
+                      <gco:CharacterString>CharacterString</gco:CharacterString>
+                    </gco:aName>
+                  </gco:TypeName>
+                </gco:attributeType>
+              </srv:name>
+              <srv:direction>
+                <srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+              </srv:direction>
+              <srv:optionality>
+                <gco:CharacterString>required</gco:CharacterString>
+              </srv:optionality>
+              <srv:repeatability>
+                <gco:Boolean>false</gco:Boolean>
+              </srv:repeatability>
+              <srv:valueType>
+                <gco:TypeName>
+                  <gco:aName>
+                    <gco:CharacterString>int</gco:CharacterString>
+                  </gco:aName>
+                </gco:TypeName>
+              </srv:valueType>
+            </srv:SV_Parameter>
+          </srv:parameters>
+          <srv:parameters>
+            <srv:SV_Parameter>
+              <srv:name>
+                <gco:aName>
+                  <gco:CharacterString>coordinateSystem</gco:CharacterString>
+                </gco:aName>
+                <gco:attributeType>
+                  <gco:TypeName>
+                    <gco:aName>
+                      <gco:CharacterString>CharacterString</gco:CharacterString>
+                    </gco:aName>
+                  </gco:TypeName>
+                </gco:attributeType>
+              </srv:name>
+              <srv:direction>
+                <srv:SV_ParameterDirection>in</srv:SV_ParameterDirection>
+              </srv:direction>
+              <srv:optionality>
+                <gco:CharacterString>optional</gco:CharacterString>
+              </srv:optionality>
+              <srv:repeatability>
+                <gco:Boolean>false</gco:Boolean>
+              </srv:repeatability>
+              <srv:valueType>
+                <gco:TypeName>
+                  <gco:aName>
+                    <gco:CharacterString>AvailableCoordinateSystemType</gco:CharacterString>
+                  </gco:aName>
+                </gco:TypeName>
+              </srv:valueType>
+            </srv:SV_Parameter>
+          </srv:parameters>
+          <srv:connectPoint>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>http://www.dinoservices.nl:80/geo3dmodelwebservices-1/Geo3DModelService</gmd:URL>
+              </gmd:linkage>
+            </gmd:CI_OnlineResource>
+          </srv:connectPoint>
+        </srv:SV_OperationMetadata>
+      </srv:containsOperations>
+      <srv:operatesOn xlink:href="http://www.dinoservices.nl"/>
+      <sds:qualityOfService>
+        <sds:SV_QualityOfService>
+          <sds:criterion>
+            <sds:SV_QualityOfServiceCriteria>performance</sds:SV_QualityOfServiceCriteria>
+          </sds:criterion>
+          <sds:unit>
+            <gco:CharacterString>seconds</gco:CharacterString>
+          </sds:unit>
+          <sds:value>
+            <gco:CharacterString>1.457</gco:CharacterString>
+          </sds:value>
+          <sds:measurementDescription>
+            <gco:CharacterString>Average response time in seconds</gco:CharacterString>
+          </sds:measurementDescription>
+        </sds:SV_QualityOfService>
+        <sds:SV_QualityOfService>
+          <sds:criterion>
+            <sds:SV_QualityOfServiceCriteria>availability</sds:SV_QualityOfServiceCriteria>
+          </sds:criterion>
+          <sds:unit>
+            <gco:CharacterString>percentage of time</gco:CharacterString>
+          </sds:unit>
+          <sds:value>
+            <gco:CharacterString>99.0</gco:CharacterString>
+          </sds:value>
+          <sds:measurementDescription>
+            <gco:CharacterString>Availability on yearly basis, expressed as percentage of time</gco:CharacterString>
+          </sds:measurementDescription>
+        </sds:SV_QualityOfService>
+        <sds:SV_QualityOfService>
+          <sds:criterion>
+            <sds:SV_QualityOfServiceCriteria>capacity</sds:SV_QualityOfServiceCriteria>
+          </sds:criterion>
+          <sds:unit>
+            <gco:CharacterString>number of requests per second</gco:CharacterString>
+          </sds:unit>
+          <sds:value>
+            <gco:CharacterString>20</gco:CharacterString>
+          </sds:value>
+          <sds:measurementDescription>
+            <gco:CharacterString>Maximum number of simultaneous requests per second meeting the performance criteria</gco:CharacterString>
+          </sds:measurementDescription>
+        </sds:SV_QualityOfService>
+      </sds:qualityOfService>
+      <sds:category>invocable</sds:category>
+    </sds:SV_ServiceIdentification>
+  </gmd:identificationInfo>
+  <gmd:distributionInfo>
+    <gmd:MD_Distribution>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>http://www.dinoservices.nl/geo3dmodelwebservices-1/Geo3DModelService</gmd:URL>
+              </gmd:linkage>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://inspire.ec.europa.eu/draft-schemas/resources/Codelist/gmxCodelist.xml#INSPIRE_CI_OnLineFunctionCode" codeListValue="accessPoint-selfDescribing">accessPoint- selfDescribing</gmd:CI_OnLineFunctionCode>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>http://link-to/get-service-metadata</gmd:URL>
+              </gmd:linkage>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://inspire.ec.europa.eu/draft-schemas/resources/Codelist/gmxCodelist.xml#INSPIRE_CI_OnLineFunctionCode" codeListValue="providesServiceMetadata">providesServiceMetadata</gmd:CI_OnLineFunctionCode>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="service">service</gmd:MD_ScopeCode>
+          </gmd:level>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:report>
+        <gmd:DQ_DomainConsistency xsi:type="gmd:DQ_DomainConsistency_Type">
+          <gmd:result>
+            <gmd:DQ_ConformanceResult xsi:type="gmd:DQ_ConformanceResult_Type">
+              <gmd:specification>
+                <gmd:CI_Citation>
+                  <gmd:title>
+                    <gco:CharacterString>invocable</gco:CharacterString>
+                  </gmd:title>
+                  <gmd:date>
+                    <gmd:CI_Date>
+                      <gmd:date>
+                        <gco:Date>2010-12-08</gco:Date>
+                      </gmd:date>
+                      <gmd:dateType>
+                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                      </gmd:dateType>
+                    </gmd:CI_Date>
+                  </gmd:date>
+                </gmd:CI_Citation>
+              </gmd:specification>
+              <gmd:explanation>
+                <gco:CharacterString>See the referenced specification</gco:CharacterString>
+              </gmd:explanation>
+              <gmd:pass>
+                <gco:Boolean>true</gco:Boolean>
+              </gmd:pass>
+            </gmd:DQ_ConformanceResult>
+          </gmd:result>
+        </gmd:DQ_DomainConsistency>
+      </gmd:report>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+</gmd:MD_Metadata>

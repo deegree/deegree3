@@ -107,11 +107,12 @@ public class ParseIdentificationInfo extends XMLAdapter {
             OMElement md_dataIdentification = getElement( root_identInfo, new XPath( "./gmd:MD_DataIdentification",
                                                                                      nsContextParseII ) );
             OMElement sv_serviceIdentification = getElement( root_identInfo,
-                                                             new XPath( "./srv:SV_ServiceIdentification",
+                                                             new XPath(
+                                                                        "./srv:SV_ServiceIdentification | ./sds:SV_ServiceIdentification",
                                                                         nsContextParseII ) );
             OMElement sv_service_OR_md_dataIdentification = getElement( root_identInfo,
                                                                         new XPath(
-                                                                                   "./srv:SV_ServiceIdentification | ./gmd:MD_DataIdentification",
+                                                                                   "./srv:SV_ServiceIdentification | ./gmd:MD_DataIdentification | ./sds:SV_ServiceIdentification",
                                                                                    nsContextParseII ) );
             /*---------------------------------------------------------------
              * 
