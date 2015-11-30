@@ -112,6 +112,7 @@ import org.deegree.feature.persistence.sql.version.VersionParser;
 import org.deegree.feature.persistence.sql.version.VersionParser.VersionCode;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.EmptyFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.FilteredFeatureInputStream;
 import org.deegree.feature.stream.IteratorFeatureInputStream;
@@ -1031,7 +1032,10 @@ public class SQLFeatureStore implements FeatureStore {
                 idKernels.add( analysis );
             }
         } catch ( IllegalArgumentException e ) {
-            throw new FeatureStoreException( e.getMessage(), e );
+            LOG.warn( "No features are returned, as an error occurred during mapping of feature name to id: "
+                      + e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            return new EmptyFeatureInputStream();
         }
 
         if ( ftNameToIdAnalysis.size() != 1 ) {
