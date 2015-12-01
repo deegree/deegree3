@@ -72,6 +72,12 @@ public class OWSException extends Exception {
     public static final String INVALID_PARAMETER_VALUE = "InvalidParameterValue";
 
     /**
+     * A Transaction (see Clause 15) has attempted to insert or change the value of a data component in a way that
+     * violates the schema of the feature. (WFS 2.0.0, Table 3 - WFS exception codes)
+     */
+    public static final String INVALID_VALUE = "InvalidValue";
+
+    /**
      * the parameter value of the format parameter is invalid
      */
     public static final String INVALID_FORMAT = "InvalidFormat";

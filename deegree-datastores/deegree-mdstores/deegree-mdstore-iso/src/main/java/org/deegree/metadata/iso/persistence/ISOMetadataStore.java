@@ -188,6 +188,7 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
                 // TODO: namespace bindings configured by the user!?
                 NamespaceBindings namespaceContext = CommonNamespaces.getNamespaceContext();
                 namespaceContext.addNamespace( CSWConstants.SRV_PREFIX, CSWConstants.SRV_NS );
+                namespaceContext.addNamespace( CSWConstants.SDS_PREFIX, CSWConstants.SDS_NS );
                 XPath xpath = new XPath( qp.getXpath(), namespaceContext );
                 List<Name> name = qp.getName();
                 List<QName> names = new ArrayList<QName>();
@@ -314,11 +315,11 @@ public class ISOMetadataStore implements MetadataStore<ISORecord> {
     public ResourceMetadata<? extends Resource> getMetadata() {
         return metadata;
     }
-    
+
     private QueryService getReadOnlySqlService()
                             throws MetadataStoreException {
         ServiceManager serviceManager = ServiceManagerProvider.getInstance().getServiceManager();
         return serviceManager.getQueryService( dialect, queryables );
     }
-    
+
 }
