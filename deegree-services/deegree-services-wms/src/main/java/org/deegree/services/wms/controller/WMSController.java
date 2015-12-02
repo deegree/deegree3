@@ -534,6 +534,9 @@ public class WMSController extends AbstractOWS {
                 throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
                                         "layers" );
             }
+            if ( !service.isCrsSupported( lr.getName(), gm.getRequestCoordinateSystem() ) ) {
+                controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
+            }
         }
         for ( StyleRef sr : gm.getStyles() ) {
             // TODO check style availability here instead of the layer
