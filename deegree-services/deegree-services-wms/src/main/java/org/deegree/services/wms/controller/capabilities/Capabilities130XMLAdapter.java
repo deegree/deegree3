@@ -61,7 +61,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
@@ -208,18 +207,13 @@ public class Capabilities130XMLAdapter {
             writeElement( writer, WMSNS, "Title", "Root" );
 
             // TODO think about a push approach instead of a pull approach
-            LayerMetadata lmd = null;
+            SpatialMetadata smd = new SpatialMetadata( null, null );
             for ( Theme t : themes ) {
                 for ( org.deegree.layer.Layer l : Themes.getAllLayers( t ) ) {
-                    if ( lmd == null ) {
-                        lmd = l.getMetadata();
-                    } else {
-                        lmd.merge( l.getMetadata() );
-                    }
+                    smd.merge( l.getMetadata().getSpatialMetadata() );
                 }
             }
-            if ( lmd != null ) {
-                SpatialMetadata smd = lmd.getSpatialMetadata();
+            if ( smd != null ) {
                 writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
             }
 
