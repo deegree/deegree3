@@ -68,15 +68,13 @@ public interface FeatureType extends GMLObjectType {
      *            feature id, or null if the feature doesn't have an id
      * @param state
      *            the state of the feature, null if the feature doesn't have a state
-     * @param version
-     *            of this feature, -1 if not available
      * @param props
      *            properties
      * @param extraProps
      *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
      * @return a new <code>Feature</code> instance
      */
-    public Feature newFeature( String fid, FeatureState state, int version, List<Property> props, ExtraProps extraProps );
+    public Feature newFeature( String fid, FeatureState state, List<Property> props, ExtraProps extraProps );
 
     /**
      * Returns the {@link AppSchema} that this feature type belongs to.

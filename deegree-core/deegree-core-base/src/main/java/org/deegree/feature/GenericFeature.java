@@ -78,7 +78,7 @@ public class GenericFeature extends AbstractFeature {
      *            extra properties, may be <code>null</code>
      */
     public GenericFeature( FeatureType ft, String fid, List<Property> props, ExtraProps extraProps ) {
-        this( ft, fid, null, -1, props, extraProps );
+        this( ft, fid, null, props, extraProps );
     }
 
     /**
@@ -90,16 +90,13 @@ public class GenericFeature extends AbstractFeature {
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
      * @param state
      *            of this feature, <code>null</code> if not available
-     * @param version
-     *            of this feature, -1 if not available
      * @param props
      *            properties of the feature
      * @param extraProps
      *            extra properties, may be <code>null</code>
      */
-    public GenericFeature( FeatureType ft, String fid, FeatureState state, int version, List<Property> props,
-                           ExtraProps extraProps ) {
-        super( fid, state, version, ft, extraProps );
+    public GenericFeature( FeatureType ft, String fid, FeatureState state, List<Property> props, ExtraProps extraProps ) {
+        super( fid, state, ft, extraProps );
         this.props = new ArrayList<Property>( props );
     }
 
