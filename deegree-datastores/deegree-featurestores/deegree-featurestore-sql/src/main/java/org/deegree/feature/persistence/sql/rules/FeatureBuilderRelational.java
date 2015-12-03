@@ -73,6 +73,7 @@ import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
@@ -80,10 +81,12 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
@@ -188,6 +191,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         for ( Mapping mapping : ftMapping.getMappings() ) {
             addSelectColumns( mapping, qualifiedSqlExprToRsIdx, true );
         }
+        if ( ftMapping.getVersionMapping() != null ) {
+            addColumn( qualifiedSqlExprToRsIdx, "state" );
+            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "."
+                                                + ftMapping.getVersionMapping().getVersionColumn().getFirst().getName() );
+        }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
         return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
     }
@@ -269,6 +277,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 feature = (Feature) fs.getCache().get( gmlId );
             }
             if ( feature == null ) {
+                FeatureState state = retrieveState( rs );
+                int version = retrieveVersion( rs );
                 LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
@@ -277,6 +287,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     if ( childEl != null ) {
                         PropertyType pt = ft.getPropertyDeclaration( childEl );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
+                        if ( version > 0 )
+                            idPrefix += "_" + version;
                         addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
                         LOG.warn( "Omitting mapping '" + mapping
@@ -284,7 +296,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + " are currently supported." );
                     }
                 }
-                feature = ft.newFeature( gmlId, props, null );
+                feature = ft.newFeature( gmlId, state, version, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
                 }
@@ -296,6 +308,36 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             throw new SQLException( t.getMessage(), t );
         }
         return feature;
+    }
+
+    private FeatureState retrieveState( ResultSet rs )
+                            throws SQLException {
+        VersionMapping versionMapping = ftMapping.getVersionMapping();
+        if ( versionMapping != null ) {
+            int stateColumnIndex = qualifiedSqlExprToRsIdx.get( "state" );
+            String stateAsText = rs.getString( stateColumnIndex );
+            if ( stateAsText != null ) {
+                try {
+                    return FeatureState.valueOfByGmlName( stateAsText );
+                } catch ( IllegalArgumentException e ) {
+                }
+            }
+        }
+        return null;
+    }
+
+    private int retrieveVersion( ResultSet rs )
+                            throws SQLException {
+        VersionMapping versionMapping = ftMapping.getVersionMapping();
+        if ( versionMapping != null ) {
+            Pair<SQLIdentifier, PrimitiveType> versionColumn = versionMapping.getVersionColumn();
+            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "." + versionColumn.getFirst().getName() );
+            int version = rs.getInt( versionColumnIndex );
+            if ( version > 0 ) {
+                return version;
+            }
+        }
+        return -1;
     }
 
     private String toIdPrefix( ValueReference propName ) {

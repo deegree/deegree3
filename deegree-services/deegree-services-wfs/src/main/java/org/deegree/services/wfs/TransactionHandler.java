@@ -63,7 +63,6 @@ import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,6 +99,9 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
+import org.deegree.feature.persistence.version.DefaultResourceIdConverter;
+import org.deegree.feature.persistence.version.FeatureMetadata;
+import org.deegree.feature.persistence.version.ResourceIdConverter;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
@@ -156,6 +158,8 @@ class TransactionHandler {
     private final WfsFeatureStoreManager service;
 
     private final Transaction request;
+
+    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     private final Map<FeatureStore, FeatureStoreTransaction> acquiredTransactions = new HashMap<FeatureStore, FeatureStoreTransaction>();
 
@@ -403,9 +407,9 @@ class TransactionHandler {
                     mode = idGenMode;
                 }
             }
-            List<String> newFids = ta.performInsert( fc, mode );
-            for ( String newFid : newFids ) {
-                inserted.add( newFid, insert.getHandle() );
+            List<FeatureMetadata> newFeatureMetadatas = ta.performInsert( fc, mode );
+            for ( FeatureMetadata newFeatureMetadata : newFeatureMetadatas ) {
+                inserted.add( newFeatureMetadata, insert.getHandle() );
             }
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
@@ -542,8 +546,8 @@ class TransactionHandler {
         }
 
         try {
-            List<String> updatedFids = ta.performUpdate( ftName, replacementProps, filter, lock );
-            for ( String updatedFid : updatedFids ) {
+            List<FeatureMetadata> updatedFids = ta.performUpdate( ftName, replacementProps, filter, lock );
+            for ( FeatureMetadata updatedFid : updatedFids ) {
                 this.updated.add( updatedFid, update.getHandle() );
             }
         } catch ( FeatureStoreException e ) {
@@ -676,8 +680,8 @@ class TransactionHandler {
 
         FeatureStoreTransaction ta = acquireTransaction( fs );
         try {
-            String newFid = ta.performReplace( replacementFeature, filter, lock, idGenMode );
-            replaced.add( newFid, replace.getHandle() );
+            FeatureMetadata newFeatureMetadata = ta.performReplace( replacementFeature, filter, lock, idGenMode );
+            replaced.add( newFeatureMetadata, replace.getHandle() );
         } catch ( FeatureStoreException e ) {
             throw new OWSException( "Error performing replace: " + e.getMessage(), e, NO_APPLICABLE_CODE );
         }
@@ -714,21 +718,20 @@ class TransactionHandler {
             for ( String handle : inserted.getHandles() ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
                 writeHandle( xmlWriter, handle );
-                Collection<String> fids = inserted.getFids( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
+                for ( FeatureMetadata featureMetadata : inserted.getFids( handle ) ) {
+                    LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", fid );
+                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
             }
             if ( !inserted.getFidsWithoutHandle().isEmpty() ) {
                 xmlWriter.writeStartElement( "wfs", "InsertResult", WFS_NS );
-                for ( String fid : inserted.getFidsWithoutHandle() ) {
-                    LOG.debug( "Inserted fid: " + fid );
+                for ( FeatureMetadata featureMetadata : inserted.getFidsWithoutHandle() ) {
+                    LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( "ogc", "FeatureId", OGCNS );
-                    xmlWriter.writeAttribute( "fid", fid );
+                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                 }
                 xmlWriter.writeEndElement();
@@ -781,22 +784,21 @@ class TransactionHandler {
         if ( inserted.getTotal() > 0 ) {
             xmlWriter.writeStartElement( WFS_NS, "InsertResults" );
             for ( String handle : inserted.getHandles() ) {
-                Collection<String> fids = inserted.getFids( handle );
-                for ( String fid : fids ) {
-                    LOG.debug( "Inserted fid: " + fid );
+                for ( FeatureMetadata featureMetadata : inserted.getFids( handle ) ) {
+                    LOG.debug( "Inserted fid: " + featureMetadata );
                     xmlWriter.writeStartElement( WFS_NS, "Feature" );
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                    xmlWriter.writeAttribute( "fid", fid );
+                    xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
             }
-            for ( String fid : inserted.getFidsWithoutHandle() ) {
-                LOG.debug( "Inserted fid: " + fid );
+            for ( FeatureMetadata featureMetadata : inserted.getFidsWithoutHandle() ) {
+                LOG.debug( "Inserted fid: " + featureMetadata );
                 xmlWriter.writeStartElement( WFS_NS, "Feature" );
                 xmlWriter.writeStartElement( OGCNS, "FeatureId" );
-                xmlWriter.writeAttribute( "fid", fid );
+                xmlWriter.writeAttribute( "fid", createdRid( featureMetadata ) );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
@@ -843,21 +845,20 @@ class TransactionHandler {
         if ( results.getTotal() > 0 ) {
             xmlWriter.writeStartElement( WFS_200_NS, elName );
             for ( String handle : results.getHandles() ) {
-                Collection<String> fids = results.getFids( handle );
-                for ( String fid : fids ) {
+                for ( FeatureMetadata featureMetadata : results.getFids( handle ) ) {
                     xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                     xmlWriter.writeAttribute( "handle", handle );
                     xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                    xmlWriter.writeAttribute( "rid", fid );
+                    xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
             }
 
-            for ( String fid : results.getFidsWithoutHandle() ) {
+            for ( FeatureMetadata featureMetadata : results.getFidsWithoutHandle() ) {
                 xmlWriter.writeStartElement( WFS_200_NS, "Feature" );
                 xmlWriter.writeStartElement( FES_20_NS, "ResourceId" );
-                xmlWriter.writeAttribute( "rid", fid );
+                xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }
@@ -892,5 +893,9 @@ class TransactionHandler {
             }
         }
         return gmlVersion;
+    }
+
+    private String createdRid( FeatureMetadata featureMetadata ) {
+        return resourceIdConverter.generateResourceId( featureMetadata );
     }
 }

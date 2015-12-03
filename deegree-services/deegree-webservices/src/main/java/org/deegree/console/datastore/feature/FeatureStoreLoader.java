@@ -54,6 +54,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -127,7 +128,7 @@ public class FeatureStoreLoader implements Serializable {
 
     public void importData()
                             throws Throwable {
-        List<String> fids = null;
+        List<FeatureMetadata> fids = null;
         FeatureStoreTransaction ta = null;
         try {
             GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( gmlVersion, new URL( url ) );

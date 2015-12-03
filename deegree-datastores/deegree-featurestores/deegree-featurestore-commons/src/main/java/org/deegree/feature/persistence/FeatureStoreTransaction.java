@@ -42,6 +42,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.Lock;
+import org.deegree.feature.persistence.version.FeatureMetadata;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
@@ -97,11 +98,12 @@ public interface FeatureStoreTransaction {
      *            features to be inserted, must not be <code>null</code>
      * @param mode
      *            mode for deriving the ids of the inserted objects, must not be <code>null</code>
-     * @return effective ids of the inserted feature and subfeatures (in document order)
+     * @return effective {@link FeatureMetadata}s (containing at least the id) of the inserted feature and subfeatures
+     *         (in document order)
      * @throws FeatureStoreException
      *             if the insertion fails
      */
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<FeatureMetadata> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException;
 
     /**
@@ -115,12 +117,13 @@ public interface FeatureStoreTransaction {
      *            selects the feature instances that are to be updated, must not be <code>null</code>
      * @param lock
      *            optional lock object, may be <code>null</code>
-     * @return ids of updated feature instances, never <code>null</code>
+     * @return {@link FeatureMetadata}s (containing at least the id) of updated feature instances, never
+     *         <code>null</code>
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
-                                       Lock lock )
+    public List<FeatureMetadata> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                Filter filter, Lock lock )
                             throws FeatureStoreException;
 
     /**
@@ -134,11 +137,11 @@ public interface FeatureStoreTransaction {
      *            optional lock object, may be <code>null</code>
      * @param idGenMode
      *            never <code>null</code>
-     * @return identifier of the replaced feature, can be <code>null</code> (filter didn't match)
+     * @return {@link FeatureMetadata} of the replaced feature, can be <code>null</code> (filter didn't match)
      * @throws FeatureStoreException
      *             if the replace fails
      */
-    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
+    public FeatureMetadata performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException;
 
     /**

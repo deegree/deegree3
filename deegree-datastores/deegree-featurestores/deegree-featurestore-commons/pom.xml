@@ -54,5 +54,10 @@
       <artifactId>deegree-sqldialect-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!--  Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
   </dependencies>
 </project>
