@@ -504,6 +504,9 @@ public class WMSController extends AbstractOWS {
                 throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
                                         "layers" );
             }
+            if ( !service.isCrsSupported( lr.getName(), gfi.getRequestCoordinateSystem() ) ) {
+                controllers.get( version ).throwSRSException( gfi.getRequestCoordinateSystem().getAlias() );
+            }
         }
         for ( StyleRef sr : gfi.getStyles() ) {
             // TODO check style availability
@@ -535,7 +538,7 @@ public class WMSController extends AbstractOWS {
                                         "layers" );
             }
             if ( !service.isCrsSupported( lr.getName(), gm.getRequestCoordinateSystem() ) ) {
-                controllers.get( version ).throwSRSException( gm.getCoordinateSystem().getAlias() );
+                controllers.get( version ).throwSRSException( gm.getRequestCoordinateSystem().getAlias() );
             }
         }
         for ( StyleRef sr : gm.getStyles() ) {
