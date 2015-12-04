@@ -35,10 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.metadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.SimpleGeometryFactory;
+import org.deegree.geometry.primitive.Point;
 
 /**
  * 
@@ -48,6 +51,8 @@ import org.deegree.geometry.Envelope;
  * @version $Revision: $, $Date: $
  */
 public class SpatialMetadata {
+
+    private static final SimpleGeometryFactory GEOM_FACTORY = new SimpleGeometryFactory();
 
     private Envelope envelope;
 
@@ -60,6 +65,15 @@ public class SpatialMetadata {
     public SpatialMetadata( Envelope envelope, List<ICRS> coordinateSystems ) {
         this.envelope = envelope;
         this.coordinateSystems = coordinateSystems;
+    }
+
+    public SpatialMetadata( SpatialMetadata spatialMetadata ) {
+        if ( spatialMetadata != null ) {
+            this.envelope = copyEnvelope( spatialMetadata.envelope );
+            this.coordinateSystems = new ArrayList<ICRS>();
+            if ( spatialMetadata.coordinateSystems != null )
+                this.coordinateSystems.addAll( spatialMetadata.coordinateSystems );
+        }
     }
 
     /**
@@ -90,6 +104,53 @@ public class SpatialMetadata {
      */
     public void setCoordinateSystems( List<ICRS> coordinateSystems ) {
         this.coordinateSystems = coordinateSystems;
+    }
+
+    /**
+     * Merge the passed SpatialMetadata into this SpatialMetadata and returns the merged SpatialMetadata, this and the
+     * passed are not changed!
+     * 
+     * @param spatialMetadataToMerge
+     *            SpatialMetadata to merge, may be <code>null</code>
+     */
+    public SpatialMetadata merge( SpatialMetadata spatialMetadataToMerge ) {
+        if ( spatialMetadataToMerge == null )
+            return new SpatialMetadata( this );
+
+        List<ICRS> newCoordinateSystems = new ArrayList<ICRS>();
+        if ( this.coordinateSystems != null ) {
+            newCoordinateSystems.addAll( this.coordinateSystems );
+        }
+        if ( spatialMetadataToMerge.getCoordinateSystems() != null ) {
+            for ( ICRS crsToMerge : spatialMetadataToMerge.getCoordinateSystems() ) {
+                if ( !newCoordinateSystems.contains( crsToMerge ) ) {
+                    newCoordinateSystems.add( crsToMerge );
+                }
+            }
+        }
+        Envelope newEnvelope = copyEnvelope( this.envelope );
+        if ( spatialMetadataToMerge.getEnvelope() != null ) {
+            if ( newEnvelope == null )
+                newEnvelope = copyEnvelope( spatialMetadataToMerge.getEnvelope() );
+            else
+                newEnvelope = newEnvelope.merge( spatialMetadataToMerge.getEnvelope() );
+        }
+        return new SpatialMetadata( newEnvelope, newCoordinateSystems );
+    }
+
+    @Override
+    public String toString() {
+        return "SpatialMetadata [envelope=" + envelope + ", coordinateSystems=" + coordinateSystems + "]";
+    }
+
+    private Envelope copyEnvelope( Envelope envelopeToCopy ) {
+        if ( envelopeToCopy != null ) {
+            Point min = envelopeToCopy.getMin();
+            Point max = envelopeToCopy.getMax();
+            ICRS crs = envelopeToCopy.getCoordinateSystem();
+            return GEOM_FACTORY.createEnvelope( min.get0(), min.get1(), max.get0(), max.get1(), crs );
+        }
+        return null;
     }
 
 }
