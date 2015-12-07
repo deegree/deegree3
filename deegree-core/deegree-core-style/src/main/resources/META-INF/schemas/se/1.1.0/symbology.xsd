@@ -96,5 +96,15 @@
       </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:complexType name="OnlineResourceType">
+      <xsd:complexContent>
+        <xsd:extension base="OnlineResourceType">
+          <xsd:sequence>
+            <xsd:element ref="ogc:expression" minOccurs="0" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
   </xsd:redefine>
 </xsd:schema>

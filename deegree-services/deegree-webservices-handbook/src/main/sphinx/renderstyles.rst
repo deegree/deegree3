@@ -280,7 +280,7 @@ Including an SVG graphic within a mark might look like this:
      <Size>10</Size>
       ...
     </Graphic>
-
+    
 ----
 Size
 ----
@@ -664,10 +664,6 @@ text rendering along lines:
 | WordWise              | Boolean    | true    | Tries to place individual words instead of individual characters| 
 +-----------------------+------------+---------+-----------------------------------------------------------------+
 
-^^^^^^^
-Example
-^^^^^^^ 
-
 .. code-block:: xml
 
     <LinePlacement>
@@ -677,7 +673,22 @@ Example
 	    <Center>true</Center>
 	    <WordWise>false</WordWise>
     </LinePlacement>
+  
+--------------------------
+ExternalGraphic extensions
+--------------------------
 
+deegree extends the OnlineResource element of ExternalGraphics to support ogc:Expressions as child elements. Example:
+
+.. code-block:: xml
+
+      <ExternalGraphic>
+        <OnlineResource>
+            <ogc:PropertyName>app:icon</ogc:PropertyName>
+        </OnlineResource>
+        <Format>image/svg</Format>
+      </ExternalGraphic> 
+      
 __________________________
 SE & FE Functions
 __________________________
