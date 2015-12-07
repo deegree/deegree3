@@ -211,7 +211,7 @@ abstract class AbstractGmlRequestHandler {
                                        GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
-        if ( gmlStream.getReferenceResolveStrategy().isObjectExported( member.getId(), member.getVersion() ) ) {
+        if ( gmlStream.getReferenceResolveStrategy().isObjectExported( member.getId() ) ) {
             xmlStream.writeEmptyElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
             if ( xmlStream.getPrefix( XLNNS ) == null ) {
                 xmlStream.setPrefix( "xlink", XLNNS );

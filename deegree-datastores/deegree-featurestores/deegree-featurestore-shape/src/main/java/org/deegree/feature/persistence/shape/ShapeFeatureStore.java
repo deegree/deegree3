@@ -111,13 +111,13 @@ import org.slf4j.Logger;
 
 /**
  * {@link FeatureStore} implementation that uses shape files as backend.
- * 
+ *
  * @see FeatureStore
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 @LoggingNotes(trace = "logs stack traces", debug = "logs information about reading the files, which srs etc.", warn = "logs reasons for not setting up the store", error = "logs grave errors that were not forseen to happen")
@@ -163,7 +163,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
-     * 
+     *
      * @param shpName
      *            name of the shape file to be loaded, may omit the ".shp" extension, must not be <code>null</code
      * @param crs
@@ -484,7 +484,7 @@ public class ShapeFeatureStore implements FeatureStore {
             // add geometry property
             Geometry g = shp.readGeometry( recNumAndPos.second );
             props.add( new GenericProperty( ft.getDefaultGeometryPropertyDeclaration(), g ) );
-            feature = ft.newFeature( fid, null, -1, props, null );
+            feature = ft.newFeature( fid, null, props, null );
 
             cache.add( feature );
         } else {
@@ -590,7 +590,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     /**
      * Returns the CRS used by the shape file.
-     * 
+     *
      * @return the CRS used by the shape file, never <code>null</code>
      */
     public ICRS getStorageCRS() {

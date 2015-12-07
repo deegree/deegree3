@@ -496,7 +496,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         setSchema( feature );
 
         if ( feature.getId() != null ) {
-            referenceExportStrategy.addExportedId( feature.getId(), feature.getVersion() );
+            referenceExportStrategy.addExportedId( feature.getId() );
         }
         if ( feature instanceof GenericFeatureCollection ) {
             LOG.debug( "Exporting generic feature collection." );
@@ -656,7 +656,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void exportEmptyProperty( final QName propName, final Map<QName,PrimitiveValue> attrs)
+    private void exportEmptyProperty( final QName propName, final Map<QName, PrimitiveValue> attrs )
                             throws XMLStreamException {
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
         writeAttributes( attrs );
@@ -741,7 +741,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
 
         writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
-        writeAttributes (xmlContent.getAttributes());
+        writeAttributes( xmlContent.getAttributes() );
         if ( xmlContent.getChildren() != null ) {
             for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
                 export( childNode, resolveState );
