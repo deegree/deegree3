@@ -58,6 +58,7 @@ import java.util.Map;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.LayerRef;
@@ -78,6 +79,8 @@ public class GetFeatureInfo extends RequestBase {
     private static final Logger LOG = getLogger( GetFeatureInfo.class );
 
     private static final GeometryFactory fac = new GeometryFactory();
+
+    private ICRS requestCrs;
 
     private ICRS crs;
 
@@ -128,6 +131,7 @@ public class GetFeatureInfo extends RequestBase {
         this.x = x;
         this.y = y;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.featureCount = featureCount;
         scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
@@ -144,6 +148,7 @@ public class GetFeatureInfo extends RequestBase {
         this.x = x;
         this.y = y;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.featureCount = featureCount;
         this.infoFormat = infoFormat;
@@ -160,8 +165,8 @@ public class GetFeatureInfo extends RequestBase {
         if ( c == null || c.trim().isEmpty() ) {
             throw new OWSException( "The SRS parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
+        requestCrs = CRSManager.getCRSRef( c );
         crs = GetMap.getCRS111( c );
-
         bbox = fac.createEnvelope( new double[] { vals[0], vals[1] }, new double[] { vals[2], vals[3] }, crs );
 
         String xs = map.get( "X" );
@@ -194,6 +199,7 @@ public class GetFeatureInfo extends RequestBase {
             throw new OWSException( "The CRS parameter is missing.", MISSING_PARAMETER_VALUE );
         }
 
+        requestCrs = CRSManager.getCRSRef( c );
         bbox = GetMap.getCRSAndEnvelope130( c, vals );
         crs = bbox.getCoordinateSystem();
 
@@ -361,6 +367,13 @@ public class GetFeatureInfo extends RequestBase {
      */
     public ICRS getCoordinateSystem() {
         return crs;
+    }
+
+    /**
+     * @return the requested coordinate system
+     */
+    public ICRS getRequestCoordinateSystem() {
+        return requestCrs;
     }
 
     /**
