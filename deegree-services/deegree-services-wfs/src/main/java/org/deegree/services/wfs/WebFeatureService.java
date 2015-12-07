@@ -125,6 +125,7 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.kvp.DescribeFeatureTypeKVPAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.xml.DescribeFeatureTypeXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.kvp.GetFeatureKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.xml.GetFeatureXMLAdapter;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
@@ -896,6 +897,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                checkGetFeatureWithLockRequest( getFeatureWithLock );
                 updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
@@ -1389,6 +1391,11 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    private void checkGetFeatureWithLockRequest( GetFeatureWithLock getFeatureWithLock ) {
+        if ( getFeatureWithLock.getPresentationParams().getResultType() == ResultType.HITS )
+            throw new InvalidParameterValueException( "ResultType 'hits' is not specified in GetFeatureWithLock requests!" );
     }
 
 }
