@@ -264,19 +264,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
         Feature feature = null;
         try {
-            String gmlId = ftMapping.getFidMapping().getPrefix();
-            List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
-            gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
-            for ( int i = 1; i < fidColumns.size(); i++ ) {
-                gmlId += ftMapping.getFidMapping().getDelimiter()
-                         + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
-            }
+            int version = retrieveVersion( rs );
+            String gmlId = buildGmlId( rs, version );
             if ( fs.getCache() != null ) {
                 feature = (Feature) fs.getCache().get( gmlId );
             }
             if ( feature == null ) {
                 FeatureState state = retrieveState( rs );
-                int version = retrieveVersion( rs );
                 LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
@@ -285,8 +279,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     if ( childEl != null ) {
                         PropertyType pt = ft.getPropertyDeclaration( childEl );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
-                        if ( version > 0 )
-                            idPrefix += "_" + version;
                         addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
                         LOG.warn( "Omitting mapping '" + mapping
@@ -294,7 +286,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + " are currently supported." );
                     }
                 }
-                feature = ft.newFeature( gmlId, state, version, props, null );
+                feature = ft.newFeature( gmlId, state, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
                 }
@@ -306,6 +298,21 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             throw new SQLException( t.getMessage(), t );
         }
         return feature;
+    }
+
+    private String buildGmlId( ResultSet rs, int version )
+                            throws SQLException {
+        String gmlId = ftMapping.getFidMapping().getPrefix();
+        List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
+        gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
+        for ( int i = 1; i < fidColumns.size(); i++ ) {
+            gmlId += ftMapping.getFidMapping().getDelimiter()
+                     + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
+        }
+
+        if ( version > 0 )
+            gmlId += "_" + version;
+        return gmlId;
     }
 
     private FeatureState retrieveState( ResultSet rs )

@@ -79,8 +79,6 @@ public abstract class AbstractFeature implements Feature {
 
     private final FeatureState state;
 
-    private final int version;
-
     /**
      * Creates a new {@link AbstractFeature} instance.
      *
@@ -88,17 +86,14 @@ public abstract class AbstractFeature implements Feature {
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
      * @param state
      *            of the feature or <code>null</code> if not available
-     * @param version
-     *            of this feature, -1 if not available
      * @param ft
      *            feature type, must not be <code>null</code>
      * @param extraProps
      *            extra properties, may be <code>null</code>
      */
-    protected AbstractFeature( String fid, FeatureState state, int version, FeatureType ft, ExtraProps extraProps ) {
+    protected AbstractFeature( String fid, FeatureState state, FeatureType ft, ExtraProps extraProps ) {
         this.fid = fid;
         this.state = state;
-        this.version = version;
         this.ft = ft;
         this.extraProps = extraProps;
     }
@@ -242,11 +237,6 @@ public abstract class AbstractFeature implements Feature {
     @Override
     public FeatureState getState() {
         return state;
-    }
-
-    @Override
-    public int getVersion() {
-        return version;
     }
 
 }

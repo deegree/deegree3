@@ -145,9 +145,4 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
         return getReferencedObject().getState();
     }
 
-    @Override
-    public int getVersion() {
-        return getReferencedObject().getVersion();
-    }
-
 }
