@@ -59,6 +59,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -125,7 +126,6 @@ import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.describefeaturetype.kvp.DescribeFeatureTypeKVPAdapter;
 import org.deegree.protocol.wfs.describefeaturetype.xml.DescribeFeatureTypeXMLAdapter;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
-import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.kvp.GetFeatureKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.xml.GetFeatureXMLAdapter;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
@@ -897,7 +897,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
-                checkGetFeatureWithLockRequest( getFeatureWithLock );
+                checkGetFeatureWithLockRequest( requestVersion, getFeatureWithLock );
                 updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
@@ -1393,9 +1393,11 @@ public class WebFeatureService extends AbstractOWS {
         return version;
     }
 
-    private void checkGetFeatureWithLockRequest( GetFeatureWithLock getFeatureWithLock ) {
-        if ( getFeatureWithLock.getPresentationParams().getResultType() == ResultType.HITS )
-            throw new InvalidParameterValueException( "ResultType 'hits' is not specified in GetFeatureWithLock requests!" );
+    private void checkGetFeatureWithLockRequest( Version requestVersion, GetFeatureWithLock getFeatureWithLock ) {
+        if ( VERSION_200.equals( requestVersion )
+             && HITS.equals( getFeatureWithLock.getPresentationParams().getResultType() ) )
+            throw new InvalidParameterValueException(
+                                                      "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
 
 }
