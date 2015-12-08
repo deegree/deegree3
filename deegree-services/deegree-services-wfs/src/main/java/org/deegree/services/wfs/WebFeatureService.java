@@ -794,6 +794,12 @@ public class WebFeatureService extends AbstractOWS {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, e, response );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
