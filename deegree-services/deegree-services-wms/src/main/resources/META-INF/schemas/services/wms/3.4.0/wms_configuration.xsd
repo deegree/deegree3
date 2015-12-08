@@ -21,7 +21,7 @@
             </sequence>
           </complexType>
         </element>
-        <element name="CapabilitiesVersion" type="integer" minOccurs="0" />
+        <element name="UpdateSequence" type="integer" minOccurs="0" />
         <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
         <element name="MetadataStoreId" type="string" minOccurs="0" />
         <!-- if set, this template will be used for generating MetadataURL elements for layers (default is to use an internal 
