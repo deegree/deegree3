@@ -59,6 +59,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -906,6 +907,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                checkGetFeatureWithLockRequest( requestVersion, getFeatureWithLock );
                 updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
@@ -1410,6 +1412,13 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    private void checkGetFeatureWithLockRequest( Version requestVersion, GetFeatureWithLock getFeatureWithLock ) {
+        if ( VERSION_200.equals( requestVersion )
+             && HITS.equals( getFeatureWithLock.getPresentationParams().getResultType() ) )
+            throw new InvalidParameterValueException(
+                                                      "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
 
 }
