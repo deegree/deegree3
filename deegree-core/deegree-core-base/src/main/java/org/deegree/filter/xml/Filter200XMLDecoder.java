@@ -71,6 +71,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
@@ -789,6 +790,7 @@ public class Filter200XMLDecoder {
         while ( xmlStream.next() != END_ELEMENT ) {
             int eventType = xmlStream.getEventType();
             if ( eventType == START_ELEMENT ) {
+                checkIfCurrentStartElementIsGmlGeometry( xmlStream );
                 children.add( parseElement( xmlStream ) );
             } else if ( eventType == CHARACTERS || eventType == CDATA ) {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
@@ -1173,6 +1175,17 @@ public class Filter200XMLDecoder {
         } catch ( Throwable t ) {
             t.printStackTrace();
             throw new XMLParsingException( xmlStream, t.getMessage() );
+        }
+    }
+
+    private static void checkIfCurrentStartElementIsGmlGeometry( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        String ns = xmlStream.getNamespaceURI();
+        if ( CommonNamespaces.GMLNS.equals( ns ) || CommonNamespaces.GML3_2_NS.equals( ns ) ) {
+            GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName(), xmlStream );
+            boolean isGeometryElement = gmlReader.isGeometryOrEnvelopeElement( xmlStream );
+            if ( isGeometryElement )
+                throw new XMLParsingException( xmlStream, "Geometry elements as Literal child are not supported!" );
         }
     }
 
