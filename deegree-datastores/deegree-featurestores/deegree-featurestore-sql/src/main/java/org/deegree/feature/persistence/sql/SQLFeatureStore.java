@@ -1740,8 +1740,9 @@ public class SQLFeatureStore implements FeatureStore {
             if ( ftMapping.getVersionMapping() != null ) {
                 versionSubQueryAlias = wb.getAliasManager().generateNew();
                 String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
+                String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
                 sql.append( ", (SELECT " );
-                appendSelectFidColumns( ftMapping.getFidMapping(), sql );
+                sql.append( versionColumn );
                 sql.append( ", CASE WHEN " );
                 sql.append( actionColumn );
                 sql.append( " = 'delete' THEN 'retired' ELSE 'valid' END state " );
@@ -1775,17 +1776,10 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( " AND " );
                 else
                     sql.append( " WHERE " );
-                boolean first = true;
-                for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-                    if ( !first )
-                        sql.append( " AND " );
-                    String columnName = fidColumn.first.getName();
-                    sql.append( ftTableAlias ).append( '.' ).append( columnName );
-                    sql.append( '=' );
-                    sql.append( versionSubQueryAlias ).append( '.' ).append( columnName );
-                    first = false;
-                }
-                // where X1.id = s.id;
+                String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
+                sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
+                sql.append( '=' );
+                sql.append( versionSubQueryAlias ).append( '.' ).append( versionColumn );
             }
             if ( wb.getOrderBy() != null ) {
                 sql.append( " ORDER BY " );
