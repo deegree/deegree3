@@ -378,6 +378,8 @@ The following table shows what top level options are available.
 +==========================+==============+=========+==============================================================================+
 | SupportedVersions        | 0..1         | Complex | Limits active OGC protocol versions                                          |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| UpdateSequence           | 0..1         | Integer | Current update sequence, default: 0                                          |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | MetadataStoreId          | 0..1         | String  | Configures a metadata store to check if metadata ids for layers exist        |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | MetadataURLTemplate      | 0..1         | String  | Template for generating URLs to feature type metadata                        |
