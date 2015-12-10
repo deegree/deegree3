@@ -146,7 +146,7 @@ public class Capabilities130XMLAdapter {
         writer.setDefaultNamespace( WMSNS );
         writer.writeStartElement( WMSNS, "WMS_Capabilities" );
         writer.writeAttribute( "version", "1.3.0" );
-        writer.writeAttribute( "updateSequence", "" + service.updateSequence );
+        writer.writeAttribute( "updateSequence", "" + service.getCurrentUpdateSequence() );
         writer.writeDefaultNamespace( WMSNS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeNamespace( "xlink", XLNNS );

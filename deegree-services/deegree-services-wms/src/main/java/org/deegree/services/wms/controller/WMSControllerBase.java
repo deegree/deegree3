@@ -103,11 +103,11 @@ public abstract class WMSControllerBase implements Controller {
         if ( updateSequence != null && updateSequence.trim().length() > 0 ) {
             try {
                 int seq = parseInt( updateSequence );
-                if ( seq > service.updateSequence ) {
+                if ( seq > service.getCurrentUpdateSequence() ) {
                     throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ),
                                             OWSException.INVALID_UPDATE_SEQUENCE );
                 }
-                if ( seq == service.updateSequence ) {
+                if ( seq == service.getCurrentUpdateSequence() ) {
                     throw new OWSException( get( "WMS.CURRENT_UPDATE_SEQUENCE" ), OWSException.CURRENT_UPDATE_SEQUENCE );
                 }
             } catch ( NumberFormatException e ) {
