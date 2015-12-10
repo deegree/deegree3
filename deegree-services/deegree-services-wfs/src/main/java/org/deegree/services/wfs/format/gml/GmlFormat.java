@@ -116,7 +116,7 @@ public class GmlFormat implements Format {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
                                              master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false,
-                                             null, null );
+                                             null, null, master.isEnableResponsePaging() );
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
@@ -203,7 +203,8 @@ public class GmlFormat implements Format {
         this.options = new GmlFormatOptions( gmlVersion, responseContainerEl, responseFeatureMemberEl, schemaLocation,
                                              disableStreaming, generateBoundedByForFeatures, queryMaxFeatures,
                                              checkAreaOfUse, formatter, appSchemaBaseURL, mimeType,
-                                             exportOriginalSchema, geometrySimplifier, prebindNamespaces );
+                                             exportOriginalSchema, geometrySimplifier, prebindNamespaces,
+                                             master.isEnableResponsePaging() );
 
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );

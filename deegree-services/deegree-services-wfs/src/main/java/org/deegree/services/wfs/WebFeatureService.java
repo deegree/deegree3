@@ -250,6 +250,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean checkAreaOfUse;
 
+    private boolean enableResponsePaging;
+
     private OWSMetadataProvider mdProvider;
 
     public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
@@ -280,6 +282,8 @@ public class WebFeatureService extends AbstractOWS {
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
         resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
+        enableResponsePaging = jaxbConfig.isEnableResponsePaging() == null ? false
+                                                                          : jaxbConfig.isEnableResponsePaging();
 
         service = new WfsFeatureStoreManager();
         try {
@@ -1357,6 +1361,13 @@ public class WebFeatureService extends AbstractOWS {
 
     public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
+    }
+
+    /**
+     * @return <code>true</code> if response paging is enabled by configuration, <code>false</code> otherwise
+     */
+    public boolean isEnableResponsePaging() {
+        return enableResponsePaging;
     }
 
     /**
