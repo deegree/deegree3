@@ -407,6 +407,14 @@ class TransactionHandler {
             for ( String newFid : newFids ) {
                 inserted.add( newFid, insert.getHandle() );
             }
+        } catch ( XMLParsingException e ) {
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( request.getVersion() ) ) {
+                exceptionCode = OWSException.INVALID_VALUE;
+            }
+            LOG.debug( e.getMessage(), e );
+            String msg = "Cannot perform insert operation: " + e.getMessage();
+            throw new OWSException( msg, exceptionCode );
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
             String msg = "Cannot perform insert operation: " + e.getMessage();
