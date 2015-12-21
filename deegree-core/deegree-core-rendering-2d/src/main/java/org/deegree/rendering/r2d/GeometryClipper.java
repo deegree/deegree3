@@ -103,6 +103,10 @@ class GeometryClipper {
                 if ( jtsOrig == jtsClipped ) {
                     return geom;
                 }
+                if ( isInvertedOrientation( jtsOrig ) ) {
+                    return clippedGeometry;
+                }
+                
                 return fixOrientation( clippedGeometry, clippedGeometry.getCoordinateSystem() );
             } catch ( UnsupportedOperationException e ) {
                 // use original geometry if intersection not supported by JTS
@@ -110,6 +114,44 @@ class GeometryClipper {
             }
         }
         return geom;
+    }
+    
+    /**
+     * Check if the passed Geometry is a Polygon (or the first Geometry of a Collection) and the exterior Ring has CW orientation  
+     * 
+     * This helper is only a workaround to render polygons in CW/CCW order in the same manner clipped as unclipped
+     * 
+     * TODO This should be resolved in a more universal way, see https://github.com/deegree/deegree3/issues/645
+     * 
+     * @param   jtsGeom   JTS Geometry to be evaluated
+     * @return  boolean   true if (first) Geometry is Polygon with CW external ring, false otherwise
+     */
+    private boolean isInvertedOrientation( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
+        com.vividsolutions.jts.geom.Polygon poly = null;
+        try {
+            if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection && //
+                 ( (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom ).getNumGeometries() > 0 ) {
+                com.vividsolutions.jts.geom.Geometry firstGeom;
+                firstGeom = ( (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom ).getGeometryN( 0 );
+                if ( firstGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
+                    poly = (com.vividsolutions.jts.geom.Polygon) firstGeom;
+                }
+            } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
+                poly = (com.vividsolutions.jts.geom.Polygon) jtsGeom;
+            }
+        
+            //TRICKY check if polygon exterior is CW
+            if ( poly != null ) {
+                com.vividsolutions.jts.geom.Coordinate[] coords = poly.getExteriorRing().getCoordinates();
+                if ( !com.vividsolutions.jts.algorithm.CGAlgorithms.isCCW( coords ) ) {
+                    return true;
+                }
+            }
+        } catch ( Exception ign ) {
+            // treat as not affected
+        }
+        
+        return false;
     }
 
     public static boolean isGenerationExpensive( PolygonStyling styling ) {
