@@ -80,7 +80,7 @@ public class GetLegendGraphic {
         }
         this.layer = new LayerRef( layer );
         String s = map.get( "STYLE" );
-        if ( s == null ) {
+        if ( s == null || "".equals( s )) {
             s = "default";
         }
         this.style = new StyleRef( s );
