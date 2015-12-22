@@ -37,6 +37,7 @@
 package org.deegree.rendering.r2d;
 
 import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
+import static org.deegree.rendering.r2d.GeometryClipper.isGenerationExpensive;
 import static org.deegree.rendering.r2d.RenderHelper.calculateResolution;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -176,7 +177,7 @@ public class Java2DRenderer implements Renderer {
             return;
         }
         Geometry renderGeometry = null;
-        if ( isPathGenerationExpensive( styling ) ) {
+        if ( isGenerationExpensive( styling ) ) {
             renderGeometry = transformToWorldCrsAndClip( geom );
             if ( renderGeometry == null ) {
                 return;
@@ -198,10 +199,6 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    private boolean isPathGenerationExpensive( LineStyling styling ) {
-        return styling.stroke != null && styling.stroke.stroke != null;
-    }
-
     @Override
     public void render( final PolygonStyling styling, final Geometry geom ) {
         if ( geom == null ) {
@@ -214,8 +211,8 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render line with polygon styling." );
         }
         Geometry renderGeometry = null;
-        if ( isPathGenerationExpensive( styling ) ) {
-            renderGeometry = transformToWorldCrsAndClip( renderGeometry );
+        if ( isGenerationExpensive( styling ) ) {
+            renderGeometry = transformToWorldCrsAndClip( geom );
             if ( renderGeometry == null ) {
                 return;
             }
@@ -233,10 +230,6 @@ public class Java2DRenderer implements Renderer {
                 render( styling, g );
             }
         }
-    }
-
-    private boolean isPathGenerationExpensive( PolygonStyling styling ) {
-        return styling.stroke != null && styling.stroke.stroke != null;
     }
 
     @Override
@@ -275,6 +268,10 @@ public class Java2DRenderer implements Renderer {
 
     Geometry transformToWorldCrsAndClip( final Geometry geom ) {
         final Geometry geomInWorldCrs = rendererContext.geomHelper.transform( geom );
+        if ( rendererContext.clipper == null ) {
+            LOG.warn( "No clipper defined, geometry will be ignored for rendering" );
+            return null;
+        }
         return rendererContext.clipper.clipGeometry( geomInWorldCrs );
     }
 
