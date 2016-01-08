@@ -44,6 +44,7 @@ package org.deegree.sqldialect.oracle;
 
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -53,6 +54,8 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
@@ -75,6 +78,7 @@ import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+import org.deegree.sqldialect.filter.islike.IsLikeString;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Oracle Spatial databases.
@@ -114,6 +118,47 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
         super( dialect, mapper, filter, sortCrit );
         this.databaseMajorVersion = databaseMajorVersion;
         build( allowPartialMappings );
+    }
+
+    @Override
+    protected SQLOperation toProtoSQL( PropertyIsLike op )
+            throws UnmappableException, FilterEvaluationException {
+
+        if ( !( op.getPattern() instanceof Literal ) ) {
+            String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
+            throw new UnsupportedOperationException( msg );
+        }
+
+        String literal = ( (Literal) op.getPattern() ).getValue().toString();
+        String escape = "" + op.getEscapeChar();
+        String wildCard = "" + op.getWildCard();
+        String singleChar = "" + op.getSingleChar();
+
+        SQLExpression propName = toProtoSQL( op.getExpression() );
+
+        IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
+        String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
+
+        if ( propName.isMultiValued() ) {
+            // TODO escaping of pipe symbols
+            //sqlEncoded = "%|" + sqlEncoded + "|%";
+        }
+
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+        if ( !op.isMatchCase() ) {
+            //builder.add( "LOWER (" + propName + ")" );
+        } else {
+            builder.add( propName );
+        }
+        builder.add( " CONTAINS ( " );
+        PrimitiveType pt = new PrimitiveType( STRING );
+        PrimitiveValue value = new PrimitiveValue( sqlEncoded, pt );
+        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, propName.isMultiValued() );
+        SQLArgument argument = new SQLArgument( value, converter );
+        builder.add( argument );
+        builder.add( " ) " );
+
+        return builder.toOperation();
     }
 
     @Override
