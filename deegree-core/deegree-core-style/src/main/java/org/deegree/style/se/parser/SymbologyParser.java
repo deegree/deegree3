@@ -125,9 +125,7 @@ import org.slf4j.Logger;
  */
 public class SymbologyParser {
 
-    private boolean collectXMLSnippets = false;
-
-    static final Logger LOG = getLogger( SymbologyParser.class );
+    private static final Logger LOG = getLogger( SymbologyParser.class );
 
     /**
      * A static elsefilter instance (think of it as a marker).
@@ -139,15 +137,17 @@ public class SymbologyParser {
      */
     public static final SymbologyParser INSTANCE = new SymbologyParser();
 
-    private SymbologyParserContext context = new SymbologyParserContext( this );
+    private final SymbologyParserContext context = new SymbologyParserContext( this );
 
-    private ResourceLocation<StyleStore> location;
+    private final boolean collectXMLSnippets;
+
+    private final ResourceLocation<StyleStore> location;
 
     /**
      * Constructs one which does not collect source snippets.
      */
     public SymbologyParser() {
-
+        this( false );
     }
 
     /**
@@ -155,7 +155,7 @@ public class SymbologyParser {
      *            if true, some source snippets are collected (which can be used for re-export)
      */
     public SymbologyParser( boolean collectXMLSnippets ) {
-        this.collectXMLSnippets = collectXMLSnippets;
+        this( collectXMLSnippets, null );
     }
 
     /**
@@ -163,8 +163,13 @@ public class SymbologyParser {
      *            used to resolve external resources
      */
     public SymbologyParser( ResourceLocation<StyleStore> location ) {
+        this( false, location );
+    }
+
+    private SymbologyParser( boolean collectXMLSnippets, ResourceLocation<StyleStore> location ) {
+        this.collectXMLSnippets = collectXMLSnippets;
         this.location = location;
-        context.location = location;
+        this.context.location = location;
     }
 
     private static boolean require( XMLStreamReader in, String elementName ) {
@@ -779,8 +784,8 @@ public class SymbologyParser {
 
                     if ( in.getLocalName().equalsIgnoreCase( "PointPlacement" ) ) {
                         String cssName = in.getAttributeValue( null, "auto" );
-                        baseOrEvaluated.auto = ( cssName != null && cssName.equalsIgnoreCase( "true" ) ); 
-                        
+                        baseOrEvaluated.auto = ( cssName != null && cssName.equalsIgnoreCase( "true" ) );
+
                         while ( !( in.isEndElement() && in.getLocalName().equals( "PointPlacement" ) ) ) {
                             in.nextTag();
                             if ( in.getLocalName().equals( "AnchorPoint" ) ) {
