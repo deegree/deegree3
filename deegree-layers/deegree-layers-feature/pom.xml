@@ -55,6 +55,11 @@
       <artifactId>deegree-featurestore-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

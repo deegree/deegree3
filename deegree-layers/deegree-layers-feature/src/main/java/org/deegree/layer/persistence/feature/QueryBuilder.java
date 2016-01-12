@@ -56,13 +56,24 @@ import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
+import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.BinaryComparisonOperator;
+import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsBetween;
+import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.comparison.PropertyIsNil;
+import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.LayerQuery;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.style.se.unevaluated.Style;
 
 /**
  * Builds feature store queries for feature layers.
@@ -90,8 +101,10 @@ class QueryBuilder {
 
     private String layerName;
 
+    private Style style;
+
     QueryBuilder( FeatureStore featureStore, OperatorFilter filter, QName ftName, Envelope bbox, LayerQuery query,
-                  ValueReference geomProp, SortProperty[] sortBy, String layerName ) {
+                  ValueReference geomProp, SortProperty[] sortBy, String layerName, Style style ) {
         this.featureStore = featureStore;
         this.filter = filter;
         this.ftName = ftName;
@@ -100,12 +113,14 @@ class QueryBuilder {
         this.geomProp = geomProp;
         this.sortBy = sortBy;
         this.layerName = layerName;
+        this.style = style;
     }
 
-    List<Query> buildMapQueries( final List<ValueReference> styleValueReferences ) {
+    List<Query> buildMapQueries() {
         List<Query> queries = new ArrayList<Query>();
         Integer maxFeats = query.getRenderingOptions().getMaxFeatures( layerName );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
+        final List<ValueReference> valueReferences = collectValueReferences();
         if ( ftName == null && featureStore != null ) {
             final Filter filter2 = filter;
             queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
@@ -114,13 +129,13 @@ class QueryBuilder {
                                      public Query apply( FeatureType u ) {
                                          Filter fil = addBBoxConstraint( bbox, filter2, geomProp, true );
                                          return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
-                                                             query.getResolution(), sortBy, styleValueReferences );
+                                                             query.getResolution(), sortBy, valueReferences );
                                      }
                                  } ) );
         } else {
             Query fquery = createQuery( ftName, addBBoxConstraint( bbox, filter, geomProp, true ),
                                         round( query.getScale() ), maxFeatures, query.getResolution(), sortBy,
-                                        styleValueReferences );
+                                        valueReferences );
             queries.add( fquery );
         }
 
@@ -167,6 +182,88 @@ class QueryBuilder {
                               SortProperty[] sort, List<ValueReference> styleValueReferences ) {
         TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
         return new Query( typeNames, filter, sort, scale, maxFeatures, resolution, styleValueReferences );
+    }
+
+    static List<ValueReference> parseValueReferencesFromFilter( OperatorFilter filter ) {
+        List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+        Operator operator = filter.getOperator();
+        addValueReferences( operator, allValueReferences );
+        return allValueReferences;
+    }
+
+    private static void addValueReferences( Operator operator, List<ValueReference> allValueReferences ) {
+        switch ( operator.getType() ) {
+        case COMPARISON:
+            addValueReferences( (ComparisonOperator) operator, allValueReferences );
+            break;
+        case LOGICAL:
+            addValueReferences( (LogicalOperator) operator, allValueReferences );
+            break;
+        case SPATIAL:
+            // spatial operators are not required (spatial properties are always requested)
+            break;
+        case TEMPORAL:
+            TemporalOperator temporalOperator = (TemporalOperator) operator;
+            addValueReferences( temporalOperator.getParameter1(), allValueReferences );
+            addValueReferences( temporalOperator.getParameter2(), allValueReferences );
+            break;
+        default:
+            break;
+        }
+    }
+
+    private static void addValueReferences( ComparisonOperator operator, List<ValueReference> allValueReferences ) {
+        switch ( operator.getSubType() ) {
+        case PROPERTY_IS_BETWEEN:
+            PropertyIsBetween propertyIsBetween = (PropertyIsBetween) operator;
+            addValueReferences( propertyIsBetween.getLowerBoundary(), allValueReferences );
+            addValueReferences( propertyIsBetween.getExpression(), allValueReferences );
+            addValueReferences( propertyIsBetween.getUpperBoundary(), allValueReferences );
+            break;
+        case PROPERTY_IS_EQUAL_TO:
+        case PROPERTY_IS_GREATER_THAN:
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_LESS_THAN:
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            BinaryComparisonOperator binaryComparisonOperator = (BinaryComparisonOperator) operator;
+            addValueReferences( binaryComparisonOperator.getParameter1(), allValueReferences );
+            addValueReferences( binaryComparisonOperator.getParameter2(), allValueReferences );
+            break;
+        case PROPERTY_IS_LIKE:
+            PropertyIsLike propertyIsLike = (PropertyIsLike) operator;
+            addValueReferences( propertyIsLike.getExpression(), allValueReferences );
+            break;
+        case PROPERTY_IS_NIL:
+            PropertyIsNil propertyIsNil = (PropertyIsNil) operator;
+            addValueReferences( propertyIsNil.getPropertyName(), allValueReferences );
+            break;
+        case PROPERTY_IS_NULL:
+            PropertyIsNull propertyIsNull = (PropertyIsNull) operator;
+            addValueReferences( propertyIsNull.getPropertyName(), allValueReferences );
+            break;
+        default:
+            break;
+        }
+    }
+
+    private static void addValueReferences( LogicalOperator operator, List<ValueReference> allValueReferences ) {
+        Operator[] params = operator.getParams();
+        for ( Operator param : params ) {
+            addValueReferences( param, allValueReferences );
+        }
+    }
+
+    private static void addValueReferences( Expression expression, List<ValueReference> allValueReferences ) {
+        if ( Expression.Type.VALUE_REFERENCE.equals( expression.getType() ) )
+            allValueReferences.add( (ValueReference) expression );
+    }
+
+    private List<ValueReference> collectValueReferences() {
+        List<ValueReference> valueReferences = new ArrayList<ValueReference>();
+        valueReferences.addAll( style.retrieveValueReferences() );
+        valueReferences.addAll( parseValueReferencesFromFilter( filter ) );
+        return valueReferences;
     }
 
 }

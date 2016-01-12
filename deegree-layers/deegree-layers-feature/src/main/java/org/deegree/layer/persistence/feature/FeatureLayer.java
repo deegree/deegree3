@@ -138,8 +138,8 @@ public class FeatureLayer extends AbstractLayer {
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), ftName ) );
 
         QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
-                                                 getMetadata().getName() );
-        List<Query> queries = builder.buildMapQueries( style.retrieveValueReferences() );
+                                                 getMetadata().getName(), style );
+        List<Query> queries = builder.buildMapQueries();
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );
@@ -181,7 +181,7 @@ public class FeatureLayer extends AbstractLayer {
         LOG.debug( "Querying the feature store(s)..." );
 
         QueryBuilder builder = new QueryBuilder( featureStore, filter, featureType, clickBox, query, null,
-                                                 sortByFeatureInfo, getMetadata().getName() );
+                                                 sortByFeatureInfo, getMetadata().getName(), style );
         List<Query> queries = builder.buildInfoQueries();
 
         LOG.debug( "Finished querying the feature store(s)." );
