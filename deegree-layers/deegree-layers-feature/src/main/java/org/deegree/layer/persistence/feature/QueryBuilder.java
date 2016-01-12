@@ -166,7 +166,7 @@ class QueryBuilder {
     static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
                               SortProperty[] sort, List<ValueReference> styleValueReferences ) {
         TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
-        return new Query( typeNames, filter, sort, scale, maxFeatures, resolution );
+        return new Query( typeNames, filter, sort, scale, maxFeatures, resolution, styleValueReferences );
     }
 
 }
