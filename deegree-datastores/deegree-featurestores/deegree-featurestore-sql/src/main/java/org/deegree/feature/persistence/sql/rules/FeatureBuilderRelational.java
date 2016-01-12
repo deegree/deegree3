@@ -146,6 +146,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final boolean nullEscalation;
 
+    private final List<ValueReference> valueReferences;
+
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
      * 
@@ -173,6 +175,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         this.conn = conn;
         this.tableAlias = ftTableAlias;
         this.nullEscalation = nullEscalation;
+        this.valueReferences = valueReferences;
         this.nsBindings = new NamespaceBindings();
         for ( String prefix : fs.getNamespaceContext().keySet() ) {
             String ns = fs.getNamespaceContext().get( prefix );
@@ -227,7 +230,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         } else {
             ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
-                if ( particleConverter != null ) {
+                if ( particleConverter != null && checkIfSelectIfRequired( mapping ) ) {
+
                     addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
@@ -255,6 +259,16 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
             }
         }
+    }
+
+    private boolean checkIfSelectIfRequired( Mapping mapping ) {
+        if ( valueReferences == null )
+            return true;
+        for ( ValueReference valueReference : valueReferences ) {
+            if ( mapping.getPath().equals( valueReference ) )
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -442,11 +456,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         ParticleConverter<?> converter = fs.getConverter( mapping );
 
         if ( mapping instanceof PrimitiveMapping ) {
-            PrimitiveMapping pm = (PrimitiveMapping) mapping;
-            MappingExpression me = pm.getMapping();
-            String col = converter.getSelectSnippet( tableAlias );
-            int colIndex = colToRsIdx.get( col );
-            particle = converter.toParticle( rs, colIndex );
+            if ( checkIfSelectIfRequired( mapping ) ) {
+                String col = converter.getSelectSnippet( tableAlias );
+                int colIndex = colToRsIdx.get( col );
+                particle = converter.toParticle( rs, colIndex );
+            } else {
+                LOG.debug( "Primitive Mapping " + mapping
+                           + " will be ignored, cause it is not in the list of requested values." );
+            }
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
