@@ -139,7 +139,7 @@ public class FeatureLayer extends AbstractLayer {
 
         QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
                                                  getMetadata().getName() );
-        List<Query> queries = builder.buildMapQueries();
+        List<Query> queries = builder.buildMapQueries( style.retrieveValueReferences() );
 
         if ( queries.isEmpty() ) {
             LOG.warn( "No queries were generated. Is the configuration correct?" );

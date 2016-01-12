@@ -102,7 +102,7 @@ class QueryBuilder {
         this.layerName = layerName;
     }
 
-    List<Query> buildMapQueries() {
+    List<Query> buildMapQueries( final List<ValueReference> styleValueReferences ) {
         List<Query> queries = new ArrayList<Query>();
         Integer maxFeats = query.getRenderingOptions().getMaxFeatures( layerName );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
@@ -114,12 +114,13 @@ class QueryBuilder {
                                      public Query apply( FeatureType u ) {
                                          Filter fil = addBBoxConstraint( bbox, filter2, geomProp, true );
                                          return createQuery( u.getName(), fil, round( query.getScale() ), maxFeatures,
-                                                             query.getResolution(), sortBy );
+                                                             query.getResolution(), sortBy, styleValueReferences );
                                      }
                                  } ) );
         } else {
             Query fquery = createQuery( ftName, addBBoxConstraint( bbox, filter, geomProp, true ),
-                                        round( query.getScale() ), maxFeatures, query.getResolution(), sortBy );
+                                        round( query.getScale() ), maxFeatures, query.getResolution(), sortBy,
+                                        styleValueReferences );
             queries.add( fquery );
         }
 
@@ -158,6 +159,12 @@ class QueryBuilder {
 
     static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
                               SortProperty[] sort ) {
+        TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
+        return new Query( typeNames, filter, sort, scale, maxFeatures, resolution );
+    }
+
+    static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
+                              SortProperty[] sort, List<ValueReference> styleValueReferences ) {
         TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
         return new Query( typeNames, filter, sort, scale, maxFeatures, resolution );
     }

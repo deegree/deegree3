@@ -51,6 +51,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
@@ -99,6 +100,8 @@ public class Query {
 
     private final List<ProjectionClause> projections;
 
+    private final List<ValueReference> styleValueReferences;
+
     /**
      * Creates a new {@link Query} instance.
      * 
@@ -118,6 +121,7 @@ public class Query {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
         this.maxFeatures = maxFeatures;
+        this.styleValueReferences = null;
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
         }
@@ -146,6 +150,7 @@ public class Query {
     public Query( TypeName[] typeNames, Filter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = typeNames;
         this.filter = filter;
+        this.styleValueReferences = null;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -173,8 +178,14 @@ public class Query {
      */
     public Query( TypeName[] typeNames, Filter filter, SortProperty[] sortBy, int scale, int maxFeatures,
                   double resolution ) {
+        this( typeNames, filter, sortBy, scale, maxFeatures, resolution, null );
+    }
+
+    public Query( TypeName[] typeNames, Filter filter, SortProperty[] sortBy, int scale, int maxFeatures,
+                  double resolution, List<ValueReference> styleValueReferences ) {
         this.typeNames = typeNames;
         this.filter = filter;
+        this.styleValueReferences = styleValueReferences;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -277,4 +288,13 @@ public class Query {
     public int getMaxFeatures() {
         return maxFeatures;
     }
+
+    /**
+     * @return a list of value references to limit the requested feature properties to, may be <code>null</code> if not
+     *         applicable
+     */
+    public List<ValueReference> getStyleValueReferences() {
+        return styleValueReferences;
+    }
+
 }
