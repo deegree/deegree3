@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -83,6 +84,8 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.expression.custom.CustomExpression;
 import org.deegree.filter.expression.custom.se.Categorize;
 import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
@@ -234,6 +237,14 @@ public class SymbologyParser {
                         @Override
                         public void updateStep( PointStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                             pair.second.evaluate( base.graphic, f, evaluator );
+                        }
+
+                        @Override
+                        public List<ValueReference> retrieveValueReferences() {
+                            List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                            allValueReferences.addAll( super.retrieveValueReferences() );
+                            allValueReferences.addAll( pair.second.retrieveValueReferences() );
+                            return allValueReferences;
                         }
                     }, common.geometry, null, common.loc, common.line, common.col );
                 }
@@ -523,6 +534,14 @@ public class SymbologyParser {
                             public void updateStep( LineStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 pair.second.evaluate( base.stroke, f, evaluator );
                             }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( pair.second.retrieveValueReferences() );
+                                return allValueReferences;
+                            }
                         };
                     }
                 }
@@ -583,6 +602,14 @@ public class SymbologyParser {
                             public void updateStep( PolygonStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 pair.second.evaluate( base.stroke, f, evaluator );
                             }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( pair.second.retrieveValueReferences() );
+                                return allValueReferences;
+                            }
                         };
                     }
                 }
@@ -597,6 +624,14 @@ public class SymbologyParser {
                             @Override
                             public void updateStep( PolygonStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 fillPair.second.evaluate( base.fill, f, evaluator );
+                            }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( fillPair.second.retrieveValueReferences() );
+                                return allValueReferences;
                             }
                         };
                     }
@@ -737,6 +772,29 @@ public class SymbologyParser {
 
                         updater.update( base, tmp.toString() );
                     }
+
+                    @Override
+                    public List<ValueReference> retrieveValueReferences() {
+                        List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                        allValueReferences.addAll( super.retrieveValueReferences() );
+                        for ( Pair<String, Pair<Expression, String>> p : text ) {
+                            if ( p.second != null ) {
+                                Expression expression = p.second.first;
+                                if ( expression != null ) {
+                                    if ( expression instanceof ValueReference )
+                                        allValueReferences.add( (ValueReference) expression );
+                                    else if ( expression instanceof CustomExpression ) {
+                                        Expression[] customExpressionParams = expression.getParams();
+                                        for ( Expression customExpressionParam : customExpressionParams ) {
+                                            if ( customExpressionParam instanceof ValueReference )
+                                                allValueReferences.add( (ValueReference) customExpressionParam );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return allValueReferences;
+                    }
                 };
             }
         }
@@ -871,6 +929,14 @@ public class SymbologyParser {
                                                             XPathEvaluator<Feature> evaluator ) {
                                         pair.second.evaluate( base.linePlacement, f, evaluator );
                                     }
+
+                                    @Override
+                                    public List<ValueReference> retrieveValueReferences() {
+                                        List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                        allValueReferences.addAll( super.retrieveValueReferences() );
+                                        allValueReferences.addAll( pair.second.retrieveValueReferences() );
+                                        return allValueReferences;
+                                    }
                                 };
                             }
                         }
@@ -887,6 +953,14 @@ public class SymbologyParser {
                             public void updateStep( TextStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 haloPair.second.evaluate( base.halo, f, evaluator );
                             }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( haloPair.second.retrieveValueReferences() );
+                                return allValueReferences;
+                            }
                         };
                     }
                 }
@@ -901,6 +975,14 @@ public class SymbologyParser {
                             public void updateStep( TextStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 fontPair.second.evaluate( base.font, f, evaluator );
                             }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( fontPair.second.retrieveValueReferences() );
+                                return allValueReferences;
+                            }
                         };
                     }
                 }
@@ -914,6 +996,14 @@ public class SymbologyParser {
                             @Override
                             public void updateStep( TextStyling base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 fillPair.second.evaluate( base.fill, f, evaluator );
+                            }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( fillPair.second.retrieveValueReferences() );
+                                return allValueReferences;
                             }
                         };
                     }
@@ -1022,6 +1112,14 @@ public class SymbologyParser {
                             @Override
                             public void updateStep( Halo base, Feature f, XPathEvaluator<Feature> evaluator ) {
                                 fillPair.second.evaluate( base.fill, f, evaluator );
+                            }
+
+                            @Override
+                            public List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+                                allValueReferences.addAll( super.retrieveValueReferences() );
+                                allValueReferences.addAll( fillPair.second.retrieveValueReferences() );
+                                return allValueReferences;
                             }
                         };
                     }
@@ -1383,6 +1481,17 @@ public class SymbologyParser {
          */
         public List<Symbolizer<?>> getSymbolizers() {
             return syms;
+        }
+
+        @Override
+        public List<ValueReference> retrieveValueReferences() {
+            List<ValueReference> allValueReference = new ArrayList<ValueReference>();
+            for ( Symbolizer<?> symbolizer : syms ) {
+                List<ValueReference> valueReferencesFromCont = symbolizer.retrieveValueReferences();
+                if ( valueReferencesFromCont != null )
+                    allValueReference.addAll( valueReferencesFromCont );
+            }
+            return allValueReference;
         }
 
     }

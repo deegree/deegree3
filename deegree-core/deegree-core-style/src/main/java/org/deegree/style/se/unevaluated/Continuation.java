@@ -36,8 +36,12 @@
 
 package org.deegree.style.se.unevaluated;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.deegree.feature.Feature;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 
 /**
  * <code>Continuation</code> is not a real continuation...
@@ -81,6 +85,17 @@ public abstract class Continuation<T> {
         if ( next != null ) {
             next.evaluate( base, obj, evaluator );
         }
+    }
+
+    /**
+     * @return all parsed ValueReferences from next Continutation, never <code>null</code>
+     */
+    public List<ValueReference> retrieveValueReferences() {
+        List<ValueReference> valueReferences = new ArrayList<ValueReference>();
+        if ( next != null ) {
+            valueReferences.addAll( next.retrieveValueReferences() );
+        }
+        return valueReferences;
     }
 
     /**

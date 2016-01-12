@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -60,6 +61,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.function.geometry.IsCurve;
 import org.deegree.filter.function.geometry.IsPoint;
 import org.deegree.filter.function.geometry.IsSurface;
@@ -148,8 +150,7 @@ public class Style implements Copyable<Style> {
      * @param xmlText
      */
     public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name, String xmlText ) {
-        InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn;
-        contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>( symbolizer );
+        InsertContinuation contn = new InsertContinuation( symbolizer );
         rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn,
                                                                                   new DoublePair( NEGATIVE_INFINITY,
                                                                                                   POSITIVE_INFINITY ) ) );
@@ -279,6 +280,29 @@ public class Style implements Copyable<Style> {
         }
 
         return (LinkedList) res;
+    }
+
+    /**
+     * @return all ValueReferences parsed from the style (except the one from the filter). May be empty, but never
+     *         <code>null</code>.
+     */
+    public List<ValueReference> retrieveValueReferences() {
+        List<ValueReference> allValueReference = new ArrayList<ValueReference>();
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> pair : rules ) {
+            Continuation<LinkedList<Symbolizer<?>>> cont = pair.first;
+            if ( cont != null ) {
+                List<ValueReference> ruleValueReferences = cont.retrieveValueReferences();
+                allValueReference.addAll( ruleValueReferences );
+            }
+        }
+        for ( Entry<Symbolizer<TextStyling>, Continuation<StringBuffer>> label : labels.entrySet() ) {
+            Continuation<StringBuffer> value = label.getValue();
+            if ( value != null ) {
+                List<ValueReference> labelValueReferences = value.retrieveValueReferences();
+                allValueReference.addAll( labelValueReferences );
+            }
+        }
+        return allValueReference;
     }
 
     /**
@@ -438,17 +462,23 @@ public class Style implements Copyable<Style> {
         return prefersGetLegendGraphicUrl;
     }
 
-    static class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
-        U value;
+    static class InsertContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
+        Symbolizer<?> value;
 
-        InsertContinuation( U value ) {
+        InsertContinuation( Symbolizer<?> value ) {
             this.value = value;
         }
 
         @Override
-        public void updateStep( T base, Feature f, XPathEvaluator<Feature> evaluator ) {
+        public void updateStep( LinkedList<Symbolizer<?>> base, Feature f, XPathEvaluator<Feature> evaluator ) {
             base.add( value );
         }
+
+        @Override
+        public List<ValueReference> retrieveValueReferences() {
+            return value.retrieveValueReferences();
+        }
+
     }
 
     @Override

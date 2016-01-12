@@ -38,6 +38,7 @@ package org.deegree.style.se.unevaluated;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,6 +50,7 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.style.styling.Styling;
 import org.slf4j.Logger;
@@ -267,6 +269,12 @@ public class Symbolizer<T extends Styling<T>> {
      */
     public Expression getGeometryExpression() {
         return geometry;
+    }
+
+    public List<ValueReference> retrieveValueReferences() {
+        if ( next != null )
+            return next.retrieveValueReferences();
+        return new ArrayList<ValueReference>();
     }
 
 }
