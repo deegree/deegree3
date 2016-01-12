@@ -1207,7 +1207,7 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( "." );
             sql.append( blobMapping.getTypeColumn() );
             sql.append( "=?" );
-            if ( wb != null ) {
+            if ( wb != null && wb.getWhere() != null ) {
                 sql.append( " AND " );
                 sql.append( wb.getWhere().getSQL() );
             }
@@ -1233,7 +1233,7 @@ public class SQLFeatureStore implements FeatureStore {
             int i = 1;
             // if ( blobMapping != null ) {
             stmt.setShort( i++, getSchema().getFtId( ftName ) );
-            if ( wb != null ) {
+            if ( wb != null && wb.getWhere() != null ) {
                 for ( SQLArgument o : wb.getWhere().getArguments() ) {
                     o.setArgument( stmt, i++ );
                 }

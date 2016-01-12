@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--====================================================================-->
+<!--AIXM 5.1 - Event Schema-->
+<!--www.aixm.aero-->
+<!--Released:  May 2011-->
+<!--====================================================================-->
+<!--
+		Copyright (c) 2011, EUROCONTROL & FAA
+		=====================================
+		All rights reserved.
+		Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+			* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+			* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+			* Neither the names of EUROCONTROL or FAA nor the names of their contributors may be used to endorse or promote products derived from this specification without specific prior written permission.
+
+		THIS SPECIFICATION IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+		==========================================
+		Editorial note: this license is an instance of the BSD license template as
+		provided by the Open Source Initiative:
+		http://www.opensource.org/licenses/bsd-license.php
+	-->
+<!-- Component: Event: DataTypes -->
+<schema xmlns:event="http://www.aixm.aero/schema/5.1/event" xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.aixm.aero/schema/5.1/event" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.1-d">
+	<import namespace="http://www.aixm.aero/schema/5.1" schemaLocation="../AIXM_DataTypes.xsd"/>
+	<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="../ISO_19136_Schemas/gml.xsd"/>
+	<annotation>
+		<appinfo>
+			<gml:gmlProfileSchema>http://www.aixm.aero/schema/5.1/profile/gml4aixm.xsd</gml:gmlProfileSchema>
+		</appinfo>
+	</annotation>
+	<annotation>
+		<appinfo source="www.aixm.aero/schema/5.1/event">Event_DataTypes.xsd</appinfo>
+	</annotation>
+	<annotation>
+		<documentation>Definition of data types that are associated with the Event Schema.</documentation>
+	</annotation>
+	<simpleType name="CodeNOTAMBaseType">
+		<annotation>
+			<appinfo>
+				<gml:description>A coded indicator of the NOTAM type.</gml:description>
+			</appinfo>
+		</annotation>
+		<union>
+			<simpleType>
+				<restriction base="xsd:string">
+					<enumeration value="N">
+						<annotation>
+							<appinfo>
+								<gml:description>New NOTAM</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="R">
+						<annotation>
+							<appinfo>
+								<gml:description>Replacement NOTAM</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="C">
+						<annotation>
+							<appinfo>
+								<gml:description>Cancel NOTAM</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+				</restriction>
+			</simpleType>
+			<simpleType>
+				<restriction base="string">
+					<pattern value="OTHER(:(\w|_){1,58})?"/>
+				</restriction>
+			</simpleType>
+		</union>
+	</simpleType>
+	<complexType name="CodeNOTAMType">
+		<simpleContent>
+			<extension base="event:CodeNOTAMBaseType">
+				<attribute name="nilReason" type="gml:NilReasonEnumeration"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="CodeNOTAMTranslationBaseType">
+		<annotation>
+			<appinfo>
+				<gml:description>A coded list of values indicating the extent by which a translation duplicates the related NOTAM.</gml:description>
+			</appinfo>
+		</annotation>
+		<union>
+			<simpleType>
+				<restriction base="xsd:string">
+					<enumeration value="TEXT_ONLY">
+						<annotation>
+							<appinfo>
+								<gml:description>The information contained in the NOTAM fields D (schedule), E (text), F (lowerLimit) and G (upperLimit) is translated into a different language. All the other NOTAM fields remain valid.</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="LOCAL_FORMAT">
+						<annotation>
+							<appinfo>
+								<gml:description>The translation is full, the whole NOTAM is translated into a local/regional format, which is different from the ICAO NOTAM format.</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+				</restriction>
+			</simpleType>
+			<simpleType>
+				<restriction base="string">
+					<pattern value="OTHER(:(\w|_){1,58})?"/>
+				</restriction>
+			</simpleType>
+		</union>
+	</simpleType>
+	<complexType name="CodeNOTAMTranslationType">
+		<simpleContent>
+			<extension base="event:CodeNOTAMTranslationBaseType">
+				<attribute name="nilReason" type="gml:NilReasonEnumeration"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="CodeEventEncodingBaseType">
+		<annotation>
+			<appinfo>
+				<gml:description>A coded value indicating the extent by which a piece of information is provided as digital data versus free text notes.</gml:description>
+			</appinfo>
+		</annotation>
+		<union>
+			<simpleType>
+				<restriction base="xsd:string">
+					<enumeration value="DIGITAL">
+						<annotation>
+							<appinfo>
+								<gml:description>The information is digitally structured to the maximum possible extent allowed by the model.</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="MIXED">
+						<annotation>
+							<appinfo>
+								<gml:description>The information is partially digitally structured. Some information is provided as a text Note, although the model has the capability to support the digital encoding of that piece of information.</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="ANNOTATION">
+						<annotation>
+							<appinfo>
+								<gml:description>The information is provided as free text Note associated with the feature and eventually the property concerned.</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+				</restriction>
+			</simpleType>
+			<simpleType>
+				<restriction base="string">
+					<pattern value="OTHER(:(\w|_){1,58})?"/>
+				</restriction>
+			</simpleType>
+		</union>
+	</simpleType>
+	<complexType name="CodeEventEncodingType">
+		<simpleContent>
+			<extension base="event:CodeEventEncodingBaseType"/>
+		</simpleContent>
+	</complexType>
+	<simpleType name="CodeAISPublicationBaseType">
+		<annotation>
+			<appinfo>
+				<gml:description>A coded list of values indicating a type of AIS publication, according to the ICAO Standards and Recommended Practices.</gml:description>
+			</appinfo>
+		</annotation>
+		<union>
+			<simpleType>
+				<restriction base="xsd:string">
+					<enumeration value="AIP_AMDT">
+						<annotation>
+							<appinfo>
+								<gml:description>Aeronautical Information Publication (AIP) Amendment</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="AIP_SUP">
+						<annotation>
+							<appinfo>
+								<gml:description>Aeronautical Information Publication (AIP) Supplement</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+					<enumeration value="AIC">
+						<annotation>
+							<appinfo>
+								<gml:description>Aeronautical Information Circular (AIC)</gml:description>
+							</appinfo>
+						</annotation>
+					</enumeration>
+				</restriction>
+			</simpleType>
+			<simpleType>
+				<restriction base="string">
+					<pattern value="OTHER(:(\w|_){1,58})?"/>
+				</restriction>
+			</simpleType>
+		</union>
+	</simpleType>
+	<complexType name="CodeAISPublicationType">
+		<simpleContent>
+			<extension base="event:CodeAISPublicationBaseType">
+				<attribute name="nilReason" type="gml:NilReasonEnumeration"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="TextNOTAMBaseType">
+		<annotation>
+			<appinfo>
+				<gml:description>A string of upper case characters and / or numbers that can be used in the NOTAM fields.</gml:description>
+			</appinfo>
+		</annotation>
+		<restriction base="aixm:Character2Type"/>
+	</simpleType>
+	<complexType name="TextNOTAMType">
+		<simpleContent>
+			<extension base="event:TextNOTAMBaseType">
+				<attribute name="nilReason" type="gml:NilReasonEnumeration"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+</schema>
