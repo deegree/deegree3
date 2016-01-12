@@ -1306,7 +1306,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias,
-                                                                   nullEscalation );
+                                                                   nullEscalation, query.getValueReferences() );
             List<String> columns = builder.getInitialSelectList();
 
             BlobMapping blobMapping = getSchema().getBlobMapping();

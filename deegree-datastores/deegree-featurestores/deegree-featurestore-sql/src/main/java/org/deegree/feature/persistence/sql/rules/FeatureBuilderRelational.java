@@ -162,6 +162,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      */
     public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
                                      String ftTableAlias, boolean nullEscalation ) {
+        this( fs, ft, ftMapping, conn, ftTableAlias, nullEscalation, null );
+    }
+
+    public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
+                                     String ftTableAlias, boolean nullEscalation, List<ValueReference> valueReferences ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;

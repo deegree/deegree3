@@ -100,7 +100,7 @@ public class Query {
 
     private final List<ProjectionClause> projections;
 
-    private final List<ValueReference> styleValueReferences;
+    private final List<ValueReference> valueReferences;
 
     /**
      * Creates a new {@link Query} instance.
@@ -121,7 +121,7 @@ public class Query {
         this.typeNames = new TypeName[] { new TypeName( ftName, null ) };
         this.filter = filter;
         this.maxFeatures = maxFeatures;
-        this.styleValueReferences = null;
+        this.valueReferences = null;
         if ( scale > 0 ) {
             hints.put( HINT_SCALE, scale );
         }
@@ -150,7 +150,7 @@ public class Query {
     public Query( TypeName[] typeNames, Filter filter, String featureVersion, ICRS srsName, SortProperty[] sortBy ) {
         this.typeNames = typeNames;
         this.filter = filter;
-        this.styleValueReferences = null;
+        this.valueReferences = null;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -181,11 +181,30 @@ public class Query {
         this( typeNames, filter, sortBy, scale, maxFeatures, resolution, null );
     }
 
+    /**
+     * Creates a new {@link Query} instance.
+     * 
+     * @param typeNames
+     *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
+     * @param filter
+     *            filter to be applied, can be <code>null</code>, if not <code>null</code>, all contained geometry
+     *            operands must have a non-null {@link CRS}
+     * @param sortBy
+     *            sort criteria to be applied, can be <code>null</code>
+     * @param scale
+     *            if scale is positive, a scale query hint will be used
+     * @param maxFeatures
+     *            may be -1 if no limit needs to be exercised
+     * @param resolution
+     *            if resolution is positive, a pixel resolution hint will be used
+     * @param valueReferences
+     *            a list value references this query must select. May be null, if no restrictions are required.
+     */
     public Query( TypeName[] typeNames, Filter filter, SortProperty[] sortBy, int scale, int maxFeatures,
-                  double resolution, List<ValueReference> styleValueReferences ) {
+                  double resolution, List<ValueReference> valueReferences ) {
         this.typeNames = typeNames;
         this.filter = filter;
-        this.styleValueReferences = styleValueReferences;
+        this.valueReferences = valueReferences;
         if ( sortBy != null ) {
             this.sortBy = sortBy;
         } else {
@@ -293,8 +312,8 @@ public class Query {
      * @return a list of value references to limit the requested feature properties to, may be <code>null</code> if not
      *         applicable
      */
-    public List<ValueReference> getStyleValueReferences() {
-        return styleValueReferences;
+    public List<ValueReference> getValueReferences() {
+        return valueReferences;
     }
 
 }
