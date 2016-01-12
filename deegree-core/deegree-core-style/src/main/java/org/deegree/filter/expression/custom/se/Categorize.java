@@ -41,6 +41,7 @@ import static org.deegree.commons.xml.CommonNamespaces.SENS;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -55,7 +56,9 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.feature.Feature;
+import org.deegree.filter.Expression;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.styling.RasterStyling;
@@ -275,6 +278,24 @@ public class Categorize extends AbstractCustomExpression {
     @Override
     public String toString() {
         return generateToString( this );
+    }
+
+    @Override
+    public Expression[] getParams() {
+        List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+        if ( contn != null )
+            allValueReferences.addAll( contn.retrieveValueReferences() );
+        if ( valueContns != null ) {
+            for ( Continuation<StringBuffer> valueCont : valueContns ) {
+                allValueReferences.addAll( valueCont.retrieveValueReferences() );
+            }
+        }
+        if ( thresholdContns != null ) {
+            for ( Continuation<StringBuffer> thresholdCont : thresholdContns ) {
+                allValueReferences.addAll( thresholdCont.retrieveValueReferences() );
+            }
+        }
+        return allValueReferences.toArray( new Expression[allValueReferences.size()] );
     }
 
 }

@@ -54,8 +54,10 @@ import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Continuation;
@@ -168,4 +170,14 @@ public class FormatDate extends AbstractCustomExpression {
         in.require( END_ELEMENT, null, "FormatDate" );
         return new FormatDate( dateValue, dateValueContn, formatter );
     }
+
+    @Override
+    public Expression[] getParams() {
+        if ( dateValueContn != null ) {
+            List<ValueReference> valueReferences = dateValueContn.retrieveValueReferences();
+            return valueReferences.toArray( new Expression[valueReferences.size()] );
+        }
+        return new Expression[0];
+    }
+
 }

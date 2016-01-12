@@ -40,6 +40,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -47,8 +49,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Continuation;
@@ -126,4 +130,14 @@ public class ChangeCase extends AbstractCustomExpression {
         in.require( END_ELEMENT, null, "ChangeCase" );
         return new ChangeCase( value, contn, toupper );
     }
+
+    @Override
+    public Expression[] getParams() {
+        if ( contn != null ) {
+            List<ValueReference> valueReferences = contn.retrieveValueReferences();
+            return valueReferences.toArray( new Expression[valueReferences.size()] );
+        }
+        return new Expression[0];
+    }
+
 }

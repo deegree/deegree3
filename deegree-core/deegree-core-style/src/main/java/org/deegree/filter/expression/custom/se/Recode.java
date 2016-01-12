@@ -41,8 +41,10 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -51,8 +53,10 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Continuation;
@@ -178,4 +182,18 @@ public class Recode extends AbstractCustomExpression {
         in.require( END_ELEMENT, null, "Recode" );
         return new Recode( value, contn, datas, values, valueContns, fallbackValue );
     }
+
+    @Override
+    public Expression[] getParams() {
+        List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+        if ( contn != null )
+            allValueReferences.addAll( contn.retrieveValueReferences() );
+        if ( valueContns != null ) {
+            for ( Continuation<StringBuffer> valueCont : valueContns ) {
+                allValueReferences.addAll( valueCont.retrieveValueReferences() );
+            }
+        }
+        return allValueReferences.toArray( new Expression[allValueReferences.size()] );
+    }
+
 }

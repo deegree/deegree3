@@ -66,8 +66,10 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.feature.Feature;
+import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Continuation;
@@ -354,6 +356,19 @@ public class Interpolate extends AbstractCustomExpression {
                                            valueContns, color, mode, fallbackColor );
         inp.buildLookupArrays();
         return inp;
+    }
+
+    @Override
+    public Expression[] getParams() {
+        List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
+        if ( contn != null )
+            allValueReferences.addAll( contn.retrieveValueReferences() );
+        if ( valueContns != null ) {
+            for ( Continuation<StringBuffer> valueCont : valueContns ) {
+                allValueReferences.addAll( valueCont.retrieveValueReferences() );
+            }
+        }
+        return allValueReferences.toArray( new Expression[allValueReferences.size()] );
     }
 
     private void parseInterpolationPoint( XMLStreamReader in, LinkedList<Double> datas,
