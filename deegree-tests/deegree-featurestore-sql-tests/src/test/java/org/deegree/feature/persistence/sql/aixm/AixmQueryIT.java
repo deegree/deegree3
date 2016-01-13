@@ -1,5 +1,7 @@
 package org.deegree.feature.persistence.sql.aixm;
 
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -34,7 +36,7 @@ public class AixmQueryIT extends SQLFeatureStoreTestCase {
                             throws Exception {
         fs = setUpFeatureStore( "aixm-blob", "aixm/workspace" );
         createTablesFromConfig( fs );
-        importGml( fs, "aixm/data/Donlon.xml" );
+        importGml( fs, "aixm/data/Donlon.xml", USE_EXISTING );
     }
 
     @Override

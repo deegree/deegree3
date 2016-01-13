@@ -13,7 +13,6 @@ import static org.deegree.feature.persistence.sql.PostGISSetupHelper.createTestD
 import static org.deegree.feature.persistence.sql.PostGISSetupHelper.dropTestDatabase;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,6 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +62,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
+import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
@@ -147,6 +148,8 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
      *            feature store, must not be <code>null</code>
      * @param gmlResourceName
      *            resource name of the GML dataset, must not be <code>null</code>
+     * @param idGenMode
+     *            id generation mode, must not be <code>null</code>
      * @throws XMLStreamException
      * @throws FactoryConfigurationError
      * @throws IOException
@@ -154,7 +157,7 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
      * @throws UnknownCRSException
      * @throws FeatureStoreException
      */
-    protected void importGml( final FeatureStore fs, final String gmlResourceName )
+    protected void importGml( final FeatureStore fs, final String gmlResourceName, final IDGenMode idGenMode )
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException, FeatureStoreException {
         final URL datasetURL = SQLFeatureStoreTestCase.class.getResource( gmlResourceName );
@@ -164,7 +167,7 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
         gmlReader.close();
 
         final FeatureStoreTransaction ta = fs.acquireTransaction();
-        ta.performInsert( fc, USE_EXISTING );
+        ta.performInsert( fc, idGenMode );
         ta.commit();
     }
 
@@ -269,7 +272,33 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
             final String actualValue = diff.getTestNodeDetail().getValue();
             return compareDoubleListsWithDelta( expectedValue, actualValue, 0.000001 );
         }
-        return false;
+        return equals( diff.getControlNodeDetail().getNode(), diff.getTestNodeDetail().getNode() );
+    }
+
+    /**
+     * Workaround for shortcoming in XMLUnit (xsi:nil="true" and xsi:nil="true") are not recognized as equal if the
+     * namespace binding is not on the same level.
+     */
+    private boolean equals( final Node control, final Node test ) {
+        if ( !control.getNodeName().equals( "xsi:nil" ) ) {
+            return false;
+        }
+        if ( !test.getNodeName().equals( "xsi:nil" ) ) {
+            return false;
+        }
+        if ( control.getNodeType() != test.getNodeType() ) {
+            return false;
+        }
+        if ( !control.getLocalName().equals( test.getLocalName() ) ) {
+            return false;
+        }
+        if ( !control.getNamespaceURI().equals( test.getNamespaceURI() ) ) {
+            return false;
+        }
+        if ( control.getNodeValue() != null ) {
+            return control.getNodeValue().equals( test.getNodeValue() );
+        }
+        return test.getNodeValue() == null;
     }
 
     private byte[] getResource( final String resourcePath ) {
@@ -297,8 +326,6 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
         for ( int i = 0; i < expectedDoubles.size(); i++ ) {
             double actualDelta = expectedDoubles.get( i ) - actualDoubles.get( i );
             if ( Math.abs( actualDelta ) > delta ) {
-                System.out.println( "A: " + expected );
-                System.out.println( "A: " + actual );
                 return false;
             }
         }
@@ -306,11 +333,16 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
     }
 
     private List<Double> parseAsDoubles( String s ) {
+        if ( s == null ) {
+            return Collections.emptyList();
+        }
         final String[] tokens = s.trim().split( " " );
         final List<Double> doubles = new ArrayList<Double>();
         try {
             for ( final String token : tokens ) {
-                doubles.add( new Double( Double.parseDouble( token ) ) );
+                if ( !token.trim().isEmpty() ) {
+                    doubles.add( new Double( Double.parseDouble( token ) ) );
+                }
             }
         } catch ( Exception e ) {
             return emptyList();
