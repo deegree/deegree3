@@ -33,6 +33,7 @@ public class PostGISSetupHelper {
      */
     static void createTestDatabase()
                             throws SQLException {
+        dropTestDatabase();
         createPostgresDb( ADMIN_USER, ADMIN_PASS, HOST, PORT, ADMIN_DB, TEST_DB );
         addPostgisExtension( ADMIN_USER, ADMIN_PASS, HOST, PORT, TEST_DB );
     }
@@ -46,7 +47,7 @@ public class PostGISSetupHelper {
         Statement stmt = null;
         try {
             stmt = adminConn.createStatement();
-            stmt.execute( "DROP DATABASE \"" + TEST_DB + "\"" );
+            stmt.execute( "DROP DATABASE IF EXISTS \"" + TEST_DB + "\"" );
         } finally {
             close( null, stmt, adminConn, null );
         }
