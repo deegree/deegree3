@@ -139,24 +139,16 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
         IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
         String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
 
-        if ( propName.isMultiValued() ) {
-            // TODO escaping of pipe symbols
-            //sqlEncoded = "%|" + sqlEncoded + "|%";
-        }
-
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-        if ( !op.isMatchCase() ) {
-            //builder.add( "LOWER (" + propName + ")" );
-        } else {
-            builder.add( propName );
-        }
         builder.add( " CONTAINS ( " );
+        builder.add( propName );
+        builder.add( ", " );
         PrimitiveType pt = new PrimitiveType( STRING );
         PrimitiveValue value = new PrimitiveValue( sqlEncoded, pt );
         PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, propName.isMultiValued() );
         SQLArgument argument = new SQLArgument( value, converter );
         builder.add( argument );
-        builder.add( " ) " );
+        builder.add( " ) > 0 " );
 
         return builder.toOperation();
     }
