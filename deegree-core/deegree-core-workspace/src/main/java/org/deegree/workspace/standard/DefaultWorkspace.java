@@ -134,11 +134,11 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "--------------------------------------------------------------------------------" );
 
         // probably better to implement an insert bulk operation on the graph
-        for ( ResourceMetadata<? extends Resource> md : prepared.getMetadata() ) {
+       /* for ( ResourceMetadata<? extends Resource> md : prepared.getMetadata (  ) ) {
             graph.insertNode( md );
-        }
-
-        outer: for ( ResourceMetadata<? extends Resource> md : graph.toSortedList() ) {
+        }*/
+        List<ResourceMetadata<? extends Resource>> mdList = graph.toSortedList();
+        outer: for ( ResourceMetadata<? extends Resource> md : mdList ) {
             if ( states.getState( md.getIdentifier() ) == Deactivated ) {
                 LOG.warn( "Not building resource {} (deactivated).", md.getIdentifier() );
                 continue;
@@ -407,8 +407,10 @@ public class DefaultWorkspace implements Workspace {
         PreparedResources prepared = new PreparedResources( this );
 
         LOG.info( "--------------------------------------------------------------------------------" );
-        LOG.info( "Preparing resources." );
+        LOG.info( "Preparing {} resources.", resourceMetadata.size() );
         LOG.info( "--------------------------------------------------------------------------------" );
+        int count = 0;
+        long startTime = System.currentTimeMillis();
         outer: for ( ResourceMetadata<? extends Resource> md : resourceMetadata.values() ) {
             ResourceState state = states.getState( md.getIdentifier() );
             if ( state == null ) {
@@ -421,7 +423,7 @@ public class DefaultWorkspace implements Workspace {
                     continue outer;
                 }
             }
-            LOG.info( "Preparing resource {}.", md.getIdentifier() );
+            //LOG.info( "Preparing resource {}.", md.getIdentifier() );
             try {
                 ResourceBuilder<? extends Resource> builder = md.prepare();
                 if ( builder == null ) {
@@ -436,6 +438,12 @@ public class DefaultWorkspace implements Workspace {
                     states.setState( md.getIdentifier(), Prepared );
                 }
                 prepared.addBuilder( (ResourceIdentifier) md.getIdentifier(), builder );
+                if (count%100==0 && count!=0) {
+                    LOG.info( "Prepared "+count+" out of "+resourceMetadata.size()+" resources (last 100 within " + ((System.currentTimeMillis()-startTime)) +" ms.)");
+                    startTime = System.currentTimeMillis();
+                }
+                count+=1;
+
             } catch ( Exception e ) {
                 String msg = "Error preparing resource " + md.getIdentifier() + ": " + e.getLocalizedMessage();
                 errors.registerError( md.getIdentifier(), msg );
@@ -443,7 +451,7 @@ public class DefaultWorkspace implements Workspace {
                 LOG.trace( "Stack trace:", e );
             }
         }
-
+        graph.updateDependencies();
         return prepared;
     }
 

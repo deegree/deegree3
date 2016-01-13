@@ -42,6 +42,7 @@
 package org.deegree.workspace.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.workspace.Resource;
@@ -142,6 +143,33 @@ public class ResourceNode<T extends Resource> {
      */
     public List<ResourceNode<? extends Resource>> getDependents() {
         return dependents;
+    }
+
+    public boolean hasDependencies() {
+        return !this.dependencies.isEmpty() || !this.softDependencies.isEmpty();
+    }
+
+    public boolean hasAsDependency(ResourceMetadata resourceMetadata) {
+        for (ResourceNode<? extends Resource> node : this.dependencies) {
+            if (node.getMetadata().equals(resourceMetadata)) {
+                return true;
+            }
+        }
+        for (ResourceNode<? extends Resource> node : this.softDependencies) {
+            if (node.getMetadata().equals(resourceMetadata)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAsDependency(List<ResourceMetadata<? extends Resource>> resourceMetadataList) {
+        for (ResourceMetadata<? extends Resource> resourceMetadata : resourceMetadataList) {
+            if (this.hasAsDependency(resourceMetadata)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

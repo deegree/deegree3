@@ -41,11 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
@@ -62,7 +58,7 @@ import org.deegree.workspace.ResourceMetadata;
  */
 public class ResourceGraph {
 
-    private Map<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>> nodeMap;
+    private final Map<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>> nodeMap;
 
     public ResourceGraph() {
         nodeMap = new HashMap<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>>();
@@ -74,10 +70,8 @@ public class ResourceGraph {
      */
     public ResourceGraph( List<ResourceMetadata<? extends Resource>> metadata ) {
         this();
-        List<ResourceNode<? extends Resource>> nodes = new ArrayList<ResourceNode<? extends Resource>>();
         for ( ResourceMetadata<? extends Resource> md : metadata ) {
             ResourceNode<? extends Resource> node = new ResourceNode( this, md );
-            nodes.add( node );
             nodeMap.put( md.getIdentifier(), node );
         }
         updateDependencies();
@@ -100,19 +94,18 @@ public class ResourceGraph {
     public synchronized <T extends Resource> ResourceNode<T> insertNode( ResourceMetadata<T> metadata ) {
         ResourceNode<T> node = new ResourceNode<T>( this, metadata );
         nodeMap.put( metadata.getIdentifier(), node );
-
-        updateDependencies();
-
+        //updateDependencies();
         return node;
     }
 
-    private void updateDependencies() {
-        // better algorithm possible?
+    public void updateDependencies() {
+        boolean isFirst=true;
         for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
-            node.getDependencies().clear();
-            node.getDependents().clear();
-        }
-        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
+            if (isFirst) {
+                node.getDependencies().clear();
+                node.getDependents().clear();
+                isFirst=false;
+            }
             ResourceMetadata<? extends Resource> md = node.getMetadata();
             for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
                 ResourceNode<? extends Resource> depNode = nodeMap.get( id );
@@ -184,4 +177,23 @@ public class ResourceGraph {
         return roots;
     }
 
+/*
+    public List<ResourceMetadata<? extends Resource>> toSortedList() {
+        Set<ResourceNode<? extends Resource>> graphNodeList = new HashSet<ResourceNode<?>>(nodeMap.values());
+        List<ResourceMetadata<? extends Resource>> sortedNodeList = new ArrayList<ResourceMetadata<? extends Resource>>();
+        addRootNodesToList(graphNodeList, sortedNodeList);
+        return sortedNodeList;
+    }
+
+    private void addRootNodesToList(Set<ResourceNode<? extends Resource>> graphNodeList, List<ResourceMetadata<? extends Resource>> sortedNodeList) {
+        if (graphNodeList.isEmpty()) return;
+        for ( ResourceNode<? extends Resource> node : graphNodeList ) {
+            if ( !node.hasDependencies() || node.hasAsDependency(sortedNodeList) ) {
+                sortedNodeList.add( node.getMetadata() );
+                graphNodeList.remove(node);
+            }
+        }
+        this.addRootNodesToList(graphNodeList,sortedNodeList);
+    }
+*/
 }
