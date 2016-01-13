@@ -1,0 +1,64 @@
+<aixm:Airspace gml:id="uuid.010d8451-d751-4abb-9c71-f48ad024045b" xmlns:message="http://www.aixm.aero/schema/5.1/message"
+  xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:aixm="http://www.aixm.aero/schema/5.1"
+  xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:event="http://www.aixm.aero/schema/5.1/event"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+    <gml:identifier codeSpace="urn:uuid:">010d8451-d751-4abb-9c71-f48ad024045b</gml:identifier>
+    <gml:boundedBy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+    <aixm:timeSlice>
+        <aixm:AirspaceTimeSlice gml:id="uuid.177fd0db-de96-4c45-9aa1-60b90a2027c1">
+            <gml:validTime>
+                <gml:TimePeriod gml:id="uuid.ee0a0e78-614e-419e-aebb-57829fd26699">
+                    <gml:beginPosition>2013-09-19T00:00:00Z</gml:beginPosition>
+                    <gml:endPosition indeterminatePosition="unknown"/>
+                </gml:TimePeriod>
+            </gml:validTime>
+            <aixm:interpretation>BASELINE</aixm:interpretation>
+            <aixm:sequenceNumber>1</aixm:sequenceNumber>
+            <aixm:correctionNumber>0</aixm:correctionNumber>
+            <aixm:featureLifetime>
+                <gml:TimePeriod gml:id="uuid.61902c93-3b1c-4969-90f1-c2422a31f9a2">
+                    <gml:beginPosition>2010-11-01T00:00:00Z</gml:beginPosition>
+                    <gml:endPosition indeterminatePosition="unknown"/>
+                </gml:TimePeriod>
+            </aixm:featureLifetime>
+            <aixm:type>PART</aixm:type>
+            <aixm:designator>EAMM2</aixm:designator>
+            <aixm:name>MAGNETTO OCA PART 2</aixm:name>
+            <aixm:designatorICAO>NO</aixm:designatorICAO>
+            <aixm:geometryComponent>
+                <aixm:AirspaceGeometryComponent gml:id="uuid.bbeaa329-9239-4e4f-86e3-95400d7ca76d">
+                    <aixm:theAirspaceVolume>
+                        <aixm:AirspaceVolume gml:id="uuid.fe954643-af04-4334-bd7f-fe969273a9a9">
+                            <aixm:upperLimit uom="FL">460</aixm:upperLimit>
+                            <aixm:upperLimitReference>STD</aixm:upperLimitReference>
+                            <aixm:lowerLimit uom="FL">210</aixm:lowerLimit>
+                            <aixm:lowerLimitReference>STD</aixm:lowerLimitReference>
+                            <aixm:horizontalProjection>
+                                <aixm:Surface srsName="urn:ogc:def:crs:EPSG::4326" gml:id="uuid.b2444276-e335-4106-9a4a-fd5eeb75b41c">
+                                    <gml:patches>
+                                        <gml:PolygonPatch>
+                                            <gml:exterior>
+                                                <gml:Ring>
+                                                    <gml:curveMember>
+                                                        <gml:Curve srsName="urn:ogc:def:crs:EPSG::4326" gml:id="uuid.84fe3774-a519-4b16-9344-cb311b2c92b5">
+                                                            <gml:segments>
+                                                                <gml:GeodesicString interpolation="geodesic">
+                                                                    <gml:posList>53.876666666666665 -5.863333333333333 53.89333333333333 -5.937833333333333 53.53333333333333 -5.981666666666667 52.81666666666667 -5.89 52.45333333333333 -5.869333333333333 52.516666666666666 -5.850666666666667 52.583333333333336 -5.831666666666667 53.3 -5.755 53.7 -5.786666666666667 53.718333333333334 -5.8083333333333336 53.876666666666665 -5.863333333333333</gml:posList>
+                                                                </gml:GeodesicString>
+                                                            </gml:segments>
+                                                        </gml:Curve>
+                                                    </gml:curveMember>
+                                                </gml:Ring>
+                                            </gml:exterior>
+                                        </gml:PolygonPatch>
+                                    </gml:patches>
+                                </aixm:Surface>
+                            </aixm:horizontalProjection>
+                        </aixm:AirspaceVolume>
+                    </aixm:theAirspaceVolume>
+                </aixm:AirspaceGeometryComponent>
+            </aixm:geometryComponent>
+        </aixm:AirspaceTimeSlice>
+    </aixm:timeSlice>
+</aixm:Airspace>

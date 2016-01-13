@@ -5,7 +5,7 @@
 
   <JDBCConnId>deegree-test</JDBCConnId>
 
-  <StorageCRS srid="0" dim="2D">urn:ogc:def:crs:EPSG:4326</StorageCRS>
+  <StorageCRS srid="0" dim="2D">urn:ogc:def:crs:EPSG::4326</StorageCRS>
 
   <GMLSchema>../../appschemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchema>
   <GMLSchema>../../appschemas/aixm/event/Event_Features.xsd</GMLSchema>
