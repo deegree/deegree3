@@ -130,11 +130,6 @@ public class DefaultWorkspace implements Workspace {
         LOG.info( "Building and initializing resources." );
         LOG.info( "--------------------------------------------------------------------------------" );
 
-        // probably better to implement an insert bulk operation on the graph
-        // for ( ResourceMetadata<? extends Resource> md : prepared.getMetadata() ) {
-        // graph.insertNode( md );
-        // }
-
         Iterator<ResourceIdentifier<?>> traverse = graph.traverseGraphFromBottomToTop();
         outer: while ( traverse.hasNext() ) {
             ResourceIdentifier<?> identifier = (ResourceIdentifier<?>) traverse.next();
@@ -177,7 +172,6 @@ public class DefaultWorkspace implements Workspace {
                 String msg = "Unable to build resource " + identifier + ": " + ex.getLocalizedMessage();
                 errors.registerError( identifier, msg );
                 LOG.error( msg );
-                // LOG.trace( "Stack trace:", ex );
             }
         }
     }
@@ -348,7 +342,7 @@ public class DefaultWorkspace implements Workspace {
             LOG.info( "Found resource manager {}.", mgr.getClass().getSimpleName() );
             resourceManagers.put( mgr.getMetadata().getProviderClass(), mgr );
             LOG.info( "Starting up resource manager {}.", mgr.getClass().getSimpleName() );
-            // try/catch?
+            // TODO try/catch?
             mgr.startup( this );
         }
         startedUp = true;
@@ -426,7 +420,7 @@ public class DefaultWorkspace implements Workspace {
                     continue outer;
                 }
             }
-            // LOG.info( "Preparing resource {}.", md.getIdentifier() );
+            LOG.trace( "Preparing resource {}.", md.getIdentifier() );
             try {
                 ResourceBuilder<? extends Resource> builder = md.prepare();
                 if ( builder == null ) {
@@ -456,7 +450,6 @@ public class DefaultWorkspace implements Workspace {
                 LOG.trace( "Stack trace:", e );
             }
         }
-        // graph.updateDependencies();
         return prepared;
     }
 
