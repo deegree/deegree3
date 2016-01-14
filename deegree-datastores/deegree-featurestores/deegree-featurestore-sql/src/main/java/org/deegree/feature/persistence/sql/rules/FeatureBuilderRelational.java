@@ -118,10 +118,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Builds {@link Feature} instances from SQL result set rows (relational mode).
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class FeatureBuilderRelational implements FeatureBuilder {
@@ -148,7 +148,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
-     * 
+     *
      * @param fs
      *            feature store, must not be <code>null</code>
      * @param ft
@@ -240,6 +240,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof CompoundMapping ) {
+                if ( particleConverter != null ) {
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
+                }
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
                     addSelectColumns( particle, colToRsIdx, true );
@@ -325,7 +328,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         for ( final TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
-                if ( pt instanceof ObjectPropertyType && particle instanceof TimeObject ) {
+                if ( pt instanceof ObjectPropertyType ) {
                     props.add( recreatePropertyFromGml( pt, (GenericXMLElement) particle ) );
                 } else {
                     GenericXMLElement xmlEl = (GenericXMLElement) particle;
@@ -437,10 +440,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         ParticleConverter<?> converter = fs.getConverter( mapping );
 
         if ( mapping instanceof PrimitiveMapping ) {
-            PrimitiveMapping pm = (PrimitiveMapping) mapping;
-            MappingExpression me = pm.getMapping();
-            String col = converter.getSelectSnippet( tableAlias );
-            int colIndex = colToRsIdx.get( col );
+            final String col = converter.getSelectSnippet( tableAlias );
+            final int colIndex = colToRsIdx.get( col );
             particle = converter.toParticle( rs, colIndex );
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
@@ -463,154 +464,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             // }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
-
-            Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
-            List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
-
-            boolean escalateVoid = false;
-
-            for ( Mapping particleMapping : cm.getParticles() ) {
-
-                // TODO idPrefix
-                List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx, idPrefix );
-
-                if ( !particleMapping.isVoidable() ) {
-                    boolean found = false;
-                    for ( TypedObjectNode particleValue : particleValues ) {
-                        if ( particleValue != null ) {
-                            found = true;
-                        }
-                    }
-                    if ( !found && this.nullEscalation ) {
-                        escalateVoid = true;
-                    }
-                }
-
-                Expr xpath = particleMapping.getPath().getAsXPath();
-                if ( xpath instanceof LocationPath ) {
-                    LocationPath lp = (LocationPath) xpath;
-                    if ( lp.getSteps().size() != 1 ) {
-                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                  + "'. Only single step paths are handled." );
-                        continue;
-                    }
-                    if ( lp.isAbsolute() ) {
-                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                  + "'. Only relative paths are handled." );
-                        continue;
-                    }
-                    Step step = (Step) lp.getSteps().get( 0 );
-                    if ( !step.getPredicates().isEmpty() ) {
-                        List<?> predicates = step.getPredicates();
-                        if ( predicates.size() == 1 ) {
-                            Expr predicate = ( (Predicate) predicates.get( 0 ) ).getExpr();
-                            if ( predicate instanceof NumberExpr ) {
-                                LOG.debug( "Number predicate. Assuming natural ordering." );
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
-                                      + "'. Only unpredicated steps are handled." );
-                            continue;
-                        }
-                    }
-                    if ( step instanceof TextNodeStep ) {
-                        for ( TypedObjectNode particleValue : particleValues ) {
-                            children.add( particleValue );
-                        }
-                    } else if ( step instanceof NameStep ) {
-                        NameStep ns = (NameStep) step;
-                        QName name = getQName( ns );
-                        if ( step.getAxis() == Axis.ATTRIBUTE ) {
-                            for ( TypedObjectNode particleValue : particleValues ) {
-                                if ( particleValue instanceof PrimitiveValue ) {
-                                    attrs.put( name, (PrimitiveValue) particleValue );
-                                } else {
-                                    LOG.warn( "Value not suitable for attribute." );
-                                }
-                            }
-                        } else if ( step.getAxis() == Axis.CHILD ) {
-                            for ( TypedObjectNode particleValue : particleValues ) {
-                                if ( particleValue instanceof PrimitiveValue ) {
-                                    // TODO
-                                    XSElementDeclaration childType = null;
-                                    GenericXMLElement child = new GenericXMLElement(
-                                                                                     name,
-                                                                                     childType,
-                                                                                     Collections.<QName, PrimitiveValue> emptyMap(),
-                                                                                     Collections.singletonList( particleValue ) );
-                                    children.add( child );
-                                } else if ( particleValue != null ) {
-                                    children.add( particleValue );
-                                }
-                            }
-                        } else {
-                            LOG.warn( "Unhandled axis type '" + step.getAxis() + "' for path: '"
-                                      + particleMapping.getPath() + "'" );
-                        }
-                    } else {
-                        // TODO handle other steps as self()
-                        for ( TypedObjectNode particleValue : particleValues ) {
-                            children.add( particleValue );
-                        }
-                    }
-                } else {
-                    LOG.warn( "Unhandled mapping type '" + particleMapping.getClass() + "' for path: '"
-                              + particleMapping.getPath() + "'" );
-                }
-            }
-
-            PrimitiveValue nilled = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
-            if ( nilled != null && nilled.getValue().equals( TRUE ) ) {
-                QName elName = getName( mapping.getPath() );
-                particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
-            } else if ( escalateVoid ) {
-                if ( cm.isVoidable() ) {
-                    LOG.debug( "Materializing void by omitting particle for path {}.", mapping.getPath() );
-                } else if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
-                    LOG.debug( "Materializing void by nilling particle for path {}.", mapping.getPath() );
-                    QName elName = getName( mapping.getPath() );
-                    // required attributes must still be present even if element is nilled...
-                    Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
-                    if ( cm.getElementDecl().getTypeDefinition() instanceof XSComplexTypeDefinition ) {
-                        XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) cm.getElementDecl().getTypeDefinition();
-                        XSObjectList attrUses = complexType.getAttributeUses();
-                        for ( int i = 0; i < attrUses.getLength(); i++ ) {
-                            XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
-                            if ( attrUse.getRequired() ) {
-                                QName attrName = null;
-                                XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-                                if ( attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty() ) {
-                                    attrName = new QName( attrDecl.getName() );
-                                } else {
-                                    attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-                                }
-                                PrimitiveValue attrValue = attrs.get( attrName );
-                                if ( attrValue == null ) {
-                                    LOG.debug( "Required attribute " + attrName
-                                               + "not present. Cannot void using xsi:nil. Escalating void value." );
-                                    return null;
-                                }
-                                nilAttrs.put( attrName, attrValue );
-                            }
-                        }
-                    }
-                    nilAttrs.put( new QName( XSINS, "nil", XSI_PREFIX ), new PrimitiveValue( TRUE ) );
-                    particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
-                }
+            if (converter != null) {
+                final String col = converter.getSelectSnippet( tableAlias );
+                final int colIndex = colToRsIdx.get( col );
+                particle = converter.toParticle( rs, colIndex );
             } else {
-                if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
-                    QName elName = getName( mapping.getPath() );
-                    particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, children );
-                }
+                particle = buildParticleRecursively( cm, rs, colToRsIdx, idPrefix );
             }
-
-            QName elName = getName( mapping.getPath() );
-            if ( particle instanceof GenericXMLElement && fs.getSchema().getGeometryType( elName ) != null ) {
-                particle = unwrapCustomGeometry( (GenericXMLElement) particle );
-            }
-
         } else {
             LOG.warn( "Handling of '" + mapping.getClass() + "' mappings is not implemented yet." );
         }
@@ -621,6 +481,159 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             LOG.debug( "Built particle with path {}.", mapping.getPath() );
         }
 
+        return particle;
+    }
+
+    private TypedObjectNode buildParticleRecursively (final CompoundMapping cm, final ResultSet rs, final LinkedHashMap<String, Integer> colToRsIdx,
+                                           final String idPrefix) throws SQLException {
+
+        Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
+        List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
+
+        boolean escalateVoid = false;
+
+        for ( Mapping particleMapping : cm.getParticles() ) {
+
+            // TODO idPrefix
+            List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx, idPrefix );
+
+            if ( !particleMapping.isVoidable() ) {
+                boolean found = false;
+                for ( TypedObjectNode particleValue : particleValues ) {
+                    if ( particleValue != null ) {
+                        found = true;
+                    }
+                }
+                if ( !found && this.nullEscalation ) {
+                    escalateVoid = true;
+                }
+            }
+
+            Expr xpath = particleMapping.getPath().getAsXPath();
+            if ( xpath instanceof LocationPath ) {
+                LocationPath lp = (LocationPath) xpath;
+                if ( lp.getSteps().size() != 1 ) {
+                    LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                              + "'. Only single step paths are handled." );
+                    continue;
+                }
+                if ( lp.isAbsolute() ) {
+                    LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                              + "'. Only relative paths are handled." );
+                    continue;
+                }
+                Step step = (Step) lp.getSteps().get( 0 );
+                if ( !step.getPredicates().isEmpty() ) {
+                    List<?> predicates = step.getPredicates();
+                    if ( predicates.size() == 1 ) {
+                        Expr predicate = ( (Predicate) predicates.get( 0 ) ).getExpr();
+                        if ( predicate instanceof NumberExpr ) {
+                            LOG.debug( "Number predicate. Assuming natural ordering." );
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        LOG.warn( "Unhandled location path: '" + particleMapping.getPath()
+                                  + "'. Only unpredicated steps are handled." );
+                        continue;
+                    }
+                }
+                if ( step instanceof TextNodeStep ) {
+                    for ( TypedObjectNode particleValue : particleValues ) {
+                        children.add( particleValue );
+                    }
+                } else if ( step instanceof NameStep ) {
+                    NameStep ns = (NameStep) step;
+                    QName name = getQName( ns );
+                    if ( step.getAxis() == Axis.ATTRIBUTE ) {
+                        for ( TypedObjectNode particleValue : particleValues ) {
+                            if ( particleValue instanceof PrimitiveValue ) {
+                                attrs.put( name, (PrimitiveValue) particleValue );
+                            } else {
+                                LOG.warn( "Value not suitable for attribute." );
+                            }
+                        }
+                    } else if ( step.getAxis() == Axis.CHILD ) {
+                        for ( TypedObjectNode particleValue : particleValues ) {
+                            if ( particleValue instanceof PrimitiveValue ) {
+                                // TODO
+                                XSElementDeclaration childType = null;
+                                GenericXMLElement child = new GenericXMLElement(
+                                                                                 name,
+                                                                                 childType,
+                                                                                 Collections.<QName, PrimitiveValue> emptyMap(),
+                                                                                 Collections.singletonList( particleValue ) );
+                                children.add( child );
+                            } else if ( particleValue != null ) {
+                                children.add( particleValue );
+                            }
+                        }
+                    } else {
+                        LOG.warn( "Unhandled axis type '" + step.getAxis() + "' for path: '"
+                                  + particleMapping.getPath() + "'" );
+                    }
+                } else {
+                    // TODO handle other steps as self()
+                    for ( TypedObjectNode particleValue : particleValues ) {
+                        children.add( particleValue );
+                    }
+                }
+            } else {
+                LOG.warn( "Unhandled mapping type '" + particleMapping.getClass() + "' for path: '"
+                          + particleMapping.getPath() + "'" );
+            }
+        }
+
+        TypedObjectNode particle = null;
+        PrimitiveValue nilled = attrs.get( new QName( CommonNamespaces.XSINS, "nil" ) );
+        if ( nilled != null && nilled.getValue().equals( TRUE ) ) {
+            QName elName = getName( cm.getPath() );
+            particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, null );
+        } else if ( escalateVoid ) {
+            if ( cm.isVoidable() ) {
+                LOG.debug( "Materializing void by omitting particle for path {}.", cm.getPath() );
+            } else if ( cm.getElementDecl() != null && cm.getElementDecl().getNillable() ) {
+                LOG.debug( "Materializing void by nilling particle for path {}.", cm.getPath() );
+                QName elName = getName( cm.getPath() );
+                // required attributes must still be present even if element is nilled...
+                Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
+                if ( cm.getElementDecl().getTypeDefinition() instanceof XSComplexTypeDefinition ) {
+                    XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) cm.getElementDecl().getTypeDefinition();
+                    XSObjectList attrUses = complexType.getAttributeUses();
+                    for ( int i = 0; i < attrUses.getLength(); i++ ) {
+                        XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
+                        if ( attrUse.getRequired() ) {
+                            QName attrName = null;
+                            XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
+                            if ( attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty() ) {
+                                attrName = new QName( attrDecl.getName() );
+                            } else {
+                                attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+                            }
+                            PrimitiveValue attrValue = attrs.get( attrName );
+                            if ( attrValue == null ) {
+                                LOG.debug( "Required attribute " + attrName
+                                           + "not present. Cannot void using xsi:nil. Escalating void value." );
+                                return null;
+                            }
+                            nilAttrs.put( attrName, attrValue );
+                        }
+                    }
+                }
+                nilAttrs.put( new QName( XSINS, "nil", XSI_PREFIX ), new PrimitiveValue( TRUE ) );
+                particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
+            }
+        } else {
+            if ( ( !attrs.isEmpty() ) || !children.isEmpty() ) {
+                QName elName = getName( cm.getPath() );
+                particle = new GenericXMLElement( elName, cm.getElementDecl(), attrs, children );
+            }
+        }
+
+        QName elName = getName( cm.getPath() );
+        if ( particle instanceof GenericXMLElement && fs.getSchema().getGeometryType( elName ) != null ) {
+            particle = unwrapCustomGeometry( (GenericXMLElement) particle );
+        }
         return particle;
     }
 

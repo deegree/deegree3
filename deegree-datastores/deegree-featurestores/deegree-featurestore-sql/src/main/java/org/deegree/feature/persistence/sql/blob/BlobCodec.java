@@ -57,10 +57,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -209,7 +211,7 @@ public class BlobCodec {
      * @throws IOException
      */
     public TypedObjectNode decode( InputStream is, Map<String, String> nsContext, AppSchema schema, ICRS crs,
-                             GMLReferenceResolver idResolver )
+                                   GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
 
@@ -223,6 +225,24 @@ public class BlobCodec {
         Feature feature = gmlReader.readFeature();
         LOG.debug( "Decoding feature (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
         return feature;
+    }
+
+    public TypedObjectNode decode( InputStream is, Map<String, String> nsContext, AppSchema schema, ICRS crs,
+                                   GMLReferenceResolver idResolver, XSElementDeclaration decl )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
+
+        long begin = System.currentTimeMillis();
+        BufferedInputStream bis = new BufferedInputStream( is );
+        XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper(getXMLReader( bis, nsContext ), null);
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, xmlStream );
+        gmlReader.setResolver( idResolver );
+        gmlReader.setApplicationSchema( schema );
+        gmlReader.setDefaultCRS( crs );
+        gmlReader.getFeatureReader();
+        TypedObjectNode object = gmlReader.getFeatureReader().parseGenericXMLElement( xmlStream, decl, crs );
+        LOG.debug( "Decoding object (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
+        return object;
     }
 
     private XMLStreamReader getXMLReader( InputStream is, Map<String, String> nsContext )

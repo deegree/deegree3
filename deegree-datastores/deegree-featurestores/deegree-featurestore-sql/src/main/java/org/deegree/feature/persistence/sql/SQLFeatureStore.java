@@ -58,7 +58,7 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
@@ -74,6 +74,7 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -92,7 +93,6 @@ import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
-import org.deegree.feature.persistence.sql.blob.BlobCodec.Compression;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
@@ -104,6 +104,7 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.CustomInspector;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
+import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -238,17 +239,19 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void initConverters() {
-        for ( FeatureType ft : schema.getFeatureTypes() ) {
-            FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
+        for ( final FeatureType ft : schema.getFeatureTypes() ) {
+            final FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
             if ( ftMapping != null ) {
-                for ( Mapping particleMapping : ftMapping.getMappings() ) {
-                    initConverter( particleMapping );
+                final XSElementDeclaration elementDecl = getElementDeclaration( ft.getName() );
+                for ( final Mapping particleMapping : ftMapping.getMappings() ) {
+                    initConverter( particleMapping, elementDecl );
                 }
             }
         }
     }
 
-    private void initConverter( Mapping particleMapping ) {
+    private void initConverter( final Mapping particleMapping, final XSElementDeclaration parentElementDecl  ) {
+        final XSElementDeclaration elementDecl = getElementDeclaration( parentElementDecl, particleMapping.getPath() );
         if ( particleMapping.getConverter() != null ) {
             CustomParticleConverter<TypedObjectNode> converter = instantiateConverter( particleMapping.getConverter() );
             converter.init( particleMapping, this );
@@ -290,20 +293,46 @@ public class SQLFeatureStore implements FeatureStore {
                     throw new IllegalArgumentException( msg );
                 }
                 final SQLIdentifier column = new SQLIdentifier( ( (DBField) blobMapping ).getColumn() );
-                // TODO
-                final XSTypeDefinition type = null;
                 final BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), NONE );
                 final ICRS crs = schema.getGeometryParams().getCrs();
-                final ParticleConverter<?> converter = new ParticleBlobConverter( column, type, this, resolver, codec,
+                final ParticleConverter<?> converter = new ParticleBlobConverter( column, elementDecl, this, resolver, codec,
                                                                                   crs );
                 particleMappingToConverter.put( particleMapping, converter );
             }
-            for ( Mapping childMapping : cm.getParticles() ) {
-                initConverter( childMapping );
+            for ( final Mapping childMapping : cm.getParticles() ) {
+                initConverter( childMapping, elementDecl );
             }
         } else {
             LOG.warn( "Unhandled particle mapping type {}", particleMapping );
         }
+    }
+
+    private XSElementDeclaration getElementDeclaration( final QName elName ) {
+        if ( schema.getGMLSchema() == null ) {
+            return null;
+        }
+        return schema.getGMLSchema().getElementDecl( elName );
+    }
+
+    private XSElementDeclaration getElementDeclaration( final XSElementDeclaration elementDecl,
+                                                        final ValueReference path ) {
+        if ( elementDecl == null ) {
+            return null;
+        }
+        final NamespaceBindings nsBindings = new NamespaceBindings();
+        for ( final String prefix : getNamespaceContext().keySet() ) {
+            nsBindings.addNamespace( prefix, nsContext.get( prefix ) );
+        }
+        final XPathSchemaWalker schemaWalker = new XPathSchemaWalker( schema, nsBindings );
+        final Pair<XSElementDeclaration, Boolean> startNode = new Pair<XSElementDeclaration, Boolean>( elementDecl,
+                                                                                                       false );
+        try {
+            final Pair<XSElementDeclaration, Boolean> targetElement = schemaWalker.getTargetElement( startNode, path );
+            return targetElement.first;
+        } catch ( Exception e ) {
+            LOG.debug ("Path " + path.getAsText() + " does not resolve to element. Start: " + elementDecl);
+        }
+        return null;
     }
 
     ParticleConverter<Geometry> getGeometryConverter( GeometryMapping geomMapping ) {

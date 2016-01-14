@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -26,7 +27,7 @@ public class ParticleBlobConverter implements ParticleConverter<TypedObjectNode>
 
     private final SQLIdentifier column;
 
-    private final XSTypeDefinition type;
+    private final XSElementDeclaration elementDecl;
 
     private final SQLFeatureStore fs;
 
@@ -36,10 +37,10 @@ public class ParticleBlobConverter implements ParticleConverter<TypedObjectNode>
 
     private final ICRS crs;
 
-    public ParticleBlobConverter( final SQLIdentifier column, final XSTypeDefinition type, final SQLFeatureStore fs,
+    public ParticleBlobConverter( final SQLIdentifier column, final XSElementDeclaration elementDecl, final SQLFeatureStore fs,
                                   final GMLReferenceResolver resolver, final BlobCodec codec, final ICRS crs ) {
         this.column = column;
-        this.type = type;
+        this.elementDecl = elementDecl;
         this.fs = fs;
         this.resolver = resolver;
         this.codec = codec;
@@ -63,7 +64,7 @@ public class ParticleBlobConverter implements ParticleConverter<TypedObjectNode>
         }
         final InputStream is = new ByteArrayInputStream( bytes );
         try {
-            return codec.decode( is, fs.getNamespaceContext(), fs.getSchema(), crs, resolver );
+            return codec.decode( is, fs.getNamespaceContext(), fs.getSchema(), crs, resolver, elementDecl );
         } catch ( final Exception e ) {
             throw new SQLException( e.getMessage(), e );
         } finally {
