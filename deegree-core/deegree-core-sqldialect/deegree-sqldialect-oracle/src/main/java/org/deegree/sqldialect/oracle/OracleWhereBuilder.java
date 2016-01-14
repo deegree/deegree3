@@ -123,34 +123,33 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
     @Override
     protected SQLOperation toProtoSQL( PropertyIsLike op )
             throws UnmappableException, FilterEvaluationException {
-
-        if ( !( op.getPattern() instanceof Literal ) ) {
-            String msg = "Mapping of PropertyIsLike with non-literal comparisons to SQL is not implemented yet.";
-            throw new UnsupportedOperationException( msg );
-        }
-
-        String literal = ( (Literal) op.getPattern() ).getValue().toString();
-        String escape = "" + op.getEscapeChar();
-        String wildCard = "" + op.getWildCard();
-        String singleChar = "" + op.getSingleChar();
-
         SQLExpression propName = toProtoSQL( op.getExpression() );
 
-        IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
-        String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
+        if ( propName.toString().contains("title") || propName.toString().contains("abstract") ) {
+            // use Oracle's contains function only for title and abstract properties
+            String literal = ( (Literal) op.getPattern() ).getValue().toString();
+            String escape = "" + op.getEscapeChar();
+            String wildCard = "" + op.getWildCard();
+            String singleChar = "" + op.getSingleChar();
+            IsLikeString specialString = new IsLikeString( literal, wildCard, singleChar, escape );
+            String sqlEncoded = specialString.toSQL( !op.isMatchCase() );
 
-        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
-        builder.add( " CONTAINS ( " );
-        builder.add( propName );
-        builder.add( ", " );
-        PrimitiveType pt = new PrimitiveType( STRING );
-        PrimitiveValue value = new PrimitiveValue( sqlEncoded, pt );
-        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, propName.isMultiValued() );
-        SQLArgument argument = new SQLArgument( value, converter );
-        builder.add( argument );
-        builder.add( " ) > 0 " );
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            builder.add( " CONTAINS ( " );
+            builder.add( propName );
+            builder.add( ", " );
+            PrimitiveType pt = new PrimitiveType( STRING );
+            PrimitiveValue value = new PrimitiveValue( sqlEncoded, pt );
+            PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, propName.isMultiValued() );
+            SQLArgument argument = new SQLArgument( value, converter );
+            builder.add( argument );
+            builder.add( " ) > 0 " );
 
-        return builder.toOperation();
+            return builder.toOperation();
+        } else {
+            // for all other properties use the like operator
+            return super.toProtoSQL( op );
+        }
     }
 
     @Override
