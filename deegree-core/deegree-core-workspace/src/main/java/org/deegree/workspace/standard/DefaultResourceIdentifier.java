@@ -73,44 +73,35 @@ public class DefaultResourceIdentifier<T extends Resource> implements ResourceId
         return provider;
     }
 
-    /**
-     * Implementation as proposed by Joshua Block in Effective Java (Addison-Wesley 2001), which supplies an even
-     * distribution and is relatively fast. It is created from field <b>f</b> as follows:
-     * <ul>
-     * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f</li>
-     * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
-     * <li>float -- code = Float.floatToIntBits(f);</li>
-     * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
-     * <li>all Objects, (where equals(&nbsp;) calls equals(&nbsp;) for this field) -- code = f.hashCode(&nbsp;)</li>
-     * <li>Array -- Apply above rules to each element</li>
-     * </ul>
-     * <p>
-     * Combining the hash code(s) computed above: result = 37 * result + code;
-     * </p>
-     * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
-        // the 2nd millionth prime, :-)
-        long result = 32452843;
-        result = result * 37 + getId().hashCode();
-        result = result * 37 + getProvider().hashCode();
-        return (int) ( result >>> 32 ) ^ (int) result;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( id == null ) ? 0 : id.hashCode() );
+        result = prime * result + ( ( provider == null ) ? 0 : provider.hashCode() );
+        return result;
     }
 
     @Override
     public boolean equals( Object obj ) {
-        if ( !( obj instanceof ResourceIdentifier ) ) {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
             return false;
-        }
-
-        ResourceIdentifier<? extends Resource> id = (ResourceIdentifier<?>) obj;
-
-        return getId().equals( id.getId() ) && getProvider().equals( id.getProvider() );
+        if ( getClass() != obj.getClass() )
+            return false;
+        DefaultResourceIdentifier other = (DefaultResourceIdentifier) obj;
+        if ( id == null ) {
+            if ( other.id != null )
+                return false;
+        } else if ( !id.equals( other.id ) )
+            return false;
+        if ( provider == null ) {
+            if ( other.provider != null )
+                return false;
+        } else if ( !provider.equals( other.provider ) )
+            return false;
+        return true;
     }
 
     @Override
