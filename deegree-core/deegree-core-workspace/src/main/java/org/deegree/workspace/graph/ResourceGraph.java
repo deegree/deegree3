@@ -41,49 +41,42 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.graph;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.ClosestFirstIterator;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 /**
  * Responsible for building a graph network based on a list of resource metadata objects. The metadata must obviously be
  * prepared, so they knows their dependencies.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
+ * @param <E>
+ * @param <V>
  * 
  * @since 3.4
  */
 public class ResourceGraph {
 
-    private final Map<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>> nodeMap;
+    private final DefaultDirectedGraph<ResourceIdentifier<?>, DefaultEdge> graph;
 
+    /**
+     * Creates a new graph without any content.
+     */
     public ResourceGraph() {
-        nodeMap = new HashMap<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>>();
+        this( new DefaultDirectedGraph<ResourceIdentifier<?>, DefaultEdge>( DefaultEdge.class ) );
     }
 
-    /**
-     * @param metadata
-     *            a list of prepared metadata objects, never <code>null</code>
-     */
-    public ResourceGraph( List<ResourceMetadata<? extends Resource>> metadata ) {
-        this();
-        for ( ResourceMetadata<? extends Resource> md : metadata ) {
-            ResourceNode<? extends Resource> node = new ResourceNode( this, md );
-            nodeMap.put( md.getIdentifier(), node );
-        }
-        updateDependencies();
-    }
-
-    /**
-     * @param id
-     *            may not be <code>null</code>
-     * @return a single node of the dependency network, <code>null</code> if no such node exists
-     */
-    public <T extends Resource> ResourceNode<T> getNode( ResourceIdentifier<T> id ) {
-        return (ResourceNode) nodeMap.get( id );
+    private ResourceGraph( DefaultDirectedGraph<ResourceIdentifier<?>, DefaultEdge> graph ) {
+        this.graph = graph;
     }
 
     /**
@@ -91,109 +84,118 @@ public class ResourceGraph {
      *            may not be <code>null</code>
      * @return the new node, never <code>null</code>
      */
-    public synchronized <T extends Resource> ResourceNode<T> insertNode( ResourceMetadata<T> metadata ) {
-        ResourceNode<T> node = new ResourceNode<T>( this, metadata );
-        nodeMap.put( metadata.getIdentifier(), node );
-        //updateDependencies();
-        return node;
-    }
-
-    public void updateDependencies() {
-        boolean isFirst=true;
-        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
-            if (isFirst) {
-                node.getDependencies().clear();
-                node.getDependents().clear();
-                isFirst=false;
-            }
-            ResourceMetadata<? extends Resource> md = node.getMetadata();
-            for ( ResourceIdentifier<? extends Resource> id : md.getDependencies() ) {
-                ResourceNode<? extends Resource> depNode = nodeMap.get( id );
-                if ( depNode != null ) {
-                    node.addDependency( depNode );
-                    depNode.addDependent( node );
-                }
-            }
-            for ( ResourceIdentifier<? extends Resource> id : md.getSoftDependencies() ) {
-                ResourceNode<? extends Resource> depNode = nodeMap.get( id );
-                if ( depNode != null ) {
-                    node.addSoftDependency( depNode );
-                    depNode.addDependent( node );
-                }
-            }
+    public synchronized void insertNode( ResourceMetadata<?> metadata ) {
+        ResourceIdentifier<?> identifier = metadata.getIdentifier();
+        if ( !graph.containsVertex( identifier ) ) {
+            graph.addVertex( identifier );
         }
+        insertNode( identifier, metadata.getDependencies() );
+        insertNode( identifier, metadata.getSoftDependencies() );
     }
 
     /**
-     * The list is sorted by initialization order, with resources that need to be initialized first at the beginning of
-     * the list.
+     * The provided iterator iterates through the graph in initialization order, with resources that need to be
+     * initialized first at the beginning.
      * 
-     * @return a sorted list of resource metadata objects, never <code>null</code>
+     * @return an Iterator iterating through the graph in initialization order, never <code>null</code>
      */
-    public List<ResourceMetadata<? extends Resource>> toSortedList() {
-        // sketch: first add resources without dependencies, then add resources whose dependencies are met until done
-        HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<ResourceNode<?>>( nodeMap.values() );
+    public Iterator<ResourceIdentifier<?>> traverseGraphFromBottomToTop() {
+        return new TopologicalOrderIterator<ResourceIdentifier<?>, DefaultEdge>( graph );
+    }
 
-        List<ResourceMetadata<? extends Resource>> roots = getRoots( nodes );
+    /**
+     * The provided iterator iterates through the graph in reversed initialization order, with resources that need to be
+     * initialized last at the beginning.
+     * 
+     * @return
+     */
+    public Iterator<ResourceIdentifier<?>> traverseGraphFromTopToBottom() {
+        return new ClosestFirstIterator<ResourceIdentifier<?>, DefaultEdge>( graph );
+    }
 
-        boolean changed = true;
+    /**
+     * @param nodeInGraph
+     *            the node which identifies the graph to return, never <code>null</code>
+     * @return the graph the nodeInGraph node is part of, may be <code>null</code> if the node is not part of this graph
+     */
+    public ResourceGraph getSubgraph( ResourceIdentifier<?> nodeInGraph ) {
+        if ( !graph.containsVertex( nodeInGraph ) )
+            return null;
+        DefaultDirectedGraph<ResourceIdentifier<?>, DefaultEdge> subgraph = new DefaultDirectedGraph<ResourceIdentifier<?>, DefaultEdge>(
+                                                                                                                                          DefaultEdge.class );
+        subgraph.addVertex( nodeInGraph );
+        appendRelatedVerticesAndEdges( nodeInGraph, subgraph );
+        // graph.getEdgeSource( e );
+        return new ResourceGraph( subgraph );
+    }
 
-        outer: while ( !nodes.isEmpty() ) {
-            if ( changed ) {
-                changed = false;
+    /**
+     * @param nodeInGraph
+     *            , never <code>null</code>
+     * @return the dependents of of the passed node, <code>null</code> if the node is not part of this graph
+     */
+    public List<ResourceIdentifier<?>> getDependents( ResourceIdentifier<?> nodeInGraph ) {
+        if ( !graph.containsVertex( nodeInGraph ) )
+            return null;
+        List<ResourceIdentifier<?>> dependents = new ArrayList<ResourceIdentifier<?>>();
+        Set<DefaultEdge> outgoingEdgesOf = graph.outgoingEdgesOf( nodeInGraph );
+        for ( DefaultEdge outgoingEdge : outgoingEdgesOf ) {
+            dependents.add( graph.getEdgeTarget( outgoingEdge ) );
+        }
+        return dependents;
+    }
+
+    /**
+     * @param nodeInGraph
+     *            , never <code>null</code>
+     * @return the dependencies of of the passed node, <code>null</code> if the node is not part of this graph
+     */
+    public List<ResourceIdentifier<?>> getDependencies( ResourceIdentifier<?> nodeInGraph ) {
+        if ( !graph.containsVertex( nodeInGraph ) )
+            return null;
+        List<ResourceIdentifier<?>> dependencies = new ArrayList<ResourceIdentifier<?>>();
+        Set<DefaultEdge> incomingEdgesOf = graph.incomingEdgesOf( nodeInGraph );
+        for ( DefaultEdge incomingEdge : incomingEdgesOf ) {
+            dependencies.add( graph.getEdgeSource( incomingEdge ) );
+        }
+        return dependencies;
+    }
+
+    private void insertNode( ResourceIdentifier<?> identifier, Set<ResourceIdentifier<? extends Resource>> dependencies ) {
+        for ( ResourceIdentifier<? extends Resource> dep : dependencies ) {
+            if ( !graph.containsVertex( dep ) ) {
+                graph.addVertex( dep );
+                graph.addEdge( dep, identifier );
             } else {
-                throw new ResourceException( "There are inconsistent dependency chains." );
-            }
-            inner: for ( ResourceNode<? extends Resource> node : nodes ) {
-                for ( ResourceNode<? extends Resource> dep : node.getDependencies() ) {
-                    if ( !roots.contains( dep.getMetadata() ) ) {
-                        continue inner;
-                    }
-                }
-                for ( ResourceNode<? extends Resource> dep : node.getSoftDependencies() ) {
-                    if ( !roots.contains( dep.getMetadata() ) ) {
-                        continue inner;
-                    }
-                }
-                roots.add( node.getMetadata() );
-                nodes.remove( node );
-                changed = true;
-                // could be optimized by continuing to inner, needs a little rewrite
-                continue outer;
+                if ( !graph.containsEdge( dep, identifier ) )
+                    graph.addEdge( dep, identifier );
             }
         }
-
-        return roots;
     }
 
-    private List<ResourceMetadata<? extends Resource>> getRoots( HashSet<ResourceNode<? extends Resource>> nodes ) {
-        List<ResourceMetadata<? extends Resource>> roots = new ArrayList<ResourceMetadata<? extends Resource>>();
-        for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
-            if ( node.getDependencies().isEmpty() && node.getSoftDependencies().isEmpty() ) {
-                roots.add( node.getMetadata() );
-                nodes.remove( node );
+    private void appendRelatedVerticesAndEdges( ResourceIdentifier<?> vertex,
+                                                DefaultDirectedGraph<ResourceIdentifier<?>, DefaultEdge> subgraph ) {
+
+        Set<DefaultEdge> outgoingEdgesOf = graph.outgoingEdgesOf( vertex );
+        for ( DefaultEdge outgoingEdge : outgoingEdgesOf ) {
+            ResourceIdentifier<?> targetVertex = graph.getEdgeTarget( outgoingEdge );
+            if ( !subgraph.containsVertex( targetVertex ) ) {
+                subgraph.addVertex( targetVertex );
+                if ( !subgraph.containsEdge( vertex, targetVertex ) )
+                    subgraph.addEdge( vertex, targetVertex );
+                appendRelatedVerticesAndEdges( targetVertex, subgraph );
             }
         }
-        return roots;
-    }
-
-/*
-    public List<ResourceMetadata<? extends Resource>> toSortedList() {
-        Set<ResourceNode<? extends Resource>> graphNodeList = new HashSet<ResourceNode<?>>(nodeMap.values());
-        List<ResourceMetadata<? extends Resource>> sortedNodeList = new ArrayList<ResourceMetadata<? extends Resource>>();
-        addRootNodesToList(graphNodeList, sortedNodeList);
-        return sortedNodeList;
-    }
-
-    private void addRootNodesToList(Set<ResourceNode<? extends Resource>> graphNodeList, List<ResourceMetadata<? extends Resource>> sortedNodeList) {
-        if (graphNodeList.isEmpty()) return;
-        for ( ResourceNode<? extends Resource> node : graphNodeList ) {
-            if ( !node.hasDependencies() || node.hasAsDependency(sortedNodeList) ) {
-                sortedNodeList.add( node.getMetadata() );
-                graphNodeList.remove(node);
+        Set<DefaultEdge> incomingEdgesOf = graph.incomingEdgesOf( vertex );
+        for ( DefaultEdge incomingEdge : incomingEdgesOf ) {
+            ResourceIdentifier<?> sourceVertex = graph.getEdgeSource( incomingEdge );
+            if ( !subgraph.containsVertex( sourceVertex ) ) {
+                subgraph.addVertex( sourceVertex );
+                if ( !subgraph.containsEdge( sourceVertex, vertex ) )
+                    subgraph.addEdge( sourceVertex, vertex );
+                appendRelatedVerticesAndEdges( sourceVertex, subgraph );
             }
         }
-        this.addRootNodesToList(graphNodeList,sortedNodeList);
     }
-*/
+
 }

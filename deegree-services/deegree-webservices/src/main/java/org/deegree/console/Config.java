@@ -41,9 +41,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceStates.ResourceState;
+import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.slf4j.Logger;
@@ -113,12 +115,13 @@ public class Config implements Comparable<Config>, Serializable {
 
     public void deactivate() {
         try {
-            getWorkspace().destroy( metadata.getIdentifier() );
-            getWorkspace().getLocationHandler().deactivate( metadata.getLocation() );
-            List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
-            WorkspaceUtils.collectDependents( list, getWorkspace().getDependencyGraph().getNode( metadata.getIdentifier() ) );
-            for ( ResourceMetadata<?> md : list ) {
-                getWorkspace().getLocationHandler().deactivate( md.getLocation() );
+            Workspace workspace = getWorkspace();
+            workspace.destroy( metadata.getIdentifier() );
+            workspace.getLocationHandler().deactivate( metadata.getLocation() );
+            List<ResourceIdentifier<?>> dependents = workspace.getDependencyGraph().getDependents( metadata.getIdentifier() );
+            for ( ResourceIdentifier<?> dependent : dependents ) {
+                ResourceMetadata<?> md = workspace.getResourceMetadata( dependent.getProvider(), dependent.getId() );
+                workspace.getLocationHandler().deactivate( md.getLocation() );
             }
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to deactivate resource: " + t.getMessage(),
@@ -132,7 +135,7 @@ public class Config implements Comparable<Config>, Serializable {
                             throws IOException {
         StringBuilder sb = new StringBuilder( "/console/generic/xmleditor?faces-redirect=true" );
         sb.append( "&id=" ).append( id );
-        sb.append( "&schemaUrl=" ).append( ""+schemaURL );
+        sb.append( "&schemaUrl=" ).append( "" + schemaURL );
         sb.append( "&resourceProviderClass=" ).append( metadata.getIdentifier().getProvider().getCanonicalName() );
         sb.append( "&nextView=" ).append( resourceOutcome );
         return sb.toString();

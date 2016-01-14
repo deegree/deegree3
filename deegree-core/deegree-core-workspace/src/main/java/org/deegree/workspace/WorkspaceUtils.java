@@ -45,11 +45,11 @@ import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.workspace.graph.ResourceGraph;
-import org.deegree.workspace.graph.ResourceNode;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.deegree.workspace.standard.IncorporealResourceLocation;
@@ -72,62 +72,16 @@ public class WorkspaceUtils {
      *            may not be <code>null</code>
      */
     public static void reinitializeChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
-        ResourceNode<? extends Resource> node = workspace.getDependencyGraph().getNode( id );
-        List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
-        ResourceMetadata<? extends Resource> meta = workspace.getResourceMetadata( id.getProvider(), id.getId() );
-        if ( meta == null ) {
+        ResourceGraph subgraph = workspace.getDependencyGraph().getSubgraph( id );
+        if ( subgraph == null )
             return;
-        }
-        list.add( meta );
-        collectDependencies( list, node );
-        collectDependents( list, node );
-        ResourceGraph g = new ResourceGraph( list );
-        list = g.toSortedList();
-        workspace.destroy( list.get( 0 ).getIdentifier() );
-        for ( ResourceMetadata<? extends Resource> md : list ) {
-            workspace.add( md.getLocation() );
-            workspace.init( md.getIdentifier(), null );
-        }
-    }
-
-    /**
-     * Collects all transitive dependencies of the resource node given.
-     * 
-     * @param list
-     *            may not be <code>null</code>
-     * @param node
-     *            may not be <code>null</code>
-     */
-    public static void collectDependencies( List<ResourceMetadata<? extends Resource>> list,
-                                            ResourceNode<? extends Resource> node ) {
-        if ( node == null ) {
-            return;
-        }
-        for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
-            if ( n.getMetadata() != null ) {
-                list.add( n.getMetadata() );
-                collectDependencies( list, n );
-            }
-        }
-    }
-
-    /**
-     * Transitively collects all resources which depend on the resource connected to the node given.
-     * 
-     * @param list
-     *            may not be <code>null</code>
-     * @param node
-     *            may not be <code>null</code>
-     */
-    public static void collectDependents( List<ResourceMetadata<? extends Resource>> list,
-                                          ResourceNode<? extends Resource> node ) {
-        if ( node == null ) {
-            return;
-        }
-        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
-            if ( n.getMetadata() != null ) {
-                list.add( n.getMetadata() );
-                collectDependents( list, n );
+        Iterator<ResourceIdentifier<?>> iterator = subgraph.traverseGraphFromBottomToTop();
+        if ( iterator.hasNext() ) {
+            ResourceIdentifier<?> first = iterator.next();
+            workspace.destroy( first );
+            addToWorkspaceAndInit( workspace, first );
+            while ( iterator.hasNext() ) {
+                addToWorkspaceAndInit( workspace, first );
             }
         }
     }
@@ -247,6 +201,12 @@ public class WorkspaceUtils {
             result.add( new DefaultResourceIdentifier( cls, id ) );
         }
         return result;
+    }
+
+    private static void addToWorkspaceAndInit( Workspace workspace, ResourceIdentifier<?> first ) {
+        ResourceMetadata<?> md = workspace.getResourceMetadata( first.getProvider(), first.getId() );
+        workspace.add( md.getLocation() );
+        workspace.init( md.getIdentifier(), null );
     }
 
 }
