@@ -35,19 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
+import java.util.List;
+
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.filter.expression.ValueReference;
-
-import java.util.List;
+import org.deegree.sqldialect.filter.MappingExpression;
 
 /**
  * Composite {@link Mapping} of complex particles.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class CompoundMapping extends Mapping {
@@ -56,11 +57,14 @@ public class CompoundMapping extends Mapping {
 
     private final XSElementDeclaration elDecl;
 
+    private final MappingExpression blobMapping;
+
     public CompoundMapping( ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
-                            XSElementDeclaration elDecl, CustomConverterJAXB converter ) {
+                            XSElementDeclaration elDecl, CustomConverterJAXB converter, MappingExpression blobMapping  ) {
         super( path, voidable, tableChange, converter );
         this.particles = particles;
         this.elDecl = elDecl;
+        this.blobMapping = blobMapping;
     }
 
     public CompoundMapping( ValueReference path, boolean voidable, List<Mapping> particles, List<TableJoin> tableChange,
@@ -68,6 +72,7 @@ public class CompoundMapping extends Mapping {
         super( path, voidable, tableChange, null );
         this.particles = particles;
         this.elDecl = elDecl;
+        this.blobMapping = null;
     }
 
     public List<Mapping> getParticles() {
@@ -76,6 +81,10 @@ public class CompoundMapping extends Mapping {
 
     public XSElementDeclaration getElementDecl() {
         return elDecl;
+    }
+
+    public MappingExpression getBlobMapping() {
+        return blobMapping;
     }
 
     @Override

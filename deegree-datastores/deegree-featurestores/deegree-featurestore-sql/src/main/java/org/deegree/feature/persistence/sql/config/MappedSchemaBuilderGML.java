@@ -154,6 +154,10 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
 
+        if (storageCRS == null) {
+            throw new FeatureStoreException("No StorageCRS configured. This is required in schema-driven mode.");
+        }
+
         CRSRef crs = CRSManager.getCRSRef( storageCRS.getValue() );
         CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
         geometryParams = new GeometryStorageParams( crs, storageCRS.getSrid(), dim );
@@ -442,6 +446,12 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
                                           ComplexParticleJAXB config ) {
         ValueReference path = new ValueReference( config.getPath(), nsBindings );
         elDecl = schemaWalker.getTargetElement( elDecl, path );
+
+        MappingExpression blobMapping = null;
+        if ( config.getBlobMapping() != null ) {
+            blobMapping = parseMappingExpression( config.getBlobMapping() );
+        }
+
         boolean escalateVoid = determineParticleVoidability( elDecl.second, config.getNullEscalation() );
         List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
         if ( joinedTable != null ) {
@@ -458,7 +468,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
 
         return new CompoundMapping( path, escalateVoid, particles, joinedTable, elDecl.first,
-                                    config.getCustomConverter() );
+                                    config.getCustomConverter(), blobMapping );
     }
 
     private boolean determineParticleVoidability( boolean fromSchema, NullEscalationType config ) {
