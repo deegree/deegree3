@@ -292,6 +292,11 @@
           <sequence>
             <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
+          <attribute name="blobMapping" type="string" use="optional">
+            <annotation>
+              <documentation>BLOB column.</documentation>
+            </annotation>
+          </attribute>
         </extension>
       </complexContent>
     </complexType>

@@ -57,10 +57,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: 328 $, $Date: 2011-07-01 11:31:23 +0200 (Fr, 01. Jul 2011) $
  */
 public class MSSQLDDLCreator extends DDLCreator {
@@ -69,7 +69,7 @@ public class MSSQLDDLCreator extends DDLCreator {
 
     /**
      * Creates a new {@link MSSQLDDLCreator} instance for the given {@link MappedAppSchema}.
-     * 
+     *
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
@@ -169,6 +169,16 @@ public class MSSQLDDLCreator extends DDLCreator {
             sql.append( ",\n    " );
             sql.append( ( (DBField) hrefMe ).getColumn() );
             sql.append( " varchar(2000)" );
+        }
+    }
+
+    @Override
+    protected void blobMappingSnippet( StringBuffer sql, MappingExpression mapping ) {
+        if ( mapping instanceof DBField ) {
+            DBField dbField = (DBField) mapping;
+            sql.append( ",\n    " );
+            sql.append( dbField.getColumn() );
+            sql.append( " varbinary(max)" );
         }
     }
 

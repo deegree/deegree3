@@ -56,10 +56,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Creates Oracle-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: 348 $, $Date: 2011-07-01 18:02:24 +0200 (Fr, 01. Jul 2011) $
  */
 public class OracleDDLCreator extends DDLCreator {
@@ -68,7 +68,7 @@ public class OracleDDLCreator extends DDLCreator {
 
     /**
      * Creates a new {@link OracleDDLCreator} instance for the given {@link MappedAppSchema}.
-     * 
+     *
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
@@ -232,6 +232,16 @@ public class OracleDDLCreator extends DDLCreator {
             ddls.addAll( getGeometryCreate( mapping, (DBField) me, table ) );
         } else {
             LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
+        }
+    }
+
+    @Override
+    protected void blobMappingSnippet( StringBuffer sql, MappingExpression mapping ) {
+        if ( mapping instanceof DBField ) {
+            DBField dbField = (DBField) mapping;
+            sql.append( ",\n    " );
+            sql.append( dbField.getColumn() );
+            sql.append( " blob" );
         }
     }
 

@@ -56,10 +56,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
+ *
  * @version $Revision: 31176 $, $Date: 2011-07-01 11:31:06 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDDLCreator extends DDLCreator {
@@ -70,7 +70,7 @@ public class PostGISDDLCreator extends DDLCreator {
 
     /**
      * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedAppSchema}.
-     * 
+     *
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
@@ -150,6 +150,16 @@ public class PostGISDDLCreator extends DDLCreator {
             ddls.addAll( getGeometryCreate( mapping, (DBField) me, table ) );
         } else {
             LOG.info( "Skipping geometry mapping -- not mapped to a db field. " );
+        }
+    }
+
+    @Override
+    protected void blobMappingSnippet( StringBuffer sql, MappingExpression mapping ) {
+        if ( mapping instanceof DBField ) {
+            DBField dbField = (DBField) mapping;
+            sql.append( ",\n    " );
+            sql.append( dbField.getColumn() );
+            sql.append( " bytea" );
         }
     }
 

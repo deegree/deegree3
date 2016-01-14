@@ -50,20 +50,21 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.sqldialect.postgis.PostGISDialect;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public abstract class DDLCreator {
@@ -80,7 +81,7 @@ public abstract class DDLCreator {
 
     /**
      * Creates a new {@link DDLCreator} instance for the given {@link MappedAppSchema}.
-     * 
+     *
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
@@ -94,7 +95,7 @@ public abstract class DDLCreator {
 
     /**
      * Returns the DDL statements for creating the relational schema required by the {@link MappedAppSchema}.
-     * 
+     *
      * @return the DDL statements, never <code>null</code>
      */
     public String[] getDDL() {
@@ -190,6 +191,8 @@ public abstract class DDLCreator {
     protected abstract void geometryMappingSnippet( StringBuffer sql, GeometryMapping mapping, List<StringBuffer> ddls,
                                                     TableName table );
 
+    protected abstract void blobMappingSnippet( final StringBuffer sql, final MappingExpression mapping );
+
     protected abstract void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping );
 
     protected abstract StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls );
@@ -213,7 +216,10 @@ public abstract class DDLCreator {
         } else if ( mapping instanceof FeatureMapping ) {
             featureMappingSnippet( sql, (FeatureMapping) mapping );
         } else if ( mapping instanceof CompoundMapping ) {
-            CompoundMapping compoundMapping = (CompoundMapping) mapping;
+            final CompoundMapping compoundMapping = (CompoundMapping) mapping;
+            if ( compoundMapping.getBlobMapping() != null ) {
+                blobMappingSnippet( sql, compoundMapping.getBlobMapping() );
+            }
             for ( Mapping childMapping : compoundMapping.getParticles() ) {
                 ddls.addAll( process( sql, table, childMapping ) );
             }
@@ -245,4 +251,5 @@ public abstract class DDLCreator {
         throw new IllegalArgumentException( "Nod DDLCreator for DB type '" + dialect.getClass().getSimpleName()
                                             + "' available." );
     }
+
 }
