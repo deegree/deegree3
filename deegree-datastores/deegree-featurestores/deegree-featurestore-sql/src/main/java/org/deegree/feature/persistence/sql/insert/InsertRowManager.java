@@ -66,11 +66,11 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.KeyPropagation;
 import org.deegree.feature.persistence.sql.id.TableDependencies;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
@@ -94,10 +94,10 @@ import org.slf4j.LoggerFactory;
  * <li>Coping with unresolved feature references (forward/backward xlinks)</li>
  * <li>Auto-generated feature ids/key columns</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class InsertRowManager {
@@ -128,7 +128,7 @@ public class InsertRowManager {
 
     /**
      * Creates a new {@link InsertRowManager} instance.
-     * 
+     *
      * @param fs
      *            feature store, must not be <code>null</code>
      * @param conn
@@ -151,7 +151,7 @@ public class InsertRowManager {
      * may be delayed until their dependencies are inserted. This method also takes care of checking for rows that have
      * been delayed and can be inserted now.
      * </p>
-     * 
+     *
      * @param feature
      *            feature instance to be inserted, must not be <code>null</code>
      * @param ftMapping
@@ -395,7 +395,14 @@ public class InsertRowManager {
                     }
                 }
             } else if ( mapping instanceof CompoundMapping ) {
-                for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
+                final CompoundMapping compoundMapping = (CompoundMapping) mapping;
+                @SuppressWarnings("unchecked")
+                final ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
+                if (converter != null && value != null && compoundMapping.getBlobMapping() instanceof DBField) {
+                    final DBField blobMapping = (DBField) compoundMapping.getBlobMapping();
+                    currentRow.addPreparedArgument( blobMapping.getColumn(), value, converter );
+                }
+                for ( Mapping child : compoundMapping.getParticles() ) {
                     buildInsertRows( value, child, currentRow, additionalRows );
                 }
             } else if ( mapping instanceof SqlExpressionMapping ) {
@@ -543,7 +550,7 @@ public class InsertRowManager {
 
     /**
      * Returns the number of currently delayed rows (rows that depend on some other row to be inserted first).
-     * 
+     *
      * @return number of currently delayed rows
      */
     public int getDelayedRows() {

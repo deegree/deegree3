@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.xml.XMLParsingException;
@@ -71,6 +72,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,13 +81,13 @@ import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 
 /**
  * Provides methods for storing / retrieving {@link GMLObject} instances in binary form, e.g. in BLOBs.
- * 
+ *
  * TODO improve namespace handling (should not be done for every single blob) TODO get FAST_INFOSET to work TODO
  * FAST_INFOSET with external vocabulary
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class BlobCodec {
@@ -110,7 +112,7 @@ public class BlobCodec {
 
     /**
      * Creates a new {@link BlobCodec} instance.
-     * 
+     *
      * @param gmlVersion
      *            gml version to use, must not be <code>null</code>
      * @param compression
@@ -122,8 +124,8 @@ public class BlobCodec {
     }
 
     /**
-     * Encodes the given {@link GMLObject} to the specified output stream.
-     * 
+     * Encodes the given {@link TypedObjectNode} to the specified output stream.
+     *
      * @param object
      *            object to be encoded, must not be <code>null</code>
      * @param nsContext
@@ -137,7 +139,8 @@ public class BlobCodec {
      * @throws TransformationException
      * @throws IOException
      */
-    public void encode( GMLObject object, final Map<String, String> nsContext, OutputStream os, ICRS crs )
+    public void encode( final TypedObjectNode object, final Map<String, String> nsContext, OutputStream os,
+                        final ICRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
@@ -148,7 +151,7 @@ public class BlobCodec {
         gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCrs( crs );
         gmlWriter.setExportExtraProps( true );
-        gmlWriter.write( object );
+        gmlWriter.getFeatureWriter().export( object, new GmlXlinkOptions() );
         gmlWriter.close();
         if ( LOG.isDebugEnabled() ) {
             File file = File.createTempFile( "encoded-feature", ".tmp" );
@@ -156,12 +159,12 @@ public class BlobCodec {
             xmlWriter = getXMLWriter( os );
             gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
             gmlWriter.setOutputCrs( crs );
-            gmlWriter.write( object );
+            gmlWriter.getFeatureWriter().export( object, new GmlXlinkOptions() );
             gmlWriter.close();
             os.close();
-            LOG.debug( "Wrote encoded feature to '" + file.getAbsolutePath() + "'" );
+            LOG.debug( "Wrote encoded object to '" + file.getAbsolutePath() + "'" );
         }
-        LOG.debug( "Encoding feature (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
+        LOG.debug( "Encoding object (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
     }
 
     private XMLStreamWriter getXMLWriter( OutputStream os )
@@ -190,7 +193,7 @@ public class BlobCodec {
 
     /**
      * Decodes the given {@link GMLObject} from the specified input stream.
-     * 
+     *
      * @param is
      *            input stream to read from, must not be <code>null</code>
      * @param nsContext
@@ -205,7 +208,7 @@ public class BlobCodec {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public GMLObject decode( InputStream is, Map<String, String> nsContext, AppSchema schema, ICRS crs,
+    public TypedObjectNode decode( InputStream is, Map<String, String> nsContext, AppSchema schema, ICRS crs,
                              GMLReferenceResolver idResolver )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
@@ -259,6 +262,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#close()
      */
+    @Override
     public void close()
                             throws XMLStreamException {
         xmlStreamWriter.close();
@@ -273,6 +277,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#flush()
      */
+    @Override
     public void flush()
                             throws XMLStreamException {
         xmlStreamWriter.flush();
@@ -287,6 +292,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @return
      * @see javax.xml.stream.XMLStreamWriter#getNamespaceContext()
      */
+    @Override
     public NamespaceContext getNamespaceContext() {
         return xmlStreamWriter.getNamespaceContext();
     }
@@ -297,6 +303,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#getPrefix(java.lang.String)
      */
+    @Override
     public String getPrefix( String arg0 )
                             throws XMLStreamException {
         return xmlStreamWriter.getPrefix( arg0 );
@@ -308,6 +315,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws IllegalArgumentException
      * @see javax.xml.stream.XMLStreamWriter#getProperty(java.lang.String)
      */
+    @Override
     public Object getProperty( String arg0 )
                             throws IllegalArgumentException {
         return xmlStreamWriter.getProperty( arg0 );
@@ -318,6 +326,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#setDefaultNamespace(java.lang.String)
      */
+    @Override
     public void setDefaultNamespace( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.setDefaultNamespace( arg0 );
@@ -328,6 +337,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#setNamespaceContext(javax.xml.namespace.NamespaceContext)
      */
+    @Override
     public void setNamespaceContext( NamespaceContext arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.setNamespaceContext( arg0 );
@@ -339,6 +349,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#setPrefix(java.lang.String, java.lang.String)
      */
+    @Override
     public void setPrefix( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.setPrefix( arg0, arg1 );
@@ -353,6 +364,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @see javax.xml.stream.XMLStreamWriter#writeAttribute(java.lang.String, java.lang.String, java.lang.String,
      *      java.lang.String)
      */
+    @Override
     public void writeAttribute( String arg0, String arg1, String arg2, String arg3 )
                             throws XMLStreamException {
         xmlStreamWriter.writeAttribute( arg0, arg1, arg2, arg3 );
@@ -365,6 +377,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeAttribute(java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void writeAttribute( String arg0, String arg1, String arg2 )
                             throws XMLStreamException {
         xmlStreamWriter.writeAttribute( arg0, arg1, arg2 );
@@ -376,6 +389,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeAttribute(java.lang.String, java.lang.String)
      */
+    @Override
     public void writeAttribute( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.writeAttribute( arg0, arg1 );
@@ -386,6 +400,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeCData(java.lang.String)
      */
+    @Override
     public void writeCData( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeCData( arg0 );
@@ -398,6 +413,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeCharacters(char[], int, int)
      */
+    @Override
     public void writeCharacters( char[] arg0, int arg1, int arg2 )
                             throws XMLStreamException {
         xmlStreamWriter.writeCharacters( arg0, arg1, arg2 );
@@ -408,6 +424,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeCharacters(java.lang.String)
      */
+    @Override
     public void writeCharacters( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeCharacters( arg0 );
@@ -418,6 +435,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeComment(java.lang.String)
      */
+    @Override
     public void writeComment( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeComment( arg0 );
@@ -428,6 +446,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeDTD(java.lang.String)
      */
+    @Override
     public void writeDTD( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeDTD( arg0 );
@@ -438,6 +457,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeDefaultNamespace(java.lang.String)
      */
+    @Override
     public void writeDefaultNamespace( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeDefaultNamespace( arg0 );
@@ -450,6 +470,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeEmptyElement(java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void writeEmptyElement( String arg0, String arg1, String arg2 )
                             throws XMLStreamException {
         xmlStreamWriter.writeEmptyElement( arg0, arg1, arg2 );
@@ -461,6 +482,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeEmptyElement(java.lang.String, java.lang.String)
      */
+    @Override
     public void writeEmptyElement( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.writeEmptyElement( arg0, arg1 );
@@ -471,6 +493,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeEmptyElement(java.lang.String)
      */
+    @Override
     public void writeEmptyElement( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeEmptyElement( arg0 );
@@ -480,6 +503,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeEndDocument()
      */
+    @Override
     public void writeEndDocument()
                             throws XMLStreamException {
         xmlStreamWriter.writeEndDocument();
@@ -489,6 +513,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeEndElement()
      */
+    @Override
     public void writeEndElement()
                             throws XMLStreamException {
         xmlStreamWriter.writeEndElement();
@@ -499,6 +524,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeEntityRef(java.lang.String)
      */
+    @Override
     public void writeEntityRef( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeEntityRef( arg0 );
@@ -510,6 +536,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeNamespace(java.lang.String, java.lang.String)
      */
+    @Override
     public void writeNamespace( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.writeNamespace( arg0, arg1 );
@@ -521,6 +548,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeProcessingInstruction(java.lang.String, java.lang.String)
      */
+    @Override
     public void writeProcessingInstruction( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.writeProcessingInstruction( arg0, arg1 );
@@ -531,6 +559,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeProcessingInstruction(java.lang.String)
      */
+    @Override
     public void writeProcessingInstruction( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeProcessingInstruction( arg0 );
@@ -540,6 +569,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeStartDocument()
      */
+    @Override
     public void writeStartDocument()
                             throws XMLStreamException {
         xmlStreamWriter.writeStartDocument();
@@ -551,6 +581,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeStartDocument(java.lang.String, java.lang.String)
      */
+    @Override
     public void writeStartDocument( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.writeStartDocument( arg0, arg1 );
@@ -561,6 +592,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeStartDocument(java.lang.String)
      */
+    @Override
     public void writeStartDocument( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeStartDocument( arg0 );
@@ -573,6 +605,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeStartElement(java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void writeStartElement( String arg0, String arg1, String arg2 )
                             throws XMLStreamException {
         xmlStreamWriter.writeStartElement( arg0, arg1, arg2 );
@@ -584,6 +617,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeStartElement(java.lang.String, java.lang.String)
      */
+    @Override
     public void writeStartElement( String arg0, String arg1 )
                             throws XMLStreamException {
         xmlStreamWriter.writeStartElement( arg0, arg1 );
@@ -594,6 +628,7 @@ class XMLStreamWriterWrapper implements XMLStreamWriter {
      * @throws XMLStreamException
      * @see javax.xml.stream.XMLStreamWriter#writeStartElement(java.lang.String)
      */
+    @Override
     public void writeStartElement( String arg0 )
                             throws XMLStreamException {
         xmlStreamWriter.writeStartElement( arg0 );

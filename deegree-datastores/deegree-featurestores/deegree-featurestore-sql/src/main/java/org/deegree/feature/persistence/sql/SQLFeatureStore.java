@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.sql;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -57,6 +58,7 @@ import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
@@ -90,11 +92,13 @@ import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
+import org.deegree.feature.persistence.sql.blob.BlobCodec.Compression;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.blob.FeatureBuilderBlob;
 import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
 import org.deegree.feature.persistence.sql.converter.CustomParticleConverter;
 import org.deegree.feature.persistence.sql.converter.FeatureParticleConverter;
+import org.deegree.feature.persistence.sql.converter.ParticleBlobConverter;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
@@ -276,7 +280,24 @@ public class SQLFeatureStore implements FeatureStore {
                                                                            valueFt, schema );
             particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
-            CompoundMapping cm = (CompoundMapping) particleMapping;
+            final CompoundMapping cm = (CompoundMapping) particleMapping;
+            if ( cm.getBlobMapping() != null ) {
+                final MappingExpression blobMapping = cm.getBlobMapping();
+                if ( !( blobMapping instanceof DBField ) ) {
+                    final String msg = "Unsupported mapping expression for blob mapping: " + blobMapping
+                                       + ". Only column names are allowed here.";
+                    LOG.error( msg );
+                    throw new IllegalArgumentException( msg );
+                }
+                final SQLIdentifier column = new SQLIdentifier( ( (DBField) blobMapping ).getColumn() );
+                // TODO
+                final XSTypeDefinition type = null;
+                final BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), NONE );
+                final ICRS crs = schema.getGeometryParams().getCrs();
+                final ParticleConverter<?> converter = new ParticleBlobConverter( column, type, this, resolver, codec,
+                                                                                  crs );
+                particleMappingToConverter.put( particleMapping, converter );
+            }
             for ( Mapping childMapping : cm.getParticles() ) {
                 initConverter( childMapping );
             }
@@ -517,8 +538,8 @@ public class SQLFeatureStore implements FeatureStore {
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 BlobCodec codec = blobMapping.getCodec();
-                geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
-                                              blobMapping.getCRS(), resolver );
+                geomOrFeature = (GMLObject) codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
+                                                          blobMapping.getCRS(), resolver );
                 if ( getCache() != null ) {
                     getCache().add( geomOrFeature );
                 }
