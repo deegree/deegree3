@@ -8,10 +8,13 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTestCase;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.OperatorFilter;
 
 /**
  * Tests the query behaviour of the {@link SQLFeatureStore} for an AIXM configuration.
@@ -20,7 +23,7 @@ import org.deegree.filter.FilterEvaluationException;
  *
  * @since 3.4
  */
-public class AixmReconstructionBlobIT extends SQLFeatureStoreTestCase {
+public class AixmTransactionBlobIT extends SQLFeatureStoreTestCase {
 
     private static final String DATASET_LOCATION = "aixm/data/Donlon.xml";
 
@@ -28,11 +31,7 @@ public class AixmReconstructionBlobIT extends SQLFeatureStoreTestCase {
 
     private static final String WORKSPACE_LOCATION = "aixm/workspace";
 
-    private static final QName AIRPORT_NAME = new QName( AIXM_NS, "AirportHeliport" );
-
     private static final QName AIRSPACE_NAME = new QName( AIXM_NS, "Airspace" );
-
-    private static final QName VERTICAL_STRUCTURE_NAME = new QName( AIXM_NS, "VerticalStructure" );
 
     private SQLFeatureStore fs;
 
@@ -44,30 +43,27 @@ public class AixmReconstructionBlobIT extends SQLFeatureStoreTestCase {
         importGml( fs, DATASET_LOCATION, GENERATE_NEW );
     }
 
-    public void testQueryAllAirports()
-                            throws FeatureStoreException, FilterEvaluationException {
-
-        final Query query = new Query( AIRPORT_NAME, null, -1, -1, -1 );
-        final FeatureCollection fc = fs.query( query ).toCollection();
-        assertEquals( 2, fc.size() );
-    }
-
-    public void testQueryAirspaceEamm2()
+    public void testDeleteAirspaceEamm2()
                             throws FeatureStoreException, FilterEvaluationException, IOException {
-        final Query query = buildGmlIdentifierQuery( "010d8451-d751-4abb-9c71-f48ad024045b", AIRSPACE_NAME );
-        final FeatureCollection fc = fs.query( query ).toCollection();
 
-        assertEquals( 1, fc.size() );
-        assertGmlEquals( fc.iterator().next(), "aixm/expected/airspace_eamm2.xml" );
-    }
+        // before: 13 Airspace features
+        final Query query = new Query( AIRSPACE_NAME, null, -1, -1, -1 );
+        final FeatureCollection fcBefore = fs.query( query ).toCollection();
+        assertEquals( 13, fcBefore.size() );
 
-    public void testQueryVerticalStructureCrane5()
-                            throws FeatureStoreException, FilterEvaluationException, IOException {
-        final Query query = buildGmlIdentifierQuery( "8c755520-b42b-11e3-a5e2-0800500c9a66", VERTICAL_STRUCTURE_NAME );
-        final FeatureCollection fc = fs.query( query ).toCollection();
+        // delete one Airspace feature
+        final Filter filter = buildGmlIdentifierFilter( "010d8451-d751-4abb-9c71-f48ad024045b" );
+        final FeatureStoreTransaction ta = fs.acquireTransaction();
+        try {
+            ta.performDelete( AIRSPACE_NAME, (OperatorFilter) filter, null );
+        } catch ( Exception e ) {
+            ta.rollback();
+        }
+        ta.commit();
 
-        assertEquals( 1, fc.size() );
-        assertGmlEquals( fc.iterator().next(), "aixm/expected/crane_5.xml" );
+        // after: 12 Airspace features
+        final FeatureCollection fcAfter = fs.query( query ).toCollection();
+        assertEquals( 12, fcAfter.size() );
     }
 
 }

@@ -25,20 +25,22 @@ import org.deegree.filter.OperatorFilter;
  */
 public class AixmTransactionHybridIT extends SQLFeatureStoreTestCase {
 
-    private static final QName AIRPORT_NAME = new QName( AIXM_NS, "AirportHeliport" );
+    private static final String DATASET_LOCATION = "aixm/data/Donlon.xml";
+
+    private static final String FEATURE_STORE_ID = "aixm-relational";
+
+    private static final String WORKSPACE_LOCATION = "aixm/workspace";
 
     private static final QName AIRSPACE_NAME = new QName( AIXM_NS, "Airspace" );
-
-    private static final QName VERTICAL_STRUCTURE_NAME = new QName( AIXM_NS, "VerticalStructure" );
 
     private SQLFeatureStore fs;
 
     @Override
     public void setUp()
                             throws Exception {
-        fs = setUpFeatureStore( "aixm-relational", "aixm/workspace" );
+        fs = setUpFeatureStore( FEATURE_STORE_ID, WORKSPACE_LOCATION );
         createTablesFromConfig( fs );
-        importGml( fs, "aixm/data/Donlon.xml", GENERATE_NEW );
+        importGml( fs, DATASET_LOCATION, GENERATE_NEW );
     }
 
     public void testDeleteAirspaceEamm2()
