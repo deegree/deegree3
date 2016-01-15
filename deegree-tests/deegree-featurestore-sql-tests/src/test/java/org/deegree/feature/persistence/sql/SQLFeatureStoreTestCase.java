@@ -181,11 +181,25 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
      * @return query instance, never <code>null</code>
      */
     protected Query buildGmlIdentifierQuery( final String identifier, final QName featureTypeName ) {
+        final Filter filter = buildGmlIdentifierFilter( identifier );
+        return new Query( featureTypeName, filter, -1, -1, -1 );
+    }
+
+    /**
+     * Creates a {@link Filter} that targets the feature with the given <code>gml:identifier</code>.
+     *
+     * @param identifier
+     *            value of the gml:identifier, must not be <code>null</code>
+     * @param featureTypeName
+     *            name of the feature type, must not be <code>null</code>
+     * @return filter instance, never <code>null</code>
+     */
+    protected Filter buildGmlIdentifierFilter( final String identifier ) {
         final ValueReference propName = new ValueReference( GML_IDENTIFIER );
         final Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( identifier );
         final PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
         final Filter filter = new OperatorFilter( oper );
-        return new Query( featureTypeName, filter, -1, -1, -1 );
+        return filter;
     }
 
     /**

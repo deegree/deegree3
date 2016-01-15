@@ -14,7 +14,7 @@
 
 
   <FeatureTypeMapping name="aixm:AirportHeliport" table="airport_heliport">
-    <FIDMapping prefix="uuid.">
+    <FIDMapping prefix="airport.heliport.uuid.">
       <Column name="attr_gml_id" type="string" />
       <UUIDGenerator />
     </FIDMapping>
@@ -36,7 +36,7 @@
   </FeatureTypeMapping>
 
   <FeatureTypeMapping name="aixm:Airspace" table="airspace">
-    <FIDMapping prefix="uuid.">
+    <FIDMapping prefix="airspace.uuid.">
       <Column name="attr_gml_id" type="string" />
       <UUIDGenerator />
     </FIDMapping>
@@ -58,7 +58,7 @@
   </FeatureTypeMapping>
 
   <FeatureTypeMapping name="aixm:VerticalStructure" table="vertical_structure">
-    <FIDMapping prefix="uuid.">
+    <FIDMapping prefix="vertical.structure.uuid.">
       <Column name="attr_gml_id" type="string" />
       <UUIDGenerator />
     </FIDMapping>
