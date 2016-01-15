@@ -301,6 +301,25 @@
       </complexContent>
     </complexType>
   </element>
+  <element name="Blob" substitutionGroup="sqlfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping of an element and its subtree to a BLOB column</documentation>
+        <appinfo>
+          <jaxb:class name="BlobParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractParticleType">
+          <attribute name="mapping" type="string">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
   <element name="Href">
     <complexType>
       <annotation>

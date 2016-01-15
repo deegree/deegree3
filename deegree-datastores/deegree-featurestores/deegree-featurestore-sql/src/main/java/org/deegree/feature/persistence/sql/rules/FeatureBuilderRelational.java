@@ -104,7 +104,6 @@ import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
-import org.deegree.time.TimeObject;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -234,6 +233,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
                 }
             } else if ( mapping instanceof FeatureMapping ) {
+                if ( particleConverter != null ) {
+                    addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
+                } else {
+                    LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
+                }
+            } else if ( mapping instanceof BlobParticleMapping ) {
                 if ( particleConverter != null ) {
                     addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
@@ -462,6 +467,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             int colIndex = colToRsIdx.get( col );
             particle = converter.toParticle( rs, colIndex );
             // }
+        } else if ( mapping instanceof BlobParticleMapping ) {
+            final BlobParticleMapping bm = (BlobParticleMapping) mapping;
+            final MappingExpression me = bm.getMapping();
+            if ( me instanceof DBField ) {
+                final String col = converter.getSelectSnippet( tableAlias );
+                final int colIndex = colToRsIdx.get( col );
+                particle = converter.toParticle( rs, colIndex );
+            }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
             if (converter != null) {

@@ -105,6 +105,7 @@ import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.CustomInspector;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
+import org.deegree.feature.persistence.sql.rules.BlobParticleMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -281,6 +282,21 @@ public class SQLFeatureStore implements FeatureStore {
             }
             ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(),
                                                                            valueFt, schema );
+            particleMappingToConverter.put( particleMapping, converter );
+        } else if ( particleMapping instanceof BlobParticleMapping ) {
+            final BlobParticleMapping bm = (BlobParticleMapping) particleMapping;
+            final MappingExpression mapping = bm.getMapping();
+            if ( !( mapping instanceof DBField ) ) {
+                final String msg = "Unsupported mapping expression for blob mapping: " + blobMapping
+                                   + ". Only column names are allowed here.";
+                LOG.error( msg );
+                throw new IllegalArgumentException( msg );
+            }
+            final SQLIdentifier column = new SQLIdentifier( ( (DBField) mapping ).getColumn() );
+            final BlobCodec codec = new BlobCodec( schema.getGMLSchema().getVersion(), NONE );
+            final ICRS crs = schema.getGeometryParams().getCrs();
+            final ParticleConverter<?> converter = new ParticleBlobConverter( column, elementDecl, this, resolver,
+                                                                              codec, crs );
             particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             final CompoundMapping cm = (CompoundMapping) particleMapping;

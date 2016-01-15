@@ -1,6 +1,6 @@
 <SQLFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd"
-  xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:message="http://www.aixm.aero/schema/5.1/message" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:message="http://www.aixm.aero/schema/5.1/message" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:gml="http://www.opengis.net/gml/3.2">
 
   <JDBCConnId>deegree-test</JDBCConnId>
@@ -12,6 +12,51 @@
 
   <CustomReferenceResolver>org.deegree.feature.persistence.FeatureStoreGmlIdentifierResolver</CustomReferenceResolver>
 
+
+  <FeatureTypeMapping name="aixm:AirportHeliport" table="airport_heliport">
+    <FIDMapping prefix="uuid.">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="'urn:uuid:'" />
+    </Complex>
+
+    <Complex path="aixm:featureMetadata">
+      <Blob path="gmd:MD_Metadata" mapping="aixm_feature_metadata"/>
+    </Complex>
+
+    <Complex path="aixm:timeSlice">
+      <Join fromColumns="attr_gml_id" table="airport_heliport_timeslice" toColumns="fk_airport" numbered="true" orderColumns="pos"/>
+      <Blob path="aixm:AirportHeliportTimeSlice" mapping="aixm_timeslice"/>
+    </Complex>
+
+  </FeatureTypeMapping>
+
+  <FeatureTypeMapping name="aixm:Airspace" table="airspace">
+    <FIDMapping prefix="uuid.">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="'urn:uuid:'" />
+    </Complex>
+
+    <Complex path="aixm:featureMetadata">
+      <Blob path="gmd:MD_Metadata" mapping="aixm_feature_metadata"/>
+    </Complex>
+
+    <Complex path="aixm:timeSlice">
+      <Join fromColumns="attr_gml_id" table="airspace_timeslice" toColumns="fk_airspace" numbered="true" orderColumns="pos"/>
+      <Blob path="aixm:AirspaceTimeSlice" mapping="aixm_timeslice"/>      
+    </Complex>
+
+  </FeatureTypeMapping>
+
   <FeatureTypeMapping name="aixm:VerticalStructure" table="vertical_structure">
     <FIDMapping prefix="uuid.">
       <Column name="attr_gml_id" type="string" />
@@ -21,15 +66,19 @@
       <Primitive path="text()" mapping="gml_identifier" />
       <Primitive path="@codeSpace" mapping="'urn:uuid:'" />
     </Complex>
-    <Complex path="aixm:featureMetadata" blobMapping="aixm_feature_metadata"/>
+
+    <Complex path="aixm:featureMetadata">
+      <Blob path="gmd:MD_Metadata" mapping="aixm_feature_metadata"/>
+    </Complex>
 
     <Complex path="aixm:timeSlice">
-      <Join fromColumns="attr_gml_id" table="vertical_structure_timeslice" toColumns="fk_vertical_structure" numbered="true" orderColumns="pos"/>           
+      <Join fromColumns="attr_gml_id" table="vertical_structure_timeslice" toColumns="fk_vertical_structure" numbered="true" orderColumns="pos"/>
+
+      <Blob path="aixm:VerticalStructureTimeSlice" mapping="aixm_timeslice"/>
 
       <Complex path="aixm:VerticalStructureTimeSlice">
-        <Primitive path="@gml:id" mapping="attr_gml_id" />
-                
-        <Complex path="gml:validTime" blobMapping="gml_validtime_blob">
+        <Primitive path="@gml:id" mapping="attr_gml_id" />              
+        <Complex path="gml:validTime">
           <Primitive path="@nilReason" mapping="(CASE WHEN $0.gml_validtime_gml_timeinstant IS NULL AND $0.gml_validtime_gml_timeperiod_begin IS NULL AND $0.gml_validtime_gml_timeperiod_end IS NULL THEN 'inapplicable' ELSE NULL END)" type="string" />
           <Complex path="gml:TimeInstant">
             <Complex path="gml:timePosition">
@@ -46,13 +95,11 @@
               <Primitive path="text()" mapping="gml_validtime_gml_timeperiod_end" type="dateTime" />
             </Complex>
           </Complex>
-        </Complex>
-       
+        </Complex>    
         <Primitive path="aixm:interpretation" mapping="aixm_interpretation" />
         <Primitive path="aixm:sequenceNumber" mapping="aixm_sequence_number" />
         <Primitive path="aixm:correctionNumber" mapping="aixm_correction_number" />
-
-        <Complex path="aixm:featureLifetime" blobMapping="aixm_featurelifetime_blob">
+        <Complex path="aixm:featureLifetime">
           <Complex path="gml:TimePeriod">
             <Complex path="gml:beginPosition">
               <Primitive path="@indeterminatePosition" mapping="CASE WHEN aixm_featurelifetime_gml_timeperiod_begin IS NULL THEN 'unknown' ELSE NULL END" type="string" />
@@ -80,7 +127,7 @@
           <Join fromColumns="id" table="vertical_structure_timeslice_part" toColumns="fk_timeslice" numbered="true" orderColumns="pos"/>
           <Complex path="aixm:VerticalStructurePart">
             <Primitive path="@gml:id" mapping="attr_gml_id" />
-            <Complex path="aixm:timeInterval" blobMapping="time_interval"/>
+            <Complex path="aixm:timeInterval" />
             <Complex path="aixm:verticalExtent">
               <Primitive path="text()" mapping="vertical_extent" />
               <Primitive path="@uom" mapping="vertical_extent_uom" />
@@ -102,7 +149,7 @@
             </Complex>
           </Complex>
         </Complex>        
-      </Complex>
+      </Complex>      
     </Complex>
   </FeatureTypeMapping>
 

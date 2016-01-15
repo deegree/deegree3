@@ -3,7 +3,6 @@ package org.deegree.feature.persistence.sql.aixm;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.xml.namespace.QName;
 
@@ -21,7 +20,7 @@ import org.deegree.filter.FilterEvaluationException;
  *
  * @since 3.4
  */
-public class AixmQueryIT extends SQLFeatureStoreTestCase {
+public class AixmReconstructionBlobIT extends SQLFeatureStoreTestCase {
 
     private static final QName AIRPORT_NAME = new QName( AIXM_NS, "AirportHeliport" );
 
@@ -47,15 +46,6 @@ public class AixmQueryIT extends SQLFeatureStoreTestCase {
         assertEquals( 2, fc.size() );
     }
 
-    public void testQueryVerticalStructureCrane5()
-                            throws FeatureStoreException, FilterEvaluationException, IOException {
-        final Query query = buildGmlIdentifierQuery( "8c755520-b42b-11e3-a5e2-0800500c9a66", VERTICAL_STRUCTURE_NAME );
-        final FeatureCollection fc = fs.query( query ).toCollection();
-
-        assertEquals( 1, fc.size() );
-        assertGmlEquals( fc.iterator().next(), "aixm/expected/crane_5.xml" );
-    }
-
     public void testQueryAirspaceEamm2()
                             throws FeatureStoreException, FilterEvaluationException, IOException {
         final Query query = buildGmlIdentifierQuery( "010d8451-d751-4abb-9c71-f48ad024045b", AIRSPACE_NAME );
@@ -63,6 +53,15 @@ public class AixmQueryIT extends SQLFeatureStoreTestCase {
 
         assertEquals( 1, fc.size() );
         assertGmlEquals( fc.iterator().next(), "aixm/expected/airspace_eamm2.xml" );
+    }
+
+    public void testQueryVerticalStructureCrane5()
+                            throws FeatureStoreException, FilterEvaluationException, IOException {
+        final Query query = buildGmlIdentifierQuery( "8c755520-b42b-11e3-a5e2-0800500c9a66", VERTICAL_STRUCTURE_NAME );
+        final FeatureCollection fc = fs.query( query ).toCollection();
+
+        assertEquals( 1, fc.size() );
+        assertGmlEquals( fc.iterator().next(), "aixm/expected/crane_5.xml" );
     }
 
 }

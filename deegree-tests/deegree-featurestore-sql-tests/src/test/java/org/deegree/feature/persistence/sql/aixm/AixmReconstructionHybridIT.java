@@ -3,11 +3,9 @@ package org.deegree.feature.persistence.sql.aixm;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
@@ -22,7 +20,7 @@ import org.deegree.filter.FilterEvaluationException;
  *
  * @since 3.4
  */
-public class AixmRelationalQueryIT extends SQLFeatureStoreTestCase {
+public class AixmReconstructionHybridIT extends SQLFeatureStoreTestCase {
 
     private static final QName AIRPORT_NAME = new QName( AIXM_NS, "AirportHeliport" );
 
@@ -40,10 +38,21 @@ public class AixmRelationalQueryIT extends SQLFeatureStoreTestCase {
         importGml( fs, "aixm/data/Donlon.xml", GENERATE_NEW );
     }
 
-    @Override
-    public void tearDown()
-                            throws SQLException {
-//        super.tearDown();
+    public void testQueryAllAirports()
+                            throws FeatureStoreException, FilterEvaluationException {
+
+        final Query query = new Query( AIRPORT_NAME, null, -1, -1, -1 );
+        final FeatureCollection fc = fs.query( query ).toCollection();
+        assertEquals( 2, fc.size() );
+    }
+
+    public void testQueryAirspaceEamm2()
+                            throws FeatureStoreException, FilterEvaluationException, IOException {
+        final Query query = buildGmlIdentifierQuery( "010d8451-d751-4abb-9c71-f48ad024045b", AIRSPACE_NAME );
+        final FeatureCollection fc = fs.query( query ).toCollection();
+
+        assertEquals( 1, fc.size() );
+        assertGmlEquals( fc.iterator().next(), "aixm/expected/airspace_eamm2.xml" );
     }
 
     public void testQueryVerticalStructureCrane5()
@@ -51,6 +60,7 @@ public class AixmRelationalQueryIT extends SQLFeatureStoreTestCase {
         final Query query = buildGmlIdentifierQuery( "8c755520-b42b-11e3-a5e2-0800500c9a66", VERTICAL_STRUCTURE_NAME );
         final FeatureCollection fc = fs.query( query ).toCollection();
         assertEquals( 1, fc.size() );
+        System.out.println (new String (toGml( fc.iterator().next() )));
         assertGmlEquals( fc.iterator().next(), "aixm/expected/crane_5.xml" );
     }
 

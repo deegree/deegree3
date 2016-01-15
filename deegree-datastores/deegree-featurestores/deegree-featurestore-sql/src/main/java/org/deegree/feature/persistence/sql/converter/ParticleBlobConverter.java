@@ -4,13 +4,15 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
@@ -62,6 +64,12 @@ public class ParticleBlobConverter implements ParticleConverter<TypedObjectNode>
         if ( bytes == null ) {
             return null;
         }
+        try {
+            FileUtils.writeByteArrayToFile( new File ("/tmp/blob.xml"), bytes );
+        } catch ( IOException e1 ) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         final InputStream is = new ByteArrayInputStream( bytes );
         try {
             return codec.decode( is, fs.getNamespaceContext(), fs.getSchema(), crs, resolver, elementDecl );
@@ -94,7 +102,7 @@ public class ParticleBlobConverter implements ParticleConverter<TypedObjectNode>
             codec.encode( particle, fs.getNamespaceContext(), bos, crs );
         } catch ( Exception e ) {
             final String msg = "Error encoding particle to BLOB: " + e.getMessage();
-            LOG.error( msg );
+            LOG.trace( msg );
             LOG.trace( "Stack trace:", e );
             throw new SQLException( msg, e );
         }

@@ -49,6 +49,7 @@ import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.rules.BlobParticleMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
@@ -215,6 +216,8 @@ public abstract class DDLCreator {
             geometryMappingSnippet( sql, (GeometryMapping) mapping, ddls, table );
         } else if ( mapping instanceof FeatureMapping ) {
             featureMappingSnippet( sql, (FeatureMapping) mapping );
+        } else if ( mapping instanceof BlobParticleMapping ) {
+            blobMappingSnippet( sql, ((BlobParticleMapping) mapping).getMapping());
         } else if ( mapping instanceof CompoundMapping ) {
             final CompoundMapping compoundMapping = (CompoundMapping) mapping;
             if ( compoundMapping.getBlobMapping() != null ) {
