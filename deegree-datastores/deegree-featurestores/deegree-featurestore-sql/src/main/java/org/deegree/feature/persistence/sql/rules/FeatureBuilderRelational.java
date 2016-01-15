@@ -69,6 +69,7 @@ import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -332,18 +333,34 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         }
         for ( final TypedObjectNode particle : particles ) {
-            if ( particle instanceof GenericXMLElement ) {
-                if ( pt instanceof ObjectPropertyType ) {
-                    props.add( recreatePropertyFromGml( pt, (GenericXMLElement) particle ) );
-                } else {
-                    GenericXMLElement xmlEl = (GenericXMLElement) particle;
-                    props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(),
-                                                    xmlEl.getChildren() ) );
-                }
+            if ( particle instanceof Property ) {
+                props.add( (Property) particle );
+            } else if ( particle instanceof GenericXMLElement ) {
+                props.add( convertToProperty( (GenericXMLElement) particle, pt ) );
             } else {
                 props.add( new GenericProperty( pt, pt.getName(), particle ) );
             }
         }
+    }
+
+    private Property convertToProperty( final GenericXMLElement particle, final PropertyType pt ) {
+        if ( pt instanceof ObjectPropertyType && !isChildElementGmlObject( particle ) ) {
+            LOG.warn( "Recreating GML object-valued property: "
+                      + ( (ObjectPropertyType) pt ).getAllowedRepresentation() );
+            return recreatePropertyFromGml( pt, particle );
+        }
+        return new GenericProperty( pt, particle.getName(), null, particle.getAttributes(), particle.getChildren() );
+    }
+
+    private boolean isChildElementGmlObject( final GenericXMLElement particle ) {
+        if ( particle.getChildren().size() != 1 ) {
+            return false;
+        }
+        final TypedObjectNode child = particle.getChildren().get( 0 );
+        if ( child instanceof GMLObject ) {
+            return true;
+        }
+        return false;
     }
 
     // private GMLObject buildGmlObject( final ObjectPropertyType pt, final CompoundMapping propMapping,
@@ -477,7 +494,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
-            if (converter != null) {
+            if ( converter != null ) {
                 final String col = converter.getSelectSnippet( tableAlias );
                 final int colIndex = colToRsIdx.get( col );
                 particle = converter.toParticle( rs, colIndex );
@@ -497,8 +514,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return particle;
     }
 
-    private TypedObjectNode buildParticleRecursively (final CompoundMapping cm, final ResultSet rs, final LinkedHashMap<String, Integer> colToRsIdx,
-                                           final String idPrefix) throws SQLException {
+    private TypedObjectNode buildParticleRecursively( final CompoundMapping cm, final ResultSet rs,
+                                                      final LinkedHashMap<String, Integer> colToRsIdx,
+                                                      final String idPrefix )
+                            throws SQLException {
 
         Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
         List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
