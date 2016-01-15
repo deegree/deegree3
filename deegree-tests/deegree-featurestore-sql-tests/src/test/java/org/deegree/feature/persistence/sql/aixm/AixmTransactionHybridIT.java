@@ -17,7 +17,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.OperatorFilter;
 
 /**
- * Tests the query behaviour of the {@link SQLFeatureStore} for an AIXM configuration.
+ * Tests the transactional behaviour of the {@link SQLFeatureStore} for an AIXM configuration.
  *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  *
@@ -56,10 +56,10 @@ public class AixmTransactionHybridIT extends SQLFeatureStoreTestCase {
         final FeatureStoreTransaction ta = fs.acquireTransaction();
         try {
             ta.performDelete( AIRSPACE_NAME, (OperatorFilter) filter, null );
+            ta.commit();
         } catch ( Exception e ) {
             ta.rollback();
         }
-        ta.commit();
 
         // after: 12 Airspace features
         final FeatureCollection fcAfter = fs.query( query ).toCollection();
