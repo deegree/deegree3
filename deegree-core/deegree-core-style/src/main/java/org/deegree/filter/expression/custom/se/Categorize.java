@@ -287,12 +287,14 @@ public class Categorize extends AbstractCustomExpression {
             allValueReferences.addAll( contn.retrieveValueReferences() );
         if ( valueContns != null ) {
             for ( Continuation<StringBuffer> valueCont : valueContns ) {
-                allValueReferences.addAll( valueCont.retrieveValueReferences() );
+                if ( valueCont != null )
+                    allValueReferences.addAll( valueCont.retrieveValueReferences() );
             }
         }
         if ( thresholdContns != null ) {
             for ( Continuation<StringBuffer> thresholdCont : thresholdContns ) {
-                allValueReferences.addAll( thresholdCont.retrieveValueReferences() );
+                if ( thresholdCont != null )
+                    allValueReferences.addAll( thresholdCont.retrieveValueReferences() );
             }
         }
         return allValueReferences.toArray( new Expression[allValueReferences.size()] );

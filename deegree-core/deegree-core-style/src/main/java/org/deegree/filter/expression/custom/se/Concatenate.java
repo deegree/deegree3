@@ -137,7 +137,8 @@ public class Concatenate extends AbstractCustomExpression {
         List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
         if ( valueContns != null ) {
             for ( Continuation<StringBuffer> valueCont : valueContns ) {
-                allValueReferences.addAll( valueCont.retrieveValueReferences() );
+                if ( valueCont != null )
+                    allValueReferences.addAll( valueCont.retrieveValueReferences() );
             }
         }
         return allValueReferences.toArray( new Expression[allValueReferences.size()] );

@@ -186,8 +186,10 @@ class QueryBuilder {
 
     static List<ValueReference> parseValueReferencesFromFilter( OperatorFilter filter ) {
         List<ValueReference> allValueReferences = new ArrayList<ValueReference>();
-        Operator operator = filter.getOperator();
-        addValueReferences( operator, allValueReferences );
+        if ( filter != null ) {
+            Operator operator = filter.getOperator();
+            addValueReferences( operator, allValueReferences );
+        }
         return allValueReferences;
     }
 
