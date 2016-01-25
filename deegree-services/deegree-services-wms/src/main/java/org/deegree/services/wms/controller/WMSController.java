@@ -335,7 +335,15 @@ public class WMSController extends AbstractOWS {
         if ( v == null ) {
             v = map.get( "WMTVER" );
         }
-        Version version = v == null ? highestVersion : Version.parseVersion( v );
+        Version version;
+        try {
+            version = v == null ? highestVersion : Version.parseVersion( v );
+        } catch ( InvalidParameterValueException e ) {
+            WMSRequestType req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
+            OWSException expection = new OWSException( e );
+            controllers.get( highestVersion ).handleException( map, req, expection, response, this );
+            return;
+        }
 
         WMSRequestType req;
         try {
