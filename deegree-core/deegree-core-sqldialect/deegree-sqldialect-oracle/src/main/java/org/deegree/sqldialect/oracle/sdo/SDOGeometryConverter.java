@@ -268,17 +268,57 @@ public class SDOGeometryConverter {
      */
     public Geometry toGeometry( STRUCT sdoStruct, ICRS crs )
                             throws SQLException {
-        if ( sdoStruct == null )
+        if ( sdoStruct == null ) {
             return null;
+        }
 
         Datum data[] = sdoStruct.getOracleAttributes();
 
-        GeomHolder sdo = new GeomHolder( OracleObjectTools.fromInteger( data[0], 0 ), // gtype
-                                         OracleObjectTools.fromInteger( data[1], -1 ), // srid
-                                         OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN ), // point
-                                         OracleObjectTools.fromIntegerArray( (ARRAY) data[3] ), // elem_info
-                                         OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN ), // ordinates
-                                         crs );
+        int gtype = OracleObjectTools.fromInteger( data[0], 0 );
+        int srid = OracleObjectTools.fromInteger( data[1], -1 );
+        double[] point = OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN );
+        int[] elemInfo = OracleObjectTools.fromIntegerArray( (ARRAY) data[3] );
+        double[] ordinates = OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN );
+
+        int gtype_d, tdims = gtype / 1000;
+        if ( tdims < 2 || tdims > 4 ) {
+            gtype_d = 2;
+        } else {
+            gtype_d = tdims;
+        }
+
+        int gtype_l = ( gtype % 1000 ) / 100;
+        if ( gtype_l > 0 ) { // contains LRS?
+            // create ordinates array without LRS dimension
+            double[] newOrdinates = new double[( ordinates.length / gtype_d ) * ( gtype_d - 1 )];
+
+            int j = 0;
+            for ( int i = 0; i < ordinates.length; i++ ) {
+                if ( i % gtype_d != ( gtype_l - 1 ) ) { // ordinate not in LRS dimension?
+                    newOrdinates[j++] = ordinates[i];
+                }
+            }
+
+            ordinates = newOrdinates;
+
+            // create elemInfo array without LRS dimension
+            int[] newElemInfo = new int[elemInfo.length];
+            for ( int i = 0; i < newElemInfo.length; i++ ) {
+                if ( i % 3 == 0 ) { 
+                    // compute new offset in ordinates array
+                    newElemInfo[i] = ( ( elemInfo[i] - 1 ) / gtype_d ) * ( gtype_d - 1 ) + 1;
+                } else {
+                    newElemInfo[i] = elemInfo[i];
+                }
+            }
+
+            elemInfo = newElemInfo;
+
+            // compute new gtype
+            gtype = gtype - 1000 - gtype_l * 100;
+        }
+
+        GeomHolder sdo = new GeomHolder( gtype, srid, point, elemInfo, ordinates, crs );
 
         return toGeometry( sdo, crs );
     }
@@ -288,8 +328,6 @@ public class SDOGeometryConverter {
                             throws SQLException {
         if ( sdo.cnt_o < sdo.gtype_d || sdo.cnt_e < 3 || sdo.cnt_o % sdo.gtype_d > 0 || sdo.cnt_e % 3 > 0 )
             throw new SQLException( "Illegal Geometry" );
-        else if ( sdo.gtype_l > 0 )
-            throw new SQLException( "SDO_Geometry with LRS is not supported" );
         else if ( sdo.gtype_tt == SDOGTypeTT.UNKNOWN )
             throw new SQLException( "Unsupported Geometry" );
 

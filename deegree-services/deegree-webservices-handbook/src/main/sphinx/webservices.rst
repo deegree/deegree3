@@ -951,7 +951,7 @@ The following table lists all available configuration options. When specifiying 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Extended Functionality
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-* deegree3 CSW (up to 3.2-pre11) supports JSON as additional output format. Use *outputFormat="application/json"* in your GetRecords or GetRecordById Request to get the matching records in JSON.
+* deegree3 CSW supports JSON as additional output format. Use *outputFormat="application/json"* in your GetRecords or GetRecordById Request to get the matching records in JSON.
 
 
 .. _anchor-configuration-wps:

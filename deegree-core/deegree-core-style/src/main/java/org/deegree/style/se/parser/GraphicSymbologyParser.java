@@ -80,8 +80,8 @@ import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Mark;
-import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Mark.SimpleMark;
+import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
@@ -129,14 +129,16 @@ class GraphicSymbologyParser {
                 }
             } else if ( in.getLocalName().equals( "ExternalGraphic" ) ) {
                 try {
-                    final Triple<BufferedImage, String, Continuation<List<BufferedImage>>> p = parseExternalGraphic( in );
+                    final Triple<BufferedImage, String, Continuation<List<Pair<BufferedImage, String>>>> p = parseExternalGraphic( in );
                     if ( p.third != null ) {
                         contn = new Continuation<Graphic>( contn ) {
                             @Override
                             public void updateStep( Graphic base, Feature f, XPathEvaluator<Feature> evaluator ) {
-                                LinkedList<BufferedImage> list = new LinkedList<BufferedImage>();
+                                LinkedList<Pair<BufferedImage, String>> list = new LinkedList<Pair<BufferedImage, String>>();
                                 p.third.evaluate( list, f, evaluator );
-                                base.image = list.poll();
+                                Pair<BufferedImage, String> image = list.poll();
+                                base.image = image.first;
+                                base.imageURL = image.second;
                             }
                         };
                     } else {
@@ -338,7 +340,7 @@ class GraphicSymbologyParser {
         return new Pair<Mark, Continuation<Mark>>( base, contn );
     }
 
-    private Triple<BufferedImage, String, Continuation<List<BufferedImage>>> parseExternalGraphic( final XMLStreamReader in )
+    private Triple<BufferedImage, String, Continuation<List<Pair<BufferedImage, String>>>> parseExternalGraphic( final XMLStreamReader in )
                             throws IOException, XMLStreamException {
         // TODO color replacement
 
@@ -348,7 +350,8 @@ class GraphicSymbologyParser {
         BufferedImage img = null;
         String url = null;
         Triple<InputStream, String, Continuation<StringBuffer>> pair = null;
-        Continuation<List<BufferedImage>> contn = null; // needs to be list to be updateable by reference...
+        Continuation<List<Pair<BufferedImage, String>>> contn = null; // needs to be list to be updateable by
+                                                                      // reference...
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "ExternalGraphic" ) ) ) {
             in.nextTag();
@@ -383,25 +386,32 @@ class GraphicSymbologyParser {
                             return size() > 256; // yeah, hardcoded max size... TODO
                         }
                     };
-                    contn = new Continuation<List<BufferedImage>>() {
+                    contn = new Continuation<List<Pair<BufferedImage, String>>>() {
                         @Override
-                        public void updateStep( List<BufferedImage> base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                        public void updateStep( List<Pair<BufferedImage, String>> base, Feature f,
+                                                XPathEvaluator<Feature> evaluator ) {
                             StringBuffer sb = new StringBuffer();
                             sbcontn.evaluate( sb, f, evaluator );
                             String file = sb.toString();
                             if ( cache.containsKey( file ) ) {
-                                base.add( cache.get( file ) );
+                                base.add( new Pair<BufferedImage, String>( cache.get( file ), null ) );
                                 return;
                             }
                             try {
-                                BufferedImage i;
-                                if ( context.location != null ) {
-                                    i = ImageIO.read( context.location.resolve( file ) );
+                                URL resolvedImageUrl = resolveImageUrl( file );
+                                BufferedImage image = null;
+                                String imageUrl = null;
+                                if ( resolvedImageUrl != null ) {
+                                    image = ImageIO.read( resolvedImageUrl );
+                                    if ( image != null ) {
+                                        cache.put( file, image );
+                                    } else {
+                                        imageUrl = resolvedImageUrl.toExternalForm();
+                                    }
                                 } else {
-                                    i = ImageIO.read( resolve( file, in ) );
+                                    imageUrl = file;
                                 }
-                                base.add( i );
-                                cache.put( file, i );
+                                base.add( new Pair<BufferedImage, String>( image, imageUrl ) );
                             } catch ( MalformedURLException e ) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -410,6 +420,19 @@ class GraphicSymbologyParser {
                                 e.printStackTrace();
                             }
                         }
+
+                        private URL resolveImageUrl( String file )
+                                                throws MalformedURLException {
+                            if ( context.location != null )
+                                return context.location.resolveToUrl( file );
+                            return resolve( file, in );
+                        }
+
+                        private BufferedImage asImage( URL resolvedImageUrl )
+                                                throws IOException {
+                            return ImageIO.read( resolvedImageUrl );
+                        }
+
                     };
                 }
             }
@@ -423,7 +446,7 @@ class GraphicSymbologyParser {
             }
         }
 
-        return new Triple<BufferedImage, String, Continuation<List<BufferedImage>>>( img, url, contn );
+        return new Triple<BufferedImage, String, Continuation<List<Pair<BufferedImage, String>>>>( img, url, contn );
     }
 
     private Triple<InputStream, String, Continuation<StringBuffer>> getOnlineResourceOrInlineContent( XMLStreamReader in )
