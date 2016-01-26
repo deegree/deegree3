@@ -31,8 +31,11 @@ import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSProvider;
+import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB;
+import org.deegree.tile.persistence.remotewms.jaxb.RemoteWMSTileStoreJAXB.TileDataSet;
+import org.deegree.tile.tilematrixset.TileMatrixSetProvider;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
@@ -66,6 +69,12 @@ public class RemoteWmsTileStoreMetadata extends AbstractResourceMetadata<TileSto
             String wmsId = config.getRemoteWMSId();
 
             dependencies.add( new DefaultResourceIdentifier<RemoteOWS>( RemoteOWSProvider.class, wmsId ) );
+            for ( TileDataSet tileDataSet : config.getTileDataSet() ) {
+                String tileMatrixSetId = tileDataSet.getTileMatrixSetId();
+                if ( tileMatrixSetId != null )
+                    dependencies.add( new DefaultResourceIdentifier<TileMatrixSet>( TileMatrixSetProvider.class,
+                                                                                    tileMatrixSetId ) );
+            }
 
             return new RemoteWmsTileStoreBuilder( config, this, workspace );
         } catch ( Exception e ) {
