@@ -904,7 +904,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             constraints.add( new Domain( "KVPEncoding", "TRUE" ) );
             constraints.add( new Domain( "XMLEncoding", "TRUE" ) );
-            constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            if ( master.isSoapSupported() ) {
+                constraints.add( new Domain( "SOAPEncoding", "TRUE" ) );
+            } else {
+                constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            }
             constraints.add( new Domain( "ImplementsInheritance", "FALSE" ) );
             constraints.add( new Domain( "ImplementsRemoteResolve", "FALSE" ) );
             if ( master.isEnableResponsePaging() ) {
