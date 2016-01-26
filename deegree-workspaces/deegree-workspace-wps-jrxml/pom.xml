@@ -54,6 +54,12 @@
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.lowagie</groupId>
+          <artifactId>itext</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>xalan</groupId>

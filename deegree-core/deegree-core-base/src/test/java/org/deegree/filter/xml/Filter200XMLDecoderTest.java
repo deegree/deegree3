@@ -36,7 +36,6 @@
 package org.deegree.filter.xml;
 
 import static org.junit.Assert.assertEquals;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.schema.RedirectingEntityResolver;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.filter.Filter;
@@ -73,7 +73,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
  * Tests the correct parsing of Filter Encoding 2.0.0 documents using the official examples (excluding filter
@@ -85,8 +84,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  */
 public class Filter200XMLDecoderTest {
-
-    private static final Logger LOG = getLogger( Filter200XMLDecoderTest.class );
 
     // files are not really fetched from this URL, but taken from cached version (module deegree-ogcschemas)
     private static final String OGC_EXAMPLES_BASE_URL = "http://schemas.opengis.net/filter/2.0/examples/";
@@ -329,6 +326,15 @@ public class Filter200XMLDecoderTest {
         for ( Filter filter : getFilters( "filter14.xml" ) ) {
             And and = (And) ( (OperatorFilter) filter ).getOperator();
         }
+    }
+
+    @Test(expected = XMLParsingException.class)
+    public void parsePropertyIsLessThanOrEuqlToWithLiteralContainingUnexpectedGeometry()
+                            throws Exception {
+        InputStream filterAsStream = this.getClass().getResourceAsStream( "v200/unexectedTestfilter.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( filterAsStream );
+        XMLStreamUtils.skipStartDocument( xmlStream );
+        Filter200XMLDecoder.parse( xmlStream );
     }
 
     // @Test

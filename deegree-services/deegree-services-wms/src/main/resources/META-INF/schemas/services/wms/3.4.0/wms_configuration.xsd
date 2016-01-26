@@ -21,14 +21,17 @@
             </sequence>
           </complexType>
         </element>
+        <element name="UpdateSequence" type="integer" minOccurs="0" />
         <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
         <element name="MetadataStoreId" type="string" minOccurs="0" />
         <!-- if set, this template will be used for generating MetadataURL elements for layers (default is to use an internal 
           CSW if available) -->
         <element name="MetadataURLTemplate" minOccurs="0" type="string" />
         <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
+        <element name="GetCapabilitiesFormats" minOccurs="0" type="wms:GetCapabilitiesFormatsType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
         <element name="GetMapFormats" minOccurs="0" type="wms:GetMapFormatsType" />
+        <element name="ExceptionFormats" minOccurs="0" type="wms:ExceptionFormatsType" />
         <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <sequence>
@@ -42,9 +45,9 @@
             </sequence>
           </complexType>
         </element>
-        <element name="LayerLimit" minOccurs="0" type="positiveInteger"/>
-        <element name="MaxWidth" minOccurs="0" type="positiveInteger"/>
-        <element name="MaxHeight" minOccurs="0" type="positiveInteger"/>        
+        <element name="LayerLimit" minOccurs="0" type="positiveInteger" />
+        <element name="MaxWidth" minOccurs="0" type="positiveInteger" />
+        <element name="MaxHeight" minOccurs="0" type="positiveInteger" />
       </sequence>
       <attribute name="configVersion" use="required" type="wms:ConfigVersionType" />
     </complexType>
@@ -57,8 +60,22 @@
     </sequence>
   </complexType>
 
-  <complexType name="FeatureInfoFormatsType">  
-    <sequence>    
+  <complexType name="GetCapabilitiesFormatsType">
+    <sequence>
+      <element name="GetCapabilitiesFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="XSLTFile" type="string" />
+            <element name="Format" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="enableDefaultFormats" type="boolean" default="true" />
+  </complexType>
+
+  <complexType name="FeatureInfoFormatsType">
+    <sequence>
       <element name="GetFeatureInfoFormat" minOccurs="0" maxOccurs="unbounded">
         <complexType>
           <sequence>
@@ -74,11 +91,11 @@
                 </complexType>
               </element>
               <element name="Serializer">
-              	<complexType>
-              		<sequence>
-						<element name="JavaClass" type="string" />
-					</sequence>
-              	</complexType>
+                <complexType>
+                  <sequence>
+                    <element name="JavaClass" type="string" />
+                  </sequence>
+                </complexType>
               </element>
             </choice>
             <element name="Format" type="string" />
@@ -86,9 +103,23 @@
         </complexType>
       </element>
     </sequence>
-    <attribute name="enableDefaultFormats" type="boolean" default="true"/>
+    <attribute name="enableDefaultFormats" type="boolean" default="true" />
   </complexType>
 
+  <complexType name="ExceptionFormatsType">
+    <sequence>
+      <element name="ExceptionFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="XSLTFile" type="string"/>
+            <element name="Format" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="enableDefaultFormats" type="boolean" default="true" />
+  </complexType>
+  
   <complexType name="GetMapFormatsType">
     <sequence>
       <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded">
@@ -107,7 +138,7 @@
       </element>
     </sequence>
   </complexType>
-  
+
   <complexType name="LayerOptionsType">
     <sequence>
       <element name="AntiAliasing" type="string" minOccurs="0" />

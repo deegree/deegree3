@@ -54,10 +54,12 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-layers-coverage</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.inspectors;
 
+import static org.deegree.protocol.csw.CSWConstants.SDS_NS;
+import static org.deegree.protocol.csw.CSWConstants.SDS_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.sql.Connection;
@@ -80,6 +82,7 @@ public class FIInspector implements RecordInspector<ISORecord> {
         nsContext.addNamespace( "srv", "http://www.isotc211.org/2005/srv" );
         nsContext.addNamespace( "gmd", "http://www.isotc211.org/2005/gmd" );
         nsContext.addNamespace( "gco", "http://www.isotc211.org/2005/gco" );
+        nsContext.addNamespace( SDS_PREFIX, SDS_NS );
     }
 
     /**
@@ -146,13 +149,12 @@ public class FIInspector implements RecordInspector<ISORecord> {
                                                              new XPath( "./gmd:fileIdentifier/gco:CharacterString",
                                                                         nsContext ) );
 
-        OMElement sv_service_OR_md_dataIdentification = a.getElement( rootEl,
-                                                                      new XPath(
-                                                                                 "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification",
-                                                                                 nsContext ) );
-        String dataIdentificationId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "id" ) );
-        String dataIdentificationUuId = sv_service_OR_md_dataIdentification.getAttributeValue( new QName( "uuid" ) );
-        List<OMElement> identifier = a.getElements( sv_service_OR_md_dataIdentification,
+        String identificationInfoXPathExpr = "./gmd:identificationInfo/srv:SV_ServiceIdentification | ./gmd:identificationInfo/gmd:MD_DataIdentification"
+                                             + " | ./gmd:identificationInfo/sds:SV_ServiceIdentification";
+        OMElement identificationInfo = a.getElement( rootEl, new XPath( identificationInfoXPathExpr, nsContext ) );
+        String dataIdentificationId = identificationInfo.getAttributeValue( new QName( "id" ) );
+        String dataIdentificationUuId = identificationInfo.getAttributeValue( new QName( "uuid" ) );
+        List<OMElement> identifier = a.getElements( identificationInfo,
                                                     new XPath( "./gmd:citation/gmd:CI_Citation/gmd:identifier",
                                                                nsContext ) );
         List<String> resourceIdentifierList = new ArrayList<String>();

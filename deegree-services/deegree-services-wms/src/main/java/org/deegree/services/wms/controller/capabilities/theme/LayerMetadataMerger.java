@@ -61,13 +61,13 @@ import org.deegree.theme.Themes;
  * @since 3.3
  */
 class LayerMetadataMerger {
-    
+
     private static final int QUERYABLE_DEFAULT_MASK = 1;
-    
+
     private static final int QUERYABLE_DISABLED_MASK = 2;
-    
+
     private static final int QUERYABLE_ENABLED_MASK = 4;
-    
+
     /**
      * Returns the combined layer metadata for the given theme/sublayers.
      *
@@ -79,31 +79,26 @@ class LayerMetadataMerger {
      */
     LayerMetadata merge( final Theme theme ) {
         final LayerMetadata themeMetadata = theme.getLayerMetadata();
-        LayerMetadata layerMetadata = null;
-        
+        LayerMetadata layerMetadata = new LayerMetadata( null, null, null );
+
         int queryable = 0;
-        
+
         for ( final Layer l : Themes.getAllLayers( theme ) ) {
             queryable |= analyseQueryable( l.getMetadata() );
-            
-            if ( layerMetadata == null ) {
-                layerMetadata = l.getMetadata();
-            } else {
-                layerMetadata.merge( l.getMetadata() );
-            }
+            layerMetadata.merge( l.getMetadata() );
         }
         themeMetadata.merge( layerMetadata );
-        
+
         if ( themeMetadata.getMapOptions() == null ) {
             themeMetadata.setMapOptions( new MapOptions( null, null, null, -1, -1 ) );
         }
-        
+
         if ( queryable == QUERYABLE_DISABLED_MASK ) {
             themeMetadata.getMapOptions().setFeatureInfoRadius( 0 );
         } else {
             themeMetadata.getMapOptions().setFeatureInfoRadius( -1 );
         }
-            
+
         return themeMetadata;
     }
 
@@ -144,9 +139,9 @@ class LayerMetadataMerger {
     private int analyseQueryable( LayerMetadata m ) {
         if ( m.getMapOptions() == null )
             return QUERYABLE_DEFAULT_MASK;
-        
+
         int r = m.getMapOptions().getFeatureInfoRadius();
-        
+
         if ( r < 0 )
             return QUERYABLE_DEFAULT_MASK;
         else if ( r == 0 )

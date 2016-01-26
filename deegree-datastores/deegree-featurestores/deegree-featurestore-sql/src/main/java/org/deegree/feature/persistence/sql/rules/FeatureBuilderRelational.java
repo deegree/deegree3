@@ -104,6 +104,7 @@ import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
+import org.deegree.time.TimeObject;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -221,7 +222,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         } else {
             ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
-                if ( particleConverter != null ) {                    
+                if ( particleConverter != null ) {
                     addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
@@ -324,7 +325,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         for ( final TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
-                if ( pt instanceof ObjectPropertyType ) {
+                if ( pt instanceof ObjectPropertyType && particle instanceof TimeObject ) {
                     props.add( recreatePropertyFromGml( pt, (GenericXMLElement) particle ) );
                 } else {
                     GenericXMLElement xmlEl = (GenericXMLElement) particle;
@@ -377,7 +378,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             gmlWriter.close();
             xmlWriter.close();
             bos.close();
-            System.out.println("HUHU: " + bos.toString());
             final InputStream is = new ByteArrayInputStream( bos.toByteArray() );
             final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );

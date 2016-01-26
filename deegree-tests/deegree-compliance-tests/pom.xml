@@ -112,8 +112,8 @@
           </plugin>
 
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>tomcat-maven-plugin</artifactId>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
             <executions>
               <execution>
                 <id>start-tomcat</id>
@@ -207,6 +207,10 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>   
   </dependencies>
 
 </project>
