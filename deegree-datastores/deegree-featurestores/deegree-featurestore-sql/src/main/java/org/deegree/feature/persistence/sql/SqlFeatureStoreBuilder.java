@@ -84,7 +84,13 @@ public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
         ConnectionProvider conn = workspace.getResource( ConnectionProviderProvider.class,
                                                          config.getJDBCConnId().getValue() );
         checkConnection( conn );
-        File file = metadata.getLocation().resolveToFile( metadata.getIdentifier().getId() + ".xml" );
+        String filename = metadata.getIdentifier().getId() + ".xml";
+        int pos;
+        if ( ( pos = filename.lastIndexOf( "/" ) ) > -1 ) {
+            // TRICKY if file is in a subfolder, this folder is part of the identifier AND the file-location:
+            filename = filename.substring( pos + 1 );
+        }
+        File file = metadata.getLocation().resolveToFile( filename );
         SQLFeatureStore fs = null;
         try {
             // TODO rewrite needed to properly resolve files using resource location
