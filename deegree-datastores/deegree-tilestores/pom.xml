@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.4-xplanbox-1.4-SNAPSHOT</version>
+    <version>3.4-RC1-xplanbox-1.4</version>
   </parent>
 
   <repositories>
