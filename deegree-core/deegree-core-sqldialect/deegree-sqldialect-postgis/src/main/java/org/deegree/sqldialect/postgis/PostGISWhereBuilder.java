@@ -36,6 +36,7 @@
 package org.deegree.sqldialect.postgis;
 
 import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
+import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -77,6 +79,8 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
+import org.deegree.time.position.TimePosition;
+import org.deegree.time.primitive.GenericTimePeriod;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -113,7 +117,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      */
     public PostGISWhereBuilder( PostGISDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
                                 SortProperty[] sortCrit, boolean allowPartialMappings, boolean useLegacyPredicates )
-                            throws FilterEvaluationException, UnmappableException {
+                                                        throws FilterEvaluationException, UnmappableException {
         super( dialect, mapper, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         build( allowPartialMappings );
@@ -157,8 +161,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         appendParamsFromFunction( function, params );
         TypedObjectNode value = evaluateFunction( function, params );
         if ( !( value instanceof PrimitiveValue ) ) {
-            throw new UnsupportedOperationException(
-                                                     "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
+            throw new UnsupportedOperationException( "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
         }
         String valueAsString = ( (PrimitiveValue) value ).getAsText();
         return valueAsString;
@@ -383,6 +386,89 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         }
         return builder.toOperation();
+    }
+
+    protected SQLOperation toProtoSQL( TemporalOperator op )
+                            throws UnmappableException, FilterEvaluationException {
+        SQLOperation sql = null;
+        switch ( op.getSubType() ) {
+        case AFTER: {
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            SQLExpression first = toProtoSQL( op.getParameter1() );
+            SQLExpression second = toProtoSQL( op.getParameter2() );
+            inferType( first, second );
+            builder.add( "(" );
+            addExpression( builder, first );
+            builder.add( " > " );
+            addExpression( builder, second );
+            builder.add( ")" );
+            sql = builder.toOperation();
+            break;
+        }
+        case BEFORE: {
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            SQLExpression first = toProtoSQL( op.getParameter1() );
+            SQLExpression second = toProtoSQL( op.getParameter2() );
+            inferType( first, second );
+            builder.add( "(" );
+            addExpression( builder, first );
+            builder.add( " < " );
+            addExpression( builder, second );
+            builder.add( ")" );
+            sql = builder.toOperation();
+            break;
+        }
+        case TEQUALS: {
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            SQLExpression first = toProtoSQL( op.getParameter1() );
+            SQLExpression second = toProtoSQL( op.getParameter2() );
+            inferType( first, second );
+            builder.add( "(" );
+            addExpression( builder, first );
+            builder.add( " = " );
+            addExpression( builder, second );
+            builder.add( ")" );
+            sql = builder.toOperation();
+            break;
+        }
+        case DURING: {
+            Expression parameter2 = op.getParameter2();
+            if ( parameter2 instanceof Literal
+                 && ( (Literal<?>) parameter2 ).getValue() instanceof GenericTimePeriod ) {
+                TimePosition begin = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getBeginPosition();
+                TimePosition end = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getEndPosition();
+                SQLExpression valueReference = toProtoSQL( op.getParameter1() );
+                SQLExpression beginExpr = new SQLArgument( new PrimitiveValue( begin.getValue(),
+                                                                               new PrimitiveType( DATE_TIME ) ),
+                                                           new DefaultPrimitiveConverter( new PrimitiveType( DATE_TIME ),
+                                                                                          null, false ) );
+                SQLExpression endExpr = new SQLArgument( new PrimitiveValue( end.getValue(),
+                                                                             new PrimitiveType( DATE_TIME ) ),
+                                                         new DefaultPrimitiveConverter( new PrimitiveType( DATE_TIME ),
+                                                                                        null, false ) );
+                inferType( valueReference, beginExpr, endExpr );
+                SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+                builder.add( "(" );
+                addExpression( builder, valueReference );
+                builder.add( " = " );
+                addExpression( builder, beginExpr );
+                builder.add( " OR (" );
+                addExpression( builder, valueReference );
+                builder.add( " >= " );
+                addExpression( builder, beginExpr );
+                builder.add( " AND " );
+                addExpression( builder, valueReference );
+                builder.add( " <= " );
+                addExpression( builder, endExpr );
+                builder.add( "))" );
+                sql = builder.toOperation();
+            }
+            break;
+        }
+        default:
+            sql = super.toProtoSQL( op );
+        }
+        return sql;
     }
 
     @Override
