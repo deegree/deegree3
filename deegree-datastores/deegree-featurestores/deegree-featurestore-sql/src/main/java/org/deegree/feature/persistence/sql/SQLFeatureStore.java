@@ -225,10 +225,10 @@ public class SQLFeatureStore implements FeatureStore {
         this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
         fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
-                                                                 : DEFAULT_FETCH_SIZE;
+                                                                  : DEFAULT_FETCH_SIZE;
         LOG.debug( "Fetch size: " + fetchSize );
         readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
-                                                                          : !dialect.requiresTransactionForCursorMode();
+                                                                           : !dialect.requiresTransactionForCursorMode();
         LOG.debug( "Read auto commit: " + readAutoCommit );
 
         if ( config.getFeatureCache() != null ) {
@@ -277,8 +277,8 @@ public class SQLFeatureStore implements FeatureStore {
             if ( fm.getValueFtName() != null ) {
                 valueFt = schema.getFeatureType( fm.getValueFtName() );
             }
-            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(),
-                                                                           valueFt, schema );
+            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(), valueFt,
+                                                                           schema );
             particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
@@ -577,7 +577,8 @@ public class SQLFeatureStore implements FeatureStore {
             ta = new SQLFeatureStoreTransaction( this, conn, getSchema(), inspectors );
             transaction.set( ta );
         } catch ( SQLException e ) {
-            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
+            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(),
+                                             e );
         }
         return ta;
     }
@@ -1035,8 +1036,7 @@ public class SQLFeatureStore implements FeatureStore {
         }
 
         if ( ftNameToIdAnalysis.size() != 1 ) {
-            throw new FeatureStoreException(
-                                             "Currently, only relational id queries are supported that target single feature types." );
+            throw new FeatureStoreException( "Currently, only relational id queries are supported that target single feature types." );
         }
 
         QName ftName = ftNameToIdAnalysis.keySet().iterator().next();
@@ -1053,7 +1053,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private FeatureInputStream queryByIdFilterRelational( FeatureType ft, FeatureTypeMapping ftMapping,
                                                           FIDMapping fidMapping, List<IdAnalysis> idKernels )
-                            throws FeatureStoreException {
+                                                                                  throws FeatureStoreException {
         FeatureInputStream result = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -1103,7 +1103,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                                                final FeatureTypeMapping ftMapping,
                                                                                final FIDMapping fidMapping,
                                                                                final IdFilter filter )
-                            throws FeatureStoreException {
+                                                                                                       throws FeatureStoreException {
         final List<ResourceId> resourceIds = filter.getSelectedIds();
         Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
@@ -1141,7 +1141,7 @@ public class SQLFeatureStore implements FeatureStore {
                                                                                FeatureTypeMapping ftMapping,
                                                                                FIDMapping fidMapping,
                                                                                ResourceId resourceId )
-                            throws FeatureStoreException {
+                                                                                                       throws FeatureStoreException {
         IdAnalysis analysis = getSchema().analyzeId( resourceId.getRid() );
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         FeatureInputStream result = null;
@@ -1153,7 +1153,8 @@ public class SQLFeatureStore implements FeatureStore {
             conn = getConnection();
 
             String tableAlias = "X1";
-            String versionTableAlias = "X2";
+            String stateTableAlias = "X2";
+            String versionTableAlias = "X3";
             String versionTable = versionMapping.getVersionMetadataTable().toString();
             String versionColumn = versionMapping.getVersionColumnName();
             String actionColumn = versionMapping.getActionColumnName();
@@ -1172,7 +1173,16 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( versionTable );
             sql.append( ' ' );
             sql.append( tableAlias );
-
+            sql.append( ", (SELECT " );
+            sql.append( versionColumn );
+            sql.append( ", ROW_NUMBER() OVER (PARTITION BY " );
+            appendSelectFidColumns( ftMapping.getFidMapping(), sql );
+            sql.append( " ORDER BY " );
+            sql.append( versionColumn );
+            sql.append( " ) AS VERSION FROM " );
+            sql.append( versionTable );
+            sql.append( "  ) " );
+            sql.append( versionTableAlias );
             sql.append( ", (SELECT " );
             sql.append( versionColumn );
             sql.append( ", state  FROM (SELECT " );
@@ -1212,7 +1222,7 @@ public class SQLFeatureStore implements FeatureStore {
             checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
 
             if ( versionCode != null ) {
-                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                appendSqlForVersionCode( fidMapping, resourceId, stateTableAlias, versionTable, versionColumn, sql,
                                          versionCode );
             } else if ( versionInteger > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
@@ -1222,13 +1232,22 @@ public class SQLFeatureStore implements FeatureStore {
             } else if ( resourceId.getRidVersion() > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else {
-                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                appendSqlForVersionCode( fidMapping, resourceId, stateTableAlias, versionTable, versionColumn, sql,
                                          LATEST );
             }
-            sql.append( " and c." );
+            sql.append( " AND c." );
             sql.append( versionColumn );
             sql.append( " = " );
             sql.append( tableAlias );
+            sql.append( "." );
+            sql.append( versionColumn );
+
+            sql.append( " AND " );
+            sql.append( tableAlias );
+            sql.append( "." );
+            sql.append( versionColumn );
+            sql.append( " = " );
+            sql.append( versionTableAlias );
             sql.append( "." );
             sql.append( versionColumn );
 
@@ -1490,7 +1509,8 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     @SuppressWarnings("unused")
-    private void appendWhereClauseForResourceIds( FIDMapping fidMapping, List<IdAnalysis> idAnalysis, StringBuilder sql ) {
+    private void appendWhereClauseForResourceIds( FIDMapping fidMapping, List<IdAnalysis> idAnalysis,
+                                                  StringBuilder sql ) {
         boolean first = true;
         for ( IdAnalysis idKernel : idAnalysis ) {
             if ( !first ) {
@@ -1678,7 +1698,8 @@ public class SQLFeatureStore implements FeatureStore {
 
         if ( query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
-            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(),
+                                                                    query.getSortProperties() ) );
         }
         return result;
     }
@@ -1732,9 +1753,10 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( ' ' );
             sql.append( ftTableAlias );
 
+            String stateSubQueryAlias = null;
             String versionSubQueryAlias = null;
             if ( ftMapping.getVersionMapping() != null ) {
-                versionSubQueryAlias = wb.getAliasManager().generateNew();
+                stateSubQueryAlias = wb.getAliasManager().generateNew();
                 String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
                 String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
                 sql.append( ", (SELECT " );
@@ -1744,6 +1766,19 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( " = 'delete' THEN 'retired' ELSE 'valid' END state " );
                 sql.append( "FROM " );
                 sql.append( ftMapping.getFtTable() );
+                sql.append( ") " );
+                sql.append( stateSubQueryAlias );
+
+                versionSubQueryAlias = wb.getAliasManager().generateNew();
+                String versionTable = ftMapping.getVersionMapping().getVersionMetadataTable().toString();
+                sql.append( ", (SELECT " );
+                sql.append( versionColumn );
+                sql.append( ", ROW_NUMBER() OVER (PARTITION BY " );
+                appendSelectFidColumns( ftMapping.getFidMapping(), sql );
+                sql.append( " ORDER BY " );
+                sql.append( versionColumn );
+                sql.append( " ) AS VERSION FROM " );
+                sql.append( versionTable );
                 sql.append( ") " );
                 sql.append( versionSubQueryAlias );
             }
@@ -1773,6 +1808,10 @@ public class SQLFeatureStore implements FeatureStore {
                 else
                     sql.append( " WHERE " );
                 String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
+                sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
+                sql.append( '=' );
+                sql.append( stateSubQueryAlias ).append( '.' ).append( versionColumn );
+                sql.append( " AND " );
                 sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
                 sql.append( '=' );
                 sql.append( versionSubQueryAlias ).append( '.' ).append( versionColumn );
@@ -1899,7 +1938,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
                                                   Connection conn )
-                            throws FilterEvaluationException, UnmappableException {
+                                                                          throws FilterEvaluationException,
+                                                                          UnmappableException {
         PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
         return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
     }

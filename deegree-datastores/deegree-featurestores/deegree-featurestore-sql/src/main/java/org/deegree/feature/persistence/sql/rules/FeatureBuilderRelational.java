@@ -192,7 +192,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         if ( ftMapping.getVersionMapping() != null ) {
             addColumn( qualifiedSqlExprToRsIdx, "state" );
-            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "." + ftMapping.getVersionMapping().getVersionColumnName() );
+            addColumn( qualifiedSqlExprToRsIdx, "version" );
         }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
         return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
@@ -311,7 +311,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
 
         if ( version > 0 )
-            gmlId += "_" + version;
+            gmlId += "_version" + version;
         return gmlId;
     }
 
@@ -335,8 +335,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
-            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( tableAlias + "."
-                                                                  + versionMapping.getVersionColumnName() );
+            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( "version" );
             int version = rs.getInt( versionColumnIndex );
             if ( version > 0 ) {
                 return version;
@@ -357,7 +356,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
                                 String idPrefix )
-                            throws SQLException {
+                                                        throws SQLException {
         List<TypedObjectNode> particles = buildParticles( propMapping, rs, qualifiedSqlExprToRsIdx, idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
             if ( pt.isNillable() ) {
@@ -430,8 +429,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );
             gmlReader.setApplicationSchema( ft.getSchema() );
             gmlReader.setLaxMode( true );
-            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper(
-                                                                                                              xmlReader,
+            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper( xmlReader,
                                                                                                               null ),
                                                                                   pt, null );
             return property;
@@ -443,7 +441,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
                                                   LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
-                            throws SQLException {
+                                                                          throws SQLException {
 
         if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
@@ -476,7 +474,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx,
                                            String idPrefix )
-                            throws SQLException {
+                                                                   throws SQLException {
 
         LOG.debug( "Trying to build particle with path {}.", mapping.getPath() );
 
@@ -582,9 +580,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 if ( particleValue instanceof PrimitiveValue ) {
                                     // TODO
                                     XSElementDeclaration childType = null;
-                                    GenericXMLElement child = new GenericXMLElement(
-                                                                                     name,
-                                                                                     childType,
+                                    GenericXMLElement child = new GenericXMLElement( name, childType,
                                                                                      Collections.<QName, PrimitiveValue> emptyMap(),
                                                                                      Collections.singletonList( particleValue ) );
                                     children.add( child );
@@ -683,7 +679,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             } else if ( child instanceof GenericXMLElement ) {
                 GenericXMLElement xmlEl = (GenericXMLElement) child;
                 PropertyType pt = ot.getPropertyDeclaration( xmlEl.getName() );
-                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(), xmlEl.getChildren() ) );
+                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(),
+                                                xmlEl.getChildren() ) );
             } else {
                 LOG.warn( "Unhandled particle: " + child );
             }
@@ -701,7 +698,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 List<SurfacePatch> patches = new ArrayList<SurfacePatch>();
                 patches.add( geomFac.createPolygonPatch( p.getExteriorRing(), p.getInteriorRings() ) );
                 geom = geomFac.createSurface( geom.getId(), patches, geom.getCoordinateSystem() );
-            } else if ( hierarchy.getCurveSubstitutions().contains( particle.getName() ) && geom instanceof LineString ) {
+            } else if ( hierarchy.getCurveSubstitutions().contains( particle.getName() )
+                        && geom instanceof LineString ) {
                 // constructed as LineString, but needs to become a Curve
                 LineString p = (LineString) geom;
                 GeometryFactory geomFac = new GeometryFactory();
@@ -732,11 +730,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return null;
     }
 
-    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc,
-                                                                                Mapping mapping,
+    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc, Mapping mapping,
                                                                                 ResultSet rs,
                                                                                 LinkedHashMap<String, Integer> colToRsIdx )
-                            throws SQLException {
+                                                                                                        throws SQLException {
 
         LinkedHashMap<String, Integer> rsToIdx = getSubsequentSelectColumns( mapping );
 
