@@ -128,7 +128,7 @@ class CoverageFeatureInfoHandler {
                 for ( int i = 0; i < data.getBands(); ++i ) {
                     PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ),
                                                              new PrimitiveType( BaseType.DECIMAL ) );
-                    props.add( new GenericProperty( findValueProperty(), val ) );
+                    props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
                 }
                 break;
             }
