@@ -109,21 +109,65 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer {
         String ns = factory.getNamespace().getNamespaceURI();
         String prefix = factory.getNamespace().getPrefix();
 
+        if ( isSoap11( ns ) ) {
+            serializeSoapException11( writer, exception, ns, prefix );
+        } else {
+            serializeSoapException12( writer, exception, ns, prefix );
+        }
+    }
+
+    private void serializeSoapException11( XMLStreamWriter writer, SOAPException exception, String ns, String prefix )
+                            throws XMLStreamException {
         writer.writeStartElement( "soapenv", envelope.getLocalName(), ns );
         writer.writeNamespace( "soapenv", ns );
         writer.writeNamespace( "xsi", XSINS );
-        boolean isSoap11 = false;
-        if ( ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope" )
-             || ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope/" ) ) {
-            isSoap11 = true;
+        writer.writeAttribute( XSINS, "schemaLocation",
+                               "http://schemas.xmlsoap.org/soap/envelope http://schemas.xmlsoap.org/soap/envelope" );
+
+        writeAttributes( writer, envelope );
+        writeHeader( writer, header );
+
+        SOAPBody body = envelope.getBody();
+        writer.writeStartElement( ns, body.getLocalName() );
+        writeAttributes( writer, body );
+
+        SOAPFault fault = factory.createSOAPFault( body );
+        writer.writeStartElement( ns, fault.getLocalName() );
+        writeAttributes( writer, fault );
+
+        SOAPFaultCode code = factory.createSOAPFaultCode( fault );
+        writer.writeStartElement( code.getLocalName() );
+        writeAttributes( writer, code );
+        String exceptionCode = exception.getExceptionCode();
+        writer.writeCharacters( exceptionCode );
+        writer.writeEndElement(); // code
+
+        SOAPFaultReason reason = factory.createSOAPFaultReason( fault );
+        writer.writeStartElement( reason.getLocalName() );
+        writeAttributes( writer, reason );
+        writer.writeCharacters( exception.getReason() );
+        writer.writeEndElement(); // reason
+
+        OWSException exceptionDetail = exception.getDetail();
+        if ( exceptionDetail != null && detailSerializer != null ) {
+            SOAPFaultDetail detail = factory.createSOAPFaultDetail( fault );
+            writer.writeStartElement( detail.getLocalName() );
+            writeAttributes( writer, detail );
+            detailSerializer.serializeExceptionToXML( writer, exceptionDetail );
+            writer.writeEndElement(); // detail
         }
-        if ( isSoap11 ) {
-            writer.writeAttribute( XSINS, "schemaLocation",
-                                   "http://schemas.xmlsoap.org/soap/envelope http://schemas.xmlsoap.org/soap/envelope" );
-        } else {
-            writer.writeAttribute( XSINS, "schemaLocation",
-                                   "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
-        }
+        writer.writeEndElement(); // fault
+        writer.writeEndElement(); // body
+        writer.writeEndElement(); // envelope
+    }
+
+    private void serializeSoapException12( XMLStreamWriter writer, SOAPException exception, String ns, String prefix )
+                            throws XMLStreamException {
+        writer.writeStartElement( "soapenv", envelope.getLocalName(), ns );
+        writer.writeNamespace( "soapenv", ns );
+        writer.writeNamespace( "xsi", XSINS );
+        writer.writeAttribute( XSINS, "schemaLocation",
+                               "http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope" );
 
         writeAttributes( writer, envelope );
         writeHeader( writer, header );
@@ -146,7 +190,7 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer {
 
         String exceptionCode = exception.getExceptionCode();
         // add namespace for SOAP 1.2 if not there
-        if ( !isSoap11 && !exceptionCode.startsWith( prefix + ":" ) ) {
+        if ( !exceptionCode.startsWith( prefix + ":" ) ) {
             exceptionCode = prefix + ":" + exceptionCode;
         }
         writer.writeCharacters( exceptionCode );
@@ -217,5 +261,14 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer {
     private static void writeAttribute( XMLStreamWriter writer, OMAttribute attrib )
                             throws XMLStreamException {
         writer.writeAttribute( attrib.getNamespace().getNamespaceURI(), attrib.getAttributeValue() );
+    }
+
+    private boolean isSoap11( String ns ) {
+        boolean isSoap11 = false;
+        if ( ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope" )
+             || ns.equalsIgnoreCase( "http://schemas.xmlsoap.org/soap/envelope/" ) ) {
+            isSoap11 = true;
+        }
+        return isSoap11;
     }
 }
