@@ -61,8 +61,18 @@ public abstract class XMLExceptionSerializer implements ExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/vnd.ogc.se_xml" );
-        response.setStatus( 200 );
+        setExceptionStatusCode( response, exception );
         serializeExceptionToXML( response.getXMLWriter(), exception );
+    }
+
+    /**
+     * Sets the statusCode to the response.
+     * 
+     * @param response
+     * @param exception
+     */
+    public void setExceptionStatusCode( HttpResponseBuffer response, OWSException exception ) {
+        response.setStatus( 200 );
     }
 
     /**

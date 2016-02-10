@@ -82,6 +82,12 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
+
+        serializeExceptionToXML( response.getXMLWriter(), exception );
+    }
+
+    @Override
+    public void setExceptionStatusCode( HttpResponseBuffer response, OWSException exception ) {
         if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
             response.setStatus( 500 );
         } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
@@ -89,7 +95,6 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
         } else {
             response.setStatus( 400 );
         }
-        serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
     @Override

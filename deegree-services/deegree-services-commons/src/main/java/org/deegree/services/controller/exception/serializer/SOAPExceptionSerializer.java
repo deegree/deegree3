@@ -38,6 +38,7 @@ package org.deegree.services.controller.exception.serializer;
 
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import javax.xml.stream.XMLStreamException;
@@ -60,6 +61,7 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.services.controller.exception.SOAPException;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 
 /**
  * The <code>SoapExceptionSerializer</code> class TODO add class documentation here.
@@ -69,7 +71,7 @@ import org.deegree.services.controller.exception.SOAPException;
  * 
  * @version $Revision$, $Date$
  */
-public class SOAPExceptionSerializer extends XMLExceptionSerializer {
+public class SOAPExceptionSerializer implements ExceptionSerializer {
 
     private SOAPFactory factory;
 
@@ -95,6 +97,18 @@ public class SOAPExceptionSerializer extends XMLExceptionSerializer {
 
         this.header = header;
 
+    }
+
+    @Override
+    public void serializeException( HttpResponseBuffer response, OWSException exception )
+                            throws IOException, XMLStreamException {
+        response.reset();
+        response.setCharacterEncoding( "UTF-8" );
+        if ( detailSerializer != null )
+            detailSerializer.setExceptionStatusCode( response, exception );
+        else
+            response.setStatus( 200 );
+        serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
     public void serializeExceptionToXML( XMLStreamWriter writer, OWSException owsException )
