@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-wmsWfsEnhancements-1.0</version>
+    <version>3.4-wmsWfsEnhancements-1.1-SNAPSHOT</version>
   </parent>
 
   <repositories>
