@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.4-wmsWfsEnhancements-0.4-SNAPSHOT</version>
+    <version>3.4-wmsWfsEnhancements-1.0</version>
   </parent>
 
   <repositories>
