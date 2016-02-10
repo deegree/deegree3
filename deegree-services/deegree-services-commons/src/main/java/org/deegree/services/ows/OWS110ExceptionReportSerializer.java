@@ -82,7 +82,7 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
-
+        setExceptionStatusCode( response, exception );
         serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
