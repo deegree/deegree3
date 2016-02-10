@@ -104,10 +104,15 @@ public class SOAPExceptionSerializer implements ExceptionSerializer {
                             throws IOException, XMLStreamException {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
-        if ( detailSerializer != null )
-            detailSerializer.setExceptionStatusCode( response, exception );
-        else
+        if ( detailSerializer != null ) {
+            if ( exception != null && exception instanceof SOAPException ) {
+                detailSerializer.setExceptionStatusCode( response, ( (SOAPException) exception ).getDetail() );
+            } else {
+                detailSerializer.setExceptionStatusCode( response, exception );
+            }
+        } else {
             response.setStatus( 200 );
+        }
         serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
