@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tilestores</artifactId>
-    <version>3.4-RC1-lkeewebgis3-1.0-SNAPSHOT</version>
+    <version>3.4-RC1-lkeewebgis3-1.0</version>
   </parent>
 
   <repositories>
