@@ -10,9 +10,9 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -27,16 +27,24 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>lkee_intranetgis-release</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/lkee_intranetgis-release/</url>
+    </repository>
+    <repository>
+      <id>lkee_intranetgis-snapshot</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/lkee_intranetgis-snapshot/</url>
+    </repository>
   </repositories>
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <id>lkee_intranetgis-release</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/lkee_intranetgis-release/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>lkee_intranetgis-snapshot</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/lkee_intranetgis-snapshot/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
