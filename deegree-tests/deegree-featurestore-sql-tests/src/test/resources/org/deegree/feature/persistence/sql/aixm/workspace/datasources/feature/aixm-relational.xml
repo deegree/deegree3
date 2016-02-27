@@ -1,0 +1,48 @@
+<SQLFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd"
+  xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:message="http://www.aixm.aero/schema/5.1/message" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:gml="http://www.opengis.net/gml/3.2">
+
+  <JDBCConnId>deegree-test</JDBCConnId>
+
+  <StorageCRS srid="0" dim="2D">urn:ogc:def:crs:EPSG:4326</StorageCRS>
+
+  <GMLSchema>../../appschemas/aixm/message/AIXM_BasicMessage.xsd</GMLSchema>
+  <GMLSchema>../../appschemas/aixm/event/Event_Features.xsd</GMLSchema>
+
+  <CustomReferenceResolver>org.deegree.feature.persistence.FeatureStoreGmlIdentifierResolver</CustomReferenceResolver>
+
+  <FeatureTypeMapping name="aixm:AirportHeliport" table="airport_heliport">
+    <FIDMapping prefix="airport.heliport.uuid.">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="'urn:uuid:'" />
+    </Complex>
+  </FeatureTypeMapping>
+
+  <FeatureTypeMapping name="aixm:Airspace" table="airspace">
+    <FIDMapping prefix="airspace.uuid.">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="'urn:uuid:'" />
+    </Complex>
+  </FeatureTypeMapping>
+
+  <FeatureTypeMapping name="aixm:VerticalStructure" table="vertical_structure">
+    <FIDMapping prefix="vertical.structure.uuid.">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="gml:identifier">
+      <Primitive path="text()" mapping="gml_identifier" />
+      <Primitive path="@codeSpace" mapping="'urn:uuid:'" />
+    </Complex>
+  </FeatureTypeMapping>
+
+</SQLFeatureStore>

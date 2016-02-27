@@ -40,13 +40,16 @@ import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.db.ConnectionProvider;
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -215,6 +218,19 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
         final byte[] actual = toGml( actualObject );
         final byte[] expected = getResource( expectedGmlResourceName );
         assertGmlEquals( expected, actual );
+    }
+
+    /**
+     * Returns the gml:identifier of the given feature.
+     *
+     * @param feature
+     *            must not be null and have a gml:identifier property
+     * @return value of the gml:identifier, never <code>null</code>
+     */
+    protected String getGmlIdentifier( final Feature feature ) {
+        final Property property = feature.getProperties( GML_IDENTIFIER ).get( 0 );
+        final TypedObjectNode value = property.getValue();
+        return "" + value;
     }
 
     private void assertGmlEquals( final byte[] expected, final byte[] actual ) {
