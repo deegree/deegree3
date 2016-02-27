@@ -1207,7 +1207,7 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( "." );
             sql.append( blobMapping.getTypeColumn() );
             sql.append( "=?" );
-            if ( wb != null ) {
+            if ( wb != null && wb.getWhere() != null ) {
                 sql.append( " AND " );
                 sql.append( wb.getWhere().getSQL() );
             }
@@ -1233,7 +1233,7 @@ public class SQLFeatureStore implements FeatureStore {
             int i = 1;
             // if ( blobMapping != null ) {
             stmt.setShort( i++, getSchema().getFtId( ftName ) );
-            if ( wb != null ) {
+            if ( wb != null && wb.getWhere() != null ) {
                 for ( SQLArgument o : wb.getWhere().getArguments() ) {
                     o.setArgument( stmt, i++ );
                 }
@@ -1477,6 +1477,12 @@ public class SQLFeatureStore implements FeatureStore {
             @Override
             public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
+                return null;
+            }
+
+            @Override
+            public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
+                                    throws FilterEvaluationException, UnmappableException {
                 GeometryStorageParams geometryParams = new GeometryStorageParams( blobMapping.getCRS(), undefinedSrid,
                                                                                   CoordinateDimension.DIM_2 );
                 GeometryMapping bboxMapping = new GeometryMapping( null, false,
@@ -1484,12 +1490,6 @@ public class SQLFeatureStore implements FeatureStore {
                                                                    GeometryType.GEOMETRY, geometryParams, null );
                 return new PropertyNameMapping( getGeometryConverter( bboxMapping ), null, blobMapping.getBBoxColumn(),
                                                 aliasManager.getRootTableAlias() );
-            }
-
-            @Override
-            public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
-                                    throws FilterEvaluationException, UnmappableException {
-                return getMapping( propName, aliasManager );
             }
         };
         return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );

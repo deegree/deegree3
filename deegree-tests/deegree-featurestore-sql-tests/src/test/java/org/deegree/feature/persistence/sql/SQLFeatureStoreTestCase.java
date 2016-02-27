@@ -41,6 +41,7 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.exceptions.TransformationException;
@@ -55,6 +56,10 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
@@ -178,6 +183,23 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
      */
     protected Query buildGmlIdQuery( final String identifier, final QName featureTypeName ) {
         final Filter filter = new IdFilter( identifier );
+        return new Query( featureTypeName, filter, -1, -1, -1 );
+    }
+
+    /**
+     * Creates a {@link Query} that targets the feature with the given <code>gml:identifier</code>.
+     *
+     * @param identifier
+     *            value of the gml:identifier, must not be <code>null</code>
+     * @param featureTypeName
+     *            name of the feature type, must not be <code>null</code>
+     * @return query instance, never <code>null</code>
+     */
+    protected Query buildGmlIdentifierQuery( final String identifier, final QName featureTypeName ) {
+        final ValueReference propName = new ValueReference( GML_IDENTIFIER );
+        final Literal<PrimitiveValue> literal = new Literal<PrimitiveValue>( identifier );
+        final PropertyIsEqualTo oper = new PropertyIsEqualTo( propName, literal, false, null );
+        final Filter filter = new OperatorFilter( oper );
         return new Query( featureTypeName, filter, -1, -1, -1 );
     }
 

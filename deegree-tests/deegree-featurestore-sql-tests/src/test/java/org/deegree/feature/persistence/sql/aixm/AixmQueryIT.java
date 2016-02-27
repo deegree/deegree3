@@ -46,4 +46,10 @@ public class AixmQueryIT extends SQLFeatureStoreTestCase {
         assertGmlEquals( fc.iterator().next(), "aixm/expected/airspace_eamm2.xml" );
     }
 
+    public void testQueryByGmlIdentifier() throws Exception {
+        final Query query = buildGmlIdentifierQuery( "010d8451-d751-4abb-9c71-f48ad024045b", AIRSPACE_NAME );
+        final FeatureCollection fc = fs.query( query ).toCollection();
+        assertEquals( 1, fc.size() );
+        assertGmlEquals( fc.iterator().next(), "aixm/expected/airspace_eamm2.xml" );
+    }
 }
