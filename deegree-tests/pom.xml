@@ -81,6 +81,7 @@
   </dependencies>
 
   <modules>
+    <module>deegree-featurestore-sql-tests</module>
     <module>deegree-testservice</module>
     <!-- workspace tests must run first! -->
     <module>deegree-workspace-tests</module>
