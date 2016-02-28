@@ -38,6 +38,7 @@ package org.deegree.sqldialect.filter;
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.filter.Filters.extractAndOperands;
 import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 
 import java.sql.ResultSet;
@@ -71,6 +72,7 @@ import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.sort.SortProperty;
@@ -101,16 +103,8 @@ import org.slf4j.LoggerFactory;
  * {@link #getPostFilter()}/{@link #getPostSortCriteria()} return not <code>null</code> and the objects extracted from
  * the corresponding {@link ResultSet} must be filtered/sorted in memory to guarantee the requested constraints/order.
  * </p>
- * <p>
- * TODO: Implement partial backend filtering / sorting. Currently, filtering / sorting is performed completely by the
- * database <i>or</i> by the post filter / criteria (if any property name has been encountered that could not be
- * mapped).
- * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 31370 $, $Date: 2011-07-28 19:37:13 +0200 (Do, 28. Jul 2011) $
  */
 public abstract class AbstractWhereBuilder {
 
@@ -125,7 +119,7 @@ public abstract class AbstractWhereBuilder {
     protected final SortProperty[] sortCrit;
 
     /** Keeps track of all generated table aliases. */
-    protected final TableAliasManager aliasManager = new TableAliasManager();
+    protected TableAliasManager aliasManager = new TableAliasManager();
 
     /** Keeps track of all successfully mapped property names. */
     protected final List<PropertyNameMapping> propNameMappingList = new ArrayList<PropertyNameMapping>();
@@ -161,37 +155,54 @@ public abstract class AbstractWhereBuilder {
     }
 
     /**
-     * Invokes the building of the internal variables that store filter and sort criteria.
+     * Builds internal variables that store filter and sort criteria.
      * 
-     * @param allowPartialMappings
-     *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
+     * @param allowPostFiltering
+     *            if <code>false</code>, any unmappable expression will cause an {@link UnmappableException} to be
+     *            thrown
      * @throws FilterEvaluationException
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
-    protected void build( boolean allowPartialMappings )
+    protected void build( final boolean allowPostFiltering )
                             throws FilterEvaluationException, UnmappableException {
 
         if ( filter != null ) {
             try {
                 whereClause = toProtoSQL( filter.getOperator() );
             } catch ( UnmappableException e ) {
-                if ( !allowPartialMappings ) {
+                LOG.trace( "Stack trace:", e );
+                if ( !allowPostFiltering ) {
                     throw e;
                 }
-                LOG.debug( "Unable to map full filter to WHERE-clause. Trying mapping of bbox constraint only." );
-                LOG.trace( "Stack trace:", e );
-
-                BBOX preFilterBBox = extractPrefilterBBoxConstraint( filter );
-                if ( preFilterBBox != null ) {
-                    try {
-                        whereClause = toProtoSQL( preFilterBBox );
-                    } catch ( UnmappableException e2 ) {
-                        LOG.warn( "Unable to map any filter constraints to WHERE-clause. Fallback to full memory filtering." );
-                        LOG.trace( "Stack trace:", e2 );
+                LOG.debug( "Unable to map full filter to WHERE-clause. Separating SQL and post filter parts." );
+                propNameMappingList.clear();
+                aliasManager = new TableAliasManager();
+                final List<Operator> andOperands = extractAndOperands( filter );
+                if ( andOperands == null ) {
+                    postFilter = filter;
+                    LOG.debug( "Not an AND filter. Using complete filter as post filter." );
+                } else {
+                    final List<Operator> mappableOperands = new ArrayList<Operator>();
+                    final List<Operator> unmappableOperands = new ArrayList<Operator>();
+                    for ( final Operator operand : andOperands ) {
+                        if ( isMappable( operand ) ) {
+                            mappableOperands.add( operand );
+                        } else {
+                            unmappableOperands.add( operand );
+                        }
                     }
+                    addPrefilterBBoxIfNoGeometryConstraintMapped( filter, mappableOperands );
+                    final OperatorFilter sqlFilter = createFilter( mappableOperands );
+                    if ( sqlFilter != null ) {
+                        propNameMappingList.clear();
+                        aliasManager = new TableAliasManager();
+                        whereClause = toProtoSQL( sqlFilter.getOperator() );
+                    }
+                    postFilter = createFilter( unmappableOperands );
+                    LOG.debug( "SQL filter part: " + mappableOperands.size() + " operand(s)" );
+                    LOG.debug( "Post filter part: " + unmappableOperands.size() + " operand(s)" );
                 }
-                postFilter = filter;
             } catch ( FilterEvaluationException e ) {
                 throw e;
             } catch ( RuntimeException e ) {
@@ -204,7 +215,7 @@ public abstract class AbstractWhereBuilder {
             try {
                 orderByClause = toProtoSQL( sortCrit );
             } catch ( UnmappableException e ) {
-                if ( !allowPartialMappings ) {
+                if ( !allowPostFiltering ) {
                     throw e;
                 }
                 LOG.debug( "Unable to map sort criteria to ORDER BY-clause. Setting post order criteria.", e );
@@ -217,6 +228,37 @@ public abstract class AbstractWhereBuilder {
                 throw e;
             }
         }
+    }
+
+    private boolean isMappable( final Operator operand ) {
+        try {
+            toProtoSQL( operand );
+        } catch ( final Exception e ) {
+            return false;
+        }
+        return true;
+    }
+
+    private void addPrefilterBBoxIfNoGeometryConstraintMapped( final OperatorFilter filter,
+                                                               final List<Operator> operands ) {
+        final Filter mappedFilter = createFilter( operands );
+        final BBOX mappedBbox = extractPrefilterBBoxConstraint( mappedFilter );
+        if ( mappedBbox == null ) {
+            final BBOX preFilterBBox = extractPrefilterBBoxConstraint( filter );
+            if ( preFilterBBox != null ) {
+                operands.add( preFilterBBox );
+            }
+        }
+    }
+
+    private OperatorFilter createFilter( List<Operator> andOperands ) {
+        if ( andOperands.isEmpty() ) {
+            return null;
+        }
+        if ( andOperands.size() == 1 ) {
+            return new OperatorFilter( andOperands.get( 0 ) );
+        }
+        return new OperatorFilter( new And( andOperands.toArray( new Operator[andOperands.size()] ) ) );
     }
 
     /**
