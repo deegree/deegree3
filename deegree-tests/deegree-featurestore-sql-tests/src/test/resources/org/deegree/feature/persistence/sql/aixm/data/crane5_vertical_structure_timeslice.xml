@@ -1,0 +1,39 @@
+<aixm:timeSlice xmlns:message="http://www.aixm.aero/schema/5.1/message" xmlns:gts="http://www.isotc211.org/2005/gts"
+  xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:gsr="http://www.isotc211.org/2005/gsr"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:event="http://www.aixm.aero/schema/5.1/event" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <aixm:VerticalStructureTimeSlice gml:id="ID_505">
+    <gml:validTime>
+      <gml:TimePeriod gml:id="ID_506">
+        <gml:beginPosition>2012-10-12T00:00:00Z</gml:beginPosition>
+        <gml:endPosition>2012-10-19T23:59:59Z</gml:endPosition>
+      </gml:TimePeriod>
+    </gml:validTime>
+    <aixm:interpretation>TEMPDELTA</aixm:interpretation>
+    <aixm:sequenceNumber>1</aixm:sequenceNumber>
+    <aixm:correctionNumber>1</aixm:correctionNumber>
+    <aixm:part>
+      <aixm:VerticalStructurePart gml:id="ID_507">
+        <aixm:timeInterval>
+          <aixm:Timesheet gml:id="ID_508">
+            <aixm:timeReference>UTC</aixm:timeReference>
+            <aixm:day>ANY</aixm:day>
+            <aixm:startTime>00:00</aixm:startTime>
+            <aixm:endTime>24:00</aixm:endTime>
+            <aixm:daylightSavingAdjust>NO</aixm:daylightSavingAdjust>
+          </aixm:Timesheet>
+        </aixm:timeInterval>
+        <aixm:verticalExtent uom="FT">0.0</aixm:verticalExtent>
+        <aixm:type>CRANE</aixm:type>
+        <aixm:mobile>YES</aixm:mobile>
+        <aixm:horizontalProjection_location>
+          <aixm:ElevatedPoint srsName="urn:ogc:def:crs:EPSG::4326" gml:id="ID_509">
+            <gml:pos>52.3727777777778 -31.9425</gml:pos>
+            <aixm:elevation uom="FT">858</aixm:elevation>
+          </aixm:ElevatedPoint>
+        </aixm:horizontalProjection_location>
+      </aixm:VerticalStructurePart>
+    </aixm:part>
+  </aixm:VerticalStructureTimeSlice>
+</aixm:timeSlice>

@@ -282,13 +282,13 @@ public class XPathSchemaWalker {
                 for ( XSElementDeclaration substitution : appSchema.getGMLSchema().getSubstitutions( elDecl, null,
                                                                                                      true, false ) ) {
                     QName elDeclName = getQName( substitution );
-                    if ( elName.equals( elDeclName ) ) {
+                    if ( matches(elName, elDeclName ) ) {
                         return new Pair<XSElementDeclaration, Boolean>( substitution, term.second );
                     }
                 }
             } else {
                 QName elDeclName = getQName( elDecl );
-                if ( elName.equals( elDeclName ) ) {
+                if ( matches(elName, elDeclName ) ) {
                     return new Pair<XSElementDeclaration, Boolean>( elDecl, term.second );
                 }
             }
@@ -312,6 +312,13 @@ public class XPathSchemaWalker {
             throw new RuntimeException( "Unexpected term type: " + term.getClass() );
         }
         return null;
+    }
+
+    private boolean matches( final QName expectedNameOrWildcard, final QName actual ) {
+        if ( expectedNameOrWildcard.getLocalPart().equals( "*" ) ) {
+            return true;
+        }
+        return expectedNameOrWildcard.equals( actual );
     }
 
     private QName getQName( XSElementDeclaration elDecl ) {

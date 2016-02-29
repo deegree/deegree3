@@ -158,9 +158,17 @@
           <documentation>(Root) table that the feature type is mapped to</documentation>
         </annotation>
       </attribute>
-      <attribute name="name" type="QName" use="optional">
+      <attribute name="name" use="optional">
         <annotation>
           <documentation>Qualified name of the feature type (if omitted, it is derived from table name)</documentation>
+        </annotation>
+        <simpleType>
+          <list itemType="QName"/>
+        </simpleType>
+      </attribute>
+      <attribute name="typeColumn" type="string" use="optional">
+        <annotation>
+          <documentation>Column that stores the name of the feature type, required for multiple feature types</documentation>
         </annotation>
       </attribute>
     </complexType>
@@ -293,6 +301,25 @@
           <sequence>
             <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
           </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Blob" substitutionGroup="sqlfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping of an element and its subtree to a BLOB column</documentation>
+        <appinfo>
+          <jaxb:class name="BlobParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractParticleType">
+          <attribute name="mapping" type="string">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
         </extension>
       </complexContent>
     </complexType>

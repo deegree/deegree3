@@ -183,14 +183,8 @@ public class FeatureRow extends InsertRow {
         }
         String[] idKernels = null;
         try {
-            IdAnalysis analysis = mgr.getSchema().analyzeId( getOriginalId() );
+            IdAnalysis analysis = mgr.getSchema().analyzeId( getOriginalId(), ftMapping.getFeatureType() );
             idKernels = analysis.getIdKernels();
-            if ( !analysis.getFeatureType().getName().equals( ftMapping.getFeatureType() ) ) {
-                String msg = "Cannot insert feature with id '" + origFid + "' and id generation mode 'UseExisting'. "
-                             + "Id does not match configured feature id pattern for feature type '"
-                             + ftMapping.getFeatureType() + "'.";
-                throw new FeatureStoreException( msg );
-            }
         } catch ( IllegalArgumentException e ) {
             String msg = "Cannot insert feature with id '" + getOriginalId()
                          + "' and id generation mode 'UseExisting'. "

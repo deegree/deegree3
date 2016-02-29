@@ -33661,7 +33661,9 @@ GROUP OF 3.</event:text>
 	<message:hasMember>
 		<aixm:Airspace gml:id="uuid.010d8451-d751-4abb-9c71-f48ad024045b">
 			<gml:identifier codeSpace="urn:uuid:">010d8451-d751-4abb-9c71-f48ad024045b</gml:identifier>
+<!-- Workaround for deegree limitations
 			<gml:boundedBy xsi:nil="true"/>
+-->
 			<aixm:timeSlice>
 				<aixm:AirspaceTimeSlice gml:id="uuid.177fd0db-de96-4c45-9aa1-60b90a2027c1">
 					<gml:validTime>

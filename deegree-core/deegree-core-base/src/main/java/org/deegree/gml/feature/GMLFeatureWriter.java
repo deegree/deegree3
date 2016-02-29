@@ -217,7 +217,11 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 export( (Feature) node, resolveState );
             } else if ( node instanceof Geometry ) {
                 gmlStreamWriter.getGeometryWriter().export( (Geometry) node );
-            } else {
+            } else if ( node instanceof TimeSlice ) {
+                export( (TimeSlice) node, resolveState );
+            } else if ( node instanceof TimeGeometricPrimitive ) {
+                new GmlTimeGeometricPrimitiveWriter().write( writer, (TimeGeometricPrimitive) node );
+            }  else {
                 throw new UnsupportedOperationException();
             }
         } else if ( node instanceof PrimitiveValue ) {

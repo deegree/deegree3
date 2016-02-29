@@ -256,6 +256,20 @@ public class MappedAppSchema extends GenericAppSchema {
     }
 
     /**
+     * Returns an analysis of the given feature id.
+     *
+     * @param fid
+     *            id to be analyzed, must not be <code>null</code>
+     * @return id analysis, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the id does not match the prefix for the feature type
+     */
+    public IdAnalysis analyzeId( final String fid, final QName ftName )
+                            throws IllegalArgumentException {
+        return idAnalyzer.analyze( fid, ftName );
+    }
+
+    /**
      * Returns the dependencies between key columns for the involved database tables.
      *
      * @return dependencies between key columns, never <code>null</code>

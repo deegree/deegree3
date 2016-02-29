@@ -173,6 +173,16 @@ public class MSSQLDDLCreator extends DDLCreator {
     }
 
     @Override
+    protected void blobMappingSnippet( StringBuffer sql, MappingExpression mapping ) {
+        if ( mapping instanceof DBField ) {
+            DBField dbField = (DBField) mapping;
+            sql.append( ",\n    " );
+            sql.append( dbField.getColumn() );
+            sql.append( " varbinary(max)" );
+        }
+    }
+
+    @Override
     protected StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls ) {
         StringBuffer sb = new StringBuffer( "CREATE TABLE " );
         sb.append( jc.getToTable() );

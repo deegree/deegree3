@@ -57,9 +57,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -71,6 +74,7 @@ import org.deegree.gml.GMLOutputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.GmlXlinkOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +126,7 @@ public class BlobCodec {
     }
 
     /**
-     * Encodes the given {@link GMLObject} to the specified output stream.
+     * Encodes the given {@link TypedObjectNode} to the specified output stream.
      * 
      * @param object
      *            object to be encoded, must not be <code>null</code>
@@ -137,7 +141,7 @@ public class BlobCodec {
      * @throws TransformationException
      * @throws IOException
      */
-    public void encode( GMLObject object, final Map<String, String> nsContext, OutputStream os, ICRS crs )
+    public void encode( TypedObjectNode object, final Map<String, String> nsContext, OutputStream os, ICRS crs )
                             throws FeatureStoreException, XMLStreamException, FactoryConfigurationError,
                             UnknownCRSException, TransformationException, IOException {
 
@@ -148,7 +152,7 @@ public class BlobCodec {
         gmlWriter.setNamespaceBindings( bindings );
         gmlWriter.setOutputCrs( crs );
         gmlWriter.setExportExtraProps( true );
-        gmlWriter.write( object );
+        gmlWriter.getFeatureWriter().export( object, new GmlXlinkOptions() );
         gmlWriter.close();
         if ( LOG.isDebugEnabled() ) {
             File file = File.createTempFile( "encoded-feature", ".tmp" );
@@ -156,12 +160,12 @@ public class BlobCodec {
             xmlWriter = getXMLWriter( os );
             gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
             gmlWriter.setOutputCrs( crs );
-            gmlWriter.write( object );
+            gmlWriter.getFeatureWriter().export( object, new GmlXlinkOptions() );
             gmlWriter.close();
             os.close();
-            LOG.debug( "Wrote encoded feature to '" + file.getAbsolutePath() + "'" );
+            LOG.debug( "Wrote encoded object to '" + file.getAbsolutePath() + "'" );
         }
-        LOG.debug( "Encoding feature (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
+        LOG.debug( "Encoding object (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
     }
 
     private XMLStreamWriter getXMLWriter( OutputStream os )
@@ -190,7 +194,7 @@ public class BlobCodec {
 
     /**
      * Decodes the given {@link GMLObject} from the specified input stream.
-     * 
+     *
      * @param is
      *            input stream to read from, must not be <code>null</code>
      * @param nsContext
@@ -220,6 +224,47 @@ public class BlobCodec {
         Feature feature = gmlReader.readFeature();
         LOG.debug( "Decoding feature (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
         return feature;
+    }
+
+    /**
+     * Decodes a {@link TypedObjectNode} from the specified input stream.
+     *
+     * @param is
+     *            input stream to read from, must not be <code>null</code>
+     * @param nsContext
+     *            current namespace bindings, must not be <code>null</code>
+     * @param schema
+     *            application schema, must not be <code>null</code>
+     * @param crs
+     *            coordinate reference system, can be <code>null</code>
+     * @param idResolver
+     *            resolver instance to use for resolving xlinks, can be <code>null</code>
+     * @param decl
+     *            element declaration for the expected object, must not be <code>null</code>
+     * @return decoded object, never <code>null</code>
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
+    public TypedObjectNode decode( final InputStream is, final Map<String, String> nsContext, final AppSchema schema,
+                                   final ICRS crs, final GMLReferenceResolver idResolver,
+                                   final XSElementDeclaration decl )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
+
+        final long begin = System.currentTimeMillis();
+        final BufferedInputStream bis = new BufferedInputStream( is );
+        final XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( getXMLReader( bis, nsContext ), null );
+        final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, xmlStream );
+        gmlReader.setResolver( idResolver );
+        gmlReader.setApplicationSchema( schema );
+        gmlReader.setDefaultCRS( crs );
+        gmlReader.getFeatureReader();
+        final TypedObjectNode object = gmlReader.getFeatureReader().parseGenericXMLElement( xmlStream, decl, crs );
+        LOG.debug( "Decoding object (compression: {}) took {} [ms]", compression, System.currentTimeMillis() - begin );
+        return object;
     }
 
     private XMLStreamReader getXMLReader( InputStream is, Map<String, String> nsContext )

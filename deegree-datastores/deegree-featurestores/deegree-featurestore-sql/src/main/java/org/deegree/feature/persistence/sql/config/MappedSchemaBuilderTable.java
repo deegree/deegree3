@@ -34,6 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
+import static java.util.Collections.singletonList;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.deegree.commons.tom.primitive.BaseType.valueOf;
 import static org.deegree.cs.persistence.CRSManager.lookup;
@@ -48,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -189,21 +191,24 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             throw new FeatureStoreException( "No table with name '" + table + "' exists (or no columns defined)." );
         }
 
-        QName ftName = ftDecl.getName();
-        if ( ftName == null ) {
+        Collection<QName> ftNames = ftDecl.getName();
+        if ( ftNames == null || ftNames.isEmpty()) {
             LOG.debug( "Using table name for feature type." );
-            ftName = new QName( table.getTable() );
+            ftNames = singletonList( new QName( table.getTable() ));
         }
-        ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
-        LOG.debug( "Feature type name: '" + ftName + "'." );
 
-        FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
+        for (QName ftName : ftNames) {
+            ftName = makeFullyQualified( ftName, "app", "http://www.deegree.org/app" );
+            LOG.debug( "Feature type name: '" + ftName + "'." );
 
-        List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
-        if ( propDecls != null && !propDecls.isEmpty() ) {
-            buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls );
-        } else {
-            buildFeatureTypeAndMapping( table, ftName, fidMapping );
+            FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
+
+            List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
+            if ( propDecls != null && !propDecls.isEmpty() ) {
+                buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls );
+            } else {
+                buildFeatureTypeAndMapping( table, ftName, fidMapping );
+            }
         }
     }
 

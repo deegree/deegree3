@@ -36,7 +36,9 @@
 package org.deegree.feature.persistence.sql.ddl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -49,13 +51,15 @@ import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
+import org.deegree.feature.persistence.sql.rules.BlobParticleMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.sqldialect.postgis.PostGISDialect;
 
 /**
@@ -112,13 +116,15 @@ public abstract class DDLCreator {
     protected abstract List<String> getBLOBCreates();
 
     private List<StringBuffer> getRelationalCreates() {
-        List<StringBuffer> ddl = new ArrayList<StringBuffer>();
+        final Set<TableName> tables = new HashSet<TableName>();
+        final List<StringBuffer> ddl = new ArrayList<StringBuffer>();
 
         for ( short ftId = 0; ftId < schema.getFts(); ftId++ ) {
             QName ftName = schema.getFtName( ftId );
             FeatureTypeMapping ftMapping = schema.getFtMapping( ftName );
-            if ( ftMapping != null ) {
+            if ( ftMapping != null && !tables.contains( ftMapping.getFtTable())) {
                 ddl.addAll( process( ftMapping ) );
+                tables.add( ftMapping.getFtTable() );
             }
         }
         return ddl;
@@ -190,6 +196,8 @@ public abstract class DDLCreator {
     protected abstract void geometryMappingSnippet( StringBuffer sql, GeometryMapping mapping, List<StringBuffer> ddls,
                                                     TableName table );
 
+    protected abstract void blobMappingSnippet( final StringBuffer sql, final MappingExpression mapping );
+
     protected abstract void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping );
 
     protected abstract StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls );
@@ -212,6 +220,8 @@ public abstract class DDLCreator {
             geometryMappingSnippet( sql, (GeometryMapping) mapping, ddls, table );
         } else if ( mapping instanceof FeatureMapping ) {
             featureMappingSnippet( sql, (FeatureMapping) mapping );
+        } else if ( mapping instanceof BlobParticleMapping ) {
+            blobMappingSnippet( sql, ((BlobParticleMapping) mapping).getMapping());
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) mapping;
             for ( Mapping childMapping : compoundMapping.getParticles() ) {

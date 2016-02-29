@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
+import static org.deegree.protocol.wfs.transaction.action.UpdateAction.INSERT_AFTER;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -65,12 +67,13 @@ import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.KeyPropagation;
 import org.deegree.feature.persistence.sql.id.TableDependencies;
+import org.deegree.feature.persistence.sql.rules.BlobParticleMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
@@ -170,7 +173,7 @@ public class InsertRowManager {
             allRows.add( featureRow );
 
             for ( Mapping particleMapping : ftMapping.getMappings() ) {
-                buildInsertRows( feature, particleMapping, featureRow, allRows );
+                buildInsertRows( feature, particleMapping, featureRow, allRows, 1 );
             }
 
             LOG.debug( "Built rows for feature '" + feature.getId() + "': " + allRows.size() );
@@ -223,7 +226,11 @@ public class InsertRowManager {
             List<InsertRow> allRows = new ArrayList<InsertRow>();
             allRows.add( featureRow );
 
-            buildInsertRows( feature, mapping, featureRow, allRows );
+            int index = replacement.getIndex();
+            if (replacement.getUpdateAction() == INSERT_AFTER) {
+                index++;
+            }
+            buildInsertRows( feature, mapping, featureRow, allRows, index );
 
             LOG.debug( "Built rows for feature '" + feature.getId() + "': " + allRows.size() );
 
@@ -297,8 +304,8 @@ public class InsertRowManager {
         return featureRow;
     }
 
-    public void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRow row,
-                                 List<InsertRow> additionalRows )
+    private void buildInsertRows( final TypedObjectNode particle, final Mapping mapping, final InsertRow row,
+                                 final List<InsertRow> additionalRows, int childIdx )
                             throws FilterEvaluationException, FeatureStoreException {
 
         List<TableJoin> jc = mapping.getJoinedTable();
@@ -310,7 +317,6 @@ public class InsertRowManager {
 
         TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
         TypedObjectNode[] values = evaluator.eval( particle, mapping.getPath() );
-        int childIdx = 1;
         for ( TypedObjectNode value : values ) {
             InsertRow currentRow = row;
             if ( jc != null && !( mapping instanceof FeatureMapping ) ) {
@@ -394,9 +400,20 @@ public class InsertRowManager {
                         }
                     }
                 }
+            } else if ( mapping instanceof BlobParticleMapping ) {
+                MappingExpression me = ( (BlobParticleMapping) mapping ).getMapping();
+                if ( !( me instanceof DBField ) ) {
+                    LOG.debug( "Skipping BLOB mapping. Not mapped to database column." );
+                } else {
+                    @SuppressWarnings("unchecked")
+                    final ParticleConverter<TypedObjectNode> converter = (ParticleConverter<TypedObjectNode>) fs.getConverter( mapping );
+                    String column = ( (DBField) me ).getColumn();
+                    currentRow.addPreparedArgument( column, value, converter );
+                }
             } else if ( mapping instanceof CompoundMapping ) {
-                for ( Mapping child : ( (CompoundMapping) mapping ).getParticles() ) {
-                    buildInsertRows( value, child, currentRow, additionalRows );
+                final CompoundMapping compoundMapping = (CompoundMapping) mapping;
+                for ( Mapping child : compoundMapping.getParticles() ) {
+                    buildInsertRows( value, child, currentRow, additionalRows, childIdx );
                 }
             } else if ( mapping instanceof SqlExpressionMapping ) {
                 // nothing to do

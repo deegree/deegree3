@@ -38,6 +38,8 @@ package org.deegree.feature.persistence.sql.id;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
@@ -114,4 +116,19 @@ public class IdAnalyzer {
         String idRemainder = featureOrGeomId.substring( fidMapping.getPrefix().length() );
         return new IdAnalysis( ft, idRemainder, fidMapping );
     }
+
+    public IdAnalysis analyze( final String fid, final QName ftName ) {
+        final FIDMapping fidMapping = schema.getFtMapping( ftName ).getFidMapping();
+        if ( !fid.startsWith( fidMapping.getPrefix() ) ) {
+            StringBuilder sb = new StringBuilder( "Given id '" );
+            sb.append( fid );
+            sb.append( "' does not match configured identifier prefix for feature type " );
+            sb.append( ftName );
+            sb.append( "." );
+            throw new IllegalArgumentException( sb.toString() );
+        }
+        final String idRemainder = fid.substring( fidMapping.getPrefix().length() );
+        return new IdAnalysis( schema.getFeatureType( ftName ), idRemainder, fidMapping );
+    }
+
 }

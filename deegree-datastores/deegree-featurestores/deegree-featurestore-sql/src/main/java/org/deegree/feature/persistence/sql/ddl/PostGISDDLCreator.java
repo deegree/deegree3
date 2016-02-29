@@ -154,6 +154,16 @@ public class PostGISDDLCreator extends DDLCreator {
     }
 
     @Override
+    protected void blobMappingSnippet( StringBuffer sql, MappingExpression mapping ) {
+        if ( mapping instanceof DBField ) {
+            DBField dbField = (DBField) mapping;
+            sql.append( ",\n    " );
+            sql.append( dbField.getColumn() );
+            sql.append( " bytea" );
+        }
+    }
+
+    @Override
     protected void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping ) {
         SQLIdentifier col = mapping.getJoinedTable().get( mapping.getJoinedTable().size() - 1 ).getFromColumns().get( 0 );
         if ( col != null ) {
