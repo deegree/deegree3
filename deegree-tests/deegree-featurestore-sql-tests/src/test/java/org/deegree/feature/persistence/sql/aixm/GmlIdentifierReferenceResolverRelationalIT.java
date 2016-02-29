@@ -23,7 +23,6 @@ public class GmlIdentifierReferenceResolverRelationalIT extends SQLFeatureStoreT
     public void setUp()
                             throws Exception {
         final SQLFeatureStore fs = setUpFeatureStore( "aixm-relational", "aixm/workspace" );
-        createTablesFromConfig( fs );
         importGml( fs, "aixm/data/Donlon.xml", GENERATE_NEW );
         resolver = new FeatureStoreGmlIdentifierResolver( fs );
     }

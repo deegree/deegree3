@@ -3,7 +3,7 @@
   xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:message="http://www.aixm.aero/schema/5.1/message" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:gml="http://www.opengis.net/gml/3.2">
 
-  <JDBCConnId>deegree-test</JDBCConnId>
+  <JDBCConnId autoCreateTables="true">deegree-test</JDBCConnId>
 
   <StorageCRS srid="0" dim="2D">urn:ogc:def:crs:EPSG::4326</StorageCRS>
 

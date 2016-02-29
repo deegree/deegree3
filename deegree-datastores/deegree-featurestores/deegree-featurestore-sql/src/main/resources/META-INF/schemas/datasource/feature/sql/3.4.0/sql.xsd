@@ -26,6 +26,7 @@
               <extension base="string">
                 <attribute name="fetchSize" type="nonNegativeInteger" default="1000" />
                 <attribute name="readAutoCommit" type="boolean" />
+                <attribute name="autoCreateTables" type="boolean" use="optional" default="false"/>
               </extension>
             </simpleContent>
           </complexType>

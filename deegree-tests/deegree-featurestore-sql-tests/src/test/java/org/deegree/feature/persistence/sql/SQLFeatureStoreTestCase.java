@@ -122,30 +122,6 @@ public abstract class SQLFeatureStoreTestCase extends XMLTestCase {
     }
 
     /**
-     * Derives the tables required by the given {@link SQLFeatureStore} and creates them in the connected database.
-     *
-     * @param fs
-     *            feature store, must not be <code>null</code>
-     * @throws Exception
-     */
-    protected void createTablesFromConfig( final SQLFeatureStore fs )
-                            throws Exception {
-        final String[] ddl = DDLCreator.newInstance( fs.getSchema(), fs.getDialect() ).getDDL();
-        final Connection conn = fs.getConnection();
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            for ( final String sql : ddl ) {
-                stmt.execute( sql );
-            }
-            conn.commit();
-        } finally {
-            stmt.close();
-            conn.close();
-        }
-    }
-
-    /**
      * Imports the specified GML dataset into the given {@link SQLFeatureStore}.
      *
      * @param fs

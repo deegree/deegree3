@@ -26,7 +26,6 @@ public class AixmQueryRelationalIT extends SQLFeatureStoreTestCase {
     public void setUp()
                             throws Exception {
         fs = setUpFeatureStore( "aixm-relational", "aixm/workspace" );
-        createTablesFromConfig( fs );
         importGml( fs, "aixm/data/Donlon.xml", GENERATE_NEW );
     }
 

@@ -28,7 +28,6 @@ public class AixmQueryIT extends SQLFeatureStoreTestCase {
     public void setUp()
                             throws Exception {
         fs = setUpFeatureStore( "aixm-blob", "aixm/workspace" );
-        createTablesFromConfig( fs );
         importGml( fs, "aixm/data/Donlon.xml", USE_EXISTING );
     }
 

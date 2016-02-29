@@ -38,6 +38,8 @@ package org.deegree.feature.persistence.sql;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.feature.persistence.sql.ddl.DbSetupUtils.createTables;
+import static org.deegree.feature.persistence.sql.ddl.DbSetupUtils.isTableCreationNeeded;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -1624,6 +1626,22 @@ public class SQLFeatureStore implements FeatureStore {
             schema = AbstractMappedSchemaBuilder.build( configURL.toString(), config, dialect, this.workspace );
         } catch ( Exception t ) {
             throw new ResourceInitException( t.getMessage(), t );
+        }
+
+        final Boolean autoCreateTables = config.getJDBCConnId().isAutoCreateTables();
+        if ( autoCreateTables != null && autoCreateTables ) {
+            LOG.info( "Automatic table creation activated. Is table creation required?" );
+            if ( isTableCreationNeeded( schema, connProvider ) ) {
+                LOG.info( "Yes. Will derive tables from config and create them." );
+                try {
+                    createTables( schema, dialect, connProvider );
+                } catch ( SQLException e ) {
+                    final String msg = "Automatic table generation failed: " + e.getMessage();
+                    throw new ResourceInitException( msg );
+                }
+            } else {
+                LOG.info( "No. Tables are present." );
+            }
         }
 
         // lockManager = new DefaultLockManager( this, "LOCK_DB" );
