@@ -76,8 +76,11 @@ class Java2DFillRenderer {
     }
 
     void applyGraphicFill( Graphic graphic, UOM uom ) {
-        BufferedImage img;
+        applyGraphicFill( graphic, null, uom );
+    }
 
+    void applyGraphicFill( Graphic graphic, Color color, UOM uom ) {
+        BufferedImage img;
         if ( graphic.image == null ) {
             int size = round( uomCalculator.considerUOM( graphic.size, uom ) );
             img = new BufferedImage( size, size, TYPE_INT_ARGB );
@@ -89,7 +92,7 @@ class Java2DFillRenderer {
         } else {
             img = graphic.image;
         }
-
+        colorTexture( img, color );
         graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0, uom ) ) );
     }
 
@@ -102,7 +105,7 @@ class Java2DFillRenderer {
         if ( fill.graphic == null ) {
             graphics.setPaint( fill.color );
         } else {
-            applyGraphicFill( fill.graphic, uom );
+            applyGraphicFill( fill.graphic, fill.color, uom );
         }
     }
 
@@ -129,11 +132,24 @@ class Java2DFillRenderer {
                 height = graphic.image.getHeight();
             }
         }
-        
+
         double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
         double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
 
         return new Rectangle2D.Double( x0, y0, width, height );
+    }
+
+    private void colorTexture( BufferedImage img, Color color ) {
+        if ( color != null ) {
+            int rgb = color.getRGB();
+            for ( int i = 0; i < img.getWidth(); i++ ) {
+                for ( int j = 0; j < img.getHeight(); j++ ) {
+                    if ( img.getRGB( i, j ) == Color.BLACK.getRGB() ) {
+                        img.setRGB( i, j, rgb );
+                    }
+                }
+            }
+        }
     }
 
 }
