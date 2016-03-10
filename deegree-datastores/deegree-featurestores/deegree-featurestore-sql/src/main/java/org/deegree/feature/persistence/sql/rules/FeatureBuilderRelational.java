@@ -168,7 +168,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
-                                     String ftTableAlias, boolean nullEscalation, List<ValueReference> valueReferences ) {
+                                     String ftTableAlias, boolean nullEscalation,
+                                     List<ValueReference> valueReferences ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
@@ -181,6 +182,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             String ns = fs.getNamespaceContext().get( prefix );
             nsBindings.addNamespace( prefix, ns );
         }
+
+        logValueReferences( valueReferences );
         // if ( ft.getSchema().getGMLSchema() != null ) {
         // this.gmlVersion = ft.getSchema().getGMLSchema().getVersion();
         // } else {
@@ -231,7 +234,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             ParticleConverter<?> particleConverter = fs.getConverter( mapping );
             if ( mapping instanceof PrimitiveMapping ) {
                 if ( particleConverter != null && checkIfSelectIfRequired( mapping ) ) {
-
                     addColumn( colToRsIdx, particleConverter.getSelectSnippet( tableAlias ) );
                 } else {
                     LOG.info( "Omitting mapping '" + mapping + "' from SELECT list. Not mapped to column.'" );
@@ -262,6 +264,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     private boolean checkIfSelectIfRequired( Mapping mapping ) {
+        LOG.trace( "Check if mapping {} must be selected.", mapping.getPath() );
         if ( valueReferences == null )
             return true;
         for ( ValueReference valueReference : valueReferences ) {
@@ -329,7 +332,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
                                 String idPrefix )
-                            throws SQLException {
+                                                        throws SQLException {
         List<TypedObjectNode> particles = buildParticles( propMapping, rs, qualifiedSqlExprToRsIdx, idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
             if ( pt.isNillable() ) {
@@ -402,8 +405,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );
             gmlReader.setApplicationSchema( ft.getSchema() );
             gmlReader.setLaxMode( true );
-            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper(
-                                                                                                              xmlReader,
+            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper( xmlReader,
                                                                                                               null ),
                                                                                   pt, null );
             return property;
@@ -415,7 +417,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
                                                   LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
-                            throws SQLException {
+                                                                          throws SQLException {
 
         if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
@@ -448,7 +450,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx,
                                            String idPrefix )
-                            throws SQLException {
+                                                                   throws SQLException {
 
         LOG.debug( "Trying to build particle with path {}.", mapping.getPath() );
 
@@ -557,9 +559,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 if ( particleValue instanceof PrimitiveValue ) {
                                     // TODO
                                     XSElementDeclaration childType = null;
-                                    GenericXMLElement child = new GenericXMLElement(
-                                                                                     name,
-                                                                                     childType,
+                                    GenericXMLElement child = new GenericXMLElement( name, childType,
                                                                                      Collections.<QName, PrimitiveValue> emptyMap(),
                                                                                      Collections.singletonList( particleValue ) );
                                     children.add( child );
@@ -658,7 +658,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             } else if ( child instanceof GenericXMLElement ) {
                 GenericXMLElement xmlEl = (GenericXMLElement) child;
                 PropertyType pt = ot.getPropertyDeclaration( xmlEl.getName() );
-                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(), xmlEl.getChildren() ) );
+                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(),
+                                                xmlEl.getChildren() ) );
             } else {
                 LOG.warn( "Unhandled particle: " + child );
             }
@@ -676,7 +677,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 List<SurfacePatch> patches = new ArrayList<SurfacePatch>();
                 patches.add( geomFac.createPolygonPatch( p.getExteriorRing(), p.getInteriorRings() ) );
                 geom = geomFac.createSurface( geom.getId(), patches, geom.getCoordinateSystem() );
-            } else if ( hierarchy.getCurveSubstitutions().contains( particle.getName() ) && geom instanceof LineString ) {
+            } else if ( hierarchy.getCurveSubstitutions().contains( particle.getName() )
+                        && geom instanceof LineString ) {
                 // constructed as LineString, but needs to become a Curve
                 LineString p = (LineString) geom;
                 GeometryFactory geomFac = new GeometryFactory();
@@ -707,11 +709,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return null;
     }
 
-    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc,
-                                                                                Mapping mapping,
+    private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc, Mapping mapping,
                                                                                 ResultSet rs,
                                                                                 LinkedHashMap<String, Integer> colToRsIdx )
-                            throws SQLException {
+                                                                                                        throws SQLException {
 
         LinkedHashMap<String, Integer> rsToIdx = getSubsequentSelectColumns( mapping );
 
@@ -830,5 +831,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         }
         return false;
+    }
+
+    private void logValueReferences( List<ValueReference> valueReferences ) {
+        if ( valueReferences != null ) {
+            LOG.trace( "ValueReferences: " );
+            for ( ValueReference valueReference : valueReferences ) {
+                LOG.trace( " -" + valueReference );
+            }
+        }
     }
 }

@@ -228,7 +228,10 @@ public class ValueReference implements Expression {
         if ( other == null || !( other instanceof ValueReference ) ) {
             return false;
         }
-        return text.equals( ( (ValueReference) other ).text );
+        ValueReference otherValuereference = (ValueReference) other;
+        if ( qName != null && otherValuereference.qName != null )
+            return qName.equals( otherValuereference.qName );
+        return text.equals( otherValuereference.text );
     }
 
     @Override
