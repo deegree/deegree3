@@ -82,7 +82,8 @@ public class StyleTest {
         List<ValueReference> valueReferences = parsedStyle.retrieveValueReferences();
 
         assertThat( valueReferences.size(), is( 1 ) );
-        assertThat( valueReferences.get( 0 ).getAsQName(), is( new QName( "http://www.deegree.org/app", "strokeProp" ) ) );
+        assertThat( valueReferences.get( 0 ).getAsQName(),
+                    is( new QName( "http://www.deegree.org/app", "strokeProp" ) ) );
     }
 
     @Test
@@ -101,6 +102,20 @@ public class StyleTest {
         assertThat( valueReferences.get( 2 ).getAsQName(), is( new QName( "strokeB" ) ) );
         assertThat( valueReferences.get( 3 ).getAsQName(), is( new QName( "width" ) ) );
         assertThat( valueReferences.get( 4 ).getAsQName(), is( new QName( "linecap" ) ) );
+    }
+
+    @Test
+    public void testRetrieveValueReferences_SLD_PointSymbolizer()
+                            throws Exception {
+        InputStream style = this.getClass().getResourceAsStream( "SLD_PointSymbolizerWithCustomExpression.xml" );
+        XMLStreamReader in = XML_FACTORY.createXMLStreamReader( style );
+        in.next();
+
+        Style parsedStyle = SymbologyParser.INSTANCE.parse( in );
+        List<ValueReference> valueReferences = parsedStyle.retrieveValueReferences();
+
+        System.out.println( valueReferences );
+        assertThat( valueReferences.size(), is( 4 ) );
     }
 
 }

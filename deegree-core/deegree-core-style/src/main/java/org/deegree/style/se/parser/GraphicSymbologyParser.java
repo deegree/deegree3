@@ -75,13 +75,14 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Mark;
-import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Mark.SimpleMark;
+import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
@@ -138,6 +139,13 @@ class GraphicSymbologyParser {
                                 p.third.evaluate( list, f, evaluator );
                                 base.image = list.poll();
                             }
+
+                            @Override
+                            public java.util.List<ValueReference> retrieveValueReferences() {
+                                List<ValueReference> valueReferences = super.retrieveValueReferences();
+                                valueReferences.addAll( p.third.retrieveValueReferences() );
+                                return valueReferences;
+                            };
                         };
                     } else {
                         base.image = p.first;
@@ -147,7 +155,7 @@ class GraphicSymbologyParser {
                     LOG.debug( "Stack trace", e );
                     LOG.warn( "External graphic could not be loaded. Location: line '{}' column '{}' of file '{}'.",
                               new Object[] { in.getLocation().getLineNumber(), in.getLocation().getColumnNumber(),
-                                            in.getLocation().getSystemId() } );
+                                             in.getLocation().getSystemId() } );
                 }
             } else if ( in.getLocalName().equals( "Opacity" ) ) {
                 contn = context.parser.updateOrContinue( in, "Opacity", base, new Updater<Graphic>() {
@@ -248,7 +256,8 @@ class GraphicSymbologyParser {
                     base.wellKnown = SimpleMark.SQUARE;
                 }
             } else
-                sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
+                sym: if ( in.getLocalName().equals( "OnlineResource" )
+                          || in.getLocalName().equals( "InlineContent" ) ) {
                     LOG.debug( "Loading mark from external file." );
                     Triple<InputStream, String, Continuation<StringBuffer>> pair = getOnlineResourceOrInlineContent( in );
                     if ( pair == null ) {
@@ -385,7 +394,8 @@ class GraphicSymbologyParser {
                     };
                     contn = new Continuation<List<BufferedImage>>() {
                         @Override
-                        public void updateStep( List<BufferedImage> base, Feature f, XPathEvaluator<Feature> evaluator ) {
+                        public void updateStep( List<BufferedImage> base, Feature f, 
+                                                XPathEvaluator<Feature> evaluator ) {
                             StringBuffer sb = new StringBuffer();
                             sbcontn.evaluate( sb, f, evaluator );
                             String file = sb.toString();
@@ -410,6 +420,13 @@ class GraphicSymbologyParser {
                                 e.printStackTrace();
                             }
                         }
+
+                        @Override
+                        public List<ValueReference> retrieveValueReferences() {
+                            List<ValueReference> valueReferences = super.retrieveValueReferences();
+                            valueReferences.addAll( sbcontn.retrieveValueReferences() );
+                            return valueReferences;
+                        }
                     };
                 }
             }
@@ -433,7 +450,8 @@ class GraphicSymbologyParser {
 
             if ( str == null ) {
                 Continuation<StringBuffer> contn = context.parser.updateOrContinue( in, "OnlineResource",
-                                                                                    new StringBuffer(), SBUPDATER, null ).second;
+                                                                                    new StringBuffer(), SBUPDATER,
+                                                                                    null ).second;
                 return new Triple<InputStream, String, Continuation<StringBuffer>>( null, null, contn );
             }
 

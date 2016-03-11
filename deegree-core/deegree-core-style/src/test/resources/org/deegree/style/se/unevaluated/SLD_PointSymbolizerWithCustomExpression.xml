@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PointSymbolizer xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app"
+  xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <Geometry>
+    <ogc:PropertyName>app:geom</ogc:PropertyName>
+  </Geometry>
+  <Graphic>
+    <ExternalGraphic>
+      <!--OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="../../../resources/verkehrszeichen/$fk_vkz_id$.png"/ -->
+      <OnlineResource>
+        <se:Concatenate fallbackValue="0">
+          <se:StringValue>
+            <ogc:Literal>./icons/</ogc:Literal>
+          </se:StringValue>
+          <se:StringValue>
+            <ogc:PropertyName>app:icon</ogc:PropertyName>
+          </se:StringValue>
+          <se:StringValue>
+            <ogc:Literal>.png</ogc:Literal>
+          </se:StringValue>
+        </se:Concatenate>
+      </OnlineResource>
+      <Format>image/png</Format>
+    </ExternalGraphic>
+    <Opacity>1.0</Opacity>
+    <Size>5.0</Size>
+    <Displacement>
+      <DisplacementX>
+        <ogc:PropertyName>app:dis_x</ogc:PropertyName>
+      </DisplacementX>
+      <DisplacementY>
+        <ogc:PropertyName>app:dis_y</ogc:PropertyName>
+      </DisplacementY>
+    </Displacement>
+    <Rotation>
+      <ogc:PropertyName>app:rotation</ogc:PropertyName>
+    </Rotation>
+  </Graphic>
+</PointSymbolizer>
