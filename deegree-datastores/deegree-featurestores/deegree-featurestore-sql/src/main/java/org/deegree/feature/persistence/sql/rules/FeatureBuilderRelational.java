@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -146,7 +147,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final boolean nullEscalation;
 
-    private final List<ValueReference> valueReferences;
+    private final Set<ValueReference> valueReferences;
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
@@ -169,7 +170,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
                                      String ftTableAlias, boolean nullEscalation,
-                                     List<ValueReference> valueReferences ) {
+                                     Set<ValueReference> valueReferences ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
@@ -833,7 +834,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return false;
     }
 
-    private void logValueReferences( List<ValueReference> valueReferences ) {
+    private void logValueReferences( Set<ValueReference> valueReferences ) {
         if ( valueReferences != null ) {
             LOG.trace( "ValueReferences: " );
             for ( ValueReference valueReference : valueReferences ) {

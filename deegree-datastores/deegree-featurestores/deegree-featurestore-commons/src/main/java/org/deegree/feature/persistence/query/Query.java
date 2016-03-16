@@ -43,6 +43,7 @@ import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -100,7 +101,7 @@ public class Query {
 
     private final List<ProjectionClause> projections;
 
-    private final List<ValueReference> valueReferences;
+    private final Set<ValueReference> valueReferences;
 
     /**
      * Creates a new {@link Query} instance.
@@ -201,7 +202,7 @@ public class Query {
      *            a list value references this query must select. May be null, if no restrictions are required.
      */
     public Query( TypeName[] typeNames, Filter filter, SortProperty[] sortBy, int scale, int maxFeatures,
-                  double resolution, List<ValueReference> valueReferences ) {
+                  double resolution, Set<ValueReference> valueReferences ) {
         this.typeNames = typeNames;
         this.filter = filter;
         this.valueReferences = valueReferences;
@@ -312,7 +313,7 @@ public class Query {
      * @return a list of value references to limit the requested feature properties to, may be <code>null</code> if not
      *         applicable
      */
-    public List<ValueReference> getValueReferences() {
+    public Set<ValueReference> getValueReferences() {
         return valueReferences;
     }
 

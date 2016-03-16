@@ -48,9 +48,10 @@ import static org.deegree.filter.Filters.addBBoxConstraint;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilter;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -124,7 +125,7 @@ class QueryBuilder {
         List<Query> queries = new ArrayList<Query>();
         Integer maxFeats = query.getRenderingOptions().getMaxFeatures( layerName );
         final int maxFeatures = maxFeats == null ? -1 : maxFeats;
-        final List<ValueReference> valueReferences = collectValueReferences();
+        final Set<ValueReference> valueReferences = collectValueReferences();
         if ( ftName == null && featureStore != null ) {
             final Filter filter2 = filter;
             queries.addAll( map( featureStore.getSchema().getFeatureTypes( null, false, false ),
@@ -183,7 +184,7 @@ class QueryBuilder {
     }
 
     static Query createQuery( QName ftName, Filter filter, int scale, int maxFeatures, double resolution,
-                              SortProperty[] sort, List<ValueReference> styleValueReferences ) {
+                              SortProperty[] sort, Set<ValueReference> styleValueReferences ) {
         TypeName[] typeNames = new TypeName[] { new TypeName( ftName, null ) };
         return new Query( typeNames, filter, sort, scale, maxFeatures, resolution, styleValueReferences );
     }
@@ -282,8 +283,8 @@ class QueryBuilder {
             allValueReferences.add( (ValueReference) expression );
     }
 
-    private List<ValueReference> collectValueReferences() {
-        List<ValueReference> valueReferences = new ArrayList<ValueReference>();
+    private Set<ValueReference> collectValueReferences() {
+        Set<ValueReference> valueReferences = new HashSet<ValueReference>();
         valueReferences.addAll( style.retrieveValueReferences() );
         valueReferences.addAll( parseValueReferencesFromFilter( filter ) );
         valueReferences.addAll( parseValueReferencesFromStyle( style ) );
