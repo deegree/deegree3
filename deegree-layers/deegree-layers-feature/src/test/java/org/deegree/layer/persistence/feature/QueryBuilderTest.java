@@ -49,6 +49,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Style;
 import org.junit.Test;
 
 /**
@@ -81,6 +83,20 @@ public class QueryBuilderTest {
                     is( new QName( "http://www.deegree.org/app", "placeOfBirth" ) ) );
     }
 
+    @Test
+    public void testParseValueReferencesFromStyle()
+                            throws Exception {
+        Style filter = parseStyle( "Style.xml" );
+
+        List<ValueReference> valueReferences = QueryBuilder.parseValueReferencesFromStyle( filter );
+
+        assertThat( valueReferences.size(), is( 2 ) );
+        assertThat( valueReferences.get( 0 ).getAsQName(),
+                    is( new QName( "http://www.deegree.org/app", "category1" ) ) );
+        assertThat( valueReferences.get( 1 ).getAsQName(),
+                    is( new QName( "http://www.deegree.org/app", "category2" ) ) );
+    }
+
     private OperatorFilter parseFilter( String resourceName )
                             throws Exception {
         InputStream resource = this.getClass().getResourceAsStream( resourceName );
@@ -88,6 +104,19 @@ public class QueryBuilderTest {
         xmlStream.nextTag();
         Filter parse = Filter110XMLDecoder.parse( xmlStream );
         return (OperatorFilter) parse;
+    }
+
+    private Style parseStyle( String resourceName )
+                            throws Exception {
+        InputStream resource = this.getClass().getResourceAsStream( resourceName );
+        try {
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( resource );
+            xmlStream.nextTag();
+            SymbologyParser symbologyParser = new SymbologyParser();
+            return symbologyParser.parse( xmlStream );
+        } finally {
+            resource.close();
+        }
     }
 
 }

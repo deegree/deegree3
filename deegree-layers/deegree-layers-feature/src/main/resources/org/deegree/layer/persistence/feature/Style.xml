@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/sld" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc">
+  <Rule>
+    <Name>Other</Name>
+    <PointSymbolizer>
+      <Graphic>
+        <Mark>
+          <WellKnownName>circle</WellKnownName>
+          <Fill>
+            <CssParameter name="fill">#e400ec</CssParameter>
+          </Fill>
+        </Mark>
+        <Size>12</Size>
+      </Graphic>
+    </PointSymbolizer>
+  </Rule>
+  <Rule>
+    <Name>Category 1</Name>
+    <ogc:Filter>
+      <ogc:Or>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:category1</ogc:PropertyName>
+          <ogc:Literal>0</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+        <ogc:PropertyIsEqualTo>
+          <ogc:PropertyName>app:category2</ogc:PropertyName>
+          <ogc:Literal>0</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+      </ogc:Or>
+    </ogc:Filter>
+    <PointSymbolizer>
+      <Graphic>
+        <Mark>
+          <WellKnownName>circle</WellKnownName>
+          <Fill>
+            <CssParameter name="fill">#ff0000</CssParameter>
+          </Fill>
+        </Mark>
+        <Size>12</Size>
+      </Graphic>
+    </PointSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

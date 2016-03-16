@@ -48,11 +48,14 @@ import static org.deegree.filter.Filters.addBBoxConstraint;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilter;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.utils.CollectionUtils.Mapper;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.FeatureType;
@@ -73,6 +76,7 @@ import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.layer.LayerQuery;
 import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
 import org.deegree.style.se.unevaluated.Style;
 
 /**
@@ -193,6 +197,23 @@ class QueryBuilder {
         return allValueReferences;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    static List<ValueReference> parseValueReferencesFromStyle( Style style ) {
+        List<ValueReference> valueReferencesFromStyle = new ArrayList<ValueReference>();
+        if ( style != null ) {
+            LinkedList<Pair<?, ?>> rules = (LinkedList) style.getRules();
+            for ( Pair<?, ?> p : rules ) {
+                if ( p.first != null && p.first instanceof FilterContinuation ) {
+                    FilterContinuation contn = (FilterContinuation) p.first;
+                    if ( contn.filter != null ) {
+                        valueReferencesFromStyle.addAll( parseValueReferencesFromFilter( (OperatorFilter) contn.filter ) );
+                    }
+                }
+            }
+        }
+        return valueReferencesFromStyle;
+    }
+
     private static void addValueReferences( Operator operator, List<ValueReference> allValueReferences ) {
         switch ( operator.getType() ) {
         case COMPARISON:
@@ -265,6 +286,7 @@ class QueryBuilder {
         List<ValueReference> valueReferences = new ArrayList<ValueReference>();
         valueReferences.addAll( style.retrieveValueReferences() );
         valueReferences.addAll( parseValueReferencesFromFilter( filter ) );
+        valueReferences.addAll( parseValueReferencesFromStyle( style ) );
         return valueReferences;
     }
 
