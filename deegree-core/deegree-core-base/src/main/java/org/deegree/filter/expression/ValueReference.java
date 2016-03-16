@@ -236,6 +236,8 @@ public class ValueReference implements Expression {
 
     @Override
     public int hashCode() {
+        if ( qName != null )
+            return qName.hashCode();
         return text.hashCode();
     }
 }
