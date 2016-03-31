@@ -48,11 +48,13 @@ import java.util.Map;
 
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.DescriptionConverter;
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
 import org.deegree.layer.Layer;
 import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
@@ -100,7 +102,12 @@ class RemoteWmsLayerBuilder {
                                                           l.getDescription().getAbstract(),
                                                           l.getDescription().getKeywords() );
                 }
+
                 LayerMetadata md = new LayerMetadata( name, desc, smd );
+                ScaleDenominatorsType denoms = l.getScaleDenominators();
+                if ( denoms != null ) {
+                    md.setScaleDenominators( new DoublePair( denoms.getMin(), denoms.getMax() ) );
+                }
                 md.setMapOptions( ConfigUtils.parseLayerOptions( l.getLayerOptions() ) );
                 configured.put( l.getOriginalName(), md );
             }
