@@ -110,6 +110,8 @@ class RemoteWmsLayerBuilder {
             LayerMetadata confMd = configured.get( name );
             if ( confMd != null ) {
                 confMd.merge( md );
+                confMd.setStyles( md.getStyles() );
+                confMd.setLegendStyles( md.getLegendStyles() );
                 map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts ) );
             }
         }
