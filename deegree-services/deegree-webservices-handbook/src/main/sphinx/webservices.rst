@@ -530,6 +530,7 @@ This is how the configuration section looks like for configuring a deegree templ
     <GetFeatureInfoFormat>
       <File>../customformat.gfi</File>
       <Format>text/html</Format>
+      <Property name="customname" value="customvalue" \>
     </GetFeatureInfoFormat>
   </FeatureInfoFormats>
 
@@ -541,6 +542,7 @@ The configuration for the XSLT approach looks like this:
     <GetFeatureInfoFormat>
       <XSLTFile gmlVersion="GML_32">../customformat.xsl</XSLTFile>
       <Format>text/html</Format>
+      <Property name="customname" value="customvalue" \>
     </GetFeatureInfoFormat>
   </FeatureInfoFormats>
 
@@ -727,6 +729,36 @@ This is how the configuration section looks like for configuring only ``image/pn
 
   <GetMapFormats>
     <GetMapFormat>image/png</GetMapFormat>
+  </GetMapFormats>
+
+"""""""""""""""""""""""""""""
+Custom format provider class
+"""""""""""""""""""""""""""""
+Using option element ``CustomGetMapFormat``, it possible to plug-in your own Java classes to generate the output for a specific mime type
+
++-----------+-------------+---------+------------------------------------------------------+
+| Option    | Cardinality | Value   | Description                                          |
++===========+=============+=========+======================================================+
+| Format    | 1..1        | String  | Mime type associated with this format configuration  |
++-----------+-------------+---------+------------------------------------------------------+
+| JavaClass | 1..1        | String  | Qualified Java class name                            |
++-----------+-------------+---------+------------------------------------------------------+
+| Property  | 0..n        | Complex | Configure properties of the JavaClass                |
++-----------+-------------+---------+------------------------------------------------------+
+
+* ``Format``: Mime type associated with this format configuration (and announced in GetCapabilities)
+* ``JavaClass``: Therefore, an implementation of interface ``org.deegree.rendering.r2d.ImageSerializer`` must be present on the classpath.
+* ``Property``:
+
+This is how the configuration looks like for the implementation of GeoTIFF:
+
+.. code-block:: xml
+
+  <GetMapFormats>
+    <CustomGetMapFormat>
+      <Format>image/tiff</Format>
+      <JavaClass>org.deegree.services.wms.controller.plugins.ImageSerializerGeoTiff</JavaClass>
+    </CustomGetMapFormat>
   </GetMapFormats>
 
 ^^^^^^^^^^^^^^^^^^^^^^^^
