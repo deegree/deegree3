@@ -33,18 +33,19 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wms.controller.plugins;
+package org.deegree.rendering.r2d;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.OutputStream;
+
+import org.deegree.rendering.r2d.context.RenderingInfo;
 
 /**
  * <code>ImageSerializer</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:niklasch@grit.de">Sebastian Niklasch</a>
  */
 public interface ImageSerializer {
 
@@ -52,6 +53,7 @@ public interface ImageSerializer {
      * @param img
      * @param out
      */
-    void serialize( BufferedImage img, OutputStream out );
+    void serialize( RenderingInfo rinfo, BufferedImage img, OutputStream out )
+                            throws IOException;
 
 }

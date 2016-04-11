@@ -94,6 +94,13 @@
                 <complexType>
                   <sequence>
                     <element name="JavaClass" type="string" />
+                    <element name="File" type="string" />
+                    <element name="Property" minOccurs="0" maxOccurs="unbounded">
+                      <complexType>
+                        <attribute name="name" use="required" />
+                        <attribute name="value" use="required" />            
+                      </complexType>
+                    </element>
                   </sequence>
                 </complexType>
               </element>
@@ -135,6 +142,20 @@
             <enumeration value="image/svg+xml" />
           </restriction>
         </simpleType>
+      </element>
+      <element name="CustomGetMapFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="Format" type="string" />
+            <element name="JavaClass" type="string" />
+            <element name="Property" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <attribute name="name" use="required" />
+                <attribute name="value" use="required" />            
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
       </element>
     </sequence>
   </complexType>

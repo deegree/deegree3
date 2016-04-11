@@ -90,6 +90,7 @@ import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAP11Version;
 import org.apache.axiom.soap.SOAPVersion;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
@@ -125,6 +126,7 @@ import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.rendering.r2d.ImageSerializer;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.rendering.r2d.context.RenderingInfo;
 import org.deegree.services.OWS;
@@ -158,7 +160,6 @@ import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.serialize.CapabilitiesManager;
 import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
-import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
 import org.deegree.services.wms.utils.GetMapLimitChecker;
 import org.deegree.style.StyleRef;
@@ -671,20 +672,13 @@ public class WMSController extends AbstractOWS {
         }
     }
 
-    /**
-     * @param img
-     * @param response
-     * @param format
-     * @throws OWSException
-     * @throws IOException
-     */
     public void sendImage( BufferedImage img, HttpResponseBuffer response, String format )
                             throws OWSException, IOException {
         response.setContentType( format );
 
         ImageSerializer serializer = imageSerializers.get( format );
         if ( serializer != null ) {
-            serializer.serialize( img, response.getOutputStream() );
+            serializer.serialize( null, img, response.getOutputStream() );
             return;
         }
 
@@ -812,11 +806,13 @@ public class WMSController extends AbstractOWS {
 
         RenderingInfo info = new RenderingInfo( getMap.getFormat(), getMap.getWidth(), getMap.getHeight(),
                                                 getMap.getTransparent(), getMap.getBgColor(), getMap.getBoundingBox(),
-                                                getMap.getPixelSize(), map );
+                                                getMap.getPixelSize(), map, imageSerializers.get( getMap.getFormat() ) );
+
         RenderContext ctx = ouputFormatProvider.getRenderers( info, stream );
         LinkedList<String> headers = new LinkedList<String>();
         service.getMap( getMap, headers, ctx );
         ctx.close();
+
         return headers;
     }
 
@@ -885,6 +881,33 @@ public class WMSController extends AbstractOWS {
             for ( String getMapFormat : getMapFormatList ) {
                 supportedImageFormats.add( getMapFormat );
             }
+
+            for ( GetMapFormatsType.CustomGetMapFormat mf : getMapFormats.getCustomGetMapFormat() ) {
+                ImageSerializer imageSerializer;
+                try {
+                    Class<?> clazz = workspace.getModuleClassLoader().loadClass( mf.getJavaClass() );
+                    imageSerializer = clazz.asSubclass( ImageSerializer.class ).newInstance();
+                } catch ( ClassNotFoundException e ) {
+                    throw new IllegalArgumentException( "Couldn't find image serializer class: " + mf.getJavaClass(), e );
+                } catch ( Exception e ) {
+                    throw new IllegalArgumentException(
+                                                        "Configured image serializer class doesn't implement ImageSerializer",
+                                                        e );
+                }
+
+                for ( GetMapFormatsType.CustomGetMapFormat.Property p : mf.getProperty() ) {
+                    try {
+
+                        BeanUtils.setProperty( imageSerializer, p.getName(), p.getValue() );
+                    } catch ( Exception e ) {
+                        LOG.warn( "Error setting ImageSerializer '{}' property '{}': ", mf.getFormat(), p.getName(),
+                                  e.getLocalizedMessage() );
+                        LOG.trace( "Exception", e );
+                    }
+                }
+                supportedImageFormats.add( mf.getFormat() );
+                imageSerializers.put( mf.getFormat(), imageSerializer );
+            }
         }
         if ( supportedImageFormats.isEmpty() ) {
             supportedImageFormats.addAll( ouputFormatProvider.getSupportedOutputFormats() );
@@ -917,6 +940,16 @@ public class WMSController extends AbstractOWS {
                         throw new IllegalArgumentException(
                                                             "Configured serializer class doesn't implement FeatureInfoSerializer",
                                                             e );
+                    }
+
+                    for ( GetFeatureInfoFormat.Serializer.Property p : t.getSerializer().getProperty() ) {
+                        try {
+                            BeanUtils.setProperty( featureInfoSerializer, p.getName(), p.getValue() );
+                        } catch ( Exception e ) {
+                            LOG.warn( "Error setting FeatureInfoSerializer '{}' property '{}': ", t.getFormat(),
+                                      p.getName(), e.getLocalizedMessage() );
+                            LOG.trace( "Exception", e );
+                        }
                     }
 
                     featureInfoManager.addOrReplaceCustomFormat( t.getFormat(), featureInfoSerializer );
