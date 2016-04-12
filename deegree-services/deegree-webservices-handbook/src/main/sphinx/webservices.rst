@@ -309,7 +309,7 @@ Here's an example of a linearized version of the example geometry as it would be
 Adding custom output formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using option element ``CustomFormat``, it possible to plug-in your own Java classes to generate the output for a specific mime type (e.g. a binary format)
+Using option element ``CustomFormat``, it is possible to plug-in your own Java classes to generate the output for a specific mime type (e.g. a binary format)
 
 +-----------+-------------+---------+------------------------------------------------------+
 | Option    | Cardinality | Value   | Description                                          |
@@ -734,7 +734,7 @@ This is how the configuration section looks like for configuring only ``image/pn
 """""""""""""""""""""""""""""
 Custom format provider class
 """""""""""""""""""""""""""""
-Using option element ``CustomGetMapFormat``, it possible to plug-in your own Java classes to generate the output for a specific mime type
+Using option element ``CustomGetMapFormat``, it is possible to plug-in your own Java classes to generate the output for a specific mime type
 
 +-----------+-------------+---------+------------------------------------------------------+
 | Option    | Cardinality | Value   | Description                                          |
