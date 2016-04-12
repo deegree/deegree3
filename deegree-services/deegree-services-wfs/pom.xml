@@ -56,7 +56,11 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
       <version>${project.version}</version>
-    </dependency>      
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
@@ -554,7 +555,7 @@ public class WebFeatureService extends AbstractOWS {
                                                      + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
-                    mimeTypeToFormat.put( mimeType, format );
+                    mimeTypeToFormat.put( trim( mimeType ), format );
                 }
             }
         }
