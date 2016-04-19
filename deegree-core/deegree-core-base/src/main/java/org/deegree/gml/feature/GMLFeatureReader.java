@@ -51,6 +51,7 @@ import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -255,7 +256,8 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
     private Property parsePropertyDynamic( QName propName, XMLStreamReaderWrapper xmlStream, ICRS activeCRS,
                                            FeatureType ft, PropertyType lastPropDecl, DynamicAppSchema appSchema )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+                                                                   throws XMLParsingException, XMLStreamException,
+                                                                   UnknownCRSException {
 
         Map<QName, String> propAttributes = XMLStreamUtils.getAttributes( xmlStream );
         StringBuffer text = new StringBuffer();
@@ -274,7 +276,8 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
         PropertyType propDecl = null;
         if ( xmlStream.isEndElement() ) {
             if ( propAttributes.containsKey( new QName( XLNNS, "href" ) ) ) {
-                LOG.debug( "Detected complex (xlink-valued) property '" + propName + "'. Treating as feature property." );
+                LOG.debug( "Detected complex (xlink-valued) property '" + propName
+                           + "'. Treating as feature property." );
                 propDecl = ( (DynamicFeatureType) ft ).addFeaturePropertyDeclaration( lastPropDecl, propName, null );
             } else {
                 LOG.debug( "Detected simple property '" + propName + "'." );
@@ -347,7 +350,8 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
         }
         List<Property> extraPropertyList = null;
         if ( extraPropertyIdx != -1 ) {
-            extraPropertyList = new ArrayList<Property>( propertyList.subList( extraPropertyIdx, propertyList.size() ) );
+            extraPropertyList = new ArrayList<Property>( propertyList.subList( extraPropertyIdx,
+                                                                               propertyList.size() ) );
             propertyList = new ArrayList<Property>( propertyList.subList( 0, extraPropertyIdx ) );
         }
         ExtraProps extraProps = null;
@@ -368,6 +372,9 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
     private List<Property> parseProperties( XMLStreamReaderWrapper xmlStream, ICRS crs, GMLObjectType type )
                             throws XMLStreamException, UnknownCRSException {
+        Collection<String> typeNamespaces = null;
+        if ( type instanceof FeatureType )
+            typeNamespaces = ( (FeatureType) type ).getSchema().getNamespaceBindings().values();
         Iterator<PropertyType> declIter = type.getPropertyDeclarations().iterator();
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
@@ -378,69 +385,79 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
         while ( xmlStream.getEventType() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "- property '" + propName + "'" );
-            }
-
-            if ( propName.getNamespaceURI() != null && propName.getNamespaceURI().startsWith( EXTRA_PROP_NS ) ) {
-                LOG.debug( "Parsing extra property: " + propName );
-                PropertyType pt = null;
-                if ( EXTRA_PROP_NS_GEOMETRY.equals( propName.getNamespaceURI() ) ) {
-                    pt = new GeometryPropertyType( propName, 1, 1, null, null, GEOMETRY, DIM_2_OR_3, INLINE );
-                } else {
-                    pt = new SimplePropertyType( propName, 1, 1, STRING, null, null );
+            if ( typeNamespaces == null || typeNamespaces.contains( propName.getNamespaceURI() ) ) {
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "- property '" + propName + "'" );
                 }
-                Property prop = parseProperty( xmlStream, pt, activeCRS );
-                propertyList.add( prop );
-                xmlStream.nextTag();
-                continue;
-            }
 
-            if ( findConcretePropertyType( propName, activeDecl ) != null ) {
-                // current property element is equal to active declaration
-                if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
-                    String msg = Messages.getMessage( "ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
-                                                      activeDecl.getMaxOccurs(), type.getName() );
-                    throw new XMLParsingException( xmlStream, msg );
+                if ( propName.getNamespaceURI() != null && propName.getNamespaceURI().startsWith( EXTRA_PROP_NS ) ) {
+                    LOG.debug( "Parsing extra property: " + propName );
+                    PropertyType pt = null;
+                    if ( EXTRA_PROP_NS_GEOMETRY.equals( propName.getNamespaceURI() ) ) {
+                        pt = new GeometryPropertyType( propName, 1, 1, null, null, GEOMETRY, DIM_2_OR_3, INLINE );
+                    } else {
+                        pt = new SimplePropertyType( propName, 1, 1, STRING, null, null );
+                    }
+                    Property prop = parseProperty( xmlStream, pt, activeCRS );
+                    propertyList.add( prop );
+                    xmlStream.nextTag();
+                    continue;
                 }
-            } else {
-                // current property element is not equal to active declaration
-                while ( declIter.hasNext() && findConcretePropertyType( propName, activeDecl ) == null ) {
-                    if ( !gmlStreamReader.getLaxMode() && propOccurences < activeDecl.getMinOccurs() ) {
-                        String msg = null;
-                        if ( activeDecl.getMinOccurs() == 1 ) {
-                            msg = Messages.getMessage( "ERROR_PROPERTY_MANDATORY", activeDecl.getName(), type.getName() );
-                        } else {
-                            msg = Messages.getMessage( "ERROR_PROPERTY_TOO_FEW_OCCURENCES", activeDecl.getName(),
-                                                       activeDecl.getMinOccurs(), type.getName() );
-                        }
+
+                if ( findConcretePropertyType( propName, activeDecl ) != null ) {
+                    // current property element is equal to active declaration
+                    if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
+                        String msg = Messages.getMessage( "ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
+                                                          activeDecl.getMaxOccurs(), type.getName() );
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    activeDecl = declIter.next();
-                    propOccurences = 0;
-                }
-                if ( findConcretePropertyType( propName, activeDecl ) == null ) {
-                    String msg = Messages.getMessage( "ERROR_PROPERTY_UNEXPECTED", propName, type.getName() );
-                    throw new XMLParsingException( xmlStream, msg );
-                }
-            }
-
-            Property property = parseProperty( xmlStream, findConcretePropertyType( propName, activeDecl ), activeCRS );
-            if ( property != null ) {
-                // if this is the "gml:boundedBy" property, override active CRS
-                // (see GML spec. (where???))
-                if ( BOUNDED_BY_GML31.equals( activeDecl.getName() ) || BOUNDED_BY_GML32.equals( activeDecl.getName() ) ) {
-                    Envelope bbox = (Envelope) property.getValue();
-                    if ( bbox != null && bbox.getCoordinateSystem() != null ) {
-                        activeCRS = bbox.getCoordinateSystem();
-                        LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
+                } else {
+                    // current property element is not equal to active declaration
+                    while ( declIter.hasNext() && findConcretePropertyType( propName, activeDecl ) == null ) {
+                        if ( !gmlStreamReader.getLaxMode() && propOccurences < activeDecl.getMinOccurs() ) {
+                            String msg = null;
+                            if ( activeDecl.getMinOccurs() == 1 ) {
+                                msg = Messages.getMessage( "ERROR_PROPERTY_MANDATORY", activeDecl.getName(),
+                                                           type.getName() );
+                            } else {
+                                msg = Messages.getMessage( "ERROR_PROPERTY_TOO_FEW_OCCURENCES", activeDecl.getName(),
+                                                           activeDecl.getMinOccurs(), type.getName() );
+                            }
+                            throw new XMLParsingException( xmlStream, msg );
+                        }
+                        activeDecl = declIter.next();
+                        propOccurences = 0;
+                    }
+                    if ( findConcretePropertyType( propName, activeDecl ) == null ) {
+                        String msg = Messages.getMessage( "ERROR_PROPERTY_UNEXPECTED", propName, type.getName() );
+                        throw new XMLParsingException( xmlStream, msg );
                     }
                 }
 
-                propertyList.add( property );
+                Property property = parseProperty( xmlStream, findConcretePropertyType( propName, activeDecl ),
+                                                   activeCRS );
+                if ( property != null ) {
+                    // if this is the "gml:boundedBy" property, override active CRS
+                    // (see GML spec. (where???))
+                    if ( BOUNDED_BY_GML31.equals( activeDecl.getName() )
+                         || BOUNDED_BY_GML32.equals( activeDecl.getName() ) ) {
+                        Envelope bbox = (Envelope) property.getValue();
+                        if ( bbox != null && bbox.getCoordinateSystem() != null ) {
+                            activeCRS = bbox.getCoordinateSystem();
+                            LOG.debug( "- crs (from boundedBy): '" + activeCRS + "'" );
+                        }
+                    }
+
+                    propertyList.add( property );
+                }
+                propOccurences++;
+                xmlStream.nextTag();
+            } else {
+                LOG.debug( "Property " + propName.toString() + " is skipped as namespace '" + propName.getNamespaceURI()
+                           + "' does not exist in target FeatureType!" );
+                XMLStreamUtils.skipElement( xmlStream );
+                xmlStream.nextTag();
             }
-            propOccurences++;
-            xmlStream.nextTag();
         }
         return propertyList;
     }
