@@ -790,7 +790,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response, queryCRS );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -946,7 +946,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response, queryCRS );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1107,7 +1107,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
                 Transaction transaction = transactionReader.read( bodyXmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response, queryCRS );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
