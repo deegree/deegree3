@@ -47,6 +47,7 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.feature.Features.findFeaturesAndGeometries;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
@@ -66,9 +67,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -413,6 +416,8 @@ class TransactionHandler {
             for ( String newFid : newFids ) {
                 inserted.add( newFid, insert.getHandle() );
             }
+        } catch ( OWSException e ) {
+            throw e;
         } catch ( XMLParsingException e ) {
             String exceptionCode = INVALID_PARAMETER_VALUE;
             if ( VERSION_200.equals( request.getVersion() ) ) {
@@ -919,12 +924,13 @@ class TransactionHandler {
 
     private void evaluateSrsNameForFeatureCollection( FeatureCollection fc, List<ICRS> queryCRS, String handle )
                             throws OWSException {
-        List<Property> geometries = fc.getGeometryProperties();
-        for ( Property geometry : geometries ) {
-            if ( geometry instanceof Geometry ) {
-                ICRS crs = ( (Geometry) geometry ).getCoordinateSystem();
-                evaluateSrsName( crs, queryCRS, handle );
-            }
+        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
+        for ( Feature feature : fc )
+            findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<Feature>(), new LinkedHashSet<String>(),
+                                       new LinkedHashSet<String>() );
+        for ( Geometry geometry : geometries ) {
+            ICRS crs = geometry.getCoordinateSystem();
+            evaluateSrsName( crs, queryCRS, handle );
         }
     }
 
