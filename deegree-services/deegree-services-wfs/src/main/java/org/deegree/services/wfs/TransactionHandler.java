@@ -92,6 +92,7 @@ import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -108,6 +109,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.validation.CoordinateValidityInspector;
 import org.deegree.gml.GMLInputFactory;
@@ -228,9 +230,7 @@ class TransactionHandler {
                     break;
                 }
                 case INSERT: {
-                    Insert insert = (Insert) operation;
-                    evaluateSrsName( insert, queryCRS );
-                    doInsert( insert );
+                    doInsert( (Insert) operation, queryCRS );
                     break;
                 }
                 case NATIVE: {
@@ -362,10 +362,11 @@ class TransactionHandler {
         }
     }
 
-    private void doInsert( Insert insert )
+    private void doInsert( Insert insert, List<ICRS> queryCRS )
                             throws OWSException {
 
         LOG.debug( "doInsert: " + insert );
+        evaluateSrsNameForInsert( insert, queryCRS );
 
         if ( service.getStores().length == 0 ) {
             throw new OWSException( "Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE );
@@ -397,6 +398,7 @@ class TransactionHandler {
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
+            evaluateSrsNameForFeatureCollection( fc, queryCRS, insert.getHandle() );
             FeatureStore fs = service.getStores()[0];
             ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
@@ -906,23 +908,36 @@ class TransactionHandler {
         return gmlVersion;
     }
 
-    private void evaluateSrsName( Insert insert, List<ICRS> queryCRS )
+    private void evaluateSrsNameForInsert( Insert insert, List<ICRS> queryCRS )
                             throws OWSException {
         String srsName = insert.getSrsName();
-        if ( srsName != null && queryCRS != null ) {
-            if ( !queryCRS.contains( CRSManager.getCRSRef( srsName ) ) ) {
-                String message = "The value of the srsName parameter is not one of the SRS values the server claims to support in its capabilities document.";
-                String handle = retrieveHandle( insert );
-                throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
+        if ( srsName != null ) {
+            CRSRef crs = CRSManager.getCRSRef( srsName );
+            evaluateSrsName( crs, queryCRS, insert.getHandle() );
+        }
+    }
+
+    private void evaluateSrsNameForFeatureCollection( FeatureCollection fc, List<ICRS> queryCRS, String handle )
+                            throws OWSException {
+        List<Property> geometries = fc.getGeometryProperties();
+        for ( Property geometry : geometries ) {
+            if ( geometry instanceof Geometry ) {
+                ICRS crs = ( (Geometry) geometry ).getCoordinateSystem();
+                evaluateSrsName( crs, queryCRS, handle );
             }
         }
     }
 
-    private String retrieveHandle( Insert insert ) {
-        String handle = insert.getHandle();
-        if ( handle == null || "".equals( handle ) )
-            return "Transaction";
-        return handle;
+    private void evaluateSrsName( ICRS srsName, List<ICRS> queryCRS, String handle )
+                            throws OWSException {
+        if ( srsName != null && queryCRS != null ) {
+            if ( !queryCRS.contains( srsName ) ) {
+                String message = "The value of the srsName parameter is not one of the SRS values the server claims to support in its capabilities document.";
+                if ( handle == null || "".equals( handle ) )
+                    handle = "Transaction";
+                throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
+            }
+        }
     }
 
 }
