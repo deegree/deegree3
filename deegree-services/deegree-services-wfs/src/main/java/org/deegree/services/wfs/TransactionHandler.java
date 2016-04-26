@@ -435,8 +435,10 @@ class TransactionHandler {
 
     private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
                                                          ICRS defaultCRS )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
-                            ReferenceResolvingException {
+                                                                                 throws XMLStreamException,
+                                                                                 XMLParsingException,
+                                                                                 UnknownCRSException,
+                                                                                 ReferenceResolvingException {
 
         FeatureCollection fc = null;
 
@@ -616,7 +618,8 @@ class TransactionHandler {
             PropertyType pt = ft.getPropertyDeclaration( propName );
             if ( pt == null ) {
                 throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
-                                        + "'. The feature type does not define this property.", OPERATION_NOT_SUPPORTED );
+                                        + "'. The feature type does not define this property.",
+                                        OPERATION_NOT_SUPPORTED );
             }
             XMLStreamReader xmlStream = replacement.getReplacementValue();
             int index = simpleMultiProp == null ? 0 : simpleMultiProp.second;
@@ -633,7 +636,8 @@ class TransactionHandler {
                     GMLFeatureReader featureReader = gmlReader.getFeatureReader();
 
                     ICRS crs = master.getDefaultQueryCrs();
-                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt, crs );
+                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
+                                                                 crs );
 
                     // TODO make this hack unnecessary
                     TypedObjectNode propValue = prop.getValue();
@@ -924,10 +928,15 @@ class TransactionHandler {
 
     private void evaluateSrsNameForFeatureCollection( FeatureCollection fc, List<ICRS> queryCRS, String handle )
                             throws OWSException {
-        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
         for ( Feature feature : fc )
-            findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<Feature>(), new LinkedHashSet<String>(),
-                                       new LinkedHashSet<String>() );
+            evaluateSrsNameForFeature( feature, queryCRS, handle );
+    }
+
+    private void evaluateSrsNameForFeature( Feature feature, List<ICRS> queryCRS, String handle )
+                            throws OWSException {
+        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
+        findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<Feature>(), new LinkedHashSet<String>(),
+                                   new LinkedHashSet<String>() );
         for ( Geometry geometry : geometries ) {
             ICRS crs = geometry.getCoordinateSystem();
             evaluateSrsName( crs, queryCRS, handle );
