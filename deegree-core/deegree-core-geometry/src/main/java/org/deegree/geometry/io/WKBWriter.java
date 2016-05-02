@@ -67,12 +67,14 @@ public class WKBWriter {
             geom = ( (GeometryReference<Geometry>) geom ).getReferencedObject();
         }
         // com.vividsolutions.jts.io.WKBWriter is not thread safe
-        return new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
+        int dim = geom.getCoordinateDimension();
+        return new com.vividsolutions.jts.io.WKBWriter(dim).write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
     }
 
     public static void write( Geometry geom, OutputStream os )
                             throws IOException, ParseException {
         // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        //TODO: test for dimentionality here aswell?
         new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
                                                          new OutputStreamOutStream( os ) );
     }
