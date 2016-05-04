@@ -30,11 +30,11 @@
   <distributionManagement>
     <repository>
       <id>ndssla-releases</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/ndssla-snapshot/</url>
+      <url>http://repo.lat-lon/nexus/content/repositories/ndssla-release/</url>
     </repository>
     <snapshotRepository>
       <id>ndssla-snapshots</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/ndssla-release/</url>
+      <url>http://repo.lat-lon/nexus/content/repositories/ndssla-snapshot/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
