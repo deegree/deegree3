@@ -453,7 +453,6 @@ class TransactionHandler {
             features.add( feature );
             while ( xmlStream.nextTag() == START_ELEMENT ) {
                 // more features
-                System.out.println( xmlStream.getName() );
                 feature = gmlStream.readFeature();
                 features.add( feature );
             }
