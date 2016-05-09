@@ -367,14 +367,6 @@ class TransactionHandler {
             throw new OWSException( "Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE );
         }
 
-        // TODO deal with this problem
-        if ( service.getStores().length > 1 ) {
-            String msg = "Cannot perform insert. More than one feature store is active -- "
-                         + "this is currently not supported. Please deactivate all feature stores, "
-                         + "but one in order to make Insert transactions work.";
-            throw new OWSException( msg, NO_APPLICABLE_CODE );
-        }
-
         ICRS defaultCRS = null;
         if ( insert.getSrsName() != null ) {
             try {
@@ -393,7 +385,7 @@ class TransactionHandler {
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
-            FeatureStore fs = service.getStores()[0];
+            FeatureStore fs = retrieveStore( fc );
             ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
             if ( mode == null ) {
@@ -424,51 +416,63 @@ class TransactionHandler {
 
     private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
                                                          ICRS defaultCRS )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
-                            ReferenceResolvingException {
+                                                                                 throws XMLStreamException,
+                                                                                 XMLParsingException,
+                                                                                 UnknownCRSException,
+                                                                                 ReferenceResolvingException,
+                                                                                 OWSException {
+        if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) )
+            return parseWFSFeatureCollection( xmlStream, inputFormat, defaultCRS );
+        return parseFeatures( xmlStream, inputFormat, defaultCRS );
+    }
 
+    private FeatureCollection parseFeatures( XMLStreamReader xmlStream, GMLVersion inputFormat, ICRS defaultCRS )
+                            throws XMLStreamException, UnknownCRSException, OWSException {
         FeatureCollection fc = null;
 
-        // TODO determine correct schema
-        AppSchema schema = service.getStores()[0].getSchema();
-        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
-        gmlStream.setApplicationSchema( schema );
-        gmlStream.setDefaultCRS( defaultCRS );
-
-        if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
-            LOG.debug( "Features embedded in wfs:FeatureCollection" );
-            fc = parseWFSFeatureCollection( xmlStream, gmlStream );
+        Pair<GMLStreamReader, FeatureStore> gmlStream2Store = createGmlStreamReaderIfUnique( xmlStream, inputFormat,
+                                                                                             defaultCRS );
+        if ( gmlStream2Store == null ) {
+            String msg = "Cannot perform insert. More than one feature store is active -- "
+                         + "this is currently not supported if insert request contains single features. "
+                         + "Please deactivate all feature stores, "
+                         + "but one in order to make Insert transactions work.";
+            throw new OWSException( msg, NO_APPLICABLE_CODE );
+        }
+        GMLStreamReader gmlStream = gmlStream2Store.first;
+        // must contain one or more features or a feature collection from the application schema
+        Feature feature = gmlStream.readFeature();
+        if ( feature instanceof FeatureCollection ) {
+            LOG.debug( "Features embedded in application FeatureCollection" );
+            fc = (FeatureCollection) feature;
             // skip to wfs:Insert END_ELEMENT
             xmlStream.nextTag();
         } else {
-            // must contain one or more features or a feature collection from the application schema
-            Feature feature = gmlStream.readFeature();
-            if ( feature instanceof FeatureCollection ) {
-                LOG.debug( "Features embedded in application FeatureCollection" );
-                fc = (FeatureCollection) feature;
-                // skip to wfs:Insert END_ELEMENT
-                xmlStream.nextTag();
-            } else {
-                LOG.debug( "Unenclosed features to be inserted" );
-                List<Feature> features = new LinkedList<Feature>();
+            LOG.debug( "Unenclosed features to be inserted" );
+            List<Feature> features = new LinkedList<Feature>();
+            features.add( feature );
+            while ( xmlStream.nextTag() == START_ELEMENT ) {
+                // more features
+                System.out.println( xmlStream.getName() );
+                feature = gmlStream.readFeature();
                 features.add( feature );
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    // more features
-                    feature = gmlStream.readFeature();
-                    features.add( feature );
-                }
-                fc = new GenericFeatureCollection( null, features );
             }
+            fc = new GenericFeatureCollection( null, features );
         }
 
         // resolve local xlink references
         gmlStream.getIdContext().resolveLocalRefs();
-
         return fc;
     }
 
-    private FeatureCollection parseWFSFeatureCollection( XMLStreamReader xmlStream, GMLStreamReader gmlStream )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+    private FeatureCollection parseWFSFeatureCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
+                                                         ICRS defaultCRS )
+                                                                                 throws XMLStreamException,
+                                                                                 XMLParsingException,
+                                                                                 UnknownCRSException, OWSException {
+        LOG.debug( "Features embedded in wfs:FeatureCollection" );
+        Pair<GMLStreamReader, FeatureStore> gmlStream = createGmlStreamReaderIfUnique( xmlStream, inputFormat,
+                                                                                       defaultCRS );
 
         // TODO handle crs + move this method somewhere else
         xmlStream.require( START_ELEMENT, WFS_NS, "FeatureCollection" );
@@ -481,17 +485,27 @@ class TransactionHandler {
                     // xlink?
                     String href = xmlStream.getAttributeValue( XLNNS, "href" );
                     if ( href != null ) {
-                        FeatureReference refFeature = new FeatureReference( gmlStream.getIdContext(), href, null );
+                        if ( service.getStores().length > 1 ) {
+                            String msg = "Cannot perform insert. Features could not be read from request, "
+                                         + "it contains feature members with href links, "
+                                         + "but more than one store is configured  -- "
+                                         + "this is currently not supported.";
+                            throw new OWSException( msg, NO_APPLICABLE_CODE );
+                        }
+                        FeatureReference refFeature = new FeatureReference( gmlStream.first.getIdContext(), href,
+                                                                            null );
                         memberFeatures.add( refFeature );
-                        gmlStream.getIdContext().addReference( refFeature );
+                        gmlStream.first.getIdContext().addReference( refFeature );
                     } else {
                         xmlStream.nextTag();
-                        memberFeatures.add( gmlStream.readFeature() );
+                        gmlStream = updateAndCheckGmlStreamReader( xmlStream, inputFormat, defaultCRS, gmlStream );
+                        memberFeatures.add( gmlStream.first.readFeature() );
                     }
                     xmlStream.nextTag();
                 } else if ( "featureMembers".equals( elName.getLocalPart() ) ) {
                     while ( xmlStream.nextTag() == START_ELEMENT ) {
-                        memberFeatures.add( gmlStream.readFeature() );
+                        gmlStream = updateAndCheckGmlStreamReader( xmlStream, inputFormat, defaultCRS, gmlStream );
+                        memberFeatures.add( gmlStream.first.readFeature() );
                     }
                 } else {
                     LOG.debug( "Ignoring element '" + elName + "'" );
@@ -505,7 +519,13 @@ class TransactionHandler {
 
         // idContext.resolveXLinks( decoder.getApplicationSchema() );
         xmlStream.require( END_ELEMENT, WFS_NS, "FeatureCollection" );
-        return new GenericFeatureCollection( null, memberFeatures );
+        GenericFeatureCollection fc = new GenericFeatureCollection( null, memberFeatures );
+
+        // skip to wfs:Insert END_ELEMENT
+        xmlStream.nextTag();
+        // resolve local xlink references
+        gmlStream.first.getIdContext().resolveLocalRefs();
+        return fc;
     }
 
     private void doNative( Native nativeOp )
@@ -605,7 +625,8 @@ class TransactionHandler {
             PropertyType pt = ft.getPropertyDeclaration( propName );
             if ( pt == null ) {
                 throw new OWSException( "Cannot update property '" + propName + "' of feature type '" + ft.getName()
-                                        + "'. The feature type does not define this property.", OPERATION_NOT_SUPPORTED );
+                                        + "'. The feature type does not define this property.",
+                                        OPERATION_NOT_SUPPORTED );
             }
             XMLStreamReader xmlStream = replacement.getReplacementValue();
             int index = simpleMultiProp == null ? 0 : simpleMultiProp.second;
@@ -622,7 +643,8 @@ class TransactionHandler {
                     GMLFeatureReader featureReader = gmlReader.getFeatureReader();
 
                     ICRS crs = master.getDefaultQueryCrs();
-                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt, crs );
+                    Property prop = featureReader.parseProperty( new XMLStreamReaderWrapper( xmlStream, null ), pt,
+                                                                 crs );
 
                     // TODO make this hack unnecessary
                     TypedObjectNode propValue = prop.getValue();
@@ -901,4 +923,79 @@ class TransactionHandler {
         }
         return gmlVersion;
     }
+
+    private Pair<GMLStreamReader, FeatureStore> createGmlStreamReaderIfUnique( XMLStreamReader xmlStream,
+                                                                               GMLVersion inputFormat, ICRS defaultCRS )
+                                                                                                       throws XMLStreamException {
+        FeatureStore[] stores = service.getStores();
+        if ( stores.length == 1 ) {
+            FeatureStore featureStore = stores[0];
+            GMLStreamReader gmlStreamReader = createGmlStreamReader( xmlStream, inputFormat, defaultCRS, featureStore );
+            return new Pair<GMLStreamReader, FeatureStore>( gmlStreamReader, featureStore );
+        }
+        return null;
+    }
+
+    private Pair<GMLStreamReader, FeatureStore> createRequiredGmlStreamReader( XMLStreamReader xmlStream,
+                                                                               GMLVersion inputFormat, ICRS defaultCRS )
+                                                                                                       throws OWSException,
+                                                                                                       XMLStreamException {
+        FeatureStore store = service.getStore( xmlStream.getName() );
+        if ( store == null ) {
+            String msg = "Cannot perform insert. Insert contains unsupported feature " + xmlStream.getName() + ".";
+            throw new OWSException( msg, NO_APPLICABLE_CODE );
+        }
+        GMLStreamReader gmlStreamReader = createGmlStreamReader( xmlStream, inputFormat, defaultCRS, store );
+        return new Pair<GMLStreamReader, FeatureStore>( gmlStreamReader, store );
+    }
+
+    private GMLStreamReader createGmlStreamReader( XMLStreamReader xmlStream, GMLVersion inputFormat, ICRS defaultCRS,
+                                                   FeatureStore featureStore )
+                                                                           throws XMLStreamException {
+        AppSchema schema = featureStore.getSchema();
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
+        gmlStream.setApplicationSchema( schema );
+        gmlStream.setDefaultCRS( defaultCRS );
+        return gmlStream;
+    }
+
+    private Pair<GMLStreamReader, FeatureStore> updateAndCheckGmlStreamReader( XMLStreamReader xmlStream,
+                                                                               GMLVersion inputFormat, ICRS defaultCRS,
+                                                                               Pair<GMLStreamReader, FeatureStore> gmlStream )
+                                                                                                       throws OWSException,
+                                                                                                       XMLStreamException {
+        if ( gmlStream == null ) {
+            gmlStream = createRequiredGmlStreamReader( xmlStream, inputFormat, defaultCRS );
+        } else {
+            if ( !gmlStream.second.isMapped( xmlStream.getName() ) ) {
+                String msg = "Cannot perform insert. Feature collection contains "
+                             + "features from different feature stores -- " + "this is currently not supported.";
+                throw new OWSException( msg, NO_APPLICABLE_CODE );
+            }
+        }
+        return gmlStream;
+    }
+
+    private FeatureStore retrieveStore( FeatureCollection fc )
+                            throws OWSException {
+        if ( service.getStores().length == 1 ) {
+            return service.getStores()[0];
+        }
+        FeatureStore featureStoreToInsertInto = null;
+        for ( Feature feature : fc ) {
+            QName ftName = feature.getType().getName();
+            if ( featureStoreToInsertInto == null ) {
+                featureStoreToInsertInto = service.getStore( ftName );
+            } else {
+                boolean isCurrentFeatureMapped = featureStoreToInsertInto.isMapped( ftName );
+                if ( !isCurrentFeatureMapped ) {
+                    String msg = "Cannot perform insert. Insert contains features from more than one feature store -- "
+                                 + "this is currently not supported.";
+                    throw new OWSException( msg, NO_APPLICABLE_CODE );
+                }
+            }
+        }
+        return featureStoreToInsertInto;
+    }
+
 }
