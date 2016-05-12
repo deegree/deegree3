@@ -51,6 +51,7 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -82,6 +83,7 @@ public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
     public FeatureStore build() {
         ConnectionProvider conn = workspace.getResource( ConnectionProviderProvider.class,
                                                          config.getJDBCConnId().getValue() );
+        checkConnection( conn );
         File file = metadata.getLocation().resolveToFile( metadata.getIdentifier().getId() + ".xml" );
         SQLFeatureStore fs = null;
         try {
@@ -91,6 +93,15 @@ public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
             LOG.trace( "Stack trace:", e );
         }
         return fs;
+    }
+
+    private void checkConnection( ConnectionProvider conn ) {
+        if ( conn == null ) {
+            String msg = "Unable to create SqlFeatureStore: Connection with identifier "
+                         + config.getJDBCConnId().getValue() + " is not available.";
+            LOG.error( msg );
+            throw new ResourceInitException( msg );
+        }
     }
 
 }

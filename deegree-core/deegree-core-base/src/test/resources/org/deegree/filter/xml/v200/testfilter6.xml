@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fes:Filter xmlns:app="http://www.deegree.org/app" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd">
+  <fes:And>
+    <fes:Or>
+      <fes:PropertyIsLike escapeChar="!" singleChar="#" wildCard="*">
+        <fes:ValueReference>app:name</fes:ValueReference>
+        <fes:Literal>Karl *</fes:Literal>
+      </fes:PropertyIsLike>
+      <fes:PropertyIsLike escapeChar="!" singleChar="#" wildCard="*">
+        <fes:ValueReference>app:name</fes:ValueReference>
+        <fes:Literal>*Marx</fes:Literal>
+      </fes:PropertyIsLike>
+      <fes:PropertyIsEqualTo  matchCase="true">
+        <fes:ValueReference>app:name</fes:ValueReference>
+        <fes:Literal>Karl Marx</fes:Literal>
+      </fes:PropertyIsEqualTo>
+    </fes:Or>
+    <fes:Not>
+      <fes:PropertyIsBetween>
+        <fes:Function name="Add">
+          <fes:ValueReference>app:number</fes:ValueReference>
+          <fes:Literal>100</fes:Literal>
+        </fes:Function>
+        <fes:LowerBoundary>
+          <fes:Literal>0</fes:Literal>
+        </fes:LowerBoundary>
+        <fes:UpperBoundary>
+          <fes:ValueReference>app:numberTwo</fes:ValueReference>
+        </fes:UpperBoundary>
+      </fes:PropertyIsBetween>
+    </fes:Not>
+    <fes:PropertyIsNull>
+      <fes:ValueReference>app:nullTest</fes:ValueReference>
+    </fes:PropertyIsNull>
+  </fes:And>
+</fes:Filter>
