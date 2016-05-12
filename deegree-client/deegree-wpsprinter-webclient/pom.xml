@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>
-    <version>3.4-RC2-SNAPSHOT</version>
+    <version>3.4-RC2-SNAPSHOT-wuppertal-1</version>
   </parent>
 
   <repositories>
