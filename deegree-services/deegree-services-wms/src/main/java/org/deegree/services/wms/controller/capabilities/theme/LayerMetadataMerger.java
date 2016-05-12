@@ -90,7 +90,7 @@ class LayerMetadataMerger {
         themeMetadata.merge( layerMetadata );
 
         if ( themeMetadata.getMapOptions() == null ) {
-            themeMetadata.setMapOptions( new MapOptions( null, null, null, -1, -1 ) );
+            themeMetadata.setMapOptions( new MapOptions() );
         }
 
         if ( queryable == QUERYABLE_DISABLED_MASK ) {
