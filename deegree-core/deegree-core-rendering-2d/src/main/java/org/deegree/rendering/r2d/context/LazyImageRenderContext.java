@@ -99,6 +99,13 @@ public class LazyImageRenderContext implements RenderContext {
     }
 
     @Override
+    public void paintCopyright( String copyright, int mapHeight ) {
+        LOG.trace( "Paint copyright" );
+        
+        getRenderContext().paintCopyright( copyright, mapHeight );
+    }
+
+    @Override
     public boolean close()
                             throws IOException {
         LOG.trace( "Closing render context" );

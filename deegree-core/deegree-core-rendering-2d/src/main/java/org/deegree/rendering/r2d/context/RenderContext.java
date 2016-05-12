@@ -70,6 +70,8 @@ public interface RenderContext {
 
     void paintImage( BufferedImage img );
 
+    void paintCopyright( String copyright, int mapHeight );
+
     boolean close()
                             throws IOException;
 

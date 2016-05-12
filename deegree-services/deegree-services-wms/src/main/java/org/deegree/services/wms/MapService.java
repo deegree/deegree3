@@ -111,6 +111,8 @@ public class MapService {
     HashMap<String, Theme> themeMap;
 
     private final GetLegendHandler getLegendHandler;
+    
+    private String copyright;
 
     /**
      * @param conf
@@ -146,6 +148,7 @@ public class MapService {
                     }
                 }
             }
+            copyright = conf.getCopyright();
         }
         getLegendHandler = new GetLegendHandler( this );
     }
@@ -220,6 +223,8 @@ public class MapService {
             }
         }
         ctx.optimizeAndDrawLabels();
+        if ( copyright != null )
+            ctx.paintCopyright( copyright, gm.getHeight() );
 
         ScaleFunction.getCurrentScaleValue().remove();
     }
