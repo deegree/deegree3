@@ -426,6 +426,20 @@ Here is a snippet for quick copy & paste:
 Service content configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The following table shows what options are available.
+
+.. table:: Service content configuration
+
++---------------------+-------------+---------+-----------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                               |
++=====================+=============+=========+===========================================================+
+| DefaultLayerOptions | 0..1        | Complex | Configure the behaviour of layers                         |
++---------------------+-------------+---------+-----------------------------------------------------------+
+| ThemeId             | 0..n        | String  | Configure the WMS to use one or more preconfigured themes |
++---------------------+-------------+---------+-----------------------------------------------------------+
+| Copyright           | 0..1        | String  | Adds a watermark to image of GetMap response              |
++---------------------+-------------+---------+-----------------------------------------------------------+
+
 You can configure the behaviour of layers using the ``DefaultLayerOptions`` element.
 
 Have a look at the layer options and their values:
@@ -459,6 +473,8 @@ Here is an example snippet of the content section:
     </DefaultLayerOptions>
 
     <ThemeId>mytheme</ThemeId>
+
+    <Copyright>(c) deegree</Copyright>
 
   </ServiceConfiguration>
 
