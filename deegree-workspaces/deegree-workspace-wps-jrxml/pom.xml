@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.4-RC2-SNAPSHOT-wuppertal-1</version>
+    <version>3.4-RC2-SNAPSHOT-wuppertal-2-SNAPSHOT</version>
   </parent>
 
   <repositories>
