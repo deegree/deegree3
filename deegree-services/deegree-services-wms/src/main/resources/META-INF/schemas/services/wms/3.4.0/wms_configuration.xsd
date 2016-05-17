@@ -58,6 +58,7 @@
     <sequence>
       <element name="DefaultLayerOptions" type="wms:LayerOptionsType" minOccurs="0" />
       <element name="ThemeId" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Copyright" minOccurs="0" type="string" />
     </sequence>
   </complexType>
 
