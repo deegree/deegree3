@@ -98,6 +98,8 @@ public class Intersects extends SpatialOperator {
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
+        if ( geometry == null )
+            return false;
 
         Expression param1 = getParam1();
         if ( param1 != null ) {

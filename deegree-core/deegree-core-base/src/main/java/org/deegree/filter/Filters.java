@@ -204,7 +204,8 @@ public class Filters {
         case EQUALS:
             return new BBOX( ( (Equals) oper ).getParam1(), ( (Equals) oper ).getGeometry().getEnvelope() );
         case INTERSECTS:
-            return new BBOX( ( (Intersects) oper ).getParam1(), ( (Intersects) oper ).getGeometry().getEnvelope() );
+            if ( ( (Intersects) oper ).getGeometry() != null )
+                return new BBOX( ( (Intersects) oper ).getParam1(), ( (Intersects) oper ).getGeometry().getEnvelope() );
         case OVERLAPS:
             return new BBOX( ( (Overlaps) oper ).getParam1(), ( (Overlaps) oper ).getGeometry().getEnvelope() );
         case WITHIN:
