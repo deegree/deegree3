@@ -276,6 +276,7 @@ public class Filter200XMLEncoder {
         writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
 
         Geometry geometry = null;
+        ValueReference secondParam = null;
         Measure distance = null;
         switch ( operator.getSubType() ) {
         case BBOX:
@@ -303,6 +304,7 @@ public class Filter200XMLEncoder {
             break;
         case INTERSECTS:
             geometry = ( (Intersects) operator ).getGeometry();
+            secondParam = ( (Intersects) operator ).getValueReference();
             break;
         case OVERLAPS:
             geometry = ( (Overlaps) operator ).getGeometry();
@@ -320,7 +322,10 @@ public class Filter200XMLEncoder {
         GMLStreamWriter gmlWriter = createGml32StreamWriter( writer );
 
         export( operator.getParam1(), writer );
-        exportGeometry( geometry, gmlWriter );
+        if ( secondParam != null )
+            export( secondParam, writer );
+        if ( geometry != null )
+            exportGeometry( geometry, gmlWriter );
         exportDistance( distance, writer );
         writer.writeEndElement();
     }

@@ -386,6 +386,7 @@ public class Filter110XMLEncoder {
 
         ValueReference propertyName = null;
         Geometry geometry = null;
+        ValueReference secondParam = null;
         Measure distance = null;
 
         switch ( operator.getSubType() ) {
@@ -423,6 +424,7 @@ public class Filter110XMLEncoder {
         case INTERSECTS:
             propertyName = ( (Intersects) operator ).getPropName();
             geometry = ( (Intersects) operator ).getGeometry();
+            secondParam = ( (Intersects) operator ).getValueReference();
             break;
         case OVERLAPS:
             propertyName = ( (Overlaps) operator ).getPropName();
@@ -441,12 +443,17 @@ public class Filter110XMLEncoder {
         // exporting the comparable geometry property
         export( propertyName, writer );
 
+
         // serializing the geometry
         if ( geometry != null ) {
             gmlWriter.setOutputCrs( geometry.getCoordinateSystem() );
             gmlWriter.write( geometry );
         }
 
+        // or value reference
+        if ( secondParam != null )
+            export( secondParam, writer );
+        
         if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
             QName distanceElementName = new QName( CommonNamespaces.OGCNS, "Distance" );
             writer.writeStartElement( distanceElementName.getNamespaceURI(), distanceElementName.getLocalPart() );

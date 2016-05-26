@@ -93,6 +93,7 @@ public class Filter200XMLEncoderParameterizedTest {
                                        asString( "v200/aixm_custom_geometry_property.xml" ) } );
         filterTests.add( new Object[] { "aixm_timeinstant_begin.xml", asString( "v200/aixm_timeinstant_begin.xml" ) } );
         filterTests.add( new Object[] { "temporal/tequals.xml", asString( "v200/temporal/tequals.xml" ) } );
+        filterTests.add( new Object[] { "intersectsWithSpatialJoin.xml", asString( "v200/intersectsWithSpatialJoin.xml" ) } );
         return filterTests;
     }
 
