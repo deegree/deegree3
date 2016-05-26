@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -56,11 +58,14 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.spatial.Intersects;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.deegree.workspace.standard.DefaultWorkspace;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -243,4 +248,16 @@ public class Filter110XMLDecoderTest {
         Assert.assertNotNull( filter );
 
     }
+
+    @Test
+    public void parseIntersectsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "intersectsWithSpatialJoin.xml" );
+        Intersects intersects = (Intersects) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) intersects.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( intersects.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( intersects.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
 }

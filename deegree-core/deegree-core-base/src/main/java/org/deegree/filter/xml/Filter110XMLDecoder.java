@@ -66,6 +66,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPathUtils;
@@ -122,6 +123,8 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
+import org.deegree.gml.geometry.GMLGeometryReader;
+import org.deegree.gml.geometry.GMLGeometryVersionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -880,9 +883,14 @@ public class Filter110XMLDecoder {
                 // first parameter: 'ogc:PropertyName' (cannot be empty)
                 ValueReference param1 = parsePropertyName( xmlStream, false );
                 nextElement( xmlStream );
-                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
-                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
-                spatialOperator = new Intersects( param1, param2 );
+                if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                    // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                    Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
+                    spatialOperator = new Intersects( param1, param2 );
+                } else {
+                    ValueReference param2 = parsePropertyName( xmlStream, false );
+                    spatialOperator = new Intersects( param1, param2 );
+                }
                 break;
             }
             case CONTAINS: {
@@ -991,4 +999,15 @@ public class Filter110XMLDecoder {
         }
         return ArrayUtils.join( ", ", names );
     }
+
+    private static boolean isCurrentStartElementIsGmlGeometry( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        String ns = xmlStream.getNamespaceURI();
+        if ( CommonNamespaces.GMLNS.equals( ns ) || CommonNamespaces.GML3_2_NS.equals( ns ) ) {
+            GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName(), xmlStream );
+            return gmlReader.isGeometryOrEnvelopeElement( xmlStream );
+        }
+        return false;
+    }
+    
 }
