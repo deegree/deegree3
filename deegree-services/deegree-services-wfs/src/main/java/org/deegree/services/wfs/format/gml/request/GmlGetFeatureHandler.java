@@ -461,7 +461,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
                                             QName featureMemberEl, Lock lock )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
-                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError {
+                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, OWSException {
 
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
 
@@ -500,7 +500,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( featuresSkipped < startIndex ) {
                         featuresSkipped++;
                     } else {
-                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl, wfsVersion );
                         featuresAdded++;
                     }
                 }
@@ -515,7 +515,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
                                             QName featureMemberEl, Lock lock, ResponsePagingUris responsePagingUris )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
-                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError {
+                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, OWSException {
 
         FeatureCollection allFeatures = new GenericFeatureCollection();
         Set<String> fids = new HashSet<String>();
@@ -568,7 +568,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         // retrieve and write result features
         GmlXlinkOptions resolveState = gmlStream.getReferenceResolveStrategy().getResolveOptions();
         for ( Feature member : allFeatures ) {
-            writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+            writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl, wfsVersion );
         }
     }
 
