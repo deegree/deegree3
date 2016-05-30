@@ -690,7 +690,7 @@ public class SQLFeatureStore implements FeatureStore {
                 } else {
                     sql.append( "COUNT(*) FROM (SELECT DISTINCT " );
 
-                    String ftTableAlias = wb.getAliasManager().getRootTableAlias();
+                    String ftTableAlias = wb.getAliasManager().getTableAlias( ftMapping.getFtTable() );
 
                     FIDMapping fidMapping = ftMapping.getFidMapping();
                     List<Pair<SQLIdentifier, BaseType>> fidCols = fidMapping.getColumns();
