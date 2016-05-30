@@ -131,7 +131,7 @@ public class MappedXPath {
         }
 
         currentTable = ftMapping.getFtTable().toString();
-        currentTableAlias = aliasManager.getRootTableAlias();
+        currentTableAlias = aliasManager.getTableAlias( ftMapping.getFtTable() );
         map( ftMapping.getMappings(), steps );
     }
 
