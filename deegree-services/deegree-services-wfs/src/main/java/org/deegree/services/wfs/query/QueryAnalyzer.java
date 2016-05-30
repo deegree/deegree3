@@ -363,7 +363,6 @@ public class QueryAnalyzer {
         // requalify query typenames and keep track of them
         TypeName[] wfsTypeNames = ( (AdHocQuery) wfsQuery ).getTypeNames();
         TypeName[] typeNames = new TypeName[wfsTypeNames.length];
-        FeatureStore commonFs = null;
         for ( int i = 0; i < wfsTypeNames.length; i++ ) {
             String alias = wfsTypeNames[i].getAlias();
             FeatureType ft = service.lookupFeatureType( wfsTypeNames[i].getFeatureTypeName() );
@@ -371,15 +370,6 @@ public class QueryAnalyzer {
                 String msg = "Feature type with name '" + wfsTypeNames[i].getFeatureTypeName()
                              + "' is not served by this WFS.";
                 throw new OWSException( msg, INVALID_PARAMETER_VALUE, "typeName" );
-            }
-            FeatureStore fs = service.getStore( ft.getName() );
-            if ( commonFs != null ) {
-                if ( fs != commonFs ) {
-                    String msg = "Requested join of feature types from different feature stores. This is not supported.";
-                    throw new OWSException( msg, INVALID_PARAMETER_VALUE, "typeName" );
-                }
-            } else {
-                commonFs = fs;
             }
             requestedFts.add( ft );
             QName ftName = ft.getName();
@@ -422,7 +412,8 @@ public class QueryAnalyzer {
                 }
             }
             if ( checkAreaOfUse ) {
-                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(), ( (AdHocQuery) wfsQuery ).getSrsName() );
+                validateGeometryConstraint( ( (BBoxQuery) wfsQuery ).getBBox(),
+                                            ( (AdHocQuery) wfsQuery ).getSrsName() );
             }
 
             Envelope bbox = bboxQuery.getBBox();
@@ -502,8 +493,7 @@ public class QueryAnalyzer {
      */
     private boolean isPrefixedAndBound( ValueReference propName ) {
         QName name = propName.getAsQName();
-        return !name.getPrefix().equals( DEFAULT_NS_PREFIX )
-               && !name.getNamespaceURI().equals( "" );
+        return !name.getPrefix().equals( DEFAULT_NS_PREFIX ) && !name.getNamespaceURI().equals( "" );
     }
 
     /**
@@ -558,7 +548,8 @@ public class QueryAnalyzer {
         String s = propName.getAsText();
         int colonIdx = s.indexOf( ':' );
         if ( !s.contains( "/" ) && colonIdx != -1 ) {
-            if ( Character.isLetterOrDigit( s.charAt( 0 ) ) && Character.isLetterOrDigit( s.charAt( s.length() - 1 ) ) ) {
+            if ( Character.isLetterOrDigit( s.charAt( 0 ) )
+                 && Character.isLetterOrDigit( s.charAt( s.length() - 1 ) ) ) {
                 String prefix = s.substring( 0, colonIdx );
                 String localName = s.substring( colonIdx + 1, s.length() );
                 String nsUri = null;
@@ -596,9 +587,7 @@ public class QueryAnalyzer {
                 domainOfValidity = transform( domainOfValidity, bbox.getCoordinateSystem() );
                 if ( !bbox.isWithin( domainOfValidity ) ) {
                     String msg = "Invalid geometry constraint in filter. The envelope of the geometry is not within the domain of validity ('"
-                                 + domainOfValidity
-                                 + "') of its CRS ('"
-                                 + bbox.getCoordinateSystem().getAlias()
+                                 + domainOfValidity + "') of its CRS ('" + bbox.getCoordinateSystem().getAlias()
                                  + "').";
                     throw new OWSException( msg, INVALID_PARAMETER_VALUE, "filter" );
                 }
