@@ -81,6 +81,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureTuple;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
@@ -290,10 +291,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     @Override
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
-
-        Feature feature = null;
+        List<Feature> features = new ArrayList<Feature>();
         try {
             for ( Entry<FeatureType, FeatureTypeMapping> featureTypeAndMapping : featureTypeAndMappings.entrySet() ) {
+                Feature feature = null;
                 FeatureType ft = featureTypeAndMapping.getKey();
                 FeatureTypeMapping ftMapping = featureTypeAndMapping.getValue();
                 String tableAlias = detectTableAlias( ftMapping );
@@ -324,7 +325,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                       + " are currently supported." );
                         }
                     }
-                    feature = ft.newFeature( gmlId, props, null );
+                    features.add( ft.newFeature( gmlId, props, null ) );
                     if ( fs.getCache() != null ) {
                         fs.getCache().add( feature );
                     }
@@ -336,7 +337,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             LOG.error( t.getMessage(), t );
             throw new SQLException( t.getMessage(), t );
         }
-        return feature;
+        if ( features.size() == 0 )
+            return null;
+        if ( features.size() == 1 )
+            return features.get( 0 );
+        return new FeatureTuple( features );
     }
 
     private String toIdPrefix( ValueReference propName ) {
