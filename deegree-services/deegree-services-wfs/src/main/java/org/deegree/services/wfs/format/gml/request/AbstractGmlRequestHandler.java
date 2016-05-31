@@ -214,7 +214,8 @@ abstract class AbstractGmlRequestHandler {
                                                                throws XMLStreamException, UnknownCRSException,
                                                                TransformationException, OWSException {
         if ( member instanceof FeatureTuple )
-            writeFeatureTuple( (FeatureTuple) member, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+            writeFeatureTuple( (FeatureTuple) member, gmlStream, xmlStream, resolveState, featureMemberEl,
+                               requestVersion );
         else
             writeFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
     }
@@ -241,15 +242,14 @@ abstract class AbstractGmlRequestHandler {
                                       GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
                                                               throws XMLStreamException, UnknownCRSException,
                                                               TransformationException, OWSException {
-        if ( !VERSION_200.equals( requestVersion ) )
-            throw new OWSException( "Tuples are not supported in WFS " + requestVersion, NO_APPLICABLE_CODE );
-        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
-        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "Tuple" );
-        for ( Feature feature : featureTuple.getTupleFeatures() ) {
-            writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
-        }
-        xmlStream.writeEndElement();
-        xmlStream.writeEndElement();
+        if ( VERSION_110.equals( requestVersion ) && GML_32.equals( gmlStream.getVersion() ) )
+            exportTupleWFS110_GML32( featureTuple, gmlStream, xmlStream, resolveState, featureMemberEl,
+                                     requestVersion );
+        else if ( VERSION_200.equals( requestVersion ) )
+            exportTupleWFS200( featureTuple, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+        else
+            throw new OWSException( "Export of tuples is not supported for WFS " + requestVersion + " / GML "
+                                    + gmlStream.getVersion(), NO_APPLICABLE_CODE );
     }
 
     /**
@@ -547,6 +547,34 @@ abstract class AbstractGmlRequestHandler {
         }
 
         return ns + " " + baseUrl.toString();
+    }
+
+    private void exportTupleWFS110_GML32( FeatureTuple featureTuple, GMLStreamWriter gmlStream,
+                                          XMLStreamWriter xmlStream, GmlXlinkOptions resolveState,
+                                          QName featureMemberEl, Version requestVersion )
+                                                                  throws XMLStreamException, UnknownCRSException,
+                                                                  TransformationException, OWSException {
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "featureMembers" );
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "FeatureCollection" );
+        xmlStream.writeAttribute( featureMemberEl.getNamespaceURI(), "id", featureTuple.getId() );
+        for ( Feature feature : featureTuple.getTupleFeatures() ) {
+            writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+        }
+        xmlStream.writeEndElement();
+        xmlStream.writeEndElement();
+    }
+
+    private void exportTupleWFS200( FeatureTuple featureTuple, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
+                                    GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
+                                                            throws XMLStreamException, UnknownCRSException,
+                                                            TransformationException, OWSException {
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "Tuple" );
+        for ( Feature feature : featureTuple.getTupleFeatures() ) {
+            writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+        }
+        xmlStream.writeEndElement();
+        xmlStream.writeEndElement();
     }
 
 }
