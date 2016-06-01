@@ -41,6 +41,7 @@ import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
@@ -60,20 +61,45 @@ public class Intersects extends SpatialOperator {
 
     private final Geometry geometry;
 
+    private final ValueReference valueReference;
+
     /**
+     * Instantiates a {@link Intersects} operator with geometry as second parameter.
+     * 
      * @param propName
      *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
      *            geometry props)
      * @param geometry
+     *            never <code>null</code>
      */
     public Intersects( Expression propName, Geometry geometry ) {
+        this( propName, geometry, null );
+    }
+
+    /**
+     * Instantiates a {@link Intersects} operator with value reference as second parameter.
+     * 
+     * @param propName
+     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
+     *            geometry props)
+     * @param valueReference
+     *            never <code>null</code>
+     */
+    public Intersects( Expression propName, ValueReference valueReference ) {
+        this( propName, null, valueReference );
+    }
+
+    private Intersects( Expression propName, Geometry geometry, ValueReference valueReference ) {
         super( propName );
         this.geometry = geometry;
+        this.valueReference = valueReference;
     }
 
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
+        if ( geometry == null )
+            return false;
 
         Expression param1 = getParam1();
         if ( param1 != null ) {
@@ -125,22 +151,35 @@ public class Intersects extends SpatialOperator {
     }
 
     /**
-     * @return the geometry
+     * @return the second parameter, <code>null</code> if it is a value reference
      */
     public Geometry getGeometry() {
         return geometry;
+    }
+
+    /**
+     * @return the second parameter, <code>null</code> if it is a geometry
+     */
+    public ValueReference getValueReference() {
+        return valueReference;
     }
 
     @Override
     public String toString( String indent ) {
         String s = indent + "-Intersects\n";
         s += indent + propName + "\n";
-        s += indent + geometry;
+        if ( geometry != null )
+            s += indent + geometry;
+        if ( valueReference != null )
+            s += indent + valueReference;
         return s;
     }
 
     @Override
     public Object[] getParams() {
+        if ( valueReference != null )
+            return new Object[] { propName, valueReference };
         return new Object[] { propName, geometry };
     }
+
 }

@@ -496,7 +496,7 @@ public class QueryAnalyzer {
 
     /**
      * Returns whether the propName has to be considered for re-qualification.
-     * 
+     *
      * @param propName
      * @return
      */
@@ -512,7 +512,7 @@ public class QueryAnalyzer {
      * <p>
      * This types of propertynames especially occurs in WFS 1.0.0 requests.
      * </p>
-     * 
+     *
      * @param propName
      *            property name to be repaired, must be "simple", i.e. contain only of a QName
      * @param typeName

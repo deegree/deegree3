@@ -36,6 +36,7 @@
 package org.deegree.geometry.metadata;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -59,25 +60,45 @@ public class SpatialMetadata {
     private List<ICRS> coordinateSystems;
 
     /**
+     * Instantiates an empty SpatialMetadata instance.
+     */
+    public SpatialMetadata() {
+        this( null, Collections.<ICRS> emptyList() );
+    }
+
+    /**
+     * Instantiates an SpatialMetadata instance with envelope and coordinate systems.
+     * 
      * @param envelope
+     *            may be <code>null</code>
      * @param coordinateSystems
+     *            may be empty but never <code>null</code>
      */
     public SpatialMetadata( Envelope envelope, List<ICRS> coordinateSystems ) {
         this.envelope = envelope;
         this.coordinateSystems = coordinateSystems;
     }
 
+    /**
+     * Instantiates an SpatialMetadata from another SpatialMetadata instance.
+     * 
+     * @param spatialMetadata
+     *            may be <code>null</code>
+     **/
     public SpatialMetadata( SpatialMetadata spatialMetadata ) {
         if ( spatialMetadata != null ) {
             this.envelope = copyEnvelope( spatialMetadata.envelope );
             this.coordinateSystems = new ArrayList<ICRS>();
             if ( spatialMetadata.coordinateSystems != null )
                 this.coordinateSystems.addAll( spatialMetadata.coordinateSystems );
+        } else {
+            this.envelope = null;
+            this.coordinateSystems = Collections.emptyList();
         }
     }
 
     /**
-     * @return the envelope
+     * @return the envelope may be <code>null</code>
      */
     public Envelope getEnvelope() {
         return envelope;
@@ -85,14 +106,14 @@ public class SpatialMetadata {
 
     /**
      * @param envelope
-     *            the envelope to set
+     *            the envelope to set, may be <code>null</code>
      */
     public void setEnvelope( Envelope envelope ) {
         this.envelope = envelope;
     }
 
     /**
-     * @return the coordinateSystems, never null
+     * @return the coordinateSystems, never <code>null</code>
      */
     public List<ICRS> getCoordinateSystems() {
         return coordinateSystems;
@@ -100,7 +121,7 @@ public class SpatialMetadata {
 
     /**
      * @param coordinateSystems
-     *            the coordinateSystems to set, may not be null
+     *            the coordinateSystems to set, never <code>null</code>
      */
     public void setCoordinateSystems( List<ICRS> coordinateSystems ) {
         this.coordinateSystems = coordinateSystems;
@@ -111,7 +132,7 @@ public class SpatialMetadata {
      * passed are not changed!
      * 
      * @param spatialMetadataToMerge
-     *            SpatialMetadata to merge, may be <code>null</code>
+     *            SpatialMetadata to merge, never <code>null</code>
      */
     public SpatialMetadata merge( SpatialMetadata spatialMetadataToMerge ) {
         if ( spatialMetadataToMerge == null )

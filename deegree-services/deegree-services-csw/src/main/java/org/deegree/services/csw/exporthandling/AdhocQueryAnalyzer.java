@@ -304,6 +304,8 @@ public class AdhocQueryAnalyzer {
                 return new Equals( copy( equals.getPropName() ), equals.getGeometry() );
             case INTERSECTS:
                 Intersects intersects = (Intersects) op;
+                if ( intersects.getValueReference() != null )
+                    return new Intersects( copy( intersects.getPropName() ), intersects.getValueReference() );
                 return new Intersects( copy( intersects.getPropName() ), intersects.getGeometry() );
             case OVERLAPS:
                 Overlaps overlaps = (Overlaps) op;

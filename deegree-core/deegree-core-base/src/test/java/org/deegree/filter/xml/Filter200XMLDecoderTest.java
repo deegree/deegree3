@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,10 +68,12 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.spatial.Disjoint;
+import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.Overlaps;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.workspace.standard.DefaultWorkspace;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -326,6 +330,19 @@ public class Filter200XMLDecoderTest {
         for ( Filter filter : getFilters( "filter14.xml" ) ) {
             And and = (And) ( (OperatorFilter) filter ).getOperator();
         }
+    }
+
+    @Test
+    public void parseIntersectsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        InputStream filterAsStream = this.getClass().getResourceAsStream( "v200/intersectsWithSpatialJoin.xml" );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( filterAsStream );
+        XMLStreamUtils.skipStartDocument( xmlStream );
+        Intersects intersects = (Intersects) ( (OperatorFilter) Filter200XMLDecoder.parse( xmlStream ) ).getOperator();
+
+        assertThat( ( (ValueReference) intersects.getParam1() ).getAsText(), is( "app:ft1/geometry" ) );
+        assertThat( intersects.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( intersects.getValueReference().getAsText(), is( "app:ft2/geometry" ) );
     }
 
     @Test(expected = XMLParsingException.class)

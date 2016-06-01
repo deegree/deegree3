@@ -112,7 +112,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      */
     public PostGISWhereBuilder( PostGISDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
                                 SortProperty[] sortCrit, boolean allowPartialMappings, boolean useLegacyPredicates )
-                            throws FilterEvaluationException, UnmappableException {
+                                                        throws FilterEvaluationException, UnmappableException {
         super( dialect, mapper, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         build( allowPartialMappings );
@@ -156,8 +156,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         appendParamsFromFunction( function, params );
         TypedObjectNode value = evaluateFunction( function, params );
         if ( !( value instanceof PrimitiveValue ) ) {
-            throw new UnsupportedOperationException(
-                                                     "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
+            throw new UnsupportedOperationException( "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
         }
         String valueAsString = ( (PrimitiveValue) value ).getAsText();
         return valueAsString;
@@ -204,11 +203,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
 
         SQLExpression propNameExpr = toProtoSQLSpatial( op.getPropName() );
-        if ( !propNameExpr.isSpatial() ) {
-            String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + op.getPropName()
-                         + "' does not denote a spatial column.";
-            throw new FilterEvaluationException( msg );
-        }
+        checkIfExpressionIsSpatial( propNameExpr, op.getPropName() );
 
         ICRS storageCRS = propNameExpr.getCRS();
         int srid = propNameExpr.getSRID() != null ? Integer.parseInt( propNameExpr.getSRID() ) : -1;
@@ -337,7 +332,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( intersects.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( intersects, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -399,4 +394,24 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                             throws FilterEvaluationException {
         return new SQLArgument( geom, new PostGISGeometryConverter( null, targetCRS, "" + srid, useLegacyPredicates ) );
     }
+
+    private SQLExpression toProtoSqlSecondParameter( Intersects intersects, ICRS storageCRS, int srid )
+                            throws FilterEvaluationException, UnmappableException {
+        if ( intersects.getValueReference() != null ) {
+            SQLExpression sqlExpression = toProtoSQLSpatial( intersects.getValueReference() );
+            checkIfExpressionIsSpatial( sqlExpression, intersects.getValueReference() );
+            return sqlExpression;
+        }
+        return toProtoSQL( intersects.getGeometry(), storageCRS, srid );
+    }
+
+    private void checkIfExpressionIsSpatial( SQLExpression sqlExpression, ValueReference propName )
+                            throws FilterEvaluationException {
+        if ( !sqlExpression.isSpatial() ) {
+            String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + propName
+                         + "' does not denote a spatial column.";
+            throw new FilterEvaluationException( msg );
+        }
+    }
+
 }

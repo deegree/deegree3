@@ -265,4 +265,13 @@ public class Filter110XMLEncoderTest {
         Assert.assertNotNull( filter );
 
     }
+
+    @Test
+    public void parseIntersectsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "intersectsWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
 }
