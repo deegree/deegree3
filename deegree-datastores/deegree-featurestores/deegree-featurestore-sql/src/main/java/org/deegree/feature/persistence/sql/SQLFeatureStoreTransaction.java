@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.sql;
 
 import static org.deegree.feature.Features.findFeaturesAndGeometries;
+import static org.deegree.feature.i18n.Messages.getMessage;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 
 import java.io.ByteArrayOutputStream;
@@ -68,6 +69,8 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -279,6 +282,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private int performDeleteBlob( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
+        checkIfFeaturesAreNotLocked( filter, lock );
+        
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
@@ -307,7 +312,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
     private int performDeleteRelational( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
-
+        checkIfFeaturesAreNotLocked( filter, lock );
+        
         int deleted = 0;
         for ( ResourceId id : filter.getSelectedIds() ) {
             LOG.debug( "Analyzing id: " + id.getRid() );
@@ -1049,6 +1055,23 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             }
         }
         return new IdFilter( ids );
+    }
+
+    private void checkIfFeaturesAreNotLocked( IdFilter filter, Lock lock )
+                            throws FeatureStoreException {
+        String lockId = lock != null ? lock.getId() : null;
+    
+        // check if all features can be deleted
+        for ( ResourceId id : filter.getSelectedIds() ) {
+            if ( !fs.getLockManager().isFeatureModifiable( id.getRid(), lockId ) ) {
+                if ( lockId == null ) {
+                    throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id.getRid() ),
+                                                         "lockId" );
+                }
+                throw new InvalidParameterValueException( getMessage( "TA_DELETE_LOCKED_WRONG_LOCK_ID", id.getRid() ),
+                                                          "lockId" );
+            }
+        }
     }
 
     @Override
