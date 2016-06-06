@@ -282,11 +282,11 @@ public class WebFeatureService extends AbstractOWS {
         }
 
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
-                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
+                                                                   : jaxbConfig.getQueryMaxFeatures().intValue();
         resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
         enableResponsePaging = jaxbConfig.isEnableResponsePaging() == null ? false
-                                                                           : jaxbConfig.isEnableResponsePaging();
+                                                                          : jaxbConfig.isEnableResponsePaging();
 
         service = new WfsFeatureStoreManager();
         try {
@@ -410,11 +410,12 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean isAtLeastOneRequestTypeConfigured( SupportedRequests supportedRequests ) {
         return supportedRequests.getCreateStoredQuery() != null || supportedRequests.getDescribeFeatureType() != null
-               || supportedRequests.getDescribeStoredQueries() != null || supportedRequests.getDropStoredQuery() != null
-               || supportedRequests.getGetCapabilities() != null || supportedRequests.getGetFeature() != null
-               || supportedRequests.getGetFeatureWithLock() != null || supportedRequests.getGetGmlObject() != null
-               || supportedRequests.getGetPropertyValue() != null || supportedRequests.getListStoredQueries() != null
-               || supportedRequests.getLockFeature() != null || supportedRequests.getTransaction() != null;
+               || supportedRequests.getDescribeStoredQueries() != null
+               || supportedRequests.getDropStoredQuery() != null || supportedRequests.getGetCapabilities() != null
+               || supportedRequests.getGetFeature() != null || supportedRequests.getGetFeatureWithLock() != null
+               || supportedRequests.getGetGmlObject() != null || supportedRequests.getGetPropertyValue() != null
+               || supportedRequests.getListStoredQueries() != null || supportedRequests.getLockFeature() != null
+               || supportedRequests.getTransaction() != null;
     }
 
     private Set<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
@@ -507,13 +508,17 @@ public class WebFeatureService extends AbstractOWS {
 
         if ( formatList == null || formatList.isEmpty() ) {
             LOG.debug( "Using default format configuration." );
-            org.deegree.services.wfs.format.gml.GmlFormat gml21 = new org.deegree.services.wfs.format.gml.GmlFormat( this,
+            org.deegree.services.wfs.format.gml.GmlFormat gml21 = new org.deegree.services.wfs.format.gml.GmlFormat(
+                                                                                                                     this,
                                                                                                                      GML_2 );
-            org.deegree.services.wfs.format.gml.GmlFormat gml30 = new org.deegree.services.wfs.format.gml.GmlFormat( this,
+            org.deegree.services.wfs.format.gml.GmlFormat gml30 = new org.deegree.services.wfs.format.gml.GmlFormat(
+                                                                                                                     this,
                                                                                                                      GML_30 );
-            org.deegree.services.wfs.format.gml.GmlFormat gml31 = new org.deegree.services.wfs.format.gml.GmlFormat( this,
+            org.deegree.services.wfs.format.gml.GmlFormat gml31 = new org.deegree.services.wfs.format.gml.GmlFormat(
+                                                                                                                     this,
                                                                                                                      GML_31 );
-            org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat( this,
+            org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat(
+                                                                                                                     this,
 
                                                                                                                      GML_32 );
             mimeTypeToFormat.put( "application/gml+xml; version=2.1", gml21 );
@@ -564,12 +569,11 @@ public class WebFeatureService extends AbstractOWS {
         }
     }
 
-    private OWSMetadataProvider initMetadataProvider( DeegreeServicesMetadataType serviceMetadata,
-                                                      DeegreeWFS jaxbConfig )
-                                                                              throws ResourceInitException {
+    private OWSMetadataProvider initMetadataProvider( DeegreeServicesMetadataType serviceMetadata, DeegreeWFS jaxbConfig )
+                            throws ResourceInitException {
         OWSMetadataProvider provider = null;
-        provider = workspace.getResource( OWSMetadataProviderProvider.class,
-                                          getMetadata().getIdentifier().getId() + "_metadata" );
+        provider = workspace.getResource( OWSMetadataProviderProvider.class, getMetadata().getIdentifier().getId()
+                                                                             + "_metadata" );
 
         if ( provider == null ) {
             ServiceIdentification serviceId = MetadataUtils.convertFromJAXB( serviceMetadata.getServiceIdentification() );
@@ -642,8 +646,7 @@ public class WebFeatureService extends AbstractOWS {
                     try {
                         xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( domSource );
                     } catch ( Exception t ) {
-                        throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(),
-                                                         t );
+                        throw new ResourceInitException( "Error extracting extended capabilities: " + t.getMessage(), t );
                     }
                     OMElement omEl = new XMLAdapter( xmlStream ).getRootElement();
                     for ( String wfsVersion : extendedCapConfig.getWfsVersions() ) {
@@ -655,8 +658,8 @@ public class WebFeatureService extends AbstractOWS {
                     }
                 }
             }
-            provider = new DefaultOWSMetadataProvider( serviceId, serviceProvider, wfsVersionToExtendedCaps, ftMetadata,
-                                                       Collections.<String, String> emptyMap(), null );
+            provider = new DefaultOWSMetadataProvider( serviceId, serviceProvider, wfsVersionToExtendedCaps,
+                                                       ftMetadata, Collections.<String, String> emptyMap(), null );
         }
         return provider;
     }
@@ -685,7 +688,7 @@ public class WebFeatureService extends AbstractOWS {
     @Override
     public void doKVP( Map<String, String> kvpParamsUC, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
-                                               throws ServletException, IOException {
+                            throws ServletException, IOException {
 
         LOG.debug( "doKVP" );
         Version requestVersion = null;
@@ -837,7 +840,7 @@ public class WebFeatureService extends AbstractOWS {
     @Override
     public void doXML( XMLStreamReader xmlStream, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
-                                               throws ServletException, IOException {
+                            throws ServletException, IOException {
 
         LOG.debug( "doXML" );
         Version requestVersion = null;
@@ -987,8 +990,7 @@ public class WebFeatureService extends AbstractOWS {
     @Override
     public void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
                         List<FileItem> multiParts, SOAPFactory factory )
-                                                throws ServletException, IOException,
-                                                org.deegree.services.authentication.SecurityException {
+                            throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
         LOG.debug( "doSOAP" );
 
         if ( disableBuffering ) {
@@ -1276,7 +1278,7 @@ public class WebFeatureService extends AbstractOWS {
      */
     public static XMLStreamWriter getXMLResponseWriter( HttpResponseBuffer writer, String mimeType,
                                                         String schemaLocation )
-                                                                                throws XMLStreamException, IOException {
+                            throws XMLStreamException, IOException {
 
         boolean needsEncoding = mimeType.startsWith( "text" );
         XMLStreamWriter xmlWriter = writer.getXMLWriter( needsEncoding );
@@ -1297,7 +1299,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
                                     OWSException e, ServletRequest request, Version requestVersion )
-                                                            throws OMException, ServletException {
+                            throws OMException, ServletException {
         XMLExceptionSerializer serializer = getExceptionSerializer( requestVersion );
         sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
                            request.getCharacterEncoding() );
@@ -1427,8 +1429,8 @@ public class WebFeatureService extends AbstractOWS {
             version = VERSION_110;
         }
         if ( !offeredVersions.contains( version ) ) {
-            throw new OWSException( Messages.get( "CONTROLLER_UNSUPPORTED_VERSION", version,
-                                                  getOfferedVersionsString() ),
+            throw new OWSException(
+                                    Messages.get( "CONTROLLER_UNSUPPORTED_VERSION", version, getOfferedVersionsString() ),
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
@@ -1437,7 +1439,8 @@ public class WebFeatureService extends AbstractOWS {
     private void checkGetFeatureWithLockRequest( Version requestVersion, GetFeatureWithLock getFeatureWithLock ) {
         if ( VERSION_200.equals( requestVersion )
              && HITS.equals( getFeatureWithLock.getPresentationParams().getResultType() ) )
-            throw new InvalidParameterValueException( "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
+            throw new InvalidParameterValueException(
+                                                      "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
 
 }
