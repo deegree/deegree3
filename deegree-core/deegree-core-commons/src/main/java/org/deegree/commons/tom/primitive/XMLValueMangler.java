@@ -47,8 +47,8 @@ import java.math.BigInteger;
 
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
-import org.deegree.commons.tom.datetime.Time;
 import org.deegree.commons.tom.datetime.Temporal;
+import org.deegree.commons.tom.datetime.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,7 +164,11 @@ public class XMLValueMangler {
                     xml = "" + o;
                     break;
                 case DECIMAL:
-                    xml = "" + o;
+                    if ( o instanceof BigDecimal ) {
+                        xml = ( (BigDecimal) o ).toPlainString();
+                    } else {
+                        xml = "" + o;
+                    }
                     break;
                 case DOUBLE:
                     xml = "" + o;
