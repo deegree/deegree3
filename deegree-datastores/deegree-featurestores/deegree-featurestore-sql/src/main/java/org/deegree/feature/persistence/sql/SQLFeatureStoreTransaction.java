@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql;
 
 import static org.deegree.feature.Features.findFeaturesAndGeometries;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
@@ -1062,7 +1063,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         final GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
-        final List<String> ids = performInsert( col, idGenMode );
+        final List<String> ids = performInsert( col, USE_EXISTING );
         if ( ids.isEmpty() || ids.size() > 1 ) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }
