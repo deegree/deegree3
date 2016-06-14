@@ -44,6 +44,9 @@ import java.util.Set;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -199,9 +202,13 @@ public class FeatureRow extends InsertRow {
         }
         for ( int i = 0; i < fidMapping.getColumns().size(); i++ ) {
             Pair<SQLIdentifier, BaseType> idColumn = fidMapping.getColumns().get( i );
-            // TODO mapping to non-string columns
             Object value = idKernels[i];
-            addPreparedArgument( idColumn.getFirst(), value );
+            BaseType baseType = idColumn.second != null ? idColumn.second : BaseType.STRING;
+            PrimitiveType type = new PrimitiveType( baseType );
+            PrimitiveValue primitiveValue = new PrimitiveValue( value, type );
+            PrimitiveParticleConverter primitiveConverter = mgr.getDialect().getPrimitiveConverter( idColumn.first.getName(),
+                                                                                                    type );
+            addPreparedArgument( idColumn.getFirst(), primitiveValue, primitiveConverter );
         }
     }
 
