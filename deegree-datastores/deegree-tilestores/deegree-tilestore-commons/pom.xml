@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tilestores</artifactId>
-    <version>3.4-RC2-SNAPSHOT</version>
+    <version>3.4-RC2-SNAPSHOT-lgv-1.0-SNAPSHOT</version>
   </parent>
 
   <repositories>
