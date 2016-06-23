@@ -46,6 +46,7 @@ import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -410,7 +411,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         if ( !sqlExpression.isSpatial() ) {
             String msg = "Cannot evaluate spatial operator on database. Targeted property name '" + propName
                          + "' does not denote a spatial column.";
-            throw new FilterEvaluationException( msg );
+            throw new InvalidParameterValueException( msg );
         }
     }
 

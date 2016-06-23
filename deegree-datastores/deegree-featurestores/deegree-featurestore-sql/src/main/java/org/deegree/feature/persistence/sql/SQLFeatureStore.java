@@ -1394,6 +1394,11 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( InvalidParameterValueException e ) {
+            release( rs, stmt, conn );
+            String msg = "Error performing query by operator filter: " + e.getMessage();
+            LOG.error( msg, e );
+            throw e;
         } catch ( Exception e ) {
             release( rs, stmt, conn );
             String msg = "Error performing query by operator filter: " + e.getMessage();
