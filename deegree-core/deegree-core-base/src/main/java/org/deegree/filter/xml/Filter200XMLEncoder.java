@@ -521,7 +521,7 @@ public class Filter200XMLEncoder {
         if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
             QName distanceElementName = new QName( CommonNamespaces.FES_20_NS, "Distance" );
             writer.writeStartElement( distanceElementName.getNamespaceURI(), distanceElementName.getLocalPart() );
-            writer.writeAttribute( "units", distance.getUomUri() );
+            writer.writeAttribute( "uom", distance.getUomUri() );
             writer.writeCharacters( distance.getValue().toString() );
             writer.writeEndElement();
         }
