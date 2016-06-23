@@ -384,59 +384,17 @@ public class Filter110XMLEncoder {
         // gmlWriter.setLocalXLinkTemplate( "#{}" );
         // gmlWriter.setXLinkDepth( 0 );
 
-        ValueReference propertyName = null;
-        Geometry geometry = null;
-        ValueReference secondParam = null;
+        ValueReference propertyName = (ValueReference) operator.getParam1();
+        Geometry geometry = operator.getGeometry();
+        ValueReference secondParam = operator.getValueReference();
         Measure distance = null;
 
         switch ( operator.getSubType() ) {
-
-        case BBOX:
-            propertyName = ( (BBOX) operator ).getPropName();
-            geometry = ( (BBOX) operator ).getBoundingBox();
-            break;
         case BEYOND:
-            propertyName = ( (Beyond) operator ).getPropName();
-            geometry = ( (Beyond) operator ).getGeometry();
             distance = ( (Beyond) operator ).getDistance();
             break;
-        case CONTAINS:
-            propertyName = ( (Contains) operator ).getPropName();
-            geometry = ( (Contains) operator ).getGeometry();
-            break;
-        case CROSSES:
-            propertyName = ( (Crosses) operator ).getPropName();
-            geometry = ( (Crosses) operator ).getGeometry();
-            break;
-        case DISJOINT:
-            propertyName = ( (Disjoint) operator ).getPropName();
-            geometry = ( (Disjoint) operator ).getGeometry();
-            break;
         case DWITHIN:
-            propertyName = ( (DWithin) operator ).getPropName();
-            geometry = ( (DWithin) operator ).getGeometry();
             distance = ( (DWithin) operator ).getDistance();
-            break;
-        case EQUALS:
-            propertyName = ( (Equals) operator ).getPropName();
-            geometry = ( (Equals) operator ).getGeometry();
-            break;
-        case INTERSECTS:
-            propertyName = ( (Intersects) operator ).getPropName();
-            geometry = ( (Intersects) operator ).getGeometry();
-            secondParam = ( (Intersects) operator ).getValueReference();
-            break;
-        case OVERLAPS:
-            propertyName = ( (Overlaps) operator ).getPropName();
-            geometry = ( (Overlaps) operator ).getGeometry();
-            break;
-        case TOUCHES:
-            propertyName = ( (Touches) operator ).getPropName();
-            geometry = ( (Touches) operator ).getGeometry();
-            break;
-        case WITHIN:
-            propertyName = ( (Within) operator ).getPropName();
-            geometry = ( (Within) operator ).getGeometry();
             break;
         }
 
