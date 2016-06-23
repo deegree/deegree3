@@ -216,7 +216,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( " && " );
-            builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( bbox, storageCRS, srid ) );
             if ( !bbox.getAllowFalsePositives() ) {
                 builder.add( " AND " );
                 if ( useLegacyPredicates ) {
@@ -226,7 +226,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                 }
                 builder.add( propNameExpr );
                 builder.add( "," );
-                builder.add( toProtoSQL( bbox.getBoundingBox(), storageCRS, srid ) );
+                builder.add( toProtoSqlSecondParameter( bbox, storageCRS, srid ) );
                 builder.add( "))" );
             }
             break;
@@ -240,7 +240,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( beyond.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( beyond, storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
             PrimitiveType pt = new PrimitiveType( DECIMAL );
@@ -260,7 +260,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( contains.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( contains, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -273,7 +273,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( crosses.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( crosses, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -286,7 +286,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( disjoint.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( disjoint, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -299,7 +299,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( dWithin.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( dWithin, storageCRS, srid ) );
             builder.add( "," );
             // TODO uom handling
             PrimitiveType pt = new PrimitiveType( DECIMAL );
@@ -319,7 +319,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( equals.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( equals, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -345,7 +345,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( overlaps.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( overlaps, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -358,7 +358,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( touches.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( touches, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -371,7 +371,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( propNameExpr );
             builder.add( "," );
-            builder.add( toProtoSQL( within.getGeometry(), storageCRS, srid ) );
+            builder.add( toProtoSqlSecondParameter( within, storageCRS, srid ) );
             builder.add( ")" );
             break;
         }
@@ -395,14 +395,14 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         return new SQLArgument( geom, new PostGISGeometryConverter( null, targetCRS, "" + srid, useLegacyPredicates ) );
     }
 
-    private SQLExpression toProtoSqlSecondParameter( Intersects intersects, ICRS storageCRS, int srid )
+    private SQLExpression toProtoSqlSecondParameter( SpatialOperator spatialOperator, ICRS storageCRS, int srid )
                             throws FilterEvaluationException, UnmappableException {
-        if ( intersects.getValueReference() != null ) {
-            SQLExpression sqlExpression = toProtoSQLSpatial( intersects.getValueReference() );
-            checkIfExpressionIsSpatial( sqlExpression, intersects.getValueReference() );
+        if ( spatialOperator.getValueReference() != null ) {
+            SQLExpression sqlExpression = toProtoSQLSpatial( spatialOperator.getValueReference() );
+            checkIfExpressionIsSpatial( sqlExpression, spatialOperator.getValueReference() );
             return sqlExpression;
         }
-        return toProtoSQL( intersects.getGeometry(), storageCRS, srid );
+        return toProtoSQL( spatialOperator.getGeometry(), storageCRS, srid );
     }
 
     private void checkIfExpressionIsSpatial( SQLExpression sqlExpression, ValueReference propName )
