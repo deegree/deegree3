@@ -275,45 +275,25 @@ public class Filter200XMLEncoder {
                                                 + " is not supported yet!" );
         writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
 
-        Geometry geometry = null;
-        ValueReference secondParam = null;
+        Geometry geometry = operator.getGeometry();
+        ValueReference secondParam = operator.getValueReference();
         Measure distance = null;
         switch ( operator.getSubType() ) {
-        case BBOX:
-            geometry = ( (BBOX) operator ).getBoundingBox();
-            break;
         case BEYOND:
-            geometry = ( (Beyond) operator ).getGeometry();
             distance = ( (Beyond) operator ).getDistance();
             break;
-        case CONTAINS:
-            geometry = ( (Contains) operator ).getGeometry();
-            break;
-        case CROSSES:
-            geometry = ( (Crosses) operator ).getGeometry();
-            break;
-        case DISJOINT:
-            geometry = ( (Disjoint) operator ).getGeometry();
-            break;
         case DWITHIN:
-            geometry = ( (DWithin) operator ).getGeometry();
             distance = ( (DWithin) operator ).getDistance();
             break;
+        case BBOX:
+        case CONTAINS:
+        case CROSSES:
+        case DISJOINT:
         case EQUALS:
-            geometry = ( (Equals) operator ).getGeometry();
-            break;
         case INTERSECTS:
-            geometry = ( (Intersects) operator ).getGeometry();
-            secondParam = ( (Intersects) operator ).getValueReference();
-            break;
         case OVERLAPS:
-            geometry = ( (Overlaps) operator ).getGeometry();
-            break;
         case TOUCHES:
-            geometry = ( (Touches) operator ).getGeometry();
-            break;
         case WITHIN:
-            geometry = ( (Within) operator ).getGeometry();
             break;
         default:
             throw new IllegalArgumentException( "Encoding of spatial operator subtype " + operator.getSubType()
