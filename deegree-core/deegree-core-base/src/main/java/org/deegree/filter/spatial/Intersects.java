@@ -61,8 +61,6 @@ public class Intersects extends SpatialOperator {
 
     private final Geometry geometry;
 
-    private final ValueReference valueReference;
-
     /**
      * Instantiates a {@link Intersects} operator with geometry as second parameter.
      * 
@@ -90,9 +88,8 @@ public class Intersects extends SpatialOperator {
     }
 
     private Intersects( Expression propName, Geometry geometry, ValueReference valueReference ) {
-        super( propName );
+        super( propName, valueReference );
         this.geometry = geometry;
-        this.valueReference = valueReference;
     }
 
     @Override
@@ -157,12 +154,6 @@ public class Intersects extends SpatialOperator {
         return geometry;
     }
 
-    /**
-     * @return the second parameter, <code>null</code> if it is a geometry
-     */
-    public ValueReference getValueReference() {
-        return valueReference;
-    }
 
     @Override
     public String toString( String indent ) {

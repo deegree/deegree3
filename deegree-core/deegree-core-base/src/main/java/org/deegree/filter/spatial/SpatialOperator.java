@@ -68,8 +68,31 @@ public abstract class SpatialOperator implements Operator {
 
     protected final Expression propName;
 
+    protected final ValueReference valueReference;
+
+    /**
+     * Instantiates a {@link SpatialOperator} without second parameter (may be stored in the implementation).
+     *
+     * @param param1
+     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
+     *            geometry props)
+     */
     protected SpatialOperator( Expression param1 ) {
+        this( param1, null );
+    }
+
+    /**
+     * Instantiates a {@link Intersects} operator with value reference as second parameter.
+     *
+     * @param param1
+     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
+     *            geometry props)
+     * @param valueReference
+     *            never <code>null</code>
+     */
+    protected SpatialOperator( Expression param1, ValueReference valueReference ) {
         this.propName = param1;
+        this.valueReference = valueReference;
     }
 
     /**
@@ -128,6 +151,13 @@ public abstract class SpatialOperator implements Operator {
      */
     public Expression getParam1() {
         return propName;
+    }
+
+    /**
+     * @return the second parameter, <code>null</code> if it is a geometry
+     */
+    public ValueReference getValueReference() {
+        return valueReference;
     }
 
     /**
