@@ -73,6 +73,7 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -547,7 +548,7 @@ public class SQLFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        FeatureInputStream rs = queryByIdFilterRelational( new IdFilter( id ), null );
+        FeatureInputStream rs = queryByIdFilterRelational( null, new IdFilter( id ), null );
         try {
             Iterator<Feature> iter = rs.iterator();
             if ( iter.hasNext() ) {
@@ -641,7 +642,7 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new FilterEvaluationException( msg );
             }
             // should be no problem iterating over the features (id queries usually request only a few ids)
-            hits = queryByIdFilter( (IdFilter) filter, query.getSortProperties() ).count();
+            hits = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() ).count();
         }
         return hits;
     }
@@ -908,7 +909,7 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
                 throw new FilterEvaluationException( msg );
             }
-            result = queryByIdFilter( (IdFilter) filter, query.getSortProperties() );
+            result = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() );
         }
         return result;
     }
@@ -952,6 +953,8 @@ public class SQLFeatureStore implements FeatureStore {
                 FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
+                } catch ( InvalidParameterValueException e ) {
+                    throw e;
                 } catch ( Throwable e ) {
                     LOG.debug( e.getMessage(), e );
                     throw new RuntimeException( e.getMessage(), e );
@@ -967,12 +970,12 @@ public class SQLFeatureStore implements FeatureStore {
         return new CombinedFeatureInputStream( rsIter );
     }
 
-    private FeatureInputStream queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilter( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
         if ( blobMapping != null ) {
             return queryByIdFilterBlob( filter, sortCrit );
         }
-        return queryByIdFilterRelational( filter, sortCrit );
+        return queryByIdFilterRelational( typeNames, filter, sortCrit );
     }
 
     private FeatureInputStream queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
@@ -1018,7 +1021,7 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureInputStream queryByIdFilterRelational( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilterRelational( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
         LinkedHashMap<QName, List<IdAnalysis>> ftNameToIdAnalysis = new LinkedHashMap<QName, List<IdAnalysis>>();
@@ -1046,6 +1049,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         QName ftName = ftNameToIdAnalysis.keySet().iterator().next();
         FeatureType ft = getSchema().getFeatureType( ftName );
+        checkIfFeatureTypIsRequested( typeNames, ft );
         FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
         List<IdAnalysis> idKernels = ftNameToIdAnalysis.get( ftName );
@@ -1679,4 +1683,18 @@ public class SQLFeatureStore implements FeatureStore {
             nullEscalation = config.isNullEscalation();
         }
     }
+
+    private void checkIfFeatureTypIsRequested( TypeName[] typeNames, FeatureType ft ) {
+        if ( typeNames != null && typeNames.length > 0 ) {
+            boolean isFeatureTypeRequested = false;
+            for ( TypeName typeName : typeNames ) {
+                if ( typeName.getFeatureTypeName().equals( ft.getName() ) )
+                    isFeatureTypeRequested = true;
+            }
+            if ( !isFeatureTypeRequested )
+                throw new InvalidParameterValueException( "Requested feature does not match the requested feature type.",
+                                                          "RESOURCEID" );
+        }
+    }
+    
 }
