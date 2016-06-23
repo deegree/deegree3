@@ -68,8 +68,6 @@ public class BBOX extends SpatialOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger( BBOX.class );
 
-    private final Envelope param2;
-
     private final boolean allowFalsePositives;
 
     /**
@@ -101,12 +99,38 @@ public class BBOX extends SpatialOperator {
      *            geometry to compare to, can be <code>null</code> (use default geometry)
      * @param param2
      *            bounding box argument for intersection testing, never <code>null</code>
+     */
+    public BBOX( Expression param1, ValueReference param2 ) {
+        this( param1, param2, false );
+    }
+
+    /**
+     * Creates a new {@link BBOX} instance which uses the specified geometry property and bounding box.
+     * 
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            bounding box argument for intersection testing, never <code>null</code>
      * @param allowFalsePositives
      *            set to <code>true</code>, if false positives are acceptable (may enable faster index-only checks)
      */
     public BBOX( final Expression param1, final Envelope param2, final boolean allowFalsePositives ) {
-        super( param1 );
-        this.param2 = param2;
+        super( param1, param2 );
+        this.allowFalsePositives = allowFalsePositives;
+    }
+
+    /**
+     * Creates a new {@link BBOX} instance which uses the specified geometry property and bounding box.
+     * 
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            bounding box argument for intersection testing, never <code>null</code>
+     * @param allowFalsePositives
+     *            set to <code>true</code>, if false positives are acceptable (may enable faster index-only checks)
+     */
+    public BBOX( final Expression param1, final ValueReference param2, final boolean allowFalsePositives ) {
+        super( param1, param2 );
         this.allowFalsePositives = allowFalsePositives;
     }
 
@@ -119,7 +143,7 @@ public class BBOX extends SpatialOperator {
      */
     @Override
     public ValueReference getPropName() {
-        return (ValueReference) propName;
+        return (ValueReference) param1;
     }
 
     /**
@@ -128,7 +152,7 @@ public class BBOX extends SpatialOperator {
      * @return the envelope, never <code>null</code>
      */
     public Envelope getBoundingBox() {
-        return param2;
+        return (Envelope) param2AsGeometry;
     }
 
     /**
@@ -149,7 +173,7 @@ public class BBOX extends SpatialOperator {
             for ( TypedObjectNode paramValue : param1.evaluate( obj, xpathEvaluator ) ) {
                 Geometry param1Value = checkGeometryOrNull( paramValue );
                 if ( param1Value != null ) {
-                    Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, param2 );
+                    Envelope transformedBBox = (Envelope) getCompatibleGeometry( param1Value, getBoundingBox() );
                     return transformedBBox.intersects( param1Value );
                 }
             }
@@ -158,7 +182,7 @@ public class BBOX extends SpatialOperator {
             Feature f = (Feature) obj;
             Envelope env = f.getEnvelope();
             if ( env != null ) {
-                Envelope transformedBBox = (Envelope) getCompatibleGeometry( env, param2 );
+                Envelope transformedBBox = (Envelope) getCompatibleGeometry( env, getBoundingBox() );
                 return transformedBBox.intersects( env );
             }
         } else {
@@ -170,13 +194,18 @@ public class BBOX extends SpatialOperator {
     @Override
     public String toString( String indent ) {
         String s = indent + "-BBOX\n";
-        s += indent + propName + "\n";
-        s += indent + param2;
+        s += indent + param1 + "\n";
+        if ( param2AsGeometry != null )
+            s += indent + param2AsGeometry;
+        if ( param2AsValueReference != null )
+            s += indent + param2AsValueReference;
         return s;
     }
 
     @Override
     public Object[] getParams() {
-        return new Object[] { propName, param2 };
+        if ( param2AsValueReference != null )
+            return new Object[] { param1, param2AsValueReference };
+        return new Object[] { param1, param2AsGeometry };
     }
 }
