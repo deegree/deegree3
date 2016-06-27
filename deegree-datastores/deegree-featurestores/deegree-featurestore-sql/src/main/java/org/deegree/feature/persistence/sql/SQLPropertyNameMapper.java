@@ -35,9 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.sql.xpath.MappableNameStep;
 import org.deegree.feature.persistence.sql.xpath.MappableStep;
 import org.deegree.feature.persistence.sql.xpath.MappedXPath;
@@ -123,12 +127,27 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
     private FeatureTypeMapping findCorrespondingMapping( ValueReference propName )
                             throws UnmappableException {
         List<MappableStep> steps = MappableStep.extractSteps( propName );
-        if ( steps.size() > 1 && steps.get( 0 ) instanceof MappableNameStep )
-            for ( FeatureTypeMapping ftMapping : ftMappings ) {
-                if ( ftMapping.getFeatureType().equals( ( (MappableNameStep) steps.get( 0 ) ).getNodeName() ) )
-                    return ftMapping;
-            }
+        if ( steps.size() > 1 && steps.get( 0 ) instanceof MappableNameStep ) {
+            QName nodeName = ( (MappableNameStep) steps.get( 0 ) ).getNodeName();
+            FeatureTypeMapping ftMapping = findBestMatchingFtMapping( nodeName );
+            if ( ftMapping != null )
+                return ftMapping;
+        }
         throw new UnmappableException( "Could not parse mapping " + propName );
+    }
+
+    private FeatureTypeMapping findBestMatchingFtMapping( QName nodeName ) {
+        List<QName> ftNames = new ArrayList<QName>();
+        for ( FeatureTypeMapping ftMapping : ftMappings ) {
+            ftNames.add( ftMapping.getFeatureType() );
+        }
+
+        QName bestMatch = QNameUtils.findBestMatch( nodeName, ftNames );
+        for ( FeatureTypeMapping ftMapping : ftMappings ) {
+            if ( ftMapping.getFeatureType().equals( bestMatch ) )
+                return ftMapping;
+        }
+        return null;
     }
 
 }

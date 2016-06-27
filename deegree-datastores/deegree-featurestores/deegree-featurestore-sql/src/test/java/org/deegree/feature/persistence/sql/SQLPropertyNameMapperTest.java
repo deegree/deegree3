@@ -95,6 +95,29 @@ public class SQLPropertyNameMapperTest {
         assertThat( spatialMapping, notNullValue() );
     }
 
+    @Test
+    public void testGetSpatialMapping_withMissingNamespaceBinding()
+                            throws Exception {
+        ValueReference propName = new ValueReference( "app:ftType2/app:geometry",
+                                                      CommonNamespaces.getNamespaceContext() );
+        List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
+        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
+
+        assertThat( spatialMapping, notNullValue() );
+    }
+
+    @Test
+    public void testGetSpatialMapping_withMissingNamespaceBindingAndPrefix()
+                            throws Exception {
+        ValueReference propName = new ValueReference( "ftType2/geometry", CommonNamespaces.getNamespaceContext() );
+        List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
+        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
+
+        assertThat( spatialMapping, notNullValue() );
+    }
+
     private List<FeatureTypeMapping> createFeatureTypeMappings( ValueReference valueReference ) {
         List<FeatureTypeMapping> ftMapping = new ArrayList<FeatureTypeMapping>();
         ftMapping.add( mockFeatureTypeMapping( "ftType1", "http://www.deegree.org/app", valueReference ) );
