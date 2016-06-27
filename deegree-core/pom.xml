@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-RC1-ogctestbed12-0.2-SNAPSHOT</version>
+    <version>3.4-RC1-ogctestbed12-0.2</version>
   </parent>
 
   <repositories>
