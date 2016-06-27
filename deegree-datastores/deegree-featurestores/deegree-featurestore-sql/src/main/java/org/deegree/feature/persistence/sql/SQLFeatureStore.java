@@ -130,7 +130,6 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
-import org.deegree.sqldialect.filter.CombinedPropertyNameMapper;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -1491,23 +1490,16 @@ public class SQLFeatureStore implements FeatureStore {
         return ftId;
     }
 
-    private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
-                                                  Connection conn )
-                                                                          throws FilterEvaluationException,
-                                                                          UnmappableException {
-        PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
-        return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
-    }
-
     private AbstractWhereBuilder getWhereBuilder( Collection<FeatureTypeMapping> ftMappings, OperatorFilter filter,
                                                   SortProperty[] sortCrit, Connection conn )
                                                                           throws FilterEvaluationException,
                                                                           UnmappableException {
-        CombinedPropertyNameMapper mapper = new CombinedPropertyNameMapper();
-        for ( FeatureTypeMapping ftMapping : ftMappings ) {
-            mapper.addPropertyNameMapper( new SQLPropertyNameMapper( this, ftMapping ) );
-        }
+        PropertyNameMapper mapper = createPropertyNameMapper( ftMappings );
         return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
+    }
+
+    private PropertyNameMapper createPropertyNameMapper( Collection<FeatureTypeMapping> ftMappings ) {
+        return new SQLPropertyNameMapper( this, ftMappings );
     }
 
     private List<QName> collectFeatureTypesNames( Query query )

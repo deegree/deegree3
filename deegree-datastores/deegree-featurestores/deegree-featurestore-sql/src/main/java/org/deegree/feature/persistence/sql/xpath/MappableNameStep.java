@@ -45,7 +45,7 @@ import javax.xml.namespace.QName;
  * 
  * @version $Revision$, $Date$
  */
-abstract class MappableNameStep extends MappableStep {
+public abstract class MappableNameStep extends MappableStep {
 
     private final QName nodeName;
 
@@ -53,7 +53,7 @@ abstract class MappableNameStep extends MappableStep {
         this.nodeName = nodeName;
     }
 
-    QName getNodeName() {
+    public QName getNodeName() {
         return nodeName;
     }
 }
