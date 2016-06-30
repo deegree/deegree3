@@ -6,7 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 
+import org.deegree.rendering.r2d.Copyright;
 import org.deegree.rendering.r2d.Java2DLabelRenderer;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
@@ -84,17 +86,17 @@ public abstract class Java2DRenderContext implements RenderContext {
     }
 
     @Override
-    public void paintCopyright( String copyright, int mapHeight ) {
+    public void paintCopyright( Copyright copyright, int mapHeight ) {
         if ( copyright != null ) {
-            graphics.setFont( new Font( "SANSSERIF", Font.PLAIN, 14 ) );
-            graphics.setColor( Color.BLACK );
-            graphics.drawString( copyright, 8, mapHeight - 15 );
-            graphics.drawString( copyright, 10, mapHeight - 15 );
-            graphics.drawString( copyright, 8, mapHeight - 13 );
-            graphics.drawString( copyright, 10, mapHeight - 13 );
-            graphics.setColor( Color.WHITE );
-            graphics.setFont( new Font( "SANSSERIF", Font.PLAIN, 14 ) );
-            graphics.drawString( copyright, 9, mapHeight - 14 );
+            String copyrightText = copyright.getCopyrightText();
+            BufferedImage copyrightImage = copyright.getCopyrightImage();
+            int offsetX = copyright.getOffsetX();
+            int offsetY = copyright.getOffsetY();
+            if ( copyrightText != null ) {
+                drawCopyrightText( copyrightText, offsetX, offsetY, mapHeight );
+            } else if ( copyrightImage != null ) {
+                drawCopyrightImage( copyrightImage, offsetX, offsetY, mapHeight );
+            }
         }
     }
 
@@ -103,5 +105,22 @@ public abstract class Java2DRenderContext implements RenderContext {
                             throws IOException {
         graphics.dispose();
         return true;
+    }
+
+    private void drawCopyrightText( String copyright, int offsetX, int offsetY, int mapHeight ) {
+        graphics.setFont( new Font( "SANSSERIF", Font.PLAIN, 14 ) );
+        graphics.setColor( Color.BLACK );
+        graphics.drawString( copyright, offsetX, mapHeight - offsetY + 2 );
+        graphics.drawString( copyright, offsetX + 2, mapHeight - offsetY + 2 );
+        graphics.drawString( copyright, offsetX, mapHeight - offsetY );
+        graphics.drawString( copyright, offsetX + 2, mapHeight - offsetY );
+        graphics.setColor( Color.WHITE );
+        graphics.setFont( new Font( "SANSSERIF", Font.PLAIN, 14 ) );
+        graphics.drawString( copyright, offsetX + 1, mapHeight - offsetY + 1 );
+    }
+
+    private void drawCopyrightImage( BufferedImage copyrightImage, int offsetX, int offsetY, int mapHeight ) {
+        int y = mapHeight - copyrightImage.getHeight() - offsetY;
+        graphics.drawImage( copyrightImage, offsetX, y, null );
     }
 }
