@@ -437,7 +437,7 @@ The following table shows what options are available.
 +---------------------+-------------+---------+-----------------------------------------------------------+
 | ThemeId             | 0..n        | String  | Configure the WMS to use one or more preconfigured themes |
 +---------------------+-------------+---------+-----------------------------------------------------------+
-| Copyright           | 0..1        | String  | Adds a watermark to image of GetMap response              |
+| Copyright           | 0..1        | Complex | Adds a watermark to the image of GetMap response          |
 +---------------------+-------------+---------+-----------------------------------------------------------+
 
 You can configure the behaviour of layers using the ``DefaultLayerOptions`` element.
@@ -474,9 +474,34 @@ Here is an example snippet of the content section:
 
     <ThemeId>mytheme</ThemeId>
 
-    <Copyright>(c) deegree</Copyright>
-
   </ServiceConfiguration>
+
+.. table:: Copyright
+
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| Option   | Cardinality | Value   | Description                                                                                                    |
++==========+=============+=========+================================================================================================================+
+| Text     | 0..1        | String  | The text of the copyright.                                                                                     |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| Image    | 0..1        | String  | An image used as copyright. May be a relative or absolute reference to a file or a http url.                   |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| OffsetX  | 0..1        | Integer | The offset from the left of the GetMap response image to the left of the copyright in pixel (default: 8).      |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| OffsetY  | 0..1        | Integer | The offset from the bottom of the GetMap response image to the bottom of the copyright in pixel (default: 13). |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+
+
+Here is an example snippet of the content section:
+
+.. code-block:: xml
+
+  <Copyright>
+    <Text>(c) deegree</Text>
+    <OffsetX>10</OffsetX>
+    <OffsetY>20</OffsetY>
+  </Copyright>
+
+At least one of Text or Image must be configured. OffsetX and OffsetY are optional, but if OffsetX is configured, OffsetY must be configured, too (and vice versa).
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom capabilities formats
