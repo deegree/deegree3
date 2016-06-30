@@ -148,7 +148,7 @@ public class MapService {
                     }
                 }
             }
-            copyright = conf.getCopyright();
+            copyright = conf.getCopyright() != null ? conf.getCopyright().getText() : null;
         }
         getLegendHandler = new GetLegendHandler( this );
     }
