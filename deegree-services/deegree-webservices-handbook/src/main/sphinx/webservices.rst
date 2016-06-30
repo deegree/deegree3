@@ -476,6 +476,8 @@ Here is an example snippet of the content section:
 
   </ServiceConfiguration>
 
+The following table shows the Copyright configuration:
+
 .. table:: Copyright
 
 +----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
@@ -490,8 +492,9 @@ Here is an example snippet of the content section:
 | OffsetY  | 0..1        | Integer | The offset from the bottom of the GetMap response image to the bottom of the copyright in pixel (default: 13). |
 +----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
 
+At least one of Text or Image must be configured. OffsetX and OffsetY are optional, but if OffsetX is configured, OffsetY must be configured, too (and vice versa).
 
-Here is an example snippet of the content section:
+Here is an example snippet:
 
 .. code-block:: xml
 
@@ -500,8 +503,6 @@ Here is an example snippet of the content section:
     <OffsetX>10</OffsetX>
     <OffsetY>20</OffsetY>
   </Copyright>
-
-At least one of Text or Image must be configured. OffsetX and OffsetY are optional, but if OffsetX is configured, OffsetY must be configured, too (and vice versa).
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom capabilities formats
