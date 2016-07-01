@@ -97,6 +97,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
+import org.deegree.featureinfo.parsing.FeatureInfoParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
@@ -338,6 +339,27 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public FeatureCollection doGetFeatureInfo( GetFeatureInfo request, Map<String, String> hardParams )
                             throws IOException, OWSExceptionReport, XMLStreamException {
+        return doGetFeatureInfo( request, hardParams, new DefaultFeatureInfoParser() );
+    }
+    
+    /**
+     * Performs a <code>GetFeatureInfo</code> request and returns the response as a {@link FeatureCollection}.
+     * 
+     * @param request
+     *            request parameter, must not be <code>null</code>
+     * @param hardParams
+     *            raw parameters for augmenting overriding KVPs, must not be <code>null</code>
+     * @param featureInfoParser
+     *            used to parse the feature info response as feature collection, never <code>null</code>
+     * @return response parsed as feature collection, never <code>null</code>
+     * @throws IOException
+     * @throws OWSExceptionReport
+     * @throws XMLStreamException
+     */
+    public FeatureCollection doGetFeatureInfo( GetFeatureInfo request, Map<String, String> hardParams,
+                                               FeatureInfoParser featureInfoParser )
+                                                                       throws IOException, OWSExceptionReport,
+                                                                       XMLStreamException {
 
         Map<String, String> params = buildGetFeatureInfoParamMap( request, hardParams );
         overrideHardParams( params, hardParams );
@@ -350,7 +372,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             response.assertHttpStatus200();
             responseStream = response.getAsBinaryStream();
             String csvLayerNames = join( ",", request.getQueryLayers() );
-            return new DefaultFeatureInfoParser().parseAsFeatureCollection( responseStream, csvLayerNames );
+            return featureInfoParser.parseAsFeatureCollection( responseStream, csvLayerNames );
         } finally {
             IOUtils.closeQuietly( responseStream );
             closeQuietly( response );
