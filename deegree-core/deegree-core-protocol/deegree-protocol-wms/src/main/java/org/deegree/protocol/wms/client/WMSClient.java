@@ -96,7 +96,7 @@ import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.featureinfo.parsing.FeatureInfoParser;
+import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
@@ -349,7 +349,7 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             response.assertHttpStatus200();
             XMLStreamReader reader = response.getAsXMLStream();
             String csvLayerNames = join( ",", request.getQueryLayers() );
-            return FeatureInfoParser.parseAsFeatureCollection( reader, csvLayerNames );
+            return new DefaultFeatureInfoParser().parseAsFeatureCollection( reader, csvLayerNames );
         } finally {
             closeQuietly( response );
         }

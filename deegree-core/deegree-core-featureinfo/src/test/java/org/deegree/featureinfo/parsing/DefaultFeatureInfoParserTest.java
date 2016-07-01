@@ -47,9 +47,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import junit.framework.Assert;
-
 import org.deegree.feature.FeatureCollection;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -60,38 +59,40 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FeatureInfoParserTest {
+public class DefaultFeatureInfoParserTest {
+
+    private final DefaultFeatureInfoParser featureInfoParser = new DefaultFeatureInfoParser();
 
     @Test
     public void testEsriCollection()
                             throws XMLStreamException {
-        InputStream in = FeatureInfoParserTest.class.getResourceAsStream( "esri1.xml" );
+        InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream( "esri1.xml" );
         XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader xin = fac.createXMLStreamReader( in );
         xin.next();
-        FeatureCollection fc = FeatureInfoParser.parseAsFeatureCollection( xin, "test" );
+        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( xin, "test" );
         Assert.assertEquals( 1, fc.size() );
     }
 
     @Test
     public void testEmptyEsriCollection()
                             throws XMLStreamException {
-        InputStream in = FeatureInfoParserTest.class.getResourceAsStream( "esri2.xml" );
+        InputStream in =  DefaultFeatureInfoParserTest.class.getResourceAsStream( "esri2.xml" );
         XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader xin = fac.createXMLStreamReader( in );
         xin.next();
-        FeatureCollection fc = FeatureInfoParser.parseAsFeatureCollection( xin, "test" );
+        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( xin, "test" );
         Assert.assertEquals( 0, fc.size() );
     }
 
     @Test
     public void testNamespacedEsriCollection()
                             throws XMLStreamException {
-        InputStream in = FeatureInfoParserTest.class.getResourceAsStream( "esriwithnamespace.xml" );
+        InputStream in = DefaultFeatureInfoParserTest.class.getResourceAsStream( "esriwithnamespace.xml" );
         XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader xin = fac.createXMLStreamReader( in );
         xin.next();
-        FeatureCollection fc = FeatureInfoParser.parseAsFeatureCollection( xin, "test" );
+        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( xin, "test" );
         Assert.assertEquals( 8, fc.size() );
     }
 
