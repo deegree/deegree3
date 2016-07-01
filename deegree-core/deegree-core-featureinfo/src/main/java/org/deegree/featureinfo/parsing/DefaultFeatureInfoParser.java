@@ -48,10 +48,12 @@ import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -84,9 +86,13 @@ public class DefaultFeatureInfoParser implements FeatureInfoParser {
 
     private static final Logger LOG = getLogger( DefaultFeatureInfoParser.class );
 
+    private static final XMLInputFactory XML_FACTORY = XMLInputFactory.newInstance();
+    
     @Override
-    public FeatureCollection parseAsFeatureCollection( XMLStreamReader xmlReader, String csvLayerNames )
+    public FeatureCollection parseAsFeatureCollection( InputStream inputStream, String csvLayerNames )
                             throws XMLStreamException {
+        XMLStreamReader xmlReader = XML_FACTORY.createXMLStreamReader( inputStream );
+        XMLStreamUtils.skipStartDocument( xmlReader );
         try {
             // yes, some versions use a namespace, some do not
             if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() || xmlReader.getNamespaceURI().equals( "http://www.esri.com/wms" ) )

@@ -35,8 +35,9 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.parsing;
 
+import java.io.InputStream;
+
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.feature.FeatureCollection;
 
@@ -48,8 +49,8 @@ import org.deegree.feature.FeatureCollection;
 public interface FeatureInfoParser {
 
     /**
-     * @param xmlReader
-     *            input XML stream to parse, never <code>null</code>
+     * @param featureInfoToParse
+     *            the feature info to parse, never <code>null</code>
      * @param csvLayerNames
      *            a comma separated list of layer names, should not be <code>null</code>
      * @return a feature collection containingall features that could be reconstructed or synthesized, never
@@ -57,7 +58,7 @@ public interface FeatureInfoParser {
      * @throws XMLStreamException
      *             if the content could not be parsed as feature collection
      */
-    FeatureCollection parseAsFeatureCollection( XMLStreamReader xmlReader, String csvLayerNames )
+    FeatureCollection parseAsFeatureCollection( InputStream featureInfoToParse, String csvLayerNames )
                             throws XMLStreamException;
 
 }

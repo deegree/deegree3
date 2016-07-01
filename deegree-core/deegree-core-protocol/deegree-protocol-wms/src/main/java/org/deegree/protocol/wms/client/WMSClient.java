@@ -76,9 +76,9 @@ import java.util.concurrent.Callable;
 import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.proxy.ProxySettings;
@@ -343,14 +343,16 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         overrideHardParams( params, hardParams );
 
         OwsHttpResponse response = null;
+        InputStream responseStream = null;
         try {
             URL url = getGetUrl( GetFeatureInfo.name() );
             response = httpClient.doGet( url, params, null );
             response.assertHttpStatus200();
-            XMLStreamReader reader = response.getAsXMLStream();
+            responseStream = response.getAsBinaryStream();
             String csvLayerNames = join( ",", request.getQueryLayers() );
-            return new DefaultFeatureInfoParser().parseAsFeatureCollection( reader, csvLayerNames );
+            return new DefaultFeatureInfoParser().parseAsFeatureCollection( responseStream, csvLayerNames );
         } finally {
+            IOUtils.closeQuietly( responseStream );
             closeQuietly( response );
         }
     }
