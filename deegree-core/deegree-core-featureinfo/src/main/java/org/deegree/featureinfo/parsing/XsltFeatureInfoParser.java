@@ -91,6 +91,7 @@ public class XsltFeatureInfoParser implements FeatureInfoParser {
 
     private XMLStreamReader transform( InputStream featureInfoToParse )
                             throws XMLStreamException {
+        LOG.debug( "Apply xslt transformation {}.", xsltFile );
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             XsltUtils.transform( featureInfoToParse, xsltFile, outputStream );
