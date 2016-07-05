@@ -33,32 +33,46 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.featureinfo.parsing;
+package org.deegree.layer.metadata;
 
-import java.io.InputStream;
+import java.net.URL;
 
-import javax.xml.stream.XMLStreamException;
-
-import org.deegree.feature.FeatureCollection;
+import org.deegree.gml.GMLVersion;
 
 /**
- * Responsible for parsing 'feature collections'.
+ * Encapsulates the xslt file as well as the gml version the xslt file transfoms to.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public interface FeatureInfoParser {
+public class XsltFile {
+
+    private final URL xsltFile;
+
+    private final GMLVersion targetGmlVersion;
 
     /**
-     * @param featureInfoToParse
-     *            the feature info to parse, never <code>null</code>
-     * @param csvLayerNames
-     *            a comma separated list of layer names, should not be <code>null</code>
-     * @return a feature collection containingall features that could be reconstructed or synthesized, never
-     *         <code>null</code>
-     * @throws XMLStreamException
-     *             if the content could not be parsed as feature collection
+     * @param xsltFile
+     *            the xslt file used to transform, never <code>null</code>
+     * @param gmlVersion
+     *            the gml version the xsltFile transforms to, never <code>null</code>
      */
-    FeatureCollection parseAsFeatureCollection( InputStream featureInfoToParse, String csvLayerNames )
-                            throws XMLStreamException;
+    public XsltFile( URL xsltFile, GMLVersion targetGmlVersion ) {
+        this.xsltFile = xsltFile;
+        this.targetGmlVersion = targetGmlVersion;
+    }
+
+    /**
+     * @return the xslt file used to transform, never <code>null</code>
+     */
+    public URL getXsltFile() {
+        return xsltFile;
+    }
+
+    /**
+     * @return the gml version the xsltFile transforms to, never <code>null</code>
+     */
+    public GMLVersion getTargetGmlVersion() {
+        return targetGmlVersion;
+    }
 
 }

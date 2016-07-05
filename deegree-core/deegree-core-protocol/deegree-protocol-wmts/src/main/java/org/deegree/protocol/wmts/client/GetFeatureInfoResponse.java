@@ -41,13 +41,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wmts.client;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.featureinfo.parsing.FeatureInfoParser;
+import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wmts.ops.GetFeatureInfo;
@@ -64,8 +67,10 @@ public class GetFeatureInfoResponse {
 
     private final OwsHttpResponse rawResponse;
 
+    private final DefaultFeatureInfoParser featureInfoParser = new DefaultFeatureInfoParser();
+    
     private GetFeatureInfo request;
-
+    
     GetFeatureInfoResponse( OwsHttpResponse rawResponse, GetFeatureInfo request ) {
         this.rawResponse = rawResponse;
         this.request = request;
@@ -73,11 +78,14 @@ public class GetFeatureInfoResponse {
 
     public FeatureCollection getFeatures()
                             throws OWSException, OWSExceptionReport {
+        InputStream featureInfo = rawResponse.getAsBinaryStream();
         try {
-            return FeatureInfoParser.parseAsFeatureCollection( rawResponse.getAsXMLStream(), request.getLayer() );
+            return featureInfoParser.parseAsFeatureCollection( featureInfo, request.getLayer() );
         } catch ( XMLStreamException e ) {
             throw new OWSException( "Remote WMTS response was not recognized as feature collection: "
                                     + e.getLocalizedMessage(), e, OWSException.NO_APPLICABLE_CODE );
+        } finally {
+             closeQuietly( featureInfo );
         }
     }
 
