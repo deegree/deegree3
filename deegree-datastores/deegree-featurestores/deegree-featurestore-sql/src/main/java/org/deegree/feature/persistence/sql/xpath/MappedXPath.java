@@ -49,14 +49,12 @@ import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.sqldialect.filter.ConstantPropertyNameMapping;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -125,8 +123,10 @@ public class MappedXPath {
             this.propName = propName;
             steps = MappableStep.extractSteps( propName );
             // the first step may be the name of the feature type or the name of a property
-            if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
-                steps.subList( 1, steps.size() );
+            MappableStep firstStep = steps.get( 0 );
+            if ( firstStep instanceof MappableNameStep
+                 && ftMapping.getFeatureType().equals( ( (MappableNameStep) firstStep ).getNodeName() ) ) {
+                steps = steps.subList( 1, steps.size() );
             }
         }
 
