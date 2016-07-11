@@ -912,7 +912,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 constraints.add( new Domain( "PagingIsTransactionSafe", "FALSE" ) );
             } else
                 constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
-            constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsStandardJoins", "TRUE" ) );
             constraints.add( new Domain( "ImplementsSpatialJoins", "TRUE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "TRUE" ) );
             constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
