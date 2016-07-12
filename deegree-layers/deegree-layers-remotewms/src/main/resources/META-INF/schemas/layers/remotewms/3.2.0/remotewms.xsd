@@ -42,6 +42,7 @@
       </element>
       <!-- if not set, will be copied from source -->
       <group ref="s:SpatialMetadata" />
+      <element name="ScaleDenominators" type="b:ScaleDenominatorsType" minOccurs="0" />
       <element name="LayerOptions" type="b:LayerOptionsType" minOccurs="0" />
       <element name="XSLTFile" minOccurs="0">
         <complexType>
