@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-mdstores</artifactId>
-    <version>3.4-RC2-SNAPSHOT-wuppertal-3-SNAPSHOT</version>
+    <version>3.4-RC2-SNAPSHOT-wuppertal-3</version>
   </parent>
 
   <repositories>
