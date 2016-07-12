@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.4-RC2-SNAPSHOT-wuppertal-3</version>
+    <version>3.4-RC3-SNAPSHOT-wuppertal-4-SNAPSHOT</version>
   </parent>
 
   <repositories>
