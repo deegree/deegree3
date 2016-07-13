@@ -60,6 +60,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
@@ -147,6 +148,25 @@ public class StoredQueryHandlerTest {
         assertThat( storedQueryHandler.hasStoredQuery( id ), is( true ) );
         assertThat( xml( outStream.toString() ),
                     hasXPath( "/wfs:CreateStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
+    }
+
+    @Test(expected = OWSException.class)
+    public void testDoCreateStoredQuery_DuplicateId()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        String id = "mangedStoredQuery";
+        CreateStoredQuery request = createStoredQuery( id );
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        try {
+            storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+            storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+        } finally {
+            xmlStreamWriter.close();
+        }
     }
 
     private CreateStoredQuery createStoredQuery( String id ) {

@@ -141,16 +141,17 @@ public class StoredQueryHandler {
      *            response that is used to write the result, must not be <code>null</code>
      * @throws IOException
      * @throws XMLStreamException
+     * @throws OWSException 
      */
     public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response )
-                            throws IOException, XMLStreamException {
+                            throws IOException, XMLStreamException, OWSException {
         if ( managedStoredQueryDirectory == null )
             throw new IllegalArgumentException( "Performing CreateStoredQuery requests is not configured." );
         if ( !managedStoredQueryDirectory.exists() )
             throw new IllegalArgumentException( "Performing CreateStoredQuery requests is not configured." );
 
+        checkIdsOfStoredQueries( request );
         handleCreateStoredQuery( request );
-
         writeCreateStoredQueryResponse( response );
     }
 
@@ -495,6 +496,17 @@ public class StoredQueryHandler {
         writer.writeDefaultNamespace( WFS_200_NS );
         writer.writeAttribute( "status", "OK" );
         writer.writeEndElement();
+    }
+
+    private void checkIdsOfStoredQueries( CreateStoredQuery request )
+                            throws OWSException {
+        for ( StoredQueryDefinition storedQueryDefinition : request.getQueryDefinitions() ) {
+            String id = storedQueryDefinition.getId();
+            if ( hasStoredQuery( id ) ) {
+                String msg = "Stored query with id '" + id + "' is already known.";
+                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
+            }
+        }
     }
 
 }
