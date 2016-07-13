@@ -36,12 +36,15 @@
 package org.deegree.sqldialect.postgis;
 
 import static java.sql.Types.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -68,6 +71,7 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
+import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -77,6 +81,9 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
+import org.deegree.time.position.IndeterminateValue;
+import org.deegree.time.position.TimePosition;
+import org.deegree.time.primitive.GenericTimePeriod;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -380,6 +387,71 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         return builder.toOperation();
     }
 
+    protected SQLOperation toProtoSQL( TemporalOperator op )
+                            throws UnmappableException, FilterEvaluationException {
+        SQLOperation sql = null;
+        switch ( op.getSubType() ) {
+        case AFTER: {
+            SQLExpression first = toProtoSQL( op.getParameter1() );
+            SQLExpression second = toProtoSQL( op.getParameter2() );
+            inferType( first, second );
+            sql = createSqlAfter( first, second );
+            break;
+        }
+        case BEFORE: {
+            SQLExpression first = toProtoSQL( op.getParameter1() );
+            SQLExpression second = toProtoSQL( op.getParameter2() );
+            inferType( first, second );
+            sql = createSqlBefore( first, second );
+            break;
+        }
+        case TEQUALS: {
+            SQLExpression first = toProtoSQL( op.getParameter1() );
+            SQLExpression second = toProtoSQL( op.getParameter2() );
+            inferType( first, second );
+            sql = createSqlEquals( first, second );
+            break;
+        }
+        case DURING: {
+            Expression parameter2 = op.getParameter2();
+            if ( parameter2 instanceof Literal
+                 && ( (Literal<?>) parameter2 ).getValue() instanceof GenericTimePeriod ) {
+                TimePosition begin = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getBeginPosition();
+                TimePosition end = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getEndPosition();
+                SQLExpression valueReference = toProtoSQL( op.getParameter1() );
+                SQLExpression beginExpr = createDateExpression( begin );
+                SQLExpression endExpr = createDateExpression( end );
+
+                sql = createSqlDuring( valueReference, beginExpr, endExpr );
+            }
+            break;
+        }
+        default:
+            sql = super.toProtoSQL( op );
+        }
+        return sql;
+    }
+
+    private SQLExpression createDateExpression( TimePosition timePosition ) {
+        if ( timePosition.getIndeterminatePosition() != null ) {
+            if ( timePosition.getIndeterminatePosition().equals( IndeterminateValue.NOW ) ) {
+                String encodedTemporal = ISO8601Converter.formatDateTime( new Date() );
+                TimePosition now = new TimePosition( null, null, null, encodedTemporal );
+                return createDateExpressionFromTimePosition( now );
+            } else {
+                return null;
+            }
+        }
+        return createDateExpressionFromTimePosition( timePosition );
+    }
+
+    private SQLExpression createDateExpressionFromTimePosition( TimePosition now ) {
+        PrimitiveValue value = new PrimitiveValue( now.getValue(), new PrimitiveType( DATE_TIME ) );
+        DefaultPrimitiveConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( DATE_TIME ), null,
+                                                                             false );
+        return new SQLArgument( value, converter );
+    }
+
     @Override
     protected void addExpression( SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase ) {
         if ( matchCase == null || matchCase ) {
@@ -413,6 +485,72 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                          + "' does not denote a spatial column.";
             throw new InvalidParameterValueException( msg );
         }
+    }
+
+    private SQLOperation createSqlDuring( SQLExpression valueReference, SQLExpression beginExpr,
+                                          SQLExpression endExpr ) {
+        if ( beginExpr == null && endExpr == null )
+            return null;
+        if ( beginExpr != null && endExpr == null ) {
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            builder.add( "(" );
+            addExpression( builder, valueReference );
+            builder.add( " >= " );
+            addExpression( builder, beginExpr );
+            builder.add( ")" );
+            return builder.toOperation();
+        }
+        if ( beginExpr == null && endExpr != null ) {
+            SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+            builder.add( "(" );
+            addExpression( builder, valueReference );
+            builder.add( " <= " );
+            addExpression( builder, endExpr );
+            builder.add( ")" );
+            return builder.toOperation();
+        }
+        inferType( valueReference, beginExpr, endExpr );
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+        builder.add( "(" );
+        addExpression( builder, valueReference );
+        builder.add( " >= " );
+        addExpression( builder, beginExpr );
+        builder.add( " AND " );
+        addExpression( builder, valueReference );
+        builder.add( " <= " );
+        addExpression( builder, endExpr );
+        builder.add( ")" );
+        return builder.toOperation();
+    }
+
+    private SQLOperation createSqlEquals( SQLExpression first, SQLExpression second ) {
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+        builder.add( "(" );
+        addExpression( builder, first );
+        builder.add( " = " );
+        addExpression( builder, second );
+        builder.add( ")" );
+        return builder.toOperation();
+    }
+
+    private SQLOperation createSqlBefore( SQLExpression first, SQLExpression second ) {
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+        builder.add( "(" );
+        addExpression( builder, first );
+        builder.add( " < " );
+        addExpression( builder, second );
+        builder.add( ")" );
+        return builder.toOperation();
+    }
+
+    private SQLOperation createSqlAfter( SQLExpression first, SQLExpression second ) {
+        SQLOperationBuilder builder = new SQLOperationBuilder( BOOLEAN );
+        builder.add( "(" );
+        addExpression( builder, first );
+        builder.add( " > " );
+        addExpression( builder, second );
+        builder.add( ")" );
+        return builder.toOperation();
     }
 
 }
