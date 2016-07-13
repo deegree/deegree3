@@ -119,8 +119,20 @@ public class StoredQueryHandler {
      * @throws IOException
      * @throws XMLStreamException
      */
-    public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response ) {
-        throw new UnsupportedOperationException( "Performing CreateStoredQuery requests is not implemented yet." );
+    public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response )
+                            throws IOException, XMLStreamException {
+        List<StoredQueryDefinition> queryDefinitionsToAdd = request.getQueryDefinitions();
+        for ( StoredQueryDefinition storedQueryDefinitionToAdd : queryDefinitionsToAdd ) {
+            idToQuery.put( storedQueryDefinitionToAdd.getId(), storedQueryDefinitionToAdd );
+        }
+
+        String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+        XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
+        writer.setDefaultNamespace( WFS_200_NS );
+        writer.writeStartElement( WFS_200_NS, "CreateStoredQueryResponse" );
+        writer.writeDefaultNamespace( WFS_200_NS );
+        writer.writeAttribute( "status", "OK" );
+        writer.writeEndElement();
     }
 
     /**
@@ -402,7 +414,7 @@ public class StoredQueryHandler {
 
     private String collectReturnFeatureTypesAndTransformToString( XMLStreamWriter writer,
                                                                   List<QName> configuredReturnFeatureTypes )
-                            throws XMLStreamException {
+                                                                                          throws XMLStreamException {
         List<QName> ftNames = collectAndSortFeatureTypesToExport( configuredReturnFeatureTypes );
         StringBuilder returnFeatureTypes = new StringBuilder();
         Set<String> exportedPrefixes = new HashSet<String>();

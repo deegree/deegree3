@@ -35,12 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.xmlmatchers.XmlMatchers.hasXPath;
+import static org.xmlmatchers.transform.XmlConverters.xml;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,16 +54,30 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
+import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WfsFeatureStoreManager;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class StoredQueryHandlerTest {
+
+    private static final NamespaceBindings NS_CONTEXT = new NamespaceBindings();
+
+    @BeforeClass
+    public static void initNamespaceContext() {
+        NS_CONTEXT.addNamespace( "wfs", WFS_200_NS );
+    }
 
     @Test
     public void testCollectAndSortFeatureTypesToExport_AllFeatureTypes() {
@@ -100,6 +120,33 @@ public class StoredQueryHandlerTest {
         assertThat( featureTypeNameToExport.getPrefix(), is( "" ) );
     }
 
+    @Test
+    public void testDoCreateStoredQuery()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
+
+        String id = "mangedStoredQuery";
+        CreateStoredQuery request = createStoredQuery( id );
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
+
+        // TODO: provide template!
+        assertThat( storedQueryHandler.hasStoredQuery( id ), is( false ) );
+        assertThat( xml( outStream.toString() ),
+                    hasXPath( "/wfs:CreateStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
+    }
+
+    private CreateStoredQuery createStoredQuery( String id ) {
+        List<StoredQueryDefinition> queryDefinitions = new ArrayList<StoredQueryDefinition>();
+        StoredQueryDefinition queryDefinition = mock( StoredQueryDefinition.class );
+        when( queryDefinition.getId() ).thenReturn( id );
+        queryDefinitions.add( queryDefinition );
+        return new CreateStoredQuery( VERSION_200, "handle", queryDefinitions );
+    }
+
     private List<FeatureType> featureTypes() {
         List<FeatureType> featureTypes = new ArrayList<FeatureType>();
         featureTypes.add( mockFeatureType( "one" ) );
@@ -131,6 +178,13 @@ public class StoredQueryHandlerTest {
         WfsFeatureStoreManager mockedStoreManager = mock( WfsFeatureStoreManager.class );
         when( mockedStoreManager.getFeatureTypes() ).thenReturn( featureTypes );
         return mockedStoreManager;
+    }
+
+    private HttpResponseBuffer mockHttpResponseBuffer( XMLStreamWriter xmlStreamWriter )
+                            throws Exception {
+        HttpResponseBuffer mockedResponse = mock( HttpResponseBuffer.class );
+        when( mockedResponse.getXMLWriter( anyBoolean() ) ).thenReturn( xmlStreamWriter );
+        return mockedResponse;
     }
 
 }
