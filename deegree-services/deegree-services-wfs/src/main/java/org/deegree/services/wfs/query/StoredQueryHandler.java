@@ -78,6 +78,7 @@ import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinition200Encoder;
 import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,16 +121,9 @@ public class StoredQueryHandler {
                                File managedStoredQueryDirectory ) {
         this.wfs = wfs;
         this.managedStoredQueryDirectory = managedStoredQueryDirectory;
-        URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
-        storedQueryTemplates.add( url );
-        url = StoredQueryHandler.class.getResource( "typequery.xml" );
-        storedQueryTemplates.add( url );
-
-        for ( URL u : storedQueryTemplates ) {
-            StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
-            xmlAdapter.load( u );
-            addStoredQuery( xmlAdapter.parse(), u );
-        }
+        loadFixStoredQueries();
+        loadConfiguredStoredQueries( storedQueryTemplates );
+        loadManagedStoredQueries( managedStoredQueryDirectory );
     }
 
     /**
@@ -141,7 +135,7 @@ public class StoredQueryHandler {
      *            response that is used to write the result, must not be <code>null</code>
      * @throws IOException
      * @throws XMLStreamException
-     * @throws OWSException 
+     * @throws OWSException
      */
     public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response )
                             throws IOException, XMLStreamException, OWSException {
@@ -378,6 +372,29 @@ public class StoredQueryHandler {
         return ftNames;
     }
 
+    private void loadFixStoredQueries() {
+        parseAndAddStoredQuery( StoredQueryHandler.class.getResource( "idquery.xml" ) );
+        parseAndAddStoredQuery( StoredQueryHandler.class.getResource( "typequery.xml" ) );
+    }
+
+    private void loadConfiguredStoredQueries( List<URL> storedQueryTemplates ) {
+        for ( URL u : storedQueryTemplates ) {
+            parseAndAddStoredQuery( u );
+        }
+    }
+
+    private void loadManagedStoredQueries( File managedStoredQueryDirectory ) {
+        for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
+            try {
+                URL url = managedStoredQuery.toURI().toURL();
+                parseAndAddStoredQuery( url );
+            } catch ( IOException e ) {
+                throw new ResourceInitException( "Error initializing managed stored query from " + managedStoredQuery
+                                                 + ":" + e.getMessage(), e );
+            }
+        }
+    }
+
     private void handleCreateStoredQuery( CreateStoredQuery request )
                             throws FileNotFoundException, XMLStreamException, FactoryConfigurationError, IOException,
                             MalformedURLException {
@@ -479,6 +496,12 @@ public class StoredQueryHandler {
             }
         }
         return returnFeatureTypes.toString();
+    }
+
+    private void parseAndAddStoredQuery( URL u ) {
+        StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
+        xmlAdapter.load( u );
+        addStoredQuery( xmlAdapter.parse(), u );
     }
 
     private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {

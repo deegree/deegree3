@@ -37,6 +37,8 @@ package org.deegree.services.wfs.query;
 
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -48,7 +50,10 @@ import static org.xmlmatchers.transform.XmlConverters.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -60,6 +65,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.FeatureType;
@@ -68,6 +74,7 @@ import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WfsFeatureStoreManager;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -84,7 +91,13 @@ public class StoredQueryHandlerTest {
     public static void initNamespaceContext()
                             throws IOException {
         NS_CONTEXT.addNamespace( "wfs", WFS_200_NS );
+    }
+
+    @Before
+    public void createManagedStoredQueriesDirectory()
+                            throws IOException {
         managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
+        managedStoredQueries.deleteOnExit();
     }
 
     @Test
@@ -129,6 +142,37 @@ public class StoredQueryHandlerTest {
         assertThat( featureTypeNameToExport.getLocalPart(), is( "one" ) );
         assertThat( featureTypeNameToExport.getNamespaceURI(), is( "" ) );
         assertThat( featureTypeNameToExport.getPrefix(), is( "" ) );
+    }
+
+    @Test
+    public void testInitManagedContainsFixedStoredQueries() {
+
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        assertThat( storedQueryHandler.hasStoredQuery( GET_FEATURE_BY_ID ), is( true ) );
+        assertThat( storedQueryHandler.hasStoredQuery( GET_FEATURE_BY_TYPE ), is( true ) );
+    }
+
+    @Test
+    public void testInitManagedStoredQueries()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+
+        File managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
+        OutputStream output = new FileOutputStream( new File( managedStoredQueries, "storedQuery_byName.xml" ) );
+        InputStream resourceAsStream = StoredQueryHandlerTest.class.getResourceAsStream( "storedQuery_byName.xml" );
+        IOUtils.copy( resourceAsStream, output );
+        resourceAsStream.close();
+        output.close();
+
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        assertThat( storedQueryHandler.hasStoredQuery( GET_FEATURE_BY_ID ), is( true ) );
+        assertThat( storedQueryHandler.hasStoredQuery( GET_FEATURE_BY_TYPE ), is( true ) );
+        assertThat( storedQueryHandler.hasStoredQuery( "ByName" ), is( true ) );
     }
 
     @Test
