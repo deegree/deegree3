@@ -54,6 +54,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
@@ -851,6 +852,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // GetPropertyValue
             addOperation( GetPropertyValue, getAndPost, post, get, operations );
 
+            // CreateStoredQuery
+            addOperation( CreateStoredQuery, getAndPost, post, get, operations );
+            
             if ( enableTransactions ) {
                 // Transaction
                 List<Domain> constraints = new ArrayList<Domain>();
