@@ -40,7 +40,11 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,13 +55,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
@@ -66,6 +74,7 @@ import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
 import org.deegree.protocol.wfs.storedquery.Parameter;
 import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinition200Encoder;
 import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
@@ -93,10 +102,24 @@ public class StoredQueryHandler {
 
     private final Map<String, URL> idToUrl = Collections.synchronizedMap( new TreeMap<String, URL>() );
 
-    private WebFeatureService wfs;
+    private final WebFeatureService wfs;
 
-    public StoredQueryHandler( WebFeatureService wfs, List<URL> storedQueryTemplates ) {
+    private final File managedStoredQueryDirectory;
+
+    /**
+     * @param wfs
+     *            never <code>null</code>
+     * @param storedQueryTemplates
+     *            the configured stored query templates, may be empty but never <code>null</code>
+     * @param managedStoredQueryDirectory
+     *            directory to store the stored queries created by CreateStoredQuery request, may be <code>null</code>
+     *            (the operations CreateStoredQuery and DropStoredQuery are not supported then). Must exist if not
+     *            <code>null</code>.
+     */
+    public StoredQueryHandler( WebFeatureService wfs, List<URL> storedQueryTemplates,
+                               File managedStoredQueryDirectory ) {
         this.wfs = wfs;
+        this.managedStoredQueryDirectory = managedStoredQueryDirectory;
         URL url = StoredQueryHandler.class.getResource( "idquery.xml" );
         storedQueryTemplates.add( url );
         url = StoredQueryHandler.class.getResource( "typequery.xml" );
@@ -121,18 +144,14 @@ public class StoredQueryHandler {
      */
     public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response )
                             throws IOException, XMLStreamException {
-        List<StoredQueryDefinition> queryDefinitionsToAdd = request.getQueryDefinitions();
-        for ( StoredQueryDefinition storedQueryDefinitionToAdd : queryDefinitionsToAdd ) {
-            idToQuery.put( storedQueryDefinitionToAdd.getId(), storedQueryDefinitionToAdd );
-        }
+        if ( managedStoredQueryDirectory == null )
+            throw new IllegalArgumentException( "Performing CreateStoredQuery requests is not configured." );
+        if ( !managedStoredQueryDirectory.exists() )
+            throw new IllegalArgumentException( "Performing CreateStoredQuery requests is not configured." );
 
-        String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
-        XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
-        writer.setDefaultNamespace( WFS_200_NS );
-        writer.writeStartElement( WFS_200_NS, "CreateStoredQueryResponse" );
-        writer.writeDefaultNamespace( WFS_200_NS );
-        writer.writeAttribute( "status", "OK" );
-        writer.writeEndElement();
+        handleCreateStoredQuery( request );
+
+        writeCreateStoredQueryResponse( response );
     }
 
     /**
@@ -358,6 +377,32 @@ public class StoredQueryHandler {
         return ftNames;
     }
 
+    private void handleCreateStoredQuery( CreateStoredQuery request )
+                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MalformedURLException {
+        List<StoredQueryDefinition> queryDefinitionsToAdd = request.getQueryDefinitions();
+        for ( StoredQueryDefinition storedQueryDefinitionToAdd : queryDefinitionsToAdd ) {
+            addStoredQueryDefinition( storedQueryDefinitionToAdd );
+        }
+    }
+
+    private void addStoredQueryDefinition( StoredQueryDefinition storedQueryDefinitionToAdd )
+                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError, IOException,
+                            MalformedURLException {
+        File file = new File( managedStoredQueryDirectory, UUID.randomUUID().toString() + ".xml" );
+        FileOutputStream fileOutputStream = new FileOutputStream( file );
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( XMLOutputFactory.newInstance().createXMLStreamWriter( fileOutputStream ) );
+        try {
+            StoredQueryDefinition200Encoder.export( storedQueryDefinitionToAdd, writer );
+        } finally {
+            writer.close();
+            fileOutputStream.close();
+        }
+        String storedQueryId = storedQueryDefinitionToAdd.getId();
+        idToQuery.put( storedQueryId, storedQueryDefinitionToAdd );
+        idToUrl.put( storedQueryId, file.toURI().toURL() );
+    }
+
     private List<QName> collectFeatureTypes( List<QName> configuredReturnFeatureTypes,
                                              Collection<FeatureType> featureTypes ) {
         if ( configuredReturnFeatureTypes != null && configuredReturnFeatureTypes.size() > 0 ) {
@@ -439,6 +484,17 @@ public class StoredQueryHandler {
         LOG.info( "Adding stored query definition with id '{}' from {}", queryDefinition.getId(), u );
         idToQuery.put( queryDefinition.getId(), queryDefinition );
         idToUrl.put( queryDefinition.getId(), u );
+    }
+
+    private void writeCreateStoredQueryResponse( HttpResponseBuffer response )
+                            throws XMLStreamException, IOException {
+        String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+        XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
+        writer.setDefaultNamespace( WFS_200_NS );
+        writer.writeStartElement( WFS_200_NS, "CreateStoredQueryResponse" );
+        writer.writeDefaultNamespace( WFS_200_NS );
+        writer.writeAttribute( "status", "OK" );
+        writer.writeEndElement();
     }
 
 }

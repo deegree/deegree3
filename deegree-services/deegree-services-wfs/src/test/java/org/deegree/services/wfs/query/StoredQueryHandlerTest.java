@@ -47,7 +47,10 @@ import static org.xmlmatchers.XmlMatchers.hasXPath;
 import static org.xmlmatchers.transform.XmlConverters.xml;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,15 +77,20 @@ public class StoredQueryHandlerTest {
 
     private static final NamespaceBindings NS_CONTEXT = new NamespaceBindings();
 
+    private static File managedStoredQueries;
+
     @BeforeClass
-    public static void initNamespaceContext() {
+    public static void initNamespaceContext()
+                            throws IOException {
         NS_CONTEXT.addNamespace( "wfs", WFS_200_NS );
+        managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
     }
 
     @Test
     public void testCollectAndSortFeatureTypesToExport_AllFeatureTypes() {
         List<FeatureType> featureTypes = featureTypes();
-        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
 
         List<QName> configuredFeatureTypeNames = Collections.emptyList();
         List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
@@ -96,7 +104,8 @@ public class StoredQueryHandlerTest {
     @Test
     public void testCollectAndSortFeatureTypesToExport_EmptyFeatureTypeList() {
         List<FeatureType> featureTypes = Collections.emptyList();
-        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
 
         List<QName> configuredFeatureTypeNames = Collections.emptyList();
         List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
@@ -107,7 +116,8 @@ public class StoredQueryHandlerTest {
     @Test
     public void testCollectAndSortFeatureTypesToExport_LimitedConfiguredFeatureTypes() {
         List<FeatureType> featureTypes = featureTypes();
-        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
 
         List<QName> configuredFeatureTypeNames = configuredFeatureTypeNames();
         List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
@@ -124,7 +134,8 @@ public class StoredQueryHandlerTest {
     public void testDoCreateStoredQuery()
                             throws Exception {
         List<FeatureType> featureTypes = featureTypes();
-        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>() );
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
 
         String id = "mangedStoredQuery";
         CreateStoredQuery request = createStoredQuery( id );
@@ -133,8 +144,7 @@ public class StoredQueryHandlerTest {
         storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
         xmlStreamWriter.close();
 
-        // TODO: provide template!
-        assertThat( storedQueryHandler.hasStoredQuery( id ), is( false ) );
+        assertThat( storedQueryHandler.hasStoredQuery( id ), is( true ) );
         assertThat( xml( outStream.toString() ),
                     hasXPath( "/wfs:CreateStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
     }
