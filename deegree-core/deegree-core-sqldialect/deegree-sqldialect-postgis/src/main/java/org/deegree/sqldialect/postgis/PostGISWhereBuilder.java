@@ -152,6 +152,9 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         } else if ( pattern instanceof Function ) {
             String valueAsString = getStringValueFromFunction( pattern );
             return toProtoSql( op, valueAsString );
+        } else if ( pattern instanceof ValueReference ) {
+            ValueReference valueReference = ( (ValueReference) pattern );
+            return toProtoSql( op, valueReference );
         }
         String msg = "Mapping of PropertyIsLike with non-literal or non-function comparisons to SQL is not implemented yet.";
         throw new UnsupportedOperationException( msg );
@@ -201,6 +204,23 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         builder.add( sqlEncoded );
         builder.add( "'" );
+        return builder.toOperation();
+    }
+
+    private SQLOperation toProtoSql( PropertyIsLike op, ValueReference valueReference )
+                            throws UnmappableException, FilterEvaluationException {
+        SQLOperationBuilder builder = new SQLOperationBuilder();
+        if ( !op.isMatchCase() ) 
+            builder.add( "LOWER(" );
+
+        builder.add( toProtoSQL( op.getExpression() ) );
+        builder.add( "::TEXT " );
+        
+        if ( !op.isMatchCase() )
+            builder.add( ") " );
+        
+        builder.add( " LIKE " );
+        builder.add( toProtoSQL( valueReference ) );
         return builder.toOperation();
     }
 
