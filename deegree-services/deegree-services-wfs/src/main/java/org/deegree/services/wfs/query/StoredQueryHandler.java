@@ -503,9 +503,14 @@ public class StoredQueryHandler {
     }
 
     private void parseAndAddStoredQuery( URL u ) {
-        StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
-        xmlAdapter.load( u );
-        addStoredQuery( xmlAdapter.parse(), u );
+        try {
+            StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
+            xmlAdapter.load( u );
+            addStoredQuery( xmlAdapter.parse(), u );
+        } catch ( Exception e ) {
+            LOG.warn( "Could not parse stored query " + u.toString() + ". Reason: " + e.getMessage() );
+            LOG.trace( "Stack trace:", e );
+        }
     }
 
     private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {

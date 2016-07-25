@@ -191,6 +191,21 @@ public class StoredQueryHandlerTest {
     }
 
     @Test
+    public void testInitErroneousManagedStoredQueries()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+
+        File managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
+        OutputStream output = new FileOutputStream( new File( managedStoredQueries, "storedQuery_erroneous.xml" ) );
+        InputStream resourceAsStream = StoredQueryHandlerTest.class.getResourceAsStream( "storedQuery_erroneous.xml" );
+        IOUtils.copy( resourceAsStream, output );
+        resourceAsStream.close();
+        output.close();
+
+        new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(), managedStoredQueries );
+    }
+
+    @Test
     public void testDoCreateStoredQuery()
                             throws Exception {
         List<FeatureType> featureTypes = featureTypes();
