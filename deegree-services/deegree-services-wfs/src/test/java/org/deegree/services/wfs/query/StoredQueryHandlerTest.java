@@ -156,6 +156,13 @@ public class StoredQueryHandlerTest {
     }
 
     @Test
+    public void testInitManagedWitNullManagedStoredQueryDirectory() {
+        List<FeatureType> featureTypes = featureTypes();
+
+        new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(), null );
+    }
+
+    @Test
     public void testInitManagedStoredQueries()
                             throws Exception {
         List<FeatureType> featureTypes = featureTypes();

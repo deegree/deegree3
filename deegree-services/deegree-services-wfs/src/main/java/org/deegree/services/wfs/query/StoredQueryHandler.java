@@ -384,13 +384,15 @@ public class StoredQueryHandler {
     }
 
     private void loadManagedStoredQueries( File managedStoredQueryDirectory ) {
-        for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
-            try {
-                URL url = managedStoredQuery.toURI().toURL();
-                parseAndAddStoredQuery( url );
-            } catch ( IOException e ) {
-                throw new ResourceInitException( "Error initializing managed stored query from " + managedStoredQuery
-                                                 + ":" + e.getMessage(), e );
+        if ( managedStoredQueryDirectory != null ) {
+            for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
+                try {
+                    URL url = managedStoredQuery.toURI().toURL();
+                    parseAndAddStoredQuery( url );
+                } catch ( IOException e ) {
+                    throw new ResourceInitException( "Error initializing managed stored query from "
+                                                     + managedStoredQuery + ":" + e.getMessage(), e );
+                }
             }
         }
     }
