@@ -36,6 +36,7 @@
 package org.deegree.services.wfs.query;
 
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
@@ -45,6 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -285,11 +287,16 @@ public class StoredQueryHandler {
      *            request to be handled, must not be <code>null</code>
      * @param response
      *            response that is used to write the result, must not be <code>null</code>
+     * @throws OWSException
+     * @throws URISyntaxException
      * @throws IOException
      * @throws XMLStreamException
      */
-    public void doDropStoredQuery( DropStoredQuery dropStoredQuery, HttpResponseBuffer response ) {
-        throw new UnsupportedOperationException( "Performing DropStoredQuery requests is not implemented yet." );
+    public void doDropStoredQuery( DropStoredQuery request, HttpResponseBuffer response )
+                            throws OWSException, URISyntaxException, XMLStreamException, IOException {
+        checkIdOfDropStoredQueryRequest( request );
+        handleDropStoredQuery( request );
+        writeDropStoredQueryResponse( response );
     }
 
     /**
@@ -407,6 +414,27 @@ public class StoredQueryHandler {
         List<StoredQueryDefinition> queryDefinitionsToAdd = request.getQueryDefinitions();
         for ( StoredQueryDefinition storedQueryDefinitionToAdd : queryDefinitionsToAdd ) {
             addManagedStoredQueryDefinition( storedQueryDefinitionToAdd );
+        }
+    }
+
+    private void handleDropStoredQuery( DropStoredQuery request )
+                            throws OWSException {
+        String storedQueryId = request.getStoredQueryId();
+        StoredQueryDescription storedQueryDescription = idToQuery.get( storedQueryId );
+        URL url = storedQueryDescription.url;
+        LOG.debug( "Remove StoredQuery with {} from {}", storedQueryId, url );
+        try {
+            boolean wasDeleted = new File( url.toURI() ).delete();
+            if ( !wasDeleted ) {
+                String msg = "Stored query with id '" + storedQueryId + "' could not be dropped.";
+                throw new OWSException( msg, OPERATION_PROCESSING_FAILED );
+            }
+            idToQuery.remove( storedQueryId );
+        } catch ( Exception e ) {
+            LOG.warn( "Could not remove stored query with id {} from {}", storedQueryId, url );
+            LOG.trace( "Could not remove stored query", e );
+            String msg = "Stored query with id '" + storedQueryId + "' could not be dropped.";
+            throw new OWSException( msg, OPERATION_PROCESSING_FAILED );
         }
     }
 
@@ -531,6 +559,17 @@ public class StoredQueryHandler {
         writer.writeEndElement();
     }
 
+    private void writeDropStoredQueryResponse( HttpResponseBuffer response )
+                            throws XMLStreamException, IOException {
+        String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
+        XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
+        writer.setDefaultNamespace( WFS_200_NS );
+        writer.writeStartElement( WFS_200_NS, "DropStoredQueryResponse" );
+        writer.writeDefaultNamespace( WFS_200_NS );
+        writer.writeAttribute( "status", "OK" );
+        writer.writeEndElement();
+    }
+
     private void checkIdsOfStoredQueries( CreateStoredQuery request )
                             throws OWSException {
         for ( StoredQueryDefinition storedQueryDefinition : request.getQueryDefinitions() ) {
@@ -539,6 +578,19 @@ public class StoredQueryHandler {
                 String msg = "Stored query with id '" + id + "' is already known.";
                 throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
             }
+        }
+    }
+
+    private void checkIdOfDropStoredQueryRequest( DropStoredQuery request )
+                            throws OWSException {
+        String storedQueryId = request.getStoredQueryId();
+        if ( !hasStoredQuery( storedQueryId ) ) {
+            String msg = "Stored query with id '" + storedQueryId + "' is not known.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
+        } else if ( !idToQuery.get( storedQueryId ).isManaged ) {
+            String msg = "Stored query with id '" + storedQueryId + "' is configured by the service provider. "
+                         + "It cannot be removed by a DropStoredQuery request.";
+            throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
         }
     }
 

@@ -70,6 +70,7 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
+import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
@@ -243,12 +244,78 @@ public class StoredQueryHandlerTest {
         }
     }
 
+    @Test
+    public void testDoDropStoredQuery()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        String id = "mangedStoredQuery";
+        insertStoredQuery( storedQueryHandler, id );
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doDropStoredQuery( dropStoredQuery( id ), mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
+
+        assertThat( storedQueryHandler.hasStoredQuery( id ), is( false ) );
+        assertThat( xml( outStream.toString() ), hasXPath( "/wfs:DropStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
+    }
+
+    @Test
+    public void testDoDropStoredQuery_Unremovable()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        try {
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+            storedQueryHandler.doDropStoredQuery( dropStoredQuery( GET_FEATURE_BY_ID ),
+                                                  mockHttpResponseBuffer( xmlStreamWriter ) );
+            xmlStreamWriter.close();
+        } catch ( Exception e ) {
+        }
+        assertThat( storedQueryHandler.hasStoredQuery( GET_FEATURE_BY_ID ), is( true ) );
+    }
+
+    @Test(expected = OWSException.class)
+    public void testDoDropStoredQuery_Unremovable_Exception()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doDropStoredQuery( dropStoredQuery( GET_FEATURE_BY_ID ),
+                                              mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
+
+        assertThat( storedQueryHandler.hasStoredQuery( GET_FEATURE_BY_ID ), is( true ) );
+    }
+
+    private void insertStoredQuery( StoredQueryHandler storedQueryHandler, String id )
+                            throws Exception {
+        CreateStoredQuery request = createStoredQuery( id );
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
+    }
+
     private CreateStoredQuery createStoredQuery( String id ) {
         List<StoredQueryDefinition> queryDefinitions = new ArrayList<StoredQueryDefinition>();
         StoredQueryDefinition queryDefinition = mock( StoredQueryDefinition.class );
         when( queryDefinition.getId() ).thenReturn( id );
         queryDefinitions.add( queryDefinition );
         return new CreateStoredQuery( VERSION_200, "handle", queryDefinitions );
+    }
+
+    private DropStoredQuery dropStoredQuery( String id ) {
+        return new DropStoredQuery( VERSION_200, "handle", id );
     }
 
     private List<FeatureType> featureTypes() {
