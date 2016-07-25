@@ -162,6 +162,14 @@ public class StoredQueryHandlerTest {
         new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(), null );
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInitManagedWithoutExistingManagedStoredQueryDirectoryThrowsException() {
+        List<FeatureType> featureTypes = featureTypes();
+
+        new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                new File( "this/directory/does/not/exist" ) );
+    }
+
     @Test
     public void testInitManagedStoredQueries()
                             throws Exception {

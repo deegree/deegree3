@@ -385,6 +385,8 @@ public class StoredQueryHandler {
 
     private void loadManagedStoredQueries( File managedStoredQueryDirectory ) {
         if ( managedStoredQueryDirectory != null ) {
+            if ( !managedStoredQueryDirectory.exists() )
+                throw new IllegalArgumentException( "Managed stored query directory does not exist." );
             for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
                 try {
                     URL url = managedStoredQuery.toURI().toURL();
