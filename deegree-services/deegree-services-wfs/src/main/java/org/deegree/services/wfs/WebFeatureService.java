@@ -305,7 +305,10 @@ public class WebFeatureService extends AbstractOWS {
             }
         }
         File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
-        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
+        if ( managedStoredQueryDirectory != null && !managedStoredQueryDirectory.exists() )
+            storedQueryHandler = new StoredQueryHandler( this, list, null );
+        else
+            storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
