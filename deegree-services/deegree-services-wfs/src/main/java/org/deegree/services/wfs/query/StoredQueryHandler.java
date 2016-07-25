@@ -114,8 +114,7 @@ public class StoredQueryHandler {
      *            the configured stored query templates, may be empty but never <code>null</code>
      * @param managedStoredQueryDirectory
      *            directory to store the stored queries created by CreateStoredQuery request, may be <code>null</code>
-     *            (the operations CreateStoredQuery and DropStoredQuery are not supported then). Must exist if not
-     *            <code>null</code>.
+     *            and must not exist (the operations CreateStoredQuery and DropStoredQuery are not supported then).
      */
     public StoredQueryHandler( WebFeatureService wfs, List<URL> storedQueryTemplates,
                                File managedStoredQueryDirectory ) {
@@ -140,9 +139,11 @@ public class StoredQueryHandler {
     public void doCreateStoredQuery( CreateStoredQuery request, HttpResponseBuffer response )
                             throws IOException, XMLStreamException, OWSException {
         if ( managedStoredQueryDirectory == null )
-            throw new IllegalArgumentException( "Performing CreateStoredQuery requests is not configured." );
+            throw new OWSException( "Performing CreateStoredQuery requests is not configured.",
+                                    OPERATION_PROCESSING_FAILED );
         if ( !managedStoredQueryDirectory.exists() )
-            throw new IllegalArgumentException( "Performing CreateStoredQuery requests is not configured." );
+            throw new OWSException( "Performing CreateStoredQuery requests is not configured.",
+                                    OPERATION_PROCESSING_FAILED );
 
         checkIdsOfStoredQueries( request );
         handleCreateStoredQuery( request );
@@ -393,17 +394,18 @@ public class StoredQueryHandler {
     }
 
     private void loadManagedStoredQueries( File managedStoredQueryDirectory ) {
-        if ( managedStoredQueryDirectory != null ) {
-            if ( !managedStoredQueryDirectory.exists() )
-                throw new IllegalArgumentException( "Managed stored query directory does not exist." );
-            for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
-                try {
-                    URL url = managedStoredQuery.toURI().toURL();
-                    parseAndAddStoredQuery( url, true );
-                } catch ( IOException e ) {
-                    throw new ResourceInitException( "Error initializing managed stored query from "
-                                                     + managedStoredQuery + ":" + e.getMessage(), e );
-                }
+        if ( managedStoredQueryDirectory == null || !managedStoredQueryDirectory.exists() ) {
+            LOG.warn( "Managed stored query directory does not exist. "
+                      + "CreateStoredQuery/DropStoredQuery requests cannot be processed." );
+            return;
+        }
+        for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
+            try {
+                URL url = managedStoredQuery.toURI().toURL();
+                parseAndAddStoredQuery( url, true );
+            } catch ( IOException e ) {
+                throw new ResourceInitException( "Error initializing managed stored query from " + managedStoredQuery
+                                                 + ":" + e.getMessage(), e );
             }
         }
     }

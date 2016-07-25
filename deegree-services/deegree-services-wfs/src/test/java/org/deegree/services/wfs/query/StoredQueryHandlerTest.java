@@ -163,7 +163,7 @@ public class StoredQueryHandlerTest {
         new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(), null );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInitManagedWithoutExistingManagedStoredQueryDirectoryThrowsException() {
         List<FeatureType> featureTypes = featureTypes();
 
@@ -223,6 +223,36 @@ public class StoredQueryHandlerTest {
         assertThat( storedQueryHandler.hasStoredQuery( id ), is( true ) );
         assertThat( xml( outStream.toString() ),
                     hasXPath( "/wfs:CreateStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
+    }
+
+    @Test(expected = OWSException.class)
+    public void testDoCreateStoredQuery_NullManagedStoredQueryDirectory()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        null );
+
+        String id = "mangedStoredQuery";
+        CreateStoredQuery request = createStoredQuery( id );
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
+    }
+
+    @Test(expected = OWSException.class)
+    public void testDoCreateStoredQuery_NotExistingManagedStoredQueryDirectory()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        new File( "this/directory/does/not/exist" ) );
+
+        String id = "mangedStoredQuery";
+        CreateStoredQuery request = createStoredQuery( id );
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
     }
 
     @Test(expected = OWSException.class)
