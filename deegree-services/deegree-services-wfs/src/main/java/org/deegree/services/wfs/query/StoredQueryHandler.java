@@ -99,9 +99,7 @@ public class StoredQueryHandler {
 
     public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:query:OGC-WFS::GetFeatureByType";
 
-    private final Map<String, StoredQueryDefinition> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDefinition>() );
-
-    private final Map<String, URL> idToUrl = Collections.synchronizedMap( new TreeMap<String, URL>() );
+    private final Map<String, StoredQueryDescription> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDescription>() );
 
     private final WebFeatureService wfs;
 
@@ -165,15 +163,18 @@ public class StoredQueryHandler {
 
         List<StoredQueryDefinition> returnedDescriptions = new ArrayList<StoredQueryDefinition>();
         if ( request.getStoredQueryIds().length == 0 ) {
-            returnedDescriptions.addAll( idToQuery.values() );
+            for ( StoredQueryDescription storedQueryDescription : idToQuery.values() ) {
+                returnedDescriptions.add( storedQueryDescription.definition );
+
+            }
         } else {
             for ( String id : request.getStoredQueryIds() ) {
-                StoredQueryDefinition queryDef = idToQuery.get( id );
-                if ( queryDef == null ) {
+                StoredQueryDescription queryDescription = idToQuery.get( id );
+                if ( queryDescription == null ) {
                     String msg = "No StoredQuery with id '" + id + "' is known to this server.";
                     throw new OWSException( msg, INVALID_PARAMETER_VALUE );
                 }
-                returnedDescriptions.add( queryDef );
+                returnedDescriptions.add( queryDescription.definition );
             }
         }
 
@@ -309,7 +310,8 @@ public class StoredQueryHandler {
         writer.writeStartElement( WFS_200_NS, "ListStoredQueriesResponse" );
         writer.writeDefaultNamespace( WFS_200_NS );
 
-        for ( StoredQueryDefinition queryDef : idToQuery.values() ) {
+        for ( StoredQueryDescription queryDescription : idToQuery.values() ) {
+            StoredQueryDefinition queryDef = queryDescription.definition;
             writer.writeStartElement( WFS_200_NS, "StoredQuery" );
             writer.writeAttribute( "id", queryDef.getId() );
             for ( LanguageString title : queryDef.getTitles() ) {
@@ -347,7 +349,7 @@ public class StoredQueryHandler {
      * @return true, if the stored query is known
      */
     public boolean hasStoredQuery( String id ) {
-        return idToUrl.get( id ) != null;
+        return idToQuery.get( id ) != null;
     }
 
     /**
@@ -355,7 +357,7 @@ public class StoredQueryHandler {
      * @return <code>null</code>, if the stored query could not be found
      */
     public URL getStoredQueryTemplate( String id ) {
-        return idToUrl.get( id );
+        return idToQuery.get( id ) != null ? idToQuery.get( id ).url : null;
     }
 
     List<QName> collectAndSortFeatureTypesToExport( List<QName> configuredReturnFeatureTypes ) {
@@ -373,13 +375,13 @@ public class StoredQueryHandler {
     }
 
     private void loadFixStoredQueries() {
-        parseAndAddStoredQuery( StoredQueryHandler.class.getResource( "idquery.xml" ) );
-        parseAndAddStoredQuery( StoredQueryHandler.class.getResource( "typequery.xml" ) );
+        parseAndAddStoredQuery( StoredQueryHandler.class.getResource( "idquery.xml" ), false );
+        parseAndAddStoredQuery( StoredQueryHandler.class.getResource( "typequery.xml" ), false );
     }
 
     private void loadConfiguredStoredQueries( List<URL> storedQueryTemplates ) {
         for ( URL u : storedQueryTemplates ) {
-            parseAndAddStoredQuery( u );
+            parseAndAddStoredQuery( u, false );
         }
     }
 
@@ -390,7 +392,7 @@ public class StoredQueryHandler {
             for ( File managedStoredQuery : managedStoredQueryDirectory.listFiles() ) {
                 try {
                     URL url = managedStoredQuery.toURI().toURL();
-                    parseAndAddStoredQuery( url );
+                    parseAndAddStoredQuery( url, true );
                 } catch ( IOException e ) {
                     throw new ResourceInitException( "Error initializing managed stored query from "
                                                      + managedStoredQuery + ":" + e.getMessage(), e );
@@ -404,11 +406,11 @@ public class StoredQueryHandler {
                             MalformedURLException {
         List<StoredQueryDefinition> queryDefinitionsToAdd = request.getQueryDefinitions();
         for ( StoredQueryDefinition storedQueryDefinitionToAdd : queryDefinitionsToAdd ) {
-            addStoredQueryDefinition( storedQueryDefinitionToAdd );
+            addManagedStoredQueryDefinition( storedQueryDefinitionToAdd );
         }
     }
 
-    private void addStoredQueryDefinition( StoredQueryDefinition storedQueryDefinitionToAdd )
+    private void addManagedStoredQueryDefinition( StoredQueryDefinition storedQueryDefinitionToAdd )
                             throws FileNotFoundException, XMLStreamException, FactoryConfigurationError, IOException,
                             MalformedURLException {
         File file = new File( managedStoredQueryDirectory, UUID.randomUUID().toString() + ".xml" );
@@ -421,8 +423,8 @@ public class StoredQueryHandler {
             fileOutputStream.close();
         }
         String storedQueryId = storedQueryDefinitionToAdd.getId();
-        idToQuery.put( storedQueryId, storedQueryDefinitionToAdd );
-        idToUrl.put( storedQueryId, file.toURI().toURL() );
+        idToQuery.put( storedQueryId,
+                       new StoredQueryDescription( storedQueryDefinitionToAdd, file.toURI().toURL(), true ) );
     }
 
     private List<QName> collectFeatureTypes( List<QName> configuredReturnFeatureTypes,
@@ -502,21 +504,20 @@ public class StoredQueryHandler {
         return returnFeatureTypes.toString();
     }
 
-    private void parseAndAddStoredQuery( URL u ) {
+    private void parseAndAddStoredQuery( URL u, boolean isManaged ) {
         try {
             StoredQueryDefinitionXMLAdapter xmlAdapter = new StoredQueryDefinitionXMLAdapter();
             xmlAdapter.load( u );
-            addStoredQuery( xmlAdapter.parse(), u );
+            addStoredQuery( xmlAdapter.parse(), u, isManaged );
         } catch ( Exception e ) {
             LOG.warn( "Could not parse stored query " + u.toString() + ". Reason: " + e.getMessage() );
             LOG.trace( "Stack trace:", e );
         }
     }
 
-    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
+    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u, boolean isManaged ) {
         LOG.info( "Adding stored query definition with id '{}' from {}", queryDefinition.getId(), u );
-        idToQuery.put( queryDefinition.getId(), queryDefinition );
-        idToUrl.put( queryDefinition.getId(), u );
+        idToQuery.put( queryDefinition.getId(), new StoredQueryDescription( queryDefinition, u, isManaged ) );
     }
 
     private void writeCreateStoredQueryResponse( HttpResponseBuffer response )
@@ -538,6 +539,21 @@ public class StoredQueryHandler {
                 String msg = "Stored query with id '" + id + "' is already known.";
                 throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
             }
+        }
+    }
+
+    private class StoredQueryDescription {
+
+        private final StoredQueryDefinition definition;
+
+        private final URL url;
+
+        private final boolean isManaged;
+
+        private StoredQueryDescription( StoredQueryDefinition definition, URL url, boolean isManaged ) {
+            this.definition = definition;
+            this.url = url;
+            this.isManaged = isManaged;
         }
     }
 
