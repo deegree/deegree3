@@ -39,7 +39,7 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.types.FeatureType;
 
 /**
- * TODO add class documentation here
+ * Encapsulates the tuple of the {@link FeatureTypeMapping}, {@link FeatureTypeMapping} and the alias from the query.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
@@ -48,16 +48,28 @@ public class QueryFeatureTypeMapping {
     private final String alias;
 
     private final FeatureType featureType;
-    
+
     private final FeatureTypeMapping featureTypeMapping;
 
     /**
+     * @param featureType
+     *            never <code>null</code>
      * @param ftMapping
+     *            never <code>null</code>
      */
     public QueryFeatureTypeMapping( FeatureType featureType, FeatureTypeMapping ftMapping ) {
         this( null, featureType, ftMapping );
     }
 
+    /**
+     * 
+     * @param alias
+     *            from the query, may be <code>null</code>
+     * @param featureType
+     *            never <code>null</code>
+     * @param ftMapping
+     *            never <code>null</code>
+     */
     public QueryFeatureTypeMapping( String alias, FeatureType featureType, FeatureTypeMapping featureTypeMapping ) {
         this.alias = alias;
         this.featureType = featureType;
@@ -65,21 +77,21 @@ public class QueryFeatureTypeMapping {
     }
 
     /**
-     * @return the alias
+     * @return the alias from the query, may be <code>null</code>
      */
     public String getAlias() {
         return alias;
     }
 
     /**
-     * @return the featureTypeMapping
+     * @return the featureTypeMapping never <code>null</code>
      */
     public FeatureTypeMapping getFeatureTypeMapping() {
         return featureTypeMapping;
     }
 
     /**
-     * @return the featureType
+     * @return the featureType never <code>null</code>
      */
     public FeatureType getFeatureType() {
         return featureType;
