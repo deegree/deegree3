@@ -122,9 +122,10 @@ public class SQLPropertyNameMapperTest {
     @Test
     public void testGetMapping_ByAlias()
                             throws Exception {
-        ValueReference propName = new ValueReference( "a/app:geometry", nsContext() );
-        List<QueryFeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName, "a", "b" );
+        ValueReference valueReference = new ValueReference( "app:geometry", nsContext() );
+        List<QueryFeatureTypeMapping> ftMapping = createFeatureTypeMappings( valueReference, "a", "b" );
         SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        ValueReference propName = new ValueReference( "a/app:geometry", nsContext() );
         PropertyNameMapping spatialMapping = mapper.getMapping( propName, mockAliasManager() );
 
         assertThat( spatialMapping, notNullValue() );

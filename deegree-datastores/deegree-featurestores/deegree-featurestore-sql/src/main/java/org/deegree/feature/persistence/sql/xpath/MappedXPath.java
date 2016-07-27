@@ -125,8 +125,7 @@ public class MappedXPath {
             steps = MappableStep.extractSteps( propName );
             // the first step may be the name of the feature type or the name of a property
             MappableStep firstStep = steps.get( 0 );
-            if ( firstStep instanceof MappableNameStep
-                 && ftMapping.getFeatureType().equals( ( (MappableNameStep) firstStep ).getNodeName() ) ) {
+            if ( isFirstStepFeatureTypeOrAlias( queryFtMapping, firstStep ) ) {
                 steps = steps.subList( 1, steps.size() );
             }
         }
@@ -316,4 +315,16 @@ public class MappedXPath {
             }
         }
     }
+
+    private boolean isFirstStepFeatureTypeOrAlias( QueryFeatureTypeMapping queryFtMapping, MappableStep firstStep ) {
+        QName firstStepName = ( (MappableNameStep) firstStep ).getNodeName();
+        if ( firstStep instanceof MappableNameStep )
+            if ( queryFtMapping.getFeatureTypeMapping().getFeatureType().equals( firstStepName ) )
+                return true;
+        String alias = queryFtMapping.getAlias();
+        if ( alias != null && alias.equals( firstStepName.getLocalPart() ) )
+            return true;
+        return false;
+    }
+    
 }
