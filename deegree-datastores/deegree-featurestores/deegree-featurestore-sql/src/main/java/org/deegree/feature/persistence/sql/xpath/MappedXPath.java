@@ -105,7 +105,7 @@ public class MappedXPath {
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
-    public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, ValueReference propName,
+    public MappedXPath( SQLFeatureStore fs, QueryFeatureTypeMapping queryFtMapping, ValueReference propName,
                         TableAliasManager aliasManager, boolean isSpatial ) throws UnmappableException {
 
         this.fs = fs;
@@ -113,6 +113,7 @@ public class MappedXPath {
         this.aliasManager = aliasManager;
         this.isSpatial = isSpatial;
 
+        FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
         // check for empty property name
         List<MappableStep> steps = null;
         if ( propName == null || propName.getAsText().isEmpty() ) {

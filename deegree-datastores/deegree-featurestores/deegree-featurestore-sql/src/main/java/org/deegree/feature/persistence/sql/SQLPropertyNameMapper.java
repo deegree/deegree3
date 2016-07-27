@@ -45,6 +45,7 @@ import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.sql.xpath.MappableNameStep;
 import org.deegree.feature.persistence.sql.xpath.MappableStep;
 import org.deegree.feature.persistence.sql.xpath.MappedXPath;
+import org.deegree.feature.persistence.sql.xpath.QueryFeatureTypeMapping;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -64,9 +65,9 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
 
     private final SQLFeatureStore fs;
 
-    private final FeatureTypeMapping ftMapping;
+    private final QueryFeatureTypeMapping ftMapping;
 
-    private final Collection<FeatureTypeMapping> ftMappings;
+    private final Collection<QueryFeatureTypeMapping> ftMappings;
 
     /**
      * @param fs
@@ -74,7 +75,7 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
      * @param ftMapping
      *            the {@link FeatureTypeMapping}, never <code>null</code>
      */
-    public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping ) {
+    public SQLPropertyNameMapper( SQLFeatureStore fs, QueryFeatureTypeMapping ftMapping ) {
         this( fs, ftMapping, null );
     }
 
@@ -84,12 +85,12 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
      * @param ftMappings
      *            a list of the {@link FeatureTypeMapping}s, never <code>null</code> or empty
      */
-    public SQLPropertyNameMapper( SQLFeatureStore fs, Collection<FeatureTypeMapping> ftMappings ) {
+    public SQLPropertyNameMapper( SQLFeatureStore fs, Collection<QueryFeatureTypeMapping> ftMappings ) {
         this( fs, null, ftMappings );
     }
 
-    private SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping,
-                                   Collection<FeatureTypeMapping> ftMappings ) {
+    private SQLPropertyNameMapper( SQLFeatureStore fs, QueryFeatureTypeMapping ftMapping,
+                                   Collection<QueryFeatureTypeMapping> ftMappings ) {
         this.fs = fs;
         if ( ftMapping != null && ( ftMappings == null || ftMappings.isEmpty() ) ) {
             this.ftMapping = ftMapping;
@@ -110,7 +111,7 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
                             throws FilterEvaluationException, UnmappableException {
         if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
             return new MappedXPath( fs, ftMapping, propName, aliasManager, false ).getPropertyNameMapping();
-        FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
+        QueryFeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
         return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, false ).getPropertyNameMapping();
 
     }
@@ -120,31 +121,31 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
                             throws FilterEvaluationException, UnmappableException {
         if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
             return new MappedXPath( fs, ftMapping, propName, aliasManager, true ).getPropertyNameMapping();
-        FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
+        QueryFeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
         return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, true ).getPropertyNameMapping();
     }
 
-    private FeatureTypeMapping findCorrespondingMapping( ValueReference propName )
+    private QueryFeatureTypeMapping findCorrespondingMapping( ValueReference propName )
                             throws UnmappableException {
         List<MappableStep> steps = MappableStep.extractSteps( propName );
         if ( steps.size() > 1 && steps.get( 0 ) instanceof MappableNameStep ) {
             QName nodeName = ( (MappableNameStep) steps.get( 0 ) ).getNodeName();
-            FeatureTypeMapping ftMapping = findBestMatchingFtMapping( nodeName );
+            QueryFeatureTypeMapping ftMapping = findBestMatchingFtMapping( nodeName );
             if ( ftMapping != null )
                 return ftMapping;
         }
         throw new UnmappableException( "Could not parse mapping " + propName );
     }
 
-    private FeatureTypeMapping findBestMatchingFtMapping( QName nodeName ) {
+    private QueryFeatureTypeMapping findBestMatchingFtMapping( QName nodeName ) {
         List<QName> ftNames = new ArrayList<QName>();
-        for ( FeatureTypeMapping ftMapping : ftMappings ) {
-            ftNames.add( ftMapping.getFeatureType() );
+        for ( QueryFeatureTypeMapping ftMapping : ftMappings ) {
+            ftNames.add( ftMapping.getFeatureTypeMapping().getFeatureType() );
         }
 
         QName bestMatch = QNameUtils.findBestMatch( nodeName, ftNames );
-        for ( FeatureTypeMapping ftMapping : ftMappings ) {
-            if ( ftMapping.getFeatureType().equals( bestMatch ) )
+        for ( QueryFeatureTypeMapping ftMapping : ftMappings ) {
+            if ( ftMapping.getFeatureTypeMapping().getFeatureType().equals( bestMatch ) )
                 return ftMapping;
         }
         return null;

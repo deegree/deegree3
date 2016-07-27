@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -86,6 +85,7 @@ import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.xpath.QueryFeatureTypeMapping;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
@@ -134,7 +134,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final SQLFeatureStore fs;
 
-    private final Map<FeatureType, FeatureTypeMapping> featureTypeAndMappings;
+    private final List<QueryFeatureTypeMapping> featureTypeAndMappings;
 
     private final Connection conn;
 
@@ -167,9 +167,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      *            the void escalation policy, must not be <code>null</code>
      */
     @Deprecated
-    public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
-                                     String ftTableAlias, boolean nullEscalation ) {
-        this( fs, Collections.singletonMap( ft, ftMapping ), conn, null, ftTableAlias, nullEscalation );
+    public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, QueryFeatureTypeMapping ftMapping,
+                                     Connection conn, String ftTableAlias, boolean nullEscalation ) {
+        this( fs, Collections.singletonList( ftMapping ), conn, null, ftTableAlias, nullEscalation );
     }
 
     /**
@@ -186,12 +186,12 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      * @param nullEscalation
      *            the void escalation policy, must not be <code>null</code>
      */
-    public FeatureBuilderRelational( SQLFeatureStore fs, Map<FeatureType, FeatureTypeMapping> featureTypeAndMappings,
+    public FeatureBuilderRelational( SQLFeatureStore fs, List<QueryFeatureTypeMapping> featureTypeAndMappings,
                                      Connection conn, TableAliasManager tableAliasManager, boolean nullEscalation ) {
         this( fs, featureTypeAndMappings, conn, tableAliasManager, null, nullEscalation );
     }
 
-    private FeatureBuilderRelational( SQLFeatureStore fs, Map<FeatureType, FeatureTypeMapping> featureTypeAndMappings,
+    private FeatureBuilderRelational( SQLFeatureStore fs, List<QueryFeatureTypeMapping> featureTypeAndMappings,
                                       Connection conn, TableAliasManager tableAliasManager, String tableAlias,
                                       boolean nullEscalation ) {
         this.fs = fs;
@@ -214,7 +214,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     @Override
     public List<String> getInitialSelectList() {
-        for ( FeatureTypeMapping ftMapping : featureTypeAndMappings.values() ) {
+        for ( QueryFeatureTypeMapping queryFtMapping : featureTypeAndMappings ) {
+            FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
             String alias = detectTableAlias( ftMapping );
             for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
                 addColumn( qualifiedSqlExprToRsIdx, alias + "." + fidColumn.first.getName() );
@@ -293,10 +294,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
         List<Feature> features = new ArrayList<Feature>();
         try {
-            for ( Entry<FeatureType, FeatureTypeMapping> featureTypeAndMapping : featureTypeAndMappings.entrySet() ) {
+            for ( QueryFeatureTypeMapping queryFtMapping : featureTypeAndMappings ) {
                 Feature feature = null;
-                FeatureType ft = featureTypeAndMapping.getKey();
-                FeatureTypeMapping ftMapping = featureTypeAndMapping.getValue();
+                FeatureType ft = queryFtMapping.getFeatureType();
+                FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
                 String tableAlias = detectTableAlias( ftMapping );
                 String gmlId = ftMapping.getFidMapping().getPrefix();
                 List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();

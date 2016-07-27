@@ -107,6 +107,7 @@ import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.xpath.QueryFeatureTypeMapping;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
 import org.deegree.feature.stream.EmptyFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
@@ -647,11 +648,11 @@ public class SQLFeatureStore implements FeatureStore {
 
     private int queryHitsByOperatorFilter( Query query, OperatorFilter filter )
                             throws FeatureStoreException {
-        List<QName> ftNames = collectFeatureTypesNames( query );
+        List<AliasedQName> ftNames = collectFeatureTypesNames( query );
         return queryHitsByOperatorFilter( query, ftNames, filter );
     }
 
-    private int queryHitsByOperatorFilter( Query query, List<QName> ftNames, OperatorFilter filter )
+    private int queryHitsByOperatorFilter( Query query, List<AliasedQName> ftNames, OperatorFilter filter )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing hits query by operator filter" );
@@ -661,10 +662,10 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Join queries between multiple feature types in blob mode are not by SQLFeatureStore (yet).";
                 throw new FeatureStoreException( msg );
             }
-            return queryHitsByOperatorFilterBlob( query, ftNames.get( 0 ), filter );
+            return queryHitsByOperatorFilterBlob( query, ftNames.get( 0 ).qname, filter );
         }
 
-        Map<FeatureType, FeatureTypeMapping> featureTypeAndMappings = collectFeatureTypesAndMappings( ftNames );
+        List<QueryFeatureTypeMapping> queryMappings = collectFeatureTypesAndMappings( ftNames );
 
         int hits = 0;
 
@@ -674,8 +675,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         try {
             conn = getConnection();
-            AbstractWhereBuilder wb = getWhereBuilder( featureTypeAndMappings.values(), filter,
-                                                       query.getSortProperties(), conn );
+            AbstractWhereBuilder wb = getWhereBuilder( queryMappings, filter, query.getSortProperties(), conn );
 
             if ( wb.getPostFilter() != null ) {
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
@@ -685,12 +685,13 @@ public class SQLFeatureStore implements FeatureStore {
                 if ( wb.getWhere() == null ) {
                     sql.append( "COUNT(*) FROM " );
                     // TODO: check the assumption that only one feature type is requested if the where clause is null...
-                    sql.append( featureTypeAndMappings.values().iterator().next().getFtTable() );
+                    sql.append( queryMappings.get( 0 ).getFeatureTypeMapping().getFtTable() );
                 } else {
                     sql.append( "COUNT(*) FROM (SELECT DISTINCT " );
 
                     boolean first = true;
-                    for ( FeatureTypeMapping ftMapping : featureTypeAndMappings.values() ) {
+                    for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
+                        FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
                         String ftTableAlias = wb.getAliasManager().getTableAlias( ftMapping.getFtTable() );
 
                         FIDMapping fidMapping = ftMapping.getFidMapping();
@@ -709,8 +710,8 @@ public class SQLFeatureStore implements FeatureStore {
 
                     // pure relational query
                     boolean firstTable = true;
-                    for ( FeatureTypeMapping ftMapping : featureTypeAndMappings.values() ) {
-                        TableName ftTable = ftMapping.getFtTable();
+                    for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
+                        TableName ftTable = queryFtMapping.getFeatureTypeMapping().getFtTable();
                         String ftTableAlias = wb.getAliasManager().getTableAlias( ftTable );
                         if ( !firstTable )
                             sql.append( ", " );
@@ -1058,7 +1059,8 @@ public class SQLFeatureStore implements FeatureStore {
             conn = getConnection();
 
             String tableAlias = "X1";
-            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
+            QueryFeatureTypeMapping queryFtMapping = new QueryFeatureTypeMapping( ft, ftMapping );
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, queryFtMapping, conn, tableAlias,
                                                                    nullEscalation );
             List<String> columns = builder.getInitialSelectList();
             StringBuilder sql = new StringBuilder( "SELECT " );
@@ -1284,11 +1286,11 @@ public class SQLFeatureStore implements FeatureStore {
 
     private FeatureInputStream queryByOperatorFilter( Query query, OperatorFilter filter )
                             throws FeatureStoreException {
-        List<QName> ftNames = collectFeatureTypesNames( query );
+        List<AliasedQName> ftNames = collectFeatureTypesNames( query );
         return queryByOperatorFilter( query, ftNames, filter );
     }
 
-    private FeatureInputStream queryByOperatorFilter( Query query, List<QName> ftNames, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilter( Query query, List<AliasedQName> ftNames, OperatorFilter filter )
                             throws FeatureStoreException {
         LOG.debug( "Performing query by operator filter" );
 
@@ -1297,7 +1299,7 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Join queries between multiple feature types in blob mode are not by SQLFeatureStore (yet).";
                 throw new FeatureStoreException( msg );
             }
-            return queryByOperatorFilterBlob( query, ftNames.get( 0 ), filter );
+            return queryByOperatorFilterBlob( query, ftNames.get( 0 ).qname, filter );
         }
 
         AbstractWhereBuilder wb = null;
@@ -1306,17 +1308,17 @@ public class SQLFeatureStore implements FeatureStore {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        Map<FeatureType, FeatureTypeMapping> featureTypeAndMappings = collectFeatureTypesAndMappings( ftNames );
+        List<QueryFeatureTypeMapping> queryMappings = collectFeatureTypesAndMappings( ftNames );
 
         try {
             conn = getConnection();
 
-            wb = getWhereBuilder( featureTypeAndMappings.values(), filter, query.getSortProperties(), conn );
+            wb = getWhereBuilder( queryMappings, filter, query.getSortProperties(), conn );
             TableAliasManager aliasManager = wb.getAliasManager();
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
-            FeatureBuilder builder = new FeatureBuilderRelational( this, featureTypeAndMappings, conn, aliasManager,
+            FeatureBuilder builder = new FeatureBuilderRelational( this, queryMappings, conn, aliasManager,
                                                                    nullEscalation );
             List<String> columns = builder.getInitialSelectList();
 
@@ -1332,10 +1334,10 @@ public class SQLFeatureStore implements FeatureStore {
 
             // pure relational query
             boolean isFirst = true;
-            for ( FeatureTypeMapping ftMapping : featureTypeAndMappings.values() ) {
+            for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
                 if ( !isFirst )
                     sql.append( ", " );
-                TableName ftTable = ftMapping.getFtTable();
+                TableName ftTable = queryFtMapping.getFeatureTypeMapping().getFtTable();
                 sql.append( ftTable );
                 sql.append( ' ' );
                 sql.append( aliasManager.getTableAlias( ftTable ) );
@@ -1481,7 +1483,7 @@ public class SQLFeatureStore implements FeatureStore {
         return ftId;
     }
 
-    private AbstractWhereBuilder getWhereBuilder( Collection<FeatureTypeMapping> ftMappings, OperatorFilter filter,
+    private AbstractWhereBuilder getWhereBuilder( Collection<QueryFeatureTypeMapping> ftMappings, OperatorFilter filter,
                                                   SortProperty[] sortCrit, Connection conn )
                                                                           throws FilterEvaluationException,
                                                                           UnmappableException {
@@ -1489,13 +1491,13 @@ public class SQLFeatureStore implements FeatureStore {
         return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
     }
 
-    private PropertyNameMapper createPropertyNameMapper( Collection<FeatureTypeMapping> ftMappings ) {
+    private PropertyNameMapper createPropertyNameMapper( Collection<QueryFeatureTypeMapping> ftMappings ) {
         return new SQLPropertyNameMapper( this, ftMappings );
     }
 
-    private List<QName> collectFeatureTypesNames( Query query )
+    private List<AliasedQName> collectFeatureTypesNames( Query query )
                             throws FeatureStoreException {
-        List<QName> ftNames = new ArrayList<QName>();
+        List<AliasedQName> ftNames = new ArrayList<AliasedQName>();
         for ( TypeName typeName : query.getTypeNames() ) {
             QName ftName = typeName.getFeatureTypeName();
             FeatureType ft = getSchema().getFeatureType( ftName );
@@ -1503,22 +1505,23 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Feature store is not configured to serve feature type '" + ftName + "'.";
                 throw new FeatureStoreException( msg );
             }
-            ftNames.add( ftName );
+            ftNames.add( new AliasedQName( typeName.getAlias(), ftName ) );
         }
         return ftNames;
     }
 
-    private Map<FeatureType, FeatureTypeMapping> collectFeatureTypesAndMappings( List<QName> ftNames )
+    private List<QueryFeatureTypeMapping> collectFeatureTypesAndMappings( List<AliasedQName> ftNames )
                             throws FeatureStoreException {
-        Map<FeatureType, FeatureTypeMapping> featureTypeAndMappings = new HashMap<FeatureType, FeatureTypeMapping>();
-        for ( QName ftName : ftNames ) {
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            FeatureTypeMapping ftMapping = getMapping( ftName );
+        List<QueryFeatureTypeMapping> featureTypeAndMappings = new ArrayList<QueryFeatureTypeMapping>();
+        for ( AliasedQName ftName : ftNames ) {
+
+            FeatureType ft = getSchema().getFeatureType( ftName.qname );
+            FeatureTypeMapping ftMapping = getMapping( ftName.qname );
             if ( ftMapping == null ) {
                 String msg = "Cannot perform query on feature type '" + ftNames + "'. Feature type is not mapped.";
                 throw new FeatureStoreException( msg );
             }
-            featureTypeAndMappings.put( ft, ftMapping );
+            featureTypeAndMappings.add( new QueryFeatureTypeMapping( ftName.alias, ft, ftMapping ) );
         }
         return featureTypeAndMappings;
     }
@@ -1670,5 +1673,18 @@ public class SQLFeatureStore implements FeatureStore {
         } else {
             nullEscalation = config.isNullEscalation();
         }
+    }
+
+    private class AliasedQName {
+
+        private final String alias;
+
+        private final QName qname;
+
+        private AliasedQName( String alias, QName qname ) {
+            this.alias = alias;
+            this.qname = qname;
+        }
+
     }
 }
