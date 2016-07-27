@@ -712,7 +712,7 @@ public class SQLFeatureStore implements FeatureStore {
                     boolean firstTable = true;
                     for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
                         TableName ftTable = queryFtMapping.getFeatureTypeMapping().getFtTable();
-                        String ftTableAlias = wb.getAliasManager().getTableAlias( ftTable );
+                        String ftTableAlias = wb.getAliasManager().getTableAlias( ftTable, queryFtMapping.getAlias() );
                         if ( !firstTable )
                             sql.append( ", " );
                         sql.append( ftTable );
