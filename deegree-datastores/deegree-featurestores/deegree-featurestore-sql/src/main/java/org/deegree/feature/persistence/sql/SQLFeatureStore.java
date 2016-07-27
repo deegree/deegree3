@@ -692,7 +692,7 @@ public class SQLFeatureStore implements FeatureStore {
                     boolean first = true;
                     for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
                         FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
-                        String ftTableAlias = wb.getAliasManager().getTableAlias( ftMapping.getFtTable() );
+                        String ftTableAlias = wb.getAliasManager().getTableAlias( ftMapping.getFtTable(), queryFtMapping.getAlias()  );
 
                         FIDMapping fidMapping = ftMapping.getFidMapping();
                         List<Pair<SQLIdentifier, BaseType>> fidCols = fidMapping.getColumns();
@@ -1340,7 +1340,7 @@ public class SQLFeatureStore implements FeatureStore {
                 TableName ftTable = queryFtMapping.getFeatureTypeMapping().getFtTable();
                 sql.append( ftTable );
                 sql.append( ' ' );
-                sql.append( aliasManager.getTableAlias( ftTable ) );
+                sql.append( aliasManager.getTableAlias( ftTable, queryFtMapping.getAlias() ) );
                 isFirst = false;
             }
 

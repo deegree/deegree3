@@ -119,10 +119,28 @@ public class SQLPropertyNameMapperTest {
         assertThat( spatialMapping, notNullValue() );
     }
 
+    @Test
+    public void testGetMapping_ByAlias()
+                            throws Exception {
+        ValueReference propName = new ValueReference( "a/app:geometry", nsContext() );
+        List<QueryFeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName, "a", "b" );
+        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        PropertyNameMapping spatialMapping = mapper.getMapping( propName, mockAliasManager() );
+
+        assertThat( spatialMapping, notNullValue() );
+    }
+
     private List<QueryFeatureTypeMapping> createFeatureTypeMappings( ValueReference valueReference ) {
+        return createFeatureTypeMappings( valueReference, null, null );
+    }
+
+    private List<QueryFeatureTypeMapping> createFeatureTypeMappings( ValueReference valueReference, String aliasFt1,
+                                                                     String aliasFt2 ) {
         List<QueryFeatureTypeMapping> ftMapping = new ArrayList<QueryFeatureTypeMapping>();
-        ftMapping.add( mockFeatureTypeMapping( "ftType1", "http://www.deegree.org/app", valueReference ) );
-        ftMapping.add( mockFeatureTypeMapping( "ftType2", "http://www.deegree.org/app", valueReference ) );
+        ftMapping.add( mockQueryFeatureTypeMapping( "ftType1", "http://www.deegree.org/app", valueReference,
+                                                    aliasFt1 ) );
+        ftMapping.add( mockQueryFeatureTypeMapping( "ftType2", "http://www.deegree.org/app", valueReference,
+                                                    aliasFt2 ) );
         return ftMapping;
     }
 
@@ -130,10 +148,18 @@ public class SQLPropertyNameMapperTest {
         return mock( SQLFeatureStore.class );
     }
 
-    private QueryFeatureTypeMapping mockFeatureTypeMapping( String featureTypeName, String featureTypeNamespace,
-                                                            ValueReference valueReference ) {
-        QName featureType = new QName( featureTypeNamespace, featureTypeName, "app" );
+    private QueryFeatureTypeMapping mockQueryFeatureTypeMapping( String featureTypeName, String featureTypeNamespace,
+                                                                 ValueReference valueReference, String alias ) {
         QueryFeatureTypeMapping mockedQueryFtMapping = mock( QueryFeatureTypeMapping.class );
+        FeatureTypeMapping ftMapping = mockFeatureTypeMapping( featureTypeName, featureTypeNamespace, valueReference );
+        when( mockedQueryFtMapping.getAlias() ).thenReturn( alias );
+        when( mockedQueryFtMapping.getFeatureTypeMapping() ).thenReturn( ftMapping );
+        return mockedQueryFtMapping;
+    }
+
+    private FeatureTypeMapping mockFeatureTypeMapping( String featureTypeName, String featureTypeNamespace,
+                                                       ValueReference valueReference ) {
+        QName featureType = new QName( featureTypeNamespace, featureTypeName, "app" );
         FeatureTypeMapping mockedFtMapping = mock( FeatureTypeMapping.class );
         when( mockedFtMapping.getFtTable() ).thenReturn( new TableName( "table" ) );
         when( mockedFtMapping.getFeatureType() ).thenReturn( featureType );
@@ -143,8 +169,7 @@ public class SQLPropertyNameMapperTest {
                                                null );
         mappings.add( mapping );
         when( mockedFtMapping.getMappings() ).thenReturn( mappings );
-        when( mockedQueryFtMapping.getFeatureTypeMapping() ).thenReturn( mockedFtMapping );
-        return mockedQueryFtMapping;
+        return mockedFtMapping;
     }
 
     private TableAliasManager mockAliasManager() {

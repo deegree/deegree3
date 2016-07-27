@@ -148,6 +148,13 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
             if ( ftMapping.getFeatureTypeMapping().getFeatureType().equals( bestMatch ) )
                 return ftMapping;
         }
+
+        // matching alias?
+        for ( QueryFeatureTypeMapping ftMapping : ftMappings ) {
+            String alias = ftMapping.getAlias();
+            if ( nodeName.getLocalPart().equals( alias ) )
+                return ftMapping;
+        }
         return null;
     }
 

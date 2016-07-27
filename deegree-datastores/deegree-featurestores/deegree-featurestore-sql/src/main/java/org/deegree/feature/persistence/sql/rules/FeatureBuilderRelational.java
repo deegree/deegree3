@@ -216,7 +216,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     public List<String> getInitialSelectList() {
         for ( QueryFeatureTypeMapping queryFtMapping : featureTypeAndMappings ) {
             FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
-            String alias = detectTableAlias( ftMapping );
+            String alias = detectTableAlias( queryFtMapping );
             for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
                 addColumn( qualifiedSqlExprToRsIdx, alias + "." + fidColumn.first.getName() );
             }
@@ -298,7 +298,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 Feature feature = null;
                 FeatureType ft = queryFtMapping.getFeatureType();
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
-                String tableAlias = detectTableAlias( ftMapping );
+                String tableAlias = detectTableAlias( queryFtMapping );
                 String gmlId = ftMapping.getFidMapping().getPrefix();
                 List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
                 gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
@@ -721,9 +721,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return geom;
     }
 
-    private String detectTableAlias( FeatureTypeMapping ftMapping ) {
+    private String detectTableAlias( QueryFeatureTypeMapping queryFtMapping ) {
         if ( tableAliasManager != null )
-            return tableAliasManager.getTableAlias( ftMapping.getFtTable() );
+            return tableAliasManager.getTableAlias( queryFtMapping.getFeatureTypeMapping().getFtTable(),
+                                                    queryFtMapping.getAlias() );
         return tableAlias;
     }
 
