@@ -105,7 +105,7 @@ public class MappedXPath {
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
-    public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, ValueReference propName,
+    public MappedXPath( SQLFeatureStore fs, QueryFeatureTypeMapping queryFtMapping, ValueReference propName,
                         TableAliasManager aliasManager, boolean isSpatial ) throws UnmappableException {
 
         this.fs = fs;
@@ -113,6 +113,7 @@ public class MappedXPath {
         this.aliasManager = aliasManager;
         this.isSpatial = isSpatial;
 
+        FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
         // check for empty property name
         List<MappableStep> steps = null;
         if ( propName == null || propName.getAsText().isEmpty() ) {
@@ -124,14 +125,13 @@ public class MappedXPath {
             steps = MappableStep.extractSteps( propName );
             // the first step may be the name of the feature type or the name of a property
             MappableStep firstStep = steps.get( 0 );
-            if ( firstStep instanceof MappableNameStep
-                 && ftMapping.getFeatureType().equals( ( (MappableNameStep) firstStep ).getNodeName() ) ) {
+            if ( isFirstStepFeatureTypeOrAlias( queryFtMapping, firstStep ) ) {
                 steps = steps.subList( 1, steps.size() );
             }
         }
 
         currentTable = ftMapping.getFtTable().toString();
-        currentTableAlias = aliasManager.getTableAlias( ftMapping.getFtTable() );
+        currentTableAlias = aliasManager.getTableAlias( ftMapping.getFtTable(), queryFtMapping.getAlias() );
         map( ftMapping.getMappings(), steps );
     }
 
@@ -315,4 +315,16 @@ public class MappedXPath {
             }
         }
     }
+
+    private boolean isFirstStepFeatureTypeOrAlias( QueryFeatureTypeMapping queryFtMapping, MappableStep firstStep ) {
+        QName firstStepName = ( (MappableNameStep) firstStep ).getNodeName();
+        if ( firstStep instanceof MappableNameStep )
+            if ( queryFtMapping.getFeatureTypeMapping().getFeatureType().equals( firstStepName ) )
+                return true;
+        String alias = queryFtMapping.getAlias();
+        if ( alias != null && alias.equals( firstStepName.getLocalPart() ) )
+            return true;
+        return false;
+    }
+    
 }
