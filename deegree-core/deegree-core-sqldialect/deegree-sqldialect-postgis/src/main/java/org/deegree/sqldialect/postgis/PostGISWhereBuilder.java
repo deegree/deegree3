@@ -403,7 +403,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             if ( isTimeInstant( parameter2 ) ) {
                 TimePosition timePosition = ( (GenericTimeInstant) ( (Literal<?>) parameter2 ).getValue() ).getPosition();
                 second = createDateExpression( timePosition );
-            } else  if ( isTimePeriod( (Literal<?>) parameter2 ) ) {
+            } else  if ( isTimePeriod( parameter2 ) ) {
                 TimePosition end = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getEndPosition();
                 second = createDateExpression( end );
             } else {
@@ -420,7 +420,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             if ( isTimeInstant( parameter2 ) ) {
                 TimePosition timePosition = ( (GenericTimeInstant) ( (Literal<?>) parameter2 ).getValue() ).getPosition();
                 second = createDateExpression( timePosition );
-            } else  if ( isTimePeriod( (Literal<?>) parameter2 ) ) {
+            } else  if ( isTimePeriod( parameter2 ) ) {
                 TimePosition begin = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getBeginPosition();
                 second = createDateExpression( begin );
             } else {
@@ -446,7 +446,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         case DURING: {
             Expression parameter2 = op.getParameter2();
-            if ( isTimePeriod( (Literal<?>) parameter2 ) ) {
+            if ( isTimePeriod( parameter2 ) ) {
                 TimePosition begin = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getBeginPosition();
                 TimePosition end = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getEndPosition();
                 SQLExpression valueReference = toProtoSQL( op.getParameter1() );
@@ -564,12 +564,12 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         return builder.toOperation();
     }
 
-    private boolean isTimePeriod( Literal<?> parameter2 ) {
-        return parameter2 instanceof Literal && parameter2.getValue() instanceof GenericTimePeriod;
+    private boolean isTimePeriod( Expression parameter2 ) {
+        return parameter2 instanceof Literal && ( (Literal<?>) parameter2 ).getValue() instanceof GenericTimePeriod;
     }
 
     private boolean isTimeInstant( Expression parameter2 ) {
-        return parameter2 instanceof Literal && ((Literal<?>)parameter2).getValue() instanceof GenericTimeInstant;
+        return parameter2 instanceof Literal && ( (Literal<?>) parameter2 ).getValue() instanceof GenericTimeInstant;
     }
 
 }
