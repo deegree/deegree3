@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tilestores</artifactId>
-    <version>3.4-RC1-ogctestbed12-0.4</version>
+    <version>3.4-RC2-ogctestbed12-0.5-SNAPSHOT</version>
   </parent>
 
   <repositories>
