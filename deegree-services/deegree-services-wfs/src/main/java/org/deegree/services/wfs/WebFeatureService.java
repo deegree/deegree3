@@ -62,6 +62,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -305,7 +306,8 @@ public class WebFeatureService extends AbstractOWS {
                 list.add( url );
             }
         }
-        storedQueryHandler = new StoredQueryHandler( this, list );
+        File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
+        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );

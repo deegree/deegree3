@@ -332,8 +332,10 @@ This example is actually usable if your WFS is set up to serve the ad:Address fe
 
 The attribute returnFeatureTypes of QueryExpressionText can be left empty. If this is the case, the element will be filled with all feature types served by the WFS when executing a DescribeStoredQueries request. The same applies for the value ${deegreewfs:ServedFeatureTypes}. If a value is set for returnFeatureTypes, the user is responsible to configure it as expected: Usually values of the typeNames of the Query-Elements should be used. An exception is thrown as DescribeStoredQueries response, if the configured feature type is not served by the WFS.
 
+To enable support for the Manage Stored Queries conformance class for WFS 2.0.0 it is required to create a directory storedqueries/managed in your workspace. The stored queries created with ``CreateStoredQuery`` requests are stored in this directory. They are loaded during startup of deegree automatically. It is not recommend to put the StoredQueries configured in the WFS configuration with the StoredQuery element into this folder. If the directory is missing the ``CreateStoredQuery`` request returns an exception.
+
 .. tip::
-  deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries`` and the ``DescribeStoredQueries`` operations. However, there is no support for ``CreateStoredQuery`` and ``DropStoredQuery`` at the moment.
+  deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries``, ``DescribeStoredQueries``, ``CreateStoredQuery`` and the ``DropStoredQuery`` operations.
 
 .. _anchor-configuration-wms:
 

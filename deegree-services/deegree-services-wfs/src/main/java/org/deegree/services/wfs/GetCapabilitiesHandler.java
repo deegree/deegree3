@@ -54,8 +54,10 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
 import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
@@ -851,6 +853,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // GetPropertyValue
             addOperation( GetPropertyValue, getAndPost, post, get, operations );
 
+            // CreateStoredQuery
+            addOperation( CreateStoredQuery, getAndPost, post, get, operations );
+
+            // DropStoredQuery
+            addOperation( DropStoredQuery, getAndPost, post, get, operations );
+            
             if ( enableTransactions ) {
                 // Transaction
                 List<Domain> constraints = new ArrayList<Domain>();
@@ -916,7 +924,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "ImplementsSpatialJoins", "TRUE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "TRUE" ) );
             constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
-            constraints.add( new Domain( "ManageStoredQueries", "FALSE" ) );
+            constraints.add( new Domain( "ManageStoredQueries", "TRUE" ) );
 
             // capacity constraints
             if ( master.getQueryMaxFeatures() != -1 ) {
