@@ -978,7 +978,7 @@ public class WebFeatureService extends AbstractOWS {
                             throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
         LOG.debug( "doSOAP" );
 
-        if ( disableBuffering ) {
+        if ( !isSoapSupported() ) {
             super.doSOAP( soapDoc, request, response, multiParts, factory );
             return;
         }
@@ -1379,6 +1379,13 @@ public class WebFeatureService extends AbstractOWS {
      */
     public boolean isEnableResponsePaging() {
         return enableResponsePaging;
+    }
+
+    /**
+     * @return <code>true</code> if soap is supported, <code>false</code> otherwise
+     */
+    public boolean isSoapSupported() {
+        return !disableBuffering;
     }
 
     /**
