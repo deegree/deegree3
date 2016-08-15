@@ -129,14 +129,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.filter.AbstractWhereBuilder;
-import org.deegree.sqldialect.filter.DBField;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.MappingExpression;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
@@ -1546,6 +1539,13 @@ public class SQLFeatureStore implements FeatureStore {
             public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
                 return getMapping( propName, aliasManager );
+            }
+
+            @Override
+            public CompoundPropertyNameMapping getCompoundMapping( ValueReference propName,
+                                                                   TableAliasManager aliasManager )
+                                    throws FilterEvaluationException, UnmappableException {
+                throw new UnsupportedOperationException( "CompoundMappings are not supported" );
             }
         };
         return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );
