@@ -48,10 +48,7 @@ import org.deegree.feature.persistence.sql.xpath.MappedXPath;
 import org.deegree.feature.persistence.sql.xpath.QueryFeatureTypeMapping;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 
 /**
  * {@link PropertyNameMapper} for the {@link SQLFeatureStore}.
@@ -114,6 +111,15 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
         QueryFeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
         return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, false ).getPropertyNameMapping();
 
+    }
+
+    @Override
+    public CompoundPropertyNameMapping getCompoundMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException {
+        if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
+            return new MappedXPath( fs, ftMapping, propName, aliasManager, false ).getCompoundPropMapping();
+        QueryFeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
+        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, false ).getCompoundPropMapping();
     }
 
     @Override

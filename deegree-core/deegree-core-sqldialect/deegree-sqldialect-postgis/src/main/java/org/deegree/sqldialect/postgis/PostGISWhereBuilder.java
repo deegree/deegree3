@@ -38,6 +38,7 @@ package org.deegree.sqldialect.postgis;
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,6 +51,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -73,9 +75,7 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
-import org.deegree.sqldialect.filter.AbstractWhereBuilder;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
@@ -85,6 +85,8 @@ import org.deegree.time.position.IndeterminateValue;
 import org.deegree.time.position.TimePosition;
 import org.deegree.time.primitive.GenericTimeInstant;
 import org.deegree.time.primitive.GenericTimePeriod;
+
+import javax.xml.namespace.QName;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -469,6 +471,28 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                 SQLExpression beginExpr = createDateExpression( begin );
                 SQLExpression endExpr = createDateExpression( end );
                 sql = createSqlDuring( valueReference, beginExpr, endExpr );
+            } else if( parameter2 instanceof ValueReference ){
+                SQLExpression valueReference = toProtoSQL( op.getParameter1() );
+                CompoundPropertyNameMapping compoundMapping = mapper.getCompoundMapping( (ValueReference) parameter2, aliasManager );
+                if ( compoundMapping != null ) {
+                    PropertyNameMapping beginMapping = compoundMapping.getPropertyNameMappings(
+                                            new QName( GML3_2_NS, "beginPosition" ) );
+                    PropertyNameMapping endMapping = compoundMapping.getPropertyNameMappings(
+                                            new QName( GML3_2_NS, "endPosition" ) );
+                    if ( beginMapping != null && endMapping != null ) {
+                        SQLExpression beginExpr = toProtoSQL( (ValueReference) parameter2, beginMapping );
+                        SQLExpression endExpr = toProtoSQL( (ValueReference) parameter2, endMapping );
+                        sql = createSqlDuring( valueReference, beginExpr, endExpr );
+                    } else {
+                        throw new UnmappableException( "Could not map property " + parameter2 +
+                                                       " as supported TimePeriod in operator 'During'. The referenced TimePeriod must" +
+                                                       " contain the child elements beginPosition and endPosition" +
+                                                       " in GML 3.2 namespace." );
+                    }
+                } else {
+                    throw new UnmappableException(
+                                            "Could not map property " + parameter2 + " as supported TimePeriod in operator 'During'." );
+                }
             }
             break;
         }

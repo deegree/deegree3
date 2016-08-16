@@ -870,7 +870,7 @@ public abstract class AbstractWhereBuilder {
     /**
      * Translates the given {@link ValueReference} into an {@link SQLExpression}.
      * 
-     * @param expr
+     * @param propName
      *            expression to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
@@ -880,31 +880,14 @@ public abstract class AbstractWhereBuilder {
      */
     protected SQLExpression toProtoSQL( ValueReference propName )
                             throws UnmappableException, FilterEvaluationException {
-        SQLExpression sql = null;
         PropertyNameMapping propMapping = mapper.getMapping( propName, aliasManager );
-        if ( propMapping != null ) {
-            propNameMappingList.add( propMapping );
-            if ( propMapping instanceof ConstantPropertyNameMapping ) {
-                // TODO get rid of ConstantPropertyNameMapping
-                PrimitiveType pt = new PrimitiveType( STRING );
-                PrimitiveValue value = new PrimitiveValue( ""
-                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
-                                                           pt );
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-                sql = new SQLArgument( value, converter );
-            } else {
-                sql = new SQLColumn( propMapping.getTableAlias(), propMapping.getColumn(), propMapping.getConverter() );
-            }
-        } else {
-            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
-        }
-        return sql;
+        return toProtoSQL( propName, propMapping );
     }
 
     /**
      * Translates the given spatial {@link ValueReference} into an {@link SQLExpression}.
      * 
-     * @param expr
+     * @param propName
      *            expression to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
@@ -914,25 +897,8 @@ public abstract class AbstractWhereBuilder {
      */
     protected SQLExpression toProtoSQLSpatial( ValueReference propName )
                             throws FilterEvaluationException, UnmappableException {
-        SQLExpression sql = null;
         PropertyNameMapping propMapping = mapper.getSpatialMapping( propName, aliasManager );
-        if ( propMapping != null ) {
-            propNameMappingList.add( propMapping );
-            if ( propMapping instanceof ConstantPropertyNameMapping ) {
-                // TODO get rid of ConstantPropertyNameMapping
-                PrimitiveType pt = new PrimitiveType( STRING );
-                PrimitiveValue value = new PrimitiveValue( ""
-                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
-                                                           pt );
-                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
-                sql = new SQLArgument( value, converter );
-            } else {
-                sql = new SQLColumn( propMapping.getTableAlias(), propMapping.getColumn(), propMapping.getConverter() );
-            }
-        } else {
-            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
-        }
-        return sql;
+        return toProtoSQL( propName, propMapping );
     }
 
     /**
@@ -963,6 +929,29 @@ public abstract class AbstractWhereBuilder {
             }
         }
         return builder.toOperation();
+    }
+
+
+    protected SQLExpression toProtoSQL( ValueReference propName, PropertyNameMapping propMapping )
+                            throws UnmappableException {
+        SQLExpression sql;
+        if ( propMapping != null ) {
+            propNameMappingList.add( propMapping );
+            if ( propMapping instanceof ConstantPropertyNameMapping ) {
+                // TODO get rid of ConstantPropertyNameMapping
+                PrimitiveType pt = new PrimitiveType( STRING );
+                PrimitiveValue value = new PrimitiveValue( ""
+                                                           + ( (ConstantPropertyNameMapping) propMapping ).getValue(),
+                                                           pt );
+                PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
+                sql = new SQLArgument( value, converter );
+            } else {
+                sql = new SQLColumn( propMapping.getTableAlias(), propMapping.getColumn(), propMapping.getConverter() );
+            }
+        } else {
+            throw new UnmappableException( "Unable to map property '" + propName + "' to database column." );
+        }
+        return sql;
     }
 
     /**

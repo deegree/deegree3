@@ -55,21 +55,16 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.sqldialect.filter.DBField;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.MappingExpression;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A {@link ValueReference} that's mapped to the relational model defined by a {@link MappedAppSchema}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class MappedXPath {
@@ -94,9 +89,10 @@ public class MappedXPath {
 
     private PropertyNameMapping propMapping;
 
+    private CompoundPropertyNameMapping compoundPropMapping;
     /**
      * @param fs
-     * @param ftMapping
+     * @param queryFtMapping
      * @param propName
      * @param aliasManager
      * @param isSpatial
@@ -139,6 +135,10 @@ public class MappedXPath {
         return propMapping;
     }
 
+    public CompoundPropertyNameMapping getCompoundPropMapping(){
+        return compoundPropMapping;
+    }
+
     private void map( Collection<Mapping> mappedParticles, List<MappableStep> steps )
                             throws UnmappableException {
 
@@ -164,7 +164,7 @@ public class MappedXPath {
             if ( matchFound ) {
                 if ( mapping instanceof CompoundMapping ) {
                     followJoins( mapping.getJoinedTable() );
-                    map( ( (CompoundMapping) mapping ).getParticles(), steps.subList( 1, steps.size() ) );
+                    map( (CompoundMapping) mapping, steps );
                 } else if ( mapping instanceof PrimitiveMapping ) {
                     followJoins( mapping.getJoinedTable() );
                     map( (PrimitiveMapping) mapping, steps );
@@ -228,18 +228,7 @@ public class MappedXPath {
 
     private void map( PrimitiveMapping mapping, List<MappableStep> remaining )
                             throws UnmappableException {
-        final PrimitiveMapping primMapping = mapping;
-        final MappingExpression me = primMapping.getMapping();
-        ParticleConverter<?> converter = null;
-        if ( fs != null ) {
-            converter = fs.getConverter( primMapping );
-        }
-        if ( !( me instanceof DBField ) ) {
-            final String qualifiedExpr = me.toString().replace( "$0", currentTableAlias );
-            propMapping = new PropertyNameMapping( converter, joins, qualifiedExpr, null );
-            return;
-        }
-        propMapping = new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
+        propMapping = createPropertyNameMapping( mapping );
     }
 
     private void map( GeometryMapping mapping, List<MappableStep> remaining )
@@ -290,6 +279,35 @@ public class MappedXPath {
         map( ftMapping.getMappings(), remaining.subList( 1, remaining.size() ) );
     }
 
+    private void map( CompoundMapping mapping, List<MappableStep> steps )
+                            throws UnmappableException {
+        List<MappableStep> remainingSteps = steps.subList( 1, steps.size() );
+        if ( remainingSteps.size() == 0 )
+            map( mapping );
+        else
+            map( mapping.getParticles(), remainingSteps );
+    }
+
+    private void map( CompoundMapping mapping )
+                            throws UnmappableException {
+        List<Mapping> particles = mapping.getParticles();
+        CompoundPropertyNameMapping compoundPropertyNameMapping = new CompoundPropertyNameMapping();
+        for ( Mapping particle : particles ) {
+            if ( particle instanceof PrimitiveMapping ) {
+                PrimitiveMapping primitiveMapping = (PrimitiveMapping) particle;
+                QName name = primitiveMapping.getPath().getAsQName();
+                if ( name != null ) {
+                    PropertyNameMapping propertyNameMapping = createPropertyNameMapping( primitiveMapping );
+                    compoundPropertyNameMapping.addPropertyNameMapper( name, propertyNameMapping );
+                }
+            } else {
+                throw new UnmappableException(
+                                        "CompoundMappings with other than PrimitiveMappings as particles are not supported." );
+            }
+        }
+        this.compoundPropMapping = compoundPropertyNameMapping;
+    }
+
     private void followJoins( List<TableJoin> joinedTables ) {
         if ( joinedTables != null ) {
             for ( TableJoin joinedTable : joinedTables ) {
@@ -326,5 +344,19 @@ public class MappedXPath {
             return true;
         return false;
     }
-    
+
+    private PropertyNameMapping createPropertyNameMapping( PrimitiveMapping mapping ) {
+        final PrimitiveMapping primMapping = mapping;
+        final MappingExpression me = primMapping.getMapping();
+        ParticleConverter<?> converter = null;
+        if ( fs != null ) {
+            converter = fs.getConverter( primMapping );
+        }
+        if ( !( me instanceof DBField ) ) {
+            final String qualifiedExpr = me.toString().replace( "$0", currentTableAlias );
+            return new PropertyNameMapping( converter, joins, qualifiedExpr, null );
+        }
+        return new PropertyNameMapping( converter, joins, ( (DBField) me ).getColumn(), currentTableAlias );
+    }
+
 }
