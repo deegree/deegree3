@@ -98,11 +98,17 @@
                 </schemaIncludes>
                 <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
                 <episode>true</episode>
-                <catalog>target/deegree.xmlcatalog</catalog>
-                <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+                <catalogResolver>org.deegree.uncoupled.jaxb.CatalogResolver</catalogResolver>
               </configuration>
             </execution>
           </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.deegree</groupId>
+              <artifactId>deegree-jaxb-resolver</artifactId>
+              <version>1.0</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.deegree</groupId>
