@@ -39,6 +39,7 @@ package org.deegree.services.wfs;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
@@ -647,6 +648,9 @@ class TransactionHandler {
                     xmlStream.require( END_ELEMENT, null, "Property" );
                     // contract: skip to next ELEMENT_EVENT
                     xmlStream.nextTag();
+                } catch ( XMLParsingException e ) {
+                    LOG.debug( e.getMessage(), e );
+                    throw new OWSException( e.getMessage(), INVALID_VALUE );
                 } catch ( Exception e ) {
                     LOG.debug( e.getMessage(), e );
                     throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
