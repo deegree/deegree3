@@ -21811,18 +21811,36 @@
                 <crs:UsedProjection>projection_for_epsg:900913</crs:UsedProjection>
         </crs:ProjectedCRS>
         <crs:ProjectedCRS>
-                <crs:Id>epsg:3395</crs:Id>
                 <crs:Id>epsg:3857</crs:Id>
                 <crs:Id>google_maps</crs:Id>
-                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3395</crs:Id>
-                <crs:Id>urn:ogc:def:crs:epsg::3395</crs:Id>
-                <crs:Id>urn:opengis:def:crs:epsg::3395</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3857</crs:Id>
                 <crs:Id>urn:ogc:def:crs:epsg::3857</crs:Id>
                 <crs:Id>urn:opengis:def:crs:epsg::3857</crs:Id>
                 <crs:Name>Google_Maps</crs:Name>
                 <crs:Name>WGS 84 / Pseudo-Mercator</crs:Name>
                 <crs:Name>WGS 84 / Popular Visualisation Pseudo-Mercator</crs:Name>
+                <crs:Name>World Mercator</crs:Name>
+                <crs:AreaOfUse>-180.0,-80.0,180.0,84.0</crs:AreaOfUse>
+                <crs:AreaOfUse>World between 80°S and 84°N.</crs:AreaOfUse>
+                <crs:Axis>
+                        <crs:Name>x</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>y</crs:Name>
+                        <crs:Units>metre</crs:Units>
+                        <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:UsedGeographicCRS>google_maps_geographiccrs</crs:UsedGeographicCRS>
+                <crs:UsedProjection>epsg:3856</crs:UsedProjection>
+        </crs:ProjectedCRS>
+        <crs:ProjectedCRS>
+                <crs:Id>epsg:3395</crs:Id>
+                <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#3395</crs:Id>
+                <crs:Id>urn:ogc:def:crs:epsg::3395</crs:Id>
+                <crs:Id>urn:opengis:def:crs:epsg::3395</crs:Id>
+                <crs:Name>WGS 84 / World Mercator</crs:Name>
                 <crs:Name>World Mercator</crs:Name>
                 <crs:AreaOfUse>-180.0,-80.0,180.0,84.0</crs:AreaOfUse>
                 <crs:AreaOfUse>World between 80°S and 84°N.</crs:AreaOfUse>
