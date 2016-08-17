@@ -86,11 +86,12 @@ public class Filter200XMLEncoderParameterizedTest {
         filterTests.add( new Object[] { "testfilter5.xml", asString( "v200/testfilter5.xml" ) } );
         filterTests.add( new Object[] { "testfilter6.xml", asString( "v200/testfilter6.xml" ) } );
         filterTests.add( new Object[] { "testfilter7.xml", asString( "v200/testfilter7.xml" ) } );
+        filterTests.add( new Object[] { "testfilter8.xml", asString( "v200/testfilter8.xml" ) } );
         filterTests.add( new Object[] { "aixm_by_gml_identifier.xml", asString( "v200/aixm_by_gml_identifier.xml" ) } );
         filterTests.add( new Object[] { "aixm_custom_geometry_bbox.xml",
-                                       asString( "v200/aixm_custom_geometry_bbox.xml" ) } );
+                                        asString( "v200/aixm_custom_geometry_bbox.xml" ) } );
         filterTests.add( new Object[] { "aixm_custom_geometry_property.xml",
-                                       asString( "v200/aixm_custom_geometry_property.xml" ) } );
+                                        asString( "v200/aixm_custom_geometry_property.xml" ) } );
         filterTests.add( new Object[] { "aixm_timeinstant_begin.xml", asString( "v200/aixm_timeinstant_begin.xml" ) } );
         filterTests.add( new Object[] { "temporal/tequals.xml", asString( "v200/temporal/tequals.xml" ) } );
         return filterTests;

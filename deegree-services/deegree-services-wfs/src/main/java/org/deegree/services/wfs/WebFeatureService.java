@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
@@ -554,7 +555,7 @@ public class WebFeatureService extends AbstractOWS {
                                                      + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
-                    mimeTypeToFormat.put( mimeType, format );
+                    mimeTypeToFormat.put( trim( mimeType ), format );
                 }
             }
         }
@@ -1121,8 +1122,11 @@ public class WebFeatureService extends AbstractOWS {
             sendSoapException( soapDoc, factory, response, e, request, requestVersion );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ),
-                               request, requestVersion );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), exceptionCode ), request,
+                               requestVersion );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
