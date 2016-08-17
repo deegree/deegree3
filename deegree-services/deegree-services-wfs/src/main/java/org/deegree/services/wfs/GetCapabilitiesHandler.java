@@ -88,6 +88,8 @@ import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -277,8 +279,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // }
 
             // wfs:SRS (minOccurs=1, maxOccurs=1)
+            ICRS querySrs = querySRS.get( 0 );
             writer.writeStartElement( WFS_NS, "SRS" );
-            writer.writeCharacters( querySRS.get( 0 ).getAlias() );
+            writer.writeCharacters( querySrs.getAlias() );
             writer.writeEndElement();
 
             // wfs:Operations (minOccurs=0, maxOccurs=1)
@@ -294,7 +297,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             if ( env != null ) {
                 try {
-                    env = transformer.transform( env );
+                    env = transformEnvelopeIntoQuerySrs( querySrs, env );
                     Point min = env.getMin();
                     Point max = env.getMax();
                     double minX = min.get0();
@@ -1034,4 +1037,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
         writer.writeEndElement();
     }
+
+    private Envelope transformEnvelopeIntoQuerySrs( ICRS querySrs, Envelope env )
+                            throws TransformationException, UnknownCRSException {
+        GeometryTransformer transformer = new GeometryTransformer( querySrs );
+        return transformer.transform( env );
+    }
+
 }
