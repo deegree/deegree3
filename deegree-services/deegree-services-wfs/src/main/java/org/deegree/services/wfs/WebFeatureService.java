@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
@@ -59,6 +60,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -250,6 +252,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean checkAreaOfUse;
 
+    private boolean enableResponsePaging;
+
     private OWSMetadataProvider mdProvider;
 
     public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
@@ -280,6 +284,8 @@ public class WebFeatureService extends AbstractOWS {
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
         resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
+        enableResponsePaging = jaxbConfig.isEnableResponsePaging() == null ? false
+                                                                          : jaxbConfig.isEnableResponsePaging();
 
         service = new WfsFeatureStoreManager();
         try {
@@ -549,7 +555,7 @@ public class WebFeatureService extends AbstractOWS {
                                                      + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
-                    mimeTypeToFormat.put( mimeType, format );
+                    mimeTypeToFormat.put( trim( mimeType ), format );
                 }
             }
         }
@@ -794,6 +800,12 @@ public class WebFeatureService extends AbstractOWS {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, e, response );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
@@ -896,6 +908,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                checkGetFeatureWithLockRequest( requestVersion, getFeatureWithLock );
                 updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
@@ -944,7 +957,10 @@ public class WebFeatureService extends AbstractOWS {
             sendServiceException( requestVersion, e, response );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException( requestVersion, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e ), response );
@@ -963,7 +979,7 @@ public class WebFeatureService extends AbstractOWS {
                             throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
         LOG.debug( "doSOAP" );
 
-        if ( disableBuffering ) {
+        if ( !isSoapSupported() ) {
             super.doSOAP( soapDoc, request, response, multiParts, factory );
             return;
         }
@@ -1106,8 +1122,11 @@ public class WebFeatureService extends AbstractOWS {
             sendSoapException( soapDoc, factory, response, e, request, requestVersion );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ),
-                               request, requestVersion );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), exceptionCode ), request,
+                               requestVersion );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
@@ -1360,6 +1379,20 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     /**
+     * @return <code>true</code> if response paging is enabled by configuration, <code>false</code> otherwise
+     */
+    public boolean isEnableResponsePaging() {
+        return enableResponsePaging;
+    }
+
+    /**
+     * @return <code>true</code> if soap is supported, <code>false</code> otherwise
+     */
+    public boolean isSoapSupported() {
+        return !disableBuffering;
+    }
+
+    /**
      * Checks if a request version can be handled by this controller (i.e. if is supported by the implementation *and*
      * offered by the current configuration).
      * <p>
@@ -1389,6 +1422,13 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    private void checkGetFeatureWithLockRequest( Version requestVersion, GetFeatureWithLock getFeatureWithLock ) {
+        if ( VERSION_200.equals( requestVersion )
+             && HITS.equals( getFeatureWithLock.getPresentationParams().getResultType() ) )
+            throw new InvalidParameterValueException(
+                                                      "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
 
 }

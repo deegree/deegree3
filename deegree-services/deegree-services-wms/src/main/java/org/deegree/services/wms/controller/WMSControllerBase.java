@@ -103,11 +103,11 @@ public abstract class WMSControllerBase implements Controller {
         if ( updateSequence != null && updateSequence.trim().length() > 0 ) {
             try {
                 int seq = parseInt( updateSequence );
-                if ( seq > service.updateSequence ) {
+                if ( seq > service.getCurrentUpdateSequence() ) {
                     throw new OWSException( get( "WMS.INVALID_UPDATE_SEQUENCE", updateSequence ),
                                             OWSException.INVALID_UPDATE_SEQUENCE );
                 }
-                if ( seq == service.updateSequence ) {
+                if ( seq == service.getCurrentUpdateSequence() ) {
                     throw new OWSException( get( "WMS.CURRENT_UPDATE_SEQUENCE" ), OWSException.CURRENT_UPDATE_SEQUENCE );
                 }
             } catch ( NumberFormatException e ) {
@@ -152,8 +152,7 @@ public abstract class WMSControllerBase implements Controller {
                                                 String exceptionsFormat, WMSController controller )
                             throws ServletException {
         try {
-            exceptionsManager.serializeCapabilities( getVersion(), exceptionsFormat, response, e, exceptionSerializer,
-                                                     map );
+            exceptionsManager.serialize( getVersion(), exceptionsFormat, response, e, exceptionSerializer, map );
         } catch ( SerializingException se ) {
             LOG.info( "An exception occured during serializing the exception, default serializer is used. Exception: {}",
                       se.getMessage() );

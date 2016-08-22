@@ -137,7 +137,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
                          + "\" [<!ELEMENT VendorSpecificCapabilities EMPTY>]>\n" );
         writer.writeStartElement( "WMT_MS_Capabilities" );
         writer.writeAttribute( "version", "1.1.1" );
-        writer.writeAttribute( "updateSequence", "" + service.updateSequence );
+        writer.writeAttribute( "updateSequence", "" + service.getCurrentUpdateSequence() );
 
         metadataWriter.writeService( writer );
 

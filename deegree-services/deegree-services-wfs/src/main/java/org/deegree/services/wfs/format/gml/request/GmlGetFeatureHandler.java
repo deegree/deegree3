@@ -57,6 +57,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,6 +76,7 @@ import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.cs.exceptions.TransformationException;
@@ -96,8 +98,10 @@ import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
+import org.deegree.protocol.wfs.getfeature.kvp.GetFeature200KVPEncoder;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
 import org.deegree.protocol.wfs.query.StoredQuery;
+import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.wfs.WebFeatureService;
@@ -105,6 +109,7 @@ import org.deegree.services.wfs.WfsFeatureStoreManager;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.deegree.services.wfs.query.QueryAnalyzer;
+import org.deegree.services.wfs.util.ResponsePagingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,9 +252,9 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         int returnMaxFeatures = options.getQueryMaxFeatures();
-        if ( request.getPresentationParams().getCount() != null
-             && ( options.getQueryMaxFeatures() < 1 || request.getPresentationParams().getCount().intValue() < options.getQueryMaxFeatures() ) ) {
-            returnMaxFeatures = request.getPresentationParams().getCount().intValue();
+        BigInteger count = request.getPresentationParams().getCount();
+        if ( count != null && ( options.getQueryMaxFeatures() < 1 || count.intValue() < options.getQueryMaxFeatures() ) ) {
+            returnMaxFeatures = count.intValue();
         }
 
         int startIndex = 0;
@@ -276,8 +281,11 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( isGetFeatureById ) {
             writeSingleFeatureMember( gmlStream, analyzer, resolveOptions );
         } else if ( options.isDisableStreaming() ) {
+            ResponsePagingUris responsePagingUris = null;
+            if ( options.isEnableResponsePaging() )
+                responsePagingUris = createResponsePagingUris( request, count, startIndex );
             writeFeatureMembersCached( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
-                                       startIndex, memberElementName, lock );
+                                       startIndex, memberElementName, lock, responsePagingUris );
         } else {
             writeFeatureMembersStream( request.getVersion(), gmlStream, analyzer, gmlVersion, returnMaxFeatures,
                                        startIndex, memberElementName, lock );
@@ -295,6 +303,38 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( ( (BufferableXMLStreamWriter) xmlStream ).hasBuffered() ) {
             ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
         }
+    }
+
+    private ResponsePagingUris createResponsePagingUris( GetFeature request, BigInteger count, int startIndex )
+                            throws UnknownCRSException, XMLStreamException, TransformationException,
+                            UnsupportedEncodingException, FilterEvaluationException, FeatureStoreException,
+                            OWSException {
+        if ( count != null ) {
+            Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
+            String nextUri = createNextUri( count, startIndex, kvpGetFeature, request );
+            String previousUri = createPreviousUri( count, startIndex, kvpGetFeature );
+            return new ResponsePagingUris( nextUri, previousUri );
+        }
+        return null;
+    }
+
+    private String createNextUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature,
+                                  GetFeature request )
+                            throws OWSException, FeatureStoreException, FilterEvaluationException {
+        QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), format.getMaster(),
+                                                    format.getMaster().getStoreManager(), options.isCheckAreaOfUse() );
+        Hits hits = retrieveHits( request, analyzer );
+        int nextStartIndex = ResponsePagingUtils.calculateNextStartIndex( startIndex, count.intValue(), hits.hitsTotal );
+        if ( nextStartIndex >= 0 )
+            return createUrlWithStartindex( kvpGetFeature, nextStartIndex );
+        return null;
+    }
+
+    private String createPreviousUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature ) {
+        int previousStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( startIndex, count.intValue() );
+        if ( previousStartIndex >= 0 )
+            return createUrlWithStartindex( kvpGetFeature, previousStartIndex );
+        return null;
     }
 
     public void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
@@ -318,6 +358,61 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         String contentType = options.getMimeType();
         XMLStreamWriter xmlStream = WebFeatureService.getXMLResponseWriter( response, contentType, schemaLocation );
 
+        Hits hits = retrieveHits( request, analyzer );
+
+        // open "wfs:FeatureCollection" element
+        if ( request.getVersion().equals( VERSION_100 ) ) {
+            xmlStream.setPrefix( "wfs", WFS_NS );
+            xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_NS );
+            if ( lock != null ) {
+                xmlStream.writeAttribute( "lockId", lock.getId() );
+            }
+            xmlStream.writeAttribute( "numberOfFeatures", "" + hits.hitsTotal );
+        } else if ( request.getVersion().equals( VERSION_110 ) ) {
+            xmlStream.setPrefix( "wfs", WFS_NS );
+            xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_NS );
+            if ( lock != null ) {
+                xmlStream.writeAttribute( "lockId", lock.getId() );
+            }
+            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
+            xmlStream.writeAttribute( "numberOfFeatures", "" + hits.hitsTotal );
+        } else if ( request.getVersion().equals( VERSION_200 ) ) {
+            xmlStream.setPrefix( "wfs", WFS_200_NS );
+            xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
+            xmlStream.writeNamespace( "wfs", WFS_200_NS );
+            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
+            xmlStream.writeAttribute( "numberMatched", "" + hits.hitsTotal );
+            xmlStream.writeAttribute( "numberReturned", "0" );
+            if ( hits.queryHits.length > 1 ) {
+                for ( int j = 0; j < hits.queryHits.length; j++ ) {
+                    xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
+                    xmlStream.writeEmptyElement( "wfs", "FeatureCollection", WFS_200_NS );
+                    xmlStream.writeAttribute( "timeStamp", formatDateTime( hits.queryTimeStamps[j] ) );
+                    xmlStream.writeAttribute( "numberMatched", "" + hits.queryHits[j] );
+                    xmlStream.writeAttribute( "numberReturned", "0" );
+                    xmlStream.writeEndElement();
+                }
+            }
+        }
+
+        // "gml:boundedBy" is necessary for GML 2 schema compliance
+        if ( options.getGmlVersion().equals( GMLVersion.GML_2 ) ) {
+            xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
+            xmlStream.writeStartElement( GMLNS, "null" );
+            xmlStream.writeCharacters( "unknown" );
+            xmlStream.writeEndElement();
+            xmlStream.writeEndElement();
+        }
+
+        // close "wfs:FeatureCollection"
+        xmlStream.writeEndElement();
+        xmlStream.flush();
+    }
+
+    private Hits retrieveHits( GetFeature request, QueryAnalyzer analyzer )
+                            throws FeatureStoreException, FilterEvaluationException {
         Map<org.deegree.protocol.wfs.query.Query, Integer> wfsQueryToIndex = new HashMap<org.deegree.protocol.wfs.query.Query, Integer>();
         int i = 0;
         for ( org.deegree.protocol.wfs.query.Query query : request.getQueries() ) {
@@ -344,56 +439,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                 queryTimeStamps[index] = getCurrentDateTimeWithoutMilliseconds();
             }
         }
-
-        // open "wfs:FeatureCollection" element
-        if ( request.getVersion().equals( VERSION_100 ) ) {
-            xmlStream.setPrefix( "wfs", WFS_NS );
-            xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
-            xmlStream.writeNamespace( "wfs", WFS_NS );
-            if ( lock != null ) {
-                xmlStream.writeAttribute( "lockId", lock.getId() );
-            }
-            xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
-        } else if ( request.getVersion().equals( VERSION_110 ) ) {
-            xmlStream.setPrefix( "wfs", WFS_NS );
-            xmlStream.writeStartElement( WFS_NS, "FeatureCollection" );
-            xmlStream.writeNamespace( "wfs", WFS_NS );
-            if ( lock != null ) {
-                xmlStream.writeAttribute( "lockId", lock.getId() );
-            }
-            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
-            xmlStream.writeAttribute( "numberOfFeatures", "" + hitsTotal );
-        } else if ( request.getVersion().equals( VERSION_200 ) ) {
-            xmlStream.setPrefix( "wfs", WFS_200_NS );
-            xmlStream.writeStartElement( WFS_200_NS, "FeatureCollection" );
-            xmlStream.writeNamespace( "wfs", WFS_200_NS );
-            xmlStream.writeAttribute( "timeStamp", getTimestamp() );
-            xmlStream.writeAttribute( "numberMatched", "" + hitsTotal );
-            xmlStream.writeAttribute( "numberReturned", "0" );
-            if ( queryHits.length > 1 ) {
-                for ( int j = 0; j < queryHits.length; j++ ) {
-                    xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
-                    xmlStream.writeEmptyElement( "wfs", "FeatureCollection", WFS_200_NS );
-                    xmlStream.writeAttribute( "timeStamp", formatDateTime( queryTimeStamps[j] ) );
-                    xmlStream.writeAttribute( "numberMatched", "" + queryHits[j] );
-                    xmlStream.writeAttribute( "numberReturned", "0" );
-                    xmlStream.writeEndElement();
-                }
-            }
-        }
-
-        // "gml:boundedBy" is necessary for GML 2 schema compliance
-        if ( options.getGmlVersion().equals( GMLVersion.GML_2 ) ) {
-            xmlStream.writeStartElement( "gml", "boundedBy", GMLNS );
-            xmlStream.writeStartElement( GMLNS, "null" );
-            xmlStream.writeCharacters( "unknown" );
-            xmlStream.writeEndElement();
-            xmlStream.writeEndElement();
-        }
-
-        // close "wfs:FeatureCollection"
-        xmlStream.writeEndElement();
-        xmlStream.flush();
+        return new Hits( hitsTotal, queryHits, queryTimeStamps );
     }
 
     private void prebindNamespaces( final XMLStreamWriter xmlStream, final NamespaceBindings prebindNamespaces )
@@ -467,7 +513,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     private void writeFeatureMembersCached( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
-                                            QName featureMemberEl, Lock lock )
+                                            QName featureMemberEl, Lock lock, ResponsePagingUris responsePagingUris )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
                             FeatureStoreException, FilterEvaluationException, FactoryConfigurationError {
 
@@ -507,6 +553,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
             xmlStream.writeAttribute( "numberReturned", "" + allFeatures.size() );
+            if ( responsePagingUris != null && responsePagingUris.nextUri != null )
+                xmlStream.writeAttribute( "next", "" + responsePagingUris.nextUri );
+            if ( responsePagingUris != null && responsePagingUris.previousUri != null )
+                xmlStream.writeAttribute( "previous", "" + responsePagingUris.previousUri );
         } else if ( !wfsVersion.equals( VERSION_100 ) && options.getResponseContainerEl() == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
@@ -678,4 +728,39 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             break;
         }
     }
+
+    private String createUrlWithStartindex( Map<String, String> kvpGetFeature, int startIndex ) {
+        kvpGetFeature.put( "STARTINDEX", "" + startIndex );
+        return OGCFrontController.getHttpGetURL() + KVPUtils.toQueryString( kvpGetFeature );
+    }
+
+    private class ResponsePagingUris {
+
+        private final String nextUri;
+
+        private final String previousUri;
+
+        private ResponsePagingUris( String nextUri, String previousUri ) {
+            this.nextUri = nextUri;
+            this.previousUri = previousUri;
+        }
+
+    }
+
+    private class Hits {
+
+        private final int hitsTotal;
+
+        private final int[] queryHits;
+
+        private final DateTime[] queryTimeStamps;
+
+        private Hits( int hitsTotal, int[] queryHits, DateTime[] queryTimeStamps ) {
+            this.hitsTotal = hitsTotal;
+            this.queryHits = queryHits;
+            this.queryTimeStamps = queryTimeStamps;
+        }
+
+    }
+
 }

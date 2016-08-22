@@ -61,7 +61,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
@@ -147,7 +146,7 @@ public class Capabilities130XMLAdapter {
         writer.setDefaultNamespace( WMSNS );
         writer.writeStartElement( WMSNS, "WMS_Capabilities" );
         writer.writeAttribute( "version", "1.3.0" );
-        writer.writeAttribute( "updateSequence", "" + service.updateSequence );
+        writer.writeAttribute( "updateSequence", "" + service.getCurrentUpdateSequence() );
         writer.writeDefaultNamespace( WMSNS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeNamespace( "xlink", XLNNS );
@@ -208,18 +207,8 @@ public class Capabilities130XMLAdapter {
             writeElement( writer, WMSNS, "Title", "Root" );
 
             // TODO think about a push approach instead of a pull approach
-            LayerMetadata lmd = null;
-            for ( Theme t : themes ) {
-                for ( org.deegree.layer.Layer l : Themes.getAllLayers( t ) ) {
-                    if ( lmd == null ) {
-                        lmd = l.getMetadata();
-                    } else {
-                        lmd.merge( l.getMetadata() );
-                    }
-                }
-            }
-            if ( lmd != null ) {
-                SpatialMetadata smd = lmd.getSpatialMetadata();
+            SpatialMetadata smd = mergeSpatialMetadata( themes );
+            if ( smd != null ) {
                 writeSrsAndEnvelope( writer, smd.getCoordinateSystems(), smd.getEnvelope() );
             }
 
@@ -289,6 +278,18 @@ public class Capabilities130XMLAdapter {
         for ( String format : exceptionsManager.getSupportedFormats( WMSConstants.VERSION_130 ) ) {
             writeElement( writer, "Format", format );
         }
+    }
+
+    private SpatialMetadata mergeSpatialMetadata( List<Theme> themes ) {
+        if ( themes.isEmpty() )
+            return null;
+        SpatialMetadata smd = new SpatialMetadata();
+        for ( Theme t : themes ) {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( t ) ) {
+                smd.merge( l.getMetadata().getSpatialMetadata() );
+            }
+        }
+        return smd;
     }
 
 }

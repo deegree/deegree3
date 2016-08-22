@@ -60,16 +60,22 @@ public class OWSException extends Exception {
      * a required parameter is missing
      */
     public static final String MISSING_PARAMETER_VALUE = "MissingParameterValue";
-    
+
     /**
      * Server processing failed
      */
     public static final String OPERATION_PROCESSING_FAILED = "OperationProcessingFailed";
-            
+
     /**
      * the parameter value is invalid
      */
     public static final String INVALID_PARAMETER_VALUE = "InvalidParameterValue";
+
+    /**
+     * A Transaction (see Clause 15) has attempted to insert or change the value of a data component in a way that
+     * violates the schema of the feature. (WFS 2.0.0, Table 3 - WFS exception codes)
+     */
+    public static final String INVALID_VALUE = "InvalidValue";
 
     /**
      * the parameter value of the format parameter is invalid
@@ -132,7 +138,12 @@ public class OWSException extends Exception {
      * exception code for all not known exceptions
      */
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
-        
+
+    /**
+     * exception code indicating an HTTP 404 error
+     */
+    public static final String NOT_FOUND = "NotFound";
+    
     private final String exceptionCode;
 
     private final String locator;
