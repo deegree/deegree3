@@ -50,6 +50,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -193,6 +194,8 @@ public abstract class AbstractWhereBuilder {
                 }
                 postFilter = filter;
             } catch ( FilterEvaluationException e ) {
+                throw e;
+            } catch ( InvalidParameterValueException e ) {
                 throw e;
             } catch ( RuntimeException e ) {
                 LOG.error( e.getMessage(), e );
