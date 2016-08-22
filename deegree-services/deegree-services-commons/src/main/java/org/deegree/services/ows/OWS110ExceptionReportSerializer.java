@@ -36,6 +36,11 @@
 package org.deegree.services.ows;
 
 import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -45,6 +50,7 @@ import java.io.IOException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.http.HttpStatus;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -79,18 +85,19 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
     @Override
     public void serializeException( HttpResponseBuffer response, OWSException exception )
                             throws IOException, XMLStreamException {
-
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
-        if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( 500 );
+        if ( NOT_FOUND.equals( exception.getExceptionCode() ) ) {
+            response.setStatus( SC_NOT_FOUND );
+        } else if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
+            response.setStatus( SC_INTERNAL_SERVER_ERROR );
         } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( 403 );
+            response.setStatus( SC_FORBIDDEN );
         } else if ( LOCK_HAS_EXPIRED.equals( exception.getExceptionCode() ) ) {
-            response.setStatus( 403 );
+            response.setStatus( SC_FORBIDDEN );
         } else {
-            response.setStatus( 400 );
+            response.setStatus( SC_BAD_REQUEST );
         }
         serializeExceptionToXML( response.getXMLWriter(), exception );
     }
