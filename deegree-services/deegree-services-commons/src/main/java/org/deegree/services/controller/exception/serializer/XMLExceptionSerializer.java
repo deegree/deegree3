@@ -36,6 +36,9 @@
 
 package org.deegree.services.controller.exception.serializer;
 
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
+
 import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
@@ -61,7 +64,7 @@ public abstract class XMLExceptionSerializer implements ExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/vnd.ogc.se_xml" );
-        response.setStatus( 200 );
+        setStatusCode( exception, response );
         serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
@@ -75,7 +78,22 @@ public abstract class XMLExceptionSerializer implements ExceptionSerializer {
      * @throws XMLStreamException
      *             if an error occurred while serializing the given exception.
      */
-    protected abstract void serializeExceptionToXML( XMLStreamWriter writer, OWSException exception )
+    public abstract void serializeExceptionToXML( XMLStreamWriter writer, OWSException exception )
                             throws XMLStreamException;
 
+    /**
+     * Sets the status code to the response.
+     * 
+     * @param exception
+     *            the exception to serialize, never <code>null</code>
+     * @param response
+     *            the response to set the status code for, never <code>null</code>
+     */
+    protected void setStatusCode( OWSException exception, HttpResponseBuffer response ) {
+        if ( NOT_FOUND.equals( exception.getExceptionCode() ) )
+            response.setStatus( SC_NOT_FOUND );
+        else
+            response.setStatus( 200 );
+    }
+    
 }

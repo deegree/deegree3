@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
@@ -59,8 +60,10 @@ import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,6 +100,7 @@ import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
@@ -244,7 +248,11 @@ public class WebFeatureService extends AbstractOWS {
 
     private int queryMaxFeatures;
 
+    private BigInteger resolveTimeOutInSeconds;
+
     private boolean checkAreaOfUse;
+
+    private boolean enableResponsePaging;
 
     private OWSMetadataProvider mdProvider;
 
@@ -274,7 +282,10 @@ public class WebFeatureService extends AbstractOWS {
 
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
+        resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
+        enableResponsePaging = jaxbConfig.isEnableResponsePaging() == null ? false
+                                                                          : jaxbConfig.isEnableResponsePaging();
 
         service = new WfsFeatureStoreManager();
         try {
@@ -544,7 +555,7 @@ public class WebFeatureService extends AbstractOWS {
                                                      + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
-                    mimeTypeToFormat.put( mimeType, format );
+                    mimeTypeToFormat.put( trim( mimeType ), format );
                 }
             }
         }
@@ -739,6 +750,7 @@ public class WebFeatureService extends AbstractOWS {
                 break;
             case GetFeature:
                 GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpParamsUC, nsMap );
+                updateResolveTimeOut( getFeature.getResolveParams() );
                 format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeature, response );
@@ -746,6 +758,7 @@ public class WebFeatureService extends AbstractOWS {
             case GetFeatureWithLock:
                 checkTransactionsEnabled( requestName );
                 GetFeatureWithLock getFeatureWithLock = GetFeatureWithLockKVPAdapter.parse( kvpParamsUC );
+                updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
@@ -757,6 +770,7 @@ public class WebFeatureService extends AbstractOWS {
                 break;
             case GetPropertyValue:
                 GetPropertyValue getPropertyValue = GetPropertyValueKVPAdapter.parse( kvpParamsUC );
+                updateResolveTimeOut( getPropertyValue.getResolveParams() );
                 format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetPropertyValue( getPropertyValue, response );
@@ -786,6 +800,12 @@ public class WebFeatureService extends AbstractOWS {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, e, response );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
@@ -878,6 +898,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeature getFeature = getFeatureAdapter.parse();
+                updateResolveTimeOut( getFeature.getResolveParams() );
                 format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeature, response );
@@ -887,6 +908,8 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                checkGetFeatureWithLockRequest( requestVersion, getFeatureWithLock );
+                updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
@@ -902,6 +925,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
                 getPropertyValueAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                updateResolveTimeOut( getPropertyValue.getResolveParams() );
                 format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetPropertyValue( getPropertyValue, response );
@@ -933,7 +957,10 @@ public class WebFeatureService extends AbstractOWS {
             sendServiceException( requestVersion, e, response );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException( requestVersion, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e ), response );
@@ -952,7 +979,7 @@ public class WebFeatureService extends AbstractOWS {
                             throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
         LOG.debug( "doSOAP" );
 
-        if ( disableBuffering ) {
+        if ( !isSoapSupported() ) {
             super.doSOAP( soapDoc, request, response, multiParts, factory );
             return;
         }
@@ -960,7 +987,6 @@ public class WebFeatureService extends AbstractOWS {
         Version requestVersion = null;
         try {
             if ( soapDoc.getVersion() instanceof SOAP11Version ) {
-                response.setContentType( "application/soap+xml" );
                 XMLStreamWriter xmlWriter = response.getXMLWriter();
                 String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
                 String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
@@ -1034,6 +1060,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( body );
                 GetFeature getFeature = getFeatureAdapter.parse();
+                updateResolveTimeOut( getFeature.getResolveParams() );
                 format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeature, response );
@@ -1043,6 +1070,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( body );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
@@ -1058,6 +1086,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
                 getPropertyValueAdapter.setRootElement( body );
                 GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                updateResolveTimeOut( getPropertyValue.getResolveParams() );
                 format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetPropertyValue( getPropertyValue, response );
@@ -1086,14 +1115,18 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             endSOAPResponse( response );
+            response.setContentType( "application/soap+xml" );
 
         } catch ( OWSException e ) {
             LOG.debug( e.getMessage(), e );
             sendSoapException( soapDoc, factory, response, e, request, requestVersion );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ),
-                               request, requestVersion );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), exceptionCode ), request,
+                               requestVersion );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
@@ -1317,22 +1350,46 @@ public class WebFeatureService extends AbstractOWS {
         return outputFormat;
     }
 
+    private void updateResolveTimeOut( ResolveParams resolveParams ) {
+        if ( resolveParams.getTimeout() == null && resolveTimeOutInSeconds != null )
+            resolveParams.setTimeout( resolveTimeOutInSeconds );
+    }
+
     Collection<String> getOutputFormats() {
         return mimeTypeToFormat.keySet();
     }
 
     public int getQueryMaxFeatures() {
-        // TODO Auto-generated method stub
         return queryMaxFeatures;
     }
 
+    /**
+     * @return the configured value for ResolveTimeOut in seconds, <code>null</code> if not configured
+     */
+    public BigInteger getResolveTimeOutInSeconds() {
+        return resolveTimeOutInSeconds;
+    }
+
     public boolean getCheckAreaOfUse() {
-        // TODO Auto-generated method stub
         return checkAreaOfUse;
     }
 
     public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
+    }
+
+    /**
+     * @return <code>true</code> if response paging is enabled by configuration, <code>false</code> otherwise
+     */
+    public boolean isEnableResponsePaging() {
+        return enableResponsePaging;
+    }
+
+    /**
+     * @return <code>true</code> if soap is supported, <code>false</code> otherwise
+     */
+    public boolean isSoapSupported() {
+        return !disableBuffering;
     }
 
     /**
@@ -1365,6 +1422,13 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    private void checkGetFeatureWithLockRequest( Version requestVersion, GetFeatureWithLock getFeatureWithLock ) {
+        if ( VERSION_200.equals( requestVersion )
+             && HITS.equals( getFeatureWithLock.getPresentationParams().getResultType() ) )
+            throw new InvalidParameterValueException(
+                                                      "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
 
 }

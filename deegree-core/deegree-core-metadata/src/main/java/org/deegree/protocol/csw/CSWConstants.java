@@ -61,6 +61,7 @@ public final class CSWConstants {
     public static final String CSW_202_NS = "http://www.opengis.net/cat/csw/2.0.2";
 
     public static final String CSW_202_PREFIX = "csw";
+
     /**
      * ISO application profile <br>
      * "http://www.isotc211.org/2005/gmd"
@@ -133,6 +134,17 @@ public final class CSWConstants {
      * Common namespace prefix for elements from the ISO AP specification for the types "Service"
      */
     public static final String SRV_PREFIX = "srv";
+
+    /**
+     * Common namespace prefix for elements from the INSPIRE SDS specification.
+     */
+    public static final String SDS_PREFIX = "sds";
+
+    /**
+     * Namespace for elements from the NSPIRE SDS specification.<br>
+     * Namespace="http://inspire.ec.europa.eu/schemas/inspire_sds/1.0"
+     * */
+    public static final String SDS_NS = "http://inspire.ec.europa.eu/schemas/inspire_sds/1.0";
 
     /** Common namespace prefix for elements from the ISO AP specification */
     public static final String APISO_PREFIX = "apiso";

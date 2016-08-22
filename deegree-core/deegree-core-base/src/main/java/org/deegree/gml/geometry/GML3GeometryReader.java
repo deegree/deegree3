@@ -942,6 +942,8 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 surface = parseSurface( xmlStream, defaultCRS );
             } else if ( "Polygon".equals( elName.getLocalPart() ) ) {
                 surface = parsePolygon( xmlStream, defaultCRS );
+            } else if ( geometryHierarchy.getCompositeSurfaceSubstitutions().contains( elName ) ) {
+                surface = parseCompositeSurface( xmlStream, defaultCRS );
             } else {
                 String msg = "Unhandled surface geometry element: '" + xmlStream.getName() + "'.";
                 throw new XMLParsingException( xmlStream, msg );

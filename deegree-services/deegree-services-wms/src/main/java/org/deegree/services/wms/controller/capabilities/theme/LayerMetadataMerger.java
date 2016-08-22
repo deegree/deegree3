@@ -79,24 +79,19 @@ class LayerMetadataMerger {
      */
     LayerMetadata merge( final Theme theme ) {
         final LayerMetadata themeMetadata = theme.getLayerMetadata();
-        LayerMetadata layerMetadata = null;
+        LayerMetadata layerMetadata = new LayerMetadata( null, null, null );
 
         int queryable = 0;
         boolean opaque = false;
         int cascaded = 0;
-
+        
         for ( final Layer l : Themes.getAllLayers( theme ) ) {
             queryable |= analyseQueryable( l.getMetadata() );
             if ( checkIfOpaque( l.getMetadata() ) )
                 opaque = true;
             if ( checkIfLargerCascadedValue( cascaded, l.getMetadata() ) )
                 cascaded = l.getMetadata().getCascaded();
-
-            if ( layerMetadata == null ) {
-                layerMetadata = l.getMetadata();
-            } else {
-                layerMetadata.merge( l.getMetadata() );
-            }
+            layerMetadata.merge( l.getMetadata() );
         }
         themeMetadata.merge( layerMetadata );
         adjustMapOptions( themeMetadata, queryable, opaque, cascaded );

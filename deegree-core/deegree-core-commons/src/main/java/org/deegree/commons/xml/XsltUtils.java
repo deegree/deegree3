@@ -43,6 +43,7 @@ package org.deegree.commons.xml;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -66,7 +67,13 @@ public class XsltUtils {
 
     public static void transform( byte[] doc, URL xsltUrl, OutputStream out )
                             throws URISyntaxException, TransformerException {
-        StreamSource source = new StreamSource( new ByteArrayInputStream( doc ) );
+        ByteArrayInputStream inputStream = new ByteArrayInputStream( doc );
+        transform( inputStream, xsltUrl, out );
+    }
+
+    public static void transform( InputStream doc, URL xsltUrl, OutputStream out )
+                            throws URISyntaxException, TransformerException {
+        StreamSource source = new StreamSource( doc );
         StreamSource xslt = new StreamSource( new File( xsltUrl.toURI() ) );
         TransformerFactory fac = TransformerFactory.newInstance();
         Transformer t = fac.newTransformer( xslt );

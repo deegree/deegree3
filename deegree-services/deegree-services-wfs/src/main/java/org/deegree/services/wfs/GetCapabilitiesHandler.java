@@ -88,8 +88,13 @@ import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -284,8 +289,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // }
 
             // wfs:SRS (minOccurs=1, maxOccurs=1)
+            ICRS querySrs = querySRS.get( 0 );
             writer.writeStartElement( WFS_NS, "SRS" );
-            writer.writeCharacters( querySRS.get( 0 ).getAlias() );
+            writer.writeCharacters( querySrs.getAlias() );
             writer.writeEndElement();
 
             // wfs:Operations (minOccurs=0, maxOccurs=1)
@@ -301,7 +307,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             if ( env != null ) {
                 try {
-                    env = transformer.transform( env );
+                    env = transformEnvelopeIntoQuerySrs( querySrs, env );
                     Point min = env.getMin();
                     Point max = env.getMax();
                     double minX = min.get0();
@@ -341,7 +347,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         FilterCapabilitiesExporter.export100( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void exportCapability100()
@@ -760,7 +765,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         FilterCapabilitiesExporter.export110( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void writeOutputFormats110( XMLStreamWriter writer )
@@ -903,10 +907,18 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             constraints.add( new Domain( "KVPEncoding", "TRUE" ) );
             constraints.add( new Domain( "XMLEncoding", "TRUE" ) );
-            constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            if ( master.isSoapSupported() ) {
+                constraints.add( new Domain( "SOAPEncoding", "TRUE" ) );
+            } else {
+                constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            }
             constraints.add( new Domain( "ImplementsInheritance", "FALSE" ) );
             constraints.add( new Domain( "ImplementsRemoteResolve", "FALSE" ) );
-            constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
+            if ( master.isEnableResponsePaging() ) {
+                constraints.add( new Domain( "ImplementsResultPaging", "TRUE" ) );
+                constraints.add( new Domain( "PagingIsTransactionSafe", "FALSE" ) );
+            } else
+                constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
             constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
@@ -917,7 +929,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             if ( master.getQueryMaxFeatures() != -1 ) {
                 constraints.add( new Domain( "CountDefault", "" + master.getQueryMaxFeatures() ) );
             }
-
+            if ( master.getResolveTimeOutInSeconds() != null ) {
+                constraints.add( new Domain( "ResolveTimeoutDefault", master.getResolveTimeOutInSeconds().toString() ) );
+            }
             constraints.add( new Domain( "ResolveLocalScope", "*" ) );
 
             List<String> queryExprs = new ArrayList<String>();
@@ -977,10 +991,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     writer.writeEndElement();
                 }
 
-                // ows:Keywords (minOccurs=0, maxOccurs=unbounded)
-                // writer.writeStartElement( OWS_NS, "Keywords" );
-                // writer.writeCharacters( "keywords" );
-                // writer.writeEndElement();
+                exportKeywords200( ftMd );
 
                 // wfs:DefaultCRS / wfs:NoCRS
                 FeatureStore fs = service.getStore( ftName );
@@ -1062,7 +1073,24 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
 
         writer.writeEndElement();
-        writer.writeEndDocument();
+    }
+
+    private void exportKeywords200( DatasetMetadata ftMd )
+                            throws XMLStreamException {
+        if ( ftMd != null ) {
+            List<Pair<List<LanguageString>, CodeType>> keywords = ftMd.getKeywords();
+            if ( keywords != null && !keywords.isEmpty() ) {
+                writer.writeStartElement( OWS110_NS, "Keywords" );
+                for ( Pair<List<LanguageString>, CodeType> keywordsPerCodeType : keywords ) {
+                    for ( LanguageString keyword : keywordsPerCodeType.getFirst() ) {
+                        writer.writeStartElement( OWS110_NS, "Keyword" );
+                        writer.writeCharacters( keyword.getString() );
+                        writer.writeEndElement();
+                    }
+                }
+                writer.writeEndElement();
+            }
+        }
     }
 
     private void addOperation( WFSRequestType wfsRequestType, List<DCP> getAndPost, List<DCP> post, List<DCP> get,
@@ -1098,6 +1126,12 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
     private boolean isPostSupported( WFSRequestType requestType ) {
         return supportedEncodings.isEncodingSupported( requestType, "XML" )
                || supportedEncodings.isEncodingSupported( requestType, "SOAP" );
+    }
+
+    private Envelope transformEnvelopeIntoQuerySrs( ICRS querySrs, Envelope env )
+                            throws TransformationException, UnknownCRSException {
+        GeometryTransformer transformer = new GeometryTransformer( querySrs );
+        return transformer.transform( env );
     }
 
 }

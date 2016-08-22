@@ -49,6 +49,9 @@ When deegree webservices initializes the workspace, it scans directory ``modules
 .. hint::
   In addition to workspace directory ``modules/``, directory ``classes/`` can be used to add individual Java classes (and other files) to the classpath. This is usually not required.
 
+.. warning::
+Since deegree 3.4 jdbc drivers are not longer loaded from workspace classpath. Instead deegree follows the commonly used method to only use jdbc drivers which are available either by the system (shared or server libraries) or by the application (WEB-INF/lib).
+
 ^^^^^^^^^^^^^^^^^^^^^^^
 Checking available JARs
 ^^^^^^^^^^^^^^^^^^^^^^^

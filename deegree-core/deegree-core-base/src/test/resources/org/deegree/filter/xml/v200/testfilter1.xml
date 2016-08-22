@@ -2,15 +2,15 @@
 <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd">
   <fes:And>
-    <fes:PropertyIsEqualTo>
+    <fes:PropertyIsEqualTo matchCase="false">
       <fes:ValueReference>gml:name[@codeSpace="app"]</fes:ValueReference>
       <fes:Literal>Karl Marx</fes:Literal>
     </fes:PropertyIsEqualTo>
-    <fes:PropertyIsEqualTo>
+    <fes:PropertyIsEqualTo matchCase="false">
       <fes:ValueReference>gml:name[@codeSpace="bpp"]</fes:ValueReference>
       <fes:Literal>Kbrl Mbrx</fes:Literal>
     </fes:PropertyIsEqualTo>
-    <fes:PropertyIsEqualTo>
+    <fes:PropertyIsEqualTo matchCase="true">
       <fes:ValueReference>gml:description</fes:ValueReference>
       <fes:Literal>This is the first Philosopher feature</fes:Literal>
     </fes:PropertyIsEqualTo>    

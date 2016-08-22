@@ -196,7 +196,7 @@ public class TransactionHandler {
                 String msg = "Transaction operation '" + currentHandle + "' failed: " + e.getMessage();
                 throw new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
             }
-            throw new OWSException( e.getMessage(), OWSException.NO_APPLICABLE_CODE );
+            throw new OWSException( e.getMessage(), e, OWSException.NO_APPLICABLE_CODE );
         }
 
         writer.writeStartElement( CSW_202_NS, "totalInserted" );
