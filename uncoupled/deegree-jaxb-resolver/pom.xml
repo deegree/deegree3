@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>deegree-jaxb-resolver</artifactId>
+	<version>1.0</version>
+	<name>deegree-jaxb-resolver</name>
+	<packaging>jar</packaging>
+	<description>JAXB resolver to search for deegree schema files on classpath</description>
+
+	<parent>
+		<groupId>org.deegree</groupId>
+		<artifactId>deegree</artifactId>
+		<version>3.4-RC1</version>
+	</parent>
+
+	<repositories>
+		<repository>
+			<id>deegree-repo</id>
+			<url>http://repo.deegree.org/content/groups/public</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<!-- TRICKY require to start compiler forked, to allow build against reference in rt.jar -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>-XDignore.symbol.file</arg>
+					</compilerArgs>
+					<fork>true</fork>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>java</groupId>
+			<artifactId>rt</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${java.home}/lib/rt.jar</systemPath>
+		</dependency>
+	</dependencies>
+</project>

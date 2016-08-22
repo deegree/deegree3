@@ -35,6 +35,7 @@
 package org.deegree.services.wfs.format.gml;
 
 import static java.lang.Integer.MAX_VALUE;
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
@@ -198,7 +199,7 @@ public class GmlFormat implements Format {
         }
 
         final GMLVersion gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
-        final String mimeType = formatDef.getMimeType().get( 0 );
+        final String mimeType = trim( formatDef.getMimeType().get( 0 ) );
         final SFSProfiler geometrySimplifier = getSfsProfiler( formatDef.getGeometryLinearization() );
         this.options = new GmlFormatOptions( gmlVersion, responseContainerEl, responseFeatureMemberEl, schemaLocation,
                                              disableStreaming, generateBoundedByForFeatures, queryMaxFeatures,

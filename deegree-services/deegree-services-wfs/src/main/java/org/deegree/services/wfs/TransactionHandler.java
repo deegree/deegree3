@@ -39,6 +39,7 @@ package org.deegree.services.wfs;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
@@ -111,6 +112,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -563,8 +565,9 @@ class TransactionHandler {
         }
     }
 
-    private Pair<QName, Integer> trySimpleMultiProp( Expr expr, FeatureType ft )
+    private Pair<QName, Integer> trySimpleMultiProp( ValueReference valueReference, FeatureType ft )
                             throws OWSException {
+        Expr expr = valueReference.getAsXPath();
         if ( !( expr instanceof LocationPath ) ) {
             throw new OWSException( "Cannot update property on feature type '" + ft.getName()
                                     + "'. Complex property paths are not supported.", OPERATION_NOT_SUPPORTED );
@@ -588,8 +591,8 @@ class TransactionHandler {
         }
         NumberExpr ne = (NumberExpr) expr;
         int index = Math.round( Float.parseFloat( ne.getText() ) );
-        return new Pair<QName, Integer>( new QName( ft.getName().getNamespaceURI(), namestep.getLocalName() ),
-                                         index - 1 );
+        String namespaceUri = determineNamespaceUri( valueReference, ft, namestep );
+        return new Pair<QName, Integer>( new QName( namespaceUri, namestep.getLocalName() ), index - 1 );
     }
 
     private List<ParsedPropertyReplacement> getReplacementProps( Update update, FeatureType ft, GMLVersion inputFormat )
@@ -602,7 +605,7 @@ class TransactionHandler {
             QName propName = replacement.getPropertyName().getAsQName();
             Pair<QName, Integer> simpleMultiProp = null;
             if ( propName == null ) {
-                simpleMultiProp = trySimpleMultiProp( replacement.getPropertyName().getAsXPath(), ft );
+                simpleMultiProp = trySimpleMultiProp( replacement.getPropertyName(), ft );
                 propName = simpleMultiProp.first;
             }
 
@@ -647,6 +650,9 @@ class TransactionHandler {
                     xmlStream.require( END_ELEMENT, null, "Property" );
                     // contract: skip to next ELEMENT_EVENT
                     xmlStream.nextTag();
+                } catch ( XMLParsingException e ) {
+                    LOG.debug( e.getMessage(), e );
+                    throw new OWSException( e.getMessage(), INVALID_VALUE );
                 } catch ( Exception e ) {
                     LOG.debug( e.getMessage(), e );
                     throw new OWSException( e.getMessage(), NO_APPLICABLE_CODE );
@@ -906,6 +912,16 @@ class TransactionHandler {
             }
         }
         return gmlVersion;
+    }
+
+    private String determineNamespaceUri( ValueReference valueReference, FeatureType ft, NameStep namestep ) {
+        String prefix = namestep.getPrefix();
+        if ( prefix != null && !"".equals( prefix ) ) {
+            String namespaceUriByPrefix = valueReference.getNsContext().getNamespaceURI( prefix );
+            if ( namespaceUriByPrefix != null && !"".equals( namespaceUriByPrefix ) )
+                return namespaceUriByPrefix;
+        }
+        return ft.getName().getNamespaceURI();
     }
 
     private ICRS determineDefaultCrs( Insert insert, List<ICRS> queryCRS )
