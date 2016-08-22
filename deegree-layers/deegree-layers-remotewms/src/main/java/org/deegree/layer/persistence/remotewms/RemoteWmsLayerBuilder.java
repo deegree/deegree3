@@ -92,9 +92,43 @@ class RemoteWmsLayerBuilder {
     }
 
     Map<String, Layer> buildLayerMap() {
-        RequestOptionsType opts = cfg.getRequestOptions();
+        Map<String, LayerMetadata> configured = collectConfiguredLayers();
+        if ( configured.isEmpty() )
+            return parseAllRemoteLayers();
+        return collectConfiguredRemoteLayers( configured );
+    }
+
+    private Map<String, Layer> parseAllRemoteLayers() {
         Map<String, Layer> map = new LinkedHashMap<String, Layer>();
 
+        RequestOptionsType opts = cfg.getRequestOptions();
+        List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
+        for ( LayerMetadata md : layers ) {
+            if ( md.getName() != null ) {
+                map.put( md.getName(), new RemoteWMSLayer( md.getName(), md, client, opts ) );
+            }
+        }
+        return map;
+    }
+
+    private Map<String, Layer> collectConfiguredRemoteLayers( Map<String, LayerMetadata> configured ) {
+        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+        RequestOptionsType opts = cfg.getRequestOptions();
+        List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
+        for ( LayerMetadata md : layers ) {
+            String name = md.getName();
+            LayerMetadata confMd = configured.get( name );
+            if ( confMd != null ) {
+                confMd.merge( md );
+                confMd.setStyles( md.getStyles() );
+                confMd.setLegendStyles( md.getLegendStyles() );
+                map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts ) );
+            }
+        }
+        return map;
+    }
+
+    private Map<String, LayerMetadata> collectConfiguredLayers() {
         Map<String, LayerMetadata> configured = new HashMap<String, LayerMetadata>();
         if ( cfg.getLayer() != null ) {
             for ( LayerType l : cfg.getLayer() ) {
@@ -116,25 +150,7 @@ class RemoteWmsLayerBuilder {
                 configured.put( l.getOriginalName(), md );
             }
         }
-
-        List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
-        if ( configured.isEmpty() ) {
-            for ( LayerMetadata md : layers ) {
-                if ( md.getName() != null ) {
-                    map.put( md.getName(), new RemoteWMSLayer( md.getName(), md, client, opts ) );
-                }
-            }
-        } else {
-            for ( LayerMetadata md : layers ) {
-                String name = md.getName();
-                LayerMetadata confMd = configured.get( name );
-                if ( confMd != null ) {
-                    confMd.merge( md );
-                    map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts, confMd.getXsltFile() ) );
-                }
-            }
-        }
-        return map;
+        return configured;
     }
 
     private XsltFile parseXsltFile( LayerMetadata md, XSLTFile xsltFileConfig ) {

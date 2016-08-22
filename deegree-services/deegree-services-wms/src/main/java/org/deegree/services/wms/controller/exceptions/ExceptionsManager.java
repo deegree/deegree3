@@ -139,9 +139,8 @@ public class ExceptionsManager {
      * @throws OWSException
      *             if an error occurred if the requested format is not supported
      */
-    public void serializeCapabilities( Version version, String format, HttpResponseBuffer response,
-                                       OWSException exception, XMLExceptionSerializer exceptionSerializer,
-                                       Map<String, String> map )
+    public void serialize( Version version, String format, HttpResponseBuffer response, OWSException exception,
+                           XMLExceptionSerializer exceptionSerializer, Map<String, String> map )
                             throws SerializingException {
         LOG.debug( "Generating capabilities output for format: {}", format );
 
