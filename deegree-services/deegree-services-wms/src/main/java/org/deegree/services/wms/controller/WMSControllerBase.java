@@ -152,8 +152,7 @@ public abstract class WMSControllerBase implements Controller {
                                                 String exceptionsFormat, WMSController controller )
                             throws ServletException {
         try {
-            exceptionsManager.serializeCapabilities( getVersion(), exceptionsFormat, response, e, exceptionSerializer,
-                                                     map );
+            exceptionsManager.serialize( getVersion(), exceptionsFormat, response, e, exceptionSerializer, map );
         } catch ( SerializingException se ) {
             LOG.info( "An exception occured during serializing the exception, default serializer is used. Exception: {}",
                       se.getMessage() );

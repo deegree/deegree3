@@ -73,6 +73,7 @@ import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLessThan;
 import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
+import org.deegree.filter.comparison.PropertyIsNil;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
 import org.deegree.filter.expression.Function;
@@ -123,14 +124,15 @@ public class Filter200XMLEncoder {
         spatialOperatorTypeToElementName.put( SpatialOperator.SubType.EQUALS, new QName( FES_20_NS, "Equals" ) );
         spatialOperatorTypeToElementName.put( SpatialOperator.SubType.DISJOINT, new QName( FES_20_NS, "Disjoint" ) );
         spatialOperatorTypeToElementName.put( SpatialOperator.SubType.DWITHIN, new QName( FES_20_NS, "DWithin" ) );
-        spatialOperatorTypeToElementName.put( SpatialOperator.SubType.INTERSECTS, new QName( FES_20_NS, "Intersects" ) );
+        spatialOperatorTypeToElementName.put( SpatialOperator.SubType.INTERSECTS,
+                                              new QName( FES_20_NS, "Intersects" ) );
         spatialOperatorTypeToElementName.put( SpatialOperator.SubType.OVERLAPS, new QName( FES_20_NS, "Overlaps" ) );
         spatialOperatorTypeToElementName.put( SpatialOperator.SubType.TOUCHES, new QName( FES_20_NS, "Touches" ) );
         spatialOperatorTypeToElementName.put( SpatialOperator.SubType.WITHIN, new QName( FES_20_NS, "Within" ) );
 
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.AFTER, new QName( FES_20_NS, "After" ) );
-        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.ANYINTERACTS, new QName( FES_20_NS,
-                                                                                                 "AnyInteracts" ) );
+        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.ANYINTERACTS,
+                                               new QName( FES_20_NS, "AnyInteracts" ) );
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.BEFORE, new QName( FES_20_NS, "Before" ) );
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.BEGINS, new QName( FES_20_NS, "Begins" ) );
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.BEGUNBY, new QName( FES_20_NS, "BegunBy" ) );
@@ -138,11 +140,13 @@ public class Filter200XMLEncoder {
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.ENDEDBY, new QName( FES_20_NS, "EndedBy" ) );
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.MEETS, new QName( FES_20_NS, "Meets" ) );
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.METBY, new QName( FES_20_NS, "MetBy" ) );
-        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.OVERLAPPEDBY, new QName( FES_20_NS,
-                                                                                                 "OverlappedBy" ) );
-        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.TCONTAINS, new QName( FES_20_NS, "TContains" ) );
+        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.OVERLAPPEDBY,
+                                               new QName( FES_20_NS, "OverlappedBy" ) );
+        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.TCONTAINS,
+                                               new QName( FES_20_NS, "TContains" ) );
         temporalOperatorTypeToElementName.put( TemporalOperator.SubType.TEQUALS, new QName( FES_20_NS, "TEquals" ) );
-        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.TOVERLAPS, new QName( FES_20_NS, "TOverlaps" ) );
+        temporalOperatorTypeToElementName.put( TemporalOperator.SubType.TOVERLAPS,
+                                               new QName( FES_20_NS, "TOverlaps" ) );
     }
 
     /**
@@ -242,6 +246,9 @@ public class Filter200XMLEncoder {
             break;
         case PROPERTY_IS_NULL:
             export( (PropertyIsNull) operator, writer );
+            break;
+        case PROPERTY_IS_NIL:
+            export( (PropertyIsNil) operator, writer );
             break;
         default:
             throw new IllegalArgumentException( "Encoding of operator subtype " + operator.getType()
@@ -436,6 +443,13 @@ public class Filter200XMLEncoder {
     private static void export( PropertyIsNull operator, XMLStreamWriter writer )
                             throws XMLStreamException {
         writer.writeStartElement( FES_20_NS, "PropertyIsNull" );
+        export( operator.getPropertyName(), writer );
+        writer.writeEndElement();
+    }
+
+    private static void export( PropertyIsNil operator, XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "PropertyIsNil" );
         export( operator.getPropertyName(), writer );
         writer.writeEndElement();
     }
