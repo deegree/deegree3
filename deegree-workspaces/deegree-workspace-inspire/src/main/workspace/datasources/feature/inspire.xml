@@ -1,5 +1,5 @@
 <MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  configVersion="3.0.0"
+  configVersion="3.4.0"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd">
   <StorageCRS>EPSG:900913</StorageCRS>
   <GMLSchema version="GML_32">../../appschemas/inspire/annex1</GMLSchema>
