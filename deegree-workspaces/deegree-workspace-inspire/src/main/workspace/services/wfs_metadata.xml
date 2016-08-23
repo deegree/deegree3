@@ -1,6 +1,6 @@
 <deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
-  xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd">
 
   <ServiceIdentification>
     <Title>INSPIRE Addresses</Title>
