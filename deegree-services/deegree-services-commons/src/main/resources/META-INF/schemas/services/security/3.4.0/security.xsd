@@ -18,7 +18,7 @@
       </xs:sequence>
       <xs:attribute name="configVersion" use="required">
       <xs:simpleType>
-        <xs:restriction base="string">
+        <xs:restriction base="xs:string">
           <xs:enumeration value="3.4.0" />
           <xs:enumeration value="3.0.0" />
         </xs:restriction>

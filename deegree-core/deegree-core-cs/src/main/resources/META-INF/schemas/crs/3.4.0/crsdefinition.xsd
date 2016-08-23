@@ -7,7 +7,7 @@
     </xs:annotation>
     <xs:attribute name="configVersion"><!-- TRICKY in 3.0.0 this was not required, should it be use="required" -->
       <xs:simpleType>
-        <xs:restriction base="string">
+        <xs:restriction base="xs:string">
           <xs:enumeration value="3.4.0" />
           <xs:enumeration value="3.0.0" />
         </xs:restriction>
