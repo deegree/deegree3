@@ -16,7 +16,14 @@
       <xs:sequence>
         <xs:element name="CredentialsProvider" type="sec:CredentialsProviderType" minOccurs="0" />
       </xs:sequence>
-      <xs:attribute name="configVersion" fixed="3.0.0" use="required" />
+      <xs:attribute name="configVersion" use="required">
+      <xs:simpleType>
+        <xs:restriction base="string">
+          <xs:enumeration value="3.4.0" />
+          <xs:enumeration value="3.0.0" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
     </xs:complexType>
   </xs:element>
 

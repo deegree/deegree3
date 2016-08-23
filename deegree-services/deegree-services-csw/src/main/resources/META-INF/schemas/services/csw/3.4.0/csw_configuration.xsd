@@ -76,6 +76,7 @@
             <enumeration value="3.0.0" />
             <enumeration value="3.1.0" />
             <enumeration value="3.2.0" />
+            <enumeration value="3.4.0" />
           </restriction>
         </simpleType>
       </attribute>
