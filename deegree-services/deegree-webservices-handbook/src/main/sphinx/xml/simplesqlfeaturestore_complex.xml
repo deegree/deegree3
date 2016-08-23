@@ -2,7 +2,7 @@
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
-  http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd">
+  http://schemas.deegree.org/datasource/feature/simplesql/3.4.0/simplesql.xsd">
 
   <!-- Required: Database connection -->
   <JDBCConnId>connid</JDBCConnId>
