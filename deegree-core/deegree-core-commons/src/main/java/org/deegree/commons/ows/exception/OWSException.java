@@ -145,6 +145,11 @@ public class OWSException extends Exception {
      */
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
 
+    /**
+     * exception code indicating an HTTP 404 error
+     */
+    public static final String NOT_FOUND = "NotFound";
+    
     private final String exceptionCode;
 
     private final String locator;
