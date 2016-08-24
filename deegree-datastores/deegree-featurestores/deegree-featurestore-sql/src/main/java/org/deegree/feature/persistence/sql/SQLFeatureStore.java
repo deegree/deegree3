@@ -750,6 +750,8 @@ public class SQLFeatureStore implements FeatureStore {
                 rs.next();
                 hits = rs.getInt( 1 );
             }
+        } catch( InvalidParameterValueException e ){
+            throw e;
         } catch ( Exception e ) {
             String msg = "Error performing hits query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
