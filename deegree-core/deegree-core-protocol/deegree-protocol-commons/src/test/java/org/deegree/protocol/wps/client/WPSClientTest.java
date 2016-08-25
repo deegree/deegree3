@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -594,20 +593,33 @@ public class WPSClientTest {
     // response.getOutputs()[0].getDataType();
     // }
 
-    @SuppressWarnings("unchecked")
     @Test(expected = OWSExceptionReport.class)
     public void testFailedExecute()
                             throws Exception {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
-        if ( demoWPSURL == null ) {
-            throw new OWSExceptionReport( Collections.EMPTY_LIST, null, null );
-        }
+        Assume.assumeNotNull( demoWPSURL );
+
         WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         Process proc = wpsClient.getProcess( "Centroid", null );
         ProcessExecution execution = proc.prepareExecution();
         // omitting required input parameter
         execution.addOutput( "Centroid", null, null, true, null, null, null );
         execution.execute();
-        assertEquals( ExecutionState.SUCCEEDED, execution.getState() );
+        Assert.assertTrue(execution.getState() != ExecutionState.SUCCEEDED); // we shouldn't arrive here
+    }
+
+    @Test(expected = OWSExceptionReport.class)
+    public void testFailedExecute_2()
+                            throws Exception {
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
+        Assume.assumeNotNull( demoWPSURL );
+
+        WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
+        Process proc = wpsClient.getProcess( "Centroid" );
+        ProcessExecution execution = proc.prepareExecution();
+        // adding invalid input parameter
+        execution.addLiteralInput( "ThisDoesNotExist", null, "5", "sortOfInteger", "reallyBigUnit" );
+        execution.executeAsync();
+        Assert.assertTrue(execution.getState() != ExecutionState.SUCCEEDED); // we shouldn't arrive here
     }
 }
