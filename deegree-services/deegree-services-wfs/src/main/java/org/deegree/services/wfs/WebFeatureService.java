@@ -1001,7 +1001,7 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             OMElement body = soapDoc.getBody().getFirstElement().cloneOMElement();
-            XMLStreamReader bodyXmlStream = body.getXMLStreamReaderWithoutCaching();
+            XMLStreamReader bodyXmlStream = XMLStreamUtils.getAsXmlStrem( body );
 
             String requestName = body.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
