@@ -35,28 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
-import org.deegree.commons.jdbc.InsertRow;
-import org.deegree.commons.jdbc.SQLIdentifier;
-import org.deegree.commons.jdbc.TableName;
-import org.deegree.commons.jdbc.TransactionRow;
-import org.deegree.commons.jdbc.UpdateRow;
+import org.deegree.commons.jdbc.*;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.geometry.Envelope;
@@ -68,27 +47,33 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.parsing.QueryableProperties;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
-import org.deegree.metadata.iso.types.BoundingBox;
-import org.deegree.metadata.iso.types.CRS;
-import org.deegree.metadata.iso.types.Constraint;
-import org.deegree.metadata.iso.types.Format;
-import org.deegree.metadata.iso.types.Keyword;
-import org.deegree.metadata.iso.types.OperatesOnData;
+import org.deegree.metadata.iso.types.*;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.slf4j.Logger;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Here are all the queryable properties encapsulated which have to put into the backend. Here is the functionality of
  * the INSERT and UPDATE action.
- * 
+ *
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author last edited by: $Author: lbuesching $
- * 
  * @version $Revision: 31021 $, $Date: 2011-06-09 08:40:00 +0200 (Do, 09. Jun 2011) $
  */
 public class DefaultTransactionService extends AbstractSqlHelper implements TransactionService {
@@ -409,7 +394,8 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         if ( constraintss != null && constraintss.size() > 0 ) {
             final StringWriter sw = new StringWriter( 300 );
             sw.append( "INSERT INTO " ).append( constraintTable );
-            sw.append( '(' ).append( fk_main ).append( ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
+            sw.append( '(' ).append( fk_main ).append(
+                                    ",conditionapptoacc,accessconstraints,otherconstraints,classification)" );
             sw.append( "VALUES( ?,?,?,?,? )" );
             PreparedStatement stmt = null;
 
@@ -442,14 +428,18 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 try {
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "authority",
-                                            ( crs.getAuthority() != null && crs.getAuthority().length() > 0 ) ? crs.getAuthority()
-                                                                                                             : null );
+                                            ( crs.getAuthority() != null && crs.getAuthority().length() > 0 ) ?
+                                            crs.getAuthority()
+                                                                                                              :
+                                            null );
                     ir.addPreparedArgument( "crsid",
                                             ( crs.getCrsId() != null && crs.getCrsId().length() > 0 ) ? crs.getCrsId()
-                                                                                                     : null );
+                                                                                                      : null );
                     ir.addPreparedArgument( "version",
-                                            ( crs.getVersion() != null && crs.getVersion().length() > 0 ) ? crs.getVersion()
-                                                                                                         : null );
+                                            ( crs.getVersion() != null && crs.getVersion().length() > 0 ) ?
+                                            crs.getVersion()
+                                                                                                          :
+                                            null );
                     LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
@@ -470,7 +460,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 try {
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "keywordtype", keyword.getKeywordType() );
-                    ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords() ) );
+                    ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords(), 4000 ) );
                     LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
@@ -529,6 +519,34 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         }
     }
 
+    private String concatenate( List<String> values, int limitInBytes ) {
+        if ( values == null || values.isEmpty() )
+            return null;
+        try {
+            return concatenateByByteLength( values, limitInBytes );
+        } catch ( Exception e ) {
+            LOG.warn( "Could not substring keyword..." );
+        }
+        return concatenate( values );
+    }
+
+    private String concatenateByByteLength( List<String> values, int limitInBytes ) {
+        int lengthSeparator = "|".getBytes( StandardCharsets.UTF_8 ).length;
+        int maxNumberOfBytes = limitInBytes - lengthSeparator;
+        int currentLength = lengthSeparator;
+
+        String s = "|";
+        for ( String value : values ) {
+            String toAdd = value.replace( "\'", "\'\'" ) + '|';
+            int lengthToAdd = toAdd.getBytes( StandardCharsets.UTF_8 ).length;
+            if ( currentLength + lengthToAdd >= maxNumberOfBytes ) {
+                return s;
+            }
+            s = s + toAdd;
+            currentLength = s.getBytes( StandardCharsets.UTF_8 ).length;
+        }
+        return s;
+    }
 
     private String concatenate( List<String> values ) {
         if ( values == null || values.isEmpty() )
