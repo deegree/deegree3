@@ -40,11 +40,14 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -59,6 +62,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.protocol.wps.client.output.BBoxOutput;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
@@ -402,5 +406,49 @@ public class ExecuteResponse100Reader {
         }
         XMLStreamUtils.nextElement( reader ); // </Status>
         return new ExecutionStatus( state, statusMsg, percent, creationTime, exceptionReport );
+    }
+
+    /**
+     * (Convenience) method to read an ExecutionResponse object for a process from a URL.
+     * @param url The status location URL of the process.
+     * @return The response object describing the execution of the process.
+     * @throws OWSExceptionReport
+     * @throws IOException
+     * @throws XMLStreamException
+     */
+    public static ExecutionResponse createExecutionResponseFromURL( URL url )
+                            throws OWSExceptionReport, IOException, XMLStreamException {
+        LOG.debug( "Polling response document from status location: " + url );
+        InputStream is = url.openStream();
+        return createExecutionResponseFromStream( is );
+    }
+
+    /**
+     * (Convenience) method to read an ExecutionResponse object for a process from an input stream.
+     * @param is The input stream to read from.
+     * @return The response object describing the execution of the process.
+     * @throws OWSExceptionReport
+     * @throws IOException
+     * @throws XMLStreamException
+     */
+    public static ExecutionResponse createExecutionResponseFromStream( InputStream is )
+                            throws OWSExceptionReport, IOException, XMLStreamException {
+        // TODO determine XML reader encoding based on mime type
+        XMLInputFactory inFactory = XMLInputFactory.newInstance();
+        XMLStreamReader xmlReader = inFactory.createXMLStreamReader( is );
+        XMLStreamUtils.nextElement( xmlReader );
+        if ( OWSExceptionReader.isExceptionReport( xmlReader.getName() ) ) {
+            throw OWSExceptionReader.parseExceptionReport( xmlReader );
+        }
+
+        if ( !new QName( WPSConstants.WPS_100_NS, "ExecuteResponse" ).equals( xmlReader.getName() ) ) {
+            throw new RuntimeException( "Unexpected Execute response: root element is '" + xmlReader.getName() + "'" );
+        }
+
+        ExecuteResponse100Reader reader = new ExecuteResponse100Reader( xmlReader );
+        ExecutionResponse response = reader.parse100();
+        xmlReader.close();
+
+        return response;
     }
 }
