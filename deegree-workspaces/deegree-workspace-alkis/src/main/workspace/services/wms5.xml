@@ -1,4 +1,4 @@
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.1.0" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/3.1.0/wms_configuration.xsd">
+<deegreeWMS xmlns="http://www.deegree.org/services/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/3.4.0/wms_configuration.xsd">
 
   <SupportedVersions>
     <Version>1.1.1</Version>
