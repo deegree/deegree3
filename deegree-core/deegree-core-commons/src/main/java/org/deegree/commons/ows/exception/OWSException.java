@@ -118,6 +118,12 @@ public class OWSException extends Exception {
      */
     public static final String CURRENT_UPDATE_SEQUENCE = "CurrentUpdateSequence";
 
+    /**
+     * what the text says
+     */
+    public static final String LOCK_HAS_EXPIRED = "LockHasExpired";
+    
+
     // OSW standard exceptions (+GetCapabilities exceptions)
     /**
      * the requested operation is not supported

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.ows;
 
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -98,6 +99,8 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
         } else if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_INTERNAL_SERVER_ERROR );
         } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
+            response.setStatus( SC_FORBIDDEN );
+        } else if ( LOCK_HAS_EXPIRED.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_FORBIDDEN );
         } else {
             response.setStatus( SC_BAD_REQUEST );
