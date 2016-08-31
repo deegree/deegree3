@@ -130,6 +130,9 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 .. hint::
    In a WFS 1.1.0 insert, the id generation mode can be overridden by attribute *idGenMode* of the ``Insert`` element. WFS 1.0.0 and WFS 2.0.0 don't support to specify the id generation mode on a request basis.
 
+.. hint::
+   When a feature is replaced the ``UseExisting`` option is always activated for that transaction. The gml:id of the feature is used for the new version of the feature. The filter is used to identify the feature to be replaced.
+
 ^^^^^^^^^^^^^^^^^^
 SupportedRequests
 ^^^^^^^^^^^^^^^^^^
@@ -980,7 +983,7 @@ A minimal valid WPS configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">  
   </deegreeWPS>
 
@@ -1000,7 +1003,7 @@ A more complex configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
   
     <SupportedVersions>
