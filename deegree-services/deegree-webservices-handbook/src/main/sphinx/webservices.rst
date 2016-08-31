@@ -985,7 +985,7 @@ A minimal valid WPS configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">  
   </deegreeWPS>
 
@@ -1005,7 +1005,7 @@ A more complex configuration example looks like this:
 
 .. code-block:: xml
   
-  <deegreeWPS configVersion="3.1.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
   
     <SupportedVersions>

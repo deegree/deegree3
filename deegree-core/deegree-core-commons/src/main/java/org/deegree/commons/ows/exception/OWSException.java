@@ -119,6 +119,11 @@ public class OWSException extends Exception {
     public static final String CURRENT_UPDATE_SEQUENCE = "CurrentUpdateSequence";
 
     /**
+     * what the text says
+     */
+    public static final String LOCK_HAS_EXPIRED = "LockHasExpired";
+
+    /**
      * the layer is not queryable by get feature info
      */
     public static final String LAYER_NOT_QUERYABLE = "LayerNotQueryable";
