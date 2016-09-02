@@ -29,7 +29,7 @@ In order to reference layers, the theme configuration needs to know layer stores
 
 .. code-block:: xml
 
-  <Themes configVersion="3.2.0" xmlns="http://www.deegree.org/themes/standard"
+  <Themes configVersion="3.4.0" xmlns="http://www.deegree.org/themes/standard"
                                 xmlns:d="http://www.deegree.org/metadata/description"
                                 xmlns:s="http://www.deegree.org/metadata/spatial">
 
@@ -82,7 +82,7 @@ The configuration is very simple, you only need to specify the remote WMS resour
 
 .. code-block:: xml
 
-  <RemoteWMSThemes xmlns="http://www.deegree.org/themes/remotewms" configVersion="3.1.0">
+  <RemoteWMSThemes xmlns="http://www.deegree.org/themes/remotewms" configVersion="3.4.0">
     <RemoteWMSId>d3</RemoteWMSId>
     <LayerStoreId>d3</LayerStoreId>
   </RemoteWMSThemes>

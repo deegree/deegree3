@@ -128,6 +128,10 @@ public class Java2DLabelRenderer implements LabelRenderer {
     }
     
     private void handleGeometryTypes( TextStyling styling, String text, Font font, Geometry geom ) {
+        if( geom == null ) {
+            LOG.warn( "null geometry cannot be handled." );
+            return;
+        }
         if ( geom instanceof Point ) {
             labelList.add( createLabel( styling, font, text, (Point) geom ) );
         } else if ( geom instanceof Surface && styling.linePlacement != null ) {
