@@ -167,4 +167,10 @@ public interface Feature extends GMLObject {
     public ExtraProps getExtraProperties();
 
     public void setExtraProperties( ExtraProps extraProps );
+
+    /**
+     * @return the state of the feature, may be <code>null</code> if not available
+     */
+    FeatureState getState();
+
 }

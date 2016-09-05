@@ -70,6 +70,7 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.ResourceId;
+import org.deegree.filter.version.FeatureMetadata;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.linearization.GeometryLinearizer;
@@ -219,7 +220,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
+    public List<FeatureMetadata> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
         long begin = System.currentTimeMillis();
@@ -251,11 +252,11 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Adding of features took {} [ms]", elapsed );
 
-        List<String> fids = new ArrayList<String>( features.size() );
+        List<FeatureMetadata> fids = new ArrayList<FeatureMetadata>( features.size() );
         for ( Feature f : features ) {
-            fids.add( f.getId() );
+            fids.add( new FeatureMetadata( f.getId() ) );
         }
-        return new ArrayList<String>( fids );
+        return new ArrayList<FeatureMetadata>( fids );
     }
 
     private void checkCRS( FeatureCollection fc )
@@ -516,8 +517,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public List<String> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps, Filter filter,
-                                       Lock lock )
+    public List<FeatureMetadata> performUpdate( QName ftName, List<ParsedPropertyReplacement> replacementProps,
+                                                Filter filter, Lock lock )
                             throws FeatureStoreException {
 
         String lockId = lock != null ? lock.getId() : null;
@@ -528,7 +529,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
 
         FeatureCollection fc = sf.getFeatures( ft );
-        List<String> updatedFids = new ArrayList<String>();
+        List<FeatureMetadata> updatedFids = new ArrayList<FeatureMetadata>();
         if ( fc != null ) {
             try {
                 TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
@@ -547,7 +548,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                 }
 
                 for ( Feature feature : update ) {
-                    updatedFids.add( feature.getId() );
+                    updatedFids.add( new FeatureMetadata( feature.getId() ) );
                     new FeatureUpdater().update( feature, replacementProps );
                     if ( lock != null ) {
                         lock.release( feature.getId() );
@@ -561,7 +562,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
+    public FeatureMetadata performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException {
         if ( filter instanceof IdFilter ) {
             performDelete( (IdFilter) filter, lock );
@@ -570,7 +571,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
-        List<String> ids = performInsert( col, USE_EXISTING );
+        List<FeatureMetadata> ids = performInsert( col, idGenMode );
         if ( ids.isEmpty() || ids.size() > 1 ) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }

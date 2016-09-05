@@ -922,7 +922,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
-            constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
+            if ( master.isFeatureVersioningEnabled() ) {
+                constraints.add( new Domain( "ImplementsFeatureVersioning", "TRUE" ) );
+            } else {
+                constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
+            }
             constraints.add( new Domain( "ManageStoredQueries", "FALSE" ) );
 
             // capacity constraints

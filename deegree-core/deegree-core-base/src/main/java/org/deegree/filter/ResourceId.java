@@ -57,22 +57,39 @@ public class ResourceId {
 
     private final DateTime endDate;
 
+    private final int ridVersion;
+
     /**
      * Creates a new {@link ResourceId} instance.
      * 
      * @param rid
      *            the id of the selected resource, must not be <code>null</code>
+     **/
+    public ResourceId( String rid ) {
+        this( rid, -1, null, null, null, null );
+    }
+
+    /**
+     * Creates a new {@link ResourceId} instance.
+     * 
+     * @param rid
+     *            the id of the selected resource (must not contain the version part, see ridVersion), must not be
+     *            <code>null</code>
+     * @param ridVersion
+     *            the version parsed from rid of the selected resource, -1 if not specified
      * @param previousRid
      *            TODO
      * @param version
-     *            TODO
+     *            the version of the selected resource, may be <code>null</code>
      * @param startDate
-     *            TODO
+     *            the start date to limit the selected resource, may be <code>null</code>
      * @param endDate
-     *            TODO
+     *            the end date to limit the selected resource, may be <code>null</code>
      */
-    public ResourceId( String rid, String previousRid, String version, DateTime startDate, DateTime endDate ) {
+    public ResourceId( String rid, int ridVersion, String previousRid, String version, DateTime startDate,
+                       DateTime endDate ) {
         this.rid = rid;
+        this.ridVersion = ridVersion;
         this.previousRid = previousRid;
         this.version = version;
         this.startDate = startDate;
@@ -87,4 +104,41 @@ public class ResourceId {
     public String getRid() {
         return rid;
     }
+
+    /**
+     * Returns the version of the resource from the rid attribute.
+     * 
+     * @return the the version of the resource from the rid attribute (-1 if not specified)
+     */
+    public int getRidVersion() {
+        return ridVersion;
+    }
+
+    /**
+     * Returns the version of the resource that shall be selected.
+     * 
+     * @return the version of the resource, may be <code>null</code>
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * Returns the start date to limit the selected resource.
+     * 
+     * @return the start date to limit the selected resource, may be <code>null</code>
+     */
+    public DateTime getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Returns the end date to limit the selected resource.
+     * 
+     * @return the end date to limit the selected resource, may be <code>null</code>
+     */
+    public DateTime getEndDate() {
+        return endDate;
+    }
+
 }

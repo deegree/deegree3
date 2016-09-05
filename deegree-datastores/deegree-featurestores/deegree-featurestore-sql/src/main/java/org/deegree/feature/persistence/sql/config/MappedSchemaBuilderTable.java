@@ -88,6 +88,7 @@ import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
@@ -198,16 +199,18 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         LOG.debug( "Feature type name: '" + ftName + "'." );
 
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
+        VersionMapping versionMapping = buildVersionMapping( ftDecl.getVersionMapping() );
 
         List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
         if ( propDecls != null && !propDecls.isEmpty() ) {
-            buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls );
+            buildFeatureTypeAndMapping( table, ftName, fidMapping, versionMapping, propDecls );
         } else {
-            buildFeatureTypeAndMapping( table, ftName, fidMapping );
+            buildFeatureTypeAndMapping( table, ftName, fidMapping, versionMapping );
         }
     }
 
-    private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping )
+    private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping,
+                                             VersionMapping versionMapping )
                             throws SQLException {
 
         LOG.debug( "Deriving properties and mapping for feature type '" + ftName + "' from table '" + table + "'" );
@@ -257,11 +260,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, versionMapping, mappings );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
     private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping,
+                                             VersionMapping versionMapping,
                                              List<JAXBElement<? extends AbstractParticleJAXB>> propDecls )
                             throws FeatureStoreException, SQLException {
 
@@ -279,7 +283,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, versionMapping, mappings );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -610,6 +614,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             throw new RuntimeException( e.getMessage(), e );
         }
     }
+
 }
 
 class ColumnMetadata {

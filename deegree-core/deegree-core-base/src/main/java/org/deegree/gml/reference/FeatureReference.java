@@ -45,6 +45,7 @@ import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureState;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -137,6 +138,11 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public void setExtraProperties( ExtraProps extraProps ) {
         getReferencedObject().setExtraProperties( extraProps );
+    }
+
+    @Override
+    public FeatureState getState() {
+        return getReferencedObject().getState();
     }
 
 }

@@ -84,6 +84,7 @@ import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.version.FeatureMetadata;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
@@ -170,7 +171,7 @@ public class SQLFeatureStoreTOPPStatesTest {
 
         FeatureStoreTransaction ta = fs.acquireTransaction();
         try {
-            List<String> fids = ta.performInsert( fc, GENERATE_NEW );
+            List<FeatureMetadata> fids = ta.performInsert( fc, GENERATE_NEW );
             Assert.assertEquals( 49, fids.size() );
             ta.commit();
         } catch ( Throwable t ) {

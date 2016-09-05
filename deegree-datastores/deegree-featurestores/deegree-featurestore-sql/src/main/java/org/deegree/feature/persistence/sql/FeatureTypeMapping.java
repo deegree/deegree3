@@ -49,6 +49,7 @@ import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.types.FeatureType;
 
 /**
@@ -67,6 +68,8 @@ public class FeatureTypeMapping {
 
     private final FIDMapping fidMapping;
 
+    private VersionMapping versionMapping;
+
     private final Map<QName, Mapping> propToMapping;
 
     private final List<Mapping> particles = new ArrayList<Mapping>();
@@ -84,9 +87,30 @@ public class FeatureTypeMapping {
      *            particle mappings for the feature type, must not be <code>null</code>
      */
     public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings ) {
+        this( ftName, table, fidMapping, null, particleMappings );
+    }
+
+    /**
+     * Creates a new {@link FeatureTypeMapping} instance.
+     * 
+     * @param ftName
+     *            name of the mapped feature type, must not be <code>null</code>
+     * @param table
+     *            name of the database table that the feature type is mapped to, must not be <code>null</code>
+     * @param fidMapping
+     *            mapping for the feature id, must not be <code>null</code>
+     * @param versionMapping
+     *            mapping of versioning, may be <code>null</code> if versioning is disabled for this feature type (or
+     *            service)
+     * @param particleMappings
+     *            particle mappings for the feature type, must not be <code>null</code>
+     */
+    public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, VersionMapping versionMapping,
+                               List<Mapping> particleMappings ) {
         this.ftName = ftName;
         this.table = table;
         this.fidMapping = fidMapping;
+        this.versionMapping = versionMapping;
         this.propToMapping = new HashMap<QName, Mapping>();
         // TODO cope with non-QName XPaths as well
         for ( Mapping mapping : particleMappings ) {
@@ -126,6 +150,15 @@ public class FeatureTypeMapping {
      */
     public FIDMapping getFidMapping() {
         return fidMapping;
+    }
+
+    /**
+     * Returns the version mapping.
+     * 
+     * @return mapping for the version, may be <code>null</code> (feature versioning is not enabled)
+     */
+    public VersionMapping getVersionMapping() {
+        return versionMapping;
     }
 
     /**

@@ -86,6 +86,7 @@ import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.version.FeatureMetadata;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -167,7 +168,7 @@ public class SQLFeatureStoreAIXMTest {
 
         FeatureStoreTransaction ta = fs.acquireTransaction();
         try {
-            List<String> fids = ta.performInsert( fc, GENERATE_NEW );
+            List<FeatureMetadata> fids = ta.performInsert( fc, GENERATE_NEW );
             Assert.assertEquals( 2, fids.size() );
             ta.commit();
         } catch ( Throwable t ) {

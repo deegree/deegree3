@@ -166,7 +166,7 @@ abstract class AbstractGmlRequestHandler {
                         writeAdditionalObjectsStart( xmlStream, requestVersion );
                         wroteStartSection = true;
                     }
-                    writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
+                    writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
                 }
             }
             nextLevelObjects = additionalObjects.getAdditionalRefs();
@@ -208,7 +208,7 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                                       GmlXlinkOptions resolveState, QName featureMemberEl )
+                                       GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         if ( gmlStream.getReferenceResolveStrategy().isObjectExported( member.getId() ) ) {
@@ -220,6 +220,9 @@ abstract class AbstractGmlRequestHandler {
             xmlStream.writeAttribute( "xlink", XLNNS, "href", "#" + member.getId() );
         } else {
             xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
+            if ( VERSION_200.equals( requestVersion ) && member.getState() != null ) {
+                xmlStream.writeAttribute( "state", member.getState().getGmlName() );
+            }
             gmlStream.getFeatureWriter().export( member, resolveState );
             xmlStream.writeEndElement();
         }

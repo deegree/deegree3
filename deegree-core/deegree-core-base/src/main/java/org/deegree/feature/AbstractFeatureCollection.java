@@ -61,13 +61,15 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
      * 
      * @param fid
      *            feature id or <code>null</code> if the feature is anonymous (discouraged for most use cases)
+     * @param state
+     *            of the feature or <code>null</code> if not available
      * @param ft
      *            feature type, must not be <code>null</code>
      * @param extraProps
      *            extra properties, may be <code>null</code>
      */
-    protected AbstractFeatureCollection( String fid, FeatureCollectionType ft, ExtraProps extraProps ) {
-        super( fid, ft, extraProps );
+    protected AbstractFeatureCollection( String fid, FeatureState state, FeatureCollectionType ft, ExtraProps extraProps ) {
+        super( fid, state, ft, extraProps );
     }
 
     @Override
