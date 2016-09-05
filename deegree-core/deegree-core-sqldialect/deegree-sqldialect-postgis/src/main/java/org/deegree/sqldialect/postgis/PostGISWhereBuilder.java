@@ -77,6 +77,7 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
+import org.deegree.uom.UomConverter;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
@@ -236,9 +237,8 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             builder.add( "," );
             builder.add( toGeographyProtoSql( beyond.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
-            // TODO uom handling
             PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( beyond.getDistance().getValue(), pt );
+            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( beyond.getDistance()), pt );
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
             SQLArgument argument = new SQLArgument( value, converter );
             builder.add( argument );
@@ -295,9 +295,8 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             builder.add( "," );
             builder.add( toGeographyProtoSql( dWithin.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
-            // TODO uom handling
             PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( dWithin.getDistance().getValue(), pt );
+            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( dWithin.getDistance()), pt );
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
             SQLArgument argument = new SQLArgument( value, converter );
             builder.add( argument );
