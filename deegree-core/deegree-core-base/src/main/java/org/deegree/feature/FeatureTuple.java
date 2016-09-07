@@ -162,6 +162,11 @@ public class FeatureTuple implements Feature {
         throw new UnsupportedOperationException( "Not implemented yet." );
     }
 
+    @Override
+    public FeatureState getState() {
+        return null;
+    }
+
     private String createId( List<Feature> features ) {
         String id = "tupel_";
         for ( Feature feature : features )

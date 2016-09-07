@@ -1170,7 +1170,8 @@ public class SQLFeatureStore implements FeatureStore {
             String versionColumn = versionMapping.getVersionColumnName();
             String actionColumn = versionMapping.getActionColumnName();
 
-            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
+            QueryFeatureTypeMapping queryFtMapping = new QueryFeatureTypeMapping( ft, ftMapping );
+            FeatureBuilder builder = new FeatureBuilderRelational( this, ft, queryFtMapping, conn, tableAlias,
                                                                    nullEscalation );
             List<String> columns = builder.getInitialSelectList();
 
@@ -1777,32 +1778,37 @@ public class SQLFeatureStore implements FeatureStore {
 
             String stateSubQueryAlias = null;
             String versionSubQueryAlias = null;
-            if ( ftMapping.getVersionMapping() != null ) {
-                stateSubQueryAlias = wb.getAliasManager().generateNew();
-                String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
-                String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
-                sql.append( ", (SELECT " );
-                sql.append( versionColumn );
-                sql.append( ", CASE WHEN " );
-                sql.append( actionColumn );
-                sql.append( " = 'delete' THEN 'retired' ELSE 'valid' END state " );
-                sql.append( "FROM " );
-                sql.append( ftMapping.getFtTable() );
-                sql.append( ") " );
-                sql.append( stateSubQueryAlias );
 
-                versionSubQueryAlias = wb.getAliasManager().generateNew();
-                String versionTable = ftMapping.getVersionMapping().getVersionMetadataTable().toString();
-                sql.append( ", (SELECT " );
-                sql.append( versionColumn );
-                sql.append( ", ROW_NUMBER() OVER (PARTITION BY " );
-                appendSelectFidColumns( ftMapping.getFidMapping(), sql );
-                sql.append( " ORDER BY " );
-                sql.append( versionColumn );
-                sql.append( " ) AS VERSION FROM " );
-                sql.append( versionTable );
-                sql.append( ") " );
-                sql.append( versionSubQueryAlias );
+            for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
+                FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
+                String ftTableAlias = queryFtMapping.getAlias();
+                if ( ftMapping.getVersionMapping() != null ) {
+                    stateSubQueryAlias = wb.getAliasManager().generateNew();
+                    String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
+                    String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
+                    sql.append( ", (SELECT " );
+                    sql.append( versionColumn );
+                    sql.append( ", CASE WHEN " );
+                    sql.append( actionColumn );
+                    sql.append( " = 'delete' THEN 'retired' ELSE 'valid' END state " );
+                    sql.append( "FROM " );
+                    sql.append( ftMapping.getFtTable() );
+                    sql.append( ") " );
+                    sql.append( stateSubQueryAlias );
+
+                    versionSubQueryAlias = wb.getAliasManager().generateNew();
+                    String versionTable = ftMapping.getVersionMapping().getVersionMetadataTable().toString();
+                    sql.append( ", (SELECT " );
+                    sql.append( versionColumn );
+                    sql.append( ", ROW_NUMBER() OVER (PARTITION BY " );
+                    appendSelectFidColumns( ftMapping.getFidMapping(), sql );
+                    sql.append( " ORDER BY " );
+                    sql.append( versionColumn );
+                    sql.append( " ) AS VERSION FROM " );
+                    sql.append( versionTable );
+                    sql.append( ") " );
+                    sql.append( versionSubQueryAlias );
+                }
             }
 
             for ( PropertyNameMapping mappedPropName : wb.getMappedPropertyNames() ) {
@@ -1824,19 +1830,24 @@ public class SQLFeatureStore implements FeatureStore {
                 }
                 sql.append( wb.getWhere().getSQL() );
             }
-            if ( ftMapping.getVersionMapping() != null ) {
-                if ( wb.getWhere() != null )
+
+            for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
+                FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
+                String ftTableAlias = queryFtMapping.getAlias();
+                if ( ftMapping.getVersionMapping() != null ) {
+                    if ( wb.getWhere() != null )
+                        sql.append( " AND " );
+                    else
+                        sql.append( " WHERE " );
+                    String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
+                    sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
+                    sql.append( '=' );
+                    sql.append( stateSubQueryAlias ).append( '.' ).append( versionColumn );
                     sql.append( " AND " );
-                else
-                    sql.append( " WHERE " );
-                String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
-                sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
-                sql.append( '=' );
-                sql.append( stateSubQueryAlias ).append( '.' ).append( versionColumn );
-                sql.append( " AND " );
-                sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
-                sql.append( '=' );
-                sql.append( versionSubQueryAlias ).append( '.' ).append( versionColumn );
+                    sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
+                    sql.append( '=' );
+                    sql.append( versionSubQueryAlias ).append( '.' ).append( versionColumn );
+                }
             }
             if ( wb.getOrderBy() != null ) {
                 sql.append( " ORDER BY " );

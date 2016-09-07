@@ -217,11 +217,11 @@ abstract class AbstractGmlRequestHandler {
             writeFeatureTuple( (FeatureTuple) member, gmlStream, xmlStream, resolveState, featureMemberEl,
                                requestVersion );
         else
-            writeFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+            writeFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
     }
 
     private void writeFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                               GmlXlinkOptions resolveState, QName featureMemberEl )
+                               GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
                                                        throws XMLStreamException, UnknownCRSException,
                                                        TransformationException {
         if ( gmlStream.getReferenceResolveStrategy().isObjectExported( member.getId() ) ) {

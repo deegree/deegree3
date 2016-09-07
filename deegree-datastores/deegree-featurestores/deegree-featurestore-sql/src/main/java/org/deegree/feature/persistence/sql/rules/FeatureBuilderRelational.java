@@ -300,14 +300,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             throws SQLException {
         List<Feature> features = new ArrayList<Feature>();
         try {
-            int version = retrieveVersion( rs );
-            String gmlId = buildGmlId( rs, version );
             for ( QueryFeatureTypeMapping queryFtMapping : featureTypeAndMappings ) {
                 Feature feature = null;
                 FeatureType ft = queryFtMapping.getFeatureType();
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
                 String tableAlias = detectTableAlias( queryFtMapping );
-                String gmlId = ftMapping.getFidMapping().getPrefix();
+                int version = retrieveVersion( ftMapping, rs );
+                String gmlId = buildGmlId( ftMapping, rs, version );
                 List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
                 gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
                 for ( int i = 1; i < fidColumns.size(); i++ ) {
@@ -319,7 +318,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     feature = (Feature) fs.getCache().get( gmlId );
                 }
                 if ( feature == null ) {
-                    FeatureState state = retrieveState( rs );
+                    FeatureState state = retrieveState( ftMapping, rs );
                     LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
                     List<Property> props = new ArrayList<Property>();
                     for ( Mapping mapping : ftMapping.getMappings() ) {
@@ -354,7 +353,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return new FeatureTuple( features );
     }
 
-    private String buildGmlId( ResultSet rs, int version )
+    private String buildGmlId( FeatureTypeMapping ftMapping, ResultSet rs, int version )
                             throws SQLException {
         String gmlId = ftMapping.getFidMapping().getPrefix();
         List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
@@ -369,7 +368,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return gmlId;
     }
 
-    private FeatureState retrieveState( ResultSet rs )
+    private FeatureState retrieveState( FeatureTypeMapping ftMapping, ResultSet rs )
                             throws SQLException {
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
@@ -385,7 +384,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return null;
     }
 
-    private int retrieveVersion( ResultSet rs )
+    private int retrieveVersion( FeatureTypeMapping ftMapping, ResultSet rs )
                             throws SQLException {
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
