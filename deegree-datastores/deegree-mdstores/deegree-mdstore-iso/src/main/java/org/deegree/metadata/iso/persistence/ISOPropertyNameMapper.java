@@ -66,11 +66,7 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.slf4j.Logger;
 
 /**
@@ -329,6 +325,12 @@ public class ISOPropertyNameMapper implements PropertyNameMapper {
             }
         }
         return mapping;
+    }
+
+    @Override
+    public CompoundPropertyNameMapping getCompoundMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException {
+        throw new UnsupportedOperationException( "CompoundMappings are not supported" );
     }
 
     private Queryable getQueryable( QName qName ) {

@@ -80,13 +80,16 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureTuple;
 import org.deegree.feature.FeatureState;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.xpath.QueryFeatureTypeMapping;
 import org.deegree.feature.persistence.version.VersionMapping;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.ObjectPropertyType;
@@ -106,6 +109,7 @@ import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
+import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.time.TimeObject;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
@@ -132,11 +136,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private final SQLFeatureStore fs;
 
-    private final FeatureType ft;
-
-    private final FeatureTypeMapping ftMapping;
+    private final List<QueryFeatureTypeMapping> featureTypeAndMappings;
 
     private final Connection conn;
+
+    private final TableAliasManager tableAliasManager;
 
     private final String tableAlias;
 
@@ -159,16 +163,44 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      *            feature type mapping, must not be <code>null</code>
      * @param conn
      *            JDBC connection (used for performing subsequent SELECTs), must not be <code>null</code>
-     * @param escalationPolicy
+     * @param ftTableAlias
+     *            the alias of the feature table, must not be <code>null</code>
+     * @param nullEscalation
      *            the void escalation policy, must not be <code>null</code>
      */
-    public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
-                                     String ftTableAlias, boolean nullEscalation ) {
+    @Deprecated
+    public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, QueryFeatureTypeMapping ftMapping,
+                                     Connection conn, String ftTableAlias, boolean nullEscalation ) {
+        this( fs, Collections.singletonList( ftMapping ), conn, null, ftTableAlias, nullEscalation );
+    }
+
+    /**
+     * Creates a new {@link FeatureBuilderRelational} instance.
+     *
+     * @param fs
+     *            feature store, must not be <code>null</code>
+     * @param featureTypeAndMappings
+     *            feature types and their mappings, must not be <code>null</code> and empty
+     * @param conn
+     *            JDBC connection (used for performing subsequent SELECTs), must not be <code>null</code>
+     * @param tableAliasManager
+     *            the manager of the table aliases, must not be <code>null</code>
+     * @param nullEscalation
+     *            the void escalation policy, must not be <code>null</code>
+     */
+    public FeatureBuilderRelational( SQLFeatureStore fs, List<QueryFeatureTypeMapping> featureTypeAndMappings,
+                                     Connection conn, TableAliasManager tableAliasManager, boolean nullEscalation ) {
+        this( fs, featureTypeAndMappings, conn, tableAliasManager, null, nullEscalation );
+    }
+
+    private FeatureBuilderRelational( SQLFeatureStore fs, List<QueryFeatureTypeMapping> featureTypeAndMappings,
+                                      Connection conn, TableAliasManager tableAliasManager, String tableAlias,
+                                      boolean nullEscalation ) {
         this.fs = fs;
-        this.ft = ft;
-        this.ftMapping = ftMapping;
+        this.featureTypeAndMappings = featureTypeAndMappings;
         this.conn = conn;
-        this.tableAlias = ftTableAlias;
+        this.tableAliasManager = tableAliasManager;
+        this.tableAlias = tableAlias;
         this.nullEscalation = nullEscalation;
         this.nsBindings = new NamespaceBindings();
         for ( String prefix : fs.getNamespaceContext().keySet() ) {
@@ -184,15 +216,19 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     @Override
     public List<String> getInitialSelectList() {
-        for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "." + fidColumn.first.getName() );
-        }
-        for ( Mapping mapping : ftMapping.getMappings() ) {
-            addSelectColumns( mapping, qualifiedSqlExprToRsIdx, true );
-        }
-        if ( ftMapping.getVersionMapping() != null ) {
-            addColumn( qualifiedSqlExprToRsIdx, "state" );
-            addColumn( qualifiedSqlExprToRsIdx, "version" );
+        for ( QueryFeatureTypeMapping queryFtMapping : featureTypeAndMappings ) {
+            FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
+            String alias = detectTableAlias( queryFtMapping );
+            for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
+                addColumn( qualifiedSqlExprToRsIdx, alias + "." + fidColumn.first.getName() );
+            }
+            for ( Mapping mapping : ftMapping.getMappings() ) {
+                addSelectColumns( mapping, qualifiedSqlExprToRsIdx, alias, true );
+            }
+            if ( ftMapping.getVersionMapping() != null ) {
+                addColumn( qualifiedSqlExprToRsIdx, "state" );
+                addColumn( qualifiedSqlExprToRsIdx, "version" );
+            }
         }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
         return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
@@ -204,13 +240,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
     }
 
-    private LinkedHashMap<String, Integer> getSubsequentSelectColumns( Mapping mapping ) {
+    private LinkedHashMap<String, Integer> getSubsequentSelectColumns( Mapping mapping, String tableAlias ) {
         LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
-        addSelectColumns( mapping, colToRsIdx, false );
+        addSelectColumns( mapping, colToRsIdx, tableAlias, false );
         return colToRsIdx;
     }
 
-    private void addSelectColumns( Mapping mapping, LinkedHashMap<String, Integer> colToRsIdx, boolean initial ) {
+    private void addSelectColumns( Mapping mapping, LinkedHashMap<String, Integer> colToRsIdx, String tableAlias,
+                                   boolean initial ) {
         List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null && initial ) {
             if ( mapping instanceof FeatureMapping ) {
@@ -248,7 +285,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             } else if ( mapping instanceof CompoundMapping ) {
                 CompoundMapping cm = (CompoundMapping) mapping;
                 for ( Mapping particle : cm.getParticles() ) {
-                    addSelectColumns( particle, colToRsIdx, true );
+                    addSelectColumns( particle, colToRsIdx, tableAlias, true );
                 }
             } else if ( mapping instanceof SqlExpressionMapping<?> ) {
                 // nothing to do
@@ -261,43 +298,60 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     @Override
     public Feature buildFeature( ResultSet rs )
                             throws SQLException {
-
-        Feature feature = null;
+        List<Feature> features = new ArrayList<Feature>();
         try {
             int version = retrieveVersion( rs );
             String gmlId = buildGmlId( rs, version );
-            if ( fs.getCache() != null ) {
-                feature = (Feature) fs.getCache().get( gmlId );
-            }
-            if ( feature == null ) {
-                FeatureState state = retrieveState( rs );
-                LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
-                List<Property> props = new ArrayList<Property>();
-                for ( Mapping mapping : ftMapping.getMappings() ) {
-                    ValueReference propName = mapping.getPath();
-                    QName childEl = getChildElementStepAsQName( propName );
-                    if ( childEl != null ) {
-                        PropertyType pt = ft.getPropertyDeclaration( childEl );
-                        String idPrefix = gmlId + "_" + toIdPrefix( propName );
-                        addProperties( props, pt, mapping, rs, idPrefix );
-                    } else {
-                        LOG.warn( "Omitting mapping '" + mapping
-                                  + "'. Only single child element steps (optionally with number predicate)"
-                                  + " are currently supported." );
-                    }
+            for ( QueryFeatureTypeMapping queryFtMapping : featureTypeAndMappings ) {
+                Feature feature = null;
+                FeatureType ft = queryFtMapping.getFeatureType();
+                FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
+                String tableAlias = detectTableAlias( queryFtMapping );
+                String gmlId = ftMapping.getFidMapping().getPrefix();
+                List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
+                gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
+                for ( int i = 1; i < fidColumns.size(); i++ ) {
+                    gmlId += ftMapping.getFidMapping().getDelimiter()
+                             + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "."
+                                                                          + fidColumns.get( i ).first ) );
                 }
-                feature = ft.newFeature( gmlId, state, props, null );
                 if ( fs.getCache() != null ) {
-                    fs.getCache().add( feature );
+                    feature = (Feature) fs.getCache().get( gmlId );
                 }
-            } else {
-                LOG.debug( "Cache hit." );
+                if ( feature == null ) {
+                    FeatureState state = retrieveState( rs );
+                    LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
+                    List<Property> props = new ArrayList<Property>();
+                    for ( Mapping mapping : ftMapping.getMappings() ) {
+                        ValueReference propName = mapping.getPath();
+                        QName childEl = getChildElementStepAsQName( propName );
+                        if ( childEl != null ) {
+                            PropertyType pt = ft.getPropertyDeclaration( childEl );
+                            String idPrefix = gmlId + "_" + toIdPrefix( propName );
+                            addProperties( ft, props, pt, mapping, rs, tableAlias, idPrefix );
+                        } else {
+                            LOG.warn( "Omitting mapping '" + mapping
+                                      + "'. Only single child element steps (optionally with number predicate)"
+                                      + " are currently supported." );
+                        }
+                    }
+                    features.add( ft.newFeature( gmlId, state, props, null ) );
+                    if ( fs.getCache() != null ) {
+                        fs.getCache().add( feature );
+                    }
+                } else {
+                    LOG.debug( "Cache hit." );
+                }
             }
         } catch ( Throwable t ) {
             LOG.error( t.getMessage(), t );
             throw new SQLException( t.getMessage(), t );
         }
-        return feature;
+        if ( features.size() == 0 )
+            return null;
+        if ( features.size() == 1 )
+            return features.get( 0 );
+        return new FeatureTuple( features );
     }
 
     private String buildGmlId( ResultSet rs, int version )
@@ -354,10 +408,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return s;
     }
 
-    private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
-                                String idPrefix )
+    private void addProperties( FeatureType ft, List<Property> props, PropertyType pt, Mapping propMapping,
+                                ResultSet rs, String tableAlias, String idPrefix )
                                                         throws SQLException {
-        List<TypedObjectNode> particles = buildParticles( propMapping, rs, qualifiedSqlExprToRsIdx, idPrefix );
+        List<TypedObjectNode> particles = buildParticles( propMapping, rs, qualifiedSqlExprToRsIdx, tableAlias,
+                                                          idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
             if ( pt.isNillable() ) {
                 Map<QName, PrimitiveValue> attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
@@ -372,7 +427,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         for ( final TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
                 if ( pt instanceof ObjectPropertyType && particle instanceof TimeObject ) {
-                    props.add( recreatePropertyFromGml( pt, (GenericXMLElement) particle ) );
+                    props.add( recreatePropertyFromGml( ft, pt, (GenericXMLElement) particle ) );
                 } else {
                     GenericXMLElement xmlEl = (GenericXMLElement) particle;
                     props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(),
@@ -411,12 +466,14 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     // }
     // }
 
-    private Property recreatePropertyFromGml( final PropertyType pt, final GenericXMLElement particle ) {
+    private Property recreatePropertyFromGml( FeatureType ft, final PropertyType pt,
+                                              final GenericXMLElement particle ) {
         try {
-            final GMLSchemaInfoSet gmlSchema = ft.getSchema().getGMLSchema();
+            AppSchema schema = ft.getSchema();
+            final GMLSchemaInfoSet gmlSchema = schema.getGMLSchema();
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             final XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
-            final GMLVersion version = ft.getSchema().getGMLSchema().getVersion();
+            final GMLVersion version = gmlSchema.getVersion();
             final GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( version, xmlWriter );
             gmlWriter.setNamespaceBindings( gmlSchema.getNamespacePrefixes() );
             final GmlXlinkOptions resolveState = new GmlXlinkOptions();
@@ -427,7 +484,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             final InputStream is = new ByteArrayInputStream( bos.toByteArray() );
             final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
             final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );
-            gmlReader.setApplicationSchema( ft.getSchema() );
+            gmlReader.setApplicationSchema( schema );
             gmlReader.setLaxMode( true );
             final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper( xmlReader,
                                                                                                               null ),
@@ -440,7 +497,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
-                                                  LinkedHashMap<String, Integer> colToRsIdx, String idPrefix )
+                                                  LinkedHashMap<String, Integer> colToRsIdx, String tableAlias,
+                                                  String idPrefix )
                                                                           throws SQLException {
 
         if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
@@ -448,11 +506,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             ResultSet rs2 = null;
             try {
                 Pair<ResultSet, LinkedHashMap<String, Integer>> p = getJoinedResultSet( mapping.getJoinedTable().get( 0 ),
-                                                                                        mapping, rs, colToRsIdx );
+                                                                                        mapping, rs, colToRsIdx,
+                                                                                        tableAlias );
                 rs2 = p.first;
                 int i = 0;
                 while ( rs2.next() ) {
-                    TypedObjectNode particle = buildParticle( mapping, rs2, p.second, idPrefix + "_" + ( i++ ) );
+                    TypedObjectNode particle = buildParticle( mapping, rs2, p.second, tableAlias,
+                                                              idPrefix + "_" + ( i++ ) );
                     if ( particle != null ) {
                         values.add( particle );
                     }
@@ -465,7 +525,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
             return values;
         }
-        TypedObjectNode particle = buildParticle( mapping, rs, colToRsIdx, idPrefix );
+        TypedObjectNode particle = buildParticle( mapping, rs, colToRsIdx, tableAlias, idPrefix );
         if ( particle != null ) {
             return Collections.singletonList( particle );
         }
@@ -473,7 +533,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     private TypedObjectNode buildParticle( Mapping mapping, ResultSet rs, LinkedHashMap<String, Integer> colToRsIdx,
-                                           String idPrefix )
+                                           String tableAlias, String idPrefix )
                                                                    throws SQLException {
 
         LOG.debug( "Trying to build particle with path {}.", mapping.getPath() );
@@ -517,7 +577,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             for ( Mapping particleMapping : cm.getParticles() ) {
 
                 // TODO idPrefix
-                List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx, idPrefix );
+                List<TypedObjectNode> particleValues = buildParticles( particleMapping, rs, colToRsIdx, tableAlias,
+                                                                       idPrefix );
 
                 if ( !particleMapping.isVoidable() ) {
                     boolean found = false;
@@ -713,6 +774,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return geom;
     }
 
+    private String detectTableAlias( QueryFeatureTypeMapping queryFtMapping ) {
+        if ( tableAliasManager != null )
+            return tableAliasManager.getTableAlias( queryFtMapping.getFeatureTypeMapping().getFtTable(),
+                                                    queryFtMapping.getAlias() );
+        return tableAlias;
+    }
+
     private QName getName( ValueReference path ) {
         if ( path.getAsQName() != null ) {
             return path.getAsQName();
@@ -732,10 +800,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     private Pair<ResultSet, LinkedHashMap<String, Integer>> getJoinedResultSet( TableJoin jc, Mapping mapping,
                                                                                 ResultSet rs,
-                                                                                LinkedHashMap<String, Integer> colToRsIdx )
+                                                                                LinkedHashMap<String, Integer> colToRsIdx,
+                                                                                String tableAlias )
                                                                                                         throws SQLException {
 
-        LinkedHashMap<String, Integer> rsToIdx = getSubsequentSelectColumns( mapping );
+        LinkedHashMap<String, Integer> rsToIdx = getSubsequentSelectColumns( mapping, tableAlias );
 
         StringBuilder sql = new StringBuilder( "SELECT " );
         boolean first = true;

@@ -265,4 +265,77 @@ public class Filter110XMLEncoderTest {
         Assert.assertNotNull( filter );
 
     }
+
+    @Test
+    public void parseBBoxWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "bboxWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseContainsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "containsWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseCrossesWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "crossesWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseDisjointWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "disjointWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseEqualsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "equalsWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseIntersectsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "intersectsWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseOverlapsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "overlapsWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseTouchesWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "touchesWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
+    @Test
+    public void parseWithinWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException,
+                            TransformationException {
+        Filter filter = testImportExportImport( "withinWithSpatialJoin.xml" );
+        Assert.assertNotNull( filter );
+    }
+
 }

@@ -461,7 +461,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
                                             QName featureMemberEl, Lock lock )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
-                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError {
+                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, OWSException {
 
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
 
@@ -515,7 +515,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
                                             QName featureMemberEl, Lock lock, ResponsePagingUris responsePagingUris )
                             throws XMLStreamException, UnknownCRSException, TransformationException,
-                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError {
+                            FeatureStoreException, FilterEvaluationException, FactoryConfigurationError, OWSException {
 
         FeatureCollection allFeatures = new GenericFeatureCollection();
         Set<String> fids = new HashSet<String>();

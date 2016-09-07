@@ -46,10 +46,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.junit.Assert;
 import org.junit.Before;
@@ -84,6 +81,13 @@ public class MSSQLWhereBuilderTest {
             public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                                     throws FilterEvaluationException, UnmappableException {
                 return new PropertyNameMapping( null, null, propName.getAsText(), "table" );
+            }
+
+            @Override
+            public CompoundPropertyNameMapping getCompoundMapping( ValueReference propName,
+                                                                   TableAliasManager aliasManager )
+                                    throws FilterEvaluationException, UnmappableException {
+                throw new UnsupportedOperationException( "CompoundMappings are not supported" );
             }
         };
         OperatorFilter filter = null;

@@ -358,7 +358,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             }
             pt = new SimplePropertyType( propName, minOccurs, maxOccurs, primType, null, null );
             m = new PrimitiveMapping( path, minOccurs == 0, mapping, ( (SimplePropertyType) pt ).getPrimitiveType(),
-                                      jc, null );
+                                      jc, simpleDecl.getCustomConverter() );
         } else if ( propDecl instanceof GeometryParticleJAXB ) {
             GeometryParticleJAXB geomDecl = (GeometryParticleJAXB) propDecl;
             GeometryType type = null;
@@ -382,7 +382,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
             CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
             pt = new GeometryPropertyType( propName, minOccurs, maxOccurs, null, null, type, dim, INLINE );
             m = new GeometryMapping( path, minOccurs == 0, mapping, type, new GeometryStorageParams( crs, srid, dim ),
-                                     jc );
+                                     jc, geomDecl.getCustomConverter() );
         } else {
             LOG.warn( "Unhandled property declaration '" + propDecl.getClass() + "'. Skipping it." );
         }

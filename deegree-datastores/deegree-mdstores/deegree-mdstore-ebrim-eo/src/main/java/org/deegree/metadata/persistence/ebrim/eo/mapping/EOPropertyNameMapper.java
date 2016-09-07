@@ -69,11 +69,7 @@ import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStore;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.Table;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping.SlotType;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.deegree.sqldialect.postgis.PostGISGeometryConverter;
 import org.jaxen.expr.EqualityExpr;
 import org.jaxen.expr.Expr;
@@ -334,6 +330,12 @@ public class EOPropertyNameMapper implements PropertyNameMapper {
         }
         addMapping( propName, type, remainingSteps, null );
         return propNameToMapping.get( propName );
+    }
+
+    @Override
+    public CompoundPropertyNameMapping getCompoundMapping( ValueReference propName, TableAliasManager aliasManager )
+                            throws FilterEvaluationException, UnmappableException {
+        throw new UnsupportedOperationException( "CompoundMappings are not supported" );
     }
 
     private void addMapping( ValueReference propName, AliasedRIMType type, List<NameStep> remainingSteps, List<Join> joins )

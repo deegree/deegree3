@@ -768,7 +768,6 @@ class TransactionHandler {
         xmlWriter.writeEndElement(); // wfs:Status
         xmlWriter.writeEndElement(); // wfs:TransactionResult
         xmlWriter.writeEndElement(); // wfs:WFS_TransactionResult
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -824,7 +823,6 @@ class TransactionHandler {
         }
 
         xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -853,7 +851,6 @@ class TransactionHandler {
         writeActionResults200( xmlWriter, "ReplaceResults", replaced );
 
         xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 

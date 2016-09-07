@@ -346,7 +346,8 @@ public class Filter200XMLDecoder {
      * <p>
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:expression&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)
+     * </li>
      * </ul>
      * </p>
      *
@@ -439,7 +440,8 @@ public class Filter200XMLDecoder {
      * <p>
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:expression&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)
+     * </li>
      * </ul>
      * </p>
      *
@@ -505,8 +507,7 @@ public class Filter200XMLDecoder {
         // check if element name is a valid comparison operator element
         ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( ComparisonOperator.SubType.class,
                                                          comparisonOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -562,7 +563,8 @@ public class Filter200XMLDecoder {
      * <p>
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:temporalOps&gt;)</li>
-     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:temporalOps&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:temporalOps&gt;)
+     * </li>
      * </ul>
      * </p>
      *
@@ -629,8 +631,7 @@ public class Filter200XMLDecoder {
     private static TemporalOperator.SubType checkTemporalOperatorName( final XMLStreamReader xmlStream ) {
         TemporalOperator.SubType type = elementNameToTemporalOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( TemporalOperator.SubType.class,
                                                          temporalOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -648,7 +649,8 @@ public class Filter200XMLDecoder {
             String expectedList = elemNames( LogicalOperator.SubType.class, logicalOperatorTypeToElementName ) + ", "
                                   + elemNames( SpatialOperator.SubType.class, spatialOperatorTypeToElementName ) + ", "
                                   + elemNames( ComparisonOperator.SubType.class, comparisonOperatorTypeToElementName )
-                                  + "," + elemNames( TemporalOperator.SubType.class, temporalOperatorTypeToElementName );
+                                  + ","
+                                  + elemNames( TemporalOperator.SubType.class, temporalOperatorTypeToElementName );
             String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(), expectedList );
             throw new XMLParsingException( xmlStream, msg );
         }
@@ -790,7 +792,7 @@ public class Filter200XMLDecoder {
         while ( xmlStream.next() != END_ELEMENT ) {
             int eventType = xmlStream.getEventType();
             if ( eventType == START_ELEMENT ) {
-                checkIfCurrentStartElementIsGmlGeometry( xmlStream );
+                checkRequiredGmlGeometry( xmlStream );
                 children.add( parseElement( xmlStream ) );
             } else if ( eventType == CHARACTERS || eventType == CDATA ) {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
@@ -951,8 +953,7 @@ public class Filter200XMLDecoder {
         // check if element name is a valid logical operator element
         LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( LogicalOperator.SubType.class,
                                                          logicalOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -1003,8 +1004,7 @@ public class Filter200XMLDecoder {
         // check if element name is a valid spatial operator element name
         SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-                                              xmlStream.getName(),
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
                                               elemNames( SpatialOperator.SubType.class,
                                                          spatialOperatorTypeToElementName ) );
             throw new XMLParsingException( xmlStream, msg );
@@ -1020,9 +1020,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Envelope'/'gml:Box')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new BBOX( param1, (Envelope) param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Envelope'/'gml:Box')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new BBOX( param1, (Envelope) param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new BBOX( param1, param2 );
+            }
             break;
         }
         case BEYOND: {
@@ -1032,15 +1038,21 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            // third parameter: 'fes:Distance'
-            nextElement( xmlStream );
-            xmlStream.require( START_ELEMENT, FES_NS, "Distance" );
-            String distanceUnits = getRequiredAttributeValue( xmlStream, "uom" );
-            String distanceValue = xmlStream.getElementText();
-            Measure distance = new Measure( distanceValue, distanceUnits );
-            spatialOperator = new Beyond( param1, param2, distance );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                // third parameter: 'fes:Distance'
+                nextElement( xmlStream );
+                Measure distance = parseDistance( xmlStream );
+                spatialOperator = new Beyond( param1, param2, distance );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                // third parameter: 'fes:Distance'
+                nextElement( xmlStream );
+                Measure distance = parseDistance( xmlStream );
+                spatialOperator = new Beyond( param1, param2, distance );
+            }
             break;
         }
         case INTERSECTS: {
@@ -1050,9 +1062,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Intersects( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Intersects( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Intersects( param1, param2 );
+            }
             break;
         }
         case CONTAINS: {
@@ -1062,9 +1080,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Contains( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Contains( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Contains( param1, param2 );
+            }
             break;
         }
         case CROSSES: {
@@ -1074,9 +1098,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Crosses( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Crosses( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Crosses( param1, param2 );
+            }
             break;
         }
         case DISJOINT: {
@@ -1086,9 +1116,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Disjoint( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Disjoint( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Disjoint( param1, param2 );
+            }
             break;
         }
         case DWITHIN: {
@@ -1098,15 +1134,21 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            // third parameter: 'fes:Distance'
-            nextElement( xmlStream );
-            xmlStream.require( START_ELEMENT, FES_NS, "Distance" );
-            String distanceUnits = getRequiredAttributeValue( xmlStream, "uom" );
-            String distanceValue = xmlStream.getElementText();
-            Measure distance = new Measure( distanceValue, distanceUnits );
-            spatialOperator = new DWithin( param1, param2, distance );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                // third parameter: 'fes:Distance'
+                nextElement( xmlStream );
+                Measure distance = parseDistance( xmlStream );
+                spatialOperator = new DWithin( param1, param2, distance );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                // third parameter: 'fes:Distance'
+                nextElement( xmlStream );
+                Measure distance = parseDistance( xmlStream );
+                spatialOperator = new DWithin( param1, param2, distance );
+            }
             break;
         }
         case EQUALS: {
@@ -1116,9 +1158,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Equals( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Equals( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Equals( param1, param2 );
+            }
             break;
         }
         case OVERLAPS: {
@@ -1128,9 +1176,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Overlaps( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Overlaps( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Overlaps( param1, param2 );
+            }
             break;
         }
         case TOUCHES: {
@@ -1140,9 +1194,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Touches( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Touches( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Touches( param1, param2 );
+            }
             break;
         }
         case WITHIN: {
@@ -1152,9 +1212,15 @@ public class Filter200XMLDecoder {
                 param1 = parseExpression( xmlStream );
                 nextElement( xmlStream );
             }
-            // <xsd:any namespace="##other"/> (must be 'gml:Geometry')
-            Geometry param2 = parseGeomOrEnvelope( xmlStream );
-            spatialOperator = new Within( param1, param2 );
+            if ( isCurrentStartElementIsGmlGeometry( xmlStream ) ) {
+                // <xsd:any namespace="##other"/> (is 'gml:Geometry')
+                Geometry param2 = parseGeomOrEnvelope( xmlStream );
+                spatialOperator = new Within( param1, param2 );
+            } else {
+                // <xsd:any namespace="##other"/> (is 'fes:ValueReference')
+                ValueReference param2 = parseValueReference( xmlStream, false );
+                spatialOperator = new Within( param1, param2 );
+            }
             break;
         }
         }
@@ -1178,15 +1244,28 @@ public class Filter200XMLDecoder {
         }
     }
 
-    private static void checkIfCurrentStartElementIsGmlGeometry( XMLStreamReader xmlStream )
+    private static Measure parseDistance( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        xmlStream.require( START_ELEMENT, FES_NS, "Distance" );
+        String distanceUnits = getRequiredAttributeValue( xmlStream, "uom" );
+        String distanceValue = xmlStream.getElementText();
+        return new Measure( distanceValue, distanceUnits );
+    }
+
+    private static void checkRequiredGmlGeometry( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        if ( isCurrentStartElementIsGmlGeometry( xmlStream ) )
+            throw new XMLParsingException( xmlStream, "Geometry elements as Literal child are not supported!" );
+    }
+
+    private static boolean isCurrentStartElementIsGmlGeometry( XMLStreamReader xmlStream )
                             throws XMLStreamException {
         String ns = xmlStream.getNamespaceURI();
         if ( CommonNamespaces.GMLNS.equals( ns ) || CommonNamespaces.GML3_2_NS.equals( ns ) ) {
             GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName(), xmlStream );
-            boolean isGeometryElement = gmlReader.isGeometryOrEnvelopeElement( xmlStream );
-            if ( isGeometryElement )
-                throw new XMLParsingException( xmlStream, "Geometry elements as Literal child are not supported!" );
+            return gmlReader.isGeometryOrEnvelopeElement( xmlStream );
         }
+        return false;
     }
 
     /**

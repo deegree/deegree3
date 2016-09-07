@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.ows;
 
-import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;

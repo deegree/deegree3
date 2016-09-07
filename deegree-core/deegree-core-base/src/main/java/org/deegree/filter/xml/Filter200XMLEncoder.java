@@ -83,18 +83,9 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
-import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Beyond;
-import org.deegree.filter.spatial.Contains;
-import org.deegree.filter.spatial.Crosses;
 import org.deegree.filter.spatial.DWithin;
-import org.deegree.filter.spatial.Disjoint;
-import org.deegree.filter.spatial.Equals;
-import org.deegree.filter.spatial.Intersects;
-import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.filter.spatial.Touches;
-import org.deegree.filter.spatial.Within;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
@@ -282,43 +273,25 @@ public class Filter200XMLEncoder {
                                                 + " is not supported yet!" );
         writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
 
-        Geometry geometry = null;
+        Geometry geometry = operator.getGeometry();
+        ValueReference secondParam = operator.getValueReference();
         Measure distance = null;
         switch ( operator.getSubType() ) {
-        case BBOX:
-            geometry = ( (BBOX) operator ).getBoundingBox();
-            break;
         case BEYOND:
-            geometry = ( (Beyond) operator ).getGeometry();
             distance = ( (Beyond) operator ).getDistance();
             break;
-        case CONTAINS:
-            geometry = ( (Contains) operator ).getGeometry();
-            break;
-        case CROSSES:
-            geometry = ( (Crosses) operator ).getGeometry();
-            break;
-        case DISJOINT:
-            geometry = ( (Disjoint) operator ).getGeometry();
-            break;
         case DWITHIN:
-            geometry = ( (DWithin) operator ).getGeometry();
             distance = ( (DWithin) operator ).getDistance();
             break;
+        case BBOX:
+        case CONTAINS:
+        case CROSSES:
+        case DISJOINT:
         case EQUALS:
-            geometry = ( (Equals) operator ).getGeometry();
-            break;
         case INTERSECTS:
-            geometry = ( (Intersects) operator ).getGeometry();
-            break;
         case OVERLAPS:
-            geometry = ( (Overlaps) operator ).getGeometry();
-            break;
         case TOUCHES:
-            geometry = ( (Touches) operator ).getGeometry();
-            break;
         case WITHIN:
-            geometry = ( (Within) operator ).getGeometry();
             break;
         default:
             throw new IllegalArgumentException( "Encoding of spatial operator subtype " + operator.getSubType()
@@ -327,7 +300,10 @@ public class Filter200XMLEncoder {
         GMLStreamWriter gmlWriter = createGml32StreamWriter( writer );
 
         export( operator.getParam1(), writer );
-        exportGeometry( geometry, gmlWriter );
+        if ( secondParam != null )
+            export( secondParam, writer );
+        if ( geometry != null )
+            exportGeometry( geometry, gmlWriter );
         exportDistance( distance, writer );
         writer.writeEndElement();
     }
@@ -550,7 +526,7 @@ public class Filter200XMLEncoder {
         if ( distance != null ) { // in case of Beyond- and DWithin-operators export their distance variable
             QName distanceElementName = new QName( CommonNamespaces.FES_20_NS, "Distance" );
             writer.writeStartElement( distanceElementName.getNamespaceURI(), distanceElementName.getLocalPart() );
-            writer.writeAttribute( "units", distance.getUomUri() );
+            writer.writeAttribute( "uom", distance.getUomUri() );
             writer.writeCharacters( distance.getValue().toString() );
             writer.writeEndElement();
         }

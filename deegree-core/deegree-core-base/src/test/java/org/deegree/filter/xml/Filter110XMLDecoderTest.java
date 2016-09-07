@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -56,11 +58,22 @@ import org.deegree.filter.IdFilter;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
+import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.Disjoint;
+import org.deegree.filter.spatial.Equals;
+import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
+import org.deegree.filter.spatial.Touches;
+import org.deegree.filter.spatial.Within;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.deegree.workspace.standard.DefaultWorkspace;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -243,4 +256,104 @@ public class Filter110XMLDecoderTest {
         Assert.assertNotNull( filter );
 
     }
+
+    @Test
+    public void parseBBoxWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "bboxWithSpatialJoin.xml" );
+        BBOX bbox = (BBOX) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) bbox.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( bbox.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( bbox.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseContainsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "containsWithSpatialJoin.xml" );
+        Contains contains = (Contains) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) contains.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( contains.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( contains.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseCrossesWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "crossesWithSpatialJoin.xml" );
+        Crosses crosses = (Crosses) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) crosses.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( crosses.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( crosses.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseDisjointWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "disjointWithSpatialJoin.xml" );
+        Disjoint disjoint = (Disjoint) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) disjoint.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( disjoint.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( disjoint.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseEqualsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "equalsWithSpatialJoin.xml" );
+        Equals equals = (Equals) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) equals.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( equals.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( equals.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseIntersectsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "intersectsWithSpatialJoin.xml" );
+        Intersects intersects = (Intersects) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) intersects.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( intersects.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( intersects.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseOverlapsWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "overlapsWithSpatialJoin.xml" );
+        Overlaps overlaps = (Overlaps) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) overlaps.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( overlaps.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( overlaps.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseTouchesWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "touchesWithSpatialJoin.xml" );
+        Touches touches = (Touches) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) touches.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( touches.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( touches.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
+    @Test
+    public void parseWithinWithSpatialJoin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        Filter filter = parse( "withinWithSpatialJoin.xml" );
+        Within within = (Within) ( (OperatorFilter) filter ).getOperator();
+
+        assertThat( ( (ValueReference) within.getParam1() ).getAsText(), is( "app:ft1/app:geom" ) );
+        assertThat( within.getGeometry(), is( CoreMatchers.nullValue() ) );
+        assertThat( within.getValueReference().getAsText(), is( "app:ft2/app:geom" ) );
+    }
+
 }
