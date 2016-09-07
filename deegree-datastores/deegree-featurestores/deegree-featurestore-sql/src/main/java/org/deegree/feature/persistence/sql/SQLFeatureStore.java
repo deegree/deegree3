@@ -1781,7 +1781,6 @@ public class SQLFeatureStore implements FeatureStore {
 
             for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
-                String ftTableAlias = queryFtMapping.getAlias();
                 if ( ftMapping.getVersionMapping() != null ) {
                     stateSubQueryAlias = wb.getAliasManager().generateNew();
                     String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
@@ -1832,8 +1831,9 @@ public class SQLFeatureStore implements FeatureStore {
             }
 
             for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
+                TableName ftTable = queryFtMapping.getFeatureTypeMapping().getFtTable();
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
-                String ftTableAlias = queryFtMapping.getAlias();
+                String ftTableAlias = aliasManager.getTableAlias( ftTable, queryFtMapping.getAlias() );
                 if ( ftMapping.getVersionMapping() != null ) {
                     if ( wb.getWhere() != null )
                         sql.append( " AND " );
