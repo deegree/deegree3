@@ -226,8 +226,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 addSelectColumns( mapping, qualifiedSqlExprToRsIdx, alias, true );
             }
             if ( ftMapping.getVersionMapping() != null ) {
-                addColumn( qualifiedSqlExprToRsIdx, "state" );
-                addColumn( qualifiedSqlExprToRsIdx, "version" );
+                addColumn( qualifiedSqlExprToRsIdx, alias + "_s." + "state" );
+                addColumn( qualifiedSqlExprToRsIdx, alias + "_v." + "version" );
             }
         }
         LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
@@ -305,7 +305,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 FeatureType ft = queryFtMapping.getFeatureType();
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
                 String tableAlias = detectTableAlias( queryFtMapping );
-                int version = retrieveVersion( ftMapping, rs );
+                int version = retrieveVersion( queryFtMapping, rs );
                 String gmlId = buildGmlId( queryFtMapping, rs, version );
                 List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
                 gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
@@ -318,7 +318,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                     feature = (Feature) fs.getCache().get( gmlId );
                 }
                 if ( feature == null ) {
-                    FeatureState state = retrieveState( ftMapping, rs );
+                    FeatureState state = retrieveState( queryFtMapping, rs );
                     LOG.debug( "Recreating feature '" + gmlId + "' from db (relational mode)." );
                     List<Property> props = new ArrayList<Property>();
                     for ( Mapping mapping : ftMapping.getMappings() ) {
@@ -369,11 +369,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return gmlId;
     }
 
-    private FeatureState retrieveState( FeatureTypeMapping ftMapping, ResultSet rs )
+    private FeatureState retrieveState( QueryFeatureTypeMapping queryFtMapping, ResultSet rs )
                             throws SQLException {
+        FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
-            int stateColumnIndex = qualifiedSqlExprToRsIdx.get( "state" );
+            String alias = detectTableAlias( queryFtMapping );
+            int stateColumnIndex = qualifiedSqlExprToRsIdx.get( alias + "_s.state" );
             String stateAsText = rs.getString( stateColumnIndex );
             if ( stateAsText != null ) {
                 try {
@@ -385,11 +387,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return null;
     }
 
-    private int retrieveVersion( FeatureTypeMapping ftMapping, ResultSet rs )
+    private int retrieveVersion( QueryFeatureTypeMapping queryFtMapping, ResultSet rs )
                             throws SQLException {
+        FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
         VersionMapping versionMapping = ftMapping.getVersionMapping();
         if ( versionMapping != null ) {
-            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( "version" );
+            String alias = detectTableAlias( queryFtMapping );
+            int versionColumnIndex = qualifiedSqlExprToRsIdx.get( alias + "_v.version" );
             int version = rs.getInt( versionColumnIndex );
             if ( version > 0 ) {
                 return version;

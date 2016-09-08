@@ -1776,13 +1776,11 @@ public class SQLFeatureStore implements FeatureStore {
                 isFirst = false;
             }
 
-            String stateSubQueryAlias = null;
-            String versionSubQueryAlias = null;
-
             for ( QueryFeatureTypeMapping queryFtMapping : queryMappings ) {
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
                 if ( ftMapping.getVersionMapping() != null ) {
-                    stateSubQueryAlias = wb.getAliasManager().generateNew();
+                    TableName ftTable = queryFtMapping.getFeatureTypeMapping().getFtTable();
+                    String tableAlias = wb.getAliasManager().getTableAlias( ftTable, queryFtMapping.getAlias() );
                     String actionColumn = ftMapping.getVersionMapping().getActionColumnName();
                     String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
                     sql.append( ", (SELECT " );
@@ -1793,9 +1791,8 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( "FROM " );
                     sql.append( ftMapping.getFtTable() );
                     sql.append( ") " );
-                    sql.append( stateSubQueryAlias );
+                    sql.append( tableAlias + "_s" );
 
-                    versionSubQueryAlias = wb.getAliasManager().generateNew();
                     String versionTable = ftMapping.getVersionMapping().getVersionMetadataTable().toString();
                     sql.append( ", (SELECT " );
                     sql.append( versionColumn );
@@ -1806,7 +1803,7 @@ public class SQLFeatureStore implements FeatureStore {
                     sql.append( " ) AS VERSION FROM " );
                     sql.append( versionTable );
                     sql.append( ") " );
-                    sql.append( versionSubQueryAlias );
+                    sql.append( tableAlias + "_v" );
                 }
             }
 
@@ -1842,11 +1839,11 @@ public class SQLFeatureStore implements FeatureStore {
                     String versionColumn = ftMapping.getVersionMapping().getVersionColumnName();
                     sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
                     sql.append( '=' );
-                    sql.append( stateSubQueryAlias ).append( '.' ).append( versionColumn );
+                    sql.append( ftTableAlias + "_s" ).append( '.' ).append( versionColumn );
                     sql.append( " AND " );
                     sql.append( ftTableAlias ).append( '.' ).append( versionColumn );
                     sql.append( '=' );
-                    sql.append( versionSubQueryAlias ).append( '.' ).append( versionColumn );
+                    sql.append( ftTableAlias + "_v" ).append( '.' ).append( versionColumn );
                 }
             }
             if ( wb.getOrderBy() != null ) {
