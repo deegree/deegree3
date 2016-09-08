@@ -306,7 +306,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
                 String tableAlias = detectTableAlias( queryFtMapping );
                 int version = retrieveVersion( ftMapping, rs );
-                String gmlId = buildGmlId( ftMapping, rs, version );
+                String gmlId = buildGmlId( queryFtMapping, rs, version );
                 List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
                 gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
                 for ( int i = 1; i < fidColumns.size(); i++ ) {
@@ -353,16 +353,17 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return new FeatureTuple( features );
     }
 
-    private String buildGmlId( FeatureTypeMapping ftMapping, ResultSet rs, int version )
+    private String buildGmlId( QueryFeatureTypeMapping queryFtMapping, ResultSet rs, int version )
                             throws SQLException {
+        FeatureTypeMapping ftMapping = queryFtMapping.getFeatureTypeMapping();
         String gmlId = ftMapping.getFidMapping().getPrefix();
         List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
-        gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
+        String alias = detectTableAlias( queryFtMapping );
+        gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( alias + "." + fidColumns.get( 0 ).first ) );
         for ( int i = 1; i < fidColumns.size(); i++ ) {
             gmlId += ftMapping.getFidMapping().getDelimiter()
-                     + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
+                     + rs.getObject( qualifiedSqlExprToRsIdx.get( alias + "." + fidColumns.get( i ).first ) );
         }
-
         if ( version > 0 )
             gmlId += "_version" + version;
         return gmlId;
