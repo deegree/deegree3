@@ -63,6 +63,8 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.ResourceIdConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +83,8 @@ import org.slf4j.LoggerFactory;
 public class DefaultLockManager implements LockManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( DefaultLockManager.class );
+
+    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     private FeatureStore store;
 
@@ -221,7 +225,7 @@ public class DefaultLockManager implements LockManager {
                     failedToLockStmt = conn.prepareStatement( "INSERT INTO LOCK_FAILED_FIDS (LOCK_ID, FID) VALUES (?,?)" );
 
                     for ( Feature feature : fc ) {
-                        String fid = feature.getId();
+                        String fid = resourceIdConverter.parseRid( feature.getId() ).first;
                         int currentLockId = -1;
 
                         // check if feature is locked already
@@ -405,7 +409,7 @@ public class DefaultLockManager implements LockManager {
     @Override
     public boolean isFeatureLocked( String fid )
                             throws FeatureStoreException {
-
+        String resolvedFid = resourceIdConverter.parseRid( fid ).getFirst();
         boolean isLocked = false;
         synchronized ( this ) {
             releaseExpiredLocks();
@@ -415,7 +419,7 @@ public class DefaultLockManager implements LockManager {
             try {
                 conn = connection.getConnection();
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=?" );
-                stmt.setString( 1, fid );
+                stmt.setString( 1, resolvedFid );
                 rs = stmt.executeQuery();
                 rs.next();
                 int count = rs.getInt( 1 );
@@ -439,6 +443,7 @@ public class DefaultLockManager implements LockManager {
             return !isFeatureLocked( fid );
         }
 
+        String resolvedFid = resourceIdConverter.parseRid( fid ).getFirst();
         int lockIdInt = -1;
         try {
             lockIdInt = Integer.parseInt( lockId );
@@ -455,7 +460,7 @@ public class DefaultLockManager implements LockManager {
             try {
                 conn = connection.getConnection();
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID<>?" );
-                stmt.setString( 1, fid );
+                stmt.setString( 1, resolvedFid );
                 stmt.setInt( 2, lockIdInt );
                 rs = stmt.executeQuery();
                 rs.next();
