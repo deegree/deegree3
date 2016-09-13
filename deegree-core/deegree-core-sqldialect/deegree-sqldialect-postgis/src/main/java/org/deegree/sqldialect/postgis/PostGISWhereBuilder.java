@@ -85,6 +85,7 @@ import org.deegree.time.position.IndeterminateValue;
 import org.deegree.time.position.TimePosition;
 import org.deegree.time.primitive.GenericTimeInstant;
 import org.deegree.time.primitive.GenericTimePeriod;
+import org.deegree.uom.UomConverter;
 
 import javax.xml.namespace.QName;
 
@@ -269,13 +270,12 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             } else {
                 builder.add( "NOT ST_DWithin(" );
             }
-            builder.add( propNameExpr );
+            builder.add( toGeography( propNameExpr ) );
             builder.add( "," );
-            builder.add( toProtoSqlSecondParameter( beyond, storageCRS, srid ) );
+            builder.add( toGeographyProtoSql( beyond.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
-            // TODO uom handling
             PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( beyond.getDistance().getValue(), pt );
+            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( beyond.getDistance()), pt );
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
             SQLArgument argument = new SQLArgument( value, converter );
             builder.add( argument );
@@ -328,13 +328,12 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             } else {
                 builder.add( "ST_DWithin(" );
             }
-            builder.add( propNameExpr );
+            builder.add( toGeography( propNameExpr ) );
             builder.add( "," );
-            builder.add( toProtoSqlSecondParameter( dWithin, storageCRS, srid ) );
+            builder.add( toGeographyProtoSql( dWithin.getGeometry(), storageCRS, srid ) );
             builder.add( "," );
-            // TODO uom handling
             PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( dWithin.getDistance().getValue(), pt );
+            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( dWithin.getDistance()), pt );
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
             SQLArgument argument = new SQLArgument( value, converter );
             builder.add( argument );
@@ -629,6 +628,19 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
     private boolean isTimeInstant( Expression parameter2 ) {
         return parameter2 instanceof Literal && ( (Literal<?>) parameter2 ).getValue() instanceof GenericTimeInstant;
+    }
+
+    private SQLExpression toGeographyProtoSql( Geometry geom, ICRS targetCRS, int srid )
+                            throws FilterEvaluationException {
+        if ( useLegacyPredicates )
+            return toProtoSQL( geom, targetCRS, srid );
+        return new SQLArgument( geom, new PostGISGeographyConverter( null, targetCRS, "" + srid ) );
+    }
+
+    private String toGeography( SQLExpression propNameExpr ) {
+        if ( useLegacyPredicates )
+            return propNameExpr.toString();
+        return propNameExpr.toString() + "::geography";
     }
 
 }

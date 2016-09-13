@@ -56,17 +56,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 31055 $, $Date: 2011-06-14 17:19:48 +0200 (Di, 14. Jun 2011) $
  */
-public class PostGISGeometryConverter implements GeometryParticleConverter {
+public class PostGISGeometryConverter extends AbstractPostGISConverter {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISGeometryConverter.class );
-
-    private final String column;
 
     private final boolean useLegacyPredicates;
-
-    private final ICRS crs;
-
-    private final String srid;
 
     /**
      * Creates a new {@link PostGISGeometryConverter} instance.
@@ -82,9 +75,7 @@ public class PostGISGeometryConverter implements GeometryParticleConverter {
      *            <code>ST_Intersects</code>)
      */
     public PostGISGeometryConverter( String column, ICRS crs, String srid, boolean useLegacyPredicates ) {
-        this.column = column;
-        this.crs = crs;
-        this.srid = srid;
+        super( column, crs, srid );
         this.useLegacyPredicates = useLegacyPredicates;
     }
 
@@ -139,36 +130,4 @@ public class PostGISGeometryConverter implements GeometryParticleConverter {
         stmt.setBytes( paramIndex, wkb );
     }
 
-    private Geometry getCompatibleGeometry( Geometry literal )
-                            throws SQLException {
-        if ( crs == null ) {
-            return literal;
-        }
-
-        Geometry transformedLiteral = literal;
-        if ( literal != null ) {
-            ICRS literalCRS = literal.getCoordinateSystem();
-            if ( literalCRS != null && !( crs.equals( literalCRS ) ) ) {
-                LOG.debug( "Need transformed literal geometry for evaluation: " + literalCRS.getAlias() + " -> "
-                           + crs.getAlias() );
-                try {
-                    GeometryTransformer transformer = new GeometryTransformer( crs );
-                    transformedLiteral = transformer.transform( literal );
-                } catch ( Exception e ) {
-                    throw new SQLException( e.getMessage(), e );
-                }
-            }
-        }
-        return transformedLiteral;
-    }
-
-    @Override
-    public String getSrid() {
-        return srid;
-    }
-
-    @Override
-    public ICRS getCrs() {
-        return crs;
-    }
 }
