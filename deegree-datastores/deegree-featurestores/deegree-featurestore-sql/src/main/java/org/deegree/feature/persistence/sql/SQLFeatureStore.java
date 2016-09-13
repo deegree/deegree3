@@ -1164,8 +1164,8 @@ public class SQLFeatureStore implements FeatureStore {
             conn = getConnection();
 
             String tableAlias = "X1";
-            String stateTableAlias = "X2";
-            String versionTableAlias = "X3";
+            String stateTableAlias = "X1_s";
+            String versionTableAlias = "X1_v";
             String versionTable = versionMapping.getVersionMetadataTable().toString();
             String versionColumn = versionMapping.getVersionColumnName();
             String actionColumn = versionMapping.getActionColumnName();
@@ -1224,7 +1224,9 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( " ) a " );
             sql.append( " WHERE " );
             appendWhereClauseForFidMapping( fidMapping, sql );
-            sql.append( " ) b ) c " );
+            sql.append( " ) b ) " );
+            sql.append( stateTableAlias );
+            sql.append( " " );
 
             String version = resourceId.getVersion();
             VersionCode versionCode = VersionParser.getVersionCode( version );
@@ -1234,8 +1236,8 @@ public class SQLFeatureStore implements FeatureStore {
             checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
 
             if ( versionCode != null ) {
-                appendSqlForVersionCode( fidMapping, resourceId, stateTableAlias, versionTable, versionColumn, sql,
-                                         versionCode );
+                appendSqlForVersionCode( fidMapping, resourceId, "X2", versionTable, versionColumn, sql, versionCode,
+                                         stateTableAlias );
             } else if ( versionInteger > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else if ( startDate != null && endDate != null ) {
@@ -1244,10 +1246,12 @@ public class SQLFeatureStore implements FeatureStore {
             } else if ( resourceId.getRidVersion() > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else {
-                appendSqlForVersionCode( fidMapping, resourceId, stateTableAlias, versionTable, versionColumn, sql,
-                                         LATEST );
+                appendSqlForVersionCode( fidMapping, resourceId, "X2", versionTable, versionColumn, sql, LATEST,
+                                         stateTableAlias );
             }
-            sql.append( " AND c." );
+            sql.append( " AND " );
+            sql.append( stateTableAlias );
+            sql.append( "." );
             sql.append( versionColumn );
             sql.append( " = " );
             sql.append( tableAlias );
@@ -1320,23 +1324,25 @@ public class SQLFeatureStore implements FeatureStore {
 
     private void appendSqlForVersionCode( FIDMapping fidMapping, ResourceId resourceId, String versionTableAlias,
                                           String versionTable, String versionColumn, StringBuilder sql,
-                                          VersionCode versionCode ) {
+                                          VersionCode versionCode, String stateTableAlias ) {
         switch ( versionCode ) {
         case LATEST:
-            appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
+            appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql,
+                                          stateTableAlias );
             break;
         case FIRST:
-            appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql );
+            appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql,
+                                         stateTableAlias );
             break;
         case NEXT:
             if ( resourceId.getRidVersion() <= 0 )
                 throw new IllegalArgumentException( "Version could not be parsed from rid attribute." );
-            appendSelectForNextVersion( fidMapping, versionTable, versionColumn, sql );
+            appendSelectForNextVersion( fidMapping, versionTable, versionColumn, sql, stateTableAlias );
             break;
         case PREVIOUS:
             if ( resourceId.getRidVersion() <= 0 )
                 throw new IllegalArgumentException( "Version could not be parsed from rid attribute." );
-            appendSelectForPreviousVersion( fidMapping, versionTable, versionColumn, sql );
+            appendSelectForPreviousVersion( fidMapping, versionTable, versionColumn, sql, stateTableAlias );
             break;
         case ALL:
             sql.append( " WHERE " );
@@ -1395,7 +1401,7 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void appendSelectForPreviousVersion( FIDMapping fidMapping, String versionTable, String versionColumn,
-                                                 StringBuilder sql ) {
+                                                 StringBuilder sql, String stateTableAlias ) {
         sql.append( ", ( SELECT previous FROM " );
         sql.append( " ( SELECT " );
         appendSelectFidColumns( fidMapping, sql );
@@ -1413,13 +1419,15 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( versionTable );
         sql.append( " WHERE " );
         appendWhereClauseForFidMapping( fidMapping, sql );
-        sql.append( ") t WHERE t.version = ? ) s WHERE c." );
+        sql.append( ") t WHERE t.version = ? ) s WHERE " );
+        sql.append( stateTableAlias );
+        sql.append( "." );
         sql.append( versionColumn );
         sql.append( " = previous" );
     }
 
     private void appendSelectForNextVersion( FIDMapping fidMapping, String versionTable, String versionColumn,
-                                             StringBuilder sql ) {
+                                             StringBuilder sql, String stateTableAlias ) {
         sql.append( ", ( SELECT next FROM " );
         sql.append( " ( SELECT " );
         appendSelectFidColumns( fidMapping, sql );
@@ -1437,13 +1445,15 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( versionTable );
         sql.append( " WHERE " );
         appendWhereClauseForFidMapping( fidMapping, sql );
-        sql.append( ") t WHERE t.version = ? ) s WHERE c." );
+        sql.append( ") t WHERE t.version = ? ) s WHERE " );
+        sql.append( stateTableAlias );
+        sql.append( "." );
         sql.append( versionColumn );
         sql.append( " = next" );
     }
 
     private void appendSelectForFirstVersion( FIDMapping fidMapping, String versionTableAlias, String versionTable,
-                                              String versionColumn, StringBuilder sql ) {
+                                              String versionColumn, StringBuilder sql, String stateTableAlias ) {
         sql.append( ", ( SELECT min(" );
         sql.append( versionColumn );
         sql.append( ") as min FROM " );
@@ -1454,7 +1464,9 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( versionTableAlias );
         sql.append( " WHERE " );
         appendWhereClauseForFidMapping( fidMapping, sql );
-        sql.append( " AND c." );
+        sql.append( " AND " );
+        sql.append( stateTableAlias );
+        sql.append( "." );
         sql.append( versionColumn );
         sql.append( " = " );
         sql.append( versionTableAlias );
@@ -1462,7 +1474,7 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void appendSelectForLatestVersion( FIDMapping fidMapping, String versionTableAlias, String versionTable,
-                                               String versionColumn, StringBuilder sql ) {
+                                               String versionColumn, StringBuilder sql, String stateTableAlias ) {
         sql.append( ", ( SELECT max(" );
         sql.append( versionColumn );
         sql.append( ") as max FROM " );
@@ -1473,7 +1485,9 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( versionTableAlias );
         sql.append( " WHERE " );
         appendWhereClauseForFidMapping( fidMapping, sql );
-        sql.append( " AND c." );
+        sql.append( " AND " );
+        sql.append( stateTableAlias );
+        sql.append( "." );
         sql.append( versionColumn );
         sql.append( " = " );
         sql.append( versionTableAlias );
