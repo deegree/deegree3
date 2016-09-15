@@ -52,7 +52,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.codec.binary.Base64;
-import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
@@ -287,7 +286,8 @@ public class ExecuteResponse100Reader {
 
         StreamBufferStore tmpSink = new StreamBufferStore();
         try {
-            if ( attribs.getMimeType().startsWith( "text/xml" ) || attribs.getMimeType().startsWith( "application/xml" ) ) {
+            if ( attribs.getMimeType().matches( "^text/.*\\bxml\\b.*" ) || 
+                 attribs.getMimeType().matches( "^application/.*\\bxml\\b.*" ) ) {
                 XMLOutputFactory fac = XMLOutputFactory.newInstance();
                 fac.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
                 XMLStreamWriter xmlWriter = fac.createXMLStreamWriter( tmpSink, "UTF-8" );
