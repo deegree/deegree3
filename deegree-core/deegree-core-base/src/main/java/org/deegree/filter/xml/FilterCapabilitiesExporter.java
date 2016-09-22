@@ -227,7 +227,7 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( FES_20_NS, "Spatial_Capabilities" );
         writer.writeStartElement( FES_20_NS, "GeometryOperands" );
         writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GML3_2_NS );
         exportGeometryOperand( writer, "gml:Box" );
         exportGeometryOperand( writer, "gml:Envelope" );
         exportGeometryOperand( writer, "gml:Point" );
@@ -286,7 +286,7 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
         writer.writeStartElement( FES_20_NS, "TemporalOperands" );
         writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GML3_2_NS );
         exportTemporalOperand( writer, "gml:TimeInstant" );
         exportTemporalOperand( writer, "gml:TimePeriod" );
         exportTemporalOperand( writer, "gml32:TimeInstant" );
