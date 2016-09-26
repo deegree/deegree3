@@ -39,12 +39,11 @@ package org.deegree.protocol.wms.client;
 import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
 import static java.lang.Math.abs;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.proxy.ProxySettings.getHttpProxyPassword;
-import static org.deegree.commons.proxy.ProxySettings.getHttpProxyUser;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import static org.deegree.commons.xml.XmlHttpUtils.XML;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
@@ -65,7 +64,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,18 +73,21 @@ import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XmlHttpUtils;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.coverage.raster.RasterTransformer;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -105,6 +106,7 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.ows.client.AbstractOWSClient;
 import org.deegree.protocol.ows.exception.OWSExceptionReader;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
+import org.deegree.protocol.ows.http.OwsHttpClient;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
@@ -562,29 +564,33 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                 url += toQueryString( map );
 
                 URL theUrl = new URL( url );
-                LOG.debug( "Connecting to URL " + theUrl );
-                URLConnection conn = ProxySettings.openURLConnection( theUrl, ProxySettings.getHttpProxyUser( true ),
-                                                                      ProxySettings.getHttpProxyPassword( true ),
-                                                                      httpBasicUser, httpBasicPass );
-                conn.setConnectTimeout( connectionTimeout * 1000 );
-                conn.setReadTimeout( requestTimeout * 1000 );
-                conn.connect();
-                LOG.debug( "Connected." );
+
+                LOG.debug( "Send getMap request " + theUrl );
+
+                OwsHttpClient httpClient = new OwsHttpClientImpl( connectionTimeout * 1000, requestTimeout * 1000,
+                                                                  httpBasicUser, httpBasicPass );
+                OwsHttpResponse response = httpClient.doGet( theUrl, null, null );
+                HttpResponse httpResponse = response.getAsHttpResponse();
+                HttpEntity entity = httpResponse.getEntity();
+                InputStream responseStream = entity.getContent();
+
+                String contentType = getContentType( httpResponse );
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "Requesting from " + theUrl );
-                    LOG.trace( "Content type is " + conn.getContentType() );
-                    LOG.trace( "Content encoding is " + conn.getContentEncoding() );
+                    LOG.trace( "Content type is " + contentType );
+                    LOG.trace( "Content encoding is " + entity.getContentEncoding() );
                 }
-                if ( conn.getContentType() != null && conn.getContentType().startsWith( format ) ) {
-                    res.first = IMAGE.work( conn.getInputStream() );
-                } else if ( conn.getContentType() != null
-                            && conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
-                    res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
+
+                if ( contentType != null && contentType.startsWith( format ) ) {
+                    res.first = IMAGE.work( responseStream );
+                } else if ( contentType != null && contentType.startsWith( "application/vnd.ogc.se_xml" ) ) {
+                    res.second = XML.work( responseStream ).toString();
                 } else { // try and find out the hard way
-                    res.first = IMAGE.work( conn.getInputStream() );
+                    res.first = IMAGE.work( responseStream );
                     if ( res.first == null ) {
-                        conn = theUrl.openConnection();
-                        res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
+                        response = httpClient.doGet( theUrl, null, null );
+                        httpResponse = response.getAsHttpResponse();
+                        res.second = XML.work( entity.getContent() ).toString();
                     }
                 }
 
@@ -774,27 +780,36 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
         String query = url + toQueryString( map );
 
         URL theUrl = new URL( query );
-        LOG.debug( "Connecting to URL " + theUrl );
-        URLConnection conn = ProxySettings.openURLConnection( theUrl, getHttpProxyUser( true ),
-                                                              getHttpProxyPassword( true ), httpBasicUser,
-                                                              httpBasicPass );
-        conn.setConnectTimeout( connectionTimeout * 1000 );
-        conn.setReadTimeout( requestTimeout * 1000 );
-        conn.connect();
-        LOG.debug( "Connected." );
 
-        String fld = conn.getHeaderField( "Content-Type" );
-        if ( fld != null && !( fld.startsWith( getMap.getFormat() ) || fld.startsWith( "image" ) ) ) {
+        LOG.debug( "Send get request: " + theUrl );
+        OwsHttpClient httpClient = new OwsHttpClientImpl( connectionTimeout * 1000, requestTimeout * 1000,
+                                                          httpBasicUser, httpBasicPass );
+        OwsHttpResponse response = httpClient.doGet( theUrl, null, null );
+        HttpResponse httpResponse = response.getAsHttpResponse();
+        InputStream responseStream = httpResponse.getEntity().getContent();
+
+        String contentType = getContentType( httpResponse );
+        if ( contentType != null
+             && !( contentType.startsWith( getMap.getFormat() ) || contentType.startsWith( "image" ) ) ) {
             XMLInputFactory fac = XMLInputFactory.newInstance();
             try {
-                OWSExceptionReport rep = OWSExceptionReader.parseExceptionReport( fac.createXMLStreamReader( conn.getInputStream() ) );
+                XMLStreamReader streamReader = fac.createXMLStreamReader( responseStream );
+                if ( streamReader.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
+                    XMLStreamUtils.nextElement( streamReader );
+                }
+                OWSExceptionReport rep = OWSExceptionReader.parseExceptionReport( streamReader );
                 throw rep.getExceptions().get( 0 );
             } catch ( Throwable e ) {
                 throw new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE );
             }
         }
+        return responseStream;
+    }
 
-        return conn.getInputStream();
+    private String getContentType( HttpResponse httpResponse ) {
+        Header contentTypeHeader = httpResponse.getFirstHeader( "Content-Type" );
+        String fld = contentTypeHeader != null ? contentTypeHeader.getValue() : null;
+        return fld;
     }
 
     private boolean axisFlipped( ICRS crs ) {
