@@ -1116,10 +1116,10 @@ public class SQLFeatureStore implements FeatureStore {
                                                                    escalationPolicy );
             List<String> columns = builder.getInitialSelectColumns();
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( columns.get( 0 ) );
+            sql.append( fixColumnNameIfStartingWithDigit( columns.get( 0 ) ) );
             for ( int i = 1; i < columns.size(); i++ ) {
                 sql.append( ',' );
-                sql.append( columns.get( i ) );
+                sql.append( fixColumnNameIfStartingWithDigit( columns.get( i ) ) );
             }
             sql.append( " FROM " );
             sql.append( ftMapping.getFtTable() );
@@ -1211,10 +1211,10 @@ public class SQLFeatureStore implements FeatureStore {
             String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
 
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( columns.get( 0 ) );
+            sql.append( fixColumnNameIfStartingWithDigit( columns.get( 0 ) ) );
             for ( int i = 1; i < columns.size(); i++ ) {
                 sql.append( ',' );
-                sql.append( columns.get( i ) );
+                sql.append( fixColumnNameIfStartingWithDigit( columns.get( i ) ) );
             }
             sql.append( " FROM " );
             if ( ftMapping == null ) {
@@ -1363,10 +1363,10 @@ public class SQLFeatureStore implements FeatureStore {
             BlobMapping blobMapping = getSchema().getBlobMapping();
 
             StringBuilder sql = new StringBuilder( "SELECT " );
-            sql.append( columns.get( 0 ) );
+            sql.append( fixColumnNameIfStartingWithDigit( columns.get( 0 ) ) );
             for ( int i = 1; i < columns.size(); i++ ) {
                 sql.append( ',' );
-                sql.append( columns.get( i ) );
+                sql.append( fixColumnNameIfStartingWithDigit( columns.get( i ) ) );
             }
             sql.append( " FROM " );
 
@@ -1438,6 +1438,17 @@ public class SQLFeatureStore implements FeatureStore {
             result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), wb.getPostSortCriteria() ) );
         }
         return result;
+    }
+
+    protected static String fixColumnNameIfStartingWithDigit( String column ) {
+        int indexOfLastDot = column.lastIndexOf( "." );
+        String pre = column.substring( 0, indexOfLastDot + 1 );
+        String columnName = column.substring( indexOfLastDot + 1 );
+        if ( Character.isDigit( columnName.charAt( 0 ) ) ) {
+            columnName = "\"" + columnName + "\"";
+            return pre + columnName;
+        }
+        return column;
     }
 
     private FeatureInputStream queryMultipleFts( Query[] queries, Envelope looseBBox )
