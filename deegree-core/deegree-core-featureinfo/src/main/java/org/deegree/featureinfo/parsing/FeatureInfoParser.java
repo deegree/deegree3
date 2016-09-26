@@ -64,10 +64,16 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.property.SimpleProperty;
 import org.deegree.feature.types.DynamicAppSchema;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamReader;
 import org.slf4j.Logger;
 
@@ -215,10 +221,29 @@ public class FeatureInfoParser {
                 nextElement( reader );
                 while ( !( reader.isEndElement() && reader.getLocalName().equals( singleFeatureTagName ) ) ) {
 
-                    // Skip boundedBy
                     if ( reader.isStartElement() && reader.getLocalName().equals( "boundedBy" ) ) {
-                        XMLStreamUtils.skipElement( reader );
-                        nextElement( reader );
+                        try {
+                            nextElement( reader );
+                            while ( !( reader.isEndElement() ) ) {
+                                Geometry geom = createGMLStreamReader( GML_2, reader ).readGeometryOrEnvelope();
+
+                                QName boundedBy = new QName( reader.getNamespaceURI() , "boundedBy" );
+                                GeometryPropertyType gp = new GeometryPropertyType( boundedBy , 1, 1,
+                                                null, null, GEOMETRY, DIM_2, BOTH );
+                                propValues.add( new GenericProperty(gp, geom) );
+                                props.add( gp );
+                                XMLStreamUtils.skipElement( reader );
+                                nextElement( reader );
+                            }
+                            XMLStreamUtils.skipElement( reader );
+                            nextElement( reader );
+                        } catch (XMLParsingException ex) {
+                            LOG.debug( "Unable to parse boundedBy from remoteows umn mapserver." );
+                            continue;
+                        } catch (UnknownCRSException ex) {
+                            LOG.debug( "Unknown CRS in boundedBy from remoteows umn mapserver." );
+                            continue;
+                        }
                     }
 
                     // skip geometry
