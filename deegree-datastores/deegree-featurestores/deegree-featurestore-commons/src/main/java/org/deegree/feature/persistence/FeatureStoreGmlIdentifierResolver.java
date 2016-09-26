@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.deegree.filter.MatchAction.ANY;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,9 +48,7 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.Filter;
-import org.deegree.filter.MatchAction;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
@@ -87,41 +85,30 @@ public class FeatureStoreGmlIdentifierResolver implements GMLReferenceResolver {
 
     @Override
     public GMLObject getObject( String uri, String baseURL ) {
-        Matcher m = pattern.matcher( uri );
+        final Matcher m = pattern.matcher( uri );
         if ( m.find() ) {
-            List<FeatureType> fts = fs.getSchema().getFeatureTypes( null, false, false );
-            TypeName[] typeNames = new TypeName[fts.size()];
-            for ( int i = 0; i < fts.size(); ++i ) {
-                typeNames[i] = new TypeName( fts.get( i ).getName(), null );
-            }
-            String id = m.group( 1 );
-            ValueReference ref = new ValueReference( identifierName );
-            PropertyIsEqualTo eq = new PropertyIsEqualTo( ref, new Literal<PrimitiveValue>( id ), true, MatchAction.ALL );
-            Filter f = new OperatorFilter( eq );
-
-            List<Query> queries = new ArrayList<Query>();
-            for ( TypeName tn : typeNames ) {
-                queries.add( new Query( new TypeName[] { tn }, f, null, null, null ) );
-            }
-            for ( Query q : queries ) {
-                FeatureInputStream rs = null;
+            final String id = m.group( 1 );
+            final ValueReference ref = new ValueReference( identifierName );
+            final PropertyIsEqualTo eq = new PropertyIsEqualTo( ref, new Literal<PrimitiveValue>( id ), true, ANY );
+            final Filter f = new OperatorFilter( eq );
+            final Query query = new Query( new TypeName[0], f, null, null, null );
+            FeatureInputStream rs = null;
+            try {
+                rs = fs.query( query );
+                final Feature obj = rs.iterator().next();
+                if ( obj != null ) {
+                    return obj;
+                }
+            } catch ( Throwable e ) {
+                // then it's not resolvable (?)
+            } finally {
                 try {
-                    rs = fs.query( q );
-                    Feature obj = rs.iterator().next();
-                    if ( obj != null ) {
-                        return obj;
-                    }
+                    rs.close();
                 } catch ( Throwable e ) {
-                    // then it's not resolvable (?)
-                } finally {
-                    try {
-                        rs.close();
-                    } catch ( Throwable e ) {
-                        // not closable
-                    }
+                    // not closable
                 }
             }
-        }// else?
+        }
         return null;
     }
 }
