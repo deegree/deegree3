@@ -82,7 +82,8 @@ public class OraclePrimitiveConverter extends DefaultPrimitiveConverter {
                                                     + sqlValue.getClass() + "' to DateTime object." );
             }
         } else if ( sqlValue instanceof java.sql.Timestamp ) {
-            java.util.Date d = new java.util.Date( ( (java.sql.Timestamp) sqlValue ).getTime() );
+            java.sql.Timestamp ts = (java.sql.Timestamp) sqlValue;
+            java.util.Date d = new java.util.Date( ts.getTime() );
             value = new DateTime( d, null );
         } else {
             throw new IllegalArgumentException( "Unable to convert sql result value of type '" + sqlValue.getClass()
