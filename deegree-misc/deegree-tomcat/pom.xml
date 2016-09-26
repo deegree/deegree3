@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.4-RC4-SNAPSHOT</version>
+    <version>3.4-RC2-ogctestbed12-0.6-SNAPSHOT</version>
   </parent>
 
   <repositories>
