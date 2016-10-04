@@ -115,6 +115,7 @@ public class Config implements Comparable<Config>, Serializable {
         try {
             getWorkspace().destroy( metadata.getIdentifier() );
             getWorkspace().getLocationHandler().deactivate( metadata.getLocation() );
+            getWorkspace().add( metadata.getLocation() );
             List<ResourceMetadata<?>> list = new ArrayList<ResourceMetadata<?>>();
             WorkspaceUtils.collectDependents( list, getWorkspace().getDependencyGraph().getNode( metadata.getIdentifier() ) );
             for ( ResourceMetadata<?> md : list ) {
