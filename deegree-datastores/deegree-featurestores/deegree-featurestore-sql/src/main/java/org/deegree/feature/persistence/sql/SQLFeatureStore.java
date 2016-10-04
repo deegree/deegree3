@@ -1236,8 +1236,8 @@ public class SQLFeatureStore implements FeatureStore {
             checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
 
             if ( versionCode != null ) {
-                appendSqlForVersionCode( fidMapping, resourceId, "X2", versionTable, versionColumn, sql, versionCode,
-                                         stateTableAlias );
+                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                                         versionCode, stateTableAlias );
             } else if ( versionInteger > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else if ( startDate != null && endDate != null ) {
@@ -1246,8 +1246,8 @@ public class SQLFeatureStore implements FeatureStore {
             } else if ( resourceId.getRidVersion() > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else {
-                appendSqlForVersionCode( fidMapping, resourceId, "X2", versionTable, versionColumn, sql, LATEST,
-                                         stateTableAlias );
+                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                                         LATEST, stateTableAlias );
             }
             sql.append( " AND " );
             sql.append( stateTableAlias );
