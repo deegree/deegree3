@@ -91,10 +91,9 @@ import javax.xml.namespace.QName;
 
 /**
  * {@link AbstractWhereBuilder} implementation for PostGIS databases.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISWhereBuilder extends AbstractWhereBuilder {
@@ -103,28 +102,20 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
 
     /**
      * Creates a new {@link PostGISWhereBuilder} instance.
-     * 
-     * @param dialect
-     *            SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
-     * @param mapper
-     *            provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
-     * @param filter
-     *            Filter to use for generating the WHERE clause, can be <code>null</code>
-     * @param sortCrit
-     *            criteria to use for generating the ORDER BY clause, can be <code>null</code>
-     * @param allowPartialMappings
-     *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
-     * @param useLegacyPredicates
-     *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
-     *            <code>ST_Intersects</code>)
-     * @throws FilterEvaluationException
-     *             if the expression contains invalid {@link ValueReference}s
-     * @throws UnmappableException
-     *             if allowPartialMappings is false and an expression could not be mapped to the db
+     *
+     * @param dialect              SQL dialect, can be <code>null</code> (TODO refactor code, so not null is always used)
+     * @param mapper               provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
+     * @param filter               Filter to use for generating the WHERE clause, can be <code>null</code>
+     * @param sortCrit             criteria to use for generating the ORDER BY clause, can be <code>null</code>
+     * @param allowPartialMappings if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
+     * @param useLegacyPredicates  if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
+     *                             <code>ST_Intersects</code>)
+     * @throws FilterEvaluationException if the expression contains invalid {@link ValueReference}s
+     * @throws UnmappableException       if allowPartialMappings is false and an expression could not be mapped to the db
      */
     public PostGISWhereBuilder( PostGISDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
                                 SortProperty[] sortCrit, boolean allowPartialMappings, boolean useLegacyPredicates )
-                                                        throws FilterEvaluationException, UnmappableException {
+                            throws FilterEvaluationException, UnmappableException {
         super( dialect, mapper, filter, sortCrit );
         this.useLegacyPredicates = useLegacyPredicates;
         build( allowPartialMappings );
@@ -136,14 +127,11 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * NOTE: This method appends the generated argument inline, i.e. not using a <code>?</code>. This is because of a
      * problem that has been observed with PostgreSQL 8.0; the execution of the inline version is *much* faster.
      * </p>
-     * 
-     * @param op
-     *            comparison operator to be translated, must not be <code>null</code>
+     *
+     * @param op comparison operator to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
-     * @throws UnmappableException
-     *             if translation is not possible (usually due to unmappable property names)
-     * @throws FilterEvaluationException
-     *             if the expression contains invalid {@link ValueReference}s
+     * @throws UnmappableException       if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException if the expression contains invalid {@link ValueReference}s
      */
     @Override
     protected SQLOperation toProtoSQL( PropertyIsLike op )
@@ -171,7 +159,8 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         appendParamsFromFunction( function, params );
         TypedObjectNode value = evaluateFunction( function, params );
         if ( !( value instanceof PrimitiveValue ) ) {
-            throw new UnsupportedOperationException( "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
+            throw new UnsupportedOperationException(
+                                    "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
         }
         String valueAsString = ( (PrimitiveValue) value ).getAsText();
         return valueAsString;
@@ -214,15 +203,15 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
     private SQLOperation toProtoSql( PropertyIsLike op, ValueReference valueReference )
                             throws UnmappableException, FilterEvaluationException {
         SQLOperationBuilder builder = new SQLOperationBuilder();
-        if ( !op.isMatchCase() ) 
+        if ( !op.isMatchCase() )
             builder.add( "LOWER(" );
 
         builder.add( toProtoSQL( op.getExpression() ) );
         builder.add( "::TEXT " );
-        
+
         if ( !op.isMatchCase() )
             builder.add( ") " );
-        
+
         builder.add( " LIKE " );
         builder.add( toProtoSQL( valueReference ) );
         return builder.toOperation();
@@ -272,10 +261,10 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( toGeography( propNameExpr ) );
             builder.add( "," );
-            builder.add( toGeographyProtoSql( beyond.getGeometry(), storageCRS, srid ) );
+            addProtoSqlSecondParameterWithDistance( beyond, storageCRS, srid, builder );
             builder.add( "," );
             PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( beyond.getDistance()), pt );
+            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( beyond.getDistance() ), pt );
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
             SQLArgument argument = new SQLArgument( value, converter );
             builder.add( argument );
@@ -330,10 +319,10 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             }
             builder.add( toGeography( propNameExpr ) );
             builder.add( "," );
-            builder.add( toGeographyProtoSql( dWithin.getGeometry(), storageCRS, srid ) );
+            addProtoSqlSecondParameterWithDistance( dWithin, storageCRS, srid, builder );
             builder.add( "," );
             PrimitiveType pt = new PrimitiveType( DECIMAL );
-            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( dWithin.getDistance()), pt );
+            PrimitiveValue value = new PrimitiveValue( UomConverter.toMeter( dWithin.getDistance() ), pt );
             PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( pt, null, false );
             SQLArgument argument = new SQLArgument( value, converter );
             builder.add( argument );
@@ -420,7 +409,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             if ( isTimeInstant( parameter2 ) ) {
                 TimePosition timePosition = ( (GenericTimeInstant) ( (Literal<?>) parameter2 ).getValue() ).getPosition();
                 second = createDateExpression( timePosition );
-            } else  if ( isTimePeriod( parameter2 ) ) {
+            } else if ( isTimePeriod( parameter2 ) ) {
                 TimePosition end = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getEndPosition();
                 second = createDateExpression( end );
             } else {
@@ -437,7 +426,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             if ( isTimeInstant( parameter2 ) ) {
                 TimePosition timePosition = ( (GenericTimeInstant) ( (Literal<?>) parameter2 ).getValue() ).getPosition();
                 second = createDateExpression( timePosition );
-            } else  if ( isTimePeriod( parameter2 ) ) {
+            } else if ( isTimePeriod( parameter2 ) ) {
                 TimePosition begin = ( (GenericTimePeriod) ( (Literal<?>) parameter2 ).getValue() ).getBeginPosition();
                 second = createDateExpression( begin );
             } else {
@@ -470,9 +459,10 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                 SQLExpression beginExpr = createDateExpression( begin );
                 SQLExpression endExpr = createDateExpression( end );
                 sql = createSqlDuring( valueReference, beginExpr, endExpr );
-            } else if( parameter2 instanceof ValueReference ){
+            } else if ( parameter2 instanceof ValueReference ) {
                 SQLExpression valueReference = toProtoSQL( op.getParameter1() );
-                CompoundPropertyNameMapping compoundMapping = mapper.getCompoundMapping( (ValueReference) parameter2, aliasManager );
+                CompoundPropertyNameMapping compoundMapping = mapper.getCompoundMapping( (ValueReference) parameter2,
+                                                                                         aliasManager );
                 if ( compoundMapping != null ) {
                     PropertyNameMapping beginMapping = compoundMapping.getPropertyNameMappings(
                                             new QName( GML3_2_NS, "beginPosition" ) );
@@ -490,7 +480,8 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
                     }
                 } else {
                     throw new UnmappableException(
-                                            "Could not map property " + parameter2 + " as supported TimePeriod in operator 'During'." );
+                                            "Could not map property " + parameter2 +
+                                            " as supported TimePeriod in operator 'During'." );
                 }
             }
             break;
@@ -545,6 +536,18 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
             return sqlExpression;
         }
         return toProtoSQL( spatialOperator.getGeometry(), storageCRS, srid );
+    }
+
+    private void addProtoSqlSecondParameterWithDistance( SpatialOperator spatialOperator, ICRS storageCRS,
+                                                         int srid, SQLOperationBuilder builder )
+                            throws FilterEvaluationException, UnmappableException {
+        if ( spatialOperator.getValueReference() != null ) {
+            SQLExpression sqlExpression = toProtoSQLSpatial( spatialOperator.getValueReference() );
+            checkIfExpressionIsSpatial( sqlExpression, spatialOperator.getValueReference() );
+            builder.add( toGeography( sqlExpression ) );
+        } else {
+            builder.add( toGeographyProtoSql( spatialOperator.getGeometry(), storageCRS, srid ) );
+        }
     }
 
     private void checkIfExpressionIsSpatial( SQLExpression sqlExpression, ValueReference propName )
