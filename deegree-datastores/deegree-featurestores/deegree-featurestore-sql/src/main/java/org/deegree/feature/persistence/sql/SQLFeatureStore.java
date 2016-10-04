@@ -1236,7 +1236,7 @@ public class SQLFeatureStore implements FeatureStore {
             checkIfRequestAttributesAreSupported( version, versionCode, versionInteger, startDate, endDate );
 
             if ( versionCode != null ) {
-                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                appendSqlForVersionCode( fidMapping, resourceId, versionTable, versionColumn, sql,
                                          versionCode, stateTableAlias );
             } else if ( versionInteger > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
@@ -1246,7 +1246,7 @@ public class SQLFeatureStore implements FeatureStore {
             } else if ( resourceId.getRidVersion() > 0 ) {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else {
-                appendSqlForVersionCode( fidMapping, resourceId, versionTableAlias, versionTable, versionColumn, sql,
+                appendSqlForVersionCode( fidMapping, resourceId, versionTable, versionColumn, sql,
                                          LATEST, stateTableAlias );
             }
             sql.append( " AND " );
@@ -1322,16 +1322,16 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private void appendSqlForVersionCode( FIDMapping fidMapping, ResourceId resourceId, String versionTableAlias,
-                                          String versionTable, String versionColumn, StringBuilder sql,
-                                          VersionCode versionCode, String stateTableAlias ) {
+    private void appendSqlForVersionCode( FIDMapping fidMapping, ResourceId resourceId, String versionTable,
+                                          String versionColumn, StringBuilder sql, VersionCode versionCode,
+                                          String stateTableAlias ) {
         switch ( versionCode ) {
         case LATEST:
-            appendSelectForLatestVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql,
+            appendSelectForLatestVersion( fidMapping, versionTable, versionColumn, sql,
                                           stateTableAlias );
             break;
         case FIRST:
-            appendSelectForFirstVersion( fidMapping, versionTableAlias, versionTable, versionColumn, sql,
+            appendSelectForFirstVersion( fidMapping, versionTable, versionColumn, sql,
                                          stateTableAlias );
             break;
         case NEXT:
@@ -1452,8 +1452,9 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( " = next" );
     }
 
-    private void appendSelectForFirstVersion( FIDMapping fidMapping, String versionTableAlias, String versionTable,
+    private void appendSelectForFirstVersion( FIDMapping fidMapping, String versionTable,
                                               String versionColumn, StringBuilder sql, String stateTableAlias ) {
+        String versionTableAlias = "mv";
         sql.append( ", ( SELECT min(" );
         sql.append( versionColumn );
         sql.append( ") as min FROM " );
@@ -1473,8 +1474,9 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( ".min" );
     }
 
-    private void appendSelectForLatestVersion( FIDMapping fidMapping, String versionTableAlias, String versionTable,
+    private void appendSelectForLatestVersion( FIDMapping fidMapping, String versionTable,
                                                String versionColumn, StringBuilder sql, String stateTableAlias ) {
+        String versionTableAlias = "mv";
         sql.append( ", ( SELECT max(" );
         sql.append( versionColumn );
         sql.append( ") as max FROM " );
