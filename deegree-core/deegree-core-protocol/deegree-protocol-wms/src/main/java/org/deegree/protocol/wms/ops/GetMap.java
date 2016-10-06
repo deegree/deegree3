@@ -109,6 +109,8 @@ public class GetMap extends RequestBase {
 
     private ICRS crs;
 
+    private ICRS requestCrs;
+
     private Envelope bbox;
 
     private String format;
@@ -175,6 +177,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = boundingBox;
+        this.requestCrs = boundingBox.getCoordinateSystem();
         this.crs = boundingBox.getCoordinateSystem();
         this.bgcolor = white;
         format = "image/png";
@@ -198,6 +201,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
@@ -211,6 +215,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
@@ -235,6 +240,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = boundingBox;
+        this.requestCrs = boundingBox.getCoordinateSystem();
         this.crs = boundingBox.getCoordinateSystem();
         this.bgcolor = white;
         this.format = format;
@@ -257,6 +263,7 @@ public class GetMap extends RequestBase {
         if ( c == null || c.trim().isEmpty() ) {
             throw new OWSException( "The SRS parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
+        requestCrs = CRSManager.getCRSRef( c );
         crs = getCRS111( c );
 
         String box = map.get( "BBOX" );
@@ -579,7 +586,7 @@ public class GetMap extends RequestBase {
             throw new OWSException( "The maxy component of the BBOX was smaller that the miny component.",
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
-
+        requestCrs = CRSManager.getCRSRef( c );
         bbox = getCRSAndEnvelope130( c, vals );
         crs = bbox.getCoordinateSystem();
 
@@ -591,6 +598,13 @@ public class GetMap extends RequestBase {
      */
     public ICRS getCoordinateSystem() {
         return crs;
+    }
+
+    /**
+     * @return the requested coordinate system
+     */
+    public ICRS getRequestCoordinateSystem() {
+        return requestCrs;
     }
 
     /**

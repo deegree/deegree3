@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2010 by:
+ Copyright (C) 2001-2015 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -32,50 +32,47 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.rendering.r2d.context;
+----------------------------------------------------------------------------*/
+package org.deegree.layer.metadata;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.net.URL;
 
-import org.deegree.rendering.r2d.RasterRenderer;
-import org.deegree.rendering.r2d.Renderer;
-import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.rendering.r2d.Copyright;
-import org.deegree.rendering.r2d.LabelRenderer;
-import org.deegree.rendering.r2d.TileRenderer;
+import org.deegree.gml.GMLVersion;
 
 /**
+ * Encapsulates the xslt file as well as the gml version the xslt file transfoms to.
  * 
- * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public interface RenderContext {
+public class XsltFile {
 
-    Renderer getVectorRenderer();
+    private final URL xsltFile;
 
-    TextRenderer getTextRenderer();
-    
-    LabelRenderer getLabelRenderer();
+    private final GMLVersion targetGmlVersion;
 
-    RasterRenderer getRasterRenderer();
-
-    TileRenderer getTileRenderer();
-    
     /**
-     * To be called after all Renderings are done, to render and maybe optimize the labels.
+     * @param xsltFile
+     *            the xslt file used to transform, never <code>null</code>
+     * @param gmlVersion
+     *            the gml version the xsltFile transforms to, never <code>null</code>
      */
-    void optimizeAndDrawLabels();
+    public XsltFile( URL xsltFile, GMLVersion targetGmlVersion ) {
+        this.xsltFile = xsltFile;
+        this.targetGmlVersion = targetGmlVersion;
+    }
 
-    void paintImage( BufferedImage img );
+    /**
+     * @return the xslt file used to transform, never <code>null</code>
+     */
+    public URL getXsltFile() {
+        return xsltFile;
+    }
 
-    void paintCopyright( Copyright copyright, int mapHeight );
-
-    boolean close()
-                            throws IOException;
-
-    void applyOptions( MapOptions options );
+    /**
+     * @return the gml version the xsltFile transforms to, never <code>null</code>
+     */
+    public GMLVersion getTargetGmlVersion() {
+        return targetGmlVersion;
+    }
 
 }

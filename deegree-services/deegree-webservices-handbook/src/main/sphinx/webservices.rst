@@ -405,6 +405,8 @@ The following table shows what top level options are available.
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | MaxHeight                | 0..1         | Integer | Maximum height in a GetMap request, default: unlimited                       |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| CrsCheckStrict           | 0..1         | Boolean | Configures if the check of the CRS should be strict or not, default: false   |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
 
 
 ^^^^^^^^^^^^^
@@ -414,6 +416,7 @@ Basic options
 * ``SupportedVersions``: By default, all implemented WMS protocol versions (1.1.1 and 1.3.0) are activated. You can control offered WMS protocol versions using the element ``SupportedVersions``. This element allows any of the child elements ``<Version>1.1.1</Version>`` and ``<Version>1.3.0</Version>``.
 * ``MetadataStoreId``: If set to a valid metadata store, the store is queried upon startup with all configured layer metadata set ids. If a metadata set does not exist in the metadata store, it will not be exported as metadata URL in the capabilties. This is a useful option if you want to automatically check for configuration errors/typos. By default, no checking is done.
 * ``MetadataURLTemplate``: By default, no metadata URLs are generated for layers in the capabilities. You can set this option either to a unique URL, which will be exported as is, or to a template with a placeholder. In any case, a metadata URL will only be exported if the layer has a metadata set id set. A template looks like this: http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full. Please note that you'll need to escape the & symbols with &amp; as shown in the example. The ${metadataSetId} will be replaced with the metadata set id from each layer.
+* ``CrsCheckStrict``: By default the requested CRS are limited by the CRS supported by deegree. Set this to false if an exception (with code InvalidCRS or InvalidSRS) should be thrown if the request CRS is not support by the layer.     
 
 Here is a snippet for quick copy & paste:
 
@@ -428,6 +431,20 @@ Here is a snippet for quick copy & paste:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Service content configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following table shows what options are available.
+
+.. table:: Service content configuration
+
++---------------------+-------------+---------+-----------------------------------------------------------+
+| Option              | Cardinality | Value   | Description                                               |
++=====================+=============+=========+===========================================================+
+| DefaultLayerOptions | 0..1        | Complex | Configure the behaviour of layers                         |
++---------------------+-------------+---------+-----------------------------------------------------------+
+| ThemeId             | 0..n        | String  | Configure the WMS to use one or more preconfigured themes |
++---------------------+-------------+---------+-----------------------------------------------------------+
+| Copyright           | 0..1        | Complex | Adds a watermark to the image of GetMap response          |
++---------------------+-------------+---------+-----------------------------------------------------------+
 
 You can configure the behaviour of layers using the ``DefaultLayerOptions`` element.
 
@@ -464,6 +481,34 @@ Here is an example snippet of the content section:
     <ThemeId>mytheme</ThemeId>
 
   </ServiceConfiguration>
+
+The following table shows the Copyright configuration:
+
+.. table:: Copyright
+
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| Option   | Cardinality | Value   | Description                                                                                                    |
++==========+=============+=========+================================================================================================================+
+| Text     | 0..1        | String  | The text of the copyright.                                                                                     |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| Image    | 0..1        | String  | An image used as copyright. May be a relative or absolute reference to a file or a http url.                   |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| OffsetX  | 0..1        | Integer | The offset from the left of the GetMap response image to the left of the copyright in pixel (default: 8).      |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+| OffsetY  | 0..1        | Integer | The offset from the bottom of the GetMap response image to the bottom of the copyright in pixel (default: 13). |
++----------+-------------+---------+----------------------------------------------------------------------------------------------------------------+
+
+At least one of Text or Image must be configured. OffsetX and OffsetY are optional, but if OffsetX is configured, OffsetY must be configured, too (and vice versa).
+
+Here is an example snippet:
+
+.. code-block:: xml
+
+  <Copyright>
+    <Text>(c) deegree</Text>
+    <OffsetX>10</OffsetX>
+    <OffsetY>20</OffsetY>
+  </Copyright>
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom capabilities formats

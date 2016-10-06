@@ -45,7 +45,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,9 +56,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.imageio.ImageIO;
+
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
@@ -70,9 +75,12 @@ import org.deegree.layer.LayerRef;
 import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
+import org.deegree.rendering.r2d.Copyright;
 import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wms.CopyrightType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
@@ -80,6 +88,7 @@ import org.deegree.style.utils.ImageUtils;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -112,13 +121,16 @@ public class MapService {
 
     private final GetLegendHandler getLegendHandler;
 
+    private Copyright copyright;
+
     /**
      * @param conf
+     * @param metadata
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
-                            throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace, ResourceMetadata<OWS> metadata,
+                       int updateSequence ) throws MalformedURLException {
         this.updateSequence = updateSequence;
         this.registry = new StyleRegistry();
 
@@ -146,6 +158,7 @@ public class MapService {
                     }
                 }
             }
+            copyright = parseCopyright( metadata, conf.getCopyright() );
         }
         getLegendHandler = new GetLegendHandler( this );
     }
@@ -181,6 +194,14 @@ public class MapService {
 
     public boolean hasTheme( String name ) {
         return themeMap.get( name ) != null;
+    }
+
+    public boolean isCrsSupported( String name, ICRS requestedCrs ) {
+        Theme theme = themeMap.get( name );
+        if ( theme == null )
+            return false;
+        List<ICRS> supportedCrs = theme.getLayerMetadata().getSpatialMetadata().getCoordinateSystems();
+        return supportedCrs.contains( requestedCrs );
     }
 
     public void getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers, RenderContext ctx )
@@ -220,6 +241,8 @@ public class MapService {
             }
         }
         ctx.optimizeAndDrawLabels();
+        if ( copyright != null )
+            ctx.paintCopyright( copyright, gm.getHeight() );
 
         ScaleFunction.getCurrentScaleValue().remove();
     }
@@ -227,7 +250,7 @@ public class MapService {
     private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
                                                                   List<String> headers, double scale,
                                                                   ListIterator<LayerQuery> queryIter )
-                            throws OWSException {
+                                                                                          throws OWSException {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
@@ -400,6 +423,44 @@ public class MapService {
      */
     public int getCurrentUpdateSequence() {
         return updateSequence;
+    }
+
+    private Copyright parseCopyright( ResourceMetadata<OWS> metadata, CopyrightType copyright ) {
+        if ( copyright != null ) {
+            String copyrightText = copyright.getText();
+            BufferedImage copyrightImage = parseCopyrightImage( metadata, copyright.getImage() );
+            int offsetX = copyright.getOffsetX() != null ? copyright.getOffsetX() : 8;
+            int offsetY = copyright.getOffsetY() != null ? copyright.getOffsetY() : 13;
+            return new Copyright( copyrightText, copyrightImage, offsetX, offsetY );
+        }
+        return null;
+    }
+
+    private BufferedImage parseCopyrightImage( ResourceMetadata<OWS> metadata, String image ) {
+        if ( image != null ) {
+            URL copyrightImageAsUrl = parseCopyrightImageAsUrl( metadata, image );
+            if ( copyrightImageAsUrl != null ) {
+                try {
+                    return ImageIO.read( copyrightImageAsUrl );
+                } catch ( IOException e ) {
+                    LOG.warn( "Could not read copyright as image from {}: {}", copyrightImageAsUrl, e.getMessage() );
+                }
+            }
+        }
+        return null;
+    }
+
+    private URL parseCopyrightImageAsUrl( ResourceMetadata<OWS> metadata, String image ) {
+        URL url = metadata.getLocation().resolveToUrl( image );
+        if ( url != null )
+            return url;
+        try {
+            return new URL( image );
+        } catch ( MalformedURLException e ) {
+            LOG.debug( "Could not resolve copyright {}.", image, e );
+        }
+        LOG.warn( "Could not resolve copyright {}.", image );
+        return null;
     }
 
 }

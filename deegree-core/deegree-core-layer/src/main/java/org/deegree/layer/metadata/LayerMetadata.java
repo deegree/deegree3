@@ -38,6 +38,7 @@ package org.deegree.layer.metadata;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -89,6 +90,8 @@ public class LayerMetadata {
     private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
 
     private boolean requestable = true;
+    
+    private XsltFile xsltFile;
 
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
@@ -192,10 +195,9 @@ public class LayerMetadata {
                     mapOptions.setFeatureInfoRadius( 0 );
                 }
             }
-        } else if ( queryable ) {
-            mapOptions = new MapOptions( null, null, null, -1, 1 );
         } else {
-            mapOptions = new MapOptions( null, null, null, -1, 0 );
+            int featureInfoRadius = queryable ? 1 : 0;
+            mapOptions = new MapOptions.Builder().featureInfoRadius( featureInfoRadius ).build();
         }
     }
 
@@ -370,6 +372,21 @@ public class LayerMetadata {
      */
     public void setAuthorities( List<Pair<String, String>> authorities ) {
         this.authorities = authorities;
+    }
+
+    /**
+     * @return the xslt file used to transform a feature info response from remote layer, may be <code>null</code>
+     */
+    public XsltFile getXsltFile() {
+        return xsltFile;
+    }
+
+    /**
+     * @param xsltFile
+     *            the xslt file used to transform a feature info response from remote layer, may be <code>null</code>
+     */
+    public void setXsltFile( XsltFile xsltFile ) {
+        this.xsltFile = xsltFile;
     }
 
     private void mergeDescription( Description desc ) {

@@ -10,9 +10,9 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -32,19 +32,12 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <url>http://repo.lat-lon/nexus/content/repositories/wuppertal-releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <url>http://repo.lat-lon/nexus/content/repositories/wuppertal-snapshots/</url>
     </snapshotRepository>
-    <site>
-      <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
-      <url>file:///${site.dir}/${project.version}/</url>
-    </site>
   </distributionManagement>
 
   <prerequisites>

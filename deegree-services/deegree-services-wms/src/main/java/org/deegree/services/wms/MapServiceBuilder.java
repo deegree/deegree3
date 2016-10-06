@@ -52,7 +52,6 @@ import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.services.jaxb.wms.LayerOptionsType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
-import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
@@ -104,7 +103,12 @@ class MapServiceBuilder {
             } else {
                 LOG.debug( "Using default feature info radius of {}.", featureInfoRadius );
             }
-            return new MapOptions( quali, interpol, alias, maxFeatures, featureInfoRadius );
+            return new MapOptions.Builder().
+                                    quality( quali ).
+                                    interpolation( interpol ).
+                                    antialias( alias ).
+                                    maxFeatures( maxFeatures).
+                                    featureInfoRadius( featureInfoRadius ).build();
         }
         return null;
     }

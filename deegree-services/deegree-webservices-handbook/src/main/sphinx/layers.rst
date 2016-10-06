@@ -516,8 +516,12 @@ The manual configuration allows you to pick out a layer, rename it, and optional
       <!-- optionally override description (title, abstract, keywords) -->
       <!-- optionally override envelope, crs -->
       <!-- optionally set layer options -->
+      <!-- optionally configure XSLT script to transform GetFeatureInfo response to a arbitrary GML version
+      <XSLTFile targetGmlVersion="GML_32">remoteGfiResponse2gml32.xsl</XSLTFile>
+       -->
     </Layer>
   </RemoteWMSLayers>
 
 Please note that once you specify one layer, you'll need to specify each layer you want to make available. If you want all layers to be available, don't specify a ``Layer`` element. Of course, you can specify as many ``Layer`` elements as you like.
 
+With the element ``XSLTFile`` a xslt-Script can be configured transforming the response of a GetFeatureInfo request of the remote WMS to gml per layer. The values GML_2, GML_30, GML_31 and GML_32 are allowed as values of the attribute ``targetGmlVersion``. 

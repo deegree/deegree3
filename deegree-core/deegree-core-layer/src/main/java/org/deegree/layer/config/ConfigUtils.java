@@ -243,7 +243,12 @@ public final class ConfigUtils {
         } else if ( cfg.getFeatureInfoRadius() != null ) {
             rad = Math.max( 0, cfg.getFeatureInfoRadius() );
         }
-        return new MapOptions( quali, interpol, alias, maxFeats, rad );
+        return new MapOptions.Builder().
+                                quality( quali ).
+                                interpolation( interpol ).
+                                antialias( alias ).
+                                maxFeatures( maxFeats ).
+                                featureInfoRadius( rad ).build();
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {
