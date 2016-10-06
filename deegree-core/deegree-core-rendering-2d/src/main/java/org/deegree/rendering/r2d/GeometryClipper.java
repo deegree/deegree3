@@ -44,17 +44,24 @@ package org.deegree.rendering.r2d;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.rendering.r2d.OrientationFixer.fixOrientation;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.standard.primitive.DefaultSurface;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.components.Stroke;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Responsible for clipping geometries to the area of the viewport.
@@ -115,7 +122,29 @@ class GeometryClipper {
         }
         return geom;
     }
-    
+
+    Geometry calculateInteriorPoints( final Geometry geom ) {
+        if( geom == null )
+            return null;
+        try {
+            List<Point> points = new ArrayList<Point>();
+            if ( geom != null && geom instanceof DefaultSurface ) {
+                points.add( ( (DefaultSurface) geom ).getInteriorPoint() );
+            }
+            if ( geom != null && geom instanceof MultiPolygon ) {
+                for ( Polygon p : ( (MultiPolygon) geom ) ) {
+                    if ( p instanceof DefaultSurface ) {
+                        points.add( ( (DefaultSurface) p ).getInteriorPoint() );
+                    }
+                }
+            }
+           return new GeometryFactory().createMultiPoint( null, geom.getCoordinateSystem(), points );
+        } catch ( UnsupportedOperationException e ) {
+            // use original geometry if intersection not supported by JTS
+            return geom;
+        }
+    }
+
     /**
      * Check if the passed Geometry is a Polygon (or the first Geometry of a Collection) and the exterior Ring has CW orientation  
      * 
