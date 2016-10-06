@@ -81,6 +81,8 @@ import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -129,6 +131,8 @@ public class QueryAnalyzer {
     private final Map<Query, org.deegree.protocol.wfs.query.Query> queryToWFSQuery = new HashMap<Query, org.deegree.protocol.wfs.query.Query>();
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
+
+    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     private List<ProjectionClause> projections = null;
 
@@ -262,7 +266,7 @@ public class QueryAnalyzer {
                         throw new OWSException( msg, MISSING_PARAMETER_VALUE, "ID" );
                     }
                     LOG.debug( "GetFeatureById query" );
-                    String requestedId = literalEl.getText();
+                    String requestedId = resourceIdConverter.parseRid( literalEl.getText() ).first;
                     FeatureIdQuery q = new FeatureIdQuery( null, null, null, null, null, null,
                                                            new String[] { requestedId } );
                     adHocQueries.add( new Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>( q, wfsQuery ) );
