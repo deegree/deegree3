@@ -38,7 +38,7 @@ package org.deegree.feature.persistence.sql;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.feature.persistence.sql.version.VersionParser.VersionCode.LATEST;
+import static org.deegree.feature.persistence.sql.version.VersionParser.VersionCode.LAST;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
@@ -1247,7 +1247,7 @@ public class SQLFeatureStore implements FeatureStore {
                 appendSqlForVersionAsInteger( fidMapping, tableAlias, versionTable, versionColumn, sql );
             } else {
                 appendSqlForVersionCode( fidMapping, resourceId, versionTable, versionColumn, sql,
-                                         LATEST, stateTableAlias );
+                                         LAST, stateTableAlias );
             }
             sql.append( " AND " );
             sql.append( stateTableAlias );
@@ -1326,9 +1326,9 @@ public class SQLFeatureStore implements FeatureStore {
                                           String versionColumn, StringBuilder sql, VersionCode versionCode,
                                           String stateTableAlias ) {
         switch ( versionCode ) {
-        case LATEST:
-            appendSelectForLatestVersion( fidMapping, versionTable, versionColumn, sql,
-                                          stateTableAlias );
+        case LAST:
+            appendSelectForLastVersion( fidMapping, versionTable, versionColumn, sql,
+                                        stateTableAlias );
             break;
         case FIRST:
             appendSelectForFirstVersion( fidMapping, versionTable, versionColumn, sql,
@@ -1474,8 +1474,8 @@ public class SQLFeatureStore implements FeatureStore {
         sql.append( ".min" );
     }
 
-    private void appendSelectForLatestVersion( FIDMapping fidMapping, String versionTable,
-                                               String versionColumn, StringBuilder sql, String stateTableAlias ) {
+    private void appendSelectForLastVersion( FIDMapping fidMapping, String versionTable,
+                                             String versionColumn, StringBuilder sql, String stateTableAlias ) {
         String versionTableAlias = "mv";
         sql.append( ", ( SELECT max(" );
         sql.append( versionColumn );

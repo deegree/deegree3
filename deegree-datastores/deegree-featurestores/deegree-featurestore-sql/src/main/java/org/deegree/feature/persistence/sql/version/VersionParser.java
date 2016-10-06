@@ -48,7 +48,7 @@ public class VersionParser {
      * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
      */
     public enum VersionCode {
-        FIRST, LATEST, NEXT, PREVIOUS, ALL
+        FIRST, LAST, NEXT, PREVIOUS, ALL
     }
 
     /**

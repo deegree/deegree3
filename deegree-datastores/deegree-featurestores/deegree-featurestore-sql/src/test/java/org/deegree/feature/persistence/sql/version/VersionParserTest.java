@@ -90,7 +90,7 @@ public class VersionParserTest {
     @Test
     public void testParseVersionInteger_FromString()
                             throws Exception {
-        int version = VersionParser.parseVersionInteger( "LATEST" );
+        int version = VersionParser.parseVersionInteger( "LAST" );
 
         assertThat( version, is( -1 ) );
     }
@@ -123,7 +123,7 @@ public class VersionParserTest {
     @Test
     public void testParseVersionCode_FromInvalidString()
                             throws Exception {
-        VersionCode version = VersionParser.getVersionCode( "LAST" );
+        VersionCode version = VersionParser.getVersionCode( "LATEST" );
 
         assertThat( version, is( nullValue() ) );
     }
