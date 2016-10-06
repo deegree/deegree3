@@ -1081,7 +1081,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
         // fes:Filter_Capabilities
         if ( sections == null || sections.contains( "Filter_Capabilities" ) ) {
-            FilterCapabilitiesExporter.export200( writer );
+            FilterCapabilitiesExporter.export200( writer, master.isFeatureVersioningEnabled() );
         }
 
         writer.writeEndElement();

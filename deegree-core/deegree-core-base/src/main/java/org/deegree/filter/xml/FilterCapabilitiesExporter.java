@@ -131,7 +131,22 @@ public class FilterCapabilitiesExporter {
      */
     public static void export200( XMLStreamWriter writer )
                             throws XMLStreamException {
+        export200( writer, false );
+    }
 
+
+    /**
+     * Exports a <code>fes:Filter_Capabilities</code> element (2.0.0) that describes the capabilities of deegree's
+     * filter implementation.
+     *
+     * @param writer
+     *            used to write the XML, must not be <code>null</code>
+     *            @param  implementsVersionNav <code>true</code> if ImplementsVersionNav should be set to TRUE, <code>false</code> otherwise
+     * @throws XMLStreamException
+     *             if the exporting fails
+     */
+    public static void export200( XMLStreamWriter writer, boolean implementsVersionNav )
+                            throws XMLStreamException {
         writer.setPrefix( FES_PREFIX, FES_20_NS );
         writer.writeStartElement( FES_20_NS, "Filter_Capabilities" );
         if ( writer.getPrefix( FES_20_NS ) == null ) {
@@ -141,7 +156,7 @@ public class FilterCapabilitiesExporter {
             writer.writeNamespace( "ows", OWS_11_NS );
         }
 
-        exportConformance200( writer );
+        exportConformance200( writer, implementsVersionNav );
         exportIdCapabilities200( writer );
         exportScalarCapabilities200( writer );
         exportSpatialCapabilities200( writer );
@@ -150,9 +165,9 @@ public class FilterCapabilitiesExporter {
         exportExtendedCapabilities200( writer );
 
         writer.writeEndElement();
-    }
 
-    private static void exportConformance200( XMLStreamWriter writer )
+    }
+    private static void exportConformance200( XMLStreamWriter writer, boolean implementsVersionNav )
                             throws XMLStreamException {
         writer.writeStartElement( FES_20_NS, "Conformance" );
         exportConstraint200( writer, "ImplementsQuery", true );
@@ -165,7 +180,7 @@ public class FilterCapabilitiesExporter {
         exportConstraint200( writer, "ImplementsSpatialFilter", true );
         exportConstraint200( writer, "ImplementsMinTemporalFilter", true );
         exportConstraint200( writer, "ImplementsTemporalFilter", true );
-        exportConstraint200( writer, "ImplementsVersionNav", false );
+        exportConstraint200( writer, "ImplementsVersionNav", implementsVersionNav );
         exportConstraint200( writer, "ImplementsSorting", true );
         exportConstraint200( writer, "ImplementsExtendedOperators", false );
         exportConstraint200( writer, "ImplementsMinimumXPath", true );
