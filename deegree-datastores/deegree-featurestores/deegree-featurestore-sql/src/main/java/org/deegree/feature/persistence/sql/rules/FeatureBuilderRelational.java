@@ -308,13 +308,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 String tableAlias = detectTableAlias( queryFtMapping );
                 int version = retrieveVersion( queryFtMapping, rs );
                 String gmlId = buildGmlId( queryFtMapping, rs, version );
-                List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
-                gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
-                for ( int i = 1; i < fidColumns.size(); i++ ) {
-                    gmlId += ftMapping.getFidMapping().getDelimiter()
-                             + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "."
-                                                                          + fidColumns.get( i ).first ) );
-                }
                 if ( fs.getCache() != null ) {
                     feature = (Feature) fs.getCache().get( gmlId );
                 }
