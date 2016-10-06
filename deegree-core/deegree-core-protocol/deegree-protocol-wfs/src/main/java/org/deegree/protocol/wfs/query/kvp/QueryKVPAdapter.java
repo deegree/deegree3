@@ -73,6 +73,8 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.filter.xml.Filter200XMLDecoder;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -92,6 +94,8 @@ import org.slf4j.LoggerFactory;
 public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( QueryKVPAdapter.class );
+
+    private static ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     protected static StandardPresentationParams parseStandardPresentationParameters100( Map<String, String> kvpUC ) {
 
@@ -348,6 +352,9 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
             }
             for ( String param : params ) {
                 String[] subParams = KVPUtils.splitList( param );
+                for ( int subParamsIndex = 0; subParamsIndex < subParams.length; subParamsIndex++ ) {
+                    subParams[subParamsIndex] = resourceIdConverter.parseRid( subParams[subParamsIndex] ).first;
+                }
                 resourceIdList.add( subParams );
             }
         }
