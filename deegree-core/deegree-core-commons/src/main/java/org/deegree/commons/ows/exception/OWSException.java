@@ -139,6 +139,11 @@ public class OWSException extends Exception {
      */
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
 
+    /**
+     * the identifier specified for a stored query expression is a duplicate.
+     */
+    public static final String DUPLICATE_STORED_QUERY_ID_VALUE =  "DuplicateStoredQueryIdValue";
+
     private final String exceptionCode;
 
     private final String locator;

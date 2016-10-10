@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.ows;
 
+import static org.deegree.commons.ows.exception.OWSException.DUPLICATE_STORED_QUERY_ID_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -86,6 +87,8 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
             response.setStatus( 500 );
         } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
             response.setStatus( 403 );
+        } else if (DUPLICATE_STORED_QUERY_ID_VALUE.equals( exception.getExceptionCode() )) {
+            response.setStatus( 409 );
         } else {
             response.setStatus( 400 );
         }
