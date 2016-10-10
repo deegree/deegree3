@@ -129,7 +129,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
     /**
      * Creates a new {@link GmlGetFeatureHandler} instance.
      * 
-     * @param gmlFormat
+     * @param format
      *            never <code>null</code>
      */
     public GmlGetFeatureHandler( GmlFormat format ) {
@@ -339,7 +339,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     public void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException, FeatureStoreException,
-                            FilterEvaluationException {
+                            FilterEvaluationException, TransformationException, UnknownCRSException {
 
         LOG.debug( "Performing GetFeature (hits) request." );
 
@@ -385,6 +385,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             xmlStream.writeAttribute( "numberMatched", "" + hits.hitsTotal );
             xmlStream.writeAttribute( "numberReturned", "0" );
+            if ( options.isEnableResponsePaging() ) {
+                BigInteger count = request.getPresentationParams().getCount();
+
+                int startIndex = 0;
+                if ( request.getPresentationParams().getStartIndex() != null ) {
+                    startIndex = request.getPresentationParams().getStartIndex().intValue();
+                }
+                ResponsePagingUris responsePagingUris = createResponsePagingUris( request, count, startIndex );
+                writeResponsePagingUris( xmlStream, responsePagingUris );
+            }
             if ( hits.queryHits.length > 1 ) {
                 for ( int j = 0; j < hits.queryHits.length; j++ ) {
                     xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
@@ -553,10 +563,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
             xmlStream.writeAttribute( "numberReturned", "" + allFeatures.size() );
-            if ( responsePagingUris != null && responsePagingUris.nextUri != null )
-                xmlStream.writeAttribute( "next", "" + responsePagingUris.nextUri );
-            if ( responsePagingUris != null && responsePagingUris.previousUri != null )
-                xmlStream.writeAttribute( "previous", "" + responsePagingUris.previousUri );
+            writeResponsePagingUris( xmlStream, responsePagingUris );
         } else if ( !wfsVersion.equals( VERSION_100 ) && options.getResponseContainerEl() == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
@@ -570,6 +577,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         for ( Feature member : allFeatures ) {
             writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
         }
+    }
+
+    private void writeResponsePagingUris( XMLStreamWriter xmlStream, ResponsePagingUris responsePagingUris )
+                            throws XMLStreamException {
+        if ( responsePagingUris == null )
+            return;
+        if ( responsePagingUris.nextUri != null )
+            xmlStream.writeAttribute( "next", "" + responsePagingUris.nextUri );
+        if ( responsePagingUris.previousUri != null )
+            xmlStream.writeAttribute( "previous", "" + responsePagingUris.previousUri );
     }
 
     private void writeBoundedBy( Version wfsVersion, GMLStreamWriter gmlStream, GMLVersion outputFormat, Envelope env )
