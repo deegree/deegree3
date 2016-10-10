@@ -71,6 +71,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
 import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
+import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
@@ -274,6 +275,21 @@ public class StoredQueryHandlerTest {
         }
     }
 
+    @Test(expected = OWSException.class)
+    public void testDoCreateStoredQuery_UnsupportedLanguage()
+                            throws Exception {
+        List<FeatureType> featureTypes = featureTypes();
+        StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
+                                                                        managedStoredQueries );
+
+        String id = "mangedStoredQuery";
+        CreateStoredQuery request = createStoredQuery( id, "http://qry.example.org" );
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
+        storedQueryHandler.doCreateStoredQuery( request, mockHttpResponseBuffer( xmlStreamWriter ) );
+        xmlStreamWriter.close();
+    }
+
     @Test
     public void testDoDropStoredQuery()
                             throws Exception {
@@ -337,10 +353,19 @@ public class StoredQueryHandlerTest {
     }
 
     private CreateStoredQuery createStoredQuery( String id ) {
+        return createStoredQuery( id, StoredQueryHandler.LANGUAGE_WFS_QUERY_EXPRESSION );
+    }
+
+    private CreateStoredQuery createStoredQuery( String id, String language ) {
         List<StoredQueryDefinition> queryDefinitions = new ArrayList<StoredQueryDefinition>();
         StoredQueryDefinition queryDefinition = mock( StoredQueryDefinition.class );
         when( queryDefinition.getId() ).thenReturn( id );
         queryDefinitions.add( queryDefinition );
+        List<QueryExpressionText> queryExpressionTexts = new ArrayList<QueryExpressionText>();
+        QueryExpressionText queryExpressionText = mock( QueryExpressionText.class );
+        when( queryExpressionText.getLanguage() ).thenReturn( language );
+        queryExpressionTexts.add( queryExpressionText );
+        when( queryDefinition.getQueryExpressionTextEls() ).thenReturn( queryExpressionTexts );
         return new CreateStoredQuery( VERSION_200, "handle", queryDefinitions );
     }
 
