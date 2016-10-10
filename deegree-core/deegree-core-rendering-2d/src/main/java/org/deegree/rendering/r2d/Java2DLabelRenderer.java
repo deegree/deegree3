@@ -225,15 +225,10 @@ public class Java2DLabelRenderer implements LabelRenderer {
 
     private void handlePolygonWithAutoPlacement( TextStyling styling, Font font, String text, Polygon geom ) {
         Geometry transformedGeom = renderer.rendererContext.geomHelper.transform( geom );
-        Geometry clippedGeometry = renderer.rendererContext.clipper.clipGeometry( transformedGeom );
-        Geometry points = renderer.rendererContext.clipper.calculateInteriorPoints( clippedGeometry );
+        MultiPoint points = renderer.rendererContext.clipper.calculateInteriorPoints( transformedGeom );
         if ( geom == null )
             return;
-        if ( points instanceof MultiPoint ) {
-            handleMultiGeometry( styling, text, font, (MultiGeometry) points );
-        } else {
-            handleGeometryTypes( styling, text, font, points.getCentroid() );
-        }
+        handleMultiGeometry( styling, text, font, (MultiGeometry) points );
     }
 
 }
