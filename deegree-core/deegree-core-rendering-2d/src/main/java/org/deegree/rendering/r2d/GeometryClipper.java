@@ -49,6 +49,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
@@ -73,9 +74,12 @@ import java.util.List;
  */
 class GeometryClipper {
 
+    private final Envelope viewPort;
+
     private final Polygon clippingArea;
 
     GeometryClipper( final Envelope viewPort, final int width ) {
+        this.viewPort = viewPort;
         this.clippingArea = calculateClippingArea( viewPort, width );
     }
 
@@ -99,6 +103,37 @@ class GeometryClipper {
      * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
      */
     Geometry clipGeometry( final Geometry geom ) {
+        return clipGeometry( geom, clippingArea );
+    }
+
+    /**
+     * Calculates the points inside the geometry and inside the view port. First the passed geometry is clipped
+     * by the view port. A multipolygon may result. For each of the polygon in this multipolygon one interior point
+     * is created
+     *
+     * @param geom to create labels for, must not be <code>null</code> and in the same CRS as the viewPort
+     * @return a MultiPoint with all calculated labels
+     */
+    MultiPoint calculateInteriorPoints( final Geometry geom ) {
+        if ( geom == null )
+            return null;
+        Geometry clippedGeometry = clipGeometry( geom, viewPort );
+        List<Point> points = new ArrayList<Point>();
+        if ( clippedGeometry != null && clippedGeometry instanceof DefaultSurface ) {
+            points.add( ( (DefaultSurface) clippedGeometry ).getInteriorPoint() );
+        }
+        if ( clippedGeometry != null && clippedGeometry instanceof MultiPolygon ) {
+            for ( Polygon p : ( (MultiPolygon) clippedGeometry ) ) {
+                if ( p instanceof DefaultSurface ) {
+                    points.add( ( (DefaultSurface) p ).getInteriorPoint() );
+                }
+            }
+        }
+        return new GeometryFactory().createMultiPoint( null, geom.getCoordinateSystem(), points );
+    }
+
+
+    Geometry clipGeometry( final Geometry geom, Geometry clippingArea ) {
         if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {
                 Geometry clippedGeometry = clippingArea.getIntersection( geom );
@@ -113,7 +148,7 @@ class GeometryClipper {
                 if ( isInvertedOrientation( jtsOrig ) ) {
                     return clippedGeometry;
                 }
-                
+
                 return fixOrientation( clippedGeometry, clippedGeometry.getCoordinateSystem() );
             } catch ( UnsupportedOperationException e ) {
                 // use original geometry if intersection not supported by JTS
@@ -121,28 +156,6 @@ class GeometryClipper {
             }
         }
         return geom;
-    }
-
-    Geometry calculateInteriorPoints( final Geometry geom ) {
-        if( geom == null )
-            return null;
-        try {
-            List<Point> points = new ArrayList<Point>();
-            if ( geom != null && geom instanceof DefaultSurface ) {
-                points.add( ( (DefaultSurface) geom ).getInteriorPoint() );
-            }
-            if ( geom != null && geom instanceof MultiPolygon ) {
-                for ( Polygon p : ( (MultiPolygon) geom ) ) {
-                    if ( p instanceof DefaultSurface ) {
-                        points.add( ( (DefaultSurface) p ).getInteriorPoint() );
-                    }
-                }
-            }
-           return new GeometryFactory().createMultiPoint( null, geom.getCoordinateSystem(), points );
-        } catch ( UnsupportedOperationException e ) {
-            // use original geometry if intersection not supported by JTS
-            return geom;
-        }
     }
 
     /**
