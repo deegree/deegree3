@@ -54,6 +54,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.io.IOException;
@@ -100,6 +101,7 @@ import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.kvp.GetFeature200KVPEncoder;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 import org.deegree.protocol.wfs.query.StoredQuery;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -304,6 +306,31 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
         }
     }
+    private ResponsePagingUris createResponsePagingUrisHits( GetFeature request )
+                            throws UnknownCRSException, XMLStreamException, TransformationException,
+                            UnsupportedEncodingException, FilterEvaluationException, FeatureStoreException,
+                            OWSException {
+        StandardPresentationParams requestPresentationParams = request.getPresentationParams();
+        BigInteger count = requestPresentationParams.getCount();
+        int startIndex = 0;
+        if ( requestPresentationParams.getStartIndex() != null ) {
+            startIndex = requestPresentationParams.getStartIndex().intValue();
+        }
+
+        StandardPresentationParams presentationParams = new StandardPresentationParams( requestPresentationParams.getStartIndex(),
+                                                                                        count,
+                                                                                        RESULTS,
+                                                                                        requestPresentationParams.getOutputFormat() );
+        GetFeature nextGetFeature = new GetFeature( request.getVersion(), request.getHandle(),
+                                                    presentationParams,
+                                                    request.getResolveParams(), request.getQueries() );
+        if ( count != null ) {
+            Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( nextGetFeature );
+            String nextUri = createUrlWithStartindex( kvpGetFeature, startIndex );
+            return new ResponsePagingUris( nextUri, null );
+        }
+        return createResponsePagingUris( nextGetFeature, count, startIndex );
+    }
 
     private ResponsePagingUris createResponsePagingUris( GetFeature request, BigInteger count, int startIndex )
                             throws UnknownCRSException, XMLStreamException, TransformationException,
@@ -386,13 +413,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             xmlStream.writeAttribute( "numberMatched", "" + hits.hitsTotal );
             xmlStream.writeAttribute( "numberReturned", "0" );
             if ( options.isEnableResponsePaging() ) {
-                BigInteger count = request.getPresentationParams().getCount();
-
-                int startIndex = 0;
-                if ( request.getPresentationParams().getStartIndex() != null ) {
-                    startIndex = request.getPresentationParams().getStartIndex().intValue();
-                }
-                ResponsePagingUris responsePagingUris = createResponsePagingUris( request, count, startIndex );
+                ResponsePagingUris responsePagingUris = createResponsePagingUrisHits( request );
                 writeResponsePagingUris( xmlStream, responsePagingUris );
             }
             if ( hits.queryHits.length > 1 ) {
