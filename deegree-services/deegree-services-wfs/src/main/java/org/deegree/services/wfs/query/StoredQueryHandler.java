@@ -98,6 +98,8 @@ public class StoredQueryHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredQueryHandler.class );
 
+    public static final String LANGUAGE_WFS_QUERY_EXPRESSION = "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression";
+
     public static final String GET_FEATURE_BY_ID = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
 
     public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:query:OGC-WFS::GetFeatureByType";
@@ -147,6 +149,7 @@ public class StoredQueryHandler {
                                     OPERATION_PROCESSING_FAILED );
 
         checkIdsOfStoredQueries( request );
+        checkLanguageOfStoredQueries( request );
         handleCreateStoredQuery( request );
         writeCreateStoredQueryResponse( response );
     }
@@ -584,6 +587,21 @@ public class StoredQueryHandler {
         }
     }
 
+    private void checkLanguageOfStoredQueries( CreateStoredQuery request )
+                            throws OWSException {
+        for ( StoredQueryDefinition storedQueryDefinition : request.getQueryDefinitions() ) {
+            List<QueryExpressionText> queryExpressionTexts = storedQueryDefinition.getQueryExpressionTextEls();
+            for ( QueryExpressionText queryExpressionText : queryExpressionTexts ) {
+                String language = queryExpressionText.getLanguage();
+                if ( !LANGUAGE_WFS_QUERY_EXPRESSION.equals( language ) ) {
+                    String msg = "Stored query with id '" + queryExpressionTexts +
+                                 "' contains an unsupported language " + language + ". Currently only " +
+                                 LANGUAGE_WFS_QUERY_EXPRESSION + " is supported";
+                    throw new OWSException( msg, OWSException.INVALID_PARAMETER_VALUE, "language" );
+                }
+            }
+        }
+    }
     private void checkIdOfDropStoredQueryRequest( DropStoredQuery request )
                             throws OWSException {
         String storedQueryId = request.getStoredQueryId();
