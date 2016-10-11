@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
+import static org.deegree.commons.ows.exception.OWSException.DUPLICATE_STORED_QUERY_ID_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
@@ -310,7 +311,7 @@ public class StoredQueryHandler {
      * @throws IOException
      * @throws XMLStreamException
      */
-    public void doListStoredQueries( ListStoredQueries listStoredQueries, HttpResponseBuffer response )
+    public void doListStoredQueries( ListStoredQueries request, HttpResponseBuffer response )
                             throws XMLStreamException, IOException {
         String schemaLocation = WFS_200_NS + " " + WFS_200_SCHEMA_URL;
         XMLStreamWriter writer = getXMLResponseWriter( response, "text/xml", schemaLocation );
@@ -578,7 +579,7 @@ public class StoredQueryHandler {
             String id = storedQueryDefinition.getId();
             if ( hasStoredQuery( id ) ) {
                 String msg = "Stored query with id '" + id + "' is already known.";
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "storedQueryId" );
+                throw new OWSException( msg, DUPLICATE_STORED_QUERY_ID_VALUE, id );
             }
         }
     }
