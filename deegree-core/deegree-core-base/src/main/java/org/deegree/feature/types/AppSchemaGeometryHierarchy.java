@@ -70,7 +70,9 @@ public class AppSchemaGeometryHierarchy {
     private final Set<QName> abstractSurfaceElements;
 
     private final Set<QName> surfaceElements;
-
+    
+    private final Set<QName> compositeSurfaceElements;
+    
     private final Set<QName> solidElements;
 
     private final Set<QName> ringElements;
@@ -106,6 +108,9 @@ public class AppSchemaGeometryHierarchy {
         elName = new QName( gmlVersion.getNamespace(), "Surface" );
         surfaceElements = getConcreteSubstitutions( appSchema, elName );
 
+        elName = new QName( gmlVersion.getNamespace(), "CompositeSurface" );
+        compositeSurfaceElements = getConcreteSubstitutions( appSchema, elName );
+        
         elName = getAbstractElementName( "Solid", gmlVersion );
         solidElements = getConcreteSubstitutions( appSchema, elName );
 
@@ -159,7 +164,7 @@ public class AppSchemaGeometryHierarchy {
     public Set<QName> getCompositeCurveSubstitutions() {
         return compositeCurveElements;
     }
-
+    
     public Set<QName> getOrientableCurveSubstitutions() {
         return orientableCurveElements;
     }
@@ -170,6 +175,10 @@ public class AppSchemaGeometryHierarchy {
 
     public Set<QName> getSurfaceSubstitutions() {
         return surfaceElements;
+    }
+
+    public Set<QName> getCompositeSurfaceSubstitutions() {
+        return compositeSurfaceElements;
     }
 
     public Set<QName> getSolidElementNames() {

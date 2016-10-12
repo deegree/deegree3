@@ -120,6 +120,7 @@ public class WMSController130 extends WMSControllerBase {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
                 new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
+                xmlWriter.close();
                 capabilitiesManager.serializeCapabilities( format, new ByteArrayInputStream( stream.toByteArray() ),
                                                            response.getOutputStream() );
             }

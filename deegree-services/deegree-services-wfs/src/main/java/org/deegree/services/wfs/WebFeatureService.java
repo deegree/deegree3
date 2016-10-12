@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
@@ -117,6 +119,7 @@ import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.lock.LockHasExpiredException;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
@@ -556,7 +559,7 @@ public class WebFeatureService extends AbstractOWS {
                                                      + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
-                    mimeTypeToFormat.put( mimeType, format );
+                    mimeTypeToFormat.put( trim( mimeType ), format );
                 }
             }
         }
@@ -811,6 +814,13 @@ public class WebFeatureService extends AbstractOWS {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, new OWSException( e ), response );
+        } catch ( LockHasExpiredException e ) {
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            if ( VERSION_200.equals( requestVersion ) )
+                sendServiceException( requestVersion, new OWSException( e.getMessage(), LOCK_HAS_EXPIRED ), response );
+            else
+                sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
@@ -965,6 +975,12 @@ public class WebFeatureService extends AbstractOWS {
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e ), response );
+        } catch ( LockHasExpiredException e ) {
+            LOG.trace( "Stack trace:", e );
+            if ( VERSION_200.equals( requestVersion ) )
+                sendServiceException( requestVersion, new OWSException( e.getMessage(), LOCK_HAS_EXPIRED ), response );
+            else
+                sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e ), response );
@@ -980,7 +996,7 @@ public class WebFeatureService extends AbstractOWS {
                             throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
         LOG.debug( "doSOAP" );
 
-        if ( disableBuffering ) {
+        if ( !isSoapSupported() ) {
             super.doSOAP( soapDoc, request, response, multiParts, factory );
             return;
         }
@@ -1002,7 +1018,7 @@ public class WebFeatureService extends AbstractOWS {
             }
 
             OMElement body = soapDoc.getBody().getFirstElement().cloneOMElement();
-            XMLStreamReader bodyXmlStream = body.getXMLStreamReaderWithoutCaching();
+            XMLStreamReader bodyXmlStream = XMLStreamUtils.getAsXmlStrem( body );
 
             String requestName = body.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
@@ -1123,11 +1139,22 @@ public class WebFeatureService extends AbstractOWS {
             sendSoapException( soapDoc, factory, response, e, request, requestVersion );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ),
-                               request, requestVersion );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), exceptionCode ), request,
+                               requestVersion );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
+
+        } catch ( LockHasExpiredException e ) {
+            LOG.trace( "Stack trace:", e );
+            if ( VERSION_200.equals( requestVersion ) )
+                sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), LOCK_HAS_EXPIRED ),
+                                   request, requestVersion );
+            else
+                sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
         } catch ( InvalidParameterValueException e ) {
             LOG.trace( "Stack trace:", e );
             sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
@@ -1381,6 +1408,13 @@ public class WebFeatureService extends AbstractOWS {
      */
     public boolean isEnableResponsePaging() {
         return enableResponsePaging;
+    }
+
+    /**
+     * @return <code>true</code> if soap is supported, <code>false</code> otherwise
+     */
+    public boolean isSoapSupported() {
+        return !disableBuffering;
     }
 
     /**

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<JrxmlProcesses configVersion="0.1.0"
-	xmlns="http://www.deegree.org/processes/jrxml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/processes/jrxml jrxmlProcess.xsd">
-	<JrxmlProcess id="process_1">
-		<jrxml>test.jrxml</jrxml>
-	</JrxmlProcess>
-</JrxmlProcesses>

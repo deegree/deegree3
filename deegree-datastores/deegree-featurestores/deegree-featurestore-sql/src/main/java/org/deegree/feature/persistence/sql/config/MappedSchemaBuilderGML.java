@@ -155,7 +155,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
 
         CRSRef crs = CRSManager.getCRSRef( storageCRS.getValue() );
-        CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
+        CoordinateDimension dim = crs.getDimension() == 3 ? DIM_3 : DIM_2;
         geometryParams = new GeometryStorageParams( crs, storageCRS.getSrid(), dim );
 
         // add namespace bindings

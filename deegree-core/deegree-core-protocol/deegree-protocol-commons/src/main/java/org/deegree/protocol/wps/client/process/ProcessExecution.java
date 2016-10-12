@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -352,7 +353,26 @@ public class ProcessExecution extends AbstractProcessExecution {
             writer.close();
         }
 
-        InputStream responseStream = conn.getInputStream();
+        InputStream responseStream;
+        
+        // avoid java.io.IOException if server returned HTTP error code, rather get the OWSException
+        if(conn instanceof HttpURLConnection) {
+            HttpURLConnection httpConn = (HttpURLConnection) conn;
+
+            int responseCode = httpConn.getResponseCode();
+            LOG.debug(String.format("WPS request returned response code: %d", responseCode));
+
+            // See if we have an error - if so, process the error stream. If
+            // not, get the input stream
+            responseStream = httpConn.getErrorStream();
+            if (responseStream == null) {
+                responseStream = httpConn.getInputStream();
+            }
+        } 
+        // revert to previous default behaviour if we don't have an HTTP connection
+        else {
+            responseStream = conn.getInputStream();
+        }
 
         if ( LOG.isDebugEnabled() ) {
             File logFile = File.createTempFile( "wpsclient", "response" );
