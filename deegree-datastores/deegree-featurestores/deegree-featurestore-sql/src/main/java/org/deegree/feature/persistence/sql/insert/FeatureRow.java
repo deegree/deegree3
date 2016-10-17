@@ -55,6 +55,8 @@ import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.version.VersionQueryHandler;
+import org.deegree.filter.version.DefaultResourceIdConverter;
+import org.deegree.filter.version.ResourceIdConverter;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 
 /**
@@ -71,6 +73,8 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
  * @version $Revision$, $Date$
  */
 public class FeatureRow extends InsertRow {
+
+    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
 
     private final String origFid;
 
@@ -200,8 +204,10 @@ public class FeatureRow extends InsertRow {
             throw new FeatureStoreException( msg );
         }
         String[] idKernels = null;
+        String originalId = getOriginalId();
         try {
-            IdAnalysis analysis = mgr.getSchema().analyzeId( getOriginalId() );
+            String idPart = resourceIdConverter.parseRid( originalId ).first;
+            IdAnalysis analysis = mgr.getSchema().analyzeId( idPart );
             idKernels = analysis.getIdKernels();
             if ( !analysis.getFeatureType().getName().equals( ftMapping.getFeatureType() ) ) {
                 String msg = "Cannot insert feature with id '" + origFid + "' and id generation mode 'UseExisting'. "
@@ -210,7 +216,7 @@ public class FeatureRow extends InsertRow {
                 throw new FeatureStoreException( msg );
             }
         } catch ( IllegalArgumentException e ) {
-            String msg = "Cannot insert feature with id '" + getOriginalId()
+            String msg = "Cannot insert feature with id '" + originalId
                          + "' and id generation mode 'UseExisting'. "
                          + "Id does not match configured feature id pattern.";
             throw new FeatureStoreException( msg );
