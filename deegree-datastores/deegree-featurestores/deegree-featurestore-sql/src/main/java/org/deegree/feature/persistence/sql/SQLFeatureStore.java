@@ -1213,7 +1213,7 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( actionColumn );
             sql.append( "= 'delete' and " );
             sql.append( versionColumn );
-            sql.append( " = max THEN 'retired' ELSE 'superseeded' END state FROM " );
+            sql.append( " = max THEN 'retired' ELSE 'superseded' END state FROM " );
             sql.append( versionTable );
             sql.append( ", (SELECT max(" );
             sql.append( versionColumn );

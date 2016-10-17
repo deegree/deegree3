@@ -42,7 +42,7 @@ package org.deegree.feature;
  */
 public enum FeatureState {
 
-    VALID( "valid" ), SUPERSEEDED( "superseeded" ), RETIRED( "retired" ), FUTURE( "future" );
+    VALID( "valid" ), SUPERSEDED( "superseded" ), RETIRED( "retired" ), FUTURE( "future" );
 
     private final String gmlName;
 
@@ -59,7 +59,7 @@ public enum FeatureState {
             if ( featureMemberState.getGmlName().equals( gmlName ) )
                 return featureMemberState;
         }
-        throw new IllegalArgumentException( "No FeatureMembetState with gmlName " + gmlName + " available." );
+        throw new IllegalArgumentException( "No FeatureMemberState with gmlName " + gmlName + " available." );
     }
 
 }
