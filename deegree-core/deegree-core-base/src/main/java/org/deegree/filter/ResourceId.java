@@ -47,6 +47,8 @@ import org.deegree.commons.tom.datetime.DateTime;
  */
 public class ResourceId {
 
+    private final String originalRid;
+
     private final String rid;
 
     private final String previousRid;
@@ -66,7 +68,7 @@ public class ResourceId {
      *            the id of the selected resource, must not be <code>null</code>
      **/
     public ResourceId( String rid ) {
-        this( rid, -1, null, null, null, null );
+        this( rid, rid, -1, null, null, null, null );
     }
 
     /**
@@ -86,14 +88,24 @@ public class ResourceId {
      * @param endDate
      *            the end date to limit the selected resource, may be <code>null</code>
      */
-    public ResourceId( String rid, int ridVersion, String previousRid, String version, DateTime startDate,
+    public ResourceId( String originalRid, String rid, int ridVersion, String previousRid, String version, DateTime startDate,
                        DateTime endDate ) {
+        this.originalRid = originalRid;
         this.rid = rid;
         this.ridVersion = ridVersion;
         this.previousRid = previousRid;
         this.version = version;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    /**
+     * Returns the id of the resource that shall be selected as specified in the ResourceId.
+     *
+     * @return the id of the resource that shall be selected as specified in the ResourceId.
+     */
+    public String getOriginalRid() {
+        return originalRid;
     }
 
     /**

@@ -719,7 +719,7 @@ public class Filter200XMLDecoder {
         nextElement( xmlStream );
 
         Pair<String, Integer> fid2Version = resourceIdConverter.parseRid( rid );
-        return new ResourceId( fid2Version.first, fid2Version.second, previousRid, version, startDate, endDate );
+        return new ResourceId( rid, fid2Version.first, fid2Version.second, previousRid, version, startDate, endDate );
     }
 
     private static ComparisonOperator parseBinaryComparisonOperator( XMLStreamReader xmlStream, SubType type )

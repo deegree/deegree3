@@ -1113,7 +1113,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
         // check if all features can be deleted
         for ( ResourceId id : filter.getSelectedIds() ) {
-            if ( !fs.getLockManager().isFeatureModifiable( id.getRid(), lockId ) ) {
+            if ( !fs.getLockManager().isFeatureModifiable( id.getOriginalRid(), lockId ) ) {
                 if ( lockId == null ) {
                     throw new MissingParameterException( getMessage( "TA_DELETE_LOCKED_NO_LOCK_ID", id.getRid() ),
                                                          "lockId" );
