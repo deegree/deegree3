@@ -84,8 +84,6 @@ public class DefaultLockManager implements LockManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( DefaultLockManager.class );
 
-    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
-
     private FeatureStore store;
 
     private ConnectionProvider connection;
@@ -94,7 +92,7 @@ public class DefaultLockManager implements LockManager {
      * Creates a new {@link DefaultLockManager} for the given {@link FeatureStore}.
      * 
      * @param store
-     * @param jdbcConnId
+     * @param connection
      * @throws FeatureStoreException
      *             if the initialization of the locking backend fails
      */
@@ -225,7 +223,7 @@ public class DefaultLockManager implements LockManager {
                     failedToLockStmt = conn.prepareStatement( "INSERT INTO LOCK_FAILED_FIDS (LOCK_ID, FID) VALUES (?,?)" );
 
                     for ( Feature feature : fc ) {
-                        String fid = resourceIdConverter.parseRid( feature.getId() ).first;
+                        String fid = feature.getId();
                         int currentLockId = -1;
 
                         // check if feature is locked already
@@ -409,7 +407,7 @@ public class DefaultLockManager implements LockManager {
     @Override
     public boolean isFeatureLocked( String fid )
                             throws FeatureStoreException {
-        String resolvedFid = resourceIdConverter.parseRid( fid ).getFirst();
+        String resolvedFid = fid;
         boolean isLocked = false;
         synchronized ( this ) {
             releaseExpiredLocks();
@@ -443,7 +441,7 @@ public class DefaultLockManager implements LockManager {
             return !isFeatureLocked( fid );
         }
 
-        String resolvedFid = resourceIdConverter.parseRid( fid ).getFirst();
+        String resolvedFid = fid;
         int lockIdInt = -1;
         try {
             lockIdInt = Integer.parseInt( lockId );

@@ -77,8 +77,6 @@ class DefaultLock implements Lock {
 
     private static final Logger LOG = LoggerFactory.getLogger( DefaultLock.class );
 
-    private final ResourceIdConverter resourceIdConverter = new DefaultResourceIdConverter();
-
     private final DefaultLockManager manager;
 
     private final String id;
@@ -98,7 +96,7 @@ class DefaultLock implements Lock {
      * 
      * @param manager
      *            corresponding {@link DefaultLockManager} instance, must not be null
-     * @param jdbcConnId
+     * @param connection
      *            id of the JDBC connection, must not be null
      * @param id
      *            lock id, must not be null
@@ -240,8 +238,6 @@ class DefaultLock implements Lock {
     @Override
     public boolean isLocked( String fid )
                             throws FeatureStoreException {
-        String resolvedFid = resourceIdConverter.parseRid( fid ).first;
-
         boolean isLocked = false;
         synchronized ( manager ) {
             manager.releaseExpiredLocks();
@@ -251,7 +247,7 @@ class DefaultLock implements Lock {
             try {
                 conn = connection.getConnection();
                 stmt = conn.prepareStatement( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID=? AND LOCK_ID=?" );
-                stmt.setString( 1, resolvedFid );
+                stmt.setString( 1, fid );
                 stmt.setString( 2, id );
                 rs = stmt.executeQuery();
                 rs.next();
