@@ -39,6 +39,7 @@ import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.deegree.commons.ows.exception.OWSException.DUPLICATE_STORED_QUERY_ID_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
@@ -102,6 +103,8 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
             response.setStatus( SC_FORBIDDEN );
         } else if ( LOCK_HAS_EXPIRED.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_FORBIDDEN );
+        } else if (DUPLICATE_STORED_QUERY_ID_VALUE.equals( exception.getExceptionCode() )) {
+            response.setStatus( 409 );
         } else {
             response.setStatus( SC_BAD_REQUEST );
         }

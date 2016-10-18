@@ -259,10 +259,14 @@ public class FilterCapabilitiesExporter {
         exportGeometryOperand( writer, "gml:CompositeSurface" );
         exportGeometryOperand( writer, "gml32:Envelope" );
         exportGeometryOperand( writer, "gml32:Point" );
+        exportGeometryOperand( writer, "gml32:LineString" );
         exportGeometryOperand( writer, "gml32:Curve" );
+        exportGeometryOperand( writer, "gml32:Polygon" );
         exportGeometryOperand( writer, "gml32:Surface" );
         exportGeometryOperand( writer, "gml32:MultiPoint" );
+        exportGeometryOperand( writer, "gml32:MultiLineString" );
         exportGeometryOperand( writer, "gml32:MultiCurve" );
+        exportGeometryOperand( writer, "gml32:MultiPolygon" );
         exportGeometryOperand( writer, "gml32:MultiSurface" );
         exportGeometryOperand( writer, "gml32:CompositeCurve" );
         exportGeometryOperand( writer, "gml32:CompositeSurface" );
