@@ -84,6 +84,8 @@ public class FeatureRow extends InsertRow {
 
     private int version;
 
+    private String previousRid;
+
     private FeatureTypeMapping ftMapping;
 
     private VersionQueryHandler versionQueryHandler = new VersionQueryHandler();
@@ -122,10 +124,19 @@ public class FeatureRow extends InsertRow {
     /**
      * Returns the current version of the inserted {@link Feature}, if versioning is enabled.
      * 
-     * @return insert id, -1 if versioning is not supported or not assigned yet
+     * @return version of the feature, -1 if versioning is not supported or not assigned yet
      */
     public int getVersion() {
         return version;
+    }
+
+    /**
+     * Returns the rid of the previous version of the  {@link Feature}, if versioning is enabled.
+     *
+     * @return rid of the previous version, <code>null</code> if versioning is not supported or the feature does not have a previous version
+     */
+    public String getPreviousRid() {
+        return previousRid;
     }
 
     @Override
@@ -140,6 +151,7 @@ public class FeatureRow extends InsertRow {
             throw new FeatureStoreException( msg );
         }
         version = buildVersion( conn, newId );
+        previousRid = retrievePreviousRid( conn, newId );
 
         // clear everything, but keep key columns (values may still be needed by referencing rows)
         Map<SQLIdentifier, Object> keyColumnToValue = new HashMap<SQLIdentifier, Object>();
@@ -253,6 +265,12 @@ public class FeatureRow extends InsertRow {
                             throws SQLException {
         IdAnalysis analyzedId = mgr.getSchema().analyzeId( newId );
         return versionQueryHandler.retrieveVersion( conn, ftMapping, analyzedId );
+    }
+
+    private String retrievePreviousRid( Connection conn, String newId )
+                            throws SQLException {
+        IdAnalysis analyzedId = mgr.getSchema().analyzeId( newId );
+        return versionQueryHandler.retrievePreviousRid( conn, ftMapping, analyzedId );
     }
 
     private Object checkFIDParticle( SQLIdentifier column )

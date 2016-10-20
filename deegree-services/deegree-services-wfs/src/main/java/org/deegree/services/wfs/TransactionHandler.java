@@ -867,6 +867,8 @@ class TransactionHandler {
                     xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
                     if ( featureMetadata.getVersion() > 0 )
                         xmlWriter.writeAttribute( "version", Integer.toString( featureMetadata.getVersion() ) );
+                    if( featureMetadata.getPreviousRid() != null )
+                        xmlWriter.writeAttribute( "previousRid", featureMetadata.getPreviousRid() );
                     xmlWriter.writeEndElement();
                     xmlWriter.writeEndElement();
                 }
@@ -878,6 +880,8 @@ class TransactionHandler {
                 xmlWriter.writeAttribute( "rid", createdRid( featureMetadata ) );
                 if ( featureMetadata.getVersion() > 0 )
                     xmlWriter.writeAttribute( "version", Integer.toString( featureMetadata.getVersion() ) );
+                if( featureMetadata.getPreviousRid() != null )
+                    xmlWriter.writeAttribute( "previousRid", featureMetadata.getPreviousRid() );
                 xmlWriter.writeEndElement();
                 xmlWriter.writeEndElement();
             }

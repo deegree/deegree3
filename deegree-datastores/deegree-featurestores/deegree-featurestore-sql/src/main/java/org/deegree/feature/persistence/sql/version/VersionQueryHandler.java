@@ -39,6 +39,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
@@ -51,27 +52,26 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
+import org.deegree.feature.persistence.sql.rules.GmlIdBuilder;
 import org.deegree.feature.persistence.version.VersionMapping;
 
 /**
  * Handles queries to request the version of a feature if versioning is enabled.
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class VersionQueryHandler {
 
+    private final GmlIdBuilder gmlIdBuilder = new GmlIdBuilder();
+
     /**
-     * @param conn
-     *            the connection used to request the database, never <code>null</code>
-     * @param featureTypeMapping
-     *            the configured mapping of the feature type containing the version and fid mapping, never
-     *            <code>null</code>
-     * @param idAnalysis
-     *            the analyzed id to retrieve the version for, never <code>null</code>
+     * @param conn               the connection used to request the database, never <code>null</code>
+     * @param featureTypeMapping the configured mapping of the feature type containing the version and fid mapping, never
+     *                           <code>null</code>
+     * @param idAnalysis         the analyzed id to retrieve the version for, never <code>null</code>
      * @return the version of the feature with the analyzed id, -1 if versioning is not enabled for the feature type or
-     *         a feature with the analyzed id could not be found
-     * @throws SQLException
-     *             if an error occurred during communication with the db
+     * a feature with the analyzed id could not be found
+     * @throws SQLException if an error occurred during communication with the db
      */
     public int retrieveVersion( Connection conn, FeatureTypeMapping featureTypeMapping, IdAnalysis idAnalysis )
                             throws SQLException {
@@ -92,6 +92,31 @@ public class VersionQueryHandler {
         return -1;
     }
 
+    public String retrievePreviousRid( Connection conn, FeatureTypeMapping featureTypeMapping, IdAnalysis idAnalysis )
+                            throws SQLException {
+        String gmlId = null;
+        VersionMapping versionMapping = featureTypeMapping.getVersionMapping();
+        if ( versionMapping != null ) {
+            FIDMapping fidMapping = featureTypeMapping.getFidMapping();
+            String previousRidSql = getPreviousRidSql( versionMapping, fidMapping, featureTypeMapping.getFtTable() );
+            PreparedStatement stmt = prepareStatement( conn, fidMapping, idAnalysis, previousRidSql );
+
+            ResultSet rs = stmt.executeQuery();
+            List<Object> idColumnValues = new ArrayList<Object>();
+            int version = -1;
+            if ( rs.next() ) {
+                for ( Pair<SQLIdentifier, BaseType> fidColumn : fidMapping.getColumns() ) {
+                    String fidColumnName = fidColumn.first.getName();
+                    idColumnValues.add( rs.getObject( fidColumnName ) );
+                }
+                version = rs.getInt( "VERSION" );
+                gmlId = gmlIdBuilder.buildGmlId( featureTypeMapping, idColumnValues, version );
+            }
+            stmt.close();
+        }
+        return gmlId;
+    }
+
     private String getVersionSql( VersionMapping versionMapping, FIDMapping fidMapping, TableName ftTable ) {
         String versionColumnName = versionMapping.getVersionColumnName();
         List<Pair<SQLIdentifier, BaseType>> columns = fidMapping.getColumns();
@@ -107,6 +132,34 @@ public class VersionQueryHandler {
         sql.append( " ORDER BY " );
         sql.append( versionColumnName );
         sql.append( " DESC LIMIT 1 " );
+        return sql.toString();
+    }
+
+    private String getPreviousRidSql( VersionMapping versionMapping, FIDMapping fidMapping, TableName ftTable ) {
+        String versionColumnName = versionMapping.getVersionColumnName();
+        String actionColumnName = versionMapping.getActionColumnName();
+        List<Pair<SQLIdentifier, BaseType>> columns = fidMapping.getColumns();
+        StringBuilder sql = new StringBuilder();
+        sql.append( "SELECT * FROM ( " );
+        sql.append( "SELECT " );
+        appendFidColumns( columns, sql );
+        sql.append( ", " );
+        sql.append( actionColumnName );
+        sql.append( ", " );
+        sql.append( versionColumnName );
+        sql.append( ", ROW_NUMBER() OVER (PARTITION BY " );
+        appendFidColumns( columns, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumnName );
+        sql.append( " ) AS VERSION FROM " );
+        sql.append( versionMapping.getVersionMetadataTable().toString() );
+        sql.append( " WHERE " );
+        appendWhereForFidColumns( columns, sql );
+        sql.append( " ORDER BY " );
+        sql.append( versionColumnName );
+        sql.append( ") AS A " );
+        sql.append( "WHERE " ).append( actionColumnName ).append( " != 'delete' " );
+        sql.append( " ORDER BY VERSION DESC LIMIT 1 OFFSET 1" );
         return sql.toString();
     }
 

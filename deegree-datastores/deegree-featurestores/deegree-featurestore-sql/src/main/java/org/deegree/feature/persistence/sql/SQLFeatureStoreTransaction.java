@@ -698,7 +698,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         for ( FeatureRow assignment : idAssignments ) {
             String newId = assignment.getNewId();
             int version = assignment.getVersion();
-            featureMetadata.add( new FeatureMetadata( newId, version ) );
+            String previousRid = assignment.getPreviousRid();
+            featureMetadata.add( new FeatureMetadata( newId, version, previousRid ) );
         }
         return featureMetadata;
     }
@@ -857,23 +858,22 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         } catch ( Exception e ) {
             LOG.debug( e.getMessage(), e );
         }
-        List<FeatureMetadata> updated = null;
         if ( blobMapping != null ) {
             throw new FeatureStoreException( "Updates in SQLFeatureStore (BLOB mode) are currently not implemented." );
         } else {
             try {
-                updated = performUpdateRelational( ftName, replacementProps, idFilter );
+                List<FeatureMetadata> updated = performUpdateRelational( ftName, replacementProps, idFilter );
                 if ( fs.getCache() != null ) {
                     for ( ResourceId id : idFilter.getSelectedIds() ) {
                         fs.getCache().remove( id.getRid() );
                     }
                 }
+                return updated;
             } catch ( Exception e ) {
                 LOG.debug( e.getMessage(), e );
                 throw new FeatureStoreException( e.getMessage(), e );
             }
         }
-        return updated;
     }
 
     private List<FeatureMetadata> performUpdateRelational( QName ftName,
@@ -1082,7 +1082,8 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         for ( ResourceId selectedId : selectedIds ) {
             IdAnalysis analysis = schema.analyzeId( selectedId.getRid() );
             int version = versionQueryHandler.retrieveVersion( conn, featureTypeMapping, analysis );
-            featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version ) );
+            String previousRid = versionQueryHandler.retrievePreviousRid( conn, featureTypeMapping, analysis );
+            featureMetadatas.add( new FeatureMetadata( selectedId.getRid(), version, previousRid ) );
         }
         return featureMetadatas;
     }

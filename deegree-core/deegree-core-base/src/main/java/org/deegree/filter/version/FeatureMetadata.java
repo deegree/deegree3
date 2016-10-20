@@ -37,7 +37,7 @@ package org.deegree.filter.version;
 
 /**
  * Encapsulates the feature id and version (if versioning is enabled).
- * 
+ *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class FeatureMetadata {
@@ -46,12 +46,14 @@ public class FeatureMetadata {
 
     private final int version;
 
+    private final String previousRid;
+
     /**
      * @param fid
      *            id of the feature, never <code>null</code>
      */
     public FeatureMetadata( String fid ) {
-        this( fid, -1 );
+        this( fid, -1, null );
     }
 
     /**
@@ -61,8 +63,21 @@ public class FeatureMetadata {
      *            current version of this feature, -1 if versioning is not supported
      */
     public FeatureMetadata( String fid, int version ) {
+        this( fid, version, null );
+    }
+
+    /**
+     * @param fid
+     *            id of the feature, never <code>null</code>
+     * @param version
+     *            current version of this feature, -1 if versioning is not supported
+     * @param previousRid  the previous rid of the feature, may be  <code>null</code> if a previous
+     *                     rid does not exist or versioning is not supported
+     */
+    public FeatureMetadata( String fid, int version, String previousRid ) {
         this.fid = fid;
         this.version = version;
+        this.previousRid = previousRid;
     }
 
     /**
@@ -77,6 +92,14 @@ public class FeatureMetadata {
      */
     public int getVersion() {
         return version;
+    }
+
+    /**
+     * @return the previous rid of the feature, may be  <code>null</code> if a previous
+     * rid does not exist or versioning is not supported
+     */
+    public String getPreviousRid() {
+        return previousRid;
     }
 
     @Override
