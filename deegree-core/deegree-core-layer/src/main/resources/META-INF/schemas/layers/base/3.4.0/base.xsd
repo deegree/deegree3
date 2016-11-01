@@ -36,6 +36,7 @@
         <complexType>
           <sequence>
             <element name="StyleName" type="string" />
+            <element name="StyleTitle" type="string" minOccurs="0" />
             <element name="LayerNameRef" type="string" />
             <element name="StyleNameRef" type="string" />
             <!-- either use same style for legend, or one of the following -->
