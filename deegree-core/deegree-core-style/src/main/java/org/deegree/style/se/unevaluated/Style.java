@@ -106,6 +106,8 @@ public class Style implements Copyable<Style> {
 
     private String name;
 
+    private String title;
+
     private boolean useDefault;
 
     private PointStyling defaultPointStyle;
@@ -301,6 +303,21 @@ public class Style implements Copyable<Style> {
     public void setName( String name ) {
         this.name = name;
     }
+
+    /**
+     * @return the title of the style, may be <code>null</code>
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title of the style, may be <code>null</code>
+     */
+    public void setTitle( String title ) {
+        this.title = title;
+    }
+
 
     /**
      * @return the name of the feature type (or null if not constrained)
