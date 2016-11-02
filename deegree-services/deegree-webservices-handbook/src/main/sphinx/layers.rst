@@ -164,12 +164,13 @@ If a ``Style`` element is specified, you must first specify what style you want 
 
   <l:Style>
     <l:StyleName>highways</l:StyleName>
+    <l:StyleTitle>Colorful Highways</l:StyleTitle>
     <l:LayerNameRef>highways</l:LayerNameRef>
     <l:StyleNameRef>highways</l:StyleNameRef>
     ...
   </l:Style>
 
-The ``StyleName`` specifies the name under which the style will be known in the WMS. The ``LayerNameRef`` and ``StyleNameRef`` are used to extract the style from the style store.
+The ``StyleName`` specifies the name under which the style will be known in the WMS. The ``LayerNameRef`` and ``StyleNameRef`` are used to extract the style from the style store. The optional  ``StyleTitle`` can be used to specify the title of the style. If ``StyleTitle`` is not configured, the ``StyleName`` is used for the title instead.
 
 The next part to configure within the ``Style`` element is the legend generation, if you don't want to use the default legend generated from the rendering style. You can either specify a different style from the style store to use for legend generation, or you can specify an external graphic. Referencing a different legend style is straightforward:
 
@@ -209,6 +210,7 @@ A full example you will find below:
   <l:StyleStoreId>road_styles</l:StyleStoreId>
     <l:Style>
       <l:StyleName>highways</l:StyleName>
+      <l:StyleTitle>Colorful Highways</l:StyleTitle>
       <l:LayerNameRef>highways</l:LayerNameRef>
       <l:StyleNameRef>highways</l:StyleNameRef>
       <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
