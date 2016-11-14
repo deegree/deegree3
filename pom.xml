@@ -10,10 +10,10 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
-    <tag>deegree-3.4-RC3-lanuvfisalbo-0.1-SNAPSHOT</tag>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -31,20 +31,20 @@
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <id>lanuvfisalbo-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/lanuvfisalbo-release/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>lanuvfisalbo-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/lanuvfisalbo-snapshot/</url>
     </snapshotRepository>
+    <!--
     <site>
       <id>apidoc.deegree.org</id>
-<!--
       <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
       <url>file:///${site.dir}/${project.version}/</url>
     </site>
+  -->
   </distributionManagement>
 
   <prerequisites>
@@ -369,7 +369,7 @@
         <groupId>org.xmlmatchers</groupId>
         <artifactId>xml-matchers</artifactId>
         <version>1.0-RC1</version>
-      <scope>test</scope>
+        <scope>test</scope>
       </dependency>
       <!-- apache commons -->
       <dependency>
@@ -820,7 +820,7 @@
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-codec</artifactId>
         <version>1.7</version>
-        </dependency>
+      </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-xml</artifactId>
