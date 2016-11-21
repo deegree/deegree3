@@ -857,7 +857,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             addOperation( GetPropertyValue, getAndPost, post, get, operations );
 
             // CreateStoredQuery
-            addOperation( CreateStoredQuery, getAndPost, post, get, operations );
+
+            List<Domain> createStoredQueryParams = new ArrayList<Domain>();
+            createStoredQueryParams.add( new Domain( "language", Collections.singletonList(
+                                    "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression" ) ) );
+            addOperation( CreateStoredQuery, createStoredQueryParams, getAndPost, post, get, operations );
 
             // DropStoredQuery
             addOperation( DropStoredQuery, getAndPost, post, get, operations );

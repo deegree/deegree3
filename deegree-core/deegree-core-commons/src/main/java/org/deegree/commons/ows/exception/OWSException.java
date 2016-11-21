@@ -149,7 +149,7 @@ public class OWSException extends Exception {
      * exception code indicating an HTTP 404 error
      */
     public static final String NOT_FOUND = "NotFound";
-    
+
     /**
      * the identifier specified for a stored query expression is a duplicate.
      */
