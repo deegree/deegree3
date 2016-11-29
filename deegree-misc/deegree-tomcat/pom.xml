@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-misc</artifactId>
-    <version>3.4-RC4-SNAPSHOT</version>
+    <version>3.4-RC3-lanuvfisalbo-0.2-SNAPSHOT</version>
   </parent>
 
   <repositories>
