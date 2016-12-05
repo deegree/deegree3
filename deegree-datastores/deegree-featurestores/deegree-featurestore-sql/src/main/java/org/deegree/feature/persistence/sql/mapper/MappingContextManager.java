@@ -39,6 +39,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.gcardone.junidecode.Junidecode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,7 @@ class MappingContextManager {
             String substring = id.substring( 0, maxLength - 6 );
             id = substring + "_" + ( this.id++ );
         }
-        return id;
+        return Junidecode.unidecode( id );
     }
 
     private String toString( QName qName ) {
