@@ -507,6 +507,9 @@ The following table lists all available configuration options for ``<Primitive>`
 | ``<StorageCRS>``      | 0..1        | Complex | CRS of stored geometries and database srid (only for ``<Geometry>``)         |
 +-----------------------+-------------+---------+------------------------------------------------------------------------------+
 
+.. hint::
+  If your configuration file is stored in UTF-8 encoding deegree allows special chars from this charset in the mapping (e.g. the property Straße can be stored in the column 'strasse' or 'straße'). Required is that the database supports UTF-8 as well.
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Mapping GML application schemas
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
