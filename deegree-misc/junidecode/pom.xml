@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>gcardone</groupId>
     <artifactId>junidecode</artifactId>
     <packaging>jar</packaging>
-    <version>0.2</version>
     <name>junidecode</name>
+    <description>https://github.com/gcardone/junidecode</description>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -15,9 +15,11 @@
         </license>
     </licenses>
 
-    <scm>
-        <url>https://github.com/gcardone/junidecode.git</url>
-    </scm>
+    <parent>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-misc</artifactId>
+        <version>3.3.21-SNAPSHOT</version>
+    </parent>
 
     <developers>
         <developer>
@@ -98,7 +100,7 @@
                                     <replacefilter token="#version#" value="${version}"/>
                                     <replacefilter token="#user.name#" value="${user.name}"/>
                                     <replacefilter token="#today#" value="${TODAY}"/>
-                                    <replacefilter token="#mainclass#" value="gcardone.junidecode.App"/>
+                                    <replacefilter token="#mainclass#" value="org.deegree.gcardone.junidecode.App"/>
                                 </replace>
                             </tasks>
                         </configuration>
