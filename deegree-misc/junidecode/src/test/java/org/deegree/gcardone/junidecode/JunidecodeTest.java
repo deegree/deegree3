@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gcardone.junidecode;
+package org.deegree.gcardone.junidecode;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
