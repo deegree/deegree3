@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gcardone.junidecode;
+package org.deegree.gcardone.junidecode;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import static gcardone.junidecode.Junidecode.*;
 
 /**
  * Simple example application for JUnidecode. If launched with arguments
@@ -48,7 +46,7 @@ public class App {
         if (args.length > 0) {
             StringBuilder sb = new StringBuilder();
             for (String s : args) {
-                sb.append(unidecode(s)).append(" ");
+                sb.append( Junidecode.unidecode( s)).append( " ");
             }
             System.out.println(sb.toString().trim());
         } else {
@@ -56,7 +54,7 @@ public class App {
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
                 String line;
                 while ((line = br.readLine()) != null) {
-                    System.out.println(unidecode(line));
+                    System.out.println( Junidecode.unidecode( line));
                 }
             } catch (IOException ex) {
                 System.err.println(ex.getLocalizedMessage());

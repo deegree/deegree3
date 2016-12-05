@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gcardone.junidecode;
+package org.deegree.gcardone.junidecode;
 
 /**
  * Character map for Unicode characters with codepoint U+12xx.
