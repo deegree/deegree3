@@ -50,6 +50,7 @@ import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +61,13 @@ import org.slf4j.LoggerFactory;
  * Can be used for resolving local xlink-references at the end of the parsing process of a GML instance document or to
  * access all encountered objects on any level of the document.
  * </p>
- * 
+ *
  * @see GMLReferenceResolver
  * @see GMLStreamReader
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GmlDocumentIdContext implements GMLReferenceResolver {
@@ -83,9 +84,11 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     private AppSchema schema;
 
+    private ReferencePatternMatcher referencePatternMatcher;
+
     /**
      * Creates a new {@link GmlDocumentIdContext} instance for a GML document of the given version.
-     * 
+     *
      * @param version
      *            GML version, must not be <code>null</code>
      */
@@ -95,7 +98,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     /**
      * Sets the application schema (necessary for {@link #getObject(String, String)}.
-     * 
+     *
      * @param schema
      *            application schema to use for parsing external references
      */
@@ -105,7 +108,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     /**
      * Adds a new {@link GMLObject} that has been encountered during the parsing of the GML document.
-     * 
+     *
      * @param object
      *            GML object, must not be <code>null</code> and must not be of type {@link GMLReference}
      */
@@ -118,7 +121,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     /**
      * Adds a new {@link GMLReference} that has been encountered during the parsing of the GML document.
-     * 
+     *
      * @param ref
      *            GML reference, must not be <code>null</code>
      */
@@ -130,8 +133,17 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
     }
 
     /**
+     * Adds a {@link ReferencePatternMatcher} that checks if a url should be skipped or not.
+     *
+     * @param referencePatternMatcher the matcher to add, may be <code>null</code> (all urls are resolved)
+     */
+    public void addReferencePatternMatcher( ReferencePatternMatcher referencePatternMatcher ) {
+        this.referencePatternMatcher = referencePatternMatcher;
+    }
+
+    /**
      * Returns the {@link GMLObject} with the specified id.
-     * 
+     *
      * @param id
      *            id of the object to be returned
      * @return the object, or <code>null</code> if it has not been added before
@@ -142,7 +154,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     /**
      * Returns all {@link GMLObject} (but no {@link GMLReference} instances) that have been added.
-     * 
+     *
      * @return all gml objects that have been added before, may be empty, but never <code>null</code>
      */
     public Map<String, GMLObject> getObjects() {
@@ -151,7 +163,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     /**
      * Return all {@link GMLReference} instances that have been added.
-     * 
+     *
      * @return all gml references that have been added before, may be empty, but never <code>null</code>
      */
     public List<GMLReference<?>> getReferences() {
@@ -160,16 +172,15 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     @Override
     public GMLObject getObject( String uri, String baseURL ) {
-        GMLObject object = null;
         if ( uri.startsWith( "#" ) ) {
-            object = idToObject.get( uri.substring( 1 ) );
+            return idToObject.get( uri.substring( 1 ) );
         } else if ( uri.startsWith( "urn:" ) ) {
             LOG.warn( "Unable to resolve external object reference: " + uri
                       + ". Resolving of urn references is not implemented yet." );
-        } else {
-            object = fetchExternalGmlObject( uri, baseURL );
+        } else if( !uriShouldBeSkipped( uri) ) {
+            return fetchExternalGmlObject( uri, baseURL );
         }
-        return object;
+        return null;
     }
 
     private GMLObject fetchExternalGmlObject( String uri, String baseURL ) {
@@ -195,7 +206,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
     /**
      * Resolves all local references that have been added before against the added objects.
-     * 
+     *
      * @throws ReferenceResolvingException
      *             if a local reference cannot be resolved
      */
@@ -212,4 +223,11 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
             }
         }
     }
+
+    private boolean uriShouldBeSkipped( String uri ) {
+        if ( referencePatternMatcher != null )
+            return referencePatternMatcher.isMatching( uri );
+        return false;
+    }
+
 }
