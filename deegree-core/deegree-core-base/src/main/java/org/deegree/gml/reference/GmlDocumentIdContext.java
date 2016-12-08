@@ -137,7 +137,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
      *
      * @param referencePatternMatcher the matcher to add, may be <code>null</code> (all urls are resolved)
      */
-    public void addReferencePatternMatcher( ReferencePatternMatcher referencePatternMatcher ) {
+    public void setReferencePatternMatcher( ReferencePatternMatcher referencePatternMatcher ) {
         this.referencePatternMatcher = referencePatternMatcher;
     }
 
@@ -179,6 +179,8 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
                       + ". Resolving of urn references is not implemented yet." );
         } else if( !uriShouldBeSkipped( uri) ) {
             return fetchExternalGmlObject( uri, baseURL );
+        } else {
+            LOG.info( "URL " + uri + " is configured to be skipped" );
         }
         return null;
     }

@@ -21,7 +21,7 @@ public class GmlDocumentIdContextTest {
     public void getObject_skippedUrl()
                             throws Exception {
         GmlDocumentIdContext gmlDocumentIdContext = new GmlDocumentIdContext( GMLVersion.GML_32 );
-        gmlDocumentIdContext.addReferencePatternMatcher( mockMatcher( true ) );
+        gmlDocumentIdContext.setReferencePatternMatcher( mockMatcher( true ) );
 
         GMLObject uri = gmlDocumentIdContext.getObject( "uri", null );
         assertThat( uri, is( nullValue() ) );
@@ -31,7 +31,7 @@ public class GmlDocumentIdContextTest {
     public void getObject_notSkippedUrl_butInvalid()
                             throws Exception {
         GmlDocumentIdContext gmlDocumentIdContext = new GmlDocumentIdContext( GMLVersion.GML_32 );
-        gmlDocumentIdContext.addReferencePatternMatcher( mockMatcher( false ) );
+        gmlDocumentIdContext.setReferencePatternMatcher( mockMatcher( false ) );
 
         gmlDocumentIdContext.getObject( "uri", null );
     }
@@ -43,7 +43,7 @@ public class GmlDocumentIdContextTest {
 
         gmlDocumentIdContext.getObject( "uri", null );
     }
-    
+
     private ReferencePatternMatcher mockMatcher( boolean isMatching ) {
         ReferencePatternMatcher mock = mock( ReferencePatternMatcher.class );
         when( mock.isMatching( anyString() ) ).thenReturn( isMatching );
