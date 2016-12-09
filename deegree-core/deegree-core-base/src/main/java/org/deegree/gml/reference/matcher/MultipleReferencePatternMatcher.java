@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class MultipleReferencePatternMatcher implements ReferencePatternMatcher {
 
-    private final List<ReferencePatternMatcher> matchersToApply = new ArrayList<>();
+    private final List<ReferencePatternMatcher> matchersToApply = new ArrayList();
 
     @Override
     public boolean isMatching( String url ) {
