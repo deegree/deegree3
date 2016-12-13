@@ -952,6 +952,9 @@ This walkthrough is based on the INSPIRE Annex I schemas, but you should be able
 .. tip::
   Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft SQL Server database. In order to enable support for these databases, see :ref:`anchor-db-libraries`.
 
+.. hint::
+  If the application schema contains UTF-8 characters which are not part of the 7-bit ASCII subset they are normalised during the generation of the feature store configuration for the database mapping (but kept for the feature type names). So the mapping to table and column names contains only 7-bit ASCII character and it is no requirement to the database to use UTF-8.
+
 As a first step, create a JDBC connection to your database. Click **server connections -> jdbc** and enter **inspire** (or an other identifier) as connection id:
 
 .. figure:: images/console_featurestore_mapping1.jpg
