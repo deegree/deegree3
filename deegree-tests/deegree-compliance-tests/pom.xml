@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4-RC4-SNAPSHOT</version>
+    <version>3.4-RC3-lgbinspire-0.1-SNAPSHOT</version>
   </parent>
 
   <repositories>
