@@ -36,6 +36,7 @@
 package org.deegree.protocol.wps.client.process;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +137,7 @@ class AbstractProcessExecution {
      *            identifier of the input parameter, must not be <code>null</code>
      * @param idCodeSpace
      *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param url
+     * @param uri
      *            {@link URL} reference to the xml resource, must not be <code>null</code>
      * @param byRef
      *            if true, the parameter will be passed by reference to the server, otherwise it will be nested in the
@@ -151,9 +152,9 @@ class AbstractProcessExecution {
      *            schema, may be <code>null</code> (indicates that the default schema from the parameter description
      *            applies)
      */
-    public void addXMLInput( String id, String idCodeSpace, URL url, boolean byRef, String mimeType, String encoding,
+    public void addXMLInput( String id, String idCodeSpace, URI uri, boolean byRef, String mimeType, String encoding,
                              String schema ) {
-        inputs.add( new XMLInput( new CodeType( id, idCodeSpace ), url, byRef, mimeType, encoding, schema ) );
+        inputs.add( new XMLInput( new CodeType( id, idCodeSpace ), uri, byRef, mimeType, encoding, schema ) );
     }
 
     /**
@@ -188,7 +189,7 @@ class AbstractProcessExecution {
      *            identifier of the input parameter, must not be <code>null</code>
      * @param idCodeSpace
      *            codespace of the parameter identifier, may be <code>null</code> (for identifiers without codespace)
-     * @param url
+     * @param uri
      *            {@link URL} reference to the binary resource, must not be <code>null</code> (and must not be
      *            web-accessible)
      * @param byRef
@@ -201,8 +202,8 @@ class AbstractProcessExecution {
      *            encoding, may be <code>null</code> (indicates that the default encoding from the parameter description
      *            applies)
      */
-    public void addBinaryInput( String id, String idCodeSpace, URL url, boolean byRef, String mimeType, String encoding ) {
-        inputs.add( new BinaryInput( new CodeType( id, idCodeSpace ), url, byRef, mimeType, encoding ) );
+    public void addBinaryInput( String id, String idCodeSpace, URI uri, boolean byRef, String mimeType, String encoding ) {
+        inputs.add( new BinaryInput( new CodeType( id, idCodeSpace ), uri, byRef, mimeType, encoding ) );
     }
 
     /**
