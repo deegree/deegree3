@@ -649,4 +649,5 @@ public class WPSClientTest {
         execution.addBinaryInput( "infile", null, inputUri, true, null, null );
 
         execution.execute();
+    }
 }
