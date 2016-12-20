@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.input;
 
-import java.net.URL;
+import java.net.URI;
 
 import org.deegree.commons.tom.ows.CodeType;
 
@@ -72,11 +72,11 @@ public abstract class ExecutionInput {
     }
 
     /**
-     * Returns the web-accessible URL for retrieving the input value.
+     * Returns the web-accessible URI for retrieving the input value.
      * 
-     * @return web-accessible URL, can be <code>null</code> (not web-acessible)
+     * @return web-accessible URI, can be <code>null</code> (not web-acessible)
      */
-    public URL getWebAccessibleURL() {
+    public URI getWebAccessibleURI() {
         return null;
     }
 }
