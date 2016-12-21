@@ -996,7 +996,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( final Feature replacement, final Filter filter, final Lock lock,
+    public List<String> performReplace( final Feature replacement, final Filter filter, final Lock lock,
                                   final IDGenMode idGenMode )
                             throws FeatureStoreException {
         if ( filter instanceof IdFilter ) {
@@ -1007,10 +1007,10 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         final GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
         final List<String> ids = performInsert( col, idGenMode );
-        if ( ids.isEmpty() || ids.size() > 1 ) {
+        if ( ids.isEmpty()) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }
-        return ids.get( 0 );
+        return ids;
     }
 
 }

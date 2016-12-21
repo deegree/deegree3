@@ -138,7 +138,7 @@ public interface FeatureStoreTransaction {
      * @throws FeatureStoreException
      *             if the replace fails
      */
-    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
+    public List<String> performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException;
 
     /**
