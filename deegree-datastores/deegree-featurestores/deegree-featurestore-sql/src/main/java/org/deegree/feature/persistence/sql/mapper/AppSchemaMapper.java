@@ -223,7 +223,7 @@ public class AppSchemaMapper {
 
     private FeatureTypeMapping generateFtMapping( FeatureType ft ) {
         LOG.info( "Mapping feature type '" + ft.getName() + "'" );
-        MappingContext mc = mcManager.newContext( ft.getName(), "attr_gml_id" );
+        MappingContext mc = mcManager.newContext( ft.getName(), detectPrimaryKeyColumnName() );
 
         // TODO
         TableName table = new TableName( mc.getTable() );
@@ -492,19 +492,17 @@ public class AppSchemaMapper {
     }
 
     private TableJoin generateFtJoin( MappingContext from, FeatureType valueFt ) {
-        TableJoin ftJoin = null;
         if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
             LOG.warn( "Ambigous feature join." );
         }
         TableName fromTable = new TableName( from.getTable() );
         TableName toTable = new TableName( "?" );
         List<String> fromColumns = Collections.singletonList( from.getColumn() );
-        List<String> toColumns = Collections.singletonList( "attr_gml_id" );
+        List<String> toColumns = Collections.singletonList( detectPrimaryKeyColumnName() );
         Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
         keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
-        ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
+        return new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
                                 keyColumnToIdGenerator );
-        return ftJoin;
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -853,4 +851,9 @@ public class AppSchemaMapper {
         }
         return new ValueReference( name );
     }
+
+    private String detectPrimaryKeyColumnName() {
+        return useIntegerFids ? "gid" : "attr_gml_id";
+    }
+
 }
