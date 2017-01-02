@@ -695,8 +695,7 @@ class TransactionHandler {
         FeatureStoreTransaction ta = acquireTransaction( fs );
         try {
             List<String> newFids = ta.performReplace( replacementFeature, filter, lock, idGenMode );
-            for (Iterator<String> i = newFids.iterator(); i.hasNext(); ){
-                String newFid=i.next();
+            for (String newFid : newFids){
                 replaced.add( newFid, replace.getHandle() );
             }
         } catch ( FeatureStoreException e ) {
