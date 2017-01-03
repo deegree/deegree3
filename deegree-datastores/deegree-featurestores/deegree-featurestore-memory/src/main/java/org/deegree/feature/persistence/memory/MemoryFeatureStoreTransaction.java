@@ -544,7 +544,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
+    public List<String> performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
                             throws FeatureStoreException {
         if ( filter instanceof IdFilter ) {
             performDelete( (IdFilter) filter, lock );
@@ -554,10 +554,10 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
         List<String> ids = performInsert( col, idGenMode );
-        if ( ids.isEmpty() || ids.size() > 1 ) {
+        if ( ids.isEmpty()) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }
-        return ids.get( 0 );
+        return ids;
     }
 
     @Override
