@@ -245,7 +245,7 @@ public class WpsPrinterBean implements Serializable {
                                                         ot.getDefaultFormat().getMimeType(), null, null );
                             ComplexOutput eo = (ComplexOutput) prepareExecution.execute().get( ot.getId().getCode(),
                                                                                                ot.getId().getCodeSpace() );
-                            overview = eo.getWebAccessibleURL().toExternalForm();
+                            overview = eo.getWebAccessibleURI().toASCIIString();
                         }
                     } catch ( Exception e ) {
                         FacesMessage fm = MessageUtils.getFacesMessage( FacesMessage.SEVERITY_ERROR,
