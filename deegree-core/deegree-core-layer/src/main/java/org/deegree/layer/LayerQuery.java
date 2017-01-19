@@ -36,11 +36,16 @@
 package org.deegree.layer;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -56,6 +61,12 @@ import org.deegree.style.StyleRef;
  * @version $Revision: $, $Date: $
  */
 public class LayerQuery {
+
+    public static final String FILTERPROPERTY = "FILTERPROPERTY";
+
+    public static final String FILTERVALUE = "FILTERVALUE";
+
+    public static final String RADIUS = "RADIUS";
 
     private final Envelope envelope;
 
@@ -192,7 +203,7 @@ public class LayerQuery {
     }
 
     public Envelope calcClickBox( int radius ) {
-        radius = parameters.get( "RADIUS" ) == null ? radius : parseInt( parameters.get( "RADIUS" ) );
+        radius = parameters.get( RADIUS ) == null ? radius : parseInt( parameters.get( RADIUS ) );
         GeometryFactory fac = new GeometryFactory();
         double dw = envelope.getSpan0() / width;
         double dh = envelope.getSpan1() / height;
@@ -204,4 +215,30 @@ public class LayerQuery {
                                                  envelope.getMax().get1() - ( y - r2 ) * dh },
                                    envelope.getCoordinateSystem() );
     }
+
+    /**
+     * Returns the additional request parameters used for filtering.
+     *
+     * @return the property (first) and the values (second) to filter for, <code>null</code> if at least one parameter is <code>null</code> or empty
+     */
+    public Pair<String, List<String>> requestFilter() {
+        String filterProperty = parameters.get( FILTERPROPERTY );
+        String filterValue = parameters.get( FILTERVALUE );
+        if ( filterProperty == null || filterProperty.isEmpty() || filterValue == null || filterValue.isEmpty() )
+            return null;
+        List<String> filterValues = parseFilterValues( filterValue );
+        return new Pair<String, List<String>>( filterProperty, filterValues );
+    }
+
+    private List<String> parseFilterValues( String filterValue ) {
+        List<String> filterValues = new ArrayList<String>();
+        String[] splittedFilterValue = filterValue.split( "," );
+        for ( String value : splittedFilterValue ) {
+            String trimmedValue = value.trim();
+            if ( !trimmedValue.isEmpty() )
+                filterValues.add( trimmedValue );
+        }
+        return filterValues;
+    }
+
 }
