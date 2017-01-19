@@ -44,16 +44,24 @@ package org.deegree.layer.persistence.feature;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.filter.Expression;
 import org.deegree.filter.Filters;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.Or;
@@ -63,24 +71,28 @@ import org.deegree.layer.LayerQuery;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
 
+import javax.xml.namespace.QName;
+
 /**
  * Responsible for building feature layer filters.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 class FilterBuilder {
 
-    static OperatorFilter buildFilterForMap(OperatorFilter filter, Style style, LayerQuery query, DimensionFilterBuilder dimFilterBuilder, List<String> headers) throws OWSException{
+    static OperatorFilter buildFilterForMap( OperatorFilter filter, Style style, LayerQuery query,
+                                             DimensionFilterBuilder dimFilterBuilder, List<String> headers )
+                            throws OWSException {
         style = style.filter( query.getScale() );
         filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter() );
         filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
+        filter = Filters.and( filter, buildRequestFilter( query ) );
         return filter;
     }
-    
+
     static OperatorFilter buildFilter( Operator operator, FeatureType ft, Envelope clickBox ) {
         if ( ft == null ) {
             if ( operator == null ) {
@@ -113,11 +125,40 @@ class FilterBuilder {
         LinkedList<Operator> list = new LinkedList<Operator>();
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
             if ( pt instanceof GeometryPropertyType
-                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 || ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
+                 && ( ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2 ||
+                      ( (GeometryPropertyType) pt ).getCoordinateDimension() == DIM_2_OR_3 ) ) {
                 list.add( new Intersects( new ValueReference( pt.getName() ), clickBox ) );
             }
         }
         return list;
+    }
+
+    static OperatorFilter buildRequestFilter( LayerQuery layerQuery ) {
+        Pair<String, List<String>> requestFilter = layerQuery.requestFilter();
+        if ( requestFilter == null )
+            return null;
+
+        List<ComparisonOperator> operators = createOperators( requestFilter );
+        if ( operators.isEmpty() )
+            return null;
+        if ( operators.size() == 1 )
+            return new OperatorFilter( operators.get( 0 ) );
+        return new OperatorFilter( new Or( operators.toArray( new Operator[operators.size()] ) ) );
+    }
+
+    private static List<ComparisonOperator> createOperators( Pair<String, List<String>> requestFilter ) {
+        List<ComparisonOperator> operators = new ArrayList<ComparisonOperator>();
+        String filterProperty = requestFilter.getFirst();
+        List<String> filterValues = requestFilter.getSecond();
+        for ( String filterValue : filterValues ) {
+            Expression filterPropertyExpression = new ValueReference( new QName( filterProperty ) );
+            Expression filterValueExpression = new Literal<PrimitiveValue>( filterValue );
+            PropertyIsEqualTo isEqualTo = new PropertyIsEqualTo( filterPropertyExpression,
+                                                                 filterValueExpression, false,
+                                                                 MatchAction.ALL );
+            operators.add( isEqualTo );
+        }
+        return operators;
     }
 
 }
