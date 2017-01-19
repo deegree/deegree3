@@ -147,6 +147,8 @@ public class GMLStreamReader {
 
     private boolean laxMode;
 
+    private GMLReferenceResolver internalResolver;
+
     /**
      * Creates a new {@link GMLStreamReader} instance.
      * 
@@ -249,6 +251,14 @@ public class GMLStreamReader {
      */
     public void setResolver( GMLReferenceResolver resolver ) {
         this.resolver = resolver;
+    }
+
+    public void setInternalResolver ( GMLReferenceResolver internalResolver ) {
+            this.internalResolver = internalResolver;
+    }
+
+    public GMLReferenceResolver getInternalResolver () {
+        return internalResolver;
     }
 
     /**

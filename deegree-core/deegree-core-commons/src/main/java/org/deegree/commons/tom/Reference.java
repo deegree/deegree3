@@ -112,6 +112,15 @@ public class Reference<T extends Object> implements Object {
     }
 
     /**
+     * Returns the base URL for resolving the uri.
+     *
+     * @return base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public String getBaseURL() {
+        return baseURL;
+    }
+
+    /**
      * Sets the referenced object.
      *
      * @param object

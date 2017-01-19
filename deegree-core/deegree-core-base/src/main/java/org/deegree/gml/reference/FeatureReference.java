@@ -40,7 +40,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
@@ -48,6 +50,9 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link GMLReference} that targets a {@link Feature}.
@@ -58,6 +63,10 @@ import org.deegree.geometry.Envelope;
  * @version $Revision$, $Date$
  */
 public class FeatureReference extends GMLReference<Feature> implements Feature {
+
+    private static final Logger LOG = LoggerFactory.getLogger( FeatureReference.class );
+
+    private final GMLReferenceResolver internalResolver;
 
     /**
      * Creates a new {@link FeatureReference} instance.
@@ -70,7 +79,24 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
      *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
      */
     public FeatureReference( GMLReferenceResolver resolver, String uri, String baseURL ) {
+        this( resolver, null, uri, baseURL );
+    }
+
+    /**
+     * Creates a new {@link FeatureReference} instance.
+     *
+     * @param resolver
+     *            used for resolving the reference, must not be <code>null</code>
+     * @param internalResolver
+     *            used for resolving references, may be <code>null</code>
+     * @param uri
+     *            the feature's uri, must not be <code>null</code>
+     * @param baseURL
+     *            base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public FeatureReference( GMLReferenceResolver resolver, GMLReferenceResolver internalResolver, String uri, String baseURL ) {
         super( resolver, uri, baseURL );
+        this.internalResolver = internalResolver;
     }
 
     @Override
@@ -137,6 +163,19 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     @Override
     public void setExtraProperties( ExtraProps extraProps ) {
         getReferencedObject().setExtraProperties( extraProps );
+    }
+
+    @Override
+    public synchronized Feature getReferencedObject()
+                            throws ReferenceResolvingException {
+        try {
+            return super.getReferencedObject();
+        } catch(ReferenceResolvingException e) {
+            GMLObject object = this.internalResolver.getObject( getURI(), getBaseURL() );
+            if ( object != null )
+                LOG.info( "Feature with uri {} could be resolved by the internal resolver.", getURI() );
+            return null;
+        }
     }
 
 }
