@@ -430,6 +430,7 @@ public class HttpUtils {
         if ( !u.valid() ) {
             return null;
         }
+        /* Handling of https was added to fix http://jira.sys.planetek.it/browse/GEUI-1484 */
         if ( isHttpOrHttps( u ) ) {
             DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
             if ( user != null && pass != null ) {
