@@ -408,17 +408,19 @@ public class HttpUtils {
     }
 
     /**
-     * Performs an HTTP-Get request and provides typed access to the response.
-     * 
+     * Performs an HTTP-Get request and provides typed access to the response. Proxy settings are only set for http and https.
+     *
      * @param <T>
      * @param worker
+     *           the worker to use for the request, never <code>null</code>
      * @param url
+     *           the url of the request, never <code>null</code>
      * @param headers
-     *            may be null
+     *           headers to append to the request (only used if the protocol of the url is http or https), may be <code>null</code>
      * @param user
-     *            optional username for HTTP basic authentication
+     *           optional username for HTTP basic authentication (only used if the protocol of the url is http or https), may be <code>null</code>
      * @param pass
-     *            optional password for HTTP basic authentication
+     *           optional password for HTTP basic authentication (only used if the protocol of the url is http or https), may be <code>null</code>
      * @return some object from the url, null, if url is not valid
      * @throws IOException
      */
@@ -428,21 +430,21 @@ public class HttpUtils {
         if ( !u.valid() ) {
             return null;
         }
-        if ( !u.getURL().getProtocol().equalsIgnoreCase( "http" ) ) {
-            return worker.work( u.getURL().openStream() );
-        }
-        DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
-        if ( user != null && pass != null ) {
-            authenticate( client, user, pass, u );
-        }
-        HttpGet get = new HttpGet( url );
-        if ( headers != null ) {
-            for ( String key : headers.keySet() ) {
-                get.addHeader( key, headers.get( key ) );
+        if ( isHttpOrHttps( u ) ) {
+            DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );
+            if ( user != null && pass != null ) {
+                authenticate( client, user, pass, u );
             }
-        }
+            HttpGet get = new HttpGet( url );
+            if ( headers != null ) {
+                for ( String key : headers.keySet() ) {
+                    get.addHeader( key, headers.get( key ) );
+                }
+            }
 
-        return worker.work( client.execute( get ).getEntity().getContent() );
+            return worker.work( client.execute( get ).getEntity().getContent() );
+        }
+        return worker.work( u.getURL().openStream() );
     }
 
     /**
@@ -590,5 +592,10 @@ public class HttpUtils {
         String protocol = url.getURL().getProtocol().toLowerCase();
         handleProxies( protocol, client, host );
         return client;
+    }
+
+    private static boolean isHttpOrHttps( DURL u ) {
+        String protocol = u.getURL().getProtocol();
+        return protocol.equalsIgnoreCase( "http" ) || protocol.equalsIgnoreCase( "https" );
     }
 }
