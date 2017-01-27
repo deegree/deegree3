@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.memory;
 
 import static org.deegree.feature.i18n.Messages.getMessage;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -569,7 +570,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
         }
         GenericFeatureCollection col = new GenericFeatureCollection();
         col.add( replacement );
-        List<String> ids = performInsert( col, idGenMode );
+        List<String> ids = performInsert( col, USE_EXISTING );
         if ( ids.isEmpty() || ids.size() > 1 ) {
             throw new FeatureStoreException( "Unable to determine new feature id." );
         }

@@ -52,8 +52,10 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
+        <element name="EnableResponsePaging" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
+        <element name="ResolveTimeOutInSeconds" type="positiveInteger" minOccurs="0" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
         <element name="StoredQuery" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />

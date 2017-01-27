@@ -220,9 +220,11 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         if ( VERSION_200.equals( request.getVersion() ) ) {
             writer.setPrefix( WFS_PREFIX, WFS_200_NS );
             writer.writeStartElement( WFS_200_NS, "DescribeFeatureTypeResponse" );
+            writer.writeNamespace( WFS_PREFIX, WFS_200_NS );
         } else {
             writer.setPrefix( WFS_PREFIX, WFS_NS );
             writer.writeStartElement( WFS_NS, "DescribeFeatureTypeResponse" );
+            writer.writeNamespace( WFS_PREFIX, WFS_NS );
         }
 
         doDescribeFeatureType( request, version, schemaWriter );

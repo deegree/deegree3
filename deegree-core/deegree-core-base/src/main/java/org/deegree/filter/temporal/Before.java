@@ -36,11 +36,11 @@
 package org.deegree.filter.temporal;
 
 import org.deegree.filter.Expression;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.XPathEvaluator;
+import org.deegree.time.operator.BeforeOperator;
+import org.deegree.time.primitive.TimeGeometricPrimitive;
 
 /**
- * {@link TemporalOperator} that...
+ * {@link TemporalOperator} that evaluates Before.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -62,8 +62,8 @@ public class Before extends TemporalOperator {
     }
 
     @Override
-    public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
-                            throws FilterEvaluationException {
-        throw new UnsupportedOperationException( "Evaluation of operator " + getSubType() + " is not implemented yet." );
+    protected boolean evaluate( TimeGeometricPrimitive t1, TimeGeometricPrimitive t2 ) {
+        return new BeforeOperator().evaluate( t1, t2 );
     }
+
 }

@@ -96,19 +96,13 @@ public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
 
-    /**
-     * 
-     */
     public StyleRegistry registry;
 
     MapOptionsMaps layerOptions = new MapOptionsMaps();
 
     MapOptions defaultLayerOptions;
 
-    /**
-     * The current update sequence.
-     */
-    public int updateSequence = 0; // TODO how to restore this after restart?
+    private int updateSequence; // TODO how to restore this after restart?
 
     private List<Theme> themes;
 
@@ -123,7 +117,9 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, Workspace workspace ) throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
+                            throws MalformedURLException {
+        this.updateSequence = updateSequence;
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -292,11 +288,11 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
-                
-                if (!l.getMetadata().isQueryable()) {
+
+                if ( !l.getMetadata().isQueryable() ) {
                     continue;
                 }
-                
+
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -373,7 +369,8 @@ public class MapService {
         return getLegendHandler.getLegendSize( style );
     }
 
-    public BufferedImage getLegend( GetLegendGraphic req ) throws OWSException {
+    public BufferedImage getLegend( GetLegendGraphic req )
+                            throws OWSException {
         return getLegendHandler.getLegend( req );
     }
 
@@ -396,6 +393,13 @@ public class MapService {
      */
     public int getGlobalMaxFeatures() {
         return defaultLayerOptions.getMaxFeatures();
+    }
+
+    /**
+     * @return the current update sequence
+     */
+    public int getCurrentUpdateSequence() {
+        return updateSequence;
     }
 
 }
