@@ -98,10 +98,6 @@
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle</groupId>
       <artifactId>xdb</artifactId>
     </dependency>
     <dependency>
