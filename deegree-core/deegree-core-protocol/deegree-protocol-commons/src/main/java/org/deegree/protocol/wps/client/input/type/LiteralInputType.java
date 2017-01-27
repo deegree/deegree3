@@ -55,6 +55,8 @@ public class LiteralInputType extends InputType {
 
     private ValueWithRef dataType;
 
+    private String defaultValue;
+
     private ValueWithRef defaultUom;
 
     private ValueWithRef[] supportedUoms;
@@ -69,7 +71,7 @@ public class LiteralInputType extends InputType {
 
     private boolean anyValue;
 
-    private ValueWithRef reference;
+    private ValueWithRef valuesReference;
 
     /**
      * Creates a new {@link LiteralInputType} instance.
@@ -85,20 +87,21 @@ public class LiteralInputType extends InputType {
      * @param allowedValues
      * @param range
      * @param anyValue
-     * @param reference
+     * @param valuesReference
      */
     public LiteralInputType( CodeType id, LanguageString inputTitle, LanguageString inputAbstract, String minOccurs,
-                             String maxOccurs, ValueWithRef dataType, ValueWithRef defaultUom,
+                             String maxOccurs, ValueWithRef dataType, String defaultValue, ValueWithRef defaultUom,
                              ValueWithRef[] supportedUoms, String[] allowedValues, Range[] range, boolean anyValue,
                              ValueWithRef reference ) {
         super( id, inputTitle, inputAbstract, minOccurs, maxOccurs );
         this.dataType = dataType;
+        this.defaultValue = defaultValue;
         this.defaultUom = defaultUom;
         this.supportedUoms = supportedUoms;
         this.allowedValues = allowedValues;
         this.range = range;
         this.anyValue = anyValue;
-        this.reference = reference;
+        this.valuesReference = reference;
     }
 
     @Override
@@ -159,5 +162,24 @@ public class LiteralInputType extends InputType {
      */
     public boolean isAnyValue() {
         return anyValue;
+    }
+
+    /**
+     * Returns the default value for the literal input as a String.
+     * 
+     * @return Default value for the literal input.
+     */
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    /**
+     * Returns the values reference that references an externally defined finite set of values and ranges for the
+     * literal input.
+     * 
+     * @return Values reference for the literal input.
+     */
+    public ValueWithRef getValuesReference() {
+        return valuesReference;
     }
 }

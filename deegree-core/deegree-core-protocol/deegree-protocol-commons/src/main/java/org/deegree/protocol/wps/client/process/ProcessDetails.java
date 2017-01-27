@@ -315,6 +315,9 @@ public class ProcessDetails {
         String dataTypeRefStr = omDataType.getAttributeValue( new QName( owsNS, "reference" ) );
         ValueWithRef dataType = new ValueWithRef( dataTypeStr, dataTypeRefStr );
 
+        OMElement omDefaultValue = input.getFirstChildWithName( new QName( null, "DefaultValue" ) );
+        String defaultValue = omDefaultValue == null ? null : omDefaultValue.getText();
+
         XPath xpath = new XPath( "UOMs/Default/ows:UOM", nsContext );
         OMElement omDefaultUom = omResponse.getElement( input, xpath );
         ValueWithRef defaultUom = null;
@@ -382,8 +385,8 @@ public class ProcessDetails {
         if ( rangeList != null ) {
             rangeArray = rangeList.toArray( new Range[rangeList.size()] );
         }
-        return new LiteralInputType( id, inputTitle, inputAbstract, minOccurs, maxOccurs, dataType, defaultUom,
-                                     supportedUom, valuesArray, rangeArray, anyValue, valuesRef );
+        return new LiteralInputType( id, inputTitle, inputAbstract, minOccurs, maxOccurs, dataType, defaultValue,
+                                     defaultUom, supportedUom, valuesArray, rangeArray, anyValue, valuesRef );
     }
 
     private InputType parseComplexData( OMElement input, CodeType id, LanguageString inputTitle,
