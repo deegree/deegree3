@@ -40,17 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.deegree.filter.Filters.addBBoxConstraint;
-import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
-import static org.deegree.style.utils.Styles.getStyleFilters;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
@@ -68,6 +57,16 @@ import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
 import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.deegree.filter.Filters.addBBoxConstraint;
+import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
+import static org.deegree.style.utils.Styles.getStyleFilters;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * 
@@ -129,13 +128,16 @@ public class FeatureLayer extends AbstractLayer {
             geomProp = null;
         }
 
+
         QName ftName = featureType == null ? style.getFeatureType() : featureType;
         if ( ftName != null && featureStore.getSchema().getFeatureType( ftName ) == null ) {
             LOG.warn( "FeatureType '" + ftName + "' is not known to the FeatureStore." );
             return null;
         }
 
-        filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), ftName ) );
+        Set<QName> propertyNames = AppSchemas.collectProperyNames( featureStore.getSchema(), ftName );
+        filter = FilterBuilder.appendRequestFilter( filter, query, propertyNames );
+        filter = Filters.repair( filter, propertyNames );
 
         QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
                                                  getMetadata().getName() );

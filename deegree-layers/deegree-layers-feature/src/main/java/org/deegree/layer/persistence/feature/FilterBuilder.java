@@ -41,13 +41,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -72,6 +65,14 @@ import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
 
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
 
 /**
  * Responsible for building feature layer filters.
@@ -89,7 +90,6 @@ class FilterBuilder {
         filter = Filters.and( filter, Styles.getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter() );
         filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
-        filter = Filters.and( filter, buildRequestFilter( query ) );
         return filter;
     }
 
@@ -133,12 +133,17 @@ class FilterBuilder {
         return list;
     }
 
-    static OperatorFilter buildRequestFilter( LayerQuery layerQuery ) {
+    static OperatorFilter appendRequestFilter( OperatorFilter filter, LayerQuery query, Set<QName> propertyNames ) {
+        OperatorFilter requestFilter = buildRequestFilter( query, propertyNames );
+        return Filters.and( filter, requestFilter );
+    }
+
+    static OperatorFilter buildRequestFilter( LayerQuery layerQuery, Set<QName> propertyNames ) {
         Pair<String, List<String>> requestFilter = layerQuery.requestFilter();
         if ( requestFilter == null )
             return null;
 
-        List<ComparisonOperator> operators = createOperators( requestFilter );
+        List<ComparisonOperator> operators = createOperatorsIfPropertyIsKnown( requestFilter, propertyNames );
         if ( operators.isEmpty() )
             return null;
         if ( operators.size() == 1 )
@@ -146,9 +151,18 @@ class FilterBuilder {
         return new OperatorFilter( new Or( operators.toArray( new Operator[operators.size()] ) ) );
     }
 
-    private static List<ComparisonOperator> createOperators( Pair<String, List<String>> requestFilter ) {
-        List<ComparisonOperator> operators = new ArrayList<ComparisonOperator>();
+    private static List<ComparisonOperator> createOperatorsIfPropertyIsKnown( Pair<String, List<String>> requestFilter,
+                                                                              Set<QName> propertyNames ) {
         String filterProperty = requestFilter.getFirst();
+        if ( propertyIsknown( filterProperty, propertyNames ) ) {
+            return createOperatorsIfPropertyIsKnown( requestFilter, filterProperty );
+        }
+        return Collections.emptyList();
+    }
+
+    private static List<ComparisonOperator> createOperatorsIfPropertyIsKnown( Pair<String, List<String>> requestFilter,
+                                                                              String filterProperty ) {
+        List<ComparisonOperator> operators = new ArrayList<ComparisonOperator>();
         List<String> filterValues = requestFilter.getSecond();
         for ( String filterValue : filterValues ) {
             Expression filterPropertyExpression = new ValueReference( new QName( filterProperty ) );
@@ -159,6 +173,14 @@ class FilterBuilder {
             operators.add( isEqualTo );
         }
         return operators;
+    }
+
+    private static boolean propertyIsknown( String filterProperty, Set<QName> propertyNames ) {
+        for ( QName propertyName : propertyNames ) {
+            if ( filterProperty.equals( propertyName.getLocalPart() ) )
+                return true;
+        }
+        return false;
     }
 
 }
