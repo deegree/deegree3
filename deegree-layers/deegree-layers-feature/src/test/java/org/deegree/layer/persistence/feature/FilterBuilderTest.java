@@ -8,9 +8,11 @@ import org.deegree.layer.LayerQuery;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import javax.xml.namespace.QName;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +30,8 @@ public class FilterBuilderTest {
         List<String> filterValues = Collections.singletonList( "one" );
 
         LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery );
+        Set<QName> propertyNames = createPropertyNames( filterProperty );
+        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
 
         assertThat( operatorFilter.getOperator(), instanceOf( PropertyIsEqualTo.class ) );
     }
@@ -38,7 +41,8 @@ public class FilterBuilderTest {
         String filterProperty = "type";
         List<String> filterValues = Arrays.asList( new String[] { "one", "two" } );
         LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery );
+        Set<QName> propertyNames = createPropertyNames( filterProperty );
+        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
 
         assertThat( operatorFilter.getOperator(), instanceOf( Or.class ) );
     }
@@ -48,7 +52,8 @@ public class FilterBuilderTest {
         String filterProperty = "type";
         List<String> filterValues = Collections.emptyList();
         LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery );
+        Set<QName> propertyNames = createPropertyNames( filterProperty );
+        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
 
         assertThat( operatorFilter, is( nullValue() ) );
     }
@@ -56,7 +61,20 @@ public class FilterBuilderTest {
     @Test
     public void testBuildRequestFilter_NullRequestFilter() {
         LayerQuery layerQuery = mockLayerQuery( null );
-        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery );
+        Set<QName> propertyNames = createPropertyNames( "abc" );
+        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
+
+        assertThat( operatorFilter, is( nullValue() ) );
+    }
+
+    @Test
+    public void testBuildRequestFilter_PropertyNotKnown() {
+        String filterProperty = "type";
+        List<String> filterValues = Collections.singletonList( "one" );
+
+        LayerQuery layerQuery = mockLayerQuery( filterProperty, filterValues );
+        Set<QName> propertyNames = createPropertyNames( "anothertype" );
+        OperatorFilter operatorFilter = FilterBuilder.buildRequestFilter( layerQuery, propertyNames );
 
         assertThat( operatorFilter, is( nullValue() ) );
     }
@@ -71,6 +89,10 @@ public class FilterBuilderTest {
         LayerQuery layerQueryMock = Mockito.mock( LayerQuery.class );
         Mockito.when( layerQueryMock.requestFilter() ).thenReturn( requestFilter );
         return layerQueryMock;
+    }
+
+    private Set<QName> createPropertyNames( String filterProperty ) {
+        return Collections.singleton( new QName( filterProperty ) );
     }
 
 }
