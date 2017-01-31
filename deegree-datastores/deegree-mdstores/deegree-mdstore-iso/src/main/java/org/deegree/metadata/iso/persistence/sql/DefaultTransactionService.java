@@ -62,6 +62,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +82,19 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
     private static final Logger LOG = getLogger( DefaultTransactionService.class );
 
     private AnyText anyTextConfig;
+
+    private static final Map<String, Integer> COLUMN_LENGTH = new HashMap<String, Integer>();
+
+    static {
+        COLUMN_LENGTH.put( "title", 1000 );
+        COLUMN_LENGTH.put( "alternatetitles", 500 );
+        COLUMN_LENGTH.put( "topiccategories", 1000 );
+        COLUMN_LENGTH.put( "geographicdescriptioncode", 500 );
+        COLUMN_LENGTH.put( "operations", 2000 );
+        COLUMN_LENGTH.put( "spectitle", 2000 );
+        COLUMN_LENGTH.put( "servicetypeversion", 1000 );
+        COLUMN_LENGTH.put( "keywords", 4000 );
+    }
 
     public DefaultTransactionService( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
         super( dialect, queryables );
@@ -275,12 +289,12 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "modified", modified );
         tr.addPreparedArgument( "parentid", rec.getParentIdentifier() );
         tr.addPreparedArgument( "type", rec.getType() );
-        tr.addPreparedArgument( "title", concatenate( Arrays.asList( rec.getTitle() ) ) );
+        concatenateAndAddColumn( tr, "title",  Arrays.asList( rec.getTitle() ) );
         tr.addPreparedArgument( "hassecurityconstraints", rec.isHasSecurityConstraints() );
 
         QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        tr.addPreparedArgument( "topiccategories", concatenate( qp.getTopicCategory() ) );
-        tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle() ) );
+        concatenateAndAddColumn( tr, "topiccategories",  qp.getTopicCategory() );
+        concatenateAndAddColumn( tr, "alternateTitles",  qp.getAlternateTitle() );
         Timestamp revDate = null;
         if ( qp.getRevisionDate() != null ) {
             revDate = new Timestamp( qp.getRevisionDate().getTimeInMilliseconds() );
@@ -299,7 +313,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "organisationname", qp.getOrganisationName() );
         tr.addPreparedArgument( "resourceid", qp.getResourceIdentifier() );
         tr.addPreparedArgument( "resourcelanguage", qp.getResourceLanguage() );
-        tr.addPreparedArgument( "geographicdescriptioncode", concatenate( qp.getGeographicDescriptionCode_service() ) );
+        concatenateAndAddColumn( tr, "geographicdescriptioncode",  qp.getGeographicDescriptionCode_service() );
         tr.addPreparedArgument( "denominator", qp.getDenominator() );
         tr.addPreparedArgument( "distancevalue", qp.getDistanceValue() );
         tr.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
@@ -314,20 +328,20 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         }
         tr.addPreparedArgument( "tempextent_end", endTmpExten );
         tr.addPreparedArgument( "servicetype", qp.getServiceType() );
-        tr.addPreparedArgument( "servicetypeversion", concatenate( qp.getServiceTypeVersion() ) );
+        concatenateAndAddColumn( tr, "servicetypeversion",  qp.getServiceTypeVersion() );
         tr.addPreparedArgument( "couplingtype", qp.getCouplingType() );
         tr.addPreparedArgument( "formats", getFormats( qp.getFormat() ) );
-        tr.addPreparedArgument( "operations", concatenate( qp.getOperation() ) );
+        concatenateAndAddColumn( tr, "operations", qp.getOperation() );
         tr.addPreparedArgument( "degree", qp.isDegree() );
         tr.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
         tr.addPreparedArgument( "resppartyrole", qp.getRespPartyRole() );
-        tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle() ) );
         Timestamp specDate = null;
         if ( qp.getSpecificationDate() != null ) {
             specDate = new Timestamp( qp.getSpecificationDate().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "specdate", specDate );
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
+        concatenateAndAddColumn( tr, "spectitle", qp.getSpecificationTitle() );
 
         Envelope env = calculateMainBBox( qp.getBoundingBox() );
         Geometry geom = null;
@@ -460,7 +474,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 try {
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "keywordtype", keyword.getKeywordType() );
-                    ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords(), 4000 ) );
+                    concatenateAndAddColumn( ir, "keywords", keyword.getKeywords() );
                     LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
@@ -516,6 +530,15 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
             throw new MetadataStoreException( msg );
         } finally {
             close( null, stmt, null, LOG );
+        }
+    }
+
+    private void concatenateAndAddColumn( TransactionRow tr, String columnName, List<String> values ) {
+        if ( COLUMN_LENGTH.containsKey( columnName ) ) {
+            Integer columnLength = COLUMN_LENGTH.get( columnName );
+            tr.addPreparedArgument( columnName, concatenate( values, columnLength ) );
+        } else {
+            tr.addPreparedArgument( columnName, concatenate( values ) );
         }
     }
 
