@@ -744,6 +744,10 @@ The PIXELSIZE parameter can be used to dynamically adjust the resolution of the 
 
 Using the QUERYBOXSIZE parameter you can include features when rendering that would normally not intersect the envelope specified in the BBOX parameter. That can be useful if you have labels at point symbols out of the envelope which would be rendered partly inside the map. Normal GetMap behaviour will exclude such a label. With the QUERYBOXSIZE parameter you can specify a factor by which to enlarge the original bounding box, which is used solely for querying the data store (the actual extent returned will not be changed!). Use values like 1.1 to enlarge the envelope by 5% in each direction (this would be 10% in total).
 
+
+With the two vendorspecific parameter FILTERPROPERTY and FILTERVALUE you can request rendering just a defined list of features. Each feature to be rendered will be identified by the value of a given property. The name of the property is defined by the parameter filterproperty. The name of the property is not qualified so all properties with the given local name will be considered. A list of valid property values will be defined using parameter filtervalue, multiple values must be comma separated. Each layer - or better its underlying data source - requested by a GeMap will evaluated for having a feature with a property with given name and one of the defined values. Just the features matching this filter condition will be rendered. It's quite natural that only layer with an underlying Feature-DataSource can be filtered. The other parameters addressed in the GetMap (e.g. the style) request are not effected by this parameters. If the filter cannot be applied to the layer, e.g. cause it is a raster layer or the data source does not have a matching property, the filter will be ignored. If one the parameters is missing or the value empty, the filter is not applied.
+Example: FILTERPROPERTY=type&FILTERVALUE=stone,wood
+
 .. _anchor-xml-request-encoding:
 
 ^^^^^^^^^^^^^^^^^^^^
