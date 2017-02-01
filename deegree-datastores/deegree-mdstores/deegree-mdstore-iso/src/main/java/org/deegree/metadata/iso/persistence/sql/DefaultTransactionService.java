@@ -107,12 +107,11 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         SQLIdentifier id = new SQLIdentifier( "id" );
         InsertRow ir = new InsertRow( new TableName( mainTable ), id );
         try {
-            ir.addPreparedArgument( recordColumn, rec.getAsByteArray() );
             ir.addPreparedArgument( "fileidentifier", rec.getIdentifier() );
             ir.addPreparedArgument( "version", null );
             ir.addPreparedArgument( "status", null );
-
             appendValues( rec, ir );
+            ir.addPreparedArgument( recordColumn, rec.getAsByteArray() );
 
             LOG.debug( ir.getSql() );
             Map<SQLIdentifier, Object> performInsert = ir.performInsert( conn );
@@ -279,8 +278,6 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
 
     private void appendValues( ISORecord rec, TransactionRow tr )
                             throws SQLException {
-        tr.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
-        tr.addPreparedArgument( "anytext", AnyTextHelper.getAnyText( rec, anyTextConfig ) );
         tr.addPreparedArgument( "language", rec.getLanguage() );
         Timestamp modified = null;
         if ( rec.getModified() != null ) {
@@ -333,7 +330,6 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "formats", getFormats( qp.getFormat() ) );
         concatenateAndAddColumn( tr, "operations", qp.getOperation() );
         tr.addPreparedArgument( "degree", qp.isDegree() );
-        tr.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
         tr.addPreparedArgument( "resppartyrole", qp.getRespPartyRole() );
         Timestamp specDate = null;
         if ( qp.getSpecificationDate() != null ) {
@@ -368,6 +364,10 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
             }
             tr.addPreparedArgument( queryable.getColumn(), value );
         }
+
+        tr.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
+        tr.addPreparedArgument( "anytext", AnyTextHelper.getAnyText( rec, anyTextConfig ) );
+        tr.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
     }
 
     private String getFormats( List<Format> list ) {
