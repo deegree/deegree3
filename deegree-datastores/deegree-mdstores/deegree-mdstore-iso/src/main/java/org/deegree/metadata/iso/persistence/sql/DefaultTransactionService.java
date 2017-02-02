@@ -62,6 +62,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +81,8 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
 
     private static final Logger LOG = getLogger( DefaultTransactionService.class );
 
+    private static final int LIMIT_IN_BYTES = 4000;
+
     private AnyText anyTextConfig;
 
     public DefaultTransactionService( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
@@ -93,12 +96,11 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         SQLIdentifier id = new SQLIdentifier( "id" );
         InsertRow ir = new InsertRow( new TableName( mainTable ), id );
         try {
-            ir.addPreparedArgument( recordColumn, rec.getAsByteArray() );
             ir.addPreparedArgument( "fileidentifier", rec.getIdentifier() );
             ir.addPreparedArgument( "version", null );
             ir.addPreparedArgument( "status", null );
-
             appendValues( rec, ir );
+            ir.addPreparedArgument( recordColumn, rec.getAsByteArray() );
 
             LOG.debug( ir.getSql() );
             Map<SQLIdentifier, Object> performInsert = ir.performInsert( conn );
@@ -265,8 +267,6 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
 
     private void appendValues( ISORecord rec, TransactionRow tr )
                             throws SQLException {
-        tr.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
-        tr.addPreparedArgument( "anytext", AnyTextHelper.getAnyText( rec, anyTextConfig ) );
         tr.addPreparedArgument( "language", rec.getLanguage() );
         Timestamp modified = null;
         if ( rec.getModified() != null ) {
@@ -275,12 +275,12 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "modified", modified );
         tr.addPreparedArgument( "parentid", rec.getParentIdentifier() );
         tr.addPreparedArgument( "type", rec.getType() );
-        tr.addPreparedArgument( "title", concatenate( Arrays.asList( rec.getTitle() ) ) );
+        tr.addPreparedArgument( "title", concatenate( Arrays.asList( rec.getTitle() ), LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "hassecurityconstraints", rec.isHasSecurityConstraints() );
 
         QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        tr.addPreparedArgument( "topiccategories", concatenate( qp.getTopicCategory() ) );
-        tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle() ) );
+        tr.addPreparedArgument( "topiccategories", concatenate( qp.getTopicCategory(), LIMIT_IN_BYTES ) );
+        tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle(), LIMIT_IN_BYTES ) );
         Timestamp revDate = null;
         if ( qp.getRevisionDate() != null ) {
             revDate = new Timestamp( qp.getRevisionDate().getTimeInMilliseconds() );
@@ -299,7 +299,8 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "organisationname", qp.getOrganisationName() );
         tr.addPreparedArgument( "resourceid", qp.getResourceIdentifier() );
         tr.addPreparedArgument( "resourcelanguage", qp.getResourceLanguage() );
-        tr.addPreparedArgument( "geographicdescriptioncode", concatenate( qp.getGeographicDescriptionCode_service() ) );
+        tr.addPreparedArgument( "geographicdescriptioncode", concatenate( qp.getGeographicDescriptionCode_service(),
+                                                                          LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "denominator", qp.getDenominator() );
         tr.addPreparedArgument( "distancevalue", qp.getDistanceValue() );
         tr.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
@@ -314,20 +315,19 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         }
         tr.addPreparedArgument( "tempextent_end", endTmpExten );
         tr.addPreparedArgument( "servicetype", qp.getServiceType() );
-        tr.addPreparedArgument( "servicetypeversion", concatenate( qp.getServiceTypeVersion() ) );
+        tr.addPreparedArgument( "servicetypeversion", concatenate( qp.getServiceTypeVersion(), LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "couplingtype", qp.getCouplingType() );
         tr.addPreparedArgument( "formats", getFormats( qp.getFormat() ) );
-        tr.addPreparedArgument( "operations", concatenate( qp.getOperation() ) );
+        tr.addPreparedArgument( "operations", concatenate( qp.getOperation(), LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "degree", qp.isDegree() );
-        tr.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
         tr.addPreparedArgument( "resppartyrole", qp.getRespPartyRole() );
-        tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle() ) );
         Timestamp specDate = null;
         if ( qp.getSpecificationDate() != null ) {
             specDate = new Timestamp( qp.getSpecificationDate().getTimeInMilliseconds() );
         }
         tr.addPreparedArgument( "specdate", specDate );
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
+        tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle(), LIMIT_IN_BYTES ) );
 
         Envelope env = calculateMainBBox( qp.getBoundingBox() );
         Geometry geom = null;
@@ -348,12 +348,16 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         for ( Queryable queryable : queryables ) {
             String value;
             if ( queryable.isMultiple() ) {
-                value = concatenate( queryable.getConvertedValues( rec ) );
+                value = concatenate( queryable.getConvertedValues( rec ), 4000 );
             } else {
                 value = queryable.getConvertedValue( rec );
             }
             tr.addPreparedArgument( queryable.getColumn(), value );
         }
+
+        tr.addPreparedArgument( "abstract", concatenate( Arrays.asList( rec.getAbstract() ) ) );
+        tr.addPreparedArgument( "anytext", AnyTextHelper.getAnyText( rec, anyTextConfig ) );
+        tr.addPreparedArgument( "lineage", concatenate( qp.getLineages() ) );
     }
 
     private String getFormats( List<Format> list ) {
@@ -404,7 +408,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 stmt.setInt( 1, operatesOnId );
                 for ( Constraint constraint : constraintss ) {
                     stmt.setString( 2, concatenate( constraint.getLimitations() ) );
-                    stmt.setString( 3, concatenate( constraint.getAccessConstraints() ) );
+                    stmt.setString( 3, concatenate( constraint.getAccessConstraints(), LIMIT_IN_BYTES ) );
                     stmt.setString( 4, concatenate( constraint.getOtherConstraints() ) );
                     stmt.setString( 5, constraint.getClassification() );
                     stmt.executeUpdate();
@@ -460,7 +464,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 try {
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "keywordtype", keyword.getKeywordType() );
-                    ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords(), 4000 ) );
+                    ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords(), LIMIT_IN_BYTES ) );
                     LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
@@ -518,6 +522,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
             close( null, stmt, null, LOG );
         }
     }
+
 
     private String concatenate( List<String> values, int limitInBytes ) {
         if ( values == null || values.isEmpty() )
