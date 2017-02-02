@@ -348,7 +348,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         for ( Queryable queryable : queryables ) {
             String value;
             if ( queryable.isMultiple() ) {
-                value = concatenate( queryable.getConvertedValues( rec ) );
+                value = concatenate( queryable.getConvertedValues( rec ), 4000 );
             } else {
                 value = queryable.getConvertedValue( rec );
             }
