@@ -81,20 +81,9 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
 
     private static final Logger LOG = getLogger( DefaultTransactionService.class );
 
+    private static final int LIMIT_IN_BYTES = 4000;
+
     private AnyText anyTextConfig;
-
-    private static final Map<String, Integer> COLUMN_LENGTH = new HashMap<String, Integer>();
-
-    static {
-        COLUMN_LENGTH.put( "title", 1000 );
-        COLUMN_LENGTH.put( "alternatetitles", 500 );
-        COLUMN_LENGTH.put( "topiccategories", 1000 );
-        COLUMN_LENGTH.put( "geographicdescriptioncode", 500 );
-        COLUMN_LENGTH.put( "operations", 2000 );
-        COLUMN_LENGTH.put( "spectitle", 2000 );
-        COLUMN_LENGTH.put( "servicetypeversion", 1000 );
-        COLUMN_LENGTH.put( "keywords", 4000 );
-    }
 
     public DefaultTransactionService( SQLDialect dialect, List<Queryable> queryables, AnyText anyTextConfig ) {
         super( dialect, queryables );
@@ -286,12 +275,12 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "modified", modified );
         tr.addPreparedArgument( "parentid", rec.getParentIdentifier() );
         tr.addPreparedArgument( "type", rec.getType() );
-        concatenateAndAddColumn( tr, "title",  Arrays.asList( rec.getTitle() ) );
+        tr.addPreparedArgument( "title", concatenate( Arrays.asList( rec.getTitle() ), LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "hassecurityconstraints", rec.isHasSecurityConstraints() );
 
         QueryableProperties qp = rec.getParsedElement().getQueryableProperties();
-        concatenateAndAddColumn( tr, "topiccategories",  qp.getTopicCategory() );
-        concatenateAndAddColumn( tr, "alternateTitles",  qp.getAlternateTitle() );
+        tr.addPreparedArgument( "topiccategories", concatenate( qp.getTopicCategory(), LIMIT_IN_BYTES ) );
+        tr.addPreparedArgument( "alternateTitles", concatenate( qp.getAlternateTitle(), LIMIT_IN_BYTES ) );
         Timestamp revDate = null;
         if ( qp.getRevisionDate() != null ) {
             revDate = new Timestamp( qp.getRevisionDate().getTimeInMilliseconds() );
@@ -310,7 +299,8 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         tr.addPreparedArgument( "organisationname", qp.getOrganisationName() );
         tr.addPreparedArgument( "resourceid", qp.getResourceIdentifier() );
         tr.addPreparedArgument( "resourcelanguage", qp.getResourceLanguage() );
-        concatenateAndAddColumn( tr, "geographicdescriptioncode",  qp.getGeographicDescriptionCode_service() );
+        tr.addPreparedArgument( "geographicdescriptioncode", concatenate( qp.getGeographicDescriptionCode_service(),
+                                                                          LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "denominator", qp.getDenominator() );
         tr.addPreparedArgument( "distancevalue", qp.getDistanceValue() );
         tr.addPreparedArgument( "distanceuom", qp.getDistanceUOM() );
@@ -325,10 +315,10 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         }
         tr.addPreparedArgument( "tempextent_end", endTmpExten );
         tr.addPreparedArgument( "servicetype", qp.getServiceType() );
-        concatenateAndAddColumn( tr, "servicetypeversion",  qp.getServiceTypeVersion() );
+        tr.addPreparedArgument( "servicetypeversion", concatenate( qp.getServiceTypeVersion(), LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "couplingtype", qp.getCouplingType() );
         tr.addPreparedArgument( "formats", getFormats( qp.getFormat() ) );
-        concatenateAndAddColumn( tr, "operations", qp.getOperation() );
+        tr.addPreparedArgument( "operations", concatenate( qp.getOperation(), LIMIT_IN_BYTES ) );
         tr.addPreparedArgument( "degree", qp.isDegree() );
         tr.addPreparedArgument( "resppartyrole", qp.getRespPartyRole() );
         Timestamp specDate = null;
@@ -337,7 +327,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         }
         tr.addPreparedArgument( "specdate", specDate );
         tr.addPreparedArgument( "specdatetype", qp.getSpecificationDateType() );
-        concatenateAndAddColumn( tr, "spectitle", qp.getSpecificationTitle() );
+        tr.addPreparedArgument( "spectitle", concatenate( qp.getSpecificationTitle(), LIMIT_IN_BYTES ) );
 
         Envelope env = calculateMainBBox( qp.getBoundingBox() );
         Geometry geom = null;
@@ -418,7 +408,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 stmt.setInt( 1, operatesOnId );
                 for ( Constraint constraint : constraintss ) {
                     stmt.setString( 2, concatenate( constraint.getLimitations() ) );
-                    stmt.setString( 3, concatenate( constraint.getAccessConstraints() ) );
+                    stmt.setString( 3, concatenate( constraint.getAccessConstraints(), LIMIT_IN_BYTES ) );
                     stmt.setString( 4, concatenate( constraint.getOtherConstraints() ) );
                     stmt.setString( 5, constraint.getClassification() );
                     stmt.executeUpdate();
@@ -474,7 +464,7 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
                 try {
                     ir.addPreparedArgument( fk_main, operatesOnId );
                     ir.addPreparedArgument( "keywordtype", keyword.getKeywordType() );
-                    concatenateAndAddColumn( ir, "keywords", keyword.getKeywords() );
+                    ir.addPreparedArgument( "keywords", concatenate( keyword.getKeywords(), LIMIT_IN_BYTES ) );
                     LOG.debug( ir.getSql() );
                     ir.performInsert( conn );
                 } catch ( SQLException e ) {
@@ -533,14 +523,6 @@ public class DefaultTransactionService extends AbstractSqlHelper implements Tran
         }
     }
 
-    private void concatenateAndAddColumn( TransactionRow tr, String columnName, List<String> values ) {
-        if ( COLUMN_LENGTH.containsKey( columnName ) ) {
-            Integer columnLength = COLUMN_LENGTH.get( columnName );
-            tr.addPreparedArgument( columnName, concatenate( values, columnLength ) );
-        } else {
-            tr.addPreparedArgument( columnName, concatenate( values ) );
-        }
-    }
 
     private String concatenate( List<String> values, int limitInBytes ) {
         if ( values == null || values.isEmpty() )
