@@ -170,6 +170,8 @@ class TransactionHandler {
     private int deleted;
 
     private final IDGenMode idGenMode;
+    
+    private FeatureStore insertFeatureStore;
 
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
@@ -369,14 +371,6 @@ class TransactionHandler {
             throw new OWSException( "Cannot perform insert. No feature store defined.", NO_APPLICABLE_CODE );
         }
 
-        // TODO deal with this problem
-        if ( service.getStores().length > 1 ) {
-            String msg = "Cannot perform insert. More than one feature store is active -- "
-                         + "this is currently not supported. Please deactivate all feature stores, "
-                         + "but one in order to make Insert transactions work.";
-            throw new OWSException( msg, NO_APPLICABLE_CODE );
-        }
-
         ICRS defaultCRS = null;
         if ( insert.getSrsName() != null ) {
             try {
@@ -395,8 +389,7 @@ class TransactionHandler {
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
-            FeatureStore fs = service.getStores()[0];
-            ta = acquireTransaction( fs );
+            ta = acquireTransaction( insertFeatureStore );
             IDGenMode mode = insert.getIdGen();
             if ( mode == null ) {
                 if ( VERSION_110.equals( request.getVersion() ) ) {
@@ -433,8 +426,9 @@ class TransactionHandler {
 
         FeatureCollection fc = null;
 
-        // TODO determine correct schema
-        AppSchema schema = service.getStores()[0].getSchema();
+        QName featureTypeName=new QName( xmlStream.getLocalName() );
+        insertFeatureStore = service.getStore(featureTypeName);
+        AppSchema schema=insertFeatureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
