@@ -199,6 +199,7 @@ public class OwsHttpClientImpl implements OwsHttpClient {
     private DefaultHttpClient getHttpClientForUrl( URL url ) {
         DefaultHttpClient client = null;
         if ( "https".equals( url.getProtocol() ) ) {
+            // FIXME: Has been implemented on request as described in #GEDEV-645, this is not recommended!
             client = initializeHttpClientWithSslContext();
         }
         if ( client == null )
@@ -206,6 +207,13 @@ public class OwsHttpClientImpl implements OwsHttpClient {
         return client;
     }
 
+    /**
+     * WARNING: It is not recommend to use this method at all!
+     * Disabling the trust manager defeats some parts of SSL and makes a HTTPS connection vulnerable to
+     * man in the middle attacks!
+     *
+     * @return DefaultHttpClient with trust manager that does not validate certificate chains! Use this with caution!
+     */
     private DefaultHttpClient initializeHttpClientWithSslContext() {
         try {
             SSLContext sslContext = SSLContext.getInstance( "SSL" );
