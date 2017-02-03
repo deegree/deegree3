@@ -50,7 +50,6 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.workspace.graph.ResourceGraph;
-import org.deegree.workspace.graph.ResourceNode;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
@@ -119,22 +118,6 @@ public class SimpleSqlFeatureStoreTest {
         Resource r = workspace.getResource( id.getProvider(), id.getId() );
         Assert.assertNotNull( "Expected dependency to be available.", r );
         Assert.assertTrue( "Expected dependency to be of type ConnectionProvider.", r instanceof ConnectionProvider );
-    }
-
-    @Test
-    public void testResourceGraph() {
-        ResourceGraph graph = workspace.getDependencyGraph();
-        ResourceNode<FeatureStore> node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>(
-                                                                                                      FeatureStoreProvider.class,
-                                                                                                      "simplesql-ok" ) );
-        Assert.assertEquals( "Expected one dependency.", 1, node.getDependencies().size() );
-        ResourceNode<ConnectionProvider> node2 = graph.getNode( new DefaultResourceIdentifier<ConnectionProvider>(
-                                                                                                                   ConnectionProviderProvider.class,
-                                                                                                                   "simplesqlh2" ) );
-        Assert.assertEquals( "Expected one dependent.", 1, node2.getDependents().size() );
-        node = graph.getNode( new DefaultResourceIdentifier<FeatureStore>( FeatureStoreProvider.class,
-                                                                           "simplesql-fail-missing-dep" ) );
-        Assert.assertFalse( "Expected broken dependencies.", node.areDependenciesAvailable() );
     }
 
     @Test
