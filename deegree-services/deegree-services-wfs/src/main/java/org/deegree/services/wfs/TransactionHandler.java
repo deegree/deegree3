@@ -426,7 +426,7 @@ class TransactionHandler {
 
         FeatureCollection fc = null;
 
-        QName featureTypeName=new QName( xmlStream.getLocalName() );
+        QName featureTypeName=new QName( xmlStream.getNamespaceURI(), xmlStream.getLocalName() );
         insertFeatureStore = service.getStore(featureTypeName);
         AppSchema schema=insertFeatureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
