@@ -63,6 +63,7 @@ import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -406,6 +407,25 @@ class TransactionHandler {
             throw new OWSException( msg, INVALID_PARAMETER_VALUE );
         }
     }
+    
+    private void setInsertFeatureStore(XMLStreamReader xmlStream){
+        List<String> containers = Arrays.asList( CommonNamespaces.GML3_2_NS, CommonNamespaces.GMLNS, WFS_NS );
+        try {
+            while (xmlStream.hasNext()){
+                if( !containers.contains( xmlStream.getNamespaceURI())){
+                    QName featureTypeName=new QName(xmlStream.getNamespaceURI(), xmlStream.getLocalName());
+                    insertFeatureStore = service.getStore(featureTypeName);
+                    break;
+                }
+                else{
+                    xmlStream.nextTag();
+                }
+            }
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     private FeatureCollection parseFeaturesOrCollection( XMLStreamReader xmlStream, GMLVersion inputFormat,
                                                          ICRS defaultCRS )
@@ -413,12 +433,9 @@ class TransactionHandler {
                             ReferenceResolvingException {
 
         FeatureCollection fc = null;
-
-        QName featureTypeName=new QName(xmlStream.getNamespaceURI(), xmlStream.getLocalName());
-        insertFeatureStore = service.getStore(featureTypeName);
-        AppSchema schema = insertFeatureStore.getSchema();
+        setInsertFeatureStore(xmlStream);
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream);
-        gmlStream.setApplicationSchema( schema );
+        gmlStream.setApplicationSchema( insertFeatureStore.getSchema() );
         gmlStream.setDefaultCRS( defaultCRS );
 
         if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
