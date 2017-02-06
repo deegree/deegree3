@@ -1041,14 +1041,14 @@
                 <crs:Description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:Description>
                 <crs:AreaOfUse>North America: Canada - Alberta; British Columbia (BC); Manitoba; New Brunswick (NB); Newfoundland and Labrador; Northwest Territories (NWT); Nova Scotia (NS); Nunavut; Ontario; Prince Edward Island (PEI); Quebec; Saskatchewan; Yukon. Puerto Rico. United States (USA) - Alabama; Alaska; Arizona; Arkansas; California; Colorado; Connecticut; Delaware; Florida; Georgia; Hawaii; Idaho; Illinois; Indiana; Iowa; Kansas; Kentucky; Louisiana; Maine; Maryland; Massachusetts; Michigan; Minnesota; Mississippi; Missouri; Montana; Nebraska; Nevada; New Hampshire; New Jersey; New Mexico; New York; North Carolina; North Dakota; Ohio; Oklahoma; Oregon; Pennsylvania; Rhode Island; South Carolina; South Dakota; Tennessee; Texas; Utah; Vermont; Virginia; Washington; West Virginia; Wisconsin; Wyoming. US Virgin Islands.  British Virgin Islands.</crs:AreaOfUse>
                 <crs:Axis>
-                        <crs:Name>longitude</crs:Name>
-                        <crs:Units>degree</crs:Units>
-                        <crs:AxisOrientation>east</crs:AxisOrientation>
-                </crs:Axis>
-                <crs:Axis>
                         <crs:Name>latitude</crs:Name>
                         <crs:Units>degree</crs:Units>
                         <crs:AxisOrientation>north</crs:AxisOrientation>
+                </crs:Axis>
+                <crs:Axis>
+                        <crs:Name>longitude</crs:Name>
+                        <crs:Units>degree</crs:Units>
+                        <crs:AxisOrientation>east</crs:AxisOrientation>
                 </crs:Axis>
                 <crs:UsedDatum>epsg:6269</crs:UsedDatum>
         </crs:GeographicCRS>
