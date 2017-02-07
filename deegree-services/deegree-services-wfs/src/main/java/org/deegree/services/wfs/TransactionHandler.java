@@ -410,21 +410,16 @@ class TransactionHandler {
         }
     }
     
-    private void setInsertFeatureStore(XMLStreamReader xmlStream){
-        try {
-            while (xmlStream.hasNext()){
-                if( !containers.contains( xmlStream.getNamespaceURI())){
-                    QName featureTypeName=new QName(xmlStream.getNamespaceURI(), xmlStream.getLocalName());
-                    insertFeatureStore = service.getStore(featureTypeName);
-                    break;
-                }
-                else{
-                    xmlStream.nextTag();
-                }
+    private void setInsertFeatureStore(XMLStreamReader xmlStream) throws XMLStreamException{
+        while (xmlStream.hasNext()){
+            if( !containers.contains( xmlStream.getNamespaceURI())){
+                QName featureTypeName=new QName(xmlStream.getNamespaceURI(), xmlStream.getLocalName());
+                insertFeatureStore = service.getStore(featureTypeName);
+                break;
             }
-        } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            else{
+                xmlStream.nextTag();
+            }
         }
     }
 
