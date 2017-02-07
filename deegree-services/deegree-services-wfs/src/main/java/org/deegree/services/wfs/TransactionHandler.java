@@ -453,7 +453,6 @@ class TransactionHandler {
             }
             
             if(xmlStream.isEndElement() && xmlStream.getName().getLocalPart() == "Insert"){
-                xmlStream.next();
                 break;
             }
             xmlStream.next();
