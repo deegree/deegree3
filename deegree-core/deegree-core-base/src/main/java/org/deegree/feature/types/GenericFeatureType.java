@@ -76,6 +76,11 @@ public class GenericFeatureType extends GenericGMLObjectType implements FeatureT
     }
 
     @Override
+    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps ) {
+        return newFeature( fid, props, extraProps );
+    }
+
+    @Override
     public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
         return new GenericFeature( this, fid, props, extraProps );
     }
