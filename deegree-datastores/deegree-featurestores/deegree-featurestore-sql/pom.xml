@@ -70,7 +70,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>junidecode</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

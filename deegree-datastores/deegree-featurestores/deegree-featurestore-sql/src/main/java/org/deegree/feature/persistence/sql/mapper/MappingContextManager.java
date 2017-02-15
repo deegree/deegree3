@@ -39,7 +39,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.gcardone.junidecode.Junidecode;
+import gcardone.junidecode.Junidecode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
