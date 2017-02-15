@@ -179,7 +179,6 @@ public class PostGISDDLCreator extends DDLCreator {
         sb.append( "id serial PRIMARY KEY,\n    " );
         // TODO
         sb.append( jc.getToColumns().get( 0 ) );
-        // TODO implement this correctly
         String primaryKeyType = retrieveTypeOfPrimaryKey( fromTable, jc.getFromColumns().get( 0 ), fidMapping );
         sb.append(" ").append( primaryKeyType ).append( " NOT NULL REFERENCES " );
         sb.append( fromTable );
@@ -233,6 +232,7 @@ public class PostGISDDLCreator extends DDLCreator {
                 }
             }
         }
+        // TODO implement this correctly
         // in joins not connected to the main feature type table 'integer' is used by default
         if ( !fromTable.equals( currentFtTable ) ) {
             return "integer";

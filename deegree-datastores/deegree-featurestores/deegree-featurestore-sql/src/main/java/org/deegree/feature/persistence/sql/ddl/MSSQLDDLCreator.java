@@ -181,7 +181,6 @@ public class MSSQLDDLCreator extends DDLCreator {
         sb.append( " (\n    " );
         sb.append( "id integer PRIMARY KEY IDENTITY(1,1),\n    " );
         sb.append( jc.getToColumns().get( 0 ) );
-        // TODO implement this correctly
         String primaryKeyType = retrieveTypeOfPrimaryKey( fromTable, jc.getFromColumns().get( 0 ), fidMapping );
         sb.append(" ").append( primaryKeyType ).append( " NOT NULL REFERENCES " );
         sb.append( fromTable );
@@ -225,6 +224,7 @@ public class MSSQLDDLCreator extends DDLCreator {
         return dbType;
     }
 
+    // TODO implement this correctly
     private String retrieveTypeOfPrimaryKey( TableName fromTable, SQLIdentifier toColumn, FIDMapping fidMapping ) {
         if ( fidMapping != null ) {
             for ( Pair<SQLIdentifier, BaseType> column : fidMapping.getColumns() ) {
