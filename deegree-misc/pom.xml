@@ -27,7 +27,6 @@
   <modules>
     <module>deegree-javacheck</module>
     <module>deegree-tomcat</module>
-    <module>junidecode</module>
   </modules>
 
 </project>
