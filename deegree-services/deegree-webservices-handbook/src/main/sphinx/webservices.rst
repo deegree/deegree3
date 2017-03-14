@@ -436,7 +436,7 @@ Have a look at the layer options and their values:
 .. table:: Layer options
 
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
-| Option                 | Cardinality       | String    | Description                                                                                       |
+| Option                 | Cardinality       | Value     | Description                                                                                       |
 +========================+===================+===========+===================================================================================================+
 | Antialiasing           | 0..1              | String    | Whether to antialias NONE, TEXT, IMAGE or BOTH, default is BOTH                                   |
 +------------------------+-------------------+-----------+---------------------------------------------------------------------------------------------------+
@@ -451,6 +451,8 @@ Have a look at the layer options and their values:
 
 You can configure the WMS to use one or more preconfigured themes. In WMS terms, each theme is mapped to a layer in the WMS capabilities. So if you use one theme, the WMS root layer corresponds to the root theme. If you use multiple themes, a synthetic root layer is exported in the capabilities, with one child layer corresponding to each root theme. The themes are configured using the ``ThemeId`` element.
 
+In addition, you can add an optional ``VisibilityInspector``. This option is described in the next section.
+
 Here is an example snippet of the content section:
 
 .. code-block:: xml
@@ -464,6 +466,32 @@ Here is an example snippet of the content section:
     <ThemeId>mytheme</ThemeId>
 
   </ServiceConfiguration>
+
+""""""""""""""""""""
+Visibility Inspector
+""""""""""""""""""""
+
+You can configure the visibility of layers using the ``VisibilityInspector`` element.
+
+Have a look at the options of the ``VisibilityInspector``:
+
+.. table:: Visibility inspector
+
++-------------------------+-------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Option                  | Cardinality | Value  | Description                                                                                                                                                                                 |
++=========================+=============+========+=============================================================================================================================================================================================+
+| JavaClass               | 1           | String | Implementation of interface org.deegree.services.wms.visibility.LayerVisibilityInspector to check if a requested layer and corresponding sublayers should be rendered in a GetMap response. |
++-------------------------+-------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| CategoryLayerIdentifier | 0..n        | String | Identifier of (category) layers (that are requestable in GetMap requests) which should be checked. If no CategoryLayerIdentifier is specified all layers are checked.                       |
++-------------------------+-------------+--------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+The implementation of the visibility inspector checks whether a requested layer and its corresponding sublayers are rendered in a GetMap response. These (category) layers are defined in the ``CategoryLayerIdentifier`` element.
+Of course, also non category layers can be configured here, but for most use cases category layers will be more useful.
+If no ``CategoryLayerIdentifier`` are configured, the VisibilityInspector is applied to all layers.
+
+Note: If a ``CategoryLayerIdentifier`` is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visiblity inspector is applied to the requested layer plus all of its sublayers.
+If just one or more sublayers of the configured ``CategoryLayerIdentifier`` are requested, the visibility inspector is NOT applied.
+This behaviour prevents that complex analyses and/or functions are executed during each GetMap request.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom capabilities formats
