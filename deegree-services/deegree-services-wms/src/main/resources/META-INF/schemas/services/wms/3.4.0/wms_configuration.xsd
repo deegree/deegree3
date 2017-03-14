@@ -187,17 +187,17 @@
 
   <complexType name="VisibilityInspectorType">
     <annotation>
-      <documentation>Configure a implementation of the interface
-        org.deegree.services.wms.visibility.LayerVisibilityInspector to check
-        if a requested layer (or sublayer) should be rendered in a GetMap response. With LayerIdentifier the identifier
-        of the layers (which are requestable in GetMap requests) can be specified which should be checked. If no
-        LayerIdentifier are specified all layers are checked.
+      <documentation>Configure an implementation of the interface
+        org.deegree.services.wms.visibility.LayerVisibilityInspector to check if a requested layer and corresponding
+        sublayers should be rendered in a GetMap response. With CategoryLayerIdentifier the identifier of (category)
+        layers (which are requestable in GetMap requests) can be specified which should be checked. If no
+        CategoryLayerIdentifier is specified all layers are checked.
       </documentation>
     </annotation>
     <sequence>
       <element name="JavaClass" type="string" />
       <sequence minOccurs="0">
-        <element name="LayerIdentifier" type="string" minOccurs="1" maxOccurs="unbounded" />
+        <element name="CategoryLayerIdentifier" type="string" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
     </sequence>
   </complexType>

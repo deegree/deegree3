@@ -18,9 +18,9 @@ public class RequestedLayerVisibilityInspector {
 
     /**
      * @param visibilityInspectorTypes
-     *                         the configuration of the visibility inspector, never <code>null</code>
+     *            the configuration of the visibility inspector, never <code>null</code>
      * @param workspace
-     *                         the currently active workspace, never <code>null</code>
+     *            the currently active workspace, never <code>null</code>
      */
     public RequestedLayerVisibilityInspector( List<VisibilityInspectorType> visibilityInspectorTypes,
                                               Workspace workspace ) {
@@ -31,9 +31,9 @@ public class RequestedLayerVisibilityInspector {
      * Checks if the layer with the passed metadata is visible or not.
      *
      * @param requestedLayerName
-     *                         the name of the requested layer, never <code>null</code>
+     *            the name of the requested layer, never <code>null</code>
      * @param layerMetadata
-     *                         the layer metadata to check if visible or not
+     *            the layer metadata to check if visible or not
      *
      * @return <code>true</code> if the layer is visible, <code>false</code> otherwise
      */
@@ -47,18 +47,17 @@ public class RequestedLayerVisibilityInspector {
         return true;
     }
 
-    private InspectorMap initInspectorMap( Workspace workspace,
-                                           List<VisibilityInspectorType> visibilityInspectorTypes ) {
+    private InspectorMap initInspectorMap( Workspace workspace, List<VisibilityInspectorType> visibilityInspectorTypes ) {
         InspectorMap inspectorMap = new InspectorMap();
         if ( visibilityInspectorTypes != null && !visibilityInspectorTypes.isEmpty() ) {
 
             for ( VisibilityInspectorType visibilityInspectorType : visibilityInspectorTypes ) {
                 LayerVisibilityInspector inspector = instantiateClass( workspace, visibilityInspectorType );
-                List<String> layerIdentifiers = visibilityInspectorType.getLayerIdentifier();
-                if ( layerIdentifiers.isEmpty() )
+                List<String> categoryLayerIdentifiers = visibilityInspectorType.getCategoryLayerIdentifier();
+                if ( categoryLayerIdentifiers.isEmpty() )
                     inspectorMap.addInspectorForAllLayers( inspector );
                 else
-                    inspectorMap.addInspectorPerLayer( inspector, layerIdentifiers );
+                    inspectorMap.addInspectorPerLayer( inspector, categoryLayerIdentifiers );
             }
         }
         return inspectorMap;
@@ -74,10 +73,11 @@ public class RequestedLayerVisibilityInspector {
             throw new IllegalArgumentException( "Couldn't find LayerVisibilityInspector class", e );
         } catch ( ClassCastException e ) {
             throw new IllegalArgumentException(
-                                    "Configured serializer class doesn't implement LayerVisibilityInspector", e );
+                                                "Configured serializer class doesn't implement LayerVisibilityInspector",
+                                                e );
         } catch ( InstantiationException e ) {
             throw new IllegalArgumentException( "Could not instantiate " + javaClass, e );
-        } catch ( IllegalAccessException  e ) {
+        } catch ( IllegalAccessException e ) {
             throw new IllegalArgumentException( "Could not instantiate " + javaClass, e );
         }
     }
@@ -100,11 +100,11 @@ public class RequestedLayerVisibilityInspector {
             inspectorForAllLayers.add( inspector );
         }
 
-        void addInspectorPerLayer( LayerVisibilityInspector inspector, List<String> layerIdentifiers ) {
-            for ( String layerIdentifier : layerIdentifiers ) {
-                if ( !inspectorPerLayer.containsKey( layerIdentifier ) )
-                    inspectorPerLayer.put( layerIdentifier, new ArrayList<LayerVisibilityInspector>() );
-                inspectorPerLayer.get( layerIdentifier ).add( inspector );
+        void addInspectorPerLayer( LayerVisibilityInspector inspector, List<String> categoryLayerIdentifiers ) {
+            for ( String categoryLayerIdentifier : categoryLayerIdentifiers ) {
+                if ( !inspectorPerLayer.containsKey( categoryLayerIdentifier ) )
+                    inspectorPerLayer.put( categoryLayerIdentifier, new ArrayList<LayerVisibilityInspector>() );
+                inspectorPerLayer.get( categoryLayerIdentifier ).add( inspector );
             }
         }
     }
