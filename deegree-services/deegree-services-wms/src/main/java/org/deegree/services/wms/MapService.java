@@ -210,7 +210,8 @@ public class MapService {
             OperatorFilter f = filterItr == null ? null : filterItr.next();
 
             LayerQuery query = buildQuery( sr, lr, options, mapOptions, f, gm );
-            queries.add( query );
+            if ( query != null )
+                queries.add( query );
         }
 
         ListIterator<LayerQuery> queryIter = queries.listIterator();
@@ -240,11 +241,15 @@ public class MapService {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
-            List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
-            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
+            String layerName = lr.getName();
+            List<Layer> layers = getAllLayers( themeMap.get( layerName ) );
+            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), layerName );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
                      || layer.getMetadata().getScaleDenominators().second < scale ) {
+                    continue;
+                }
+                if ( !visibilityInspector.isVisible( layerName, layer.getMetadata() ) ) {
                     continue;
                 }
                 if ( layer.isStyleApplicable( query.getStyle() ) ) {
@@ -271,11 +276,9 @@ public class MapService {
         String layerName = lr.getName();
 
         for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( layerName ) ) ) {
-            if ( visibilityInspector.isVisible( layerName, l.getMetadata() ) ) {
-                insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
-                                      defaultLayerOptions );
-                mapOptions.add( options.get( l.getMetadata().getName() ) );
-            }
+            insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
+                                  defaultLayerOptions );
+            mapOptions.add( options.get( l.getMetadata().getName() ) );
         }
 
         return new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
