@@ -71,6 +71,7 @@
     <sequence>
       <element name="DefaultLayerOptions" type="wms:LayerOptionsType" minOccurs="0" />
       <element name="ThemeId" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="VisibilityInspector" type="wms:VisibilityInspectorType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>
 
@@ -112,7 +113,7 @@
                     <element name="Property" minOccurs="0" maxOccurs="unbounded">
                       <complexType>
                         <attribute name="name" use="required" />
-                        <attribute name="value" use="required" />            
+                        <attribute name="value" use="required" />
                       </complexType>
                     </element>
                   </sequence>
@@ -165,7 +166,7 @@
             <element name="Property" minOccurs="0" maxOccurs="unbounded">
               <complexType>
                 <attribute name="name" use="required" />
-                <attribute name="value" use="required" />            
+                <attribute name="value" use="required" />
               </complexType>
             </element>
           </sequence>
@@ -181,6 +182,23 @@
       <element name="Interpolation" type="string" minOccurs="0" />
       <element name="MaxFeatures" type="int" minOccurs="0" />
       <element name="FeatureInfoRadius" type="int" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="VisibilityInspectorType">
+    <annotation>
+      <documentation>Configure a implementation of the interface
+        org.deegree.services.wms.visibility.LayerVisibilityInspector to check
+        if a requested layer (or sublayer) should be rendered in a GetMap response. With LayerIdentifier the identifier
+        of the layers (which are requestable in GetMap requests) can be specified which should be checked. If no
+        LayerIdentifier are specified all layers are checked.
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="JavaClass" type="string" />
+      <sequence minOccurs="0">
+        <element name="LayerIdentifier" type="string" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
     </sequence>
   </complexType>
 
