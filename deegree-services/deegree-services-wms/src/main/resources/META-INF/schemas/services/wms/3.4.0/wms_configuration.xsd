@@ -196,9 +196,7 @@
     </annotation>
     <sequence>
       <element name="JavaClass" type="string" />
-      <sequence minOccurs="0">
-        <element name="CategoryLayerIdentifier" type="string" minOccurs="0" maxOccurs="unbounded" />
-      </sequence>
+      <element name="CategoryLayerIdentifier" type="string" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>
 
