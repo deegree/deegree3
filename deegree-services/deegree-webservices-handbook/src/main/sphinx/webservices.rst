@@ -493,6 +493,19 @@ Note: If a ``CategoryLayerIdentifier`` is configured, the visibility inspector w
 If just one or more sublayers of the configured ``CategoryLayerIdentifier`` are requested, the visibility inspector is NOT applied.
 This behaviour prevents that complex analyses and/or functions are executed during each GetMap request.
 
+Example:
+
+.. code-block:: xml
+
+  <wms:VisibilityInspector>
+    <wms:JavaClass>org.deegree.VisibilityChecker</wms:JavaClass>
+    <wms:LayerIdentifier>category_layer</wms:LayerIdentifier>
+  </wms:VisibilityInspector>
+
+The layer category_layer has two sublayers layer1 and layer2.
+If category_layer is requested by a GetMap request, the visibility inspector org.deegree.VisibilityChecker is applied to category_layer, layer1 and layer2.
+If layer1 and/or layer2 are requested by a GetMap request, the visibility inspector is not applied to any layer.
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Custom capabilities formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
