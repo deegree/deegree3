@@ -76,6 +76,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.xerces.parsers.DOMParser;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -899,6 +900,20 @@ public class XMLStreamUtils {
         Document doc = parser.getDocument();
         store.close();
         return doc;
+    }
+
+    /**
+     * Creates a {@link XMLStreamReader} out of an {@link OMElement}
+     *
+     * @param omElement the omElement to convert, never <code>null</code>
+     * @return the omElement as {@link XMLStreamReader} the START_DOCUMENT node is skipped, never <code>null</code>
+     * @throws XMLStreamException if an error occurred creating the {@link XMLStreamReader}
+     */
+    public static XMLStreamReader getAsXmlStrem( OMElement omElement )
+                            throws XMLStreamException {
+        XMLStreamReader bodyXmlStream = omElement.getXMLStreamReaderWithoutCaching();
+        skipStartDocument( bodyXmlStream );
+        return bodyXmlStream;
     }
 
     /**

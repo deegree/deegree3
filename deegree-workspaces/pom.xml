@@ -47,7 +47,6 @@
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
-    <module>deegree-workspace-wps-jrxml</module>
     <module>deegree-workspace-wpvs</module>
     <module>deegree-workspace-xplan40</module>
   </modules>

@@ -73,6 +73,7 @@ import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -750,6 +751,8 @@ public class SQLFeatureStore implements FeatureStore {
                 rs.next();
                 hits = rs.getInt( 1 );
             }
+        } catch( InvalidParameterValueException e ){
+            throw e;
         } catch ( Exception e ) {
             String msg = "Error performing hits query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
@@ -953,6 +956,8 @@ public class SQLFeatureStore implements FeatureStore {
                 FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
+                } catch ( InvalidParameterValueException e ){
+                    throw e;
                 } catch ( Throwable e ) {
                     LOG.debug( e.getMessage(), e );
                     throw new RuntimeException( e.getMessage(), e );
@@ -1411,6 +1416,11 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( InvalidParameterValueException e ) {
+            release( rs, stmt, conn );
+            String msg = "Error performing query by operator filter: " + e.getMessage();
+            LOG.error( msg, e );
+            throw e;
         } catch ( Exception e ) {
             release( rs, stmt, conn );
             String msg = "Error performing query by operator filter: " + e.getMessage();
