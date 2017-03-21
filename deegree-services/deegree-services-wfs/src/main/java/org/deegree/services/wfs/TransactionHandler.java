@@ -77,11 +77,9 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.tom.CombinedReferenceResolver;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
-import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.Version;
@@ -101,7 +99,6 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
-import org.deegree.feature.persistence.FeatureStoreGmlIdentifierResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -121,7 +118,6 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
-import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -176,24 +172,27 @@ class TransactionHandler {
 
     private final IDGenMode idGenMode;
 
+    private final boolean allowFeatureReferencesToDatastore;
+
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
      * {@link FeatureType}s.
-     * 
-     * @param master
-     * 
+     *  @param master
+     *
      * @param service
      *            WFS instance used to lookup the feature types
      * @param request
-     *            request to be handled
+ *            request to be handled
      * @param idGenMode
+     * @param allowFeatureReferencesToDatastore
      */
     TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
-                        IDGenMode idGenMode ) {
+                        IDGenMode idGenMode, boolean allowFeatureReferencesToDatastore ) {
         this.master = master;
         this.service = service;
         this.request = request;
         this.idGenMode = idGenMode;
+        this.allowFeatureReferencesToDatastore = allowFeatureReferencesToDatastore;
     }
 
     /**
@@ -439,9 +438,11 @@ class TransactionHandler {
         FeatureCollection fc = null;
 
         // TODO determine correct schema
-        AppSchema schema = service.getStores()[0].getSchema();
+        FeatureStore featureStore = service.getStores()[0];
+        AppSchema schema = featureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
-        gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( service.getStores()[0] )  );
+        if ( allowFeatureReferencesToDatastore )
+            gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( featureStore ) );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
 
@@ -472,7 +473,8 @@ class TransactionHandler {
         }
 
         // resolve local xlink references
-        // gmlStream.getIdContext().resolveLocalRefs();
+        if ( !allowFeatureReferencesToDatastore )
+            gmlStream.getIdContext().resolveLocalRefs();
 
         return fc;
     }

@@ -50,7 +50,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +169,10 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
                             throws ReferenceResolvingException {
         try {
             return super.getReferencedObject();
-        } catch(ReferenceResolvingException e) {
+        } catch ( ReferenceResolvingException e ) {
+            if ( internalResolver == null ) {
+                throw e;
+            }
             GMLObject object = this.internalResolver.getObject( getURI(), getBaseURL() );
             if ( object != null )
                 LOG.info( "Feature with uri {} could be resolved by the internal resolver.", getURI() );
