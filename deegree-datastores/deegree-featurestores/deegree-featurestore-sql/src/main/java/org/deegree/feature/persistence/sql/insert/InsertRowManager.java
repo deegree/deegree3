@@ -348,7 +348,8 @@ public class InsertRowManager {
                 Feature feature = (Feature) getPropValue( value );
                 if ( feature instanceof FeatureReference ) {
                     FeatureReference featureReference = (FeatureReference) feature;
-                    if ( ( featureReference.isLocal() || featureReference.isResolved() ) && featureReference.getReferencedObject() != null ) {
+                    if ( ( featureReference.isLocal() || featureReference.isResolved() )
+                         && !featureReference.isInternalResolved() ) {
                         subFeatureRow = lookupFeatureRow( feature.getId() );
                     }
                     // always use the uri if href is mapped explicitly

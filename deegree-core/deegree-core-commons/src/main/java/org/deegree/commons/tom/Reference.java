@@ -57,7 +57,7 @@ public class Reference<T extends Object> implements Object {
 
     private T object;
 
-    private ReferenceResolvingException exception;
+    protected ReferenceResolvingException exception;
 
     /**
      * Creates a new {@link Reference} instance.
@@ -104,6 +104,16 @@ public class Reference<T extends Object> implements Object {
      */
     public boolean isResolved() {
         return object != null;
+    }
+
+    /**
+     * Returns whether the reference has been resolved and is an internal reference.
+     *
+     * @return <code>true</code> if the reference is resolved is an internal reference, <code>false</code> if the
+     *         reference has not been resolved or is not internal
+     */
+    public boolean isInternalResolved() {
+        return false;
     }
 
     // TODO can we get rid of this method?

@@ -66,6 +66,8 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
     private static final Logger LOG = LoggerFactory.getLogger( FeatureReference.class );
 
     private final GMLReferenceResolver internalResolver;
+    
+    private boolean internalResolved = false;
 
     /**
      * Creates a new {@link FeatureReference} instance.
@@ -170,14 +172,32 @@ public class FeatureReference extends GMLReference<Feature> implements Feature {
         try {
             return super.getReferencedObject();
         } catch ( ReferenceResolvingException e ) {
-            if ( internalResolver == null ) {
+            if ( internalResolver == null )
                 throw e;
-            }
-            GMLObject object = this.internalResolver.getObject( getURI(), getBaseURL() );
-            if ( object != null )
-                LOG.info( "Feature with uri {} could be resolved by the internal resolver.", getURI() );
-            return null;
+            return resolveInternalFeature( e );
         }
+    }
+
+    @Override
+    public boolean isInternalResolved() {
+        return internalResolved;
+    }
+
+    private Feature resolveInternalFeature( ReferenceResolvingException e ) {
+        String uri = getURI();
+        GMLObject object = this.internalResolver.getObject( uri, getBaseURL() );
+        if ( object != null ) {
+            if ( object instanceof Feature ) {
+                LOG.info( "Feature with uri {} could be resolved by the internal resolver.", uri );
+                resolve( (Feature) object );
+                this.internalResolved = true;
+                return (Feature) object;
+            }
+            String msg = "Object with uri '" + uri
+                         + "' could be resolved from internal resolver but is no Feature instance.";
+            throw exception = new ReferenceResolvingException( msg );
+        }
+        throw e;
     }
 
 }

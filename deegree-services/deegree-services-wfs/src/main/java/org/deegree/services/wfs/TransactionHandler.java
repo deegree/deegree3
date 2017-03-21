@@ -473,8 +473,7 @@ class TransactionHandler {
         }
 
         // resolve local xlink references
-        if ( !allowFeatureReferencesToDatastore )
-            gmlStream.getIdContext().resolveLocalRefs();
+        gmlStream.getIdContext().resolveLocalRefs();
 
         return fc;
     }
