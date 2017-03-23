@@ -166,6 +166,13 @@ public class OwsHttpClientImpl implements OwsHttpClient {
             InputStreamEntity entity = new InputStreamEntity( body.getInputStream(), (long) body.size() );
             entity.setContentType( contentType );
             httpPost.setEntity( entity );
+            
+            if ( headers != null ) {
+                for ( Entry<String, String> entry : headers.entrySet() ) {
+                    httpPost.addHeader( entry.getKey(), entry.getValue() );
+                }
+            }
+            
             HttpResponse httpResponse = httpClient.execute( httpPost );
             response = new OwsHttpResponseImpl( httpResponse, httpClient.getConnectionManager(), endPoint.toString() );
         } catch ( Throwable e ) {
