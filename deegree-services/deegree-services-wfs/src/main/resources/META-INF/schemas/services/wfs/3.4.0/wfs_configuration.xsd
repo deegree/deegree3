@@ -96,7 +96,7 @@
 
   <element name="DisabledResources">
     <annotation>
-      <documentation>Contains a list of url patterns which should not be resolved during transaction response.</documentation>
+      <documentation>Contains a sequence of url patterns which should not be resolved during transaction response.</documentation>
     </annotation>
     <complexType>
       <sequence>
