@@ -128,7 +128,7 @@ public class AppSchemaMapper {
 
     private final boolean useIntegerFids;
 
-    private final int MAX_COMPLEXITY_INDEX = 100;
+    private final int MAX_COMPLEXITY_INDEX = 500;
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -511,16 +511,9 @@ public class AppSchemaMapper {
                                            List<XSElementDeclaration> parentEls,
                                            List<XSComplexTypeDefinition> parentCTs, boolean isNillable ) {
 
-        if ( typeDef.getName() != null ) {
-            for ( XSComplexTypeDefinition ct : parentCTs ) {
-                if ( ct.getName() != null ) {
-                    if ( typeDef.getName().equals( ct.getName() ) && typeDef.getNamespace().equals( ct.getNamespace() ) ) {
-                        handleCycle( parentEls, parentCTs );
-                        return Collections.emptyList();
-                    }
-                }
-            }
-        }
+        if ( isCycle( typeDef, parentEls, parentCTs ) )
+            return Collections.emptyList();
+
         parentCTs.add( typeDef );
 
         List<Mapping> particles = new ArrayList<Mapping>();
@@ -587,7 +580,7 @@ public class AppSchemaMapper {
             sb.append( qName.getName() );
             sb.append( " -> " );
         }
-        throw new RuntimeException( "Detected unhandled cycle '" + sb + "'." );
+        LOG.warn( "Detected unhandled cycle '" + sb + "'." );
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -705,14 +698,9 @@ public class AppSchemaMapper {
     private List<Mapping> generateMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
                                            List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
 
-        if ( elDecl.getScope() == XSConstants.SCOPE_GLOBAL ) {
-            for ( XSElementDeclaration el : parentEls ) {
-                if ( elDecl.getName().equals( el.getName() ) && elDecl.getNamespace().equals( el.getNamespace() ) ) {
-                    handleCycle( parentEls, parentCTs );
-                    return Collections.emptyList();
-                }
-            }
-        }
+        if ( isCycle( elDecl, parentEls, parentCTs ) )
+            return Collections.emptyList();
+
         parentEls.add( elDecl );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
@@ -792,6 +780,7 @@ public class AppSchemaMapper {
         return mappings;
     }
 
+
     private List<Mapping> generateMapping( XSModelGroup modelGroup, int occurrence, MappingContext mc,
                                            List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
@@ -853,4 +842,33 @@ public class AppSchemaMapper {
         }
         return new ValueReference( name );
     }
+
+    private boolean isCycle( XSComplexTypeDefinition typeDef, List<XSElementDeclaration> parentEls,
+                             List<XSComplexTypeDefinition> parentCTs ) {
+        if ( typeDef.getName() != null ) {
+            for ( XSComplexTypeDefinition ct : parentCTs ) {
+                if ( ct.getName() != null ) {
+                    if ( typeDef.getName().equals( ct.getName() ) && typeDef.getNamespace().equals( ct.getNamespace() ) ) {
+                        handleCycle( parentEls, parentCTs );
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCycle( XSElementDeclaration elDecl, List<XSElementDeclaration> parentEls,
+                             List<XSComplexTypeDefinition> parentCTs ) {
+        if ( elDecl.getScope() == XSConstants.SCOPE_GLOBAL ) {
+            for ( XSElementDeclaration el : parentEls ) {
+                if ( elDecl.getName().equals( el.getName() ) && elDecl.getNamespace().equals( el.getNamespace() ) ) {
+                    handleCycle( parentEls, parentCTs );
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
