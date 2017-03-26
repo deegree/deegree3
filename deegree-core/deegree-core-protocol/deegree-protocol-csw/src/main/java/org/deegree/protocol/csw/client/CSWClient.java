@@ -243,19 +243,27 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     public MetadataRecord getIsoRecordById( String fileIdentifier )
-
                             throws IOException, OWSExceptionReport, XMLStreamException {
-        return getRecordById( fileIdentifier, "http://www.isotc211.org/2005/gmd" );
+        return getIsoRecordById( fileIdentifier, null );
+    }    
+    
+    public MetadataRecord getIsoRecordById( String fileIdentifier, Map<String, String> headers )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getRecordById( fileIdentifier, "http://www.isotc211.org/2005/gmd", headers );
     }
 
     public MetadataRecord getRecordById( String fileIdentifier, String schema )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getRecordById( fileIdentifier, schema, null );
+    }
 
+    public MetadataRecord getRecordById( String fileIdentifier, String schema, Map<String, String> headers )
                             throws IOException, OWSExceptionReport, XMLStreamException {
         URL endPoint = getGetUrl( "GetRecordById" );
 
         Map<String, String> params = getGetRecordByIdKvpParams( fileIdentifier, schema );
 
-        OwsHttpResponse response = httpClient.doGet( endPoint, params, null );
+        OwsHttpResponse response = httpClient.doGet( endPoint, params, headers );
 
         XMLStreamReader xmlStream = response.getAsXMLStream();
         XMLStreamUtils.skipStartDocument( xmlStream );

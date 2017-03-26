@@ -183,10 +183,15 @@ public class CSWClientTest {
         headers.put( "From", "somebody@somwhere.com" );
         headers.put( "Warning", "199 Miscellaneous warning" );
 
-        GetRecordsResponse recordsResponse = client.getIsoRecords(1, 10, null, headers);
-        Assert.assertNotNull( recordsResponse );        
+        GetRecordsResponse recordsResponse = client.getIsoRecords( 1, 10, null, headers );
+        Assert.assertNotNull( recordsResponse );
         Assert.assertTrue( 10 >= recordsResponse.getNumberOfRecordsReturned() );
         Assert.assertTrue( recordsResponse.getNumberOfRecordsReturned() >= 1 );
         Assert.assertTrue( recordsResponse.getNumberOfRecordsMatched() >= 1 );
+
+        String recordId = recordsResponse.getRecords().next().getIdentifier();
+        MetadataRecord singleRecord = client.getIsoRecordById( recordId, headers );
+        Assert.assertNotNull( singleRecord );
+        Assert.assertEquals( recordId, singleRecord.getIdentifier() );      
     }
 }
