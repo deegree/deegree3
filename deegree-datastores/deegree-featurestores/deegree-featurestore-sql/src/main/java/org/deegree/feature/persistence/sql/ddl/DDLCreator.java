@@ -217,7 +217,7 @@ public abstract class DDLCreator {
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) mapping;
             for ( Mapping childMapping : compoundMapping.getParticles() ) {
-                ddls.addAll( process( sql, table, childMapping, null ) );
+                ddls.addAll( process( sql, table, childMapping, fidMapping ) );
             }
         } else if ( mapping instanceof SqlExpressionMapping ) {
             // skip
