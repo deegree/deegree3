@@ -351,6 +351,9 @@ Important for applications like INSPIRE, it is often desirable to include predef
     </MyCustomOutput>
   </ExtendedCapabilities>
 
+You must set the attribute ``wfsVersions`` to indicate the version that you want to define the extended capabilities for.
+If your service supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and 2.0.0), you may include multiple ``ExtendedCapabilities`` elements in the metadata configuration.
+
 .. warning::
   The extended capabilities set in the WFS service configuration are ignored, if a metadata configuration file (see chapter :ref:`anchor-configuration-service-metadata`) exists. Instead, the extended capabilities must be configured there.
 
