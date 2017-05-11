@@ -88,6 +88,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | StoredQuery             | 0..n        | String  | File name of StoredQueryDefinition                               |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
+| ExtendedCapabilities    | 0..n        | String  | Extended Metadata reported in GetCapabilities response           |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 | GMLFormat               | 0..n        | Complex | GML format configuration                                         |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
@@ -137,7 +139,7 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 SupportedRequests
 ^^^^^^^^^^^^^^^^^^
 
-This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:  
+This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:
 
 +-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                | Cardinality  | Value   | Description                                                                                                                                  |
@@ -184,7 +186,7 @@ By default deegree will provide all supported requests type with all available e
       :language: xml
 
 .. hint::
-   It is not checked if the configuration is valid against the WFS specification! 
+   It is not checked if the configuration is valid against the WFS specification!
   
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -334,6 +336,23 @@ The attribute returnFeatureTypes of QueryExpressionText can be left empty. If th
 
 .. tip::
   deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries`` and the ``DescribeStoredQueries`` operations. However, there is no support for ``CreateStoredQuery`` and ``DropStoredQuery`` at the moment.
+
+^^^^^^^^^^^^^^^^^^^^^
+Extended capabilities
+^^^^^^^^^^^^^^^^^^^^^
+
+Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WFS capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
+
+.. code-block:: xml
+
+  <ExtendedCapabilities>
+    <MyCustomOutput xmlns="http://www.custom.org/output">
+      ...
+    </MyCustomOutput>
+  </ExtendedCapabilities>
+
+.. warning::
+  The extended capabilities set in the WFS service configuration are ignored, if a metadata configuration file (see chapter :ref:`anchor-configuration-service-metadata`) exists. Instead, the extended capabilities must be configured there.
 
 .. _anchor-configuration-wms:
 
@@ -722,7 +741,7 @@ Of course it is possible to define as many custom formats as you want, as long a
 Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
-Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS' capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
+Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
 
 .. code-block:: xml
 
@@ -731,6 +750,9 @@ Important for applications like INSPIRE, it is often desirable to include predef
       ...
     </MyCustomOutput>
   </ExtendedCapabilities>
+
+.. warning::
+  The extended capabilities set in the WMS service configuration are ignored, if a metadata configuration file (see chapter :ref:`anchor-configuration-service-metadata`) exists. Instead, the extended capabilities must be configured there.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Vendor specific parameters
@@ -984,7 +1006,7 @@ A minimal valid WPS configuration example looks like this:
 .. code-block:: xml
   
   <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">  
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
   </deegreeWPS>
 
 This will create a WPS resource with the following properties:
@@ -1096,6 +1118,9 @@ The metadata config file format is defined by schema file http://schemas.deegree
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 
 The remainder of this section describes these options and their sub-options in detail.
+
+.. warning::
+  If a metadata configuration file exists, extended capabilities configured in any service configuration (see chapters :ref:`anchor-configuration-wfs` and :ref:`anchor-configuration-wms`) are ignored. Instead, all extended capabilities must be configured in this file.
 
 ^^^^^^^^^^^^^^^^^^^^^^
 Service identification
