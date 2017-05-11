@@ -31,6 +31,7 @@
               <element name="DescribeLayer" minOccurs="0" type="wms:RequestType"/>
               <element name="GetLegendGraphic" minOccurs="0" type="wms:RequestType"/>
               <element name="GetFeatureInfoSchema" minOccurs="0" type="wms:RequestType"/>
+              <element name="DTD" minOccurs="0" type="wms:RequestType"/>
             </sequence>
           </complexType>
         </element>
