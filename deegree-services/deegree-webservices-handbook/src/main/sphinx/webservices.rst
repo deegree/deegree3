@@ -137,14 +137,14 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 SupportedRequests
 ^^^^^^^^^^^^^^^^^^
 
-This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:  
+This option can be used to configure the supported request types. Currently, the supported encodings can be specified for each request type. If the option is missing, all encodings are supported for each request type. The option has the following sup-options:
 
 +-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                | Cardinality  | Value   | Description                                                                                                                                  |
 +=======================+==============+=========+==============================================================================================================================================+
-| SupportedEncodings    | 0..1         | String  | Enable encodings for all configured request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be seperated by a white space. |
+| SupportedEncodings    | 0..1         | String  | Enable encodings for all configured request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be separated by a white space. |
 +-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| GetCapabilities       | 0..1         | Complex | Configuration of GetCapabilties requests                                                                                                     |
+| GetCapabilities       | 0..1         | Complex | Configuration of GetCapabilities requests                                                                                                    |
 +-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
 | DescribeFeatureType   | 0..1         | Complex | Configuration of DescribeFeatureType requests                                                                                                |
 +-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
@@ -174,18 +174,25 @@ Each request type has the following sup-option:
 +---------------------+--------------+---------+------------------------------------------------------------------------------------------------------------------------------------+
 | Option              | Cardinality  | Value   | Description                                                                                                                        |
 +=====================+==============+=========+====================================================================================================================================+
-| SupportedEncodings  | 0..1         | String  | Enable encodings for this request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be seperated by a white space. |
+| SupportedEncodings  | 0..1         | String  | Enable encodings for this request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be separated by a white space. |
 +---------------------+--------------+---------+------------------------------------------------------------------------------------------------------------------------------------+
 
+By default deegree will provide all supported request types with all available encodings (kvp, xml, soap).
 
-By default deegree will provide all supported requests type with all available encodings (kvp, xml, soap). To limit the provided request types to GetCapabilties and GetFeature this request types can be added without SupportedEncodings sub-option:
+If a single supported request or encoding is configured, all non configured requests or encodings are disabled.
+
+Example: To limit the provided request types to GetCapabilities and GetFeature this request types can be added without SupportedEncodings sub-option:
 
    .. literalinclude:: xml/supportedRequests.xml
       :language: xml
 
-.. hint::
-   It is not checked if the configuration is valid against the WFS specification! 
-  
+Example: To disable SOAP encoding the other encodings can be added without SupportedRequests sub-option:
+
+   .. literalinclude:: xml/deactivateSoap.xml
+      :language: xml
+
+.. warning::
+   It is not checked if the configuration is valid against the WFS specification!
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adapting GML output formats
@@ -381,6 +388,8 @@ The following table shows what top level options are available.
 +==========================+==============+=========+==============================================================================+
 | SupportedVersions        | 0..1         | Complex | Limits active OGC protocol versions                                          |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
+| SupportedRequests        | 0..1         | Complex | Configuration of WMS requests                                                |
++--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | UpdateSequence           | 0..1         | Integer | Current update sequence, default: 0                                          |
 +--------------------------+--------------+---------+------------------------------------------------------------------------------+
 | MetadataStoreId          | 0..1         | String  | Configures a metadata store to check if metadata ids for layers exist        |
@@ -424,6 +433,62 @@ Here is a snippet for quick copy & paste:
   </SupportedVersions>
   <MetadataStoreId>mdstore</MetadataStoreId>
   <MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
+
+.. _anchor-wms-supportedrequests:
+
+^^^^^^^^^^^^^^^^^^
+SupportedRequests
+^^^^^^^^^^^^^^^^^^
+
+This option can be used to configure the supported request types. Currently, the supported encodings can be specified for each request type. If the option is missing, all encodings are supported for each request type. The option has the following sup-options:
+
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Option                | Cardinality  | Value   | Description                                                                                                                                  |
++=======================+==============+=========+==============================================================================================================================================+
+| SupportedEncodings    | 0..1         | String  | Enable encodings for all configured request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be separated by a white space. |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetCapabilities       | 0..1         | Complex | Configuration of GetCapabilities requests                                                                                                    |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetMap                | 0..1         | Complex | Configuration of GetMap requests                                                                                                             |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetFeatureInfo        | 0..1         | Complex | Configuration of GetFeatureInfo requests                                                                                                     |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| DescribeLayer         | 0..1         | Complex | Configuration of DescribeLayer requests                                                                                                      |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetLegendGraphic      | 0..1         | Complex | Configuration of GetLegendGraphic requests                                                                                                   |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| GetFeatureInfoSchema  | 0..1         | Complex | Configuration of GetFeatureInfoSchema requests                                                                                               |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| DTD                   | 0..1         | Complex | Configuration of DTD requests                                                                                                                |
++-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+Each request type has the following sup-option:
+
++---------------------+--------------+---------+------------------------------------------------------------------------------------------------------------------------------------+
+| Option              | Cardinality  | Value   | Description                                                                                                                        |
++=====================+==============+=========+====================================================================================================================================+
+| SupportedEncodings  | 0..1         | String  | Enable encodings for this request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be separated by a white space. |
++---------------------+--------------+---------+------------------------------------------------------------------------------------------------------------------------------------+
+
+By default deegree will provide all supported request types with all available encodings (kvp, xml, soap).
+
+If a single supported request or encoding is configured, all non configured requests or encodings are disabled.
+
+Example: To limit the provided request types to GetCapabilities and GetFeature this request types can be added without SupportedEncodings sub-option:
+
+   .. literalinclude:: xml/supportedRequests.xml
+      :language: xml
+
+Example: To disable SOAP encoding the other encodings can be added without SupportedRequests sub-option:
+
+   .. literalinclude:: xml/deactivateSoap.xml
+      :language: xml
+
+.. warning::
+   It is not checked if the configuration is valid against the WMS specification!
+
+.. warning::
+   WMS 1.1.1 just supports KVP. SOAP can only be used for GetCapabilities, GetMap and GetFeatureInfo operations of WMS 1.3.0. Nevertheless, configuration of all combinations is possible.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Service content configuration
@@ -808,6 +873,9 @@ The operations GetCapabilities, GetMap and GetFeatureInfo support SOAP request e
 
    .. literalinclude:: xml/wms_getcapabilities_soap_request_body.xml
       :language: xml
+
+.. hint::
+   SOAP encoding can be deactivated. Chapter :ref:`anchor-wms-supportedrequests` describes and gives an example how to disable it.
 
 """"""""""""
 Capabilities
