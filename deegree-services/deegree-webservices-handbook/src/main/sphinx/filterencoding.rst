@@ -220,6 +220,35 @@ filter operator handles it. In the concrete case this means a normalization of t
 
 .. tip:: Please note, the use of functions within PropertyIsLike filter operators is only possible with FE 2.0. This is the reason for the FE 2.0 notation.
 
+___________________________________________
+Filter expressions on xlink:href attributes
+___________________________________________
+
+There are two different use cases when xlink:href attributes are used in filter expressions:
+
+* 1. Reference on other feature.
+* 2. xlink:href value is used as static value. For example, if a user wants to filter on INSPIRE codelists, filtering is executed on the value of xlink:href.
+
+Case 1. does not allow filtering on the xlink:href value itself. Case 2. allows filtering on the static value of the xlink:href attribute but the linked feature is not resolved anymore.
+
+Those two cases can be realized by different mappings in SQL feature store configuration:
+
+* 1. Feature mapping is used:
+
+.. code-block:: xml
+
+    <Feature path=".">
+      <Join table="?" fromColumns="designationtype_designation_fk" toColumns="id"/>
+      <Href mapping="designationtype_designation_href"/>
+    </Feature>
+
+* 2. Primitive mapping is used:
+
+.. code-block:: xml
+
+    <Primitive path="@xlink:href" mapping="designationtype_designation_href"/>
+
+For more details see chapter :ref:`anchor-configuration-sqlfeaturestore`.
 
 ^^^^^^^^^^^^^^^^^^^
 Custom FE functions
