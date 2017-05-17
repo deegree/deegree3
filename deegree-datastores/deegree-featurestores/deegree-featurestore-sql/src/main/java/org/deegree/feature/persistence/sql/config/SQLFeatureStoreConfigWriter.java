@@ -263,7 +263,7 @@ public class SQLFeatureStoreConfigWriter {
             FeatureMapping gm = (FeatureMapping) particle;
             if ( gm.getHrefMapping() != null && isHrefPrimitive ) {
                 writer.writeStartElement( CONFIG_NS, "Primitive" );
-                writer.writeAttribute( "path", particle.getPath().getAsText() );
+                writer.writeAttribute( "path", "@xlink:href" );
                 writer.writeAttribute( "mapping", gm.getHrefMapping().toString() );
                 writer.writeEndElement();
             } else {
