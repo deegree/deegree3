@@ -97,6 +97,8 @@ public class Query {
 
     private int maxFeatures = -1;
 
+    private int skipFeatures = -1;
+
     private final List<ProjectionClause> projections;
 
     /**
@@ -276,5 +278,26 @@ public class Query {
      */
     public int getMaxFeatures() {
         return maxFeatures;
+    }
+
+    /**
+     * Set Max Features
+     */
+    public void setMaxFeatures(int maxFeatures) {
+        this.maxFeatures = maxFeatures;
+    }
+    
+    /**
+     * @return -1, if no offset has been set
+     */
+    public int getSkipFeatures() {
+        return skipFeatures;
+    }
+    
+    /**
+     * Set Skip Features
+     */
+    public void setSkipFeatures(int skipFeatures) {
+        this.skipFeatures = skipFeatures;
     }
 }

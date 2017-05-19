@@ -487,6 +487,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
+            for (Query query : queries){
+                query.setMaxFeatures(maxFeatures);
+                query.setSkipFeatures(startIndex);
+            }
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature member : rs ) {
@@ -497,12 +501,8 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                         // limit the number of features written to maxfeatures
                         break;
                     }
-                    if ( featuresSkipped < startIndex ) {
-                        featuresSkipped++;
-                    } else {
-                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
-                        featuresAdded++;
-                    }
+                    writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+                    featuresAdded++;
                 }
             } finally {
                 LOG.debug( "Closing FeatureResultSet (stream)" );
@@ -526,6 +526,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
+            for (Query query : queries){
+                query.setMaxFeatures(maxFeatures);
+                query.setSkipFeatures(startIndex);
+            }
             FeatureInputStream rs = fs.query( queries );
             try {
                 for ( Feature feature : rs ) {
@@ -535,9 +539,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( featuresAdded == maxFeatures ) {
                         break;
                     }
-                    if ( featuresSkipped < startIndex ) {
-                        featuresSkipped++;
-                    } else if ( !fids.contains( feature.getId() ) ) {
+                    if ( !fids.contains( feature.getId() ) ) {
                         allFeatures.add( feature );
                         fids.add( feature.getId() );
                         featuresAdded++;

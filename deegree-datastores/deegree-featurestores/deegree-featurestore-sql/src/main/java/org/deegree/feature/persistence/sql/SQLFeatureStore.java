@@ -1353,6 +1353,13 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( wb.getOrderBy().getSQL() );
             }
 
+            if (query.getMaxFeatures() != -1){
+              sql.append( " LIMIT " + query.getMaxFeatures() );
+            }
+            if (query.getSkipFeatures() != -1){
+              sql.append( " OFFSET " + query.getSkipFeatures() );
+            }
+
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
