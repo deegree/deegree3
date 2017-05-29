@@ -287,11 +287,8 @@ public class SQLFeatureStoreConfigWriter {
             }
             CompoundMapping compound = (CompoundMapping) particle;
             for ( Mapping childMapping : compound.getParticles() ) {
-                if ( propertiesWithPrimitiveHref != null
-                     && propertiesWithPrimitiveHref.contains( compound.getPath().getAsQName() ) )
-                    writeMapping( writer, childMapping, true );
-                else
-                    writeMapping( writer, childMapping, false );
+                boolean isChildHrefPrimitive = isHrefPrimitive( compound );
+                writeMapping( writer, childMapping, isChildHrefPrimitive );
             }
             writer.writeEndElement();
         } else {
@@ -323,4 +320,10 @@ public class SQLFeatureStoreConfigWriter {
         }
         return name.getLocalPart();
     }
+
+    private boolean isHrefPrimitive( CompoundMapping compound ) {
+        return propertiesWithPrimitiveHref != null
+               && propertiesWithPrimitiveHref.contains( compound.getPath().getAsQName() );
+    }
+
 }
