@@ -137,6 +137,7 @@ import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.controller.utils.StandardFeatureInfoContext;
+import org.deegree.services.encoding.SupportedEncodings;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
@@ -161,6 +162,7 @@ import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
 import org.deegree.services.wms.controller.plugins.ImageSerializer;
 import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
 import org.deegree.services.wms.utils.GetMapLimitChecker;
+import org.deegree.services.wms.utils.SupportedEncodingsParser;
 import org.deegree.style.StyleRef;
 import org.deegree.style.utils.ColorQuantizer;
 import org.deegree.workspace.ResourceInitException;
@@ -213,6 +215,8 @@ public class WMSController extends AbstractOWS {
     private DeegreeWMS conf;
 
     private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
+
+    private SupportedEncodings supportedEncodings;    
 
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -319,6 +323,8 @@ public class WMSController extends AbstractOWS {
 
             String configId = getMetadata().getIdentifier().getId();
             metadataProvider = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
+            
+            supportedEncodings = new SupportedEncodingsParser().parseEncodings( conf );
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getMessage(), e );
         }
@@ -336,11 +342,11 @@ public class WMSController extends AbstractOWS {
         Version version = v == null ? highestVersion : Version.parseVersion( v );
 
         WMSRequestType req;
+        String requestName = map.get( "REQUEST" );
         try {
-            req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( map.get( "REQUEST" ) );
+            req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( requestName );
         } catch ( IllegalArgumentException e ) {
-            controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN",
-                                                                             map.get( "REQUEST" ) ),
+            controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN", requestName ),
                                                                         OWSException.OPERATION_NOT_SUPPORTED ),
                                                       response, this );
             return;
@@ -350,8 +356,11 @@ public class WMSController extends AbstractOWS {
                                                       response, this );
             return;
         }
-
         try {
+            if ( !supportedEncodings.isEncodingSupported( req, "KVP" ) ) {
+                throw new OWSException( "GET/KVP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
             handleRequest( req, response, map, version );
         } catch ( OWSException e ) {
             if ( controllers.get( version ) == null ) {
@@ -578,6 +587,12 @@ public class WMSController extends AbstractOWS {
         try {
             String requestName = xmlStream.getLocalName();
             WMSRequestType requestType = detectWmsRequestType( requestName );
+
+            if ( !supportedEncodings.isEncodingSupported( requestType, "XML" ) ) {
+                throw new OWSException( "POST/XML is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
+
             requestVersion = parseAndCheckVersion( xmlStream );
 
             switch ( requestType ) {
@@ -628,6 +643,12 @@ public class WMSController extends AbstractOWS {
 
             String requestName = xmlStream.getLocalName();
             WMSRequestType requestType = detectWmsRequestType( requestName );
+
+            if ( !supportedEncodings.isEncodingSupported( requestType, "SOAP" ) ) {
+                throw new OWSException( "POST/SOAP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
+            
             requestVersion = parseAndCheckVersion( xmlStream );
 
             if ( WMSRequestType.GetMap.equals( requestType ) ) {
@@ -752,6 +773,13 @@ public class WMSController extends AbstractOWS {
 
     public CapabilitiesManager getCapabilitiesManager() {
         return capabilitiesManager;
+    }
+
+    /**
+     * @return the supported encodings configured in the DeegreeWMS, should not be <code>null</code>
+     */
+    public SupportedEncodings getSupportedEncodings(){
+        return supportedEncodings;
     }
 
     public FeatureInfoManager getFeatureInfoManager() {
