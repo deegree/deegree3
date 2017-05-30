@@ -72,7 +72,7 @@ class MappingContextManager {
      * @param maxColumnLengthInChararacters
      *            max length of column names in characters. If -1 the default value (64) is used.
      * @param usePrefix
-     *            <code>null</code> if the column name should contain the xml prefix, <code>false</code> otherwise
+     *            <code>true</code> if the column name should contain the xml prefix, <code>false</code> otherwise
      */
     MappingContextManager( Map<String, String> nsToPrefix, int maxColumnLengthInChararacters, boolean usePrefix ) {
         this.nsToPrefix = nsToPrefix;
