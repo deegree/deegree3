@@ -113,12 +113,15 @@ class MappingContextManager {
             id = prefix + "_" + name;
         }
         if ( id.length() >= maxColumnLengthInChararacters ) {
-            String suffix = "_" + ( this.id++ );
+            String idAsString = Integer.toString( this.id++ );
+            String suffix = "_" + idAsString;
             int delta = id.length() - maxColumnLengthInChararacters;
             int substringUntilPos = id.length() - delta - suffix.length();
-            if ( substringUntilPos > 0 ) {
+            if ( substringUntilPos >= 0 ) {
                 String substring = id.substring( 0, substringUntilPos );
                 id = substring + suffix;
+            } else if ( maxColumnLengthInChararacters == idAsString.length() ) {
+                id = idAsString;
             } else {
                 id = UUID.randomUUID().toString().substring( 0, maxColumnLengthInChararacters );
             }
