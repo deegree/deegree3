@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.sql.mapper;
 
 import java.util.Map;
+import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
@@ -112,8 +113,15 @@ class MappingContextManager {
             id = prefix + "_" + name;
         }
         if ( id.length() >= maxColumnLengthInChararacters ) {
-            String substring = id.substring( 0, maxColumnLengthInChararacters - 6 );
-            id = substring + "_" + ( this.id++ );
+            String suffix = "_" + ( this.id++ );
+            int delta = id.length() - maxColumnLengthInChararacters;
+            int substringUntilPos = id.length() - delta - suffix.length();
+            if ( substringUntilPos > 0 ) {
+                String substring = id.substring( 0, substringUntilPos );
+                id = substring + suffix;
+            } else {
+                id = UUID.randomUUID().toString().substring( 0, maxColumnLengthInChararacters );
+            }
         }
         return id;
     }
