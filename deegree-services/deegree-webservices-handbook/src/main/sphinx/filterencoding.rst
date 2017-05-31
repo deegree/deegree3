@@ -224,7 +224,18 @@ ___________________________________________
 Filter expressions on xlink:href attributes
 ___________________________________________
 
-Filter expressions which filter on the static value of a xlink:href attribute itself just work if the feature store is configured a certain way. For example, this can be useful if a user wants to filter on INSPIRE codelists.
+Example for filtering on xlink:href attributes:
+
+.. code-block:: xml
+
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <fes:PropertyIsEqualTo>
+        <fes:PropertyName>property/@xlink:href</fes:PropertyName>
+        <fes:Literal>100</fes:Literal>
+      </fes:PropertyIsEqualTo>
+    </fes:Filter>
+
+deegree applies the filter to the static value of the attribute. This just work if the feature store is configured a certain way. For example, this can be useful if a user wants to filter on INSPIRE codelists.
 
 Chapter :ref:`anchor-mapping-strategies-href-attributes` describes how the configuration of the feature store is done and provides further details regarding usage.
 
