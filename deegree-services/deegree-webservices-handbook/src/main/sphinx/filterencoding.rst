@@ -220,6 +220,24 @@ filter operator handles it. In the concrete case this means a normalization of t
 
 .. tip:: Please note, the use of functions within PropertyIsLike filter operators is only possible with FE 2.0. This is the reason for the FE 2.0 notation.
 
+___________________________________________
+Filter expressions on xlink:href attributes
+___________________________________________
+
+Example for filtering on xlink:href attributes:
+
+.. code-block:: xml
+
+    <fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <fes:PropertyIsEqualTo>
+        <fes:PropertyName>property/@xlink:href</fes:PropertyName>
+        <fes:Literal>100</fes:Literal>
+      </fes:PropertyIsEqualTo>
+    </fes:Filter>
+
+deegree applies the filter to the static value of the attribute. This just works if the feature store is configured a certain way. For example, this can be useful if a user wants to filter on INSPIRE codelists.
+
+Chapter :ref:`anchor-mapping-strategies-href-attributes` describes how the configuration of the feature store is done and provides further details regarding usage.
 
 ^^^^^^^^^^^^^^^^^^^
 Custom FE functions
