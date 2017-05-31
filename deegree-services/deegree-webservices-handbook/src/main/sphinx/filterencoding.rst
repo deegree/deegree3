@@ -235,7 +235,7 @@ Example for filtering on xlink:href attributes:
       </fes:PropertyIsEqualTo>
     </fes:Filter>
 
-deegree applies the filter to the static value of the attribute. This just work if the feature store is configured a certain way. For example, this can be useful if a user wants to filter on INSPIRE codelists.
+deegree applies the filter to the static value of the attribute. This just works if the feature store is configured a certain way. For example, this can be useful if a user wants to filter on INSPIRE codelists.
 
 Chapter :ref:`anchor-mapping-strategies-href-attributes` describes how the configuration of the feature store is done and provides further details regarding usage.
 
