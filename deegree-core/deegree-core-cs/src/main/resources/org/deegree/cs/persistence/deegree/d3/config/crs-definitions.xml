@@ -68258,7 +68258,6 @@
                 <crs:Id>urn:opengis:def:crs:epsg::7423</crs:Id>
                 <crs:Id>urn:x-ogc:def:crs:epsg:7423</crs:Id>
                 <crs:Id>urn:x-ogc:def:crs:epsg:6.11.2:7423</crs:Id>
-                <crs:Id>http://www.opengis.net/def/crs/EPSG/0/7423</crs:Id>
                 <crs:Name>ETRS89 + EVRF2007 height</crs:Name>
                 <crs:Version>2007-08-27</crs:Version>
                 <crs:Description>Inserted by hand.</crs:Description>
