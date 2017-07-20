@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.utils;
 
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.DescribeLayer;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
@@ -50,7 +51,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.encoding.LimitedSupportedEncodings;
 import org.deegree.services.encoding.SupportedEncodings;
 import org.deegree.services.encoding.UnlimitedSupportedEncodings;
@@ -75,7 +75,7 @@ public class SupportedEncodingsParserTest {
         DeegreeWMS deegreeWmsConfig = prepareSupportedRequestsWithRequestTypeSpecific();
 
         LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( deegreeWmsConfig );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+        Map<WMSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
 
         Set<String> getCapabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( getCapabilitiesEncodings, hasOnlyItems( "xml", "soap" ) );
@@ -97,7 +97,7 @@ public class SupportedEncodingsParserTest {
         DeegreeWMS deegreeWmsConfig = prepareSupportedRequestsWithKvpForAll();
 
         LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( deegreeWmsConfig );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+        Map<WMSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
 
         Set<String> getCapabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( getCapabilitiesEncodings, hasOnlyItems( "kvp", "xml", "soap" ) );
@@ -119,7 +119,7 @@ public class SupportedEncodingsParserTest {
         DeegreeWMS deegreeWmsConfig = prepareSupportedRequestsWithKvpForAllAndNoRequestTypesSpecific();
 
         LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( deegreeWmsConfig );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+        Map<WMSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
 
         Set<String> getCapabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( getCapabilitiesEncodings, hasOnlyItems( "kvp" ) );
@@ -141,7 +141,7 @@ public class SupportedEncodingsParserTest {
         DeegreeWMS deegreeWmsConfig = prepareSupportedRequestsWithKvpForAllAndEmptyRequestTypeSpecific();
 
         LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( deegreeWmsConfig );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+        Map<WMSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
 
         Set<String> getCapabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( getCapabilitiesEncodings, hasOnlyItems( "kvp" ) );
@@ -165,7 +165,7 @@ public class SupportedEncodingsParserTest {
         DeegreeWMS deegreeWmsConfig = prepareSupportedRequestsWithEmptyAndSupportedRequestTypeSpecific();
 
         LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( deegreeWmsConfig );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+        Map<WMSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
 
         Set<String> getCapabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( getCapabilitiesEncodings, hasOnlyItems( "xml", "soap" ) );
@@ -187,7 +187,7 @@ public class SupportedEncodingsParserTest {
         DeegreeWMS deegreeWmsConfig = prepareSupportedRequestsWithEmptyRequestTypesSpecific();
 
         LimitedSupportedEncodings limitedSupportedEncodings = (LimitedSupportedEncodings) webFeatureService.parseEncodings( deegreeWmsConfig );
-        Map<WFSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
+        Map<WMSRequestType, Set<String>> enabledEncodings = limitedSupportedEncodings.getEnabledEncodingsPerRequestType();
 
         Set<String> getCapabilitiesEncodings = enabledEncodings.get( GetCapabilities );
         assertThat( getCapabilitiesEncodings, hasOnlyItems( "kvp", "xml", "soap" ) );

@@ -63,10 +63,7 @@ import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
-import org.deegree.protocol.wfs.WFSRequestType;
-import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
-import org.deegree.services.encoding.SupportedEncodings;
 import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.wms.controller.WMSController;
 
