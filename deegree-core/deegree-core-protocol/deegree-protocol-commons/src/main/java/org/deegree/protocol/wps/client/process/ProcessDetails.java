@@ -310,10 +310,13 @@ public class ProcessDetails {
 
     private LiteralInputType parseLiteralData( OMElement input, CodeType id, LanguageString inputTitle,
                                                LanguageString inputAbstract, String minOccurs, String maxOccurs ) {
+        ValueWithRef dataType = null;
         OMElement omDataType = input.getFirstChildWithName( new QName( owsNS, "DataType" ) );
-        String dataTypeStr = omDataType.getText();
-        String dataTypeRefStr = omDataType.getAttributeValue( new QName( owsNS, "reference" ) );
-        ValueWithRef dataType = new ValueWithRef( dataTypeStr, dataTypeRefStr );
+        if(omDataType != null) {
+            String dataTypeStr = omDataType.getText();
+            String dataTypeRefStr = omDataType.getAttributeValue( new QName( owsNS, "reference" ) );
+            dataType = new ValueWithRef( dataTypeStr, dataTypeRefStr );
+        }
 
         XPath xpath = new XPath( "UOMs/Default/ows:UOM", nsContext );
         OMElement omDefaultUom = omResponse.getElement( input, xpath );
