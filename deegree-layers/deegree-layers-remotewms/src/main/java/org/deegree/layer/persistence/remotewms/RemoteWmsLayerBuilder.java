@@ -124,7 +124,7 @@ class RemoteWmsLayerBuilder {
                 confMd.merge( md );
                 confMd.setStyles( md.getStyles() );
                 confMd.setLegendStyles( md.getLegendStyles() );
-                map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts ) );
+                map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts, confMd.getXsltFile() ) );
             }
         }
         return map;
