@@ -32,11 +32,11 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/wuppertal-releases/</url>
+      <url>http://repo/nexus/content/repositories/wuppertal-releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/wuppertal-snapshots/</url>
+      <url>http://repo/nexus/content/repositories/wuppertal-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
