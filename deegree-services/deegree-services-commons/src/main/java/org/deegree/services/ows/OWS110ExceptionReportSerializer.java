@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.ows;
 
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -87,16 +88,23 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
+        setExceptionStatusCode( response, exception );
+        serializeExceptionToXML( response.getXMLWriter(), exception );
+    }
+
+    @Override
+    public void setExceptionStatusCode( HttpResponseBuffer response, OWSException exception ) {
         if ( NOT_FOUND.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_NOT_FOUND );
         } else if ( NO_APPLICABLE_CODE.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_INTERNAL_SERVER_ERROR );
         } else if ( OPERATION_PROCESSING_FAILED.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_FORBIDDEN );
+        } else if ( LOCK_HAS_EXPIRED.equals( exception.getExceptionCode() ) ) {
+            response.setStatus( SC_FORBIDDEN );
         } else {
             response.setStatus( SC_BAD_REQUEST );
         }
-        serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
     @Override

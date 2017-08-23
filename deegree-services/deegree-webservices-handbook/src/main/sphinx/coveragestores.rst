@@ -26,14 +26,14 @@ Here are two examples showing RasterFile and RasterDirectory configuration:
 
 .. code-block:: xml
 
-  <Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.0.0" originLocation="outer">
+  <Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.4.0" originLocation="outer">
     <StorageCRS>EPSG:26912</StorageCRS>
     <RasterFile>../../../data/utah/raster/dem.tiff</RasterFile>
   </Raster>
 
 .. code-block:: xml
 
-  <Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.0.0" originLocation="outer">
+  <Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.4.0" originLocation="outer">
     <StorageCRS>EPSG:26912</StorageCRS>
     <RasterDirectory>../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
   </Raster>
@@ -56,16 +56,16 @@ Here is an example for a MultiResolutionRaster:
 
 .. code-block:: xml
 
-  <MultiResolutionRaster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.0.0" originLocation="outer">
+  <MultiResolutionRaster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.4.0" originLocation="outer">
     <StorageCRS>EPSG:26912</StorageCRS>
     <Resolution>
-      <Raster configVersion="3.0.0" originLocation="outer" res="1.0">
+      <Raster configVersion="3.4.0" originLocation="outer" res="1.0">
         <StorageCRS>EPSG:26912</StorageCRS>
         <RasterFile>../../../data/utah/raster/dem.tiff</RasterFile>
       </Raster>
     </Resolution>
     <Resolution>
-      <Raster configVersion="3.0.0" res="2.0">
+      <Raster configVersion="3.4.0" res="2.0">
         <StorageCRS>EPSG:26912</StorageCRS>
         <RasterDirectory>../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
       </Raster>
@@ -97,7 +97,7 @@ The following example shows, how to configure a coverage pyramid:
 
 .. code-block:: xml
 
-  <Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid http://schemas.deegree.org/datasource/coverage/raster/3.1.0/pyramid.xsd" configVersion="3.1.0">
+  <Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid http://schemas.deegree.org/datasource/coverage/raster/3.1.0/pyramid.xsd" configVersion="3.4.0">
     <PyramidFile>data/example.tif</PyramidFile>
     <CRS>EPSG:4326</CRS>
   </Pyramid>

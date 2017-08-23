@@ -32,7 +32,9 @@ public class EmptyFeatureInputStream implements FeatureInputStream {
 
     @Override
     public Iterator<Feature> iterator() {
-        return Collections.emptyIterator();
+        //TODO Use proper Java 1.7 API if JDK 6 is dropped
+        //return Collections.emptyIterator();
+        return Collections.<Feature>emptyList().iterator();
     }
 
 }

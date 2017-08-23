@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JrxmlProcesses configVersion="3.4.0" xmlns="http://www.deegree.org/processes/jrxml">
+  <JrxmlProcess id="complex">
+    <jrxml>complex.jrxml</jrxml>
+    <Metadata>
+      <template>complex_template.png</template>
+    </Metadata>
+    <subreport id="SUBREPORT">complexCriteria.jrxml</subreport>
+  </JrxmlProcess>
+  <JrxmlProcess id="process_1">
+    <jrxml>testWPSreportTemplate.jrxml</jrxml>
+  </JrxmlProcess>
+  <JrxmlProcess id="process_2">
+    <jrxml>templateWithTable.jrxml</jrxml>
+  </JrxmlProcess>
+  <JrxmlProcess id="process_3">
+    <jrxml>testWPSreportTemplateRenderable.jrxml</jrxml>
+  </JrxmlProcess>
+  <JrxmlProcess id="process_properties_only">
+    <jrxml>templateWithProps.jrxml</jrxml>
+    <ResourceBundle>
+      <prefix>PROP_</prefix>
+      <name>labels</name>
+      <defaultLocale>de</defaultLocale>
+      <supportedLocale>de</supportedLocale>
+      <supportedLocale>en</supportedLocale>
+    </ResourceBundle>
+  </JrxmlProcess>
+  <JrxmlProcess id="process_properties">
+    <jrxml>templateWithPropsFromResourceBundle.jrxml</jrxml>
+    <ResourceBundle>
+      <prefix>PROP_</prefix>
+      <name>labels</name>
+      <defaultLocale>de</defaultLocale>
+      <supportedLocale>de</supportedLocale>
+      <supportedLocale>en</supportedLocale>
+    </ResourceBundle>
+  </JrxmlProcess>
+  <JrxmlProcess id="process_subreport">
+    <jrxml>templateWithInlineTable.jrxml</jrxml>
+    <Metadata>
+      <template>deegree_logo.png</template>
+      <description>DIN A4 (landscape) template with included data table.</description>
+      <parameter id="MAP">
+        <title>map</title>
+        <description>map parameter</description>
+      </parameter>
+      <parameter id="LANGUAGE">
+        <title>language</title>
+        <description>the language of the report to create</description>
+      </parameter>
+      <parameter id="TABLE_TITLE">
+        <title>table title</title>
+        <description>the title of the table</description>
+      </parameter>
+      <parameter id="AUTHOR">
+        <title>author</title>
+        <description>the author of the report</description>
+      </parameter>
+      <parameter id="DESCRIPTION">
+        <title>description</title>
+        <description>the description of the report</description>
+      </parameter>
+      <parameter id="printScalebar">
+        <title>print scalebar?</title>
+        <description>flag, if the scalebar should be printed or not</description>
+      </parameter>
+      <parameter id="printLegend">
+        <title>print legend?</title>
+        <description>flag, if the legend should be printed or not</description>
+      </parameter>
+      <parameter id="DATE">
+        <title>date</title>
+        <description>the date of the report</description>
+      </parameter>
+      <parameter id="TITLE">
+        <title>title</title>
+        <description>the title of the report</description>
+      </parameter>
+      <parameter id="REPORT">
+        <title>data</title>
+        <description>the data as xml included in the report</description>
+      </parameter>
+    </Metadata>
+    <ResourceBundle>
+      <prefix>PROP_</prefix>
+      <name>labels</name>
+      <defaultLocale>de</defaultLocale>
+      <supportedLocale>de</supportedLocale>
+      <supportedLocale>en</supportedLocale>
+    </ResourceBundle>
+    <subreport id="SUBREPORT">templateWithInlineTable_subreport1.jrxml</subreport>
+  </JrxmlProcess>
+</JrxmlProcesses>
