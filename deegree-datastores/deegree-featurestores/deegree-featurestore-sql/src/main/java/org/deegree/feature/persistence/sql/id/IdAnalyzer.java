@@ -35,21 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.id;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Helper class for analyzing if a given feature or geometry id can be attributed to a certain feature type.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class IdAnalyzer {
@@ -62,9 +63,8 @@ public class IdAnalyzer {
 
     /**
      * Creates a new {@link IdAnalyzer} instance for the given {@link MappedAppSchema}.
-     * 
-     * @param schema
-     *            application schema with mapping information, must not be <code>null</code>
+     *
+     * @param schema application schema with mapping information, must not be <code>null</code>
      */
     public IdAnalyzer( MappedAppSchema schema ) {
         this.schema = schema;
@@ -82,36 +82,52 @@ public class IdAnalyzer {
         }
     }
 
+    /**
+     * @param featureOrGeomId feature or geometry ID
+     * @return never <code>null</code>
+     * @throws IllegalArgumentException if given ID not found
+     */
     public IdAnalysis analyze( String featureOrGeomId ) {
-
-        FeatureType ft = null;
-        // TODO implement this more efficiently
-        for ( String prefix : prefixToFt.keySet() ) {
-            if ( featureOrGeomId.startsWith( prefix ) ) {
-                ft = prefixToFt.get( prefix );
-                break;
-            }
-        }
-        if ( ft == null ) {
-            StringBuilder sb = new StringBuilder( "Unable to determine feature type for id '" );
-            sb.append( featureOrGeomId );
-            sb.append( "'. Given id does not start with a configured identifier prefix. Known prefixes are: " );
-            boolean first = true;
-            for ( String prefix : prefixToFt.keySet() ) {
-                if ( !first ) {
-                    sb.append( ", " );
-                }
-                sb.append( "'" );
-                sb.append( prefix );
-                sb.append( "'" );
-                first = false;
-            }
-            sb.append( "." );
-            throw new IllegalArgumentException( sb.toString() );
-        }
-
+        FeatureType ft = getFeatureType( featureOrGeomId );
         FIDMapping fidMapping = schema.getFtMapping( ft.getName() ).getFidMapping();
         String idRemainder = featureOrGeomId.substring( fidMapping.getPrefix().length() );
         return new IdAnalysis( ft, idRemainder, fidMapping );
+    }
+
+    private FeatureType getFeatureType( String featureOrGeomId ) {
+        String[] prefixKeys = prefixToFt.keySet().toArray( new String[0] );
+        orderByLengthDescending( prefixKeys );
+        for ( String prefix : prefixKeys ) {
+            if ( featureOrGeomId.startsWith( prefix ) ) {
+                return prefixToFt.get( prefix );
+            }
+        }
+
+        StringBuilder errorMsg = new StringBuilder( "Unable to determine feature type for id '" );
+        errorMsg.append( featureOrGeomId );
+        errorMsg.append( "'. Given id does not start with a configured identifier prefix. Known prefixes are: " );
+        boolean first = true;
+        for ( String prefix : prefixToFt.keySet() ) {
+            if ( !first ) {
+                errorMsg.append( ", " );
+            }
+            errorMsg.append( "'" );
+            errorMsg.append( prefix );
+            errorMsg.append( "'" );
+            first = false;
+        }
+        errorMsg.append( "." );
+        throw new IllegalArgumentException( errorMsg.toString() );
+    }
+
+    public static void orderByLengthDescending( String[] strings ) {
+        Arrays.sort( strings, new Comparator<String>() {
+            @Override
+            public int compare( String o1, String o2 ) {
+                int len1 = o1.length();
+                int len2 = o2.length();
+                return ( len1 > len2 ? -1 : ( len1 == len2 ? 0 : 1 ) );
+            }
+        } );
     }
 }
