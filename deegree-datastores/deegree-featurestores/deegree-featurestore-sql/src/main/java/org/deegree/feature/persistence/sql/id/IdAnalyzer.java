@@ -41,10 +41,10 @@ import org.deegree.feature.types.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.deegree.commons.utils.ArrayUtils.sortByLengthDescending;
 
 /**
  * Helper class for analyzing if a given feature or geometry id can be attributed to a certain feature type.
@@ -96,7 +96,7 @@ public class IdAnalyzer {
 
     private FeatureType getFeatureType( String featureOrGeomId ) {
         String[] prefixKeys = prefixToFt.keySet().toArray( new String[0] );
-        orderByLengthDescending( prefixKeys );
+        sortByLengthDescending( prefixKeys );
         for ( String prefix : prefixKeys ) {
             if ( featureOrGeomId.startsWith( prefix ) ) {
                 return prefixToFt.get( prefix );
@@ -120,14 +120,4 @@ public class IdAnalyzer {
         throw new IllegalArgumentException( errorMsg.toString() );
     }
 
-    public static void orderByLengthDescending( String[] strings ) {
-        Arrays.sort( strings, new Comparator<String>() {
-            @Override
-            public int compare( String o1, String o2 ) {
-                int len1 = o1.length();
-                int len2 = o2.length();
-                return ( len1 > len2 ? -1 : ( len1 == len2 ? 0 : 1 ) );
-            }
-        } );
-    }
 }
