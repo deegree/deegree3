@@ -91,6 +91,8 @@ public class SQLFeatureStoreConfigWriter {
 
     private final MappedAppSchema schema;
 
+    private final List<QName> propertiesWithPrimitiveHref;
+
     /**
      * Creates a new {@link SQLFeatureStoreConfigWriter} instance.
      * 
@@ -98,7 +100,21 @@ public class SQLFeatureStoreConfigWriter {
      *            the mapped application schema to export, must not be <code>null</code>
      */
     public SQLFeatureStoreConfigWriter( MappedAppSchema schema ) {
+        this( schema, null );
+    }
+
+    /**
+     * Creates a new {@link SQLFeatureStoreConfigWriter} instance.
+     *
+     * @param schema
+     *            the mapped application schema to export, must not be <code>null</code>
+     * @param propertiesWithPrimitiveHref
+     *            list of properties which are written with primitive instead of feature mapping, is applied to all
+     *            properties of type {@link FeatureMapping}, may be <code>null</code>
+     */
+    public SQLFeatureStoreConfigWriter( MappedAppSchema schema, List<QName> propertiesWithPrimitiveHref ) {
         this.schema = schema;
+        this.propertiesWithPrimitiveHref = propertiesWithPrimitiveHref;
     }
 
     /**
@@ -211,13 +227,13 @@ public class SQLFeatureStoreConfigWriter {
         writer.writeEndElement();
 
         for ( Mapping particle : ftMapping.getMappings() ) {
-            writeMapping( writer, particle );
+            writeMapping( writer, particle, false );
         }
 
         writer.writeEndElement();
     }
 
-    private void writeMapping( XMLStreamWriter writer, Mapping particle )
+    private void writeMapping( XMLStreamWriter writer, Mapping particle, boolean isHrefPrimitive )
                             throws XMLStreamException {
 
         if ( particle instanceof PrimitiveMapping ) {
@@ -245,17 +261,24 @@ public class SQLFeatureStoreConfigWriter {
             writer.writeEndElement();
         } else if ( particle instanceof FeatureMapping ) {
             FeatureMapping gm = (FeatureMapping) particle;
-            writer.writeStartElement( CONFIG_NS, "Feature" );
-            writer.writeAttribute( "path", particle.getPath().getAsText() );
-            if ( particle.getJoinedTable() != null && !particle.getJoinedTable().isEmpty() ) {
-                writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
-            }
-            if ( gm.getHrefMapping() != null ) {
-                writer.writeStartElement( CONFIG_NS, "Href" );
+            if ( gm.getHrefMapping() != null && isHrefPrimitive ) {
+                writer.writeStartElement( CONFIG_NS, "Primitive" );
+                writer.writeAttribute( "path", "@xlink:href" );
                 writer.writeAttribute( "mapping", gm.getHrefMapping().toString() );
                 writer.writeEndElement();
+            } else {
+                writer.writeStartElement( CONFIG_NS, "Feature" );
+                writer.writeAttribute( "path", particle.getPath().getAsText() );
+                if ( particle.getJoinedTable() != null && !particle.getJoinedTable().isEmpty() ) {
+                    writeJoinedTable( writer, particle.getJoinedTable().get( 0 ) );
+                }
+                if ( gm.getHrefMapping() != null ) {
+                    writer.writeStartElement( CONFIG_NS, "Href" );
+                    writer.writeAttribute( "mapping", gm.getHrefMapping().toString() );
+                    writer.writeEndElement();
+                }
+                writer.writeEndElement();
             }
-            writer.writeEndElement();
         } else if ( particle instanceof CompoundMapping ) {
             writer.writeStartElement( CONFIG_NS, "Complex" );
             writer.writeAttribute( "path", particle.getPath().getAsText() );
@@ -264,7 +287,8 @@ public class SQLFeatureStoreConfigWriter {
             }
             CompoundMapping compound = (CompoundMapping) particle;
             for ( Mapping childMapping : compound.getParticles() ) {
-                writeMapping( writer, childMapping );
+                boolean isChildHrefPrimitive = isHrefPrimitive( compound );
+                writeMapping( writer, childMapping, isChildHrefPrimitive );
             }
             writer.writeEndElement();
         } else {
@@ -296,4 +320,10 @@ public class SQLFeatureStoreConfigWriter {
         }
         return name.getLocalPart();
     }
+
+    private boolean isHrefPrimitive( CompoundMapping compound ) {
+        return propertiesWithPrimitiveHref != null
+               && propertiesWithPrimitiveHref.contains( compound.getPath().getAsQName() );
+    }
+
 }
