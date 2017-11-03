@@ -13,6 +13,9 @@
 
   <EnableTransactions idGen="UseExisting">true</EnableTransactions>
   <EnableResponseBuffering>false</EnableResponseBuffering>
+  <DisabledResources>
+    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
+  </DisabledResources>
 
   <SupportedRequests>
     <SupportedEncodings>kvp</SupportedEncodings>

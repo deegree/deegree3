@@ -117,6 +117,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -438,6 +439,7 @@ class TransactionHandler {
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
+        gmlStream.setReferencePatternMatcher( master.getReferencePatternMatcher() );
 
         if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
             LOG.debug( "Features embedded in wfs:FeatureCollection" );

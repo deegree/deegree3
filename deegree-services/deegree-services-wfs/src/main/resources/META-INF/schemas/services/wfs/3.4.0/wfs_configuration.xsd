@@ -52,6 +52,7 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
+        <element ref="wfs:DisabledResources" minOccurs="0" />
         <element name="EnableResponsePaging" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
@@ -92,6 +93,18 @@
       </attribute>
     </complexType>
   </element>
+
+  <element name="DisabledResources">
+    <annotation>
+      <documentation>Contains a sequence of url patterns which should not be resolved during transaction response.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Pattern" type="string" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+
 
   <!-- AbstractFormat and substitutions -->
   <element name="AbstractFormat" abstract="true" type="wfs:AbstractFormatType" />
