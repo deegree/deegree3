@@ -13,5 +13,3 @@ env: MAVEN_OPTS="-XX:MaxPermSize=256m"
 cache:
   directories:
     - $HOME/.m2/repository/
-dist: precise
-
