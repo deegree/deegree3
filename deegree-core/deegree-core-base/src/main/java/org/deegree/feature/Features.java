@@ -193,7 +193,7 @@ public class Features {
 
     /**
      * Determines all {@link Feature} and {@link Geometry} objects contained in the given {@link TypedObjectNode} and
-     * their ids.
+     * their ids. Does <code>not</code> include internal referenced {@link Feature}s.
      * 
      * @param node
      *            typed object node to be scanned, can be <code>null</code>
@@ -217,11 +217,15 @@ public class Features {
         } else if ( node instanceof org.deegree.commons.tom.Object ) {
             if ( node instanceof Reference<?> ) {
                 Reference<?> ref = (Reference<?>) node;
-                if ( ref.isResolved() ) {
-                    node = ( (Reference<?>) node ).getReferencedObject();
-                } else if ( node instanceof Reference<?> ) {
+                if ( ref.isResolved() && !ref.isInternalResolved() ) {
+                    node = ref.getReferencedObject();
+                } else {
                     try {
-                        node = ( (Reference<?>) node ).getReferencedObject();
+                        TypedObjectNode referencedObject = ref.getReferencedObject();
+                        if ( !ref.isInternalResolved() )
+                            node = referencedObject;
+                        else
+                            return;
                     } catch ( ReferenceResolvingException e ) {
                         LOG.warn( "Unable to resolve external reference '" + ref.getURI() + ". Ignoring." );
                         return;

@@ -887,7 +887,9 @@ For Interpolate only linear interpolation is currently supported.
 .. code-block:: xml
 
     <Recode xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/se" fallbackValue="">
-      <LookupValue>app:code</LookupValue>
+      <LookupValue>
+	<ogc:PropertyName>app:code</ogc:PropertyName>
+      </LookupValue>
       <MapItem>
         <Data>1000</Data>
         <Value>water</Value>

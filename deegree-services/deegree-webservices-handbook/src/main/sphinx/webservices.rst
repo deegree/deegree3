@@ -74,6 +74,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | EnableResponseBuffering | 0..1        | Boolean | Enable response buffering (expensive), default: false            |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
+| DisabledResources       | 0..1        | Complex | Disables resolve of xlink:href attribute references              |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 | EnableResponsePaging    | 0..1        | Boolean | Enable response paging (WFS 2.0.0 option), default: false        |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | SupportedRequests       | 0..1        | Complex | Configuration of WFS requests                                    |
@@ -87,6 +89,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 | QueryCheckAreaOfUse     | 0..1        | Boolean | Check spatial query constraints against CRS area, default: false |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | StoredQuery             | 0..n        | String  | File name of StoredQueryDefinition                               |
++-------------------------+-------------+---------+------------------------------------------------------------------+
+| ExtendedCapabilities    | 0..n        | String  | Extended Metadata reported in GetCapabilities response           |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | GMLFormat               | 0..n        | Complex | GML format configuration                                         |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
@@ -102,6 +106,7 @@ General options
 * ``SupportedVersions``: By default, all implemented WFS protocol versions (1.0.0, 1.1.0 and 2.0.0) will be activated. You can control offered WFS protocol versions using element ``SupportedVersions``. This element allows any combination of the child elements ``<Version>1.0.0</Version>``, ``<Version>1.1.0</Version>`` and ``<Version>2.0.0</Version>``.
 * ``FeatureStoreId``: By default, all feature stores in your deegree workspace  will be used for serving feature types. In some cases, this may not be what you want, e.g. because you have two different WFS instances running, or you don't want all feature types used in your WMS for rendering to be available via your WFS. Use the ``FeatureStoreId`` option to explicitly set the feature stores that this WFS should use.
 * ``EnableResponseBuffering``: By default, WFS responses are directly streamed to the client. This is very much recommended and even a requirement for transferring large responses efficiently. The only drawback happens if exceptions occur, after a partial response has already been transferred. In this case, the client will receive part payload and part exception report. By specifying ``false`` here, you can explicitly force buffering of the full response, before it is written to the client. Only if the full response could be generated successfully, it will be transferred. If an exception happens at any time the buffer will be discarded, and an exception report will be sent to the client. Buffering is performed in memory, but switches to a temp file in case the buffer grows bigger than 1 MiB.
+* ``DisabledResources``: By default all xlink:href attribute references are tried to resolved as feature references during insert. This can be avoided by configuring one or multiple base url patterns within the child element ``Pattern``. ``Pattern`` can occur multiple times, one for each base url. In the complex example above resolving of ``http://inspire.ec.europa.eu/codelist/DesignationSchemeValue/natura2000`` and ``http://inspire.ec.europa.eu/codelist/Natura2000DesignationValue/specialProtectionArea`` is disabled, but not ``https://inspire.ec.europa.eu/codelist/DesignationSchemeValue/natura2000`` and ``http://deegree.org/external/feature``.
 * ``EnableResponsePaging``: By default, WFS 2.0.0 does not support response paging. By specifying ``true`` here, you can explicitly enable response paging. Response Paging works only when streaming is disabled. Currently @next and @previous URLs bases on the original GetFeature request in KVP encoding.
 * ``QueryCRS``: Coordinate reference systems for returned geometries. This element can be specified multiple times, and the WFS will announce all CRS in the GetCapabilities response (except for WFS 1.0.0 which does not officially support using multiple coordinate reference systems). The first element always specifies the default CRS (used when no CRS parameter is present in a request).
 * ``QueryMaxFeatures``: By default, a maximum number of 15000 features will be returned for a single ``GetFeature`` request. Use this option to override this setting. A value of ``-1`` means unlimited.
@@ -112,7 +117,7 @@ General options
 Transactions
 ^^^^^^^^^^^^
 
-By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support. This option has the optional attribute ``idGenMode`` which controls how ids of inserted features (the values in the gml:id attribute) are treated. There are three id generation modes available:
+By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support. This option has two optional attributes: ``allowFeatureReferencesToDatastore`` and ``idGenMode``. If ``allowFeatureReferencesToDatastore`` is true it is allowed to insert features with references to already inserted features, default is false. ``idGenMode`` controls how ids of inserted features (the values in the gml:id attribute) are treated. There are three id generation modes available:
 
 * **UseExisting**: The original gml:id values from the input are stored. This may lead to errors if the provided ids are already in use.
 * **GenerateNew** (default): New and unique ids are generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
@@ -137,7 +142,7 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 SupportedRequests
 ^^^^^^^^^^^^^^^^^^
 
-This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:  
+This option can be used to configure the supported request types. Currently the supported encodings can be specified for each request type. If the option is missing all encodings are supported for each request type. The option has the following sup-options:
 
 +-----------------------+--------------+---------+----------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                | Cardinality  | Value   | Description                                                                                                                                  |
@@ -184,7 +189,7 @@ By default deegree will provide all supported requests type with all available e
       :language: xml
 
 .. hint::
-   It is not checked if the configuration is valid against the WFS specification! 
+   It is not checked if the configuration is valid against the WFS specification!
   
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -334,6 +339,26 @@ The attribute returnFeatureTypes of QueryExpressionText can be left empty. If th
 
 .. tip::
   deegree WFS supports the execution of stored queries using ``GetFeature`` and ``GetPropertyValue`` requests. It also implements the ``ListStoredQueries`` and the ``DescribeStoredQueries`` operations. However, there is no support for ``CreateStoredQuery`` and ``DropStoredQuery`` at the moment.
+
+^^^^^^^^^^^^^^^^^^^^^
+Extended capabilities
+^^^^^^^^^^^^^^^^^^^^^
+
+Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WFS capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
+
+.. code-block:: xml
+
+  <ExtendedCapabilities>
+    <MyCustomOutput xmlns="http://www.custom.org/output">
+      ...
+    </MyCustomOutput>
+  </ExtendedCapabilities>
+
+You must set the attribute ``wfsVersions`` to indicate the version that you want to define the extended capabilities for.
+If your service supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and 2.0.0), you may include multiple ``ExtendedCapabilities`` elements in the metadata configuration.
+
+.. warning::
+  The extended capabilities set in the WFS service configuration are ignored, if a metadata configuration file (see chapter :ref:`anchor-configuration-service-metadata`) exists. Instead, the extended capabilities must be configured there.
 
 .. _anchor-configuration-wms:
 
@@ -722,7 +747,7 @@ Of course it is possible to define as many custom formats as you want, as long a
 Extended capabilities
 ^^^^^^^^^^^^^^^^^^^^^
 
-Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS' capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
+Important for applications like INSPIRE, it is often desirable to include predefined blocks of XML in the extended capabilities section of the WMS capabilities output. This can be achieved simply by adding these blocks to the extended capabilities element of the configuration:
 
 .. code-block:: xml
 
@@ -731,6 +756,9 @@ Important for applications like INSPIRE, it is often desirable to include predef
       ...
     </MyCustomOutput>
   </ExtendedCapabilities>
+
+.. warning::
+  The extended capabilities set in the WMS service configuration are ignored, if a metadata configuration file (see chapter :ref:`anchor-configuration-service-metadata`) exists. Instead, the extended capabilities must be configured there.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Vendor specific parameters
@@ -984,7 +1012,7 @@ A minimal valid WPS configuration example looks like this:
 .. code-block:: xml
   
   <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">  
+    xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
   </deegreeWPS>
 
 This will create a WPS resource with the following properties:
@@ -1096,6 +1124,9 @@ The metadata config file format is defined by schema file http://schemas.deegree
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 
 The remainder of this section describes these options and their sub-options in detail.
+
+.. warning::
+  If a metadata configuration file exists, extended capabilities configured in any service configuration (see chapters :ref:`anchor-configuration-wfs` and :ref:`anchor-configuration-wms`) are ignored. Instead, all extended capabilities must be configured in this file.
 
 ^^^^^^^^^^^^^^^^^^^^^^
 Service identification
