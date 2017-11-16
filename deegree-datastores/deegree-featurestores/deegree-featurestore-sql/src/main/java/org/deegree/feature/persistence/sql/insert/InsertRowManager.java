@@ -347,11 +347,13 @@ public class InsertRowManager {
                 String href = null;
                 Feature feature = (Feature) getPropValue( value );
                 if ( feature instanceof FeatureReference ) {
-                    if ( ( (FeatureReference) feature ).isLocal() || ( (FeatureReference) feature ).isResolved() ) {
+                    FeatureReference featureReference = (FeatureReference) feature;
+                    if ( ( featureReference.isLocal() || featureReference.isResolved() )
+                         && !featureReference.isInternalResolved() ) {
                         subFeatureRow = lookupFeatureRow( feature.getId() );
                     }
                     // always use the uri if href is mapped explicitly
-                    href = ( (FeatureReference) feature ).getURI();
+                    href = featureReference.getURI();
                     MappingExpression me = ( (FeatureMapping) mapping ).getHrefMapping();
                     if ( !( me instanceof DBField ) ) {
                         LOG.debug( "Skipping feature mapping (href). Not mapped to database column." );

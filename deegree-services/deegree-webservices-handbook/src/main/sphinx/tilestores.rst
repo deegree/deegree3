@@ -61,7 +61,7 @@ Let's have a look at an example for the explicit configuration:
 
 .. code-block:: xml
 
-  <TileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset" configVersion="3.2.0">
+  <TileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset" configVersion="3.4.0">
 
     <CRS>urn:ogc:def:crs:OGC:1.3:CRS84</CRS>
 
@@ -109,7 +109,7 @@ Let's have a look at an example configuration:
 
 .. code-block:: xml
 
-  <GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff" configVersion="3.2.0">
+  <GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff" configVersion="3.4.0">
 
     <TileDataSet>
       <Identifier>test</Identifier>
@@ -131,7 +131,7 @@ To generate a tile matrix set from the GeoTIFF, put a file into the datasources/
 
 .. code-block:: xml
 
-  <GeoTIFFTileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff" configVersion="3.2.0">
+  <GeoTIFFTileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff" configVersion="3.4.0">
     <StorageCRS>EPSG:26912</StorageCRS>
     <File>../../../data/utah.tif</File>
   </GeoTIFFTileMatrixSet>
@@ -148,7 +148,7 @@ Let's explain the configuration using an example:
 
 .. code-block:: xml
 
-  <FileSystemTileStore xmlns="http://www.deegree.org/datasource/tile/filesystem" configVersion="3.2.0">
+  <FileSystemTileStore xmlns="http://www.deegree.org/datasource/tile/filesystem" configVersion="3.4.0">
 
     <TileDataSet>
       <Identifier>layer1</Identifier>
@@ -181,7 +181,7 @@ Let's have a look at an example:
 
 .. code-block:: xml
 
-  <RemoteWMSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewms" configVersion="3.2.0">
+  <RemoteWMSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewms" configVersion="3.4.0">
 
     <RemoteWMSId>wms1</RemoteWMSId>
 
@@ -223,7 +223,7 @@ Let's have a look at an example:
 
 .. code-block:: xml
 
-  <RemoteWMTSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewmts" configVersion="3.2.0">
+  <RemoteWMTSTileStore xmlns="http://www.deegree.org/datasource/tile/remotewmts" configVersion="3.4.0">
 
     <RemoteWMTSId>wmts1</RemoteWMTSId>
 

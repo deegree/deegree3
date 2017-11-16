@@ -69,7 +69,7 @@ public class PreOWSExceptionReportSerializer extends XMLExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( mimeType );
-        response.setStatus( 200 );
+        setExceptionStatusCode( response, exception );
         serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 

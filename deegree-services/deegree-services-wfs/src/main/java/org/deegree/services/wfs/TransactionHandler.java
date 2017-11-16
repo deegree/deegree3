@@ -101,6 +101,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -123,6 +124,7 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -179,24 +181,27 @@ class TransactionHandler {
 
     private final IDGenMode idGenMode;
 
+    private final boolean allowFeatureReferencesToDatastore;
+
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
      * {@link FeatureType}s.
-     * 
-     * @param master
-     * 
+     *  @param master
+     *
      * @param service
      *            WFS instance used to lookup the feature types
      * @param request
-     *            request to be handled
+ *            request to be handled
      * @param idGenMode
+     * @param allowFeatureReferencesToDatastore
      */
     TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
-                        IDGenMode idGenMode ) {
+                        IDGenMode idGenMode, boolean allowFeatureReferencesToDatastore ) {
         this.master = master;
         this.service = service;
         this.request = request;
         this.idGenMode = idGenMode;
+        this.allowFeatureReferencesToDatastore = allowFeatureReferencesToDatastore;
     }
 
     /**
@@ -437,10 +442,14 @@ class TransactionHandler {
         FeatureCollection fc = null;
 
         // TODO determine correct schema
-        AppSchema schema = service.getStores()[0].getSchema();
+        FeatureStore featureStore = service.getStores()[0];
+        AppSchema schema = featureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
+        if ( allowFeatureReferencesToDatastore )
+            gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( featureStore ) );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
+        gmlStream.setReferencePatternMatcher( master.getReferencePatternMatcher() );
 
         if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
             LOG.debug( "Features embedded in wfs:FeatureCollection" );
@@ -767,7 +776,6 @@ class TransactionHandler {
         xmlWriter.writeEndElement(); // wfs:Status
         xmlWriter.writeEndElement(); // wfs:TransactionResult
         xmlWriter.writeEndElement(); // wfs:WFS_TransactionResult
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -824,7 +832,6 @@ class TransactionHandler {
         }
 
         xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -853,7 +860,6 @@ class TransactionHandler {
         writeActionResults200( xmlWriter, "ReplaceResults", replaced );
 
         xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 

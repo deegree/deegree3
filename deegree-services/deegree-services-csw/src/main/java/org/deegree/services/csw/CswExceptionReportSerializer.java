@@ -80,7 +80,7 @@ public class CswExceptionReportSerializer extends XMLExceptionSerializer {
         response.reset();
         response.setCharacterEncoding( "UTF-8" );
         response.setContentType( "application/xml" );
-        response.setStatus( 200 );
+        setExceptionStatusCode( response, exception );
         serializeExceptionToXML( response.getXMLWriter(), exception );
     }
 
