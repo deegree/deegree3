@@ -59,6 +59,9 @@ public class IdAnalyzer {
 
     private final Map<String, FeatureType> prefixToFt = new HashMap<String, FeatureType>();
 
+    // this is used to match ids, so the best match (with the longest identical prefix) is found first
+    private final String [] prefixKeysSortedByLengthDesc;
+
     private final MappedAppSchema schema;
 
     /**
@@ -80,6 +83,8 @@ public class IdAnalyzer {
                 }
             }
         }
+        prefixKeysSortedByLengthDesc = prefixToFt.keySet().toArray( new String[0] );
+        sortByLengthDescending( prefixKeysSortedByLengthDesc );
     }
 
     /**
@@ -95,9 +100,7 @@ public class IdAnalyzer {
     }
 
     private FeatureType getFeatureType( String featureOrGeomId ) {
-        String[] prefixKeys = prefixToFt.keySet().toArray( new String[0] );
-        sortByLengthDescending( prefixKeys );
-        for ( String prefix : prefixKeys ) {
+        for ( String prefix : prefixKeysSortedByLengthDesc ) {
             if ( featureOrGeomId.startsWith( prefix ) ) {
                 return prefixToFt.get( prefix );
             }
