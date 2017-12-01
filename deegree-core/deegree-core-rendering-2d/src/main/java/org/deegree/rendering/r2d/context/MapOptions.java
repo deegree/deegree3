@@ -52,13 +52,21 @@ public class MapOptions {
 
     private int featureInfoRadius;
 
+    private boolean opaque;
+
     public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
                        int featureInfoRadius ) {
+        this( quality, interpol, antialias, maxFeatures, featureInfoRadius, false );
+    }
+
+    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
+                       int featureInfoRadius, boolean opaque ) {
         this.quality = quality;
         this.interpol = interpol;
         this.antialias = antialias;
         this.maxFeatures = maxFeatures;
         this.featureInfoRadius = featureInfoRadius;
+        this.opaque = opaque;
     }
 
     /**
@@ -134,6 +142,21 @@ public class MapOptions {
      */
     public void setFeatureInfoRadius( int featureInfoRadius ) {
         this.featureInfoRadius = featureInfoRadius;
+    }
+
+    /**
+     * @return if layer is opaque
+     */
+    public boolean isOpaque() {
+        return opaque;
+    }
+
+    /**
+     * @param opaque
+     *            set if layer is opaque
+     */
+    public void setOpaque( boolean opaque ) {
+        this.opaque = opaque;
     }
 
     /**

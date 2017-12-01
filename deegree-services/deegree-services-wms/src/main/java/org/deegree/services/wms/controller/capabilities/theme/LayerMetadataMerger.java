@@ -82,23 +82,19 @@ class LayerMetadataMerger {
         LayerMetadata layerMetadata = new LayerMetadata( null, null, null );
 
         int queryable = 0;
-
+        boolean opaque = false;
+        int cascaded = 0;
+        
         for ( final Layer l : Themes.getAllLayers( theme ) ) {
             queryable |= analyseQueryable( l.getMetadata() );
+            if ( checkIfOpaque( l.getMetadata() ) )
+                opaque = true;
+            if ( checkIfLargerCascadedValue( cascaded, l.getMetadata() ) )
+                cascaded = l.getMetadata().getCascaded();
             layerMetadata.merge( l.getMetadata() );
         }
         themeMetadata.merge( layerMetadata );
-
-        if ( themeMetadata.getMapOptions() == null ) {
-            themeMetadata.setMapOptions( new MapOptions( null, null, null, -1, -1 ) );
-        }
-
-        if ( queryable == QUERYABLE_DISABLED_MASK ) {
-            themeMetadata.getMapOptions().setFeatureInfoRadius( 0 );
-        } else {
-            themeMetadata.getMapOptions().setFeatureInfoRadius( -1 );
-        }
-
+        adjustMapOptions( themeMetadata, queryable, opaque, cascaded );
         return themeMetadata;
     }
 
@@ -149,4 +145,26 @@ class LayerMetadataMerger {
         else
             return QUERYABLE_ENABLED_MASK;
     }
+
+    private boolean checkIfOpaque( LayerMetadata metadata ) {
+        return metadata != null && metadata.getMapOptions() != null && metadata.getMapOptions().isOpaque();
+    }
+
+    private boolean checkIfLargerCascadedValue( int cascaded, LayerMetadata metadata ) {
+        return metadata != null && cascaded < metadata.getCascaded();
+    }
+
+    private void adjustMapOptions( LayerMetadata themeMetadata, int queryable, boolean opaque, int cascaded ) {
+        if ( themeMetadata.getMapOptions() == null ) {
+            themeMetadata.setMapOptions( new MapOptions( null, null, null, -1, -1 ) );
+        }
+        if ( queryable == QUERYABLE_DISABLED_MASK ) {
+            themeMetadata.getMapOptions().setFeatureInfoRadius( 0 );
+        } else {
+            themeMetadata.getMapOptions().setFeatureInfoRadius( -1 );
+        }
+        themeMetadata.getMapOptions().setOpaque( opaque );
+        themeMetadata.setCascaded( cascaded );
+    }
+
 }
