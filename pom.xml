@@ -1039,7 +1039,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    <java.version>1.6</java.version>
+    <java.version>1.8</java.version>
     <site.dir>${user.home}/Sites</site.dir>
     <deegree-maven-plugin.version>1.20</deegree-maven-plugin.version>
   </properties>
