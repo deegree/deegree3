@@ -1,4 +1,4 @@
-package de.weichand.deegree;
+package org.deegree.tools.config;
 
 import java.io.IOException;
 import java.net.URI;

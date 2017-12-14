@@ -1,4 +1,4 @@
-package de.weichand.deegree;
+package org.deegree.tools.config;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;

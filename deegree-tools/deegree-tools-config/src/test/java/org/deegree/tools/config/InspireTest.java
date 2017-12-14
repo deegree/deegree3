@@ -19,8 +19,9 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package de.weichand.deegree;
+package org.deegree.tools.config;
 
+import org.deegree.tools.config.Exec;
 import org.junit.Test;
 
 /**

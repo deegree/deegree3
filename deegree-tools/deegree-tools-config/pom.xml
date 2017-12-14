@@ -104,7 +104,7 @@
                 <manifest>
                   <addClasspath>true</addClasspath>
                   <classpathPrefix>lib/</classpathPrefix>
-                  <mainClass>de.weichand.deegree.Exec</mainClass>
+                  <mainClass>org.deegree.tools.config.Exec</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>
