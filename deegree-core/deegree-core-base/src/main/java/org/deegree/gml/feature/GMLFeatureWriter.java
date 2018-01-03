@@ -140,6 +140,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
+    private static final QName NIL_REASON = new QName( "nilReason" );
+    
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
      *
@@ -295,23 +297,20 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         // TODO check for GML 2 properties (gml:pointProperty, ...) and export
         // as "app:gml2PointProperty" for GML 3
         boolean nilled = false;
-        TypedObjectNode nil = property.getAttributes().get( XSI_NIL );
+        Map<QName, PrimitiveValue> attributes = property.getAttributes();
+        TypedObjectNode nil = attributes.get( XSI_NIL );
         if ( nil instanceof PrimitiveValue ) {
             nilled = Boolean.TRUE.equals( ( (PrimitiveValue) nil ).getValue() );
         }
         if ( pt instanceof FeaturePropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
-                exportFeatureProperty( (FeaturePropertyType) pt, (Feature) value, property.getAttributes(), resolveState );
+                exportFeatureProperty( (FeaturePropertyType) pt, (Feature) value, attributes, resolveState );
             }
         } else if ( pt instanceof SimplePropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
                 // must be a primitive value
                 PrimitiveValue pValue = (PrimitiveValue) value;
@@ -323,9 +322,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
         } else if ( pt instanceof GeometryPropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else if ( value == null ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 endEmptyElement();
@@ -348,7 +345,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else if ( pt instanceof CodePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( nilled ) {
-                writeAttributeWithNS( XSINS, "nil", "true" );
+                writeNilAttributes( attributes );
             }
             CodeType codeType = (CodeType) value;
 
@@ -363,9 +360,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeEndElement();
         } else if ( pt instanceof EnvelopePropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( value != null ) {
@@ -382,7 +377,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( GML_2 != version ) {
                 if ( nilled ) {
-                    writeAttributeWithNS( XSINS, "nil", "true" );
+                    writeNilAttributes( attributes );
                 }
                 writer.writeAttribute( "uom", length.getUomUri() );
             }
@@ -406,13 +401,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     writeAttributeWithNS( XLNNS, "href", stringOrRef.getRef() );
                 }
                 if ( nilled ) {
-                    writeAttributeWithNS( XSINS, "nil", "true" );
+                    writeNilAttributes( attributes );
                 }
                 endEmptyElement();
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( nilled ) {
-                    writeAttributeWithNS( XSINS, "nil", "true" );
+                    writeNilAttributes( attributes );
                 }
 
                 if ( stringOrRef.getRef() != null ) {
@@ -425,8 +420,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
         } else if ( pt instanceof CustomPropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            if ( property.getAttributes() != null ) {
-                for ( Entry<QName, PrimitiveValue> attr : property.getAttributes().entrySet() ) {
+            if ( attributes != null ) {
+                for ( Entry<QName, PrimitiveValue> attr : attributes.entrySet() ) {
                     QName attrKey = attr.getKey();
                     PrimitiveValue attrValue = attr.getValue();
                     if ( XSI_NIL.equals( attrKey ) )
@@ -443,9 +438,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeEndElement();
         } else if ( pt instanceof ArrayPropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 export( property.getValue(), resolveState );
@@ -464,6 +457,22 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
+    private void writeNilledElement( QName propName, Map<QName, PrimitiveValue> attributes )
+                            throws XMLStreamException {
+        writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        writeNilAttributes( attributes );
+        endEmptyElement();
+    }
+
+    private void writeNilAttributes( Map<QName, PrimitiveValue> attributes )
+                            throws XMLStreamException {
+        writeAttribute( writer, XSI_NIL, "true" );
+        PrimitiveValue value = attributes.get( NIL_REASON );
+        if ( value != null )
+            writeAttribute( writer, NIL_REASON, value.getAsText() );
+    }
+
+    
     private boolean excludeByTimeSliceFilter( Property property ) {
         final TimeSlice timeSlice = (TimeSlice) property.getValue();
         for ( final Filter timeSliceFilter : timeSliceFilters ) {
