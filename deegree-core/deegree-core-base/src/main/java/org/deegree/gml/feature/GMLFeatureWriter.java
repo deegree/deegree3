@@ -305,7 +305,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 writeAttributeWithNS( XSINS, "nil", "true" );
                 endEmptyElement();
             } else {
-                exportFeatureProperty( (FeaturePropertyType) pt, (Feature) value, resolveState );
+                exportFeatureProperty( (FeaturePropertyType) pt, (Feature) value, property.getAttributes(), resolveState );
             }
         } else if ( pt instanceof SimplePropertyType ) {
             if ( nilled ) {
@@ -608,13 +608,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return resolveState;
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, GmlXlinkOptions resolveState )
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature,
+                                        Map<QName, PrimitiveValue> attributes,
+                                        GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = pt.getName();
         LOG.debug( "Exporting feature property '" + propName + "'" );
         if ( subFeature == null ) {
-            exportEmptyProperty( propName, null );
+            exportEmptyProperty( propName, attributes );
         } else if ( subFeature instanceof FeatureReference ) {
             exportFeatureProperty( pt, (FeatureReference) subFeature, resolveState, propName );
         } else {
@@ -738,7 +740,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 List<TypedObjectNode> children = xmlContent.getChildren();
                 if ( children != null && children.size() == 1 && children.get( 0 ) instanceof Feature ) {
                     LOG.debug( "Exporting as nested feature property." );
-                    exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ),
+                    exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ), null,
                                            resolveState );
                     return;
                 }
