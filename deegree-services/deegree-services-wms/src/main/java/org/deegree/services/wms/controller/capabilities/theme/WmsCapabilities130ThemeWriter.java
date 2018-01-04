@@ -172,6 +172,14 @@ public class WmsCapabilities130ThemeWriter {
                                 && layerMetadata.getName() != null );
         // <attribute name="cascaded" type="nonNegativeInteger"/>
         writeCascaded( writer, layerMetadata.getCascaded() );
+        // <attribute name="opaque" type="boolean" default="0"/>
+        writeOpaque( writer, layerMetadata.getMapOptions() != null && layerMetadata.getMapOptions().isOpaque() );
+        // <attribute name="noSubsets" type="boolean" default="0"/>
+        writeNoSubset( writer );
+        // <attribute name="fixedWidth" type="nonNegativeInteger"/>
+        writeFixedWidth( writer );
+        // <attribute name="fixedHeight" type="nonNegativeInteger"/>
+        writeFixedHeight( writer );
         // <element ref="wms:Name" minOccurs="0"/>
         if ( layerMetadata.isRequestable() ) {
             writeName( writer, layerMetadata.getName() );
@@ -218,6 +226,8 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         if ( queryable ) {
             writer.writeAttribute( "queryable", "1" );
+        } else {
+            writer.writeAttribute( "queryable", "0" );
         }
     }
 
@@ -225,7 +235,34 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         if ( cascaded > 0 ) {
             writer.writeAttribute( "cascaded", cascaded + "" );
+        } else {
+            writer.writeAttribute( "cascaded", "0" );
         }
+    }
+
+    private void writeOpaque( final XMLStreamWriter writer, final boolean opaque )
+                            throws XMLStreamException {
+        if ( opaque ) {
+            writer.writeAttribute( "opaque", "1" );
+        } else {
+            writer.writeAttribute( "opaque", "0" );
+        }
+    }
+
+    private void writeNoSubset( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "noSubsets", "0" );
+
+    }
+
+    private void writeFixedWidth( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "fixedWidth", "0" );
+    }
+
+    private void writeFixedHeight( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "fixedHeight", "0" );
     }
 
     private void writeName( final XMLStreamWriter writer, final String name )

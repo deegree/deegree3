@@ -128,7 +128,7 @@ public class AppSchemaMapper {
 
     private final boolean useIntegerFids;
 
-    private final int MAX_COMPLEXITY_INDEX = 100;
+    private final int MAX_COMPLEXITY_INDEX = 500;
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -223,7 +223,7 @@ public class AppSchemaMapper {
 
     private FeatureTypeMapping generateFtMapping( FeatureType ft ) {
         LOG.info( "Mapping feature type '" + ft.getName() + "'" );
-        MappingContext mc = mcManager.newContext( ft.getName(), "attr_gml_id" );
+        MappingContext mc = mcManager.newContext( ft.getName(), detectPrimaryKeyColumnName() );
 
         // TODO
         TableName table = new TableName( mc.getTable() );
@@ -492,35 +492,26 @@ public class AppSchemaMapper {
     }
 
     private TableJoin generateFtJoin( MappingContext from, FeatureType valueFt ) {
-        TableJoin ftJoin = null;
         if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
             LOG.warn( "Ambigous feature join." );
         }
         TableName fromTable = new TableName( from.getTable() );
         TableName toTable = new TableName( "?" );
         List<String> fromColumns = Collections.singletonList( from.getColumn() );
-        List<String> toColumns = Collections.singletonList( "attr_gml_id" );
+        List<String> toColumns = Collections.singletonList( detectPrimaryKeyColumnName() );
         Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
         keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
-        ftJoin = new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
+        return new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
                                 keyColumnToIdGenerator );
-        return ftJoin;
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
                                            List<XSElementDeclaration> parentEls,
                                            List<XSComplexTypeDefinition> parentCTs, boolean isNillable ) {
 
-        if ( typeDef.getName() != null ) {
-            for ( XSComplexTypeDefinition ct : parentCTs ) {
-                if ( ct.getName() != null ) {
-                    if ( typeDef.getName().equals( ct.getName() ) && typeDef.getNamespace().equals( ct.getNamespace() ) ) {
-                        handleCycle( parentEls, parentCTs );
-                        return Collections.emptyList();
-                    }
-                }
-            }
-        }
+        if ( isCycle( typeDef, parentEls, parentCTs ) )
+            return Collections.emptyList();
+
         parentCTs.add( typeDef );
 
         List<Mapping> particles = new ArrayList<Mapping>();
@@ -587,7 +578,7 @@ public class AppSchemaMapper {
             sb.append( qName.getName() );
             sb.append( " -> " );
         }
-        throw new RuntimeException( "Detected unhandled cycle '" + sb + "'." );
+        LOG.warn( "Detected unhandled cycle '" + sb + "'." );
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
@@ -705,14 +696,9 @@ public class AppSchemaMapper {
     private List<Mapping> generateMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
                                            List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
 
-        if ( elDecl.getScope() == XSConstants.SCOPE_GLOBAL ) {
-            for ( XSElementDeclaration el : parentEls ) {
-                if ( elDecl.getName().equals( el.getName() ) && elDecl.getNamespace().equals( el.getNamespace() ) ) {
-                    handleCycle( parentEls, parentCTs );
-                    return Collections.emptyList();
-                }
-            }
-        }
+        if ( isCycle( elDecl, parentEls, parentCTs ) )
+            return Collections.emptyList();
+
         parentEls.add( elDecl );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
@@ -853,4 +839,37 @@ public class AppSchemaMapper {
         }
         return new ValueReference( name );
     }
+
+    private String detectPrimaryKeyColumnName() {
+        return useIntegerFids ? "gid" : "attr_gml_id";
+    }
+
+    private boolean isCycle( XSComplexTypeDefinition typeDef, List<XSElementDeclaration> parentEls,
+                             List<XSComplexTypeDefinition> parentCTs ) {
+        if ( typeDef.getName() != null ) {
+            for ( XSComplexTypeDefinition ct : parentCTs ) {
+                if ( ct.getName() != null ) {
+                    if ( typeDef.getName().equals( ct.getName() ) && typeDef.getNamespace().equals( ct.getNamespace() ) ) {
+                        handleCycle( parentEls, parentCTs );
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCycle( XSElementDeclaration elDecl, List<XSElementDeclaration> parentEls,
+                             List<XSComplexTypeDefinition> parentCTs ) {
+        if ( elDecl.getScope() == XSConstants.SCOPE_GLOBAL ) {
+            for ( XSElementDeclaration el : parentEls ) {
+                if ( elDecl.getName().equals( el.getName() ) && elDecl.getNamespace().equals( el.getNamespace() ) ) {
+                    handleCycle( parentEls, parentCTs );
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
