@@ -966,12 +966,13 @@ public class SQLFeatureStore implements FeatureStore {
     private FeatureInputStream queryByIdFilter( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
         if ( blobMapping != null ) {
-            return queryByIdFilterBlob( filter, sortCrit );
+            return queryByIdFilterBlob( typeNames, filter, sortCrit );
         }
         return queryByIdFilterRelational( typeNames, filter, sortCrit );
     }
 
-    private FeatureInputStream queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilterBlob( TypeName[] typeNames,
+                                                    IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
         FeatureInputStream result = null;
@@ -998,7 +999,7 @@ public class SQLFeatureStore implements FeatureStore {
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
-            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping, typeNames );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
             release( rs, stmt, conn );
@@ -1629,7 +1630,7 @@ public class SQLFeatureStore implements FeatureStore {
         }
     }
 
-    private void checkIfFeatureTypIsRequested( TypeName[] typeNames, FeatureType ft ) {
+    public void checkIfFeatureTypIsRequested( TypeName[] typeNames, FeatureType ft ) {
         if ( typeNames != null && typeNames.length > 0 ) {
             boolean isFeatureTypeRequested = false;
             for ( TypeName typeName : typeNames ) {
