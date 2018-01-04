@@ -43,7 +43,6 @@
             <simpleContent>
               <extension base="boolean">
                 <attribute name="idGen" type="wfs:IdentifierGenerationOptionType" use="optional" default="GenerateNew" />
-                <attribute name="allowFeatureReferencesToDatastore" type="boolean" use="optional" default="false" />
               </extension>
             </simpleContent>
           </complexType>
@@ -273,6 +272,16 @@
         <annotation>
           <documentation>
             Indicates that the WFS will generate new and unique feature identifiers for inserted features.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="UseExistingResolvingReferencesInternally">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            raise an exception.
+            Furthermore it is allowed to insert features with references to already inserted features as well as features from the GML to insert.
           </documentation>
         </annotation>
       </enumeration>
