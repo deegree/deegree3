@@ -37,6 +37,7 @@ package org.deegree.feature.persistence.sql;
 
 import static org.deegree.feature.Features.findFeaturesAndGeometries;
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
@@ -70,6 +71,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.BBoxTracker;
 import org.deegree.feature.persistence.FeatureInspector;
 import org.deegree.feature.persistence.FeatureStore;
@@ -995,9 +997,21 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public String performReplace( Feature replacement, Filter filter, Lock lock, IDGenMode idGenMode )
+    public String performReplace( final Feature replacement, final Filter filter, final Lock lock,
+                                  final IDGenMode idGenMode )
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Replace is not supported yet." );
+        if ( filter instanceof IdFilter ) {
+            performDelete( (IdFilter) filter, lock );
+        } else {
+            performDelete( replacement.getName(), (OperatorFilter) filter, lock );
+        }
+        final GenericFeatureCollection col = new GenericFeatureCollection();
+        col.add( replacement );
+        final List<String> ids = performInsert( col, USE_EXISTING );
+        if ( ids.isEmpty() || ids.size() > 1 ) {
+            throw new FeatureStoreException( "Unable to determine new feature id." );
+        }
+        return ids.get( 0 );
     }
 
 }
