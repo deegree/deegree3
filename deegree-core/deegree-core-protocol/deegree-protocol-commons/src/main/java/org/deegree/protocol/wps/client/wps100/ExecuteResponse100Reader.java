@@ -41,6 +41,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +177,7 @@ public class ExecuteResponse100Reader {
                     String href = reader.getAttributeValue( null, "href" );
                     ComplexFormat attribs = parseComplexAttributes();
                     String mimeType = attribs.getMimeType();
-                    output = new ComplexOutput( id, new URL( href ), mimeType, attribs.getEncoding(),
+                    output = new ComplexOutput( id, new URI( href ), mimeType, attribs.getEncoding(),
                                                 attribs.getSchema() );
                     XMLStreamUtils.nextElement( reader );
                 }
@@ -188,7 +190,7 @@ public class ExecuteResponse100Reader {
                 XMLStreamUtils.nextElement( reader ); // </Output>
                 XMLStreamUtils.nextElement( reader );
             }
-        } catch ( MalformedURLException e ) {
+        } catch ( URISyntaxException e ) {
             e.printStackTrace();
         }
 
