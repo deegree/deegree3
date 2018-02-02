@@ -1033,6 +1033,11 @@
         <artifactId>antlr-runtime</artifactId>
         <version>3.4</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>junidecode</artifactId>
+        <version>0.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
