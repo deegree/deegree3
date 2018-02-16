@@ -38,11 +38,7 @@ package org.deegree.commons.utils;
 import static java.lang.Double.parseDouble;
 import static java.lang.Float.parseFloat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * This is a collection of some methods that work with arrays and lists, like join or removeAll. It is complementary to
@@ -339,4 +335,19 @@ public class ArrayUtils {
         return fs;
     }
 
+    /**
+     * Sorts all strings by length, descending
+     *
+     * @param strings array of non-null strings, but strings can be empty
+     */
+    public static void sortByLengthDescending( String[] strings ) {
+        Arrays.sort( strings, new Comparator<String>() {
+            @Override
+            public int compare( String o1, String o2 ) {
+                int len1 = o1.length();
+                int len2 = o2.length();
+                return ( len1 > len2 ? -1 : ( len1 == len2 ? 0 : 1 ) );
+            }
+        } );
+    }
 }
