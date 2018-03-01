@@ -38,7 +38,7 @@ package org.deegree.protocol.wps.client.input;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -62,7 +62,7 @@ public class XMLInput extends ExecutionInput {
 
     private final ComplexFormat complexAttribs;
 
-    private URL url;
+    private URI uri;
 
     private XMLStreamReader reader;
 
@@ -73,8 +73,8 @@ public class XMLInput extends ExecutionInput {
      * 
      * @param id
      *            parameter identifier, must not be <code>null</code>
-     * @param url
-     *            URL for accessing the XML resource, must not be <code>null</code>
+     * @param uri
+     *            URI for accessing the XML resource, must not be <code>null</code>
      * @param isWebAccessible
      *            if true, the data will be submitted to the process as reference, otherwise it will be encoded in the
      *            request
@@ -85,9 +85,9 @@ public class XMLInput extends ExecutionInput {
      * @param schema
      *            XML schema, may be <code>null</code> (unspecified)
      */
-    public XMLInput( CodeType id, URL url, boolean isWebAccessible, String mimeType, String encoding, String schema ) {
+    public XMLInput( CodeType id, URI uri, boolean isWebAccessible, String mimeType, String encoding, String schema ) {
         super( id );
-        this.url = url;
+        this.uri = uri;
         this.isWebAccessible = isWebAccessible;
         
         this.complexAttribs = new ComplexFormat( mimeType, encoding, schema );
@@ -139,7 +139,7 @@ public class XMLInput extends ExecutionInput {
                             throws XMLStreamException, IOException {
         if ( reader == null ) {
             XMLInputFactory inFactory = XMLInputFactory.newInstance();
-            reader = inFactory.createXMLStreamReader( url.openStream() );
+            reader = inFactory.createXMLStreamReader( uri.toURL().openStream() );
         }
         if ( reader.getEventType() == XMLStreamConstants.START_DOCUMENT ) {
             XMLStreamUtils.nextElement( reader );
@@ -148,7 +148,7 @@ public class XMLInput extends ExecutionInput {
     }
 
     @Override
-    public URL getWebAccessibleURL() {
-        return isWebAccessible ? url : null;
+    public URI getWebAccessibleURI() {
+        return isWebAccessible ? uri : null;
     }
 }
