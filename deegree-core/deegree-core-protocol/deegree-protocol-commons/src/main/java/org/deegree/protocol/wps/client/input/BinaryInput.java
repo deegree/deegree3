@@ -37,7 +37,7 @@ package org.deegree.protocol.wps.client.input;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
@@ -55,7 +55,7 @@ public class BinaryInput extends ExecutionInput {
 
     private ComplexFormat complexAttributes;
 
-    private URL url;
+    private URI uri;
 
     private InputStream inputStream;
 
@@ -66,8 +66,8 @@ public class BinaryInput extends ExecutionInput {
      * 
      * @param id
      *            parameter identifier, must not be <code>null</code>
-     * @param url
-     *            URL for accessing the binary resource, must not be <code>null</code>
+     * @param uri
+     *            URI for accessing the binary resource, must not be <code>null</code>
      * @param isWebAccessible
      *            if true, the data will be submitted to the process as reference, otherwise it will be encoded in the
      *            request
@@ -76,9 +76,9 @@ public class BinaryInput extends ExecutionInput {
      * @param encoding
      *            encoding to be used for the binary data, may be <code>null</code> (unspecified)
      */
-    public BinaryInput( CodeType id, URL url, boolean isWebAccessible, String mimeType, String encoding ) {
+    public BinaryInput( CodeType id, URI uri, boolean isWebAccessible, String mimeType, String encoding ) {
         super( id );
-        this.url = url;
+        this.uri = uri;
         this.isWebAccessible = isWebAccessible;
         this.complexAttributes = new ComplexFormat( mimeType, encoding, null );
     }
@@ -122,11 +122,11 @@ public class BinaryInput extends ExecutionInput {
         if ( inputStream != null ) {
             return inputStream;
         }
-        return url.openStream();
+        return uri.toURL().openStream();
     }
 
     @Override
-    public URL getWebAccessibleURL() {
-        return isWebAccessible ? url : null;
+    public URI getWebAccessibleURI() {
+        return isWebAccessible ? uri : null;
     }
 }

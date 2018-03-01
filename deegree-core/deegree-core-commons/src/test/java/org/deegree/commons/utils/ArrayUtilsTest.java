@@ -35,29 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
-import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.deegree.commons.utils.ArrayUtils.removeAll;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
+import static org.deegree.commons.utils.ArrayUtils.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
- * 
- * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
- * 
  */
-public class ArrayToolsTest {
+public class ArrayUtilsTest {
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String delimiter, String... strings )}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String delimiter, String... strings)}.
      */
     @Test
     public void testJoin() {
@@ -68,7 +65,7 @@ public class ArrayToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String, List)}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String, Collection)}.
      */
     @Test
     public void testJoinList() {
@@ -85,7 +82,7 @@ public class ArrayToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String delimiter, int[] values )}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String delimiter, int[] values)}.
      */
     @Test
     public void testjoinInts() {
@@ -113,5 +110,13 @@ public class ArrayToolsTest {
         for ( int i = 0; i < expected.length; i++ ) {
             assertEquals( expected[i], actual[i] );
         }
+    }
+
+    @Test
+    public void sortStringsByLength() throws Exception {
+        String[] strings = { "a", "ccc", "bb" };
+        sortByLengthDescending( strings );
+
+        assertArrayEquals( strings, new String[] { "ccc", "bb", "a" } );
     }
 }

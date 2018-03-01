@@ -40,6 +40,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import gcardone.junidecode.Junidecode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +127,7 @@ class MappingContextManager {
                 id = UUID.randomUUID().toString().substring( 0, maxColumnLengthInChararacters );
             }
         }
-        return id;
+        return Junidecode.unidecode( id );
     }
 
     private String toString( QName qName ) {
