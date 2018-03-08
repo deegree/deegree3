@@ -13,7 +13,6 @@
 
   <inceptionYear>2016</inceptionYear>
 
-
   <!-- Added licence header to source files with:
        mvn  -Dlicense.addJavaLicenseAfterPackage=false -Dlicense.licenseName=lgpl_v2_1 license:update-file-header
        Added licence file with:
@@ -40,6 +39,10 @@
     <developer>
       <name>Lyn Goltz</name>
       <email>goltz@lat-lon.de</email>
+    </developer>
+    <developer>
+      <name>Dirk Stenger</name>
+      <email>stenger@lat-lon.de</email>
     </developer>
   </developers>
 

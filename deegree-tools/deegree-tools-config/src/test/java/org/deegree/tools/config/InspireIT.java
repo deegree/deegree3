@@ -28,7 +28,7 @@ import org.junit.Test;
  *
  * @author weich_ju
  */
-public class InspireTest {
+public class InspireIT {
 
     final String SCHEMA_URL_CP = "http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd";
 
