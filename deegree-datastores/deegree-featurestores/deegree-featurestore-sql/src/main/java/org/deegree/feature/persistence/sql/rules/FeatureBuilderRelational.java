@@ -284,7 +284,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + " are currently supported." );
                     }
                 }
-                feature = ft.newFeature( gmlId, props, null );
+                feature = ft.newFeatureInstance( gmlId, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
                 }
