@@ -15,7 +15,7 @@ deegree webservices work on any platform with a compatible Java installation, in
 * Mac OS X
 * Solaris
 
-Supported Java versions are `OpenJDK <http://openjdk.java.net>`_ version 7 (currently only available for Linux), `Oracle Java 7 (JDK) <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ and `Oracle Java 6 (JDK) <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_  [#f1]_. Other Java versions may work, but are not officially supported by the deegree development team.
+Supported Java versions are `Oracle Java 8/7/6 (JDK) <http://www.oracle.com/technetwork/java/javase/downloads/index.html>` [#f1]_, `OpenJDK <http://openjdk.java.net>`_ version 8/7 (currently only available for Linux). Other Java versions may work, but are not officially supported by the deegree development team.
 
 -----------
 Downloading
@@ -63,10 +63,10 @@ You may minimize this window, but don't close it as long as you want to be able 
 To shut deegree webservices down, switch back to the terminal window and press ``CTRL+C`` or simply close it. 
 
 .. tip::
-  If you want to run deegree webservices on system startup automatically, consider installing `Apache Tomcat 7 <http://tomcat.apache.org>`_ as a system service. Afterwards, download the WAR version of deegree webservices and deploy it into your Tomcat installation (e.g. by copying the WAR file into the ``webapps`` folder). Consult the Tomcat documentation for more information and options.
+  If you want to run deegree webservices on system startup automatically, consider installing `Apache Tomcat 8/7 <http://tomcat.apache.org>`_ as a system service. Afterwards, download the WAR version of deegree webservices and deploy it into your Tomcat installation (e.g. by copying the WAR file into the ``webapps`` folder). Consult the Tomcat documentation for more information and options.
 
 .. rubric:: Footnotes
 
-.. [#f1] Update 4 or better.
-.. [#f2] A Servlet 2.5 compliant web container is required. We recommend using the latest Apache Tomcat 7 release.
+.. [#f1] In case you consider to run Oracle JDK 6 or 7 be aware that both versions are out of maintenance and reached EOF.
+.. [#f2] A Servlet 2.5 compliant web container is required. We recommend using the latest Apache Tomcat 8 release.
 
