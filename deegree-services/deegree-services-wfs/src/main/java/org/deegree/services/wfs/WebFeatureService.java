@@ -202,6 +202,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
@@ -281,8 +282,9 @@ public class WebFeatureService extends AbstractOWS {
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
         if ( enableTransactions != null ) {
             this.enableTransactions = enableTransactions.isValue();
-            this.idGenMode = parseIdGenMode( enableTransactions.getIdGen() );
-            this.allowFeatureReferencesToDatastore = enableTransactions.isAllowFeatureReferencesToDatastore();
+            IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
+            this.idGenMode = parseIdGenMode( configuredIdGenMode );
+            this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
         }
         if ( jaxbConfig.isEnableResponseBuffering() != null ) {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
@@ -474,6 +476,7 @@ public class WebFeatureService extends AbstractOWS {
         case GENERATE_NEW: {
             return IDGenMode.GENERATE_NEW;
         }
+        case USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY:
         case USE_EXISTING: {
             return IDGenMode.USE_EXISTING;
         }

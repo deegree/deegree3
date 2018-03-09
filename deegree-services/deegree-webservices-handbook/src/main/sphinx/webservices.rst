@@ -117,9 +117,10 @@ General options
 Transactions
 ^^^^^^^^^^^^
 
-By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support. This option has two optional attributes: ``allowFeatureReferencesToDatastore`` and ``idGenMode``. If ``allowFeatureReferencesToDatastore`` is true it is allowed to insert features with references to already inserted features, default is false. ``idGenMode`` controls how ids of inserted features (the values in the gml:id attribute) are treated. There are three id generation modes available:
+By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` option to ``true`` will enable transaction support. This option has the optional attribute ``idGenMode`` which controls how ids of inserted features (the values in the gml:id attribute) are treated. There are three id generation modes available:
 
 * **UseExisting**: The original gml:id values from the input are stored. This may lead to errors if the provided ids are already in use.
+* **UseExistingResolvingReferencesInternally**: Same as UseExisting, but it is allowed to insert features with references to already inserted features.
 * **GenerateNew** (default): New and unique ids are generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
 * **ReplaceDuplicate**: The WFS will try to use the original gml:id values that have been provided in the input. In case a certain identifier already exists in the backend, a new and unique identifier will be generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
 
