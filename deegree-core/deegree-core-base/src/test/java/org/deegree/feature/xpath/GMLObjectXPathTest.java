@@ -44,6 +44,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +52,7 @@ import java.util.Set;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.property.SimpleProperty;
@@ -67,6 +69,8 @@ import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.xml.stream.XMLStreamException;
 
 /**
  * Tests the correct evaluation of {@link GMLObjectXPath} expressions.
@@ -90,22 +94,18 @@ public class GMLObjectXPathTest {
     @Before
     public void setUp()
                             throws Exception {
-
         String schemaURL = this.getClass().getResource( "../../gml/misc/schema/Philosopher.xsd" ).toString();
-        GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
-        AppSchema schema = xsdAdapter.extractAppSchema();
-
         URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_31, docURL );
-        gmlReader.setApplicationSchema( schema );
-        fc = (FeatureCollection) gmlReader.readFeature();
-        gmlReader.getIdContext().resolveLocalRefs();
+        fc = parseFeatureCollection( GMLVersion.GML_31, schemaURL, docURL );
 
         nsContext = new SimpleNamespaceContext();
+        nsContext.addNamespace( "gml32", "http://www.opengis.net/gml/3.2" );
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+        nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
         new DefaultWorkspace( new File( "nix" ) ).initAll();
     }
+
 
     @Test
     public void testXPath1()
@@ -390,4 +390,33 @@ public class GMLObjectXPathTest {
     // assertEquals( 6, result.length );
     // assertEquals( "COUNTRY_2", ( (PrimitiveValue) result[0] ).getAsText() );
     // }
+
+    @Test
+    public void testXPathXlinkHref()
+                            throws Exception {
+        String schemaURL = this.getClass().getResource( "../../gml/misc/schema/CustomPropertiesGml32.xsd" ).toString();
+        URL docURL = GMLFeatureReaderTest.class.getResource( BASE_DIR + "CustomPropertiesGml32.xml" );
+        FeatureCollection fc = parseFeatureCollection( GMLVersion.GML_32, schemaURL, docURL );
+
+        String xpath = "gml32:featureMember/app:ComplexFeature/app:type/@xlink:href";
+        TypedObjectNode[] result = new TypedObjectNodeXPathEvaluator().eval( fc, new ValueReference( xpath, nsContext ) );
+        assertNotNull( result );
+        assertEquals( 1, result.length );
+        assertEquals( "http://pathtoregistry/abc/code", ( (PrimitiveValue) result[0] ).getAsText() );
+    }
+
+    private FeatureCollection parseFeatureCollection( GMLVersion gmlVersion, String schemaURL, URL docURL )
+                            throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLStreamException, IOException, UnknownCRSException {
+
+        GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( gmlVersion, null, schemaURL );
+        AppSchema schema = xsdAdapter.extractAppSchema();
+
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( gmlVersion, docURL );
+        gmlReader.setApplicationSchema( schema );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+        return fc;
+    }
+
 }
