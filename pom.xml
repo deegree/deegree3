@@ -224,7 +224,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.9.1</version>
+          <version>2.10.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -244,6 +244,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
           <aggregate>false</aggregate>
@@ -321,8 +322,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>2.10.3</version>
         <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
           <aggregate>false</aggregate>
@@ -1044,7 +1046,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    <java.version>1.6</java.version>
+    <java.version>1.8</java.version>
     <site.dir>${user.home}/Sites</site.dir>
     <deegree-maven-plugin.version>1.20</deegree-maven-plugin.version>
   </properties>
@@ -1074,19 +1076,19 @@
       <id>deegree-maven-plugin</id>
       <build>
         <plugins>
-        <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>jaxbcatalog</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate-jaxb-catalog</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+          <plugin>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jaxbcatalog</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>generate-jaxb-catalog</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -1134,6 +1136,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.10.3</version>
             <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
               <detectLinks>false</detectLinks>
               <detectOfflineLinks>false</detectOfflineLinks>
               <aggregate>false</aggregate>
@@ -1166,39 +1169,6 @@
                 </reports>
               </reportSet>
             </reportSets>
-          </plugin>
-        </plugins>
-      </reporting>
-    </profile>
-    <profile>
-      <id>java8-enable</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <properties>
-        <java.version>1.8</java.version>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.3</version>
-            <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-      <reporting>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.10.3</version>
-            <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
-            </configuration>
           </plugin>
         </plugins>
       </reporting>
