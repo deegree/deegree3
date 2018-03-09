@@ -152,22 +152,15 @@ The technical infrastructure of the deegree initiative is described in [Infrastr
 
 If a member of the initiative needs access to one of the infrastructure components, the TMC decides upon tracker request and updates the respective list in Infrastructure.
 
-#### Commit Access to github projects 
+#### Ownership of github organisation and projects 
 
-Only committee members have full access to any github project under the organisation deegree https://github.com/deegree.
+Only committee members have full access to the deegree organisation https://github.com/deegree and any github project under that organisation.
 Permission for access shall be provided to new members only if accepted by one of the deegree Committees. 
 A proposal should be written to the mailing list and voted on normally. Sending the proposal to deegree-devel is sufficient.
 Removal of access should be handled by the same process.
 
-The new Project Developer (committer) should have demonstrated commitment to deegree and knowledge of the deegree source code and processes to the committee's satisfaction, usually by reporting bugs, submitting patches, and/or actively participating in the deegree mailing list(s).
-
-The new committer should also be prepared to support any new feature or changes that he/she commits to the deegree source tree in future releases, or to find someone to which to delegate responsibility for them if he/she stops being available to support the portions of code that he/she is responsible for.
-
-All committers should also be a member of the deegree-devel mailing list so they can stay informed on policies, technical developments and release preparation.
-
-New committers are responsible for having read, and understood this document.
-
 # Legal
+
 Committers are the front line gatekeepers to keep the code base clear of improperly contributed code. 
 It is important to the deegree users, developers and the OSGeo foundation to avoid contributing any code to the project
  without it being clearly licensed under the project license.
@@ -177,3 +170,5 @@ code will be released under the LGPL license, and that the person providing the 
 code. For the committer themselves understanding about the license is hopefully clear. For other contributors, the 
 commiter should verify the understanding unless the committer is very comfortable that the contributor understands the 
 license (for instance frequent contributors).
+
+All committers are responsible for having read, and understood this document.
