@@ -1,11 +1,19 @@
 # deegree Contribution Guidelines
 
-Contributing to open source can be a rewarding way to learn, teach, and build experience in just about any skill you can imagine.
+Contributing to open source can be a rewarding way to learn, and build experience in just about any skill you can imagine.
+Before you contribute to the OSGeo project deegree please read our guidelines we'd like you to follow:
+
+* [OSGeo Code of Conduct](https://www.osgeo.org/code_of_conduct/)
+* [How to help](#what-do-i-need-to-know-to-help?)
+* [How to contribute](#how-do-i-make-a-contribution?)
+* [Getting in contact](#getting-in-contact)
+* [Structures and Procedures](#structures-and-procedures-of-the-deegree-project)
+* [Legal](#legal) 
 
 ## What do I need to know to help?
 
 If you are looking to help to with a code contribution our project uses the Java programming language and a couple of 
-open source frameworks. If you don't feel ready to make a code contribution yet, no problem! 
+open source frameworks, see [Technology](https://www.deegree.org/about-deegree#technology) for more information. If you don't feel ready to make a code contribution yet, no problem! 
 You can also check out the [documentation issues](https://github.com/deegree/deegree3/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3Adocumentation) 
 or the [infrastructure issues](https://github.com/deegree/deegree3/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3Awebsite) that we have.
 
@@ -17,61 +25,66 @@ Never made an open source contribution before? Wondering how contributions work 
 
 - Find an issue that you are interested in addressing or a feature that you would like to add.
 - Fork the repository associated with the issue to your local GitHub organization. This means that you will have a copy of the repository under your-GitHub-username/repository-name.
-- Clone the repository to your local machine using git clone https://github.com/github-username/repository-name.git`.
+- Clone the repository to your local machine using `git clone https://github.com/github-username/repository-name.git`.
 - Create a new branch for your fix using `git checkout -b branch-name-here`.
 - Make the appropriate changes for the issue you are trying to address or the feature that you want to add.
-- Use git add insert-paths-of-changed-files-here to add the file contents of the changed files to the "snapshot" git uses to manage the state of the project, also known as the index.
-- Use git commit -m "Insert a short message of the changes made here" to store the contents of the index with a descriptive message.
+- Use `git add insert-paths-of-changed-files-here` to add the file contents of the changed files to the "snapshot" git uses to manage the state of the project, also known as the index.
+- Use `git commit -m "Insert a short message of the changes made here"` to store the contents of the index with a descriptive message.
 - Push the changes to the remote repository using `git push origin branch-name-here`.
 - Submit a pull request to the upstream repository.
-- Title the pull request with a short description of the changes made and the issue or bug number associated with your change. For example, you can title an issue like so "Fixed #4352 to return valid GML".
+- Title the pull request with a short description of the changes made and the issue or bug number associated with your change. For example, you can title an issue like so "Fixes #42: WFS returns valid GML for GetFeature with BBOX parameter".
 - In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer. It's OK if your pull request is not perfect (no pull request is), the reviewer will be able to help you fix any problems and improve it!
 - Wait for the pull request to be reviewed by a TMC member.
-- Make changes to the pull request if the reviewing maintainer recommends them.
-- Celebrate your success after your pull request is merged and post it to twitter @deegree_org and #deegree!
+- Make changes to the pull request if the reviewing maintainer recommends them. 
+- Join the TMC meetings when your pull request will be voted on. 
+- Celebrate your success after your pull request is merged and share it on twitter.
 
-Further information:
+Further reading:
 - https://deegree.org/community/guidelines
 - https://github.com/deegree/deegree3/wiki/Bug-or-Feature
 - https://github.com/deegree/deegree3/wiki/Developer-Guidelines
+- https://github.com/deegree/deegree3/wiki/Working-with-pull-requests
+- https://github.com/deegree/deegree3/wiki/Setting-up-deegree3-in-your-IDE
 
-## Where can I go for help?
+## Getting in contact
 
-If you need help, you can ask questions on our mailing list, IRC chat, or file an [issue](../issues).
+If you need help, you can ask questions on our mailing lists, IRC chat, [GIS stackexchange](https://gis.stackexchange.com/questions/tagged/deegree) or file an issue on github.
 
-### Getting in contact
+### Mailing Lists
 
-#### Mailing Lists
-
-- Users:
+- [Users](https://sourceforge.net/p/deegree/mailman/deegree-users/):
 questions regarding installing and deploying deegree
 questions on service configuration
 
-- Developers:
+- [Developers](https://sourceforge.net/p/deegree/mailman/deegree-devel/):
 to add code, supply patches etc
 discuss future code developments
 
-#### Issue Tracker
+### Issue Tracker
 Our issue tracking system is:
 
-- [github issue tracker](../issues) (please use this one for all inquiries!)
+- [github issue tracker](../../issues) (**please use this one for all inquiries!**)
 
-#### Contact PSC & TMC
-PSC <psc AT SPAMFREE deegree DOT org> (Who is the ProjectSteeringCommittee and what do they do?)
-TMC <tmc AT SPAMFREE deegree DOT org> (Who is the TechnicalManagementCommittee and what do they do?)
+### Contact PSC & TMC
+- PSC `psc AT SPAMFREE deegree DOT org` (Who is the [ProjectSteeringCommittee](#project-steering-committee) and what do they do?)
+- TMC `tmc AT SPAMFREE deegree DOT org` (Who is the [TechnicalManagementCommittee](#technical-management-committee) and what do they do?)
 
-#### IRC Channel
+### IRC Channel
 Channel #deegree on freenode.net (irc://freenode.net). Choose an IRC client for your platform or use the webclient for connecting:
 
-Open the freenode web client or enter /network freenode in your chat client
+Open the freenode web client or enter `/network freenode` in your chat client:
 - Choose a nickname
-- Enter channel #deegree or type /join #deegree in your chat client
+- Enter channel #deegree or type `/join #deegree` in your chat client
 - Solve captcha
 - Connect
 
-### Structures and Procedures of the deegree project
+### Social Media
 
-#### Overview
+At twitter we are [@deegree_org](https://twitter.com/deegree_org) and use `#OSGeo #deegree` for our tweets. 
+
+## Structures and Procedures of the deegree project
+
+### Overview
 Within the deegree project the following kinds of contribution are recognized:
 
 - Users are individuals or institutions who download, install and use deegree components.
@@ -93,21 +106,21 @@ Developers are individuals or institutions who are able to apply changes to the 
 Their software engineering point of view focusses on technical aspects of the deegree software. A developer's contribution to the deegree community may constist of testing and evaluation of new releases of features on a technical level, i.e. source code or software design perspective. They may contribute bug fixes or newly developped features to the community, make announcements about their work on the deegree-devel or deegree-users mailing lists and may actively participate in technical discussions.
 
 #### Committers
-Committers are individuals from the Users or Developers groups who are allowed to commit artefacts to the deegree code repository, where Users typically contribute to documentation or configuration and Developers commit source code.
+Committers are individuals from the Users or Developers groups who contribute to the deegree code repository, where Users typically contribute to documentation or configuration and Developers commit source code.
 
-Commit rights are granted upon request by the PSC. Individuals who already have contributed significant resources to the project may apply for commit rights. The prior commitment is usually shown by regularly submitting code that conforms to the current deegree developer guide and by involvement into the discussions at the developer and user list.
+Any individual that has been accepted the [legal statement](#legal) below can contribute.
 
-Any individual that has been accepted the legal statement can contribute.
+Overview of current [Contributors at github](https://github.com/deegree/deegree3/graphs/contributors).
 
-#### Technical Management Committee
+### Technical Management Committee
 The Technical Management Committee is a small group of individuals who are responsible for all technical aspects of project management.
 
 Responsibilities of the TMC include:
 
 - deciding about integration of feature additions or bug fixes provided by community members
-- ensuring regular releases (major and maintenance) of deegree software
+- ensuring regular releases (major and maintenance) of the deegree software
 - developing technical standards and policies (e.g. coding standards, file naming conventions, etc...)
-- reviewing feature requests for technical enhancements to the software
+- reviewing feature requests for technical enhancements to the deegree software
 - project infrastructure (e.g. build server, artifact repository, etc. For information about infrastructure components see the [wiki page](https://github.com/deegree/deegree3/wiki/Infrastructure))
 
 Membership: TMC members are:
@@ -116,11 +129,11 @@ Membership: TMC members are:
 - Torsten Friebe (lat/lon)
 - Stephan Reichhelm (grit)
 
-Contact: You may contact the TMC via email: <tmc AT SPAMFREE deegree DOT org>.
+Contact: You may contact the TMC via email: `tmc AT SPAMFREE deegree DOT org`.
 
-#### Project Steering Committee
+### Project Steering Committee
 
-The Project Steering Committee is a small group of individuals who are responsible for all organisational and strategic aspects of project management. The PSC decides about the major directions of the deegree project, the dates and content of major releases and who the project developers are. All decisions made by the PSC are either made in consensus or based on a single majority. The PSC communicates via E-Mail, IRC (#deegree) and usually meets once a year in person.
+The Project Steering Committee is a small group of individuals who are responsible for all organisational and strategic aspects of project management. The PSC decides about the major directions of the deegree project. All decisions made by the PSC are either made in consensus or based on a single majority. The PSC communicates via E-Mail, IRC (#deegree) and usually meets once a year in person.
 
 Current PSC Members are:
 
@@ -128,29 +141,29 @@ Current PSC Members are:
 - Jens Fitzke (lat/lon), Chair
 - Prof. Dr. Klaus Greve (Bonn University)
 
-Contact: You may contact the PSC via email: <psc AT SPAMFREE deegree DOT org>. There is also an issue tracker for the PSC, for the organisational side of the deegree project.
+Contact: You may contact the PSC via email: `psc AT SPAMFREE deegree DOT org`.
 
 Responsibilities of the PSC include:
 
 - formalization of affiliation with external entities such as OSGeo
 - project sponsorship
+- legal aspects
 
 Membership: The PSC is made up of individuals consisting of Committers and prominent members of the deegree user community. There is no set number of members for the PSC although the initial desire is to set the membership at a maximum of 10.
 
-#### Adding Members
+### Adding Members
 
 Any member of the deegree-devel mailing list may nominate someone for committee membership at any time. Only existing committee members may vote on new members. Nominees must receive a majority vote from existing members to be added to the committee.
 
-#### Stepping Down
+### Stepping Down
 
 If for any reason a committee member is not able to fully participate then they certainly are free to step down. If a member is not active (e.g. no voting, no email participation) for a period of two months then the committee reserves the right to seek nominations to fill that position. Should that person become active again (hey, it happens) then they would certainly be welcome, but would require a nomination.
-
 
 ### Access to technical infrastructure components
 
 The technical infrastructure of the deegree initiative is described in [Infrastructure](https://github.com/deegree/deegree3/wiki/Infrastructure).
 
-If a member of the initiative needs access to one of the infrastructure components, the TMC decides upon tracker request and updates the respective list in Infrastructure.
+If a member of the initiative needs access to one of the infrastructure components, the TMC decides upon tracker request and provides access to the Infrastructure.
 
 #### Ownership of github organisation and projects 
 
@@ -159,7 +172,7 @@ Permission for access shall be provided to new members only if accepted by one o
 A proposal should be written to the mailing list and voted on normally. Sending the proposal to deegree-devel is sufficient.
 Removal of access should be handled by the same process.
 
-# Legal
+## Legal
 
 Committers are the front line gatekeepers to keep the code base clear of improperly contributed code. 
 It is important to the deegree users, developers and the OSGeo foundation to avoid contributing any code to the project
@@ -168,7 +181,9 @@ It is important to the deegree users, developers and the OSGeo foundation to avo
 Generally speaking the key issues are that those providing code to be included in the repository understand that the 
 code will be released under the LGPL license, and that the person providing the code has the right to contribute the 
 code. For the committer themselves understanding about the license is hopefully clear. For other contributors, the 
-commiter should verify the understanding unless the committer is very comfortable that the contributor understands the 
+committer should verify the understanding unless the committer is very comfortable that the contributor understands the 
 license (for instance frequent contributors).
 
-All committers are responsible for having read, and understood this document.
+All committers are responsible for having read, and understood this document. And please confirm acceptance to these 
+guidelines by sending an email to the mailing list with subject `Committer guidelines acceptance` and body 
+`I hereby accept the deegree committer guidelines. <Date> <Your Full Name>`.
