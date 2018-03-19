@@ -15,7 +15,7 @@ deegree webservices work on any platform with a compatible Java installation, in
 * Mac OS X
 * Solaris
 
-Supported Java versions are `Oracle Java 8/7/6 (JDK) <http://www.oracle.com/technetwork/java/javase/downloads/index.html>` [#f1]_, `OpenJDK <http://openjdk.java.net>`_ version 8/7 (currently only available for Linux). Other Java versions may work, but are not officially supported by the deegree development team.
+Supported Java versions are `Oracle Java 8 (JDK) <http://www.oracle.com/technetwork/java/javase/downloads/index.html>` [#f1]_, `OpenJDK <http://openjdk.java.net>`_ version 8 (currently only available for Linux). Newer Java versions may work, but are not officially supported by the deegree development team.
 
 -----------
 Downloading
