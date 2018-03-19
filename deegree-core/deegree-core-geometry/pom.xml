@@ -52,7 +52,7 @@
       <artifactId>jts</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.postgis</groupId>
+      <groupId>net.postgis</groupId>
       <artifactId>postgis-jdbc</artifactId>
     </dependency>
     <dependency>
