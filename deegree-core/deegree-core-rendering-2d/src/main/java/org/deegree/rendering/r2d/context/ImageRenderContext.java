@@ -72,12 +72,15 @@ public class ImageRenderContext extends Java2DRenderContext {
     private final BufferedImage image;
 
     private final String format;
+    
+    private final RenderingInfo info;
 
     private ImageRenderContext( RenderingInfo info, BufferedImage image, Graphics2D graphics, OutputStream outputStream ) {
         super( info, graphics, outputStream );
         
         this.image = image;
         this.format = info.getFormat();
+        this.info = info;
     }
     
     public static RenderContext createInstance( RenderingInfo info, BufferedImage image, OutputStream outputStream ) {
@@ -95,6 +98,7 @@ public class ImageRenderContext extends Java2DRenderContext {
     public boolean close() throws IOException {        
         try {
             graphics.dispose();
+            
             if ( outputStream != null ) {
                 BufferedImage image = this.image;
                 String format = this.format.substring( this.format.indexOf( "/" ) + 1 );
@@ -105,7 +109,12 @@ public class ImageRenderContext extends Java2DRenderContext {
                     image = ColorQuantizer.quantizeImage( image, 256, false, false );
                     format = "png";
                 }
-                return write( image, format, outputStream );
+                
+                if (info.getSerializer() != null){
+                    info.getSerializer().serialize( info, image, outputStream );
+                } else {
+                    return write( image, format, outputStream );
+                }
             }
         } finally {
             closeQuietly( outputStream );

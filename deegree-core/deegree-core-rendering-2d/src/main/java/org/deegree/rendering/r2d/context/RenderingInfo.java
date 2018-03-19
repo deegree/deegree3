@@ -41,6 +41,7 @@ import java.awt.Color;
 import java.util.Map;
 
 import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r2d.ImageSerializer;
 import org.deegree.rendering.r2d.RenderHelper;
 
 /**
@@ -68,9 +69,16 @@ public class RenderingInfo {
     private int x, y, featureCount;
 
     private Map<String, String> parameters;
+    
+    private ImageSerializer serializer;
 
     public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
                           double pixelSize, Map<String, String> parameters ) {
+        this(format, width, height, transparent, bgcolor, envelope, pixelSize, parameters, null);
+    }
+    
+    public RenderingInfo( String format, int width, int height, boolean transparent, Color bgcolor, Envelope envelope,
+                          double pixelSize, Map<String, String> parameters, ImageSerializer serializer ) {
         this.format = format;
         this.width = width;
         this.height = height;
@@ -79,6 +87,7 @@ public class RenderingInfo {
         this.envelope = envelope;
         this.pixelSize = pixelSize;
         this.parameters = parameters;
+        this.serializer = serializer;
     }
 
     public void setFormat( String format ) {
@@ -172,5 +181,8 @@ public class RenderingInfo {
     public double getResolution() {
         return RenderHelper.calcResolution( envelope, width, height );
     }
-
+    
+    public ImageSerializer getSerializer() {
+        return serializer;
+    }
 }
