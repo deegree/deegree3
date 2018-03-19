@@ -718,39 +718,39 @@
       <!-- Oracle -->
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>ojdbc6</artifactId>
-        <version>11.2.0.2</version>
+        <artifactId>ojdbc8</artifactId>
+        <version>12.2.0.1</version>
       </dependency>
       <!-- Oracle GeoRaster -->
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoapi</artifactId>
-        <version>11.2.0.2</version>
+        <version>12.2.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdotype</artifactId>
-        <version>11.2.0.2</version>
+        <version>12.2.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdogr</artifactId>
-        <version>11.2.0.2</version>
+        <version>12.2.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoutl</artifactId>
-        <version>11.2.0.2</version>
+        <version>12.2.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>xdb</artifactId>
-        <version>11.2.0.2</version>
+        <artifactId>xdb6</artifactId>
+        <version>12.2.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
-        <version>11.2.0.2</version>
+        <version>12.2.0.1</version>
       </dependency>
       <!-- Batik -->
       <dependency>

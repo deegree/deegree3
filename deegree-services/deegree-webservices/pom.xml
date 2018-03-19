@@ -155,7 +155,7 @@
           <exclusions>
             <exclusion>
               <groupId>com.oracle</groupId>
-              <artifactId>ojdbc6</artifactId>
+              <artifactId>ojdbc8</artifactId>
             </exclusion>
           </exclusions>
         </dependency>
