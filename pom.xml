@@ -1203,18 +1203,27 @@
 
   <developers>
     <developer>
-      <name>Markus Schneider</name>
-      <email>schneider@occamlabs.de</email>
-    </developer>
-    <developer>
-      <name>Andreas Schmitz</name>
-      <email>schmitz@occamlabs.de</email>
-    </developer>
-    <developer>
-      <name>Lyn Goltz</name>
-      <email>goltz@lat-lon.de</email>
+      <id>TMC</id>
+      <name>Technical Management Committee</name>
+      <organization>OSGeo deegree project</organization>
+      <organizationUrl>https://www.deegree.org</organizationUrl>
+      <email>tmc@deegree.org</email>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Markus Schneider</name>
+      <email>schneider@occamlabs.de</email>
+    </contributor>
+    <contributor>
+      <name>Andreas Schmitz</name>
+      <email>schmitz@occamlabs.de</email>
+    </contributor>
+    <contributor>
+      <name>Lyn Goltz</name>
+      <email>goltz@lat-lon.de</email>
+    </contributor>
+  </contributors>
 
   <mailingLists>
     <mailingList>
