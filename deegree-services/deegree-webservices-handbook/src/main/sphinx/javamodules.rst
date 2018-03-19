@@ -82,7 +82,7 @@ By default, deegree webservices includes everything that is needed for connectin
 Adding Oracle support
 """""""""""""""""""""
 
-The following deegree resources support Oracle Spatial databases (10g, 11g):
+The following deegree resources support Oracle Spatial databases:
 
 * SimpleSQLFeatureStore
 * SQLFeatureStore
@@ -90,31 +90,31 @@ The following deegree resources support Oracle Spatial databases (10g, 11g):
 
 In order to enable Oracle connectivity for these resources, you need to add two JAR files (see :ref:`anchor-adding-jars`):
 
-* A compatible Oracle JDBC6-type driver (e.g. ``ojdbc6-11.2.0.2.jar``) [#f2]_
+* A compatible Oracle JDBC8-type driver (e.g. ``ojdbc8.jar``) [#f2]_
 * Module deegree-sqldialect-oracle [#f3]_
 
 """""""""""""""""""""""""""""""
 Adding Oracle GeoRaster support
 """""""""""""""""""""""""""""""
 
-The ``OracleGeoraster`` coverage store supports GeoRaster Objects stored in Oracle databases (10g, 11g).
+The ``OracleGeoraster`` coverage store supports GeoRaster Objects stored in Oracle databases.
 
 In order to enable Oracle connectivity for these resources, you need to add the following JAR files (see :ref:`anchor-adding-jars`):
 
-* A compatible Oracle JDBC6-type driver [#f2]_
-  * ojdbc6-11.2.0.2.jar
+* A compatible Oracle JDBC-type driver [#f2]_
+  * ojdbc8.jar
 * The Oracle Spatial and GeoRaster libraries and their dependencies
-  * sdoapi-11.2.0.2.jar
-  * sdogr-11.2.0.2.jar
-  * sdotype-11.2.0.2.jar
-  * sdoutl-11.2.0.2.jar
-  * xdb-11.2.0.2.jar
-  * xmlparserv2_sans_jaxp_services-11.2.0.2.jar
+  * sdoapi.jar
+  * sdogr.jar
+  * sdotype.jar
+  * sdoutl.jar
+  * xdb6.jar
+  * xmlparserv2_sans_jaxp_services.jar
 * Module deegree-coveragestore-oracle-georaster [#f6]_
 
 .. hint:: 
   The Oracle Spatial and GeoRaster libraries can be found, without version number in filename, inside the Oracle Database installation directory.
-  The ``sdo*`` files can be found at ``ORACLE_HOME/md/jlib``, xdb.jar at ``ORACLE_HOME/rdbms/jlib`` and xmlparserv2_sans_jaxp_services or xmlparserv2 at ``ORACLE_HOME/xdk/lib``.
+  The ``sdo*`` files can be found at ``ORACLE_HOME/md/jlib``, xdb6.jar at ``ORACLE_HOME/rdbms/jlib`` and xmlparserv2_sans_jaxp_services or xmlparserv2 at ``ORACLE_HOME/xdk/lib``.
   
 
 .. note::
@@ -127,7 +127,7 @@ In order to enable Oracle connectivity for these resources, you need to add the 
 Adding Microsoft SQL server support
 """""""""""""""""""""""""""""""""""
 
-The following deegree resources support Microsoft SQL Server (2008, 2012):
+The following deegree resources support Microsoft SQL Server:
 
 * SimpleSQLFeatureStore
 * SQLFeatureStore
@@ -135,7 +135,7 @@ The following deegree resources support Microsoft SQL Server (2008, 2012):
 
 In order to enable Microsoft SQL Server connectivity for these resources, you need to add two JAR files (see :ref:`anchor-adding-jars`):
 
-* A compatible Microsoft JDBC driver (e.g. ``sqljdbc4-3.0.jar``) [#f4]_
+* A compatible Microsoft JDBC driver (e.g. ``sqljdbc4.jar``) [#f4]_
 * Module deegree-sqldialect-mssql [#f5]_
 
 .. rubric:: Footnotes
