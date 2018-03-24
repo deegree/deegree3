@@ -1,3 +1,7 @@
+| Master (3.4) | Maintenance (3.3) | OpenHUB |
+| ------------ | ----------------- | ------------- |
+| [![Master Build Status](https://travis-ci.org/deegree/deegree3.png?branch=master)](https://travis-ci.org/deegree/deegree3) | [![Develop Build Status](https://travis-ci.org/deegree/deegree3.png?branch=3.3-master)](https://travis-ci.org/deegree/deegree3/branches) | [![OpenHUB](https://www.openhub.net/p/deegree3/widgets/project_thin_badge.gif)](https://www.openhub.net/p/deegree3) |
+
 # deegree web services
 deegree is open source software for spatial data infrastructures and the geospatial web. deegree includes components for geospatial data management, including data access, visualization, discovery and security. Open standards are at the heart of deegree. The software is built on the standards of the Open Geospatial Consortium (OGC) and the ISO Technical Committee 211.
 
