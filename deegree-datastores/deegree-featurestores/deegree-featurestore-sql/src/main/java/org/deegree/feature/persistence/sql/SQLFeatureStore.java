@@ -161,6 +161,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private static final int DEFAULT_CACHE_SIZE = 10000;
 
+    private static transient final ThreadLocal<Query> CURRENT_THREAD_QUERY = new ThreadLocal<Query>();
+
     private final SQLFeatureStoreJAXB config;
 
     private final URL configURL;
@@ -627,6 +629,7 @@ public class SQLFeatureStore implements FeatureStore {
         }
 
         Filter filter = query.getFilter();
+        CURRENT_THREAD_QUERY.set( query );
 
         int hits = 0;
         if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
@@ -888,6 +891,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         FeatureInputStream result = null;
         Filter filter = query.getFilter();
+        CURRENT_THREAD_QUERY.set( query );
 
         if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
             QName ftName = query.getTypeNames()[0].getFeatureTypeName();
@@ -1629,5 +1633,14 @@ public class SQLFeatureStore implements FeatureStore {
         } else {
             nullEscalation = config.isNullEscalation();
         }
+    }
+
+    /**
+     * Return the current thread query, if a query is currently processed
+     * 
+     * @return the ThreadLocal<Query> or null
+     */
+    public static ThreadLocal<Query> getCurrentThreadQuery() {
+        return CURRENT_THREAD_QUERY;
     }
 }
