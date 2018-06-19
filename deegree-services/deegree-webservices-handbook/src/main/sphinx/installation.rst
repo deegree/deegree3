@@ -8,23 +8,24 @@ Installation
 System requirements
 -------------------
 
-deegree webservices work on any platform with a compatible Java installation, including:
+deegree webservices work on any platform with a compatible Java SE installation, including:
 
 * Microsoft Windows
 * Linux
 * Mac OS X
 * Solaris
 
-Supported Java versions are `Oracle Java 8 (JDK) <http://www.oracle.com/technetwork/java/javase/downloads/index.html>` [#f1]_, `OpenJDK <http://openjdk.java.net>`_ version 8 (currently only available for Linux). Newer Java versions may work, but are not officially supported by the deegree development team.
+Supported Java SE versions are `Oracle JDK 8 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ [#f1]_, `OpenJDK <http://openjdk.java.net>`_ version 8. Newer Java SE versions may work, but are not officially supported by the deegree development team.
 
 -----------
 Downloading
 -----------
 
-deegree webservices downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice of two flavors:
+deegree webservices downloads are available on the `deegree home page <http://www.deegree.org>`_. You have the choice between:
 
-* *ZIP*: Multi-operating system package bundled with Apache Tomcat
-* *WAR*: Plain Java Web Archive for deployment in an existing servlet container [#f2]_
+* *Docker* : Docker Image with deegree webservices on OpenJDK and Apache Tomcat [#f11]_
+* *WAR*: Generic Java Web Archive for deployment in an existing Java Servlet container [#f2]_
+* *ZIP*: Distribution bundle with Apache Tomcat [#f3]_
 
 .. tip::
   If you are confused by the two options and unsure which version to pick, use the ZIP. Both variants contain exactly the same deegree software, they only differ in packaging.
@@ -63,10 +64,11 @@ You may minimize this window, but don't close it as long as you want to be able 
 To shut deegree webservices down, switch back to the terminal window and press ``CTRL+C`` or simply close it. 
 
 .. tip::
-  If you want to run deegree webservices on system startup automatically, consider installing `Apache Tomcat 8/7 <http://tomcat.apache.org>`_ as a system service. Afterwards, download the WAR version of deegree webservices and deploy it into your Tomcat installation (e.g. by copying the WAR file into the ``webapps`` folder). Consult the Tomcat documentation for more information and options.
+  If you want to run deegree webservices on system startup automatically, consider installing `Apache Tomcat 8/9 <http://tomcat.apache.org>`_ as a system service. Afterwards, download the WAR version of deegree webservices and deploy it into your Tomcat installation (e.g. by copying the WAR file into the ``webapps`` folder). Consult the Tomcat documentation for more information and options.
 
 .. rubric:: Footnotes
 
-.. [#f1] In case you consider to run Oracle JDK 6 or 7 be aware that both versions are out of maintenance and reached EOF.
-.. [#f2] A Servlet 2.5 compliant web container is required. We recommend using the latest Apache Tomcat 8 release.
-
+.. [#f1] Oracle JDK 7 and earlier are not supported anymore, be aware that those versions are out of maintenance and reached EOF.
+.. [#f11] This requires an installation of Docker Community or Enterprise Edition, download Docker from `www.docker.com <https://www.docker.com/>`_.
+.. [#f2] A Java Servlet 2.5 compliant container is required. We recommend using the latest `Apache Tomcat 8 <http://tomcat.apache.org/>`_ release.
+.. [#f3] As of deegree 3.4.0 the ZIP distribution bundle is deprecated and the download links are removed from the website. Download the ZIP from the `Nexus repository <http://repo.deegree.org/content/groups/public/org/deegree/deegree-webservices-tomcat-bundle/>` instead.
