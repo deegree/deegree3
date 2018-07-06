@@ -64,7 +64,7 @@ You may minimize this window, but don't close it as long as you want to be able 
 To shut deegree webservices down, switch back to the terminal window and press ``CTRL+C`` or simply close it. 
 
 .. tip::
-  If you want to run deegree webservices on system startup automatically, consider installing `Apache Tomcat 8 <http://tomcat.apache.org>`_ as a system service. Afterwards, download the WAR version of deegree webservices and deploy it into your Tomcat installation (e.g. by copying the WAR file into the ``webapps`` folder). Consult the `Tomcat documentation <https://tomcat.apache.org/tomcat-8.0-doc/index.html>`_ for more information and options.
+  If you want to run deegree webservices on system startup automatically, consider installing `Apache Tomcat 8 <http://tomcat.apache.org>`_ as a system service. Afterwards, download the WAR version of deegree webservices and deploy it into your Tomcat installation (e.g. by copying the WAR file into the ``webapps`` folder). Consult the `Tomcat documentation <https://tomcat.apache.org/tomcat-8.5-doc/index.html>`_ for more information and options.
 
 .. rubric:: Footnotes
 
