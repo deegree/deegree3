@@ -21,6 +21,20 @@
             </sequence>
           </complexType>
         </element>
+        <element name="SupportedRequests" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element name="SupportedEncodings" type="wms:Encodings" minOccurs="0" />
+              <element name="GetCapabilities" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetMap" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetFeatureInfo" minOccurs="0" type="wms:RequestType"/>
+              <element name="DescribeLayer" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetLegendGraphic" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetFeatureInfoSchema" minOccurs="0" type="wms:RequestType"/>
+              <element name="DTD" minOccurs="0" type="wms:RequestType"/>
+            </sequence>
+          </complexType>
+        </element>
         <element name="UpdateSequence" type="integer" minOccurs="0" />
         <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
         <element name="MetadataStoreId" type="string" minOccurs="0" />
@@ -169,6 +183,24 @@
       <element name="FeatureInfoRadius" type="int" minOccurs="0" />
     </sequence>
   </complexType>
+
+  <complexType name="RequestType">
+    <sequence>
+      <element name="SupportedEncodings" minOccurs="0" type="wms:Encodings" />
+    </sequence>
+  </complexType>
+
+  <simpleType name="Encodings">
+    <list>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="kvp" />
+          <enumeration value="xml" />
+          <enumeration value="soap" />
+        </restriction>
+      </simpleType>
+    </list>
+  </simpleType>
 
   <simpleType name="WMSVersionType">
     <restriction base="string">

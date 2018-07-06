@@ -33,9 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.encoding;
-
-import org.deegree.protocol.wfs.WFSRequestType;
+package org.deegree.services.encoding;
 
 /**
  * Encapsulates informations about supported encodings.
@@ -45,7 +43,7 @@ import org.deegree.protocol.wfs.WFSRequestType;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface SupportedEncodings {
+public interface SupportedEncodings<E extends Enum> {
 
     /**
      * Checks if an encoding is supported by a request type.
@@ -56,6 +54,6 @@ public interface SupportedEncodings {
      *            never <code>null</code>
      * @return <code>true</code> if the passed encoding is supported for the request type, <code>false</code> otherwise
      */
-    boolean isEncodingSupported( WFSRequestType requestType, String encoding );
+    boolean isEncodingSupported( E requestType, String encoding );
 
 }

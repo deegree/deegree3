@@ -114,6 +114,9 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.encoding.LimitedSupportedEncodings;
+import org.deegree.services.encoding.SupportedEncodings;
+import org.deegree.services.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -136,9 +139,6 @@ import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
-import org.deegree.services.wfs.encoding.LimitedSupportedEncodings;
-import org.deegree.services.wfs.encoding.SupportedEncodings;
-import org.deegree.services.wfs.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
@@ -360,7 +360,7 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     private LimitedSupportedEncodings parseEncodingWithSupportedEncodings( List<String> supportedEncodingsForAllRequestTypes ) {
-        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+        LimitedSupportedEncodings<WFSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
         limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
                                                        collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
         limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
@@ -390,7 +390,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private LimitedSupportedEncodings parseEncodingsWithSpecifiedRequestTypes( SupportedRequests supportedRequests,
                                                                                List<String> supportedEncodingsForAllRequestTypes ) {
-        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+        LimitedSupportedEncodings<WFSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
         limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
                                                        collectEnabledEncodings( supportedRequests.getCreateStoredQuery(),
                                                                                 supportedEncodingsForAllRequestTypes ) );

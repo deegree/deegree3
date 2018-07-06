@@ -33,14 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.encoding;
+package org.deegree.services.encoding;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
-import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.services.encoding.LimitedSupportedEncodingsTest.RequestType.CreateStoredQuery;
+import static org.deegree.services.encoding.LimitedSupportedEncodingsTest.RequestType.DescribeFeatureType;
+import static org.deegree.services.encoding.LimitedSupportedEncodingsTest.RequestType.GetCapabilities;
+import static org.deegree.services.encoding.LimitedSupportedEncodingsTest.RequestType.GetFeatureWithLock;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -84,6 +84,10 @@ public class LimitedSupportedEncodingsTest {
         limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
                                                        new HashSet<String>( asList( "kvp", "soap", "xml" ) ) );
         return limitedSupportedEncodings;
+    }
+
+    enum RequestType {
+        GetCapabilities, GetFeatureWithLock, DescribeFeatureType, CreateStoredQuery
     }
 
 }
