@@ -35,25 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -62,11 +49,7 @@ import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.SOAPException;
-import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
-import org.deegree.services.controller.exception.serializer.SOAPExceptionSerializer;
-import org.deegree.services.controller.exception.serializer.SerializerProvider;
-import org.deegree.services.controller.exception.serializer.SerializerProviderInitializer;
-import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.exception.serializer.*;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
@@ -75,8 +58,15 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Each concrete extension of this class is responsible for handling requests to a specific OGC web service (WPS, WMS,
@@ -93,7 +83,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractOWS implements OWS {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractOWS.class );
+    private static final Logger LOG = getLogger( AbstractOWS.class );
 
     protected ResourceMetadata<OWS> metadata;
 

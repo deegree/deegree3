@@ -35,19 +35,20 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.test.services;
 
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.test.services.util.HTTPResponseValidator;
 import org.deegree.test.services.util.HTTPTempFile;
 import org.deegree.test.services.util.XPathAsserter;
 import org.junit.BeforeClass;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.junit.Assert.fail;
 
 /**
  * This is a base class for integration tests of OGC services.
@@ -73,7 +74,7 @@ public abstract class OGCValidator {
 
     private static final String OGCVALIDATOR_PROPERTIES = "ogcvalidator.properties";
 
-    private static final Logger LOG = LoggerFactory.getLogger( OGCValidator.class );
+    private static final Logger LOG = getLogger( OGCValidator.class );
 
     /**
      * The XLink namespace

@@ -35,17 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.rendering.viewer;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

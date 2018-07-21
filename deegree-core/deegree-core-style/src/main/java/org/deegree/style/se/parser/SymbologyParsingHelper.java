@@ -41,16 +41,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.se.parser;
 
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.filter.Expression;
 
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.filter.Expression;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
 
 /**
  * Responsible for parsing common elements in SE files.

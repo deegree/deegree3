@@ -35,30 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static org.deegree.feature.Features.findFeaturesAndGeometries;
-import static org.deegree.feature.i18n.Messages.getMessage;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
-
-import java.io.ByteArrayOutputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -76,11 +53,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.persistence.BBoxTracker;
-import org.deegree.feature.persistence.FeatureInspector;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.*;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
@@ -90,20 +63,12 @@ import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.insert.FeatureRow;
 import org.deegree.feature.persistence.sql.insert.InsertRowManager;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.FeatureMapping;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.*;
 import org.deegree.feature.persistence.transaction.FeatureUpdater;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.IdFilter;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.ResourceId;
+import org.deegree.filter.*;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
@@ -112,8 +77,22 @@ import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
 import org.deegree.protocol.wfs.transaction.action.UpdateAction;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import java.io.ByteArrayOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.feature.Features.findFeaturesAndGeometries;
+import static org.deegree.feature.i18n.Messages.getMessage;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 /**
  * {@link FeatureStoreTransaction} implementation for {@link SQLFeatureStore}.
@@ -126,7 +105,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreTransaction.class );
+    private static final Logger LOG = getLogger( SQLFeatureStoreTransaction.class );
 
     private final SQLFeatureStore fs;
 

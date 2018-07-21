@@ -27,27 +27,17 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.merge;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
-import org.deegree.tile.DefaultTileDataSet;
-import org.deegree.tile.Tile;
-import org.deegree.tile.TileDataLevel;
-import org.deegree.tile.TileDataSet;
-import org.deegree.tile.TileMatrixSet;
+import org.deegree.tile.*;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link TileStore} that wraps other {@link TileStore}s and merges their {@link TileDataSet}s.

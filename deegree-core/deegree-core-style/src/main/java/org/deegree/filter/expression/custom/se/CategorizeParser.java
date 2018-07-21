@@ -41,25 +41,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression.custom.se;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
-import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.Pair;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Continuation;
 
-import java.awt.Color;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.utils.Pair;
-import org.deegree.style.se.parser.SymbologyParser;
-import org.deegree.style.se.unevaluated.Continuation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
+import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
 
 /**
  * Parses categorize expressions.
@@ -71,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 class CategorizeParser {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CategorizeParser.class );
+    private static final Logger LOG = getLogger( CategorizeParser.class );
 
     static Categorize parse( XMLStreamReader in )
                             throws XMLStreamException {

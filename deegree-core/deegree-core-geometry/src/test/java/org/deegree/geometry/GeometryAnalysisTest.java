@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
-import static junit.framework.Assert.assertTrue;
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -47,6 +45,8 @@ import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Basic test for some spatial analyis operations.

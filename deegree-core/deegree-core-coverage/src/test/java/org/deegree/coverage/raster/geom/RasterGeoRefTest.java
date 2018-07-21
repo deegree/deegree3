@@ -38,17 +38,18 @@
 
 package org.deegree.coverage.raster.geom;
 
-import static junit.framework.Assert.assertEquals;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
-import junit.framework.Assert;
-
+import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.junit.Assert;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 
 /**
  * The <code>RasterGeoRefTest</code> class TODO add class documentation here.
@@ -88,12 +89,12 @@ public class RasterGeoRefTest {
     @Test
     public void relocatedOrigin() {
         double[] origin = REF_CENTER.getOrigin( OUTER );
-        Assert.assertEquals( 995., origin[0] );
-        Assert.assertEquals( 1005., origin[1] );
+        Assert.assertEquals( 995., origin[0], MathUtils.EPSILON );
+        Assert.assertEquals( 1005., origin[1], MathUtils.EPSILON );
 
         origin = REF_OUTER.getOrigin( CENTER );
-        Assert.assertEquals( 1005., origin[0] );
-        Assert.assertEquals( 995., origin[1] );
+        Assert.assertEquals( 1005., origin[0], MathUtils.EPSILON );
+        Assert.assertEquals( 995., origin[1], MathUtils.EPSILON );
     }
 
     /**

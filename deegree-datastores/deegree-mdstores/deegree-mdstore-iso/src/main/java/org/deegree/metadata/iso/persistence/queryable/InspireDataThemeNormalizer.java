@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.queryable;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.config.ResourceInitException;
 
 import java.io.IOException;
 import java.util.Properties;
 
-import org.deegree.commons.config.ResourceInitException;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Replaces written codes (as string) with the code number.

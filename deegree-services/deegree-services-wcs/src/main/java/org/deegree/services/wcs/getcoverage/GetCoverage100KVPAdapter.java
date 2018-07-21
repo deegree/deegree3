@@ -35,30 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs.getcoverage;
 
-import static org.deegree.commons.utils.kvp.KVPUtils.getDefault;
-import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
-import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.coverage.rangeset.AxisSubset;
-import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.*;
 import org.deegree.coverage.rangeset.Interval.Closure;
-import org.deegree.coverage.rangeset.RangeSet;
-import org.deegree.coverage.rangeset.SingleValue;
-import org.deegree.coverage.rangeset.ValueType;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -68,6 +52,13 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.protocol.wcs.WCSConstants;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.kvp.KVPUtils.getDefault;
+import static org.deegree.commons.utils.kvp.KVPUtils.getRequired;
+import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
 
 /**
  * This is a kvp adapter for WCS 1.0.0 GetCoverage requests.
@@ -80,7 +71,7 @@ import org.deegree.protocol.wcs.WCSConstants;
  */
 public class GetCoverage100KVPAdapter {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( GetCoverage100KVPAdapter.class );
+    private final static Logger LOG = getLogger( GetCoverage100KVPAdapter.class );
 
     /**
      * WCS accepts additional arbitrary named parameters that define range subsets, so we need to know which keys are

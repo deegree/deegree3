@@ -39,13 +39,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Types;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Time;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Enumeration for discriminating the different primitive types used in deegree's "Typed Object Model".
@@ -80,7 +81,7 @@ public enum BaseType {
     /** Property value is of class {@link Time}. */
     TIME( "time", Time.class );
 
-    private static final Logger LOG = LoggerFactory.getLogger( BaseType.class );
+    private static final Logger LOG = getLogger( BaseType.class );
 
     private String xsTypeName;
 

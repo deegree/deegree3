@@ -35,16 +35,7 @@
 
 package org.deegree.rendering.r2d;
 
-import static java.lang.Math.abs;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.util.LinkedList;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -65,7 +56,15 @@ import org.deegree.style.styling.RasterStyling.ContrastEnhancement;
 import org.deegree.style.styling.Styling;
 import org.deegree.style.utils.Raster2Feature;
 import org.deegree.style.utils.RasterDataUtility;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.util.LinkedList;
+
+import static java.lang.Math.abs;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.math.MathUtils.round;
 
 /**
  * <code>Java2DRasterRenderer</code>

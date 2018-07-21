@@ -35,19 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
-import static java.lang.System.currentTimeMillis;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.RequestLogger;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.RequestLogger;
-import org.slf4j.Logger;
+import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

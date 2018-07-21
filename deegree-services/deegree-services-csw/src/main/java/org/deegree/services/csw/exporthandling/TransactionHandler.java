@@ -35,17 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_PUBLICATION_SCHEMA;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.stax.SchemaLocationXMLStreamWriter;
@@ -58,12 +48,19 @@ import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.TransactionOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.CSWConstants.*;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.transaction.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * Defines the export functionality for a {@link Transaction} request
@@ -75,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TransactionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
+    private static final Logger LOG = getLogger( TransactionHandler.class );
 
     /**
      * 

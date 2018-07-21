@@ -37,7 +37,7 @@ package org.deegree.coverage.raster.io.xyz;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -69,7 +70,6 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.slf4j.Logger;
 
 /**
  * This class implements a simple reader for text raster files.

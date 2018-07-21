@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
 
 import java.util.Arrays;
@@ -47,6 +48,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -100,8 +102,6 @@ import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Various static methods for performing standard tasks on {@link Filter} objects.
@@ -115,7 +115,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Filters {
 
-    private static Logger LOG = LoggerFactory.getLogger( Filters.class );
+    private static Logger LOG = getLogger( Filters.class );
 
     /**
      * Tries to extract a {@link BBOX} constraint from the given {@link Filter} that can be used as a pre-filtering step

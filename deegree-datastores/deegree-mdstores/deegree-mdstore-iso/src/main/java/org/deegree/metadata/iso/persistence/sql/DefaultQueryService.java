@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.StringUtils;
@@ -61,7 +53,15 @@ import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.postgis.PostGISDialect;
-import org.slf4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Executes statements that does the interaction with the underlying database. This is a PostGRES implementation.

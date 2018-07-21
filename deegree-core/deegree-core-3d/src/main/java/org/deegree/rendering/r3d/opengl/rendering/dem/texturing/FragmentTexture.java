@@ -36,15 +36,14 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.GL;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
-import org.slf4j.Logger;
+
+import javax.media.opengl.GL;
+import java.nio.FloatBuffer;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A {@link TextureTile} applied to a {@link RenderMeshFragment}, also wraps OpenGL resources (texture coordinates).

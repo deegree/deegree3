@@ -36,16 +36,16 @@
 
 package org.deegree.services.wpvs.rendering.jogl;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
+import org.deegree.rendering.r3d.opengl.rendering.dem.CompositingShader;
 
 import javax.media.opengl.DebugGL;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
-import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
-import org.deegree.rendering.r3d.opengl.rendering.dem.CompositingShader;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ConfiguredOpenGLInitValues</code> class initializes a GL context with some configured values.

@@ -36,19 +36,19 @@
 
 package org.deegree.rendering.r3d.opengl.display;
 
-import java.awt.Point;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-
-import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.rendering.r3d.opengl.JOGLUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TrackBall</code> pretends that a ball encloses the 3d view. You roll this ball with the mouse. For example,
@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class TrackBall extends MouseAdapter {
-    private final static Logger LOG = LoggerFactory.getLogger( TrackBall.class );
+    private final static Logger LOG = getLogger( TrackBall.class );
 
     private static final float kTOL = 0.01f;
 

@@ -35,34 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.processors;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.annotations.PackageLoggingNotes;
 import org.deegree.commons.utils.io.RollbackPrintWriter;
-import org.slf4j.Logger;
+
+import javax.annotation.processing.*;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import java.io.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>LoggingAnnotationProcessor</code>
@@ -75,7 +64,7 @@ import org.slf4j.Logger;
 
 @SupportedAnnotationTypes(value = { "org.deegree.commons.annotations.PackageLoggingNotes",
                                    "org.deegree.commons.annotations.LoggingNotes" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions({ "log4j.outputdir" })
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
@@ -100,35 +89,35 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
     }
 
     // breaks the lines at max width
-    String format( String str ) {
+    private String format( String str ) {
         StringBuilder res = new StringBuilder();
         outer: while ( str.length() > ( width - 3 ) ) {
             int len = 3;
-            res.append( "## " );
+            res.append( "<!-- " );
             while ( len < width && str.length() > 0 ) {
                 int idx = str.indexOf( " " );
                 if ( idx == -1 ) {
                     if ( len > 3 ) {
-                        res.append( "\n## " );
+                        res.append( "\n<!-- " );
                     }
                     res.append( str );
                     str = "";
                 } else {
                     if ( len + idx + 1 > width ) {
-                        res.append( "\n" );
+                        res.append( " -->\n" );
                         continue outer;
                     }
-                    res.append( str.substring( 0, idx + 1 ) );
-                    str = str.substring( idx + 1 );
+                    res.append(str.substring(0, idx + 1));
+                    str = str.substring(0, idx + 1);
                     len += idx + 1;
                 }
             }
             if ( !str.isEmpty() ) {
-                res.append( "\n" );
+                res.append( " -->\n" );
             }
         }
         if ( !str.isEmpty() ) {
-            res.append( "## " + str );
+            res.append( "<!-- " ).append( str ).append( " -->\n" );
         }
         return res.toString();
     }
@@ -148,17 +137,18 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-    void block( String text, RollbackPrintWriter out, boolean big ) {
+    private void block( String text, RollbackPrintWriter out, boolean big ) {
         if ( big ) {
-            out.print( "# " );
+            out.print( "<!-- " );
             for ( int i = 0; i < width - 2; ++i ) {
                 out.print( "=" );
             }
+            out.print(" -->");
             out.println();
         }
         int odd = text.length() % 2;
         int len = ( width - text.length() - 4 ) / 2;
-        out.print( "# " );
+        out.print( "<!-- " );
         for ( int i = 0; i < len; ++i ) {
             out.print( "=" );
         }
@@ -166,12 +156,14 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
         for ( int i = 0; i < len + odd; ++i ) {
             out.print( "=" );
         }
+        out.print(" -->");
         out.println();
         if ( big ) {
-            out.print( "# " );
+            out.print( "<!-- " );
             for ( int i = 0; i < width - 2; ++i ) {
                 out.print( "=" );
             }
+            out.print(" -->");
             out.println();
         }
         out.println();
@@ -212,9 +204,7 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
             tree.print( out, "", false, false, false, false, true );
             out.close();
             return true;
-        } catch ( UnsupportedEncodingException e ) {
-            e.printStackTrace();
-        } catch ( FileNotFoundException e ) {
+        } catch ( UnsupportedEncodingException | FileNotFoundException e ) {
             e.printStackTrace();
         }
         return false;
@@ -225,17 +215,16 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
 
         LoggingNotes notes;
 
-        TreeMap<String, Tree> children = new TreeMap<String, Tree>();
+        TreeMap<String, Tree> children = new TreeMap<>();
 
         void insert( String qname, PackageLoggingNotes pnotes, LoggingNotes notes ) {
-            LinkedList<String> pkgs = new LinkedList<String>( Arrays.asList( qname.split( "\\." ) ) );
+            LinkedList<String> pkgs = new LinkedList<>( Arrays.asList( qname.split( "\\." ) ) );
             Tree node = this;
             while ( true ) {
                 String next = pkgs.poll();
                 Tree nextNode = node.children.get( next );
                 if ( nextNode == null ) {
                     nextNode = new Tree();
-                    // nextNode.segment = next;
                     node.children.put( next, nextNode );
                 }
                 node = nextNode;
@@ -264,34 +253,38 @@ public class LoggingAnnotationProcessor extends AbstractProcessor {
 
         private void handleNotes( RollbackPrintWriter out, String qname, boolean error, boolean warn, boolean info,
                                   boolean debug, boolean trace ) {
-            handleNote( out, error, notes.error(), qname, "ERROR" );
-            handleNote( out, warn, notes.warn(), qname, "WARN" );
-            handleNote( out, info, notes.info(), qname, "INFO" );
-            handleNote( out, debug, notes.debug(), qname, "DEBUG" );
-            handleNote( out, trace, notes.trace(), qname, "TRACE" );
+            handleNote( out, error, notes.error(), qname, "error" );
+            handleNote( out, warn, notes.warn(), qname, "warn" );
+            handleNote( out, info, notes.info(), qname, "info" );
+            handleNote( out, debug, notes.debug(), qname, "debug" );
+            handleNote( out, trace, notes.trace(), qname, "trace" );
         }
 
         private void handlePackageNotes( RollbackPrintWriter out, String qname, boolean error, boolean warn,
                                          boolean info, boolean debug, boolean trace ) {
             String title = pnotes.title();
 
-            boolean isSubsystem = qname.replaceAll( "[^\\.]", "" ).length() == 2;
+            boolean isSubsystem = qname.replaceAll( "[^.]", "" ).length() == 2;
 
             if ( !title.isEmpty() ) {
                 block( title, out, isSubsystem );
             }
 
-            handleNote( out, error, pnotes.error(), qname, "ERROR" );
-            handleNote( out, warn, pnotes.warn(), qname, "WARN" );
-            handleNote( out, info, pnotes.info(), qname, "INFO" );
-            handleNote( out, debug, pnotes.debug(), qname, "DEBUG" );
-            handleNote( out, trace, pnotes.trace(), qname, "TRACE" );
+            handleNote( out, error, pnotes.error(), qname, "error" );
+            handleNote( out, warn, pnotes.warn(), qname, "warn" );
+            handleNote( out, info, pnotes.info(), qname, "info" );
+            handleNote( out, debug, pnotes.debug(), qname, "debug" );
+            handleNote( out, trace, pnotes.trace(), qname, "trace" );
         }
 
         private void handleNote( RollbackPrintWriter out, boolean level, String note, String qname, String levelName ) {
             if ( !note.isEmpty() && level ) {
                 out.println( format( note ) );
-                out.println( "#log4j.logger." + qname + " = " + levelName );
+                out.println("<!--");
+                out.println("    <Logger name=\"" + qname + "\" level=\"" + levelName + "\">");
+                out.println("        <AppenderRef ref=\"Console\"/>");
+                out.println("    </Logger>");
+                out.println("-->");
                 out.println();
                 out.flush();
             }

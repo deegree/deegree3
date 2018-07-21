@@ -43,13 +43,14 @@ import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.sin;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -57,7 +58,6 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
-import org.slf4j.Logger;
 
 /**
  * The <code>RasterGeoReference</code> defines methods for transformations between a raster crs and a world crs. For

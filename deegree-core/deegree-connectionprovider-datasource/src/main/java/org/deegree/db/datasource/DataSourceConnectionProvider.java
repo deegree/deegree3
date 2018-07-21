@@ -40,20 +40,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.datasource;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
+
+import javax.sql.DataSource;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link ConnectionProvider} based on <code>javax.sql.DataSource</code>.

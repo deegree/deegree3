@@ -35,8 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.multiresolution.MeshFragment;
+import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
+import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
+import org.deegree.rendering.r3d.opengl.JOGLUtils;
+import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
+import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 
+import javax.media.opengl.GL;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -45,15 +52,7 @@ import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.media.opengl.GL;
-
-import org.deegree.rendering.r3d.multiresolution.MeshFragment;
-import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
-import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
-import org.deegree.rendering.r3d.opengl.JOGLUtils;
-import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates a {@link MeshFragment} of a {@link MultiresolutionMesh} that can be rendered via JOGL.

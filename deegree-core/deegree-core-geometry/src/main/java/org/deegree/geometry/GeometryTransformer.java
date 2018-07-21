@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.StringUtils.isSet;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -44,6 +44,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.uom.Length;
 import org.deegree.cs.Transformer;
 import org.deegree.cs.coordinatesystems.CRS;
@@ -111,7 +112,6 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.geometry.standard.points.PointsList;
-import org.slf4j.Logger;
 
 /**
  * 

@@ -35,9 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.inspectors;
 
-import java.sql.SQLException;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.iso.persistence.AbstractISOTest;
 import org.deegree.metadata.iso.persistence.TstConstants;
@@ -47,8 +45,11 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: 30779 $, $Date: 2011-05-11 16:04:22 +0200 (Mi, 11. Mai 2011) $
  */
 public class InspectorIdentifierTest extends AbstractISOTest {
-    private static Logger LOG = LoggerFactory.getLogger( InspectorIdentifierTest.class );
+    private static Logger LOG = getLogger( InspectorIdentifierTest.class );
 
     /**
      * If the fileIdentifier shouldn't be generated automaticaly if not set.

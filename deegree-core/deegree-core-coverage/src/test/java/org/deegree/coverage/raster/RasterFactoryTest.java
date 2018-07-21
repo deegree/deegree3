@@ -40,7 +40,7 @@ package org.deegree.coverage.raster;
 
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.gc;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -62,6 +62,7 @@ import javax.media.jai.RenderedOp;
 
 import junit.framework.Assert;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
@@ -71,7 +72,6 @@ import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.utils.Rasters;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
  * The <code>RasterFactory</code> class TODO add class documentation here.

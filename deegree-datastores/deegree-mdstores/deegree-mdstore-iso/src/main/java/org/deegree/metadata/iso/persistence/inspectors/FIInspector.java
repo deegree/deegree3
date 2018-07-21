@@ -35,20 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.inspectors;
 
-import static org.deegree.protocol.csw.CSWConstants.SDS_NS;
-import static org.deegree.protocol.csw.CSWConstants.SDS_PREFIX;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -58,7 +49,15 @@ import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
 import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.SDS_NS;
+import static org.deegree.protocol.csw.CSWConstants.SDS_PREFIX;
 
 /**
  * Inspects whether the fileIdentifier should be set when inserting a metadata or not and what consequences should

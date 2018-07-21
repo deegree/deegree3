@@ -36,21 +36,7 @@
 
 package org.deegree.feature.persistence.lock;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.feature.i18n.Messages.getMessage;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.DateTime;
@@ -63,8 +49,16 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.filter.FilterEvaluationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.util.Date;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
+import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.feature.i18n.Messages.getMessage;
 
 /**
  * {@link LockManager} implementation that is based on an SQL database.
@@ -80,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultLockManager implements LockManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultLockManager.class );
+    private static final Logger LOG = getLogger( DefaultLockManager.class );
 
     private FeatureStore store;
 

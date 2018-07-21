@@ -40,16 +40,15 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring.bootstrap;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.spring.ApplicationContextHolder;
 import org.deegree.spring.bootstrap.jaxb.BootstrapApplicationContextHolderConfig;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /** 
  * The BootstrapApplicationContextHolderBuilder bootstraps a
@@ -69,7 +68,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
  */
 public class BootstrapApplicationContextHolderBuilder implements ResourceBuilder<ApplicationContextHolder> {
     
-    private static final Logger LOG = LoggerFactory.getLogger( BootstrapApplicationContextHolderBuilder.class );
+    private static final Logger LOG = getLogger( BootstrapApplicationContextHolderBuilder.class );
 
     private final BootstrapApplicationContextHolderMetadata metadata;
 

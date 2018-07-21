@@ -41,8 +41,7 @@
 
 package org.deegree.feature.persistence.simplesql;
 
-import static org.deegree.feature.persistence.simplesql.SimpleSqlFeatureStoreProvider.CONFIG_SCHEMA;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -55,8 +54,9 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.feature.persistence.simplesql.SimpleSqlFeatureStoreProvider.CONFIG_SCHEMA;
 
 /**
  * <code>SimpleSqlFeatureStoreMetadata</code>
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleSqlFeatureStoreMetadata extends AbstractResourceMetadata<FeatureStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SimpleSqlFeatureStoreMetadata.class );
+    private static final Logger LOG = getLogger( SimpleSqlFeatureStoreMetadata.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.simplesql.jaxb";
 

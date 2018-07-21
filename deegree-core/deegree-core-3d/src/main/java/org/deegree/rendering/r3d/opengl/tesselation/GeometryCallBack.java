@@ -36,18 +36,18 @@
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>GeometryCallBack</code> class will be called by the {@link Tesselator} if a {@link SimpleAccessGeometry}
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( GeometryCallBack.class );
+    private final transient static Logger LOG = getLogger( GeometryCallBack.class );
 
     private GLU glu;
 

@@ -36,19 +36,7 @@
 
 package org.deegree.services.wpvs.io.db;
 
-import static org.deegree.services.wpvs.io.ModelBackend.Type.TREE;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -75,8 +63,15 @@ import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;
 import org.deegree.services.wpvs.io.serializer.WROSerializer;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.services.wpvs.io.ModelBackend.Type.TREE;
 
 /**
  * The <code>DBBackend</code> provides methods for connections to the wpvs model in a database.
@@ -262,7 +257,7 @@ public abstract class DBBackend<G> extends ModelBackend<G> {
     private static final String TEST_SQL = "SELECT count( " + RelevantColumns.uuid.getColumnName() + ") FROM "
                                            + __TABLE__ + " WHERE " + RelevantColumns.uuid.getColumnName() + "=?";
 
-    private final static Logger LOG = LoggerFactory.getLogger( DBBackend.class );
+    private final static Logger LOG = getLogger( DBBackend.class );
 
     private final String connectionID;
 

@@ -36,20 +36,8 @@
 
 package org.deegree.services.wps.execute;
 
-import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.process.jaxb.java.ProcessDefinition;
@@ -60,19 +48,21 @@ import org.deegree.protocol.wps.WPSConstants.ExecutionState;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wps.ProcessExecution;
 import org.deegree.services.wps.ProcessletOutputs;
-import org.deegree.services.wps.input.BoundingBoxInput;
-import org.deegree.services.wps.input.ComplexInput;
-import org.deegree.services.wps.input.EmbeddedComplexInput;
-import org.deegree.services.wps.input.LiteralInput;
-import org.deegree.services.wps.input.ProcessletInput;
-import org.deegree.services.wps.input.ReferencedComplexInput;
-import org.deegree.services.wps.output.BoundingBoxOutputImpl;
-import org.deegree.services.wps.output.ComplexOutputImpl;
-import org.deegree.services.wps.output.LiteralOutputImpl;
-import org.deegree.services.wps.output.ProcessletOutput;
-import org.deegree.services.wps.output.ProcessletOutputImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.services.wps.input.*;
+import org.deegree.services.wps.output.*;
+
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
 
 /**
  * Responsible for the generation of WPS ExecuteResponse documents from {@link ExecuteResponse} objects.
@@ -87,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecuteResponseXMLWriter extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExecuteResponseXMLWriter.class );
+    private static final Logger LOG = getLogger( ExecuteResponseXMLWriter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 

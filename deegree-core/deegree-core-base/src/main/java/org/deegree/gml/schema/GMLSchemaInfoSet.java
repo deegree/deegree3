@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSConstants.ELEMENT_DECLARATION;
 import static org.apache.xerces.xs.XSConstants.MODEL_GROUP;
@@ -75,6 +76,7 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeDeclaration;
@@ -102,8 +104,6 @@ import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 
 /**
@@ -133,7 +133,7 @@ import org.w3c.dom.ls.LSInput;
  */
 public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLSchemaInfoSet.class );
+    private static final Logger LOG = getLogger( GMLSchemaInfoSet.class );
 
     private static final String GML_PRE_32_NS = CommonNamespaces.GMLNS;
 

@@ -35,13 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter.expression;
 
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -51,8 +45,14 @@ import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.utils.GeometryParticleConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
 
 /**
  * {@link SQLExpression} that represents a constant argument value, e.g. a string, a number or a geometry.
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLArgument implements SQLExpression {
 
-    private static Logger LOG = LoggerFactory.getLogger( SQLArgument.class );
+    private static Logger LOG = getLogger( SQLArgument.class );
 
     private TypedObjectNode value;
 

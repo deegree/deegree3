@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLVersion.GML_2;
@@ -45,10 +46,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO add class documentation here
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLGeometryVersionHelper {
 
-    private static Logger LOG = LoggerFactory.getLogger( GMLGeometryVersionHelper.class );
+    private static Logger LOG = getLogger( GMLGeometryVersionHelper.class );
 
     public static GMLGeometryReader getGeometryReader( QName elName, XMLStreamReader xmlStream )
                             throws XMLStreamException {

@@ -35,31 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.query.kvp;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.commons.utils.kvp.KVPUtils.getBigInt;
-import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
-import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
-import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
-
-import java.io.StringReader;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
@@ -80,18 +58,34 @@ import org.deegree.protocol.ows.OWSCommonKVPAdapter;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.query.BBoxQuery;
-import org.deegree.protocol.wfs.query.FeatureIdQuery;
-import org.deegree.protocol.wfs.query.FilterQuery;
-import org.deegree.protocol.wfs.query.Query;
-import org.deegree.protocol.wfs.query.StandardPresentationParams;
-import org.deegree.protocol.wfs.query.StoredQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.protocol.wfs.query.*;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.commons.utils.kvp.KVPUtils.getBigInt;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
+import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( QueryKVPAdapter.class );
+    private static final Logger LOG = getLogger( QueryKVPAdapter.class );
 
     protected static StandardPresentationParams parseStandardPresentationParameters100( Map<String, String> kvpUC ) {
 

@@ -38,9 +38,9 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.moveReaderToFirstMatch;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.URL;
 
@@ -48,6 +48,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRSResource;
@@ -55,7 +56,6 @@ import org.deegree.cs.components.PrimeMeridian;
 import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
-import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for prime meridian objects.

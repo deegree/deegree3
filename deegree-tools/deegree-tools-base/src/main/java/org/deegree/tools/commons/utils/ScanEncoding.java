@@ -36,15 +36,15 @@
 
 package org.deegree.tools.commons.utils;
 
-import static org.deegree.commons.utils.EncodingGuesser.guess;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.annotations.Tool;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.deegree.commons.annotations.Tool;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.EncodingGuesser.guess;
 
 /**
  * <code>ScanEncoding</code>

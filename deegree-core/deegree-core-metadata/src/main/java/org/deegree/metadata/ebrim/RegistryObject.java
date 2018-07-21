@@ -35,17 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.ebrim;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -63,7 +54,16 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.metadata.DCRecord;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Base type for all ebRIM {@link MetadataRecord}s.

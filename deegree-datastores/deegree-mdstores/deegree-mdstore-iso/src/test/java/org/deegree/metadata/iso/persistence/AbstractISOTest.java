@@ -35,20 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
-import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
-import static org.deegree.workspace.WorkspaceUtils.activateFromUrl;
-import static org.junit.Assume.assumeNotNull;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.test.TestProperties;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -61,7 +48,20 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Before;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
+import static org.deegree.workspace.WorkspaceUtils.activateFromUrl;
+import static org.junit.Assume.assumeNotNull;
 
 /**
  * TODO add class documentation here

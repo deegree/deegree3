@@ -41,11 +41,12 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.persistence.AbstractCRSStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>XMLFileResource</code> is an {@link OMElement} based adapter for an xml file.
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about initializing the xml file.")
 public abstract class XMLFileResource extends XMLAdapter implements XMLResource {
 
-    private static Logger LOG = LoggerFactory.getLogger( XMLFileResource.class );
+    private static Logger LOG = getLogger( XMLFileResource.class );
 
     private AbstractCRSStore provider = null;
 

@@ -41,17 +41,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
-import java.io.File;
-import java.io.IOException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.BBoxPropertiesCache;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for finding feature store resources.
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 
-    private static Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
+    private static Logger LOG = getLogger( FeatureStoreManager.class );
 
     private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
 

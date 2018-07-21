@@ -35,13 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.mssql;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -56,15 +50,18 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.AbstractSQLDialect;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.mssql.MSSQLGeometryConverter;
 import org.deegree.sqldialect.filter.mssql.MSSQLWhereBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.deegree.sqldialect.AbstractSQLDialect;
+
+import java.sql.*;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link SQLDialect} for Microsoft SQL databases.
@@ -77,7 +74,7 @@ import org.deegree.sqldialect.AbstractSQLDialect;
  */
 public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 
-    private static Logger LOG = LoggerFactory.getLogger( MSSQLDialect.class );
+    private static Logger LOG = getLogger( MSSQLDialect.class );
 
     private final char escapeChar = 0;
 

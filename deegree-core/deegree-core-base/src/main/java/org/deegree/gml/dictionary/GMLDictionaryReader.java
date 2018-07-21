@@ -37,6 +37,7 @@ package org.deegree.gml.dictionary;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +47,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLStdProps;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -53,8 +55,6 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.props.GMLStdPropsReader;
 import org.deegree.gml.reference.GmlDocumentIdContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based reader for GML dictionaries and definitions.
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLDictionaryReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLDictionaryReader.class );
+    private static final Logger LOG = getLogger( GMLDictionaryReader.class );
 
     private final GMLVersion version;
 

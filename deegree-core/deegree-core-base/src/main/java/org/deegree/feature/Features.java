@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.ReferenceResolvingException;
@@ -57,8 +58,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides utility methods for common tasks that involve {@link Feature} and {@link FeatureCollection} objects.
@@ -70,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Features {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Features.class );
+    private static final Logger LOG = getLogger( Features.class );
 
     /**
      * Returns all members of the given {@link FeatureInputStream} as a {@link FeatureCollection}.

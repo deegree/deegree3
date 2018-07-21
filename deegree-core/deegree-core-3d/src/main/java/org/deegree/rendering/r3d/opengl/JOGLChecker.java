@@ -36,10 +36,11 @@
 
 package org.deegree.rendering.r3d.opengl;
 
+import org.apache.logging.log4j.Logger;
+
 import javax.media.opengl.GLCanvas;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Utility class that contains a method for checking that JOGL is installed correctly.
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JOGLChecker {
 
-    private static final Logger LOG = LoggerFactory.getLogger( JOGLChecker.class );
+    private static final Logger LOG = getLogger( JOGLChecker.class );
 
     /**
      * Checks that the JOGL native libraries are available on the system.

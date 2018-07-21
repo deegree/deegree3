@@ -35,11 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.ddl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -53,8 +49,12 @@ import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostGISDDLCreator extends DDLCreator {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISDDLCreator.class );
+    private static Logger LOG = getLogger( PostGISDDLCreator.class );
 
     private final String undefinedSrid;
 

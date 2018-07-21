@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.imageio;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
@@ -55,6 +56,7 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.BandType;
@@ -66,8 +68,6 @@ import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterDataReader;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -98,7 +98,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
     private String format;
 
-    private static Logger LOG = LoggerFactory.getLogger( IIORasterDataReader.class );
+    private static Logger LOG = getLogger( IIORasterDataReader.class );
 
     private ImageReader reader;
 

@@ -35,16 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
-import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.RequestLogger;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.RequestLogger;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.services.controller.FrontControllerStats.incomingKVP;
 
 /**
  * 

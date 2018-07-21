@@ -35,27 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.alkis;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -64,16 +49,21 @@ import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.*;
 import org.deegree.gml.reference.FeatureReference;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLAppSchemaReader;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

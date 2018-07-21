@@ -36,8 +36,6 @@
 
 package org.deegree.cs.coordinatesystems;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -45,6 +43,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -58,7 +57,8 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Three kinds of <code>CoordinateSystem</code>s (in this class abbreviated with CRS) are supported in this lib.

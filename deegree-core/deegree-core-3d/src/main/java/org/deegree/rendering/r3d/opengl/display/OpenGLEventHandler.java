@@ -36,17 +36,8 @@
 
 package org.deegree.rendering.r3d.opengl.display;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.media.opengl.DebugGL;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.glu.GLU;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-
+import com.sun.opengl.util.GLUT;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -55,10 +46,18 @@ import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.JOGLUtils;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.GLUT;
+import javax.media.opengl.DebugGL;
+import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.glu.GLU;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>OpenGLEventHandler</code> class renders a list of DataObjects and handles opengl callback functions
@@ -73,7 +72,7 @@ import com.sun.opengl.util.GLUT;
  */
 public class OpenGLEventHandler implements GLEventListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger( OpenGLEventHandler.class );
+    private final static Logger LOG = getLogger( OpenGLEventHandler.class );
 
     private List<WorldRenderableObject> worldRenderableObjects = new ArrayList<WorldRenderableObject>();
 

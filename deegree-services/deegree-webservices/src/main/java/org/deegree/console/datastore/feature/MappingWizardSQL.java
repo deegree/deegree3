@@ -34,29 +34,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.feature;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.apache.commons.io.FileUtils.readFileToByteArray;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.client.core.utils.SQLExecution;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.FileUtils;
@@ -80,16 +59,32 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.Workspace;
-import org.deegree.workspace.WorkspaceUtils;
+import org.deegree.workspace.*;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.deegree.workspace.standard.IncorporealResourceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.commons.io.FileUtils.readFileToByteArray;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 
 /**
  * JSF bean that helps with creating configurations for the {@link SQLFeatureStore}.
@@ -103,7 +98,7 @@ import org.slf4j.LoggerFactory;
 @SessionScoped
 public class MappingWizardSQL {
 
-    private static transient Logger LOG = LoggerFactory.getLogger( MappingWizardSQL.class );
+    private static transient Logger LOG = getLogger( MappingWizardSQL.class );
 
     private String jdbcId;
 

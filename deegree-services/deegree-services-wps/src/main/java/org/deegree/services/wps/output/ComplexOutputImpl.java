@@ -36,23 +36,14 @@
 
 package org.deegree.services.wps.output;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.services.wps.storage.OutputStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.*;
+import java.io.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Identifies this {@link ProcessletOutput} to be a complex data structure encoded in XML (e.g., using GML), and
@@ -65,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ComplexOutputImpl extends ProcessletOutputImpl implements ComplexOutput {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ComplexOutputImpl.class );
+    private static final Logger LOG = getLogger( ComplexOutputImpl.class );
 
     private static XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 

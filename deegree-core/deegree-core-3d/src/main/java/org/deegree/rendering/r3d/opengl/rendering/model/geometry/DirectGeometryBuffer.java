@@ -36,14 +36,16 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
+import com.sun.opengl.util.BufferUtil;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.memory.AllocatedHeapMemory;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.FloatBuffer;
 
-import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-
-import com.sun.opengl.util.BufferUtil;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>DirectGeometryBuffer</code> encapsulates the directbuffers (coordinate, normals and texture) for all
@@ -56,7 +58,7 @@ import com.sun.opengl.util.BufferUtil;
  */
 public class DirectGeometryBuffer {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( DirectGeometryBuffer.class );
+    private final static Logger LOG = getLogger( DirectGeometryBuffer.class );
 
     private FloatBuffer coordBuffer;
 

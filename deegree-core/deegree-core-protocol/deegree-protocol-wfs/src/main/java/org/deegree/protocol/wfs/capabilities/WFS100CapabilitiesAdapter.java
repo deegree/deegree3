@@ -1,12 +1,7 @@
 package org.deegree.protocol.wfs.capabilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -23,8 +18,13 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link WFSCapabilitiesAdapter} for documents that comply to the <a
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WFS100CapabilitiesAdapter extends XMLAdapter implements WFSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WFS100CapabilitiesAdapter.class );
+    private static final Logger LOG = getLogger( WFS100CapabilitiesAdapter.class );
 
     private static final NamespaceBindings nsContext = new NamespaceBindings();
 

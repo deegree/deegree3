@@ -35,41 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.se.parser;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-import static java.util.Arrays.asList;
-import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
-import static org.deegree.style.se.parser.SymbologyParser.getUOM;
-import static org.deegree.style.styling.components.Mark.SimpleMark.SQUARE;
-import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import javax.imageio.ImageIO;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.utils.DoublePair;
-import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringUtils;
-import org.deegree.commons.utils.Triple;
+import org.deegree.commons.utils.*;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.Feature;
@@ -82,21 +51,38 @@ import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.se.unevaluated.Symbolizer;
-import org.deegree.style.styling.LineStyling;
-import org.deegree.style.styling.PointStyling;
-import org.deegree.style.styling.PolygonStyling;
-import org.deegree.style.styling.Styling;
-import org.deegree.style.styling.TextStyling;
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Font;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.Halo;
-import org.deegree.style.styling.components.LinePlacement;
+import org.deegree.style.styling.*;
+import org.deegree.style.styling.components.*;
 import org.deegree.style.styling.components.Mark.SimpleMark;
-import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineCap;
 import org.deegree.style.styling.components.Stroke.LineJoin;
-import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static java.util.Arrays.asList;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
+import static org.deegree.style.se.parser.SymbologyParser.getUOM;
+import static org.deegree.style.styling.components.Mark.SimpleMark.SQUARE;
+import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
 
 /**
  * <code>PostgreSQLReader</code>

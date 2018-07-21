@@ -36,16 +36,17 @@
 
 package org.deegree.rendering.r3d.model;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.memory.AllocatedHeapMemory;
+import org.deegree.commons.utils.memory.MemoryAware;
+import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.deegree.commons.utils.memory.MemoryAware;
-import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>GeometryQualityModel</code> defines a Quality level of a geometry model.
@@ -66,7 +67,7 @@ public class QualityModel<T extends QualityModelPart> implements Serializable, M
      */
     private static final long serialVersionUID = 9016130832456126790L;
 
-    private transient static Logger LOG = LoggerFactory.getLogger( QualityModel.class );
+    private transient static Logger LOG = getLogger( QualityModel.class );
 
     /**
      * The geometries of this quality model

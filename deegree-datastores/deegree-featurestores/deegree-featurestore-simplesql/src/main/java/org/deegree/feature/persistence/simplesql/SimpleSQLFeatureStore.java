@@ -35,20 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
-import static java.lang.System.currentTimeMillis;
-import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeMap;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.io.ParseException;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -92,9 +80,19 @@ import org.deegree.geometry.io.WKTWriter;
 import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
 
-import com.vividsolutions.jts.io.ParseException;
+import javax.xml.namespace.QName;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeMap;
+
+import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.feature.persistence.query.Query.QueryHint.HINT_SCALE;
 
 /**
  * {@link FeatureStore} implementation that is backed by an SQL database and configured by providing an SQL statement /

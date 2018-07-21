@@ -1,13 +1,7 @@
 package org.deegree.metadata.iso.persistence;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
@@ -32,8 +26,14 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link MetadataStoreTransaction} implementation for the {@link ISOMetadataStore}.
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ISOMetadataStoreTransaction.class );
+    private static final Logger LOG = getLogger( ISOMetadataStoreTransaction.class );
 
     private final List<RecordInspector<ISORecord>> inspectors;
 

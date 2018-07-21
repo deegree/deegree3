@@ -36,36 +36,24 @@
 
 package org.deegree.services.wps.describeprocess;
 
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-
-import java.util.List;
-import java.util.Map;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.process.jaxb.java.*;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.DataType;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.DefaultUOM;
+import org.deegree.process.jaxb.java.LiteralOutputDefinition.OtherUOM;
+import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
+import org.deegree.services.wps.WPSProcess;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.util.List;
+import java.util.Map;
 
-import org.deegree.commons.utils.StringUtils;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
-import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
-import org.deegree.process.jaxb.java.ComplexFormatType;
-import org.deegree.process.jaxb.java.ComplexInputDefinition;
-import org.deegree.process.jaxb.java.ComplexOutputDefinition;
-import org.deegree.process.jaxb.java.LiteralInputDefinition;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition.DataType;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition.DefaultUOM;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition.OtherUOM;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition.Metadata;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
-import org.deegree.process.jaxb.java.Range;
-import org.deegree.process.jaxb.java.ValidValueReference;
-import org.deegree.services.wps.WPSProcess;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 /**
  * Responsible for the generation of WPS ProcessDescription documents (responses to describe process requests).
@@ -78,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DescribeProcessResponseXMLAdapter extends XMLAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( DescribeProcessResponseXMLAdapter.class );
+    private static Logger LOG = getLogger( DescribeProcessResponseXMLAdapter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 

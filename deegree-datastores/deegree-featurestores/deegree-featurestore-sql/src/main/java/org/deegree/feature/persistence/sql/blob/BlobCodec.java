@@ -36,27 +36,9 @@
 
 package org.deegree.feature.persistence.sql.blob;
 
-import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.commons.xml.XMLParsingException;
@@ -66,16 +48,18 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.types.AppSchema;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.gml.*;
 
-import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
-import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides methods for storing / retrieving {@link GMLObject} instances in binary form, e.g. in BLOBs.
@@ -90,7 +74,7 @@ import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
  */
 public class BlobCodec {
 
-    private static final Logger LOG = LoggerFactory.getLogger( BlobCodec.class );
+    private static final Logger LOG = getLogger( BlobCodec.class );
 
     private static final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 

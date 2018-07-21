@@ -35,20 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecords;
 
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.net.URI;
-import java.util.List;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.net.URI;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * Abstract base class encapsulating the parsing an {@link GetRecords} XML request.
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractGetRecordsXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordsXMLAdapter.class );
+    private static final Logger LOG = getLogger( GetRecordsXMLAdapter.class );
 
     /**
      * Parses the {@link GetRecords} XML request by deciding which version has to be parsed because of the requested

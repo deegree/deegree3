@@ -41,22 +41,6 @@
 
 package org.deegree.services.wms;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
@@ -65,6 +49,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+
+import static org.deegree.commons.utils.io.Utils.determineSimilarity;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 
 /**
  * <code>WMSSimilarityIntegrationTest</code>

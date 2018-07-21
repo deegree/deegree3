@@ -41,17 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.theme.persistence.standard;
 
-import static java.util.Collections.singletonList;
-import static org.deegree.theme.Themes.aggregateSpatialMetadata;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.DescriptionConverter;
 import org.deegree.commons.tom.ows.LanguageString;
@@ -73,7 +63,13 @@ import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.util.*;
+import java.util.Map.Entry;
+
+import static java.util.Collections.singletonList;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.theme.Themes.aggregateSpatialMetadata;
 
 /**
  * Builds a {@link StandardTheme} from jaxb config beans.

@@ -38,11 +38,11 @@
 
 package org.deegree.coverage.raster.cache;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ByteBufferPool</code> will be the central place for buffering byte buffers used for rasters. Currently only

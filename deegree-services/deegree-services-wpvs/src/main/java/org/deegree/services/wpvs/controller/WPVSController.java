@@ -36,31 +36,8 @@
 
 package org.deegree.services.wpvs.controller;
 
-import static java.util.Collections.EMPTY_LIST;
-import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_100;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
@@ -100,8 +77,25 @@ import org.deegree.services.wpvs.controller.getview.GetViewResponseParameters;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+
+import static java.util.Collections.EMPTY_LIST;
+import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.wpvs.WPVSConstants.VERSION_100;
 
 /**
  * Implementation of the OpenGIS Web Perspective View Service server protocol.
@@ -119,7 +113,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WPVSController extends AbstractOWS {
 
-    private final static Logger LOG = LoggerFactory.getLogger( WPVSController.class );
+    private final static Logger LOG = getLogger( WPVSController.class );
 
     private PerspectiveViewService service;
 

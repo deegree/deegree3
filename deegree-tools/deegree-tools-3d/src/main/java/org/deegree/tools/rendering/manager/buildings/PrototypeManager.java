@@ -36,15 +36,8 @@
 
 package org.deegree.tools.rendering.manager.buildings;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.FloatBuffer;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
@@ -57,6 +50,16 @@ import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 /**
  * The <code>PrototypeManager</code> class TODO add class documentation here.
  * 
@@ -67,7 +70,7 @@ import org.deegree.services.wpvs.io.ModelBackend.Type;
  */
 public class PrototypeManager extends BuildingManager {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( PrototypeManager.class );
+    private final static Logger LOG = getLogger( PrototypeManager.class );
 
     /**
      * @param modelBackend

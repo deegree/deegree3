@@ -38,10 +38,10 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getSimpleUnboundedAsStrings;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.xml.XMLParsingException;
@@ -67,7 +68,6 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore;
-import org.slf4j.Logger;
 
 /**
  * The parent class of all parsers defines convenience methods common to all StAX based crs parsers as well as reading

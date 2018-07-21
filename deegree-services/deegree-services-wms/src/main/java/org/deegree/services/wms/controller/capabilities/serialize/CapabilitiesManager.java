@@ -35,8 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.serialize;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.workspace.Workspace;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,9 +47,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 
 /**
  * Manages GetCapabilities formats.

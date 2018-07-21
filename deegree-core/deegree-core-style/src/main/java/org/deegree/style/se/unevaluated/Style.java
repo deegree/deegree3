@@ -36,24 +36,7 @@
 
 package org.deegree.style.se.unevaluated;
 
-import static java.awt.Color.black;
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-import static org.deegree.commons.utils.CollectionUtils.unzip;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -65,26 +48,27 @@ import org.deegree.filter.function.geometry.IsPoint;
 import org.deegree.filter.function.geometry.IsSurface;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.multi.MultiCurve;
-import org.deegree.geometry.multi.MultiLineString;
-import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.multi.MultiPolygon;
-import org.deegree.geometry.multi.MultiSurface;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.multi.*;
+import org.deegree.geometry.primitive.*;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Surface;
 import org.deegree.style.se.parser.SymbologyParser.FilterContinuation;
-import org.deegree.style.styling.Copyable;
-import org.deegree.style.styling.LineStyling;
-import org.deegree.style.styling.PointStyling;
-import org.deegree.style.styling.PolygonStyling;
-import org.deegree.style.styling.Styling;
-import org.deegree.style.styling.TextStyling;
+import org.deegree.style.styling.*;
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Stroke;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.awt.*;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
+
+import static java.awt.Color.black;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.CollectionUtils.unzip;
 
 /**
  * <code>Style</code>

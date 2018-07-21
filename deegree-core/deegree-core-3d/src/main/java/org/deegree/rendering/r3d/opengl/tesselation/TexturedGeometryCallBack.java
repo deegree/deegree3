@@ -36,11 +36,12 @@
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r3d.model.geometry.TexturedGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableTexturedGeometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TexturedGeometryCallBack</code> class TODO add class documentation here.
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TexturedGeometryCallBack extends GeometryCallBack {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( TexturedGeometryCallBack.class );
+    private final transient static Logger LOG = getLogger( TexturedGeometryCallBack.class );
 
     /**
      * @param geom

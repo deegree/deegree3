@@ -40,8 +40,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring.bootstrap;
 
-import static org.deegree.spring.bootstrap.BootstrapApplicationContextHolderProvider.CONFIG_SCHEMA;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.spring.ApplicationContextHolder;
 import org.deegree.spring.bootstrap.jaxb.BootstrapApplicationContextHolderConfig;
@@ -52,8 +51,8 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.spring.bootstrap.BootstrapApplicationContextHolderProvider.CONFIG_SCHEMA;
 
 /** 
  * BootstrapApplicationContextHolderMetadata is used as
@@ -67,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BootstrapApplicationContextHolderMetadata extends AbstractResourceMetadata<ApplicationContextHolder> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( BootstrapApplicationContextHolderMetadata.class );
+    private static final Logger LOG = getLogger( BootstrapApplicationContextHolderMetadata.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.spring.bootstrap.jaxb";
 

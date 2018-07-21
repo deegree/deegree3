@@ -35,21 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.authentication;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.logging.log4j.Logger;
 import org.deegree.services.authentication.soapheader.SoapHeader;
 import org.deegree.services.authentication.soapheader.SoapHeaderXMLAdapter;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * SOAP Authentication.
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SOAPAuthentication implements CredentialsProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( SOAPAuthentication.class );
+    private static Logger LOG = getLogger( SOAPAuthentication.class );
 
     /*
      * (non-Javadoc)

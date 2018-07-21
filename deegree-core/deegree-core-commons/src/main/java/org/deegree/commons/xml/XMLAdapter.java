@@ -36,14 +36,17 @@
 
 package org.deegree.commons.xml;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.get;
+import org.apache.axiom.om.*;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.xml.stax.XMLStreamReaderDoc;
+import org.jaxen.JaxenException;
 
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,36 +56,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
+import java.util.*;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.axiom.om.OMAttribute;
-import org.apache.axiom.om.OMContainer;
-import org.apache.axiom.om.OMDocument;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMException;
-import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMText;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.deegree.commons.tom.ows.Version;
-import org.deegree.commons.xml.stax.XMLStreamReaderDoc;
-import org.jaxen.JaxenException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.stream.XMLStreamConstants.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.get;
 
 /**
  * <code>XMLAdapter</code> is the common base class of all hand-written (i.e. not automatically generated) XML parsers
@@ -116,7 +96,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLAdapter.class );
+    private static final Logger LOG = getLogger( XMLAdapter.class );
 
     /**
      * The context

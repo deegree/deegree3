@@ -36,22 +36,18 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.LinkedHashSet;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.RasterAPITextureTileProvider;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureRequest;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileProvider;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileRequest;
-import org.slf4j.Logger;
+import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.*;
+
+import java.util.LinkedHashSet;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Manages the fetching (and caching) of {@link TextureTile} instances from {@link TextureTileProvider}s.

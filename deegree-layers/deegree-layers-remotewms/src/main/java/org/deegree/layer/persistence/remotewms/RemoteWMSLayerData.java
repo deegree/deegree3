@@ -35,11 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.remotewms;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.image.BufferedImage;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -48,7 +44,11 @@ import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.rendering.r2d.context.RenderContext;
-import org.slf4j.Logger;
+
+import java.awt.image.BufferedImage;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

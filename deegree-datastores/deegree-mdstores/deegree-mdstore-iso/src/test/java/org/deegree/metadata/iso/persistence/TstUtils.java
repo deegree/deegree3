@@ -35,19 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TstUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( TstUtils.class );
+    private static Logger LOG = getLogger( TstUtils.class );
 
     public static List<String> insertMetadata( ISOMetadataStore store, URL... URLInput )
                             throws MetadataStoreException, MetadataInspectorException {

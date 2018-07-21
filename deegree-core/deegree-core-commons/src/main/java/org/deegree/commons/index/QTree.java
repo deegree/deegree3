@@ -47,8 +47,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.commons.utils.Pair;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>QTree</code> is a quadtree based organization of a scene containing {@link PositionableModel}s.
@@ -64,7 +67,7 @@ public class QTree<T> extends SpatialIndex<T> implements Serializable {
 
     private static final long serialVersionUID = 4203959065145481646L;
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( QTree.class );
+    private final static Logger LOG = getLogger( QTree.class );
 
     /** the envelope of this tree */
     protected final float[] envelope;

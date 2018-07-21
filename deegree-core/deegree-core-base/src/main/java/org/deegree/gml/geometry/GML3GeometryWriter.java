@@ -36,6 +36,7 @@
 
 package org.deegree.gml.geometry;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.geometry.Geometry.GeometryType.COMPOSITE_GEOMETRY;
 import static org.deegree.geometry.Geometry.GeometryType.ENVELOPE;
@@ -49,6 +50,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
@@ -120,8 +122,6 @@ import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generates GML 3 (3.0/3.1/3.2) representations from {@link Geometry} objects.
@@ -137,7 +137,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryWriter.class );
+    private static final Logger LOG = getLogger( GML3GeometryWriter.class );
 
     private final ICRS outputCRS;
 

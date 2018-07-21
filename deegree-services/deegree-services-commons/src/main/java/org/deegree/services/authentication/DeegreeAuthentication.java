@@ -35,18 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.authentication;
 
-import java.io.IOException;
-import java.util.Map;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.CredentialsProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.util.Map;
 
-import org.apache.axiom.soap.SOAPEnvelope;
-import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.CredentialsProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * deegree Authentication.
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DeegreeAuthentication implements CredentialsProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( DeegreeAuthentication.class );
+    private static Logger LOG = getLogger( DeegreeAuthentication.class );
 
     @Override
     public Credentials doKVP( Map<String, String> normalizedKVPParams, HttpServletRequest req,

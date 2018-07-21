@@ -35,22 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.io;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.nio.DirectByteBufferPool;
+import org.deegree.commons.utils.nio.PooledByteBuffer;
+import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+import java.nio.*;
 import java.nio.channels.FileChannel;
 
-import org.deegree.commons.utils.nio.DirectByteBufferPool;
-import org.deegree.commons.utils.nio.PooledByteBuffer;
-import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class opens a channel to a file containing meshfragments.
@@ -62,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MeshFragmentDataReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
+    private static final Logger LOG = getLogger( MeshFragmentDataReader.class );
 
     private final DirectByteBufferPool bufferPool;
 

@@ -37,6 +37,7 @@ package org.deegree.filter.expression;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XPathUtils;
@@ -50,8 +51,8 @@ import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
 import org.jaxen.saxpath.Axis;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link Expression} that contains an XPath 1.0 expression, a simple property name or an arbitrary identifier. Before
@@ -72,7 +73,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ValueReference implements Expression {
 
-    private static Logger LOG = LoggerFactory.getLogger( ValueReference.class );
+    private static Logger LOG = getLogger( ValueReference.class );
 
     private NamespaceBindings bindings = new NamespaceBindings();
 

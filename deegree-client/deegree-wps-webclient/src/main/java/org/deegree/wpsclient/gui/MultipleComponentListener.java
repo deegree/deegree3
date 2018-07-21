@@ -35,11 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.wpsclient.gui;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.logging.log4j.Logger;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
@@ -47,8 +43,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

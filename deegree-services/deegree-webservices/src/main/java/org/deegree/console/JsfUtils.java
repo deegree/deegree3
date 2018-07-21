@@ -34,15 +34,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.Workspace;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Static utility methods for JSF stuff.
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JsfUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( JsfUtils.class );
+    private static Logger LOG = getLogger( JsfUtils.class );
 
     /**
      * Returns the active {@link Workspace}.

@@ -35,14 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.id.IdAnalysis;
@@ -53,8 +46,11 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.table.RelationalModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * An {@link AppSchema} augmented with relational and / or BLOB mapping information.
@@ -66,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MappedAppSchema extends GenericAppSchema {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MappedAppSchema.class );
+    private static final Logger LOG = getLogger( MappedAppSchema.class );
 
     private final BBoxTableMapping bboxMapping;
 

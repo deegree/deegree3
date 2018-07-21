@@ -35,21 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.resources;
 
-import static org.h2.util.IOUtils.copyAndClose;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.services.controller.OGCFrontController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.services.controller.OGCFrontController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.h2.util.IOUtils.copyAndClose;
 
 /**
  * Provides access to service-related resources stored in the active workspace, e.g. XML schema files.
@@ -62,7 +61,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "logs resource requests")
 public class ResourcesServlet extends HttpServlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ResourcesServlet.class );
+    private static final Logger LOG = getLogger( ResourcesServlet.class );
 
     private static final long serialVersionUID = -2072170206703402474L;
 

@@ -39,8 +39,8 @@
 package org.deegree.coverage.raster.cache;
 
 import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.cache.RasterCache.FILE_EXTENSION;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -64,7 +65,6 @@ import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.coverage.raster.io.grid.GridWriter;
 import org.deegree.coverage.raster.utils.Rasters;
-import org.slf4j.Logger;
 
 /**
  * The <code>CacheRasterReader</code> is a grid based caching mechanism for raster readers.

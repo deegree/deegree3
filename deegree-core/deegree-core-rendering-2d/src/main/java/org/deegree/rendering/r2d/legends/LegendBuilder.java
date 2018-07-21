@@ -41,19 +41,7 @@
 
 package org.deegree.rendering.r2d.legends;
 
-import static java.lang.Math.max;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -61,7 +49,18 @@ import org.deegree.rendering.r2d.Java2DRasterRenderer;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.Java2DTextRenderer;
 import org.deegree.style.se.unevaluated.Style;
-import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
+import static java.lang.Math.max;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for building legend models.

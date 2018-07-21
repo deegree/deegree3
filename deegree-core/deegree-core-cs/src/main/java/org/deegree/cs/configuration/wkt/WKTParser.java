@@ -36,6 +36,7 @@
 
 package org.deegree.cs.configuration.wkt;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.projections.SupportedProjectionParameters.FALSE_EASTING;
 import static org.deegree.cs.projections.SupportedProjectionParameters.FALSE_NORTHING;
 import static org.deegree.cs.projections.SupportedProjectionParameters.FIRST_PARALLEL_LATITUDE;
@@ -44,7 +45,6 @@ import static org.deegree.cs.projections.SupportedProjectionParameters.LONGITUDE
 import static org.deegree.cs.projections.SupportedProjectionParameters.SCALE_AT_NATURAL_ORIGIN;
 import static org.deegree.cs.projections.SupportedProjectionParameters.SECOND_PARALLEL_LATITUDE;
 import static org.deegree.cs.utilities.ProjectionUtils.DTR;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,6 +61,7 @@ import java.util.Map;
 
 import javax.vecmath.Point2d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -88,7 +89,6 @@ import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.slf4j.Logger;
 
 /**
  * The <code>WKTParser</code> class instantiates the Coordinate System given in a file, in WKT (Well Known Text) format.

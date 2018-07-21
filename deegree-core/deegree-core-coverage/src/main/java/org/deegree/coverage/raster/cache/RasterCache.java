@@ -38,8 +38,6 @@
 
 package org.deegree.coverage.raster.cache;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -50,13 +48,15 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RasterCache</code> holds references {@link CacheRasterReader} which wrap other RasterReaders. This Cache

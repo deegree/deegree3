@@ -36,34 +36,23 @@
 
 package org.deegree.services.wpvs.controller.capabilities;
 
-import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.ows.metadata.OperationsMetadata;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
+import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
+import org.deegree.services.jaxb.metadata.ServiceProviderType;
+import org.deegree.services.jaxb.wpvs.*;
+import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.deegree.commons.ows.metadata.OperationsMetadata;
-import org.deegree.commons.tom.ows.Version;
-import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
-import org.deegree.services.jaxb.controller.DCPType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.deegree.services.jaxb.wpvs.AbstractDataType;
-import org.deegree.services.jaxb.wpvs.ColormapDatasetConfig;
-import org.deegree.services.jaxb.wpvs.DEMDatasetConfig;
-import org.deegree.services.jaxb.wpvs.DEMTextureDatasetConfig;
-import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
-import org.deegree.services.jaxb.wpvs.RenderableDatasetConfig;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
-import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
 
 /**
  * The <code>CapabilitiesXMLAdapter</code> class exports the capabilities of a wpvs.
@@ -75,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CapabilitiesXMLAdapter extends OWSCapabilitiesXMLAdapter {
 
-    private final static Logger LOG = LoggerFactory.getLogger( CapabilitiesXMLAdapter.class );
+    private final static Logger LOG = getLogger( CapabilitiesXMLAdapter.class );
 
     private static final String WPVS_NS = "http://www.opengis.net/wpvs/1.0.0-pre";
 

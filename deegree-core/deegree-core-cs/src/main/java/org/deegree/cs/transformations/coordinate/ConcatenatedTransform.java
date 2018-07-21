@@ -36,13 +36,12 @@
 
 package org.deegree.cs.transformations.coordinate;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.List;
 
 import javax.vecmath.GMatrix;
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -50,7 +49,8 @@ import org.deegree.cs.CRSResource;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ConcatenatedTransform</code> class allows the connection of two transformations.

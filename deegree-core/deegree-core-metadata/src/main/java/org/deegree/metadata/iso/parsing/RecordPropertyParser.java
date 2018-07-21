@@ -35,26 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.parsing;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
-import static org.deegree.protocol.csw.CSWConstants.SDS_NS;
-import static org.deegree.protocol.csw.CSWConstants.SDS_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.SRV_NS;
-import static org.deegree.protocol.csw.CSWConstants.SRV_PREFIX;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -63,7 +47,19 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.types.CRS;
 import org.deegree.metadata.iso.types.Format;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * Parsing regarding to ISO and DC application profile. Here the input XML document is parsed into its parts. So this is

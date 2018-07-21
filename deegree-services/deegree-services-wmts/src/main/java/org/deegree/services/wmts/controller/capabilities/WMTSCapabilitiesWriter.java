@@ -40,15 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller.capabilities;
 
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -70,8 +62,15 @@ import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.theme.Theme;
 import org.deegree.tile.TileMatrix;
 import org.deegree.tile.TileMatrixSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 
 /**
  * <code>WMTSCapabilitiesWriter</code>
@@ -83,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WMTSCapabilitiesWriter extends OWSCapabilitiesXMLAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( WMTSCapabilitiesWriter.class );
+    private static Logger LOG = getLogger( WMTSCapabilitiesWriter.class );
 
     static final String WMTSNS = "http://www.opengis.net/wmts/1.0";
 

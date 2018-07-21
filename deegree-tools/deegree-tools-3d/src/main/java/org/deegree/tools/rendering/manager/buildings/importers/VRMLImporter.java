@@ -36,12 +36,24 @@
 
 package org.deegree.tools.rendering.manager.buildings.importers;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorGLColor;
+import com.sun.j3d.loaders.Scene;
+import com.sun.j3d.utils.geometry.GeometryInfo;
+import com.sun.j3d.utils.geometry.NormalGenerator;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.math.MathUtils;
+import org.deegree.commons.utils.math.Vectors3d;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.*;
+import org.jdesktop.j3d.loaders.vrml97.VrmlLoader;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import javax.imageio.ImageIO;
+import javax.media.j3d.*;
+import javax.media.opengl.GL;
+import javax.vecmath.*;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -50,58 +62,13 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Background;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Geometry;
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.Group;
-import javax.media.j3d.ImageComponent;
-import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.Leaf;
-import javax.media.j3d.LineStripArray;
-import javax.media.j3d.Material;
-import javax.media.j3d.Node;
-import javax.media.j3d.QuadArray;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Texture;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.TriangleArray;
-import javax.media.j3d.TriangleFanArray;
-import javax.media.j3d.TriangleStripArray;
-import javax.media.opengl.GL;
-import javax.vecmath.AxisAngle4d;
-import javax.vecmath.Color3f;
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.math.MathUtils;
-import org.deegree.commons.utils.math.Vectors3d;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModelPart;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableTexturedGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.jdesktop.j3d.loaders.vrml97.VrmlLoader;
-
-import com.sun.j3d.loaders.Scene;
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorGLColor;
 
 /**
  * The <code>J3DToCityGMLExporter</code> exports a J3D scene to citygml level 1.
@@ -113,7 +80,7 @@ import com.sun.j3d.utils.geometry.NormalGenerator;
  */
 public class VRMLImporter implements ModelImporter {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( VRMLImporter.class );
+    private final static Logger LOG = getLogger( VRMLImporter.class );
 
     /** Key for the rotation angle key, 4 comma separated values, x,y,z,a */
     public static final String ROT_ANGLE = "rotationAngle";

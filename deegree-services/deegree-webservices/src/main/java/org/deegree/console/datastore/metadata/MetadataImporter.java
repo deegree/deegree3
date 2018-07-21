@@ -35,20 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.datastore.metadata;
 
-import static java.util.Collections.singletonList;
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -56,8 +43,20 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -71,7 +70,7 @@ import org.slf4j.LoggerFactory;
 @RequestScoped
 public class MetadataImporter implements Serializable {
 
-    private static Logger LOG = LoggerFactory.getLogger( MetadataImporter.class );
+    private static Logger LOG = getLogger( MetadataImporter.class );
 
     private static final long serialVersionUID = -1896633353209120888L;
 

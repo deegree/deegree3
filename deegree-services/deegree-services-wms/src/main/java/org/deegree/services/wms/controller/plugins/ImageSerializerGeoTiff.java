@@ -42,20 +42,20 @@
 
 package org.deegree.services.wms.controller.plugins;
 
-import static javax.imageio.ImageIO.write;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.create;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffWriter;
 import org.deegree.rendering.r2d.ImageSerializer;
 import org.deegree.rendering.r2d.context.RenderingInfo;
-import org.slf4j.Logger;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import static javax.imageio.ImageIO.write;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.create;
 
 /**
  * <code>ImageSerializerGeoTiff</code>

@@ -36,21 +36,19 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
-import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorIntAsFloats;
-
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.GL;
-
+import com.sun.opengl.util.BufferUtil;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.BufferUtil;
+import javax.media.opengl.GL;
+import java.nio.FloatBuffer;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.rendering.r3d.opengl.JOGLUtils.convertColorIntAsFloats;
 
 /**
  * The <code>RenderableGeometry</code> class uses VertexArrays to render the coordinates of it's geometry in an openGL
@@ -76,7 +74,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
      */
     private static final long serialVersionUID = -7536310565460231026L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( RenderableGeometry.class );
+    private final static Logger LOG = getLogger( RenderableGeometry.class );
 
     // have a look at GL class.
     private transient int openGLType;

@@ -35,14 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.SampleResolution;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Information about the (native) resolutions of a coverage.

@@ -36,13 +36,14 @@
 
 package org.deegree.services.wps.storage;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.services.wps.ExecutionManager;
+
 import java.io.File;
 import java.io.IOException;
 
-import org.deegree.commons.utils.io.StreamBufferStore;
-import org.deegree.services.wps.ExecutionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides storage locations for process response documents and outputs (and sinks for complex inputs).
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StorageManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StorageManager.class );
+    private static final Logger LOG = getLogger( StorageManager.class );
 
     private File baseDir;
 

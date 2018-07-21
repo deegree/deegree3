@@ -35,36 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.COMMENT;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElement;
-
-import java.io.IOException;
-import java.util.Iterator;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.gml.GMLStreamWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import java.io.IOException;
+import java.util.Iterator;
+
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static javax.xml.stream.XMLStreamConstants.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipToRequiredElement;
 
 /**
  * <code>XMLStreamWriter</code> wrapper that pipes through all events by default, but can be switched to a buffer during
@@ -77,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BufferableXMLStreamWriter implements XMLStreamWriter {
 
-    private static Logger LOG = LoggerFactory.getLogger( BufferableXMLStreamWriter.class );
+    private static Logger LOG = getLogger( BufferableXMLStreamWriter.class );
 
     private static final int MEMORY_BUFFER_SIZE_IN_BYTES = 10 * 1024 * 1024;
 

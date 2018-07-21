@@ -35,18 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.postgis;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.commons.utils.JDBCUtils.determinePostGISVersion;
+import org.apache.logging.log4j.Logger;
+import org.deegree.db.dialect.SqlDialectProvider;
+import org.deegree.sqldialect.SQLDialect;
+import org.deegree.workspace.ResourceInitException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.deegree.db.dialect.SqlDialectProvider;
-import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.ResourceInitException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.utils.JDBCUtils.determinePostGISVersion;
 
 /**
  * {@link SqlDialectProvider} for PostGIS-enabled PostgreSQL databases.
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostGISDialectProvider implements SqlDialectProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISDialectProvider.class );
+    private static Logger LOG = getLogger( PostGISDialectProvider.class );
 
     @Override
     public boolean supportsConnection( final Connection connection ) {

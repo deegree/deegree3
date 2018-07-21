@@ -38,18 +38,18 @@
 
 package org.deegree.coverage.raster.data.nio;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>BufferAccess</code> glue between the databuffer and the reader (which has access to the real data).

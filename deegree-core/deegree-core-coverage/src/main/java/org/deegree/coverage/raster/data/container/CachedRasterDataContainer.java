@@ -41,11 +41,12 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.io.RasterDataReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class implements a cached RasterDataContainer.
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
-    private final static Logger LOG = LoggerFactory.getLogger( CachedRasterDataContainer.class );
+    private final static Logger LOG = getLogger( CachedRasterDataContainer.class );
 
     private RasterDataReader reader;
 

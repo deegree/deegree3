@@ -40,17 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.deegree.filter.Filters.addBBoxConstraint;
-import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
-import static org.deegree.style.utils.Styles.getStyleFilters;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
@@ -67,7 +57,16 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.Styles;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.filter.Filters.addBBoxConstraint;
+import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
+import static org.deegree.style.utils.Styles.getStyleFilters;
 
 /**
  * 

@@ -34,17 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml;
 
-import static java.lang.Integer.MAX_VALUE;
-import static org.apache.commons.lang.StringUtils.trim;
-import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.geometry.SFSProfiler;
@@ -68,8 +58,17 @@ import org.deegree.services.wfs.format.gml.request.GmlGetFeatureHandler;
 import org.deegree.services.wfs.format.gml.request.GmlGetGmlObjectHandler;
 import org.deegree.services.wfs.format.gml.request.GmlGetPropertyValueHandler;
 import org.deegree.workspace.ResourceInitException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.util.List;
+
+import static java.lang.Integer.MAX_VALUE;
+import static org.apache.commons.lang.StringUtils.trim;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 /**
  * Default {@link Format} implementation that can handle GML 2/3.0/3.1/3.2 and the specific requirements for WFS 2.0
@@ -91,7 +90,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GmlFormat implements Format {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlFormat.class );
+    private static final Logger LOG = getLogger( GmlFormat.class );
 
     private final WebFeatureService master;
 

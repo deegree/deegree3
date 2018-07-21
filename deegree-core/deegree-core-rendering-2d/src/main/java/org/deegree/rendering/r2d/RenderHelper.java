@@ -36,22 +36,7 @@
 
 package org.deegree.rendering.r2d;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.abs;
-import static java.lang.Math.acos;
-import static java.lang.Math.cos;
-import static java.lang.Math.max;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static org.deegree.cs.CRSUtils.EPSG_4326;
-import static org.deegree.cs.components.Axis.AO_EAST;
-import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
-import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.MapUtils;
@@ -63,7 +48,16 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.UOM;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+
+import static java.lang.Math.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.cs.CRSUtils.EPSG_4326;
+import static org.deegree.cs.components.Axis.AO_EAST;
+import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
+import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 
 /**
  * <code>RenderHelper</code>

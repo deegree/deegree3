@@ -37,6 +37,7 @@ package org.deegree.commons.xml.schema;
 
 import static java.util.Collections.emptyList;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_EXTENSION;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_LIST;
 import static org.apache.xerces.xs.XSConstants.DERIVATION_RESTRICTION;
@@ -62,6 +63,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.impl.xs.util.StringListImpl;
 import org.apache.xerces.xs.StringList;
@@ -75,8 +77,6 @@ import org.apache.xerces.xs.XSNamespaceItemList;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.GenericLSInput;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMError;
 import org.w3c.dom.DOMErrorHandler;
@@ -98,7 +98,7 @@ import org.w3c.dom.ls.LSInput;
  */
 public class XMLSchemaInfoSet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLSchemaInfoSet.class );
+    private static final Logger LOG = getLogger( XMLSchemaInfoSet.class );
 
     /** The Xerces schema model. */
     protected final XSModel xsModel;

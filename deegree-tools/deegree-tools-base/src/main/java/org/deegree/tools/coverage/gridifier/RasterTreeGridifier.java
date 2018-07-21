@@ -36,30 +36,10 @@
 
 package org.deegree.tools.coverage.gridifier;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.Tool;
+import org.deegree.commons.tools.CommandUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -70,19 +50,29 @@ import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.coverage.tools.RasterOptionsParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.commons.tools.CommandUtils;
 import org.deegree.tools.coverage.gridifier.index.MultiLevelMemoryTileGridIndex;
 import org.deegree.tools.coverage.gridifier.index.MultiLevelRasterTileIndex;
 import org.deegree.tools.coverage.gridifier.index.MultiResolutionTileGrid;
 import org.deegree.tools.coverage.gridifier.index.TileFile;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Command line tool for converting a raster tree into a grid of regular, non-overlapping raster cells.
@@ -94,7 +84,7 @@ import org.deegree.tools.coverage.gridifier.index.TileFile;
  */
 @Tool("Converts a deegree 2 raster tree into a grid of regular, non-overlapping raster cells encoded as raw RGB blobs, suitable for the WPVS.")
 public class RasterTreeGridifier {
-    final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterTreeGridifier.class );
+    final static Logger LOG = getLogger( RasterTreeGridifier.class );
 
     // private static final String OPT_INPUT_DIR = "inputdir";
 

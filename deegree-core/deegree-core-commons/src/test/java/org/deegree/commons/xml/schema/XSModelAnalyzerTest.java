@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -50,8 +52,6 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests for the {@link XMLSchemaInfoSet}.
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XSModelAnalyzerTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( XSModelAnalyzerTest.class );
+    private static Logger LOG = getLogger( XSModelAnalyzerTest.class );
 
     /**
      * Check the correct determining of substitutable elements.

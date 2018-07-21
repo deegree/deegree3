@@ -38,6 +38,7 @@ package org.deegree.filter.spatial;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
@@ -49,8 +50,8 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Defines a topological predicate that can be evaluated on {@link Geometry} valued objects.
@@ -62,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SpatialOperator implements Operator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SpatialOperator.class );
+    private static final Logger LOG = getLogger( SpatialOperator.class );
 
     private final Map<String, Geometry> srsNameToTransformedGeometry = new HashMap<String, Geometry>();
 

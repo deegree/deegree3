@@ -35,18 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.alkis;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Set;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Keeps track of {@link GMLObject} references that have to be included in a {@link GetFeature} response.
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 class XlinkedObjectsHandler implements GmlXlinkStrategy {
 
-    private static Logger LOG = LoggerFactory.getLogger( XlinkedObjectsHandler.class );
+    private static Logger LOG = getLogger( XlinkedObjectsHandler.class );
 
     private LinkedHashMap<String, GMLReference<?>> objectIdToRef = new LinkedHashMap<String, GMLReference<?>>();
 

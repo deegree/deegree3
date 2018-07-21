@@ -41,21 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.se.parser;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.style.styling.components.Stroke.LineCap.BUTT;
-import static org.deegree.style.styling.components.Stroke.LineJoin.ROUND;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.filter.XPathEvaluator;
@@ -65,7 +51,20 @@ import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineCap;
 import org.deegree.style.styling.components.Stroke.LineJoin;
-import org.slf4j.Logger;
+
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
+
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.style.styling.components.Stroke.LineCap.BUTT;
+import static org.deegree.style.styling.components.Stroke.LineJoin.ROUND;
 
 /**
  * Responsible for parsing all Stroke related parts.

@@ -48,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.dom.DOMInputImpl;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.parsers.XIncludeAwareParserConfiguration;
@@ -59,9 +60,9 @@ import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.apache.xerces.xs.LSInputList;
 import org.deegree.commons.proxy.ProxySettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides utility methods for the easy validation of XML instance documents against XML schemas and for the validation
@@ -85,7 +86,7 @@ import org.w3c.dom.ls.LSInput;
  */
 public class SchemaValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SchemaValidator.class );
+    private static final Logger LOG = getLogger( SchemaValidator.class );
 
     /** Namespaces feature id (http://xml.org/sax/features/namespaces). */
     private static final String NAMESPACES_FEATURE_ID = "http://xml.org/sax/features/namespaces";

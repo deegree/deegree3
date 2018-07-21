@@ -35,30 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.ebrim.eo;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.SLOTURN;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.ACQUPLATFORM;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.ARCHIVINGINFO;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.BROWSEINFO;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.DATALAYER;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.MASKINFO;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.PRODUCT;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.PRODUCTINFO;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
+import com.vividsolutions.jts.io.ParseException;
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -68,14 +47,7 @@ import org.deegree.filter.OperatorFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.metadata.MetadataRecord;
-import org.deegree.metadata.ebrim.AliasedRIMType;
-import org.deegree.metadata.ebrim.Association;
-import org.deegree.metadata.ebrim.Classification;
-import org.deegree.metadata.ebrim.ClassificationNode;
-import org.deegree.metadata.ebrim.ExtrinsicObject;
-import org.deegree.metadata.ebrim.RIMType;
-import org.deegree.metadata.ebrim.RegistryObject;
-import org.deegree.metadata.ebrim.RegistryPackage;
+import org.deegree.metadata.ebrim.*;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.EOPropertyNameMapper;
@@ -90,10 +62,19 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.io.ParseException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.EOTYPE.*;
+import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.SLOTURN;
 
 /**
  * {@link MetadataStoreTransaction} implementation for the {@link EbrimEOMDStore}.
@@ -105,7 +86,7 @@ import com.vividsolutions.jts.io.ParseException;
  */
 public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( EbrimEOMDStoreTransaction.class );
+    private static final Logger LOG = getLogger( EbrimEOMDStoreTransaction.class );
 
     private final Connection conn;
 

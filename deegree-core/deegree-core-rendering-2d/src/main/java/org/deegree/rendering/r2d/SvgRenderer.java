@@ -41,13 +41,16 @@
 
 package org.deegree.rendering.r2d;
 
-import static javax.media.jai.JAI.create;
-import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
-import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.slf4j.LoggerFactory.getLogger;
+import com.sun.media.jai.codec.MemoryCacheSeekableStream;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.ComparablePair;
+import org.deegree.style.styling.components.Graphic;
 
+import javax.media.jai.RenderedOp;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -57,17 +60,12 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.media.jai.RenderedOp;
-
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.deegree.commons.utils.ComparablePair;
-import org.deegree.style.styling.components.Graphic;
-import org.slf4j.Logger;
-
-import com.sun.media.jai.codec.MemoryCacheSeekableStream;
+import static javax.media.jai.JAI.create;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
+import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.math.MathUtils.round;
 
 /**
  * Renders svg images onto buffered images.

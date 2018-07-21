@@ -43,6 +43,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -50,8 +51,8 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IIORasterWriter implements RasterWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( IIORasterWriter.class );
+    private static final Logger LOG = getLogger( IIORasterWriter.class );
 
     private static final Set<String> SUPPORTED_TYPES;
 

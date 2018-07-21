@@ -36,14 +36,15 @@
 
 package org.deegree.commons.utils.nio;
 
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>DirectByteBufferPool</code> pools a number of direct 'native' bytebuffers so they can be reused.
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DirectByteBufferPool {
 
-    private static Logger LOG = LoggerFactory.getLogger( DirectByteBufferPool.class );
+    private static Logger LOG = getLogger( DirectByteBufferPool.class );
 
     private final int MAX_MEMORY_CAPACITY;
 

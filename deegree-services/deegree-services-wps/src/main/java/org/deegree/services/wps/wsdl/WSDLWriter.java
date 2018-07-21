@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.wsdl;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.copy;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -51,9 +43,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copy;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * JAX-RS {@link MessageBodyWriter} for {@link WSDL} instances.
@@ -67,7 +66,7 @@ import org.slf4j.LoggerFactory;
 @Produces("text/xml")
 public class WSDLWriter implements MessageBodyWriter<WSDL> {
 
-    private static Logger LOG = LoggerFactory.getLogger( WSDLWriter.class );
+    private static Logger LOG = getLogger( WSDLWriter.class );
 
     @Override
     public boolean isWriteable( Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {

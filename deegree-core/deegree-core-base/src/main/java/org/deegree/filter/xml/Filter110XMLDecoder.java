@@ -39,6 +39,7 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
@@ -61,6 +62,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -122,8 +124,6 @@ import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Decodes XML fragments that comply to the <a href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding
@@ -136,7 +136,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Filter110XMLDecoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLDecoder.class );
+    private static final Logger LOG = getLogger( Filter110XMLDecoder.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 

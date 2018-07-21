@@ -35,42 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
-import static java.math.BigInteger.ZERO;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_PROCESSING_FAILED;
-import static org.deegree.commons.ows.exception.OWSException.OPTION_NOT_SUPPORTED;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.writeNamespaceIfNotBound;
-import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_100_BASIC_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.datetime.DateTime;
@@ -110,8 +75,28 @@ import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.deegree.services.wfs.util.ResponsePagingUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.util.*;
+
+import static java.math.BigInteger.ZERO;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.*;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.writeNamespaceIfNotBound;
+import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.wfs.WFSConstants.*;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 /**
  * Handles {@link GetFeature} and {@link GetFeatureWithLock} requests for the {@link GmlFormat}.
@@ -124,7 +109,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlGetFeatureHandler.class );
+    private static final Logger LOG = getLogger( GmlGetFeatureHandler.class );
 
     /**
      * Creates a new {@link GmlGetFeatureHandler} instance.

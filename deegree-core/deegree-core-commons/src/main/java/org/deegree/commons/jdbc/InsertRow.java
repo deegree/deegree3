@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.JDBCUtils.close;
 
 import java.sql.Connection;
@@ -45,10 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.sql.ParticleConversion;
-import org.deegree.commons.utils.JDBCUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates columns and values for inserting one row into a database table.
@@ -60,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InsertRow extends TransactionRow {
 
-    private static Logger LOG = LoggerFactory.getLogger( InsertRow.class );
+    private static Logger LOG = getLogger( InsertRow.class );
 
     protected final Map<SQLIdentifier, Object> columnToAutoKey = new HashMap<SQLIdentifier, Object>();
 

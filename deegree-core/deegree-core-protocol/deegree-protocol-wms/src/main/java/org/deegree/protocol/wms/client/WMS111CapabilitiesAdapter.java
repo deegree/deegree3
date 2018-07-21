@@ -35,19 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.client;
 
-import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
-import static org.deegree.protocol.i18n.Messages.get;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
+import static org.deegree.protocol.i18n.Messages.get;
 
 /**
  * {@link WMS111CapabilitiesAdapter} for documents that comply to the <a
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WMS111CapabilitiesAdapter extends WMSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMS111CapabilitiesAdapter.class );
+    private static final Logger LOG = getLogger( WMS111CapabilitiesAdapter.class );
 
     /**
      * Create a new {@link WMS111CapabilitiesAdapter} from the passed root element.

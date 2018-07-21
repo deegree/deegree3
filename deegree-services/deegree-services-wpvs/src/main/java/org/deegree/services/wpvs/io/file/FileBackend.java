@@ -36,13 +36,7 @@
 
 package org.deegree.services.wpvs.io.file;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -64,8 +58,15 @@ import org.deegree.services.wpvs.io.serializer.PrototypeSerializer;
 import org.deegree.services.wpvs.io.serializer.WROSerializer;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>FileBackend</code> is the access to the model in files on the local file system.
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileBackend extends ModelBackend<Envelope> {
 
-    private final static Logger LOG = LoggerFactory.getLogger( FileBackend.class );
+    private final static Logger LOG = getLogger( FileBackend.class );
 
     private ModelFile<BillBoard> treeFile;
 

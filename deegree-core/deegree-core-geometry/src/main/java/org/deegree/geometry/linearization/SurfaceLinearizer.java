@@ -39,16 +39,17 @@ package org.deegree.geometry.linearization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.LinearRing;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides methods for the linearization of planar surfaces, i.e. {@link PolygonPatch}es and {@link Polygon}s.
@@ -60,7 +61,7 @@ import com.vividsolutions.jts.geom.LinearRing;
  */
 public class SurfaceLinearizer {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SurfaceLinearizer.class );
+    private static final Logger LOG = getLogger( SurfaceLinearizer.class );
 
     private GeometryFactory geomFac;
 

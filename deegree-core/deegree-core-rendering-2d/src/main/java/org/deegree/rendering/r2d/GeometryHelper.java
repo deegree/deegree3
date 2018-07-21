@@ -41,13 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D.Double;
-import java.util.Iterator;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -60,7 +54,13 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.slf4j.Logger;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D.Double;
+import java.util.Iterator;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
 
 /**
  * Used to transform, linearize, clip and fix geometry orientation for rendering.

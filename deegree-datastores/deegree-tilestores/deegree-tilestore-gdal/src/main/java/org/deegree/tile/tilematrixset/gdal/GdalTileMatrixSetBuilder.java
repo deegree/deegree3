@@ -27,15 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tile.tilematrixset.gdal;
 
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-import static org.deegree.tile.persistence.gdal.GdalUtils.getEnvelopeAndCrs;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
@@ -48,7 +40,15 @@ import org.deegree.workspace.ResourceMetadata;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
+import static org.deegree.tile.persistence.gdal.GdalUtils.getEnvelopeAndCrs;
 
 /**
  * {@link ResourceBuilder} for {@link TileMatrixSet} instances based on overview and tiling information reported by <a

@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.gml.reference.GmlXlinkOptions;
@@ -51,8 +43,11 @@ import org.deegree.gml.reference.GmlXlinkStrategy;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Keeps track of additional (referenced) {@link GMLObject}s that have to be included in {@link GetFeature}/
@@ -65,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WfsXlinkStrategy implements GmlXlinkStrategy {
 
-    private static Logger LOG = LoggerFactory.getLogger( WfsXlinkStrategy.class );
+    private static Logger LOG = getLogger( WfsXlinkStrategy.class );
 
     private LinkedHashMap<String, GMLReference<?>> uriToRef = new LinkedHashMap<String, GMLReference<?>>();
 

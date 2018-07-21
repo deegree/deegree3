@@ -38,23 +38,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle.sdo;
 
-import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import oracle.jdbc.OracleConnection;
 import oracle.sql.ARRAY;
 import oracle.sql.Datum;
 import oracle.sql.STRUCT;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
@@ -64,13 +52,8 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiGeometry.MultiGeometryType;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.*;
 import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch.SurfacePatchType;
@@ -82,8 +65,12 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 
 /**
  * Convert between Oracle JDBC STRUCT and deegree Geometry
@@ -94,7 +81,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class SDOGeometryConverter {
-    static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
+    static final Logger LOG = getLogger( SDOGeometryConverter.class );
 
     public SDOGeometryConverter() {
 

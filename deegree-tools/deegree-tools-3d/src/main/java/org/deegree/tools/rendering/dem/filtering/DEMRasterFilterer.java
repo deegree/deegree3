@@ -35,25 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.rendering.dem.filtering;
 
-import static java.lang.System.currentTimeMillis;
-import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Stack;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.Pair;
@@ -77,7 +60,19 @@ import org.deegree.geometry.Envelope;
 import org.deegree.tools.rendering.dem.filtering.filters.DEMFilter;
 import org.deegree.tools.rendering.dem.filtering.filters.SmoothingFilter;
 import org.deegree.tools.rendering.manager.DataManager;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tools.CommandUtils.OPT_VERBOSE;
 
 /**
  * The <code>DEMRasterFilterer</code> applies a filter to a dem by using multiple threads.

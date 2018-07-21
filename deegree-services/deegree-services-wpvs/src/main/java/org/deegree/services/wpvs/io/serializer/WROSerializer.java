@@ -36,27 +36,20 @@
 
 package org.deegree.services.wpvs.io.serializer;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.nio.BufferSerializer;
+import org.deegree.geometry.Envelope;
+import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.*;
+import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
+import org.deegree.services.wpvs.io.DataObjectInfo;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-import org.deegree.commons.utils.nio.BufferSerializer;
-import org.deegree.geometry.Envelope;
-import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModelPart;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableTexturedGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
-import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
-import org.deegree.services.wpvs.io.DataObjectInfo;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>WROSerializer</code> class TODO add class documentation here.
@@ -67,7 +60,7 @@ import org.deegree.services.wpvs.io.DataObjectInfo;
  * 
  */
 public class WROSerializer extends ObjectSerializer<WorldRenderableObject> {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( WROSerializer.class );
+    private final static Logger LOG = getLogger( WROSerializer.class );
 
     private static final int QL_PROTO = 1;
 

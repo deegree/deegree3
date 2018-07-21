@@ -35,19 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecordbyid;
 
-import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_AUTO_ARRAY;
-import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
-import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import de.odysseus.staxon.json.JsonXMLOutputFactory;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -60,10 +49,17 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.profile.ServiceProfile;
 import org.deegree.services.i18n.Messages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.odysseus.staxon.json.JsonXMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.util.List;
+
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
+import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
 
 /**
  * Defines the export functionality for a {@link GetRecordById} request
@@ -75,7 +71,7 @@ import de.odysseus.staxon.json.JsonXMLOutputFactory;
  */
 public class DefaultGetRecordByIdHandler implements GetRecordByIdHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultGetRecordByIdHandler.class );
+    private static final Logger LOG = getLogger( DefaultGetRecordByIdHandler.class );
 
     private ServiceProfile profile;
 

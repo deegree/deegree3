@@ -41,14 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
-import static java.lang.Integer.MAX_VALUE;
-import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.math.BigDecimal;
-import java.util.LinkedList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -66,7 +59,14 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
+
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.lang.Integer.MAX_VALUE;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
 
 /**
  * Responsible for creating coverage feature info responses.

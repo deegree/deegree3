@@ -36,13 +36,16 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
-import javax.media.opengl.GL;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.model.WorldObject;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.LODSwitcher;
+
+import javax.media.opengl.GL;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>WorldRenderableObject</code> defines a number of renderable quality levels, where each level may be a
@@ -60,7 +63,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                                                                                                           JOGLRenderable {
     private static final long serialVersionUID = 2998719476993351372L;
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( WorldRenderableObject.class );
+    private final static Logger LOG = getLogger( WorldRenderableObject.class );
 
     private LODSwitcher switchLevels;
 

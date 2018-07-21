@@ -35,19 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.authentication;
 
-import java.io.IOException;
-import java.util.Map;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.CredentialsProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.util.Map;
 
-import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.commons.codec.binary.Base64;
-import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.CredentialsProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * HTTP Basic Authentication.
@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpBasicAuthentication implements CredentialsProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( HttpBasicAuthentication.class );
+    private static Logger LOG = getLogger( HttpBasicAuthentication.class );
 
     /*
      * (non-Javadoc)

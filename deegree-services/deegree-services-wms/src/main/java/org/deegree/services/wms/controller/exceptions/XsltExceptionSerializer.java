@@ -35,8 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.exceptions;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.xml.XsltUtils;
+import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.workspace.Workspace;
 
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -44,17 +53,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Map;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.xml.XsltUtils;
-import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Serializes an exception as exception and transforms the exception with a given xslt script.

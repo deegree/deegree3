@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.inspectors;
 
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.metadata.iso.persistence.AbstractISOTest;
 import org.deegree.metadata.iso.persistence.TstConstants;
@@ -46,8 +45,10 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InspectorCouplingTest extends AbstractISOTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( InspectorCouplingTest.class );
+    private static Logger LOG = getLogger( InspectorCouplingTest.class );
 
     @Test
     public void testCouplingConsistencyErrorFALSE()

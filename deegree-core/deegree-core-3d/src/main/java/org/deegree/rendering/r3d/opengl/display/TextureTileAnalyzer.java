@@ -35,22 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.display;
 
-import java.awt.Dimension;
-import java.util.Collection;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.ViewFrustum;
+import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileRequest;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
+import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3d;
+import java.awt.*;
+import java.util.Collection;
 
-import org.deegree.rendering.r3d.ViewFrustum;
-import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 
@@ -69,7 +65,7 @@ public class TextureTileAnalyzer extends GLCanvas implements GLEventListener {
      */
     private static final long serialVersionUID = 3484097952567872962L;
 
-    private static final Logger LOG = LoggerFactory.getLogger( TextureTileAnalyzer.class );
+    private static final Logger LOG = getLogger( TextureTileAnalyzer.class );
 
     private GLU glu = new GLU();
 

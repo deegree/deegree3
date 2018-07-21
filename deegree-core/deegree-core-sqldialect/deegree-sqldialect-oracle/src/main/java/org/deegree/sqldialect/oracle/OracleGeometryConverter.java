@@ -34,22 +34,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import oracle.jdbc.OracleConnection;
 import oracle.sql.STRUCT;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link GeometryParticleConverter} for Oracle Spatial.
@@ -61,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OracleGeometryConverter implements GeometryParticleConverter {
 
-    private static Logger LOG = LoggerFactory.getLogger( OracleGeometryConverter.class );
+    private static Logger LOG = getLogger( OracleGeometryConverter.class );
 
     private final String column;
 

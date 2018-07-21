@@ -40,10 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.datasource;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.deegree.db.datasource.DataSourceConnectionProviderProvider.SCHEMA_URL;
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
@@ -52,7 +49,10 @@ import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
+import static org.deegree.db.datasource.DataSourceConnectionProviderProvider.SCHEMA_URL;
 
 /**
  * {@link ConnectionProviderMetadata} for the {@link DataSourceConnectionProvider}.

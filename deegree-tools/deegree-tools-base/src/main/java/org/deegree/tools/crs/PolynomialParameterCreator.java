@@ -36,25 +36,21 @@
 
 package org.deegree.tools.crs;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.vecmath.Point3d;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
 import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.vecmath.Point3d;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>PolynomialParameterCreator</code> allows for the calculation of a
@@ -68,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PolynomialParameterCreator {
 
-    private static Logger log = LoggerFactory.getLogger( PolynomialParameterCreator.class );
+    private static Logger log = getLogger( PolynomialParameterCreator.class );
 
     /**
      * Simple constructor which reads coordinate pairs from a different files (using the separator) and stores them in a

@@ -36,6 +36,7 @@
 package org.deegree.coverage.raster.utils;
 
 import static java.awt.image.BufferedImage.TYPE_USHORT_GRAY;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.awt.image.BandedSampleModel;
 import java.awt.image.BufferedImage;
@@ -62,6 +63,7 @@ import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -84,8 +86,6 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.geometry.Envelope;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class reads and writes raster files. The actual raster loading and writing is handled by {@link RasterReader}
@@ -102,7 +102,7 @@ import org.slf4j.LoggerFactory;
 
 public class RasterFactory {
 
-    private static Logger log = LoggerFactory.getLogger( RasterFactory.class );
+    private static Logger log = getLogger( RasterFactory.class );
 
     /**
      * Load a raster from a file.

@@ -36,27 +36,7 @@
 
 package org.deegree.services.wfs;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_100_TRANSACTION_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CloseableIterator;
@@ -68,8 +48,20 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.protocol.wfs.lockfeature.LockFeature;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.query.QueryAnalyzer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.protocol.wfs.WFSConstants.*;
+import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 /**
  * Handles {@link LockFeature} requests for the {@link WebFeatureService}.
@@ -83,7 +75,7 @@ import org.slf4j.LoggerFactory;
  */
 class LockFeatureHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( LockFeatureHandler.class );
+    private static final Logger LOG = getLogger( LockFeatureHandler.class );
 
     private static final long DEFAULT_EXPIRY_IN_MILLISECONDS = 5 * 60 * 1000;
 

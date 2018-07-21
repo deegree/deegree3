@@ -27,13 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.db;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.sql.Connection;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableSQLStoreConfig;
@@ -44,8 +38,15 @@ import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.sql.Connection;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is responsible for building sql renderable stores.
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SqlRenderableStoreBuilder implements ResourceBuilder<RenderableStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SqlRenderableStoreBuilder.class );
+    private static final Logger LOG = getLogger( SqlRenderableStoreBuilder.class );
 
     private RenderableSQLStoreConfig config;
 

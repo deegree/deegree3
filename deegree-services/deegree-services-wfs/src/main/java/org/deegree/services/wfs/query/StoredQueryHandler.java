@@ -35,42 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.ows.LanguageString;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.protocol.wfs.storedquery.*;
+import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.wfs.WebFeatureService;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
-import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.tom.ows.LanguageString;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
-import org.deegree.protocol.wfs.storedquery.DescribeStoredQueries;
-import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
-import org.deegree.protocol.wfs.storedquery.ListStoredQueries;
-import org.deegree.protocol.wfs.storedquery.Parameter;
-import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
-import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
-import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
-import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.wfs.WebFeatureService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
+import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 /**
  * Handles {@link CreateStoredQuery}, {@link DescribeStoredQueries}, {@link DropStoredQuery} and
@@ -83,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StoredQueryHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StoredQueryHandler.class );
+    private static final Logger LOG = getLogger( StoredQueryHandler.class );
 
     public static final String GET_FEATURE_BY_ID = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
 

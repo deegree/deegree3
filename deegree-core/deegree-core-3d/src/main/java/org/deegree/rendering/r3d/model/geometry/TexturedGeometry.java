@@ -36,11 +36,12 @@
 
 package org.deegree.rendering.r3d.model.geometry;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.memory.AllocatedHeapMemory;
+
 import java.io.IOException;
 
-import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RenderableTexturedGeometry</code> class TODO add class documentation here.
@@ -58,7 +59,7 @@ public class TexturedGeometry extends SimpleAccessGeometry {
      */
     private static final long serialVersionUID = -8283523043454581251L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( TexturedGeometry.class );
+    private final static Logger LOG = getLogger( TexturedGeometry.class );
 
     private transient String texture;
 

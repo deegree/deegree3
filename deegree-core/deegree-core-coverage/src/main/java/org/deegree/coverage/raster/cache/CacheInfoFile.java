@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.cache;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -44,12 +42,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Information about raster cache files extends the {@link GridMetaInfoFile} which extends the WorldFile file layout.

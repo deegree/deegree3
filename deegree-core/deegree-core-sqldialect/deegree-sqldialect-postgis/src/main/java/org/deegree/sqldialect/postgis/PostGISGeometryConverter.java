@@ -35,18 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.postgis;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.io.WKBReader;
 import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.utils.GeometryParticleConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link GeometryParticleConverter} for PostGIS databases.
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostGISGeometryConverter implements GeometryParticleConverter {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISGeometryConverter.class );
+    private static Logger LOG = getLogger( PostGISGeometryConverter.class );
 
     private final String column;
 

@@ -36,43 +36,7 @@
 
 package org.deegree.rendering.r2d;
 
-import static java.awt.Color.black;
-import static java.awt.Color.green;
-import static java.awt.Color.red;
-import static java.awt.Color.white;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.io.File.createTempFile;
-import static java.lang.System.currentTimeMillis;
-import static java.lang.System.getProperty;
-import static javax.imageio.ImageIO.read;
-import static javax.imageio.ImageIO.write;
-import static org.deegree.geometry.utils.GeometryUtils.move;
-import static org.deegree.rendering.r2d.GeometryGenerator.randomCurve;
-import static org.deegree.rendering.r2d.GeometryGenerator.randomQuad;
-import static org.deegree.style.styling.components.Font.Style.ITALIC;
-import static org.deegree.style.styling.components.Font.Style.NORMAL;
-import static org.deegree.style.styling.components.Font.Style.OBLIQUE;
-import static org.deegree.style.styling.components.Stroke.LineCap.BUTT;
-import static org.deegree.style.styling.components.Stroke.LineCap.ROUND;
-import static org.deegree.style.styling.components.Stroke.LineCap.SQUARE;
-import static org.deegree.style.styling.components.Stroke.LineJoin.BEVEL;
-import static org.deegree.style.styling.components.Stroke.LineJoin.MITRE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -87,17 +51,37 @@ import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.TextStyling;
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.Halo;
-import org.deegree.style.styling.components.LinePlacement;
-import org.deegree.style.styling.components.Mark;
+import org.deegree.style.styling.components.*;
 import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.awt.Color.*;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.io.File.createTempFile;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.getProperty;
+import static javax.imageio.ImageIO.read;
+import static javax.imageio.ImageIO.write;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.geometry.utils.GeometryUtils.move;
+import static org.deegree.rendering.r2d.GeometryGenerator.randomCurve;
+import static org.deegree.rendering.r2d.GeometryGenerator.randomQuad;
+import static org.deegree.style.styling.components.Font.Style.*;
+import static org.deegree.style.styling.components.Stroke.LineCap.*;
+import static org.deegree.style.styling.components.Stroke.LineJoin.BEVEL;
+import static org.deegree.style.styling.components.Stroke.LineJoin.MITRE;
 
 /**
  * <code>Java2DRenderingTest</code>

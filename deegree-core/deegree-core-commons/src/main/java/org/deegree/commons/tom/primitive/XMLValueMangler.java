@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.primitive;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDate;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatTime;
@@ -45,12 +46,11 @@ import static org.deegree.commons.tom.datetime.ISO8601Converter.parseTime;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.Temporal;
 import org.deegree.commons.tom.datetime.Time;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Converts between internal object values and XML strings.
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XMLValueMangler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLValueMangler.class );
+    private static final Logger LOG = getLogger( XMLValueMangler.class );
 
     /**
      * Returns the internal representation for the given XML string and {@link BaseType}.

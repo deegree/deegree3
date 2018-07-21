@@ -35,21 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecords;
 
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.CQLTEXT;
-import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.FILTER;
-
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -66,8 +52,21 @@ import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWKVPAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.CQLTEXT;
+import static org.deegree.protocol.csw.CSWConstants.ConstraintLanguage.FILTER;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * Encapsulates the method for parsing a {@Link GetRecords} KVP request via Http-GET.
@@ -79,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GetRecordsKVPAdapter extends AbstractCSWKVPAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( GetRecordsKVPAdapter.class );
+    private static Logger LOG = getLogger( GetRecordsKVPAdapter.class );
 
     /**
      * Parses the {@link GetRecords} kvp request and decides which version has to parse because of the requested version

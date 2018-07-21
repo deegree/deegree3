@@ -48,11 +48,12 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.sun.opengl.util.BufferUtil;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>BufferSerializer</code> class TODO add class documentation here.
@@ -63,7 +64,7 @@ import com.sun.opengl.util.BufferUtil;
  * 
  */
 public class BufferSerializer {
-    private final static Logger LOG = LoggerFactory.getLogger( BufferSerializer.class );
+    private final static Logger LOG = getLogger( BufferSerializer.class );
 
     /**
      * Writes a buffer to the given output stream by checking the instance of the buffer and writing the native values

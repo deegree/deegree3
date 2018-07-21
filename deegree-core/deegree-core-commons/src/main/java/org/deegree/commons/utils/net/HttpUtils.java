@@ -41,8 +41,8 @@ import static java.lang.System.getProperty;
 import static java.net.URLEncoder.encode;
 import static java.util.Arrays.asList;
 import static javax.imageio.ImageIO.read;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -82,8 +82,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
-import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;

@@ -36,12 +36,14 @@
 
 package org.deegree.cs.persistence;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -58,8 +60,6 @@ import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The base class for a {@link CRSStore} which has a caching mechanism for {@link CRSIdentifiable}s and instantiates a
@@ -79,7 +79,7 @@ public abstract class AbstractCRSStore implements CRSStore {
         CRS, ELLIPSOID, PM, DATUM, PROJECTION, TRANSFORMATION
     }
 
-    private static Logger LOG = LoggerFactory.getLogger( AbstractCRSStore.class );
+    private static Logger LOG = getLogger( AbstractCRSStore.class );
 
     private Map<CRSCodeType, CRSResource> cachedIdentifiables = new HashMap<CRSCodeType, CRSResource>();
 

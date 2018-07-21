@@ -37,6 +37,7 @@ package org.deegree.coverage.raster;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.ResolutionInfo;
@@ -53,8 +55,6 @@ import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.geometry.Envelope;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a collection of {@link AbstractRaster} instances that describe the same spatial region, but
@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultiResolutionRaster extends AbstractCoverage {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MultiResolutionRaster.class );
+    private static final Logger LOG = getLogger( MultiResolutionRaster.class );
 
     private List<AbstractRaster> resolutions = new LinkedList<AbstractRaster>();
 

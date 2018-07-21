@@ -36,6 +36,7 @@
 
 package org.deegree.cs.persistence.gml;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOGRAPHIC;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
@@ -50,6 +51,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
@@ -67,8 +69,6 @@ import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GMLFileResource</code> provides easy access to a gml3.2. dictionary file, which can be used together with
@@ -86,7 +86,7 @@ public class GMLFileResource extends XMLFileResource implements GMLResource {
 
     private static final long serialVersionUID = -4389365894942107300L;
 
-    private static Logger LOG = LoggerFactory.getLogger( GMLFileResource.class );
+    private static Logger LOG = getLogger( GMLFileResource.class );
 
     private static final String PRE = CommonNamespaces.GML3_2_PREFIX + ":";
 

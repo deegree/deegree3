@@ -35,22 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.query.xml;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-
-import java.math.BigInteger;
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
@@ -77,8 +63,20 @@ import org.deegree.protocol.wfs.query.FilterQuery;
 import org.deegree.protocol.wfs.query.Query;
 import org.deegree.protocol.wfs.query.StandardPresentationParams;
 import org.deegree.protocol.wfs.query.StoredQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 /**
  * Provides parsing methods for WFS <code>Query</code> elements and related constructs.
@@ -90,7 +88,7 @@ import org.slf4j.LoggerFactory;
  */
 public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( QueryXMLAdapter.class );
+    private static final Logger LOG = getLogger( QueryXMLAdapter.class );
 
     public StandardPresentationParams parseStandardPresentationParameters100( OMElement requestEl ) {
 

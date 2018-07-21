@@ -35,16 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.min;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.slf4j.Logger;
+
+import java.io.IOException;
+
+import static java.lang.Math.floor;
+import static java.lang.Math.min;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>Utils</code>

@@ -36,27 +36,23 @@
 
 package org.deegree.wps;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.wps.Processlet;
-import org.deegree.services.wps.ProcessletException;
-import org.deegree.services.wps.ProcessletExecutionInfo;
-import org.deegree.services.wps.ProcessletInputs;
-import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.*;
 import org.deegree.services.wps.input.BoundingBoxInput;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.BoundingBoxOutput;
 import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link Processlet} that provides a demonstration for using the different input and output parameter types in a
@@ -69,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParameterDemoProcesslet implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ParameterDemoProcesslet.class );
+    private static final Logger LOG = getLogger( ParameterDemoProcesslet.class );
 
     @Override
     public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )

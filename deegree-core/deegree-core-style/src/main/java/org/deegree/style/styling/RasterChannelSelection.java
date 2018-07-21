@@ -36,12 +36,13 @@
 
 package org.deegree.style.styling;
 
-import java.util.HashMap;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.style.styling.RasterStyling.ContrastEnhancement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterChannelSelection implements Copyable<RasterChannelSelection> {
 
-    private Logger LOG = LoggerFactory.getLogger( RasterChannelSelection.class );
+    private Logger LOG = getLogger( RasterChannelSelection.class );
 
     /** Output channel names. */
     private String redChannel, greenChannel, blueChannel, grayChannel;

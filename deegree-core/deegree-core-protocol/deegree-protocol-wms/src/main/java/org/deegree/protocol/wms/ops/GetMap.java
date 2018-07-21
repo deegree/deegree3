@@ -35,41 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.ops;
 
-import static java.awt.Color.decode;
-import static java.awt.Color.white;
-import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.layer.LayerRef.FROM_NAMES;
-import static org.deegree.layer.dims.Dimension.parseTyped;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasGetter;
-import static org.deegree.rendering.r2d.context.MapOptions.getAntialiasSetter;
-import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationGetter;
-import static org.deegree.rendering.r2d.context.MapOptions.getInterpolationSetter;
-import static org.deegree.rendering.r2d.context.MapOptions.getQualityGetter;
-import static org.deegree.rendering.r2d.context.MapOptions.getQualitySetter;
-import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
@@ -85,14 +54,33 @@ import org.deegree.layer.dims.DimensionsLexer;
 import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.protocol.wms.Utils;
 import org.deegree.rendering.r2d.RenderHelper;
-import org.deegree.rendering.r2d.context.MapOptions.Antialias;
-import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
-import org.deegree.rendering.r2d.context.MapOptions.MapOptionsGetter;
-import org.deegree.rendering.r2d.context.MapOptions.MapOptionsSetter;
-import org.deegree.rendering.r2d.context.MapOptions.Quality;
+import org.deegree.rendering.r2d.context.MapOptions.*;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.text.ParseException;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+
+import static java.awt.Color.decode;
+import static java.awt.Color.white;
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.layer.LayerRef.FROM_NAMES;
+import static org.deegree.layer.dims.Dimension.parseTyped;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
+import static org.deegree.rendering.r2d.context.MapOptions.*;
 
 /**
  * 

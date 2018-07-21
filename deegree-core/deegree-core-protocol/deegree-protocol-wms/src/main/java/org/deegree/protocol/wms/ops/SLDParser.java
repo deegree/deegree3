@@ -35,34 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.ops;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.layer.dims.Dimension.parseTyped;
-import static org.deegree.protocol.wms.ops.GetMap.parseDimensionValues;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.filter.Filter;
-import org.deegree.filter.IdFilter;
-import org.deegree.filter.MatchAction;
-import org.deegree.filter.Operator;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.ResourceId;
+import org.deegree.filter.*;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
@@ -74,7 +54,21 @@ import org.deegree.protocol.wms.sld.StylesContainer;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.layer.dims.Dimension.parseTyped;
+import static org.deegree.protocol.wms.ops.GetMap.parseDimensionValues;
 
 /**
  * <code>SLDParser</code>

@@ -36,43 +36,8 @@
 
 package org.deegree.services.wfs.format.gml.request;
 
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XSNS;
-import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_2_DEFAULT_INCLUDE;
-import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_30_DEFAULT_INCLUDE;
-import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_31_DEFAULT_INCLUDE;
-import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_32_DEFAULT_INCLUDE;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.util.base64.Base64EncodingStringBufferOutputStream;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.URITranslator;
@@ -92,8 +57,22 @@ import org.deegree.services.resources.ResourcesServlet;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WfsFeatureStoreManager;
 import org.deegree.services.wfs.format.gml.GmlFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.schema.GMLAppSchemaWriter.*;
+import static org.deegree.protocol.wfs.WFSConstants.*;
 
 /**
  * Handles {@link DescribeFeatureType} requests for the {@link GmlFormat}.
@@ -107,7 +86,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlDescribeFeatureTypeHandler.class );
+    private static final Logger LOG = getLogger( GmlDescribeFeatureTypeHandler.class );
 
     private static final String APPSCHEMAS = "appschemas";
 

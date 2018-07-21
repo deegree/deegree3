@@ -35,18 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.rendering.dem.filtering.filters;
 
-import static java.lang.System.currentTimeMillis;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.nio.ByteBuffer;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
+
+import java.nio.ByteBuffer;
+
+import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Uses a kernel based approach to filter the given dem raster tile. First the standard deviation on the raster tile is

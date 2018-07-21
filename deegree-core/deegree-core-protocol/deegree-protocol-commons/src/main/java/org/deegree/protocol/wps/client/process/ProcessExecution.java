@@ -35,25 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.process;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -69,8 +51,17 @@ import org.deegree.protocol.wps.client.process.execute.OutputFormat;
 import org.deegree.protocol.wps.client.process.execute.ResponseFormat;
 import org.deegree.protocol.wps.client.wps100.ExecuteRequest100Writer;
 import org.deegree.protocol.wps.client.wps100.ExecuteResponse100Reader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Represents an execution context for a {@link Process} that uses the <code>ResponseDocument</code> output mode.
@@ -89,7 +80,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProcessExecution extends AbstractProcessExecution {
 
-    private static Logger LOG = LoggerFactory.getLogger( ProcessExecution.class );
+    private static Logger LOG = getLogger( ProcessExecution.class );
 
     private final List<OutputFormat> outputDefs = new ArrayList<OutputFormat>();
 

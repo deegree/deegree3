@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Appenders>
+    <File name="stdout" fileName="/tmp/log">
+      <PatternLayout pattern="[%d{HH:mm:ss}] %5p: [%c{1}] %m%n" />
+    </File>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.deegree" level="INFO" additivity="true" />
+    <Root level="INFO">
+      <AppenderRef ref="stdout" />
+    </Root>
+  </Loggers>
+</Configuration>

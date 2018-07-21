@@ -41,11 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.remotewms;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.DescriptionConverter;
 import org.deegree.geometry.metadata.SpatialMetadata;
@@ -57,8 +53,13 @@ import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
 import org.deegree.protocol.wms.client.WMSClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Builds remote wms layers from jaxb beans.
@@ -70,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 class RemoteWmsLayerBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RemoteWmsLayerBuilder.class );
+    private static final Logger LOG = getLogger( RemoteWmsLayerBuilder.class );
 
     private WMSClient client;
 

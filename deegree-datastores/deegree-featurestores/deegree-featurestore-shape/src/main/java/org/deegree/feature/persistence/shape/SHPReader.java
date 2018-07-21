@@ -36,27 +36,9 @@
 
 package org.deegree.feature.persistence.shape;
 
-import static java.nio.ByteOrder.BIG_ENDIAN;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_LINE_STRING;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POINT;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POLYGON;
-import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.geom.Coordinate;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -67,17 +49,23 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.LinearRing;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.*;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsList;
-import org.slf4j.Logger;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
+import java.util.*;
+
+import static java.nio.ByteOrder.BIG_ENDIAN;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.*;
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 
 /**
  * <code>SHPReader</code>

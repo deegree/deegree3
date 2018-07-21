@@ -37,7 +37,7 @@
 package org.deegree.commons.utils;
 
 import static java.nio.charset.Charset.forName;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,8 +50,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.slf4j.Logger;
 
 /**
  * <code>EncodingGuesser</code>

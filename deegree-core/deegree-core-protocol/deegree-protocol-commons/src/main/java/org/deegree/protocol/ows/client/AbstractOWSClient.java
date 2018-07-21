@@ -35,16 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.client;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -54,8 +46,16 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.ows.http.OwsHttpClient;
 import org.deegree.protocol.ows.http.OwsHttpClientImpl;
 import org.deegree.protocol.ows.http.OwsHttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides common base functionality for API-level client implementations that access OGC web services.
@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractOWSClient<T extends OWSCapabilitiesAdapter> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSClient.class );
+    private static final Logger LOG = getLogger( AbstractOWSClient.class );
 
     protected T capaDoc;
 

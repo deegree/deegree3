@@ -35,14 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.mapper;
 
+import gcardone.junidecode.Junidecode;
+import org.apache.logging.log4j.Logger;
+
+import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.xml.namespace.QName;
-
-import gcardone.junidecode.Junidecode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Keeps track of {@link MappingContext}s generated during a pass of the {@link AppSchemaMapper}.
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 class MappingContextManager {
 
-    private static Logger LOG = LoggerFactory.getLogger( MappingContextManager.class );
+    private static Logger LOG = getLogger( MappingContextManager.class );
 
     private int maxColumnLengthInChararacters;
 

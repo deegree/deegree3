@@ -42,6 +42,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.dialect.SqlDialectProvider;
+import org.deegree.sqldialect.SQLDialect;
+import org.deegree.workspace.ResourceInitException;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,12 +55,7 @@ import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.db.dialect.SqlDialectProvider;
-import org.deegree.sqldialect.SQLDialect;
-import org.deegree.workspace.ResourceInitException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link SqlDialectProvider} for Oracle spatial databases.
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OracleDialectProvider implements SqlDialectProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( OracleDialectProvider.class );
+    private static Logger LOG = getLogger( OracleDialectProvider.class );
 
     @Override
     public boolean supportsConnection( Connection connection ) {

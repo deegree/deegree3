@@ -36,49 +36,8 @@
 
 package org.deegree.protocol.wms.client;
 
-import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
-import static java.lang.Math.abs;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.proxy.ProxySettings.getHttpProxyPassword;
-import static org.deegree.commons.proxy.ProxySettings.getHttpProxyUser;
-import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
-import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
-import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
-import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
-import static org.deegree.protocol.i18n.Messages.get;
-import static org.deegree.protocol.oldwms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.oldwms.WMSConstants.VERSION_130;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Callable;
-
-import javax.imageio.ImageIO;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.proxy.ProxySettings;
@@ -112,7 +71,44 @@ import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.style.StyleRef;
-import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+
+import static java.awt.image.BufferedImage.TYPE_4BYTE_ABGR;
+import static java.lang.Math.abs;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.proxy.ProxySettings.getHttpProxyPassword;
+import static org.deegree.commons.proxy.ProxySettings.getHttpProxyUser;
+import static org.deegree.commons.utils.ArrayUtils.join;
+import static org.deegree.commons.utils.kvp.KVPUtils.toQueryString;
+import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
+import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
+import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
+import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
+import static org.deegree.protocol.i18n.Messages.get;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.oldwms.WMSConstants.VERSION_130;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.*;
 
 /**
  * API-level client for accessing servers that implement the <a

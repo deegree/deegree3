@@ -36,29 +36,13 @@
 
 package org.deegree.cs.configuration;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.vecmath.Point3d;
-
+import junit.framework.TestCase;
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.components.Axis;
-import org.deegree.cs.components.Ellipsoid;
-import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.IAxis;
-import org.deegree.cs.components.Unit;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.GeocentricCRS;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.components.*;
+import org.deegree.cs.coordinatesystems.*;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.persistence.CRSStore;
@@ -66,8 +50,13 @@ import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.vecmath.Point3d;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>TransformationTest</code> a junit test class for testing the accuracy of various transformations.
@@ -79,9 +68,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class ProviderBasedAccuracyTest {
+public class ProviderBasedAccuracyTest extends TestCase {
 
-    private static Logger LOG = LoggerFactory.getLogger( ProviderBasedAccuracyTest.class );
+    private static Logger LOG = getLogger( ProviderBasedAccuracyTest.class );
 
     private final static double METER_EPSILON = 0.15;
 

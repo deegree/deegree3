@@ -35,28 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.ows.capabilities;
 
-import static org.deegree.commons.xml.stax.XMLStreamUtils.copy;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.commons.ows.metadata.domain.AllowedValues;
-import org.deegree.commons.ows.metadata.domain.AnyValue;
-import org.deegree.commons.ows.metadata.domain.Domain;
-import org.deegree.commons.ows.metadata.domain.NoValues;
-import org.deegree.commons.ows.metadata.domain.PossibleValues;
-import org.deegree.commons.ows.metadata.domain.Range;
-import org.deegree.commons.ows.metadata.domain.Value;
-import org.deegree.commons.ows.metadata.domain.Values;
-import org.deegree.commons.ows.metadata.domain.ValuesReference;
+import org.deegree.commons.ows.metadata.domain.*;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.ows.metadata.party.Address;
@@ -67,15 +51,16 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
 import org.deegree.protocol.ows.OWSCommonXMLAdapter;
 import org.deegree.services.jaxb.controller.DCPType;
-import org.deegree.services.jaxb.metadata.AddressType;
-import org.deegree.services.jaxb.metadata.CodeType;
-import org.deegree.services.jaxb.metadata.KeywordsType;
-import org.deegree.services.jaxb.metadata.LanguageStringType;
-import org.deegree.services.jaxb.metadata.ServiceContactType;
-import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
-import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.services.jaxb.metadata.*;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.copy;
 
 /**
  * Provides methods for exporting
@@ -87,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
 
-    private final static Logger LOG = LoggerFactory.getLogger( OWSCapabilitiesXMLAdapter.class );
+    private final static Logger LOG = getLogger( OWSCapabilitiesXMLAdapter.class );
 
     /**
      * Exports the given {@link ServiceIdentificationType} as an OWS 1.0.0 <code>ServiceIdentification</code> element.

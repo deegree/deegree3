@@ -36,21 +36,7 @@
 
 package org.deegree.services.wfs;
 
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.services.i18n.Messages.get;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.QNameUtils;
 import org.deegree.feature.persistence.FeatureStore;
@@ -61,8 +47,15 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.services.i18n.Messages.get;
 
 /**
  * Manages the {@link FeatureStore} instances for the {@link WebFeatureService}.
@@ -76,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WfsFeatureStoreManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WfsFeatureStoreManager.class );
+    private static final Logger LOG = getLogger( WfsFeatureStoreManager.class );
 
     private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 

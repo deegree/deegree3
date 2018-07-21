@@ -41,6 +41,7 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -51,8 +52,8 @@ import org.deegree.cs.coordinatesystems.IProjectedCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ProjectionTransform</code> class wraps the access to a projection, by calling it's doProjection.
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about axis of the projection as well as the used projection and the incoming ordinates.")
 public class ProjectionTransform extends Transformation {
 
-    private static Logger LOG = LoggerFactory.getLogger( ProjectionTransform.class );
+    private static Logger LOG = getLogger( ProjectionTransform.class );
 
     private boolean swapAxisTarget = false;
 

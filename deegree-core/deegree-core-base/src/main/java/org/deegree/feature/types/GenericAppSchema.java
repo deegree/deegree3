@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.GEOMETRY;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSNamespaceItemList;
 import org.deegree.commons.tom.gml.GMLObjectCategory;
 import org.deegree.commons.tom.gml.GMLObjectType;
@@ -58,8 +60,6 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generic {@link AppSchema} implementation, can be used for representing arbitrary application schemas.
@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericAppSchema implements AppSchema {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GenericAppSchema.class );
+    private static final Logger LOG = getLogger( GenericAppSchema.class );
 
     private final Map<QName, GMLObjectType> typeNameToType = new LinkedHashMap<QName, GMLObjectType>();
 

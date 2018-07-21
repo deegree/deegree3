@@ -35,28 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs.describecoverage;
 
-import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
-import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
-import static org.deegree.protocol.wcs.WCSConstants.WCS_100_PRE;
-import static org.deegree.protocol.wcs.WCSConstants.WCS_100_SCHEMA;
-
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.ArrayUtils;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.coverage.rangeset.AxisSubset;
-import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.*;
 import org.deegree.coverage.rangeset.Interval.Closure;
-import org.deegree.coverage.rangeset.RangeSet;
-import org.deegree.coverage.rangeset.SingleValue;
-import org.deegree.coverage.rangeset.ValueType;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -67,6 +50,14 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.model.CoverageOptions;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.protocol.wcs.WCSConstants.*;
 
 /**
  * This is an XMLAdapter for the CoverageDescription of the WCS 1.0.0 spec.
@@ -79,7 +70,7 @@ import org.deegree.services.wcs.model.CoverageOptions;
  */
 public class CoverageDescription100XMLAdapter extends XMLAdapter {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( CoverageDescription100XMLAdapter.class );
+    private final static Logger LOG = getLogger( CoverageDescription100XMLAdapter.class );
 
     private static final String GML_PREFIX = "gml";
 

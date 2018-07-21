@@ -78,6 +78,10 @@
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
     </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+    </dependency>
   </dependencies>
 
   <modules>
@@ -130,9 +134,9 @@
     </profile>
     <profile>
       <id>csw-cite</id>
-  <modules>
+        <modules>
           <module>deegree-csw-bkg</module>
-  </modules>
+        </modules>
     </profile>
   </profiles>
 

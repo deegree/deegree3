@@ -35,16 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Locale;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link HttpServletResponse} that copes with gzipping the output.
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GZipHttpServletResponse implements HttpServletResponse {
 
-    private static Logger LOG = LoggerFactory.getLogger( GZipHttpServletResponse.class );
+    private static Logger LOG = getLogger( GZipHttpServletResponse.class );
 
     private final HttpServletResponse response;
 

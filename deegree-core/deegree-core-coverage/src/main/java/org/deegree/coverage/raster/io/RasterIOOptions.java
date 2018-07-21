@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
@@ -50,8 +51,8 @@ import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is a container for various RasterIO options.
@@ -66,7 +67,7 @@ public class RasterIOOptions implements Serializable {
 
     private static final long serialVersionUID = 6804424511435114774L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( RasterIOOptions.class );
+    private final static Logger LOG = getLogger( RasterIOOptions.class );
 
     /** Separator for text base files */
     public final static String OPT_TEXT_SEPARATOR = "value_separator";

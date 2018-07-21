@@ -35,20 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.wpsclient.gui;
 
-import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.utils.StringPair;
@@ -59,7 +46,19 @@ import org.deegree.protocol.wps.client.output.LiteralOutput;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.wpsclient.controller.ProcessExecuter;
-import org.slf4j.Logger;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 
 /**
  * <code>ExecuteBean</code> receives the parameters to execute the WPS and holds the response.

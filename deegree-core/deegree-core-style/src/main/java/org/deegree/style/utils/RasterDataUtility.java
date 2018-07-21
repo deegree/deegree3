@@ -34,14 +34,15 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.style.utils;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.style.styling.RasterChannelSelection;
 import org.deegree.style.styling.RasterChannelSelection.ChannelSelectionMode;
 import org.deegree.style.styling.RasterStyling.ContrastEnhancement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Utility class to interpret raster data in a consistent way. It should be used in raster lookup operations (for
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterDataUtility {
 
-    private final static Logger LOG = LoggerFactory.getLogger( RasterDataUtility.class );
+    private final static Logger LOG = getLogger( RasterDataUtility.class );
 
     private RasterData data;
 

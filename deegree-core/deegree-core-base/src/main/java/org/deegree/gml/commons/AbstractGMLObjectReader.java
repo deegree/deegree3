@@ -40,6 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
@@ -67,6 +68,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -125,8 +127,6 @@ import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.deegree.time.gml.reader.GmlTimeGeometricPrimitiveReader;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 import org.deegree.time.primitive.reference.TimeGeometricPrimitiveReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Concrete extensions are parsers for a specific category of GML objects.
@@ -141,7 +141,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectReader.class );
+    private static final Logger LOG = getLogger( AbstractGMLObjectReader.class );
 
     protected final String gmlNs;
 

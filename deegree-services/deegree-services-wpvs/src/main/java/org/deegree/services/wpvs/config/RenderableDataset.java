@@ -36,13 +36,7 @@
 
 package org.deegree.services.wpvs.config;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
@@ -63,7 +57,13 @@ import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ModelDatasetWrapper</code> loads the entities and the billboards from the configured backends.

@@ -35,24 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_100;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -64,8 +48,19 @@ import org.deegree.services.csw.profile.EbrimProfile;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_100;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * TODO add class documentation here
@@ -77,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EbrimGetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements CapabilitiesHandler {
 
-    private static Logger LOG = LoggerFactory.getLogger( EbrimGetCapabilitiesHandler.class );
+    private static Logger LOG = getLogger( EbrimGetCapabilitiesHandler.class );
 
     private static final String WRS_NS = "http://www.opengis.net/cat/wrs/1.0";
 

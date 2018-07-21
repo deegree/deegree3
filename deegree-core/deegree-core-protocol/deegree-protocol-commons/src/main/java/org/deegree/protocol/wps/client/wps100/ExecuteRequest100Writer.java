@@ -35,31 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.wps100;
 
-import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import org.apache.axiom.util.base64.Base64EncodingOutputStream;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.protocol.wps.client.input.*;
+import org.deegree.protocol.wps.client.param.ComplexFormat;
+import org.deegree.protocol.wps.client.process.execute.OutputFormat;
+import org.deegree.protocol.wps.client.process.execute.ResponseFormat;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.axiom.util.base64.Base64EncodingOutputStream;
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.protocol.wps.client.input.BBoxInput;
-import org.deegree.protocol.wps.client.input.BinaryInput;
-import org.deegree.protocol.wps.client.input.ExecutionInput;
-import org.deegree.protocol.wps.client.input.LiteralInput;
-import org.deegree.protocol.wps.client.input.XMLInput;
-import org.deegree.protocol.wps.client.param.ComplexFormat;
-import org.deegree.protocol.wps.client.process.execute.OutputFormat;
-import org.deegree.protocol.wps.client.process.execute.ResponseFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
 /**
  * Generates WPS 1.0.0 Execute request documents.
@@ -72,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecuteRequest100Writer {
 
-    private static Logger LOG = LoggerFactory.getLogger( ExecuteRequest100Writer.class );
+    private static Logger LOG = getLogger( ExecuteRequest100Writer.class );
 
     private static final String wpsPrefix = "wps";
 

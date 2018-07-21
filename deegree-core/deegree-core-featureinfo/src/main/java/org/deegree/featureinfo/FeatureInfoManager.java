@@ -41,24 +41,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.featureinfo.serializing.*;
+import org.deegree.gml.GMLVersion;
+import org.deegree.workspace.Workspace;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.stream.XMLStreamException;
-
-import org.deegree.featureinfo.serializing.FeatureInfoGmlWriter;
-import org.deegree.featureinfo.serializing.FeatureInfoSerializer;
-import org.deegree.featureinfo.serializing.PlainTextFeatureInfoSerializer;
-import org.deegree.featureinfo.serializing.TemplateFeatureInfoSerializer;
-import org.deegree.featureinfo.serializing.XsltFeatureInfoSerializer;
-import org.deegree.gml.GMLVersion;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for managing feature info output formats and their serializers.

@@ -35,23 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.display;
 
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Collection;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.ViewFrustum;
+import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
+import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3d;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import org.deegree.rendering.r3d.ViewFrustum;
-import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>LODAnalyzer</code> displays the used macrotriangles in a scene. It determines which macrotriangles are used
@@ -66,7 +62,7 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
     private static final long serialVersionUID = -2679880887972155332L;
 
-    private static final Logger LOG = LoggerFactory.getLogger( LODAnalyzer.class );
+    private static final Logger LOG = getLogger( LODAnalyzer.class );
 
     private GLU glu = new GLU();
 

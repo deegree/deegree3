@@ -35,25 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.ebrim.eo.mapping;
 
-import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
-import static org.deegree.commons.tom.primitive.BaseType.DOUBLE;
-import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping.SlotType._string;
-import static org.jaxen.saxpath.Axis.ATTRIBUTE;
-import static org.jaxen.saxpath.Axis.CHILD;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -69,21 +51,18 @@ import org.deegree.metadata.persistence.ebrim.eo.EbrimEOMDStore;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.Table;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping.SlotType;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.deegree.sqldialect.postgis.PostGISGeometryConverter;
-import org.jaxen.expr.EqualityExpr;
-import org.jaxen.expr.Expr;
-import org.jaxen.expr.LiteralExpr;
-import org.jaxen.expr.LocationPath;
-import org.jaxen.expr.NameStep;
-import org.jaxen.expr.PathExpr;
-import org.jaxen.expr.Predicate;
-import org.jaxen.expr.VariableReferenceExpr;
-import org.slf4j.Logger;
+import org.jaxen.expr.*;
+
+import javax.xml.namespace.QName;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.*;
+import static org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapping.SlotType._string;
+import static org.jaxen.saxpath.Axis.ATTRIBUTE;
+import static org.jaxen.saxpath.Axis.CHILD;
 
 /**
  * {@link PropertyNameMapper} for the {@link EbrimEOMDStore}.

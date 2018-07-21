@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -50,8 +51,8 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A {@link GMLReference} that targets a {@link Feature}.
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureReference extends GMLReference<Feature> implements Feature {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureReference.class );
+    private static final Logger LOG = getLogger( FeatureReference.class );
 
     private final GMLReferenceResolver internalResolver;
     

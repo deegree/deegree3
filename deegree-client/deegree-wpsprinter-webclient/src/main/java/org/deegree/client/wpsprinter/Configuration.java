@@ -35,15 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wpsprinter;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.ArrayUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import org.deegree.commons.utils.ArrayUtils;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

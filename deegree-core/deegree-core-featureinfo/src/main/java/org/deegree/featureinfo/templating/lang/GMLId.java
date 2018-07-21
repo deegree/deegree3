@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.templating.lang;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.Feature;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>GMLId</code>

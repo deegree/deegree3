@@ -35,17 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.inspectors;
 
-import static org.deegree.metadata.DCRecord.SCHEMA_URL;
-import static org.deegree.metadata.iso.ISORecord.SCHEMA_URL_GMD;
-import static org.deegree.metadata.iso.ISORecord.SCHEMA_URL_SRV;
-
-import java.io.InputStream;
-import java.sql.Connection;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
@@ -54,8 +45,16 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.metadata.DCRecord.SCHEMA_URL;
+import static org.deegree.metadata.iso.ISORecord.SCHEMA_URL_GMD;
+import static org.deegree.metadata.iso.ISORecord.SCHEMA_URL_SRV;
 
 /**
  * {@link RecordInspector} that performs schema-validation.
@@ -67,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MetadataSchemaValidationInspector<T extends MetadataRecord> implements RecordInspector<T> {
 
-    private static Logger LOG = LoggerFactory.getLogger( MetadataSchemaValidationInspector.class );
+    private static Logger LOG = getLogger( MetadataSchemaValidationInspector.class );
 
     /**
      * Before any transaction operation is possible there should be an evaluation of the record. The response of the

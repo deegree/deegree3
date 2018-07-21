@@ -36,6 +36,8 @@
 
 package org.deegree.commons.utils.fam;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -49,8 +51,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * File alteration monitor for monitoring changes in a directory. Supports recursive scanning and filters.
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileAlterationMonitor {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FileAlterationMonitor.class );
+    private static final Logger LOG = getLogger( FileAlterationMonitor.class );
 
     private final File dir;
 

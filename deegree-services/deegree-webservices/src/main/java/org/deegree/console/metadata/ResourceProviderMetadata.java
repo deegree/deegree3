@@ -35,7 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.metadata;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import org.apache.logging.log4j.Logger;
+import org.deegree.workspace.ResourceProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,9 +45,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.deegree.workspace.ResourceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ResourceProviderMetadata {
 
-    private static Logger LOG = LoggerFactory.getLogger( ResourceProviderMetadata.class );
+    private static Logger LOG = getLogger( ResourceProviderMetadata.class );
 
     private String wizardView = "/console/jsf/wizard";
 

@@ -35,16 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.serialize;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.xml.XsltUtils;
+import org.deegree.workspace.Workspace;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
-import org.deegree.commons.xml.XsltUtils;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Transforms the incoming capabilities XML via XSLT and writes the output in the response stream.

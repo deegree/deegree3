@@ -35,14 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.refs;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Represents a reference to a {@link CRSResource}, which is usually expressed using an <code>xlink:href</code>

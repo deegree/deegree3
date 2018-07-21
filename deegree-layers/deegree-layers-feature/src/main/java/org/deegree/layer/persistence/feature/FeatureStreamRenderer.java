@@ -41,26 +41,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
-import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
-import org.deegree.rendering.r2d.Renderer;
-import org.deegree.rendering.r2d.TextRenderer;
 import org.deegree.rendering.r2d.LabelRenderer;
-import org.deegree.rendering.r2d.Label;
+import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.Styling;
 import org.deegree.style.styling.TextStyling;
-import org.slf4j.Logger;
+
+import java.util.LinkedList;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for using a renderer to evaluate and render a feature stream.

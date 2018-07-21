@@ -35,10 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -47,7 +46,8 @@ import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Abstract base class for all transformers. Stores a target coordinate system and creates {@link Transformation}

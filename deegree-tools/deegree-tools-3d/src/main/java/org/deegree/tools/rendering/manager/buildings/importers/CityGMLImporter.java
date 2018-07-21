@@ -37,22 +37,7 @@
 package org.deegree.tools.rendering.manager.buildings.importers;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
@@ -73,11 +58,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiSurface;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.Solid;
-import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.*;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.gml.GMLInputFactory;
@@ -90,8 +71,18 @@ import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.Timestamp;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link ModelImporter} that reads a CityGML element (namespace <code>http://www.opengis.net/citygml/1.0</code>) file
@@ -110,7 +101,7 @@ public class CityGMLImporter implements ModelImporter {
 
     private static final GeometryFactory geomFac = new GeometryFactory();
 
-    private static Logger LOG = LoggerFactory.getLogger( CityGMLImporter.class );
+    private static Logger LOG = getLogger( CityGMLImporter.class );
 
     private static final String CITYGML_SCHEMA = CityGMLImporter.class.getResource( "schema/citygml100_old/CityGML.xsd" ).toString();
 

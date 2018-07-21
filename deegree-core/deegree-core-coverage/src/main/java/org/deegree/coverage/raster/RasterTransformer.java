@@ -42,6 +42,7 @@ import java.util.List;
 import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterRect;
@@ -56,8 +57,8 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class transforms raster to a taget coordinate system .
@@ -70,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterTransformer extends Transformer {
 
-    private static Logger LOG = LoggerFactory.getLogger( RasterTransformer.class );
+    private static Logger LOG = getLogger( RasterTransformer.class );
 
     private final int polynomialOrder = 3;
 

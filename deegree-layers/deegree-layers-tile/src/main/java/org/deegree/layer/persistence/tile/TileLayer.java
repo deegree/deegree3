@@ -40,14 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.tile;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
@@ -58,7 +51,10 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.style.StyleRef;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataSet;
-import org.slf4j.Logger;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A layer implementation based on a list of tile data sets.

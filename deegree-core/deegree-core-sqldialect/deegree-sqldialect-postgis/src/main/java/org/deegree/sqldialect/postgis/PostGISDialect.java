@@ -35,13 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.postgis;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -62,8 +56,11 @@ import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.postgis.PGboxbase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link SQLDialect} for PostGIS-enabled PostgreSQL databases.
@@ -93,7 +90,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 
-    private static Logger LOG = LoggerFactory.getLogger( PostGISDialect.class );
+    private static Logger LOG = getLogger( PostGISDialect.class );
 
     private final String undefinedSrid;
 

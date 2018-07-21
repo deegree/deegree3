@@ -35,12 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.transformations;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.Assert;
-
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.EPSGCode;
@@ -60,7 +54,12 @@ import org.deegree.cs.transformations.coordinate.ProjectionTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
 import org.deegree.cs.utilities.MappingUtils;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests the substitution of transformations.

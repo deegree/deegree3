@@ -28,6 +28,7 @@
 
 package org.deegree.coverage.raster.io.oraclegeoraster.utils;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.oraclegeoraster.jaxb.OracleGeorasterConfig;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -37,8 +38,8 @@ import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Oracle GeoRaster Builder
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OracleGeorasterBuilder implements ResourceBuilder<Coverage> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( OracleGeorasterBuilder.class );
+    private static final Logger LOG = getLogger( OracleGeorasterBuilder.class );
 
     private OracleGeorasterConfig config;
 

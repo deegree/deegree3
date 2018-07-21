@@ -35,38 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wpsprinter;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.Serializable;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.el.ValueExpression;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.component.UIInput;
-import javax.faces.component.html.HtmlInputHidden;
-import javax.faces.component.html.HtmlInputText;
-import javax.faces.component.html.HtmlOutputLabel;
-import javax.faces.component.html.HtmlOutputText;
-import javax.faces.component.html.HtmlPanelGrid;
-import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.component.html.HtmlSelectBooleanCheckbox;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.DateTimeConverter;
-import javax.faces.convert.DoubleConverter;
-import javax.faces.convert.FloatConverter;
-import javax.faces.convert.IntegerConverter;
-import javax.faces.convert.LongConverter;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.ComponentSystemEvent;
-import javax.faces.model.SelectItem;
-import javax.faces.validator.DoubleRangeValidator;
-import javax.faces.validator.LongRangeValidator;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.client.core.utils.MessageUtils;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.ArrayUtils;
@@ -79,7 +48,27 @@ import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.output.type.ComplexOutputType;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
-import org.slf4j.Logger;
+
+import javax.el.ValueExpression;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIInput;
+import javax.faces.component.html.*;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.*;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.model.SelectItem;
+import javax.faces.validator.DoubleRangeValidator;
+import javax.faces.validator.LongRangeValidator;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>

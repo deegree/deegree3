@@ -38,17 +38,16 @@
 
 package org.deegree.geometry;
 
+import org.deegree.commons.index.QTree;
+import org.deegree.commons.utils.GraphvizDot;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.Assert;
-
-import org.deegree.commons.index.QTree;
-import org.deegree.commons.utils.GraphvizDot;
-import org.junit.Test;
 
 /**
  * The <code>QTreeTest</code> class TODO add class documentation here.

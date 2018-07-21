@@ -35,26 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
-import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
-import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
-import static org.deegree.cs.CRSUtils.EPSG_4326;
-import static org.deegree.protocol.csw.CSWConstants.APISO_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.DCT_NS;
-import static org.deegree.protocol.csw.CSWConstants.DC_NS;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
@@ -66,12 +47,19 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
-import org.slf4j.Logger;
+import org.deegree.sqldialect.filter.*;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.*;
+import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
+import static org.deegree.cs.CRSUtils.EPSG_4326;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * Implementation of the {@link PropertyNameMapper}. It's the base class for access to the backend. Is there any change

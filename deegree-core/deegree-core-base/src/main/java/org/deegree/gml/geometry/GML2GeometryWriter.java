@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.geometry;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.geometry.Geometry.GeometryType.COMPOSITE_GEOMETRY;
 import static org.deegree.geometry.Geometry.GeometryType.ENVELOPE;
@@ -43,6 +44,7 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -79,8 +81,6 @@ import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generates GML 2.1 representations from {@link Geometry} objects.
@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GML2GeometryWriter extends AbstractGMLObjectWriter implements GMLGeometryWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML2GeometryWriter.class );
+    private static final Logger LOG = getLogger( GML2GeometryWriter.class );
 
     private static final String GML21NS = "http://www.opengis.net/gml";
 

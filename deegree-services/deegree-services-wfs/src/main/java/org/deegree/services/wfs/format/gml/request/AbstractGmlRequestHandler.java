@@ -35,42 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.GML32_NS;
-import static org.deegree.protocol.wfs.WFSConstants.GML32_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.QUERY_ID_GET_FEATURE_BY_ID;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_100_BASIC_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_PREFIX;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.datetime.DateTime;
@@ -98,8 +63,20 @@ import org.deegree.services.i18n.Messages;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.deegree.services.wfs.format.gml.GmlFormatOptions;
 import org.deegree.services.wfs.query.QueryAnalyzer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.gml.GMLVersion.*;
+import static org.deegree.protocol.wfs.WFSConstants.*;
 
 /**
  * Handles {@link DescribeFeatureType} requests for the {@link GmlFormat}.
@@ -113,7 +90,7 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractGmlRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractGmlRequestHandler.class );
+    private static final Logger LOG = getLogger( AbstractGmlRequestHandler.class );
 
     private static final QName WFS_FEATURECOLLECTION_NAME = new QName( WFS_NS, "FeatureCollection", WFS_PREFIX );
 

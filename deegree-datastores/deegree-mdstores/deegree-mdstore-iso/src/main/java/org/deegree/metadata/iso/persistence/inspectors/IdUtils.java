@@ -35,8 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.inspectors;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.metadata.i18n.Messages;
+import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
+import org.deegree.metadata.persistence.MetadataInspectorException;
+import org.deegree.protocol.csw.MetadataStoreException;
+import org.deegree.sqldialect.SQLDialect;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,12 +51,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.deegree.metadata.i18n.Messages;
-import org.deegree.metadata.iso.persistence.ISOPropertyNameMapper;
-import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JDBCUtils.close;
 
 /**
  * <Code>ParsingUtils</Code>

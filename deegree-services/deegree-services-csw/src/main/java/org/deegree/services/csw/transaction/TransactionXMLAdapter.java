@@ -35,17 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.transaction;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.XMLParsingException;
@@ -57,17 +48,21 @@ import org.deegree.filter.xml.Filter100XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.MetadataRecordFactory;
-import org.deegree.metadata.persistence.transaction.DeleteOperation;
-import org.deegree.metadata.persistence.transaction.InsertOperation;
-import org.deegree.metadata.persistence.transaction.MetadataProperty;
-import org.deegree.metadata.persistence.transaction.TransactionOperation;
-import org.deegree.metadata.persistence.transaction.UpdateOperation;
+import org.deegree.metadata.persistence.transaction.*;
 import org.deegree.protocol.csw.CSWConstants.TransactionType;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * Adapter between XML encoded <code>Transaction</code> requests and {@link Transaction} objects.
@@ -79,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TransactionXMLAdapter extends AbstractCSWRequestXMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TransactionXMLAdapter.class );
+    private static final Logger LOG = getLogger( TransactionXMLAdapter.class );
 
     /**
      * Parses the {@link Transaction} XML request by deciding which version has to be parsed because of the requested

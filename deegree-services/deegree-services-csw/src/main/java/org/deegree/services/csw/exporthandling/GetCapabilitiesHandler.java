@@ -35,49 +35,30 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.DescribeRecord;
-import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetCapabilities;
-import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetRecordById;
-import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.GetRecords;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.filter.xml.FilterCapabilitiesExporter;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
-import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.CSWConstants.*;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.protocol.csw.CSWConstants.CSWRequestType.*;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * Does the exportHandling for the Capabilities. This is a very static handling for explanation.
@@ -89,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter implements CapabilitiesHandler {
 
-    private static Logger LOG = LoggerFactory.getLogger( GetCapabilitiesHandler.class );
+    private static Logger LOG = getLogger( GetCapabilitiesHandler.class );
 
     private final XMLStreamWriter writer;
 

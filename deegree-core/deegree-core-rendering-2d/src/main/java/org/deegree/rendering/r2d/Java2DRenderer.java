@@ -36,16 +36,7 @@
 
 package org.deegree.rendering.r2d;
 
-import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
-import static org.deegree.rendering.r2d.GeometryClipper.isGenerationExpensive;
-import static org.deegree.rendering.r2d.RenderHelper.calculateResolution;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D.Double;
-import java.util.Collection;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -60,7 +51,16 @@ import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PointStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.Styling;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D.Double;
+import java.util.Collection;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.geometry.utils.GeometryUtils.envelopeToPolygon;
+import static org.deegree.rendering.r2d.GeometryClipper.isGenerationExpensive;
+import static org.deegree.rendering.r2d.RenderHelper.calculateResolution;
 
 /**
  * <code>Java2DRenderer</code>

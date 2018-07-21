@@ -40,7 +40,7 @@ package org.deegree.coverage.raster.io.grid;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -68,7 +69,6 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.coverage.raster.utils.Rasters;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
 
 /**
  * The <code>GridWriter</code> class TODO add class documentation here.

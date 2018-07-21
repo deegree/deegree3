@@ -35,53 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
-import static java.util.Collections.singletonList;
-import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
-import static org.deegree.commons.xml.CommonNamespaces.FES_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.CommonNamespaces.OGC_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_100_CAPABILITIES_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
-import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
-import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
-import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
-import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
-import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
-import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
-import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-import static org.deegree.services.controller.OGCFrontController.getHttpPostURL;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
@@ -112,8 +67,21 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.deegree.services.wfs.encoding.SupportedEncodings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+
+import static java.util.Collections.singletonList;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.protocol.wfs.WFSConstants.*;
+import static org.deegree.protocol.wfs.WFSRequestType.*;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
+import static org.deegree.services.controller.OGCFrontController.getHttpPostURL;
 
 /**
  * Handles a single {@link GetCapabilities} request for the {@link WebFeatureService}.
@@ -125,7 +93,7 @@ import org.slf4j.LoggerFactory;
  */
 class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( GetCapabilitiesHandler.class );
+    private static Logger LOG = getLogger( GetCapabilitiesHandler.class );
 
     private static GeometryTransformer transformer;
 

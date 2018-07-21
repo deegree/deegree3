@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Unit tests for {@link RequestContext}
@@ -50,6 +53,9 @@ import org.mockito.Mockito;
  * 
  * @version $Revision: $, $Date: $
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(RequestContextTest.class)
+@PowerMockIgnore("javax.management.*")
 public class RequestContextTest {
 
     @Test
@@ -102,10 +108,10 @@ public class RequestContextTest {
     }
 
     private HttpServletRequest mockHttpRequest( String requestUrl, String servletPath, String pathInfo ) {
-        HttpServletRequest mock = Mockito.mock( HttpServletRequest.class );
-        Mockito.when( mock.getRequestURL() ).thenReturn( new StringBuffer( requestUrl ) );
-        Mockito.when( mock.getServletPath() ).thenReturn( servletPath );
-        Mockito.when( mock.getPathInfo() ).thenReturn( pathInfo );
+        HttpServletRequest mock = PowerMockito.mock( HttpServletRequest.class );
+        PowerMockito.when( mock.getRequestURL() ).thenReturn( new StringBuffer( requestUrl ) );
+        PowerMockito.when( mock.getServletPath() ).thenReturn( servletPath );
+        PowerMockito.when( mock.getPathInfo() ).thenReturn( pathInfo );
         return mock;
     }
 

@@ -38,16 +38,15 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Arrays;
-
-import javax.media.opengl.GL;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.ShaderProgram;
-import org.slf4j.Logger;
+
+import javax.media.opengl.GL;
+import java.util.Arrays;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Implementation of a shader based color map for the WPVS. Colors will be linear interpolated between the min and max

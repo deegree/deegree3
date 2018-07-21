@@ -27,8 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreProvider;
 import org.deegree.layer.persistence.LayerStore;
@@ -37,7 +36,8 @@ import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is responsible for building feature layer stores.

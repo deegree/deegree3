@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.transformations;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOCENTRIC;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOGRAPHIC;
@@ -54,6 +55,7 @@ import java.util.List;
 
 import javax.vecmath.Matrix4d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.crs.store.AbstractStore;
 import org.deegree.cs.CRSCodeType;
@@ -81,8 +83,6 @@ import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
 import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
 import org.deegree.cs.utilities.Matrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>TransformationFactory</code> class is the central access point for all transformations between different
@@ -111,7 +111,7 @@ import org.slf4j.LoggerFactory;
  */
 @LoggingNotes(debug = "Get information about the transformation steps which were 'automatically' created.")
 public class TransformationFactory {
-    private static Logger LOG = LoggerFactory.getLogger( TransformationFactory.class );
+    private static Logger LOG = getLogger( TransformationFactory.class );
 
     private CRSStore provider;
 

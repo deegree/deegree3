@@ -35,6 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.nio.DirectByteBufferPool;
+import org.deegree.rendering.r3d.ViewFrustum;
+import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
+import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,12 +48,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import org.deegree.commons.utils.nio.DirectByteBufferPool;
-import org.deegree.rendering.r3d.ViewFrustum;
-import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
-import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Implementation of a fragment based multiresolution model for massive triangle meshes (e.g. large terrain surfaces,
@@ -74,7 +75,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultiresolutionMesh {
 
-    private static Logger LOG = LoggerFactory.getLogger( MultiresolutionMesh.class );
+    private static Logger LOG = getLogger( MultiresolutionMesh.class );
 
     /** Default name for the binary file that contains the mesh fragments. */
     public static final String FRAGMENTS_FILE_NAME = "fragments.bin";

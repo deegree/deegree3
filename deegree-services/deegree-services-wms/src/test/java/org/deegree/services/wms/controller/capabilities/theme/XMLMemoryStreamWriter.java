@@ -35,20 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.theme;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import junit.framework.Assert;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
 
-import junit.framework.Assert;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class creates a {@link XMLStreamWriter} that writes into a temporary buffer and can create a {@link Reader} on
@@ -64,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 class XMLMemoryStreamWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLMemoryStreamWriter.class );
+    private static final Logger LOG = getLogger( XMLMemoryStreamWriter.class );
 
     private XMLStreamWriter xmlWriter;
 

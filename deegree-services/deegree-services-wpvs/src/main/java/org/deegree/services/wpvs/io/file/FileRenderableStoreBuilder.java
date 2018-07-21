@@ -27,20 +27,21 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.wpvs.io.file;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r3d.jaxb.renderable.RenderableFileStoreConfig;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is responsible for building file renderable stores.
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileRenderableStoreBuilder implements ResourceBuilder<RenderableStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FileRenderableStoreBuilder.class );
+    private static final Logger LOG = getLogger( FileRenderableStoreBuilder.class );
 
     private RenderableFileStoreConfig config;
 

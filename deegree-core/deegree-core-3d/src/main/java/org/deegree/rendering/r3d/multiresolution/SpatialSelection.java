@@ -35,15 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.ViewFrustum;
+import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.rendering.r3d.ViewFrustum;
-import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Implementation of <i>spatial selection</i> algorithm for {@link MultiresolutionMesh}.
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SpatialSelection {
 
-    private static Logger LOG = LoggerFactory.getLogger( SpatialSelection.class );
+    private static Logger LOG = getLogger( SpatialSelection.class );
 
     // associated multiresolution model
     private MultiresolutionMesh mt;

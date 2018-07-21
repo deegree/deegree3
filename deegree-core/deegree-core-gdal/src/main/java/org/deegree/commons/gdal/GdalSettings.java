@@ -27,20 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.gdal;
 
-import static java.util.Collections.synchronizedMap;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.gdal.jaxb.GDALSettings;
 import org.deegree.commons.gdal.jaxb.GDALSettings.GDALOption;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
@@ -50,7 +38,18 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.gdal.gdal.gdal;
 import org.gdal.osr.SpatialReference;
-import org.slf4j.Logger;
+
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Collections.synchronizedMap;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link Initializable} for GDAL JNI access.

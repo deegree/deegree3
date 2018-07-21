@@ -36,18 +36,17 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.GL;
-
+import com.sun.opengl.util.BufferUtil;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.BufferUtil;
+import javax.media.opengl.GL;
+import java.nio.FloatBuffer;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RenderableTexturedGeometry</code> is a {@link RenderableGeometry} which has texture coordinates assigned to
@@ -67,7 +66,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      */
     private static final long serialVersionUID = 2809495291716138222L;
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( RenderableTexturedGeometry.class );
+    private final transient static Logger LOG = getLogger( RenderableTexturedGeometry.class );
 
     private transient String texture;
 

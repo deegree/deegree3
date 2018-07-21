@@ -37,6 +37,7 @@ package org.deegree.workspace.standard;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
+import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -51,8 +52,7 @@ import java.util.regex.Pattern;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ConfigurationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides access to deegree module metadata (e.g. Maven artifact identifier and build information).
@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ModuleInfo implements Comparable<ModuleInfo> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ModuleInfo.class );
+    private static final Logger LOG = getLogger( ModuleInfo.class );
 
     private final String artifactId;
 

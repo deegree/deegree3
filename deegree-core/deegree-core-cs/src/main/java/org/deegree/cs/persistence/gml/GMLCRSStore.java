@@ -36,6 +36,7 @@
 
 package org.deegree.cs.persistence.gml;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.components.Unit.createUnitFromString;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
 import static org.deegree.cs.coordinatesystems.CRS.CRSType.GEOCENTRIC;
@@ -52,6 +53,7 @@ import javax.vecmath.Point2d;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -104,8 +106,6 @@ import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.transformations.coordinate.NotSupportedTransformation;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GMLCRSProvider</code> is a provider for a GML 3.2 backend, this may be a dictionary or a database.
@@ -123,7 +123,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about the currently parsed coordinate system components.")
 public class GMLCRSStore extends AbstractCRSStore {
 
-    private static Logger LOG = LoggerFactory.getLogger( GMLCRSStore.class );
+    private static Logger LOG = getLogger( GMLCRSStore.class );
 
     private static String PRE = CommonNamespaces.GML3_2_PREFIX + ":";
 
@@ -210,9 +210,7 @@ public class GMLCRSStore extends AbstractCRSStore {
                             throws CRSConfigurationException {
         try {
             return parseGMLTransformation( rootElement, null, null );
-        } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException( e );
-        } catch ( IOException e ) {
+        } catch ( XMLParsingException | IOException e ) {
             throw new CRSConfigurationException( e );
         }
     }

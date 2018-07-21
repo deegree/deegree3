@@ -41,36 +41,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.se.parser;
 
-import static java.awt.Font.TRUETYPE_FONT;
-import static java.awt.Font.TYPE1_FONT;
-import static java.awt.Font.createFont;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.resolve;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.FontFormatException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
@@ -83,7 +55,32 @@ import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.utils.ShapeHelper;
-import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static java.awt.Font.*;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.resolve;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.style.se.unevaluated.Continuation.SBUPDATER;
 
 /**
  * Responsible for parsing Graphic elements.

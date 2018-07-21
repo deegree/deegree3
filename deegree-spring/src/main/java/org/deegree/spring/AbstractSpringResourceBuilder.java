@@ -40,17 +40,16 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring;
 
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.context.ApplicationContext;
+
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The AbstractSpringResourceBuilder can be extended in order to create a 
@@ -65,7 +64,7 @@ import org.springframework.context.ApplicationContext;
  */
 public abstract class AbstractSpringResourceBuilder<T extends Resource> implements ResourceBuilder<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractSpringResourceBuilder.class );
+    private static final Logger LOG = getLogger( AbstractSpringResourceBuilder.class );
 
     private final Workspace workspace;
 

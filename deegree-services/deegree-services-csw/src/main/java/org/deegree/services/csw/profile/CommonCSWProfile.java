@@ -35,31 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.profile;
 
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
-import org.deegree.protocol.csw.CSWConstants.OutputSchema;
-import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.CSWConstants.*;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.controller.ImplementationMetadata;
@@ -69,7 +49,19 @@ import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ServiceIdentificationType;
 import org.deegree.services.jaxb.metadata.ServiceProviderType;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * TODO add class documentation here

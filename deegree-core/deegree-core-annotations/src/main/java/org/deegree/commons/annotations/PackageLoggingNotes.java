@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.annotations;
 
-import static java.lang.annotation.ElementType.PACKAGE;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.PACKAGE;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * <code>PackageDebuggingNotes</code>
@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
 public @interface PackageLoggingNotes {
 
     /**
-     * @return the string that can be used as title string delimiting a log4j.properties section
+     * @return the string that can be used as title string delimiting a log4j2.xml section
      */
     String title() default "";
 

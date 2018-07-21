@@ -36,25 +36,22 @@
 
 package org.deegree.style.se.parser;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
-import java.util.LinkedList;
+import junit.framework.TestCase;
+import org.apache.logging.log4j.Logger;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
 
-import junit.framework.TestCase;
-
-import org.deegree.style.se.parser.SymbologyParser;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>SymbologyParserTest</code>

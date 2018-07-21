@@ -36,15 +36,17 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
-import java.util.List;
-
-import javax.vecmath.Point3d;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+
+import javax.vecmath.Point3d;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>LODSwitcher</code> holds (configured) scale values for a {@link WorldRenderableObject} with which the
@@ -57,7 +59,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  */
 public class LODSwitcher {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( LODSwitcher.class );
+    private final static Logger LOG = getLogger( LODSwitcher.class );
 
     /**
      * Array containing min,max for each level.

@@ -38,8 +38,6 @@
 
 package org.deegree.coverage.raster.io.grid;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,10 +47,12 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>SplittedBlobReader</code> is a rasterreader for a grid file which is spread over multiple blobs. The blobs

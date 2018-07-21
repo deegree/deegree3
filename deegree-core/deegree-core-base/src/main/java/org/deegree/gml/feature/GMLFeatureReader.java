@@ -36,6 +36,7 @@
 package org.deegree.gml.feature;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
@@ -58,6 +59,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
@@ -89,8 +91,6 @@ import org.deegree.gml.commons.AbstractGMLObjectReader;
 import org.deegree.gml.reference.FeatureReference;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.WellKnownGMLTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link AbstractGMLObjectReader} for features and feature collections.
@@ -102,7 +102,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLFeatureReader extends AbstractGMLObjectReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureReader.class );
+    private static final Logger LOG = getLogger( GMLFeatureReader.class );
 
     private static String FID = "fid";
 

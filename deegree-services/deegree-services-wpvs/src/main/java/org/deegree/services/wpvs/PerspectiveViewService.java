@@ -36,18 +36,7 @@
 
 package org.deegree.services.wpvs;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.media.opengl.GLPbuffer;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
@@ -65,26 +54,28 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.RenderableManager;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wpvs.Copyright;
+import org.deegree.services.jaxb.wpvs.*;
 import org.deegree.services.jaxb.wpvs.Copyright.Image;
-import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
-import org.deegree.services.jaxb.wpvs.ServiceConfiguration;
-import org.deegree.services.jaxb.wpvs.SkyImages;
 import org.deegree.services.jaxb.wpvs.SkyImages.SkyImage;
-import org.deegree.services.jaxb.wpvs.TranslationToLocalCRS;
-import org.deegree.services.wpvs.config.ColormapDataset;
-import org.deegree.services.wpvs.config.DEMDataset;
-import org.deegree.services.wpvs.config.DEMTextureDataset;
-import org.deegree.services.wpvs.config.Dataset;
-import org.deegree.services.wpvs.config.RenderableDataset;
+import org.deegree.services.wpvs.config.*;
 import org.deegree.services.wpvs.controller.getview.GetView;
 import org.deegree.services.wpvs.rendering.jogl.ConfiguredOpenGLInitValues;
 import org.deegree.services.wpvs.rendering.jogl.GLPBufferPool;
 import org.deegree.services.wpvs.rendering.jogl.GetViewRenderer;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.media.opengl.GLPbuffer;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 /**
  * Performs the setup of a {@link Dataset}s from a configuration document and provides the {@link #getImage(GetView)}
@@ -98,7 +89,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PerspectiveViewService {
 
-    private final static Logger LOG = LoggerFactory.getLogger( PerspectiveViewService.class );
+    private final static Logger LOG = getLogger( PerspectiveViewService.class );
 
     private final static GeometryFactory geomFactory = new GeometryFactory();
 

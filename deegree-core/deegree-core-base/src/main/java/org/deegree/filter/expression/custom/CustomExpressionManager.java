@@ -35,14 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression.custom;
 
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 import javax.xml.namespace.QName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Entry point for retrieving {@link CustomExpression} instances that are registered via Java SPI.
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CustomExpressionManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CustomExpressionManager.class );
+    private static final Logger LOG = getLogger( CustomExpressionManager.class );
 
     private static ServiceLoader<CustomExpression> customExpressionLoader = ServiceLoader.load( CustomExpression.class );
 

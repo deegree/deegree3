@@ -13,18 +13,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.filter;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
+import javax.servlet.*;
 import java.io.IOException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Ensure that the encoding of the request is correct! Use the init parameter with name 'encoding' or 'UTF-8' as

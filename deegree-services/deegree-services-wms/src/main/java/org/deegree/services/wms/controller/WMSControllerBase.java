@@ -35,17 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller;
 
-import static java.lang.Integer.parseInt;
-import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.services.i18n.Messages.get;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.xml.stream.XMLOutputFactory;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -58,7 +48,16 @@ import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.WMSController.Controller;
 import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.services.wms.controller.exceptions.SerializingException;
-import org.slf4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.xml.stream.XMLOutputFactory;
+import java.io.IOException;
+import java.util.Map;
+
+import static java.lang.Integer.parseInt;
+import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.services.i18n.Messages.get;
 
 /**
  * <code>WMSControllerBase</code>

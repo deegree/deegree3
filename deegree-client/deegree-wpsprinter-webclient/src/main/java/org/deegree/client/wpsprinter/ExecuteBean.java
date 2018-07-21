@@ -35,8 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.wpsprinter;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.protocol.wps.client.WPSClient;
+import org.deegree.protocol.wps.client.output.ComplexOutput;
+import org.deegree.protocol.wps.client.output.type.OutputType;
+import org.deegree.protocol.wps.client.process.Process;
+import org.deegree.protocol.wps.client.process.ProcessExecution;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import java.io.Serializable;
 import java.net.URL;
 import java.text.DateFormat;
@@ -45,16 +53,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.protocol.wps.client.WPSClient;
-import org.deegree.protocol.wps.client.output.ComplexOutput;
-import org.deegree.protocol.wps.client.output.type.OutputType;
-import org.deegree.protocol.wps.client.process.Process;
-import org.deegree.protocol.wps.client.process.ProcessExecution;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

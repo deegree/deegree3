@@ -36,8 +36,10 @@
 
 package org.deegree.commons.dataaccess;
 
+import org.apache.logging.log4j.Logger;
+
 import static java.util.Arrays.copyOf;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -45,8 +47,6 @@ import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
 
 /**
  * The <code>CSVReader</code> reads a csv file line by line. Note the regular expression for quotes may not work under

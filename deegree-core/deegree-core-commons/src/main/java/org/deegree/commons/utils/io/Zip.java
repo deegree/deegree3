@@ -35,9 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.io;
 
+import org.apache.logging.log4j.Logger;
+
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,8 +51,6 @@ import java.net.URI;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import org.slf4j.Logger;
 
 /**
  * 

@@ -35,23 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -77,8 +64,21 @@ import org.deegree.metadata.iso.types.Format;
 import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.jaxen.JaxenException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Represents an ISO 19115 {@link MetadataRecord}.
@@ -99,7 +99,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ISORecord implements MetadataRecord {
 
-    private static Logger LOG = LoggerFactory.getLogger( ISORecord.class );
+    private static Logger LOG = getLogger( ISORecord.class );
 
     /** Namespace for ISORecord elements */
     public static String ISO_RECORD_NS = CommonNamespaces.ISOAP10GMDNS;

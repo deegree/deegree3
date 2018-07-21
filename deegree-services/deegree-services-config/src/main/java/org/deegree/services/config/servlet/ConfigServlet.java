@@ -35,9 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.config.servlet;
 
-import static org.deegree.services.config.actions.Crs.checkCrs;
-import static org.deegree.services.config.actions.Crs.getCodes;
-import static org.deegree.services.config.actions.Crs.listCrs;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.services.config.actions.Crs.*;
 import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.Invalidate.invalidate;
@@ -45,17 +53,6 @@ import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.Upload.upload;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 
 /**
  * 

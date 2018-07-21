@@ -41,14 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.gdal;
 
-import static org.gdal.gdalconst.gdalconstConstants.GA_ReadOnly;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.TileDataSet;
@@ -59,7 +52,13 @@ import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Builds a tile data set map from jaxb config.

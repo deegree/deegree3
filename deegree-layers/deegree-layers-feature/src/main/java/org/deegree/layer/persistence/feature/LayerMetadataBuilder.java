@@ -41,20 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
-import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
-import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
-import static org.deegree.layer.config.ConfigUtils.parseDimensions;
-import static org.deegree.layer.config.ConfigUtils.parseLayerOptions;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
@@ -67,7 +54,19 @@ import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.feature.jaxb.FeatureLayerType;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
+import static org.deegree.feature.persistence.FeatureStores.getCombinedEnvelope;
+import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
+import static org.deegree.layer.config.ConfigUtils.parseDimensions;
+import static org.deegree.layer.config.ConfigUtils.parseLayerOptions;
 
 /**
  * Builds layer metadata objects from jaxb config for feature layers.

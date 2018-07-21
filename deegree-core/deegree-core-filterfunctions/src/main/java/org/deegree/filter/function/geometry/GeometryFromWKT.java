@@ -35,13 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
-import static org.deegree.filter.function.ParameterType.GEOMETRY;
-import static org.deegree.filter.function.ParameterType.STRING;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.vividsolutions.jts.io.ParseException;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -53,9 +48,13 @@ import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
 
-import com.vividsolutions.jts.io.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.filter.function.ParameterType.GEOMETRY;
+import static org.deegree.filter.function.ParameterType.STRING;
 
 /**
  * 

@@ -34,33 +34,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_AUTO_ARRAY;
-import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_NAMESPACE_DECLARATIONS;
-import static de.odysseus.staxon.json.JsonXMLOutputFactory.PROP_PRETTY_PRINT;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.CSW_PREFIX;
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import de.odysseus.staxon.json.JsonXMLOutputFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.ows.Version;
@@ -78,18 +54,27 @@ import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.ResultType;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.CSWConstants.*;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.csw.CSWController;
 import org.deegree.services.csw.getrecords.ConfiguredElementName;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.odysseus.staxon.json.JsonXMLOutputFactory;
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import java.io.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static de.odysseus.staxon.json.JsonXMLOutputFactory.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * Defines the export functionality for a {@link GetRecords} request
@@ -102,7 +87,7 @@ import de.odysseus.staxon.json.JsonXMLOutputFactory;
  */
 public class GetRecordsHandler {
 
-    private static Logger LOG = LoggerFactory.getLogger( GetRecordsHandler.class );
+    private static Logger LOG = getLogger( GetRecordsHandler.class );
 
     private final int maxMatches;
 

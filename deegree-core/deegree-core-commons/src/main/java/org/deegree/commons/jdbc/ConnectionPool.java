@@ -36,8 +36,6 @@
 
 package org.deegree.commons.jdbc;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -47,8 +45,10 @@ import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Simple implementation of a JDBC connection pool based on the Apache Commons Pool and DBCP projects.

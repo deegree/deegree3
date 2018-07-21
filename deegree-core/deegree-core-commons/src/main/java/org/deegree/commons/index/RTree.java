@@ -36,8 +36,6 @@
 
 package org.deegree.commons.index;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -56,8 +54,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>RTree</code>

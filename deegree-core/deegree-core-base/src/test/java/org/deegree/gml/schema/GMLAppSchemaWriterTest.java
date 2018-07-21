@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -53,14 +51,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.junit.Test;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add documentation here

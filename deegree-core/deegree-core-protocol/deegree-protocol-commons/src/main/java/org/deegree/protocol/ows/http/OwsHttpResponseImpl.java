@@ -35,28 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.http;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
-import static org.deegree.protocol.ows.exception.OWSExceptionReader.isExceptionReport;
-import static org.deegree.protocol.ows.exception.OWSExceptionReader.parseExceptionReport;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
+import static org.deegree.protocol.ows.exception.OWSExceptionReader.isExceptionReport;
+import static org.deegree.protocol.ows.exception.OWSExceptionReader.parseExceptionReport;
 
 /**
  * Encapsulates an HTTP response from an OGC web service.
@@ -68,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OwsHttpResponseImpl implements OwsHttpResponse {
 
-    private static Logger LOG = LoggerFactory.getLogger( OwsHttpResponseImpl.class );
+    private static Logger LOG = getLogger( OwsHttpResponseImpl.class );
 
     private static final XMLInputFactory xmlFac = XMLInputFactory.newInstance();
 

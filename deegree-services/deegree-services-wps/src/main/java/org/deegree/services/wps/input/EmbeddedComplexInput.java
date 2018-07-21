@@ -36,21 +36,21 @@
 
 package org.deegree.services.wps.input;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.process.jaxb.java.ComplexFormatType;
 import org.deegree.process.jaxb.java.ComplexInputDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A {@link ComplexInputImpl} with a value that is given inline in the execute request document.
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EmbeddedComplexInput extends ComplexInputImpl {
 
-    private static final Logger LOG = LoggerFactory.getLogger( EmbeddedComplexInput.class );
+    private static final Logger LOG = getLogger( EmbeddedComplexInput.class );
 
     private final StreamBufferStore store;
 

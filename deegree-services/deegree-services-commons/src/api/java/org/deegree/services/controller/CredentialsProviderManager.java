@@ -35,12 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.services.authentication.DeegreeAuthentication;
 import org.deegree.services.authentication.HttpBasicAuthentication;
 import org.deegree.services.authentication.SOAPAuthentication;
 import org.deegree.services.jaxb.security.CredentialsProviderType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Entry point for creating {@link CredentialsProvider} instances from XML elements (JAXB objects).
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CredentialsProviderManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CredentialsProviderManager.class );
+    private static final Logger LOG = getLogger( CredentialsProviderManager.class );
 
     /**
      * Creates the authentication method that is specified in the configuration.

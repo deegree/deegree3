@@ -41,35 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.simplesql;
 
-import static java.sql.Types.BIGINT;
-import static java.sql.Types.BINARY;
-import static java.sql.Types.BIT;
-import static java.sql.Types.BLOB;
-import static java.sql.Types.CHAR;
-import static java.sql.Types.DOUBLE;
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.LONGVARBINARY;
-import static java.sql.Types.NUMERIC;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.SMALLINT;
-import static java.sql.Types.VARCHAR;
-import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.LinkedList;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.JDBCUtils;
@@ -80,7 +52,20 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.sql.*;
+import java.util.LinkedList;
+
+import static java.sql.Types.*;
+import static java.sql.Types.DOUBLE;
+import static java.sql.Types.INTEGER;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.tom.primitive.BaseType.*;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 
 /**
  * TODO add class documentation here

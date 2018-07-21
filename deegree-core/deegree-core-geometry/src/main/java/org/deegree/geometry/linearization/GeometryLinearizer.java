@@ -38,6 +38,7 @@ package org.deegree.geometry.linearization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.multi.MultiCurve;
@@ -50,10 +51,10 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.MultiPoint;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides methods for creating linearized versions of {@link Geometry} objects.
@@ -65,7 +66,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
  */
 public class GeometryLinearizer {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SurfaceLinearizer.class );
+    private static final Logger LOG = getLogger( SurfaceLinearizer.class );
 
     private GeometryFactory geomFac;
 

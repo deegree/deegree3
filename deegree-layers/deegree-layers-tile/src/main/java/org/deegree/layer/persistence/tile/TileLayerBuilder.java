@@ -41,15 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.tile;
 
-import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
-import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -64,7 +56,15 @@ import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.metadata.DescriptionConverter.fromJaxb;
+import static org.deegree.geometry.metadata.SpatialMetadataConverter.fromJaxb;
 
 /**
  * Builds tile layers from jaxb beans.

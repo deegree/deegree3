@@ -41,16 +41,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.parsing;
 
-import java.io.InputStream;
+import org.deegree.feature.FeatureCollection;
+import org.junit.Assert;
+import org.junit.Test;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import junit.framework.Assert;
-
-import org.deegree.feature.FeatureCollection;
-import org.junit.Test;
+import java.io.InputStream;
 
 /**
  * Test feature info parsing workarounds.

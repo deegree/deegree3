@@ -44,6 +44,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -60,8 +61,8 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 
@@ -76,7 +77,7 @@ public class IIORasterReader implements RasterReader {
 
     private static final Set<String> SUPPORTED_TYPES;
 
-    private static Logger LOG = LoggerFactory.getLogger( IIORasterReader.class );
+    private static Logger LOG = getLogger( IIORasterReader.class );
 
     static {
         SUPPORTED_TYPES = new HashSet<String>();

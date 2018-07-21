@@ -35,15 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.utils;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.apache.logging.log4j.Logger;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

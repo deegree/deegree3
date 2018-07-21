@@ -35,22 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs;
 
-import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.persistence.CoverageProvider;
-import org.deegree.coverage.rangeset.AxisSubset;
-import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.*;
 import org.deegree.coverage.rangeset.Interval.Closure;
-import org.deegree.coverage.rangeset.RangeSet;
-import org.deegree.coverage.rangeset.RangeSetBuilder;
-import org.deegree.coverage.rangeset.SingleValue;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
@@ -63,23 +51,20 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.exception.ServiceInitException;
-import org.deegree.services.jaxb.wcs.AxisValue;
-import org.deegree.services.jaxb.wcs.Interpolation;
-import org.deegree.services.jaxb.wcs.IntervalType;
-import org.deegree.services.jaxb.wcs.RangeSetType;
+import org.deegree.services.jaxb.wcs.*;
 import org.deegree.services.jaxb.wcs.RangeSetType.AxisDescription;
-import org.deegree.services.jaxb.wcs.ServiceConfiguration;
 import org.deegree.services.jaxb.wcs.ServiceConfiguration.Coverage;
-import org.deegree.services.jaxb.wcs.SupportOptions;
-import org.deegree.services.jaxb.wcs.TypedType;
 import org.deegree.services.wcs.coverages.MultiResolutionCoverage;
 import org.deegree.services.wcs.coverages.SimpleCoverage;
 import org.deegree.services.wcs.coverages.WCSCoverage;
 import org.deegree.services.wcs.model.CoverageOptions;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.services.controller.OGCFrontController.getServiceWorkspace;
 
 /**
  * This class builds WCServices from the deegree WCS configuration files.
@@ -92,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WCServiceBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WCServiceBuilder.class );
+    private static final Logger LOG = getLogger( WCServiceBuilder.class );
 
     private WCService wcsService;
 

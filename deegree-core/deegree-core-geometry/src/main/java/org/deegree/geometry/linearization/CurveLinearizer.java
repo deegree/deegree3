@@ -50,6 +50,7 @@ import org.apache.commons.math.linear.LUDecompositionImpl;
 import org.apache.commons.math.linear.RealMatrix;
 import org.apache.commons.math.linear.RealVector;
 import org.apache.commons.math.linear.SingularMatrixException;
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
@@ -69,8 +70,8 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides methods for the linearization of {@link Curve}s and {@link CurveSegment}s.
@@ -94,7 +95,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CurveLinearizer {
 
-    private static Logger LOG = LoggerFactory.getLogger( CurveLinearizer.class );
+    private static Logger LOG = getLogger( CurveLinearizer.class );
 
     private static final double EPSILON = 1E-6;
 

@@ -35,25 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.wps100;
 
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
@@ -68,8 +51,18 @@ import org.deegree.protocol.wps.client.output.LiteralOutput;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.process.execute.ExecutionResponse;
 import org.deegree.protocol.wps.client.process.execute.ExecutionStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.xml.stream.XMLStreamConstants.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Parser for WPS 1.0.0 execute response documents.
@@ -82,7 +75,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecuteResponse100Reader {
 
-    private static Logger LOG = LoggerFactory.getLogger( ExecuteResponse100Reader.class );
+    private static Logger LOG = getLogger( ExecuteResponse100Reader.class );
 
     private XMLStreamReader reader;
 

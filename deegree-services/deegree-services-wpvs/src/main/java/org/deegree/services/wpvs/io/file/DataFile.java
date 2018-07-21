@@ -36,21 +36,7 @@
 
 package org.deegree.services.wpvs.io.file;
 
-import static org.deegree.commons.utils.memory.AllocatedHeapMemory.LONG_SIZE;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
@@ -59,6 +45,18 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.memory.AllocatedHeapMemory.LONG_SIZE;
 
 /**
  * The <code>DataFile</code> class TODO add class documentation here.
@@ -74,7 +72,7 @@ public class DataFile<T extends PositionableModel> {
 
     private final static GeometryFactory geomFac = new GeometryFactory();
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( DataFile.class );
+    private final static Logger LOG = getLogger( DataFile.class );
 
     // private FileChannel channel;
 

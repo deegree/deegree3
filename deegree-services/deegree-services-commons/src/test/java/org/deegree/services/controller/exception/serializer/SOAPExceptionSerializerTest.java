@@ -35,19 +35,19 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.exception.serializer;
 
-import java.io.ByteArrayOutputStream;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.axiom.soap.impl.llom.soap11.SOAP11Factory;
-import org.apache.axiom.soap.impl.llom.soap12.SOAP12Factory;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axiom.soap.impl.common.SOAP12Factory;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.services.controller.exception.SOAPException;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.junit.Test;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
 
 /**
  * currently it is only tested that no exception occurs
@@ -60,7 +60,7 @@ public class SOAPExceptionSerializerTest {
     @Test
     public void testSerializeExceptionToXML_SOAP11()
                             throws Exception {
-        SOAP11Factory factory = new SOAP11Factory();
+        SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
         XMLExceptionSerializer detailSerializer = new OWS110ExceptionReportSerializer( new Version( 2, 0, 0 ) );
         SOAPExceptionSerializer soapExceptionSerializer = new SOAPExceptionSerializer( factory.getSOAPVersion(), null,
                                                                                        factory, detailSerializer );
@@ -77,7 +77,7 @@ public class SOAPExceptionSerializerTest {
     @Test
     public void testSerializeExceptionToXML_SOAP12()
                             throws Exception {
-        SOAP12Factory factory = new SOAP12Factory();
+        SOAP12Factory factory = (SOAP12Factory)OMAbstractFactory.getSOAP12Factory();
         SOAPExceptionSerializer soapExceptionSerializer = createExceptionSerializer( factory );
         SOAPException soapException = createException();
 

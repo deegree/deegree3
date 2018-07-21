@@ -42,9 +42,12 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RangeSetBuilder</code> class supplies methods for building rangeset definitions for coverages.
@@ -56,7 +59,7 @@ import org.deegree.coverage.raster.data.info.RasterDataInfo;
  */
 public class RangeSetBuilder {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RangeSetBuilder.class );
+    private final static Logger LOG = getLogger( RangeSetBuilder.class );
 
     /**
      * creates a Rangeset for a given raster by looking at the band info.

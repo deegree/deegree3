@@ -27,14 +27,14 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is responsible for building coverage layer stores.

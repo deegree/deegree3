@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.gml;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.CRSStoreException;
@@ -56,7 +57,6 @@ import org.deegree.cs.persistence.gml.jaxb.GMLCRSStoreConfig;
 import org.deegree.cs.persistence.gml.jaxb.Param;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
 
 /**
  * {@link GMLCRSStoreProvider} for {@link GMLCRSStore}

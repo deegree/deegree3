@@ -36,19 +36,7 @@
 
 package org.deegree.services.wps.execute;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.bind.JAXBElement;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
@@ -59,31 +47,22 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.process.jaxb.java.BoundingBoxInputDefinition;
-import org.deegree.process.jaxb.java.ComplexFormatType;
-import org.deegree.process.jaxb.java.ComplexInputDefinition;
-import org.deegree.process.jaxb.java.ComplexOutputDefinition;
-import org.deegree.process.jaxb.java.LiteralInputDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.process.jaxb.java.*;
 import org.deegree.process.jaxb.java.ProcessDefinition.InputParameters;
 import org.deegree.process.jaxb.java.ProcessDefinition.OutputParameters;
-import org.deegree.process.jaxb.java.ProcessletInputDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
 import org.deegree.protocol.wps.WPSConstants;
 import org.deegree.services.wps.DefaultExceptionCustomizer;
 import org.deegree.services.wps.ExceptionCustomizer;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.WPSProcess;
-import org.deegree.services.wps.input.BoundingBoxInput;
-import org.deegree.services.wps.input.BoundingBoxInputImpl;
-import org.deegree.services.wps.input.ComplexInput;
-import org.deegree.services.wps.input.InputReference;
-import org.deegree.services.wps.input.LiteralInput;
-import org.deegree.services.wps.input.LiteralInputImpl;
-import org.deegree.services.wps.input.ProcessletInput;
-import org.deegree.services.wps.input.ReferencedComplexInput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.services.wps.input.*;
+
+import javax.xml.bind.JAXBElement;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Parser and validator for incoming WPS <code>Execute</code> KVP requests.
@@ -96,7 +75,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecuteRequestKVPAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExecuteRequestKVPAdapter.class );
+    private static final Logger LOG = getLogger( ExecuteRequestKVPAdapter.class );
 
     private static final GeometryFactory geomFac = new GeometryFactory();
 

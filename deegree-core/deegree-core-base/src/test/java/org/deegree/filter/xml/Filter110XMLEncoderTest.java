@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.junit.Assert.assertNotNull;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -67,7 +68,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
  * Tests the correct parsing and exporting of Filter Encoding 1.1.0 documents.

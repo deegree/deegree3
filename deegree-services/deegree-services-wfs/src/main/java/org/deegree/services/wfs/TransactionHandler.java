@@ -36,46 +36,7 @@
 
 package org.deegree.services.wfs;
 
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_100_TRANSACTION_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
-import static org.deegree.protocol.wfs.transaction.ReleaseAction.ALL;
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
-import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -118,28 +79,34 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
-import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
-import org.deegree.protocol.wfs.transaction.action.Delete;
-import org.deegree.protocol.wfs.transaction.action.IDGenMode;
-import org.deegree.protocol.wfs.transaction.action.Insert;
-import org.deegree.protocol.wfs.transaction.action.Native;
-import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
-import org.deegree.protocol.wfs.transaction.action.PropertyReplacement;
-import org.deegree.protocol.wfs.transaction.action.Replace;
-import org.deegree.protocol.wfs.transaction.action.Update;
-import org.deegree.protocol.wfs.transaction.action.UpdateAction;
+import org.deegree.protocol.wfs.transaction.action.*;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.i18n.Messages;
-import org.jaxen.expr.Expr;
-import org.jaxen.expr.LocationPath;
-import org.jaxen.expr.NameStep;
-import org.jaxen.expr.NumberExpr;
-import org.jaxen.expr.Predicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jaxen.expr.*;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.util.*;
+
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.*;
+import static org.deegree.commons.xml.CommonNamespaces.*;
+import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.wfs.WFSConstants.*;
+import static org.deegree.protocol.wfs.transaction.ReleaseAction.ALL;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 /**
  * Handles a single {@link Transaction} request for the {@link WebFeatureService}.
@@ -153,7 +120,7 @@ import org.slf4j.LoggerFactory;
  */
 class TransactionHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
+    private static final Logger LOG = getLogger( TransactionHandler.class );
 
     private final WebFeatureService master;
 

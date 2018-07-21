@@ -35,19 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.Feature;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.Feature;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryTransformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Tracks feature type envelope information during a {@link FeatureStoreTransaction}.
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BBoxTracker {
 
-    private static Logger LOG = LoggerFactory.getLogger( BBoxTracker.class );
+    private static Logger LOG = getLogger( BBoxTracker.class );
 
     // feature types that require envelope recalculation
     private final Set<QName> recalcFts = new HashSet<QName>();

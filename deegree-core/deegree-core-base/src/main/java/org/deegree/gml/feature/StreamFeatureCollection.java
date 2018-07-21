@@ -37,6 +37,7 @@ package org.deegree.gml.feature;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.gml.feature.GMLFeatureReader.BOUNDED_BY_GML31;
 import static org.deegree.gml.feature.GMLFeatureReader.BOUNDED_BY_GML32;
 
@@ -49,6 +50,7 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.xml.XMLParsingException;
@@ -65,8 +67,6 @@ import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.gml.GMLStreamReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link StreamFeatureCollection} for GML feature collection elements.
@@ -78,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StreamFeatureCollection implements FeatureInputStream {
 
-    private static Logger LOG = LoggerFactory.getLogger( StreamFeatureCollection.class );
+    private static Logger LOG = getLogger( StreamFeatureCollection.class );
 
     private final String fid;
 

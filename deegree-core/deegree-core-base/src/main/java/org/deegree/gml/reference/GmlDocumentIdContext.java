@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.reference;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 
 import java.net.URL;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
@@ -51,8 +53,6 @@ import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Keeps track of {@link GMLObject}s inside GML instance documents, their ids and local xlink references during the
@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GmlDocumentIdContext implements GMLReferenceResolver {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlDocumentIdContext.class );
+    private static final Logger LOG = getLogger( GmlDocumentIdContext.class );
 
     private final GMLVersion version;
 

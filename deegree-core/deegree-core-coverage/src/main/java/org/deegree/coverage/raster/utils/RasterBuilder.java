@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
@@ -63,8 +64,8 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RasterBuilder</code> recursively enters a given directory and creates a {@link TiledRaster} from found
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterBuilder {
 
-    private final static Logger LOG = LoggerFactory.getLogger( RasterBuilder.class );
+    private final static Logger LOG = getLogger( RasterBuilder.class );
 
     /**
      * Create a {@link MultiResolutionRaster} with the origin or the world coordinate of each raster file, defined by

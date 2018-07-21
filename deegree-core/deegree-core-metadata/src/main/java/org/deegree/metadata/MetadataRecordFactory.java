@@ -35,37 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata;
 
-import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
-import static org.deegree.metadata.ebrim.RegistryObject.RIM_NS;
-import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
+import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.metadata.ebrim.*;
+import org.deegree.metadata.iso.ISORecord;
 
+import javax.xml.stream.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.axiom.om.OMElement;
-import org.apache.commons.io.IOUtils;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.metadata.ebrim.AdhocQuery;
-import org.deegree.metadata.ebrim.Association;
-import org.deegree.metadata.ebrim.Classification;
-import org.deegree.metadata.ebrim.ClassificationNode;
-import org.deegree.metadata.ebrim.ExtrinsicObject;
-import org.deegree.metadata.ebrim.RIMType;
-import org.deegree.metadata.ebrim.RegistryObject;
-import org.deegree.metadata.ebrim.RegistryPackage;
-import org.deegree.metadata.iso.ISORecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.metadata.DCRecord.DC_RECORD_NS;
+import static org.deegree.metadata.ebrim.RegistryObject.RIM_NS;
+import static org.deegree.metadata.iso.ISORecord.ISO_RECORD_NS;
 
 /**
  * Main entry point for creating {@link MetadataRecord} instances from XML representations.
@@ -80,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MetadataRecordFactory {
 
-    private static Logger LOG = LoggerFactory.getLogger( MetadataRecordFactory.class );
+    private static Logger LOG = getLogger( MetadataRecordFactory.class );
 
     /**
      * Creates a {@link MetadataRecord} instance out a {@link XMLStreamReader}. The reader must point to the

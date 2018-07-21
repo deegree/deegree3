@@ -41,12 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import javax.imageio.metadata.IIOMetadata;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -54,7 +49,12 @@ import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.workspace.ResourceInitException;
-import org.slf4j.Logger;
+
+import javax.imageio.metadata.IIOMetadata;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.OUTER;
 
 /**
  * Methods to extract envelope/crs info from imageio metadata objects (GeoTIFF tags).

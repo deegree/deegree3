@@ -39,7 +39,7 @@
 package org.deegree.coverage.raster.integration;
 
 import static junit.framework.Assert.assertNotNull;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -50,6 +50,7 @@ import java.net.URISyntaxException;
 
 import junit.framework.Assert;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.PixelCounter;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -57,7 +58,6 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Before;
-import org.slf4j.Logger;
 
 /**
  * The <code>CenterOuterTest</code> defines raster API integration tests on a tiled raster and a sole simple raster. For

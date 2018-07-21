@@ -43,12 +43,13 @@ import java.util.Map.Entry;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.reference.GmlXlinkStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Concrete extensions are writers for a specific category of GML objects.
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractGMLObjectWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectWriter.class );
+    private static final Logger LOG = getLogger( AbstractGMLObjectWriter.class );
 
     protected final GMLStreamWriter gmlStreamWriter;
 

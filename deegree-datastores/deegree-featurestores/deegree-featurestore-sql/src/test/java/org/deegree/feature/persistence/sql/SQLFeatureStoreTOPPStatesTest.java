@@ -35,29 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static org.deegree.commons.tom.primitive.BaseType.DOUBLE;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.test.TestDBProperties;
@@ -70,8 +48,8 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.FeatureStoreProvider;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
@@ -101,8 +79,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.DOUBLE;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic {@link SQLFeatureStore} test for table-based configurations.
@@ -115,7 +110,7 @@ import org.slf4j.LoggerFactory;
 @RunWith(value = Parameterized.class)
 public class SQLFeatureStoreTOPPStatesTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreTOPPStatesTest.class );
+    private static Logger LOG = getLogger( SQLFeatureStoreTOPPStatesTest.class );
 
     private static final QName TOPP_STATES = QName.valueOf( "{http://www.openplans.org/topp}states" );
 

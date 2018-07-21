@@ -36,18 +36,20 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
-import java.nio.FloatBuffer;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.media.opengl.GL;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
+
+import javax.media.opengl.GL;
+import java.nio.FloatBuffer;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>BuildingRenderer</code> organizes buildings in a scene by using a quadtree.
@@ -59,7 +61,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
  */
 public class BuildingRenderer extends RenderableManager<WorldRenderableObject> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( BuildingRenderer.class );
+    private final static Logger LOG = getLogger( BuildingRenderer.class );
 
     private final DirectGeometryBuffer geometryBuffer;
 

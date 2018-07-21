@@ -36,26 +36,22 @@
 
 package org.deegree.services.wps;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.process.jaxb.java.*;
+import org.deegree.services.wps.output.BoundingBoxOutputImpl;
+import org.deegree.services.wps.output.ComplexOutputImpl;
+import org.deegree.services.wps.output.LiteralOutputImpl;
+import org.deegree.services.wps.output.ProcessletOutput;
+
+import javax.xml.bind.JAXBElement;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
-
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
-import org.deegree.process.jaxb.java.ComplexOutputDefinition;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
-import org.deegree.services.wps.output.BoundingBoxOutputImpl;
-import org.deegree.services.wps.output.ComplexOutputImpl;
-import org.deegree.services.wps.output.LiteralOutputImpl;
-import org.deegree.services.wps.output.ProcessletOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates the output parameters for the execution of a {@link Processlet}.
@@ -67,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProcessletOutputs {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ProcessletOutputs.class );
+    private static final Logger LOG = getLogger( ProcessletOutputs.class );
 
     private Map<CodeType, ProcessletOutput> idToOutput = new HashMap<CodeType, ProcessletOutput>();
 

@@ -35,9 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.utils.Pair;
+import org.deegree.style.se.parser.SymbologyParser;
+import org.deegree.style.se.unevaluated.Style;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,15 +51,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TimerTask;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-
-import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.utils.Pair;
-import org.deegree.style.se.parser.SymbologyParser;
-import org.deegree.style.se.unevaluated.Style;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>StyleRegistry</code>

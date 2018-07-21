@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="stdout" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d{HH:mm:ss}] %5p: [%c{1}] %m%n" />
+    </Console>
+  </Appenders>
+  <Loggers>
+    <AsyncLogger name="org.deegree" level="INFO" additivity="false" />
+    <AsyncLogger name="org.deegree.client" level="DEBUG" additivity="false" />
+    <AsyncRoot level="INFO">
+      <AppenderRef ref="stdout" />
+    </AsyncRoot>
+  </Loggers>
+</Configuration>

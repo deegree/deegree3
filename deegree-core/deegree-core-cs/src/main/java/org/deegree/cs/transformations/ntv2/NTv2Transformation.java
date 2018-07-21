@@ -38,12 +38,12 @@
 
 package org.deegree.cs.transformations.ntv2;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.transformations.TransformationFactory.createWGSAlligned;
 import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
 import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
 import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.ProjectionUtils.DTR;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -55,6 +55,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
@@ -67,7 +68,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.utilities.Matrix;
 import org.deegree.cs.utilities.ProjectionUtils;
-import org.slf4j.Logger;
 
 import au.com.objectix.jgridshift.GridShift;
 import au.com.objectix.jgridshift.GridShiftFile;

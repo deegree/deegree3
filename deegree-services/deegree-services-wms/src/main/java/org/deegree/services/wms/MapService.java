@@ -36,25 +36,7 @@
 
 package org.deegree.services.wms;
 
-import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
-import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
-import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
-import static org.deegree.theme.Themes.getAllLayers;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
@@ -82,7 +64,20 @@ import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
+import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
+import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
+import static org.deegree.theme.Themes.getAllLayers;
 
 /**
  * <code>MapService</code>

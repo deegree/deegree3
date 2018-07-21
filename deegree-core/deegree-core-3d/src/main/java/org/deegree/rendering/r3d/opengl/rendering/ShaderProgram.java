@@ -38,11 +38,11 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
 import javax.media.opengl.GL;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Compiles, attaches and links shader (vertex and fragment) shaders to a OpenGL shader program.

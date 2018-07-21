@@ -35,28 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.net.URL;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.net.URL;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(OGCFrontController.class)
+@PowerMockIgnore("javax.management.*")
 public class OGCFrontControllerTest {
 
     @Test
@@ -153,7 +153,7 @@ public class OGCFrontControllerTest {
     }
 
     private RequestContext mockContext( String serviceUrl, String xForwardedHost, String xForwardedPort ) {
-        return mockContext( serviceUrl, xForwardedHost, xForwardedPort, null );
+        return mockContext( serviceUrl, xForwardedHost, xForwardedPort, "http" );
     }
 
     private RequestContext mockContext( String serviceUrl, String xForwardedHost, String xForwardedPort,

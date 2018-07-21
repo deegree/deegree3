@@ -45,12 +45,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Class representation of a ESRI world file. A world file may defines bounding coordinates centered on the outer pixel
@@ -66,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WorldFileAccess {
 
-    private static Logger log = LoggerFactory.getLogger( WorldFileAccess.class );
+    private static Logger log = getLogger( WorldFileAccess.class );
 
     private static final String[] WORLD_FILE_EXT = new String[] { "wld", "tfw", "tifw", "jgw", "jpgw", "gfw", "gifw",
                                                                  "pgw", "pngw" };

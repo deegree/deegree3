@@ -36,8 +36,8 @@ package org.deegree.commons.config;
 
 import static java.io.File.separator;
 import static java.util.Arrays.asList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.CollectionUtils.removeDuplicates;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,10 +59,10 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
 
 /**
  * Encapsulates a directory for deegree configuration files (a deegree workspace) and provides access to the configured

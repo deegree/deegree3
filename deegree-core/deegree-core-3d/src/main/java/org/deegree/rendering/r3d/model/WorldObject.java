@@ -36,20 +36,20 @@
 
 package org.deegree.rendering.r3d.model;
 
-import static org.deegree.commons.utils.memory.AllocatedHeapMemory.sizeOfObjectArray;
-import static org.deegree.commons.utils.memory.AllocatedHeapMemory.sizeOfString;
-
-import java.io.IOException;
-import java.io.Serializable;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.math.Vectors3d;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.commons.utils.memory.MemoryAware;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Serializable;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.memory.AllocatedHeapMemory.sizeOfObjectArray;
+import static org.deegree.commons.utils.memory.AllocatedHeapMemory.sizeOfString;
 
 /**
  * The <code>WorldRenderableObject</code> top level class, all data objects can be stored in a dbase.
@@ -73,7 +73,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
      */
     private static final long serialVersionUID = 628773986403744985L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( WorldObject.class );
+    private final static Logger LOG = getLogger( WorldObject.class );
 
     private transient String type;
 

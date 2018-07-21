@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.feature.Feature;
@@ -43,8 +44,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for representing and evaluating the <code>Intersects</code> operator.
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Intersects extends SpatialOperator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Intersects.class );
+    private static final Logger LOG = getLogger( Intersects.class );
 
     private final Geometry geometry;
 

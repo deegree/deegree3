@@ -36,22 +36,8 @@
 
 package org.deegree.services.wpvs.rendering.jogl;
 
-import static org.deegree.rendering.r3d.opengl.JOGLUtils.getFrameBufferRGB;
-
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.media.opengl.DebugGL;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.glu.GLU;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-
+import com.sun.opengl.util.texture.Texture;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.SunInfo;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
@@ -66,10 +52,22 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.TreeRenderer;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.deegree.services.wpvs.PerspectiveViewService;
 import org.deegree.services.wpvs.controller.getview.GetView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.texture.Texture;
+import javax.media.opengl.DebugGL;
+import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.glu.GLU;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.rendering.r3d.opengl.JOGLUtils.getFrameBufferRGB;
 
 /**
  * Performs {@link GetView} requests for the {@link PerspectiveViewService}.
@@ -81,7 +79,7 @@ import com.sun.opengl.util.texture.Texture;
  */
 public class GetViewRenderer implements GLEventListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger( GetViewRenderer.class );
+    private final static Logger LOG = getLogger( GetViewRenderer.class );
 
     private GLU glu;
 

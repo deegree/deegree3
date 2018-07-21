@@ -41,19 +41,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms;
 
-import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
-import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
-import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.rendering.r2d.context.MapOptions.Quality;
 import org.deegree.services.jaxb.wms.LayerOptionsType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.rendering.r2d.context.MapOptions.Antialias.BOTH;
+import static org.deegree.rendering.r2d.context.MapOptions.Interpolation.NEARESTNEIGHBOR;
+import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 
 /**
  * Builds map service components from jaxb config beans.

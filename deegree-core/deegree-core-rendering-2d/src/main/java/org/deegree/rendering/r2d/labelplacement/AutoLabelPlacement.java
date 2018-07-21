@@ -35,17 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.labelplacement;
 
-import static org.slf4j.LoggerFactory.getLogger;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r2d.Java2DRenderer;
+import org.deegree.rendering.r2d.Label;
+import org.deegree.rendering.r2d.Renderer;
+import org.deegree.style.utils.UomCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.rendering.r2d.Label;
-import org.deegree.rendering.r2d.Renderer;
-import org.deegree.rendering.r2d.RendererContext;
-import org.deegree.rendering.r2d.Java2DRenderer;
-import org.deegree.style.utils.UomCalculator;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>Automatic Label Placement, based on org.deegree.graphics.optimizers.LabelOptimizer from deegree2 </code>

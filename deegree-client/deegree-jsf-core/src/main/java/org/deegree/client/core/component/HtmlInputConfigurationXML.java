@@ -35,24 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.component;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.logging.log4j.Logger;
+import org.deegree.client.core.utils.MessageUtils;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
+import org.deegree.commons.xml.schema.SchemaValidator;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.ConverterException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.deegree.client.core.utils.MessageUtils;
-import org.deegree.commons.xml.schema.SchemaValidationEvent;
-import org.deegree.commons.xml.schema.SchemaValidator;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Component to handle XML inputs. The input value will be validated against a list of schema URLs.

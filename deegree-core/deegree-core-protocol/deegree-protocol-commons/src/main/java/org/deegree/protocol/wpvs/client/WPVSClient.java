@@ -36,7 +36,15 @@
 
 package org.deegree.protocol.wpvs.client;
 
-import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.XmlHttpUtils;
+import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -46,16 +54,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMNamespace;
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
-import org.deegree.commons.xml.XmlHttpUtils;
-import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 
 /**
  * The <code>WPVSClient</code> class supports the functionality of sending requests to the Web Perspective View Service
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WPVSClient {
 
-    private final static Logger LOG = LoggerFactory.getLogger( WPVSClient.class );
+    private final static Logger LOG = getLogger( WPVSClient.class );
 
     private final NamespaceBindings nsContext;
 

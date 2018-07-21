@@ -36,13 +36,14 @@
 
 package org.deegree.test;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.test.services.wpvs.WPVSStressTest;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import org.deegree.test.services.wpvs.WPVSStressTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TestingToolBox</code> class is a command-line tool for testing the services.
@@ -64,7 +65,7 @@ public class TestingToolBox {
 
     private final int TEXT_WIDTH = 80;
 
-    private final static Logger LOG = LoggerFactory.getLogger( TestingToolBox.class );
+    private final static Logger LOG = getLogger( TestingToolBox.class );
 
     private static TestingToolBox instance = null;
 

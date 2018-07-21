@@ -35,14 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.cs.coordinatesystems.CRS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link SQLExpression} that represents an operation, e.g. an addition, an intersects predicate or a distance
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLOperation implements SQLExpression {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLOperation.class );
+    private static final Logger LOG = getLogger( SQLOperation.class );
     
     private List<Object> particles;
 

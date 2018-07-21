@@ -35,28 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.jdbc.SQLIdentifier;
@@ -78,12 +57,7 @@ import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Features;
-import org.deegree.feature.persistence.FeatureInspector;
-import org.deegree.feature.persistence.FeatureStore;
-import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
-import org.deegree.feature.persistence.FeatureStoreManager;
-import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.*;
 import org.deegree.feature.persistence.cache.BBoxCache;
 import org.deegree.feature.persistence.cache.FeatureStoreCache;
 import org.deegree.feature.persistence.cache.SimpleFeatureStoreCache;
@@ -101,18 +75,8 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.CustomInspector;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
-import org.deegree.feature.persistence.sql.rules.FeatureMapping;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
-import org.deegree.feature.stream.CombinedFeatureInputStream;
-import org.deegree.feature.stream.EmptyFeatureInputStream;
-import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.stream.FilteredFeatureInputStream;
-import org.deegree.feature.stream.IteratorFeatureInputStream;
-import org.deegree.feature.stream.MemoryFeatureInputStream;
+import org.deegree.feature.persistence.sql.rules.*;
+import org.deegree.feature.stream.*;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
@@ -127,21 +91,21 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.filter.AbstractWhereBuilder;
-import org.deegree.sqldialect.filter.DBField;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.MappingExpression;
-import org.deegree.sqldialect.filter.PropertyNameMapper;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
+import org.deegree.sqldialect.filter.*;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.sql.*;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.*;
 
 /**
  * {@link FeatureStore} that is backed by a spatial SQL database.

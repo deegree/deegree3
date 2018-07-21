@@ -38,8 +38,6 @@
 
 package org.deegree.coverage.tools;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -47,6 +45,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.AbstractCoverage;
@@ -55,7 +54,8 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.utils.RasterBuilder;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RasterOptionsParser</code> supplies methods for creating a raster from the command line.

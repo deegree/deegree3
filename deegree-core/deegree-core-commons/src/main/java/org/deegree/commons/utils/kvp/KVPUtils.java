@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.kvp;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -53,8 +51,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.StringUtils;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class contains convenience methods for working with key-value pair maps (e.g. from OGC KVP requests).

@@ -1,16 +1,6 @@
 package org.deegree.featureinfo.serializing;
 
-import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.ByteArrayOutputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XsltUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
@@ -21,7 +11,16 @@ import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 
 public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
 

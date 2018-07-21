@@ -34,20 +34,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URI;
-
-import javax.swing.JApplet;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.filter.expression.custom.se.Categorize;
@@ -55,8 +42,16 @@ import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Symbolizer;
 import org.deegree.style.styling.RasterStyling;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
+import java.io.*;
+import java.net.URI;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Test applet for raster rendering functions.
@@ -66,7 +61,7 @@ import org.slf4j.LoggerFactory;
 public class RasterRendererApplet extends JApplet {
     private static final long serialVersionUID = 5323930312991827270L;
 
-    public static final Logger LOG = LoggerFactory.getLogger( RasterRendererApplet.class );
+    public static final Logger LOG = getLogger( RasterRendererApplet.class );
 
     private AbstractRaster car, dem, doll;
 

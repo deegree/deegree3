@@ -34,30 +34,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static org.deegree.commons.tom.primitive.BaseType.valueOf;
-import static org.deegree.cs.persistence.CRSManager.lookup;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -78,13 +55,8 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.jaxb.AbstractParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.*;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.Join;
-import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -100,8 +72,20 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import java.sql.*;
+import java.util.*;
+
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.valueOf;
+import static org.deegree.cs.persistence.CRSManager.lookup;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
 
 /**
  * Generates {@link MappedAppSchema} instances (table-driven mode).
@@ -112,7 +96,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MappedSchemaBuilderTable.class );
+    private static final Logger LOG = getLogger( MappedSchemaBuilderTable.class );
 
     private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 

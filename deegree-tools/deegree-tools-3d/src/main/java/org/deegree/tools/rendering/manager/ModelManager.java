@@ -36,15 +36,18 @@
 
 package org.deegree.tools.rendering.manager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.apache.commons.cli.CommandLine;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.services.wpvs.io.BackendResult;
 import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ModelManager</code> class defines a simple interface for inserting, deleting and updating different kind of
@@ -59,7 +62,7 @@ import org.deegree.services.wpvs.io.ModelBackend.Type;
  */
 public abstract class ModelManager<FB extends PositionableModel> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ModelManager.class );
+    private final static Logger LOG = getLogger( ModelManager.class );
 
     /**
      * A backend using a database

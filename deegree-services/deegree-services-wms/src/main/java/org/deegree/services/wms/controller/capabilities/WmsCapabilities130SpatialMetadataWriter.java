@@ -41,17 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities;
 
-import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
-import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.cs.CRSUtils.getAxisAwareCrs;
-import static org.deegree.cs.persistence.CRSManager.lookup;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -60,7 +50,16 @@ import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
+import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.cs.CRSUtils.getAxisAwareCrs;
+import static org.deegree.cs.persistence.CRSManager.lookup;
 
 /**
  * Responsible for writing out envelopes and crs.

@@ -36,12 +36,14 @@
 
 package org.deegree.coverage.raster.container;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.io.grid.GridMetaInfoFile.METAINFO_FILE_NAME;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.io.RasterIOOptions;
@@ -49,8 +51,6 @@ import org.deegree.coverage.raster.io.grid.GridFileReader;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.coverage.raster.io.grid.GridReader;
 import org.deegree.coverage.raster.io.grid.SplittedBlobReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Concrete implementation of {@link GriddedTileContainer} that extracts the tiles from a blob with a custom format. See
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GriddedBlobTileContainer extends GriddedTileContainer {
 
-    private static Logger LOG = LoggerFactory.getLogger( GriddedBlobTileContainer.class );
+    private static Logger LOG = getLogger( GriddedBlobTileContainer.class );
 
     /** name of a blob file. **/
     public static final String BLOB_FILE_NAME = "blob_";

@@ -35,10 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.exceptions;
 
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.wms.controller.WMSController;
+import org.deegree.workspace.Workspace;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -46,15 +51,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.stream.XMLStreamException;
-
-import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.tom.ows.Version;
-import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
-import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.wms.controller.WMSController;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
 
 /**
  * Manages exception formats.

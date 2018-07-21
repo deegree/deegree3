@@ -50,6 +50,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.filter.raster.RasterFilter;
 import org.deegree.coverage.rangeset.AxisSubset;
 import org.deegree.coverage.rangeset.Interval;
@@ -67,6 +68,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 /**
  * Tests filtering on rasters.
  * 
@@ -77,7 +80,7 @@ import org.junit.Test;
  */
 public class RasterRangeSetTest {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterRangeSetTest.class );
+    private final static Logger LOG = getLogger( RasterRangeSetTest.class );
 
     private GeometryFactory geomFac = new GeometryFactory();
 

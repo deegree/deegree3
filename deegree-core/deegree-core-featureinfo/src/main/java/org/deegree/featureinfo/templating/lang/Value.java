@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.templating.lang;
 
-import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.property.Property;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
 
 /**
  * <code>Value</code>

@@ -35,15 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecordbyid;
 
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -53,8 +46,14 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.services.csw.AbstractCSWRequestXMLAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecordById} XML request via Http-POST.
@@ -65,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  */
 public class GetRecordByIdXMLAdapter extends AbstractCSWRequestXMLAdapter {
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdXMLAdapter.class );
+    private static final Logger LOG = getLogger( GetRecordByIdXMLAdapter.class );
 
     /**
      * Parses the {@link GetRecordById} XML request by deciding which version has to be parsed because of the requested

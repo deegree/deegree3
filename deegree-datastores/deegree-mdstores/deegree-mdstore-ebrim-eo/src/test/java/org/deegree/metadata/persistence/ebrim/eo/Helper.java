@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence.ebrim.eo;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.test.TestProperties;
+import org.deegree.protocol.csw.MetadataStoreException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,10 +51,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.utils.test.TestProperties;
-import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -62,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Helper {
 
-    private static Logger LOG = LoggerFactory.getLogger( Helper.class );
+    private static Logger LOG = getLogger( Helper.class );
 
     public static void setUpTables( Connection conn )
                             throws SQLException, UnsupportedEncodingException, IOException, MetadataStoreException {

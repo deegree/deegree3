@@ -38,13 +38,13 @@
 
 package org.deegree.coverage.raster.data.info;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>RasterDataInfo</code> class encapsulates

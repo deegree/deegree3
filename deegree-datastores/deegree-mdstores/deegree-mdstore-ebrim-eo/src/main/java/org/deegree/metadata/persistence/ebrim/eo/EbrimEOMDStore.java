@@ -36,33 +36,8 @@
 
 package org.deegree.metadata.persistence.ebrim.eo;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
-import static org.deegree.db.ConnectionProviderUtils.executeQuery;
-import static org.deegree.metadata.ebrim.RIMType.AdhocQuery;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -88,12 +63,7 @@ import org.deegree.metadata.ebrim.AdhocQuery;
 import org.deegree.metadata.ebrim.AliasedRIMType;
 import org.deegree.metadata.ebrim.RegistryObject;
 import org.deegree.metadata.ebrim.RegistryPackage;
-import org.deegree.metadata.persistence.MetadataInspectorException;
-import org.deegree.metadata.persistence.MetadataQuery;
-import org.deegree.metadata.persistence.MetadataResultSet;
-import org.deegree.metadata.persistence.MetadataStore;
-import org.deegree.metadata.persistence.MetadataStoreTransaction;
-import org.deegree.metadata.persistence.XMLMetadataResultSet;
+import org.deegree.metadata.persistence.*;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.EOPropertyNameMapper;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper;
 import org.deegree.metadata.persistence.ebrim.eo.mapping.SlotMapper.Table;
@@ -108,7 +78,24 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
+import static org.deegree.db.ConnectionProviderUtils.executeQuery;
+import static org.deegree.metadata.ebrim.RIMType.AdhocQuery;
 
 /**
  * {@link MetadataStore} implementation for accessing {@link EbrimEOMDRecord}s stored in spatial SQL databases

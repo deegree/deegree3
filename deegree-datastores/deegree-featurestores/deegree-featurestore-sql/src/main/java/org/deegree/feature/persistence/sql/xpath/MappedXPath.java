@@ -35,36 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.xpath;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
-import org.deegree.feature.persistence.sql.rules.FeatureMapping;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.*;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.sqldialect.filter.ConstantPropertyNameMapping;
-import org.deegree.sqldialect.filter.DBField;
-import org.deegree.sqldialect.filter.Join;
-import org.deegree.sqldialect.filter.MappingExpression;
-import org.deegree.sqldialect.filter.PropertyNameMapping;
-import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.sqldialect.filter.UnmappableException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.sqldialect.filter.*;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A {@link ValueReference} that's mapped to the relational model defined by a {@link MappedAppSchema}.
@@ -76,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MappedXPath {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MappedXPath.class );
+    private static final Logger LOG = getLogger( MappedXPath.class );
 
     private final SQLFeatureStore fs;
 

@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.profile;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.metadata.persistence.MetadataStore;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

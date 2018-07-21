@@ -38,22 +38,7 @@
 
 package org.deegree.services.wps.ap.wcts;
 
-import static org.deegree.commons.utils.StringUtils.isSet;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.gml.GMLVersion.fromMimeType;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.FileUtils;
@@ -67,16 +52,26 @@ import org.deegree.cs.transformations.Transformation;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.utils.XMLTransformer;
 import org.deegree.protocol.wps.ap.wcts.WCTSConstants;
-import org.deegree.services.wps.ExceptionAwareProcesslet;
+import org.deegree.services.wps.*;
 import org.deegree.services.wps.ExceptionCustomizer;
-import org.deegree.services.wps.ProcessletException;
-import org.deegree.services.wps.ProcessletExecutionInfo;
-import org.deegree.services.wps.ProcessletInputs;
-import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.output.ComplexOutput;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.StringUtils.isSet;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.fromMimeType;
 
 /**
  * The <code>TransformCoordinates</code> class TODO add class documentation here.

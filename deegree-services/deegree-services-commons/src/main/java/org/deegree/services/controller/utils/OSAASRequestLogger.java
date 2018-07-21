@@ -35,7 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.utils;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.db.ConnectionProvider;
+import org.deegree.db.ConnectionProviderProvider;
+import org.deegree.services.controller.Credentials;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.RequestLogger;
+import org.deegree.workspace.Workspace;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,16 +54,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.db.ConnectionProvider;
-import org.deegree.db.ConnectionProviderProvider;
-import org.deegree.services.controller.Credentials;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.RequestLogger;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

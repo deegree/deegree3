@@ -34,45 +34,30 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.generic;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
-import static javax.faces.application.FacesMessage.SEVERITY_WARN;
-import static javax.faces.context.FacesContext.getCurrentInstance;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.xerces.xni.parser.XMLParseException;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
+import org.deegree.commons.xml.schema.SchemaValidator;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.*;
+import org.deegree.workspace.standard.AbstractResourceProvider;
+import org.deegree.workspace.standard.DefaultResourceIdentifier;
+import org.deegree.workspace.standard.DefaultResourceLocation;
+import org.deegree.workspace.standard.DefaultWorkspace;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import java.io.*;
+import java.net.URL;
+import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.xerces.xni.parser.XMLParseException;
-import org.deegree.commons.xml.schema.SchemaValidationEvent;
-import org.deegree.commons.xml.schema.SchemaValidator;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceLocation;
-import org.deegree.workspace.ResourceManager;
-import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.ResourceProvider;
-import org.deegree.workspace.Workspace;
-import org.deegree.workspace.WorkspaceUtils;
-import org.deegree.workspace.standard.AbstractResourceProvider;
-import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.deegree.workspace.standard.DefaultResourceLocation;
-import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
+import static javax.faces.application.FacesMessage.*;
+import static javax.faces.context.FacesContext.getCurrentInstance;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 @ManagedBean
 @ViewScoped

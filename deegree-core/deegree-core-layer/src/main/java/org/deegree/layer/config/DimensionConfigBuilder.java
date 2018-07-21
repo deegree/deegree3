@@ -41,22 +41,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.config;
 
-import static org.deegree.layer.dims.Dimension.parseTyped;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.antlr.runtime.ANTLRStringStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.apache.logging.log4j.Logger;
+import org.deegree.layer.dims.Dimension;
+import org.deegree.layer.dims.DimensionsLexer;
+import org.deegree.layer.dims.DimensionsParser;
+import org.deegree.layer.persistence.base.jaxb.DimensionType;
 
 import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.dims.DimensionsLexer;
-import org.deegree.layer.dims.DimensionsParser;
-import org.deegree.layer.persistence.base.jaxb.DimensionType;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.layer.dims.Dimension.parseTyped;
 
 /**
  * Builds dimensions map from jaxb configuration.

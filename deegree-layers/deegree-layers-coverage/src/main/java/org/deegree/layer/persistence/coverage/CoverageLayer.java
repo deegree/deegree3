@@ -35,12 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
-import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
-import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -53,7 +48,12 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
-import org.slf4j.Logger;
+
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
+import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
 
 /**
  *

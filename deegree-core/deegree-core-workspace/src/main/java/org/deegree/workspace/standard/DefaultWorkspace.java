@@ -41,13 +41,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.workspace.ResourceStates.ResourceState.Built;
 import static org.deegree.workspace.ResourceStates.ResourceState.Deactivated;
 import static org.deegree.workspace.ResourceStates.ResourceState.Error;
 import static org.deegree.workspace.ResourceStates.ResourceState.Initialized;
 import static org.deegree.workspace.ResourceStates.ResourceState.Prepared;
 import static org.deegree.workspace.ResourceStates.ResourceState.Scanned;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.ErrorHandler;
 import org.deegree.workspace.Initializable;
@@ -81,7 +82,6 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.WorkspaceUtils;
 import org.deegree.workspace.graph.ResourceGraph;
 import org.deegree.workspace.graph.ResourceNode;
-import org.slf4j.Logger;
 
 /**
  * Directory based workspace implementation.

@@ -36,17 +36,8 @@
 
 package org.deegree.tools.rendering.manager.buildings;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.cli.CommandLine;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.JOGLUtils;
@@ -61,6 +52,18 @@ import org.deegree.tools.rendering.manager.buildings.generalisation.WorldObjectS
 import org.deegree.tools.rendering.manager.buildings.importers.CityGMLImporter;
 import org.deegree.tools.rendering.manager.buildings.importers.VRMLImporter;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 /**
  * The <code>BuildingManager</code> imports buildings from vrml or citygml files.
  * 
@@ -71,7 +74,7 @@ import org.deegree.tools.rendering.manager.buildings.importers.VRMLImporter;
  */
 public class BuildingManager extends ModelManager<WorldRenderableObject> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( BuildingManager.class );
+    private final static Logger LOG = getLogger( BuildingManager.class );
 
     private final String buildingID;
 

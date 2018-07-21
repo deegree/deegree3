@@ -36,32 +36,7 @@
 
 package org.deegree.feature.persistence.shape;
 
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.MILLISECOND;
-import static org.deegree.commons.utils.EncodingGuesser.guess;
-import static org.deegree.commons.utils.StringUtils.concat;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -74,7 +49,25 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
+import java.nio.charset.Charset;
+import java.util.*;
+
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.MILLISECOND;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.EncodingGuesser.guess;
+import static org.deegree.commons.utils.StringUtils.concat;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
 
 /**
  * <code>DBFReader</code>

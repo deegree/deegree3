@@ -36,22 +36,15 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.media.opengl.GL;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.media.opengl.GL;
+import java.io.IOException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Manages the loading, unloading and caching of {@link RenderMeshFragment} data and the enabling/disabling in a certain
@@ -64,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RenderFragmentManager {
 
-    static final Logger LOG = LoggerFactory.getLogger( RenderFragmentManager.class );
+    static final Logger LOG = getLogger( RenderFragmentManager.class );
 
     // contains the corresponding RenderableMeshFragment object for each fragment id
     final RenderMeshFragment[] renderFragments;

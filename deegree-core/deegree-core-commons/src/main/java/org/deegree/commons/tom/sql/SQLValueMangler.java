@@ -39,11 +39,12 @@ import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Temporal;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Converts between internal object values and SQL objects.
@@ -55,12 +56,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLValueMangler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLValueMangler.class );
-
     /**
      * Converts the given {@link PrimitiveValue} value to the corresponding SQL object type.
      * 
-     * @param value
+     * @param pv
      * @return
      */
     public static Object internalToSQL( PrimitiveValue pv ) {

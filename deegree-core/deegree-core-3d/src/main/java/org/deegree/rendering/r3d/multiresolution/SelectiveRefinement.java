@@ -35,14 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Implementation of a <i>selective refinement</i> algorithm that operates on {@link MultiresolutionMesh} instances.
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SelectiveRefinement {
 
-    private static Logger LOG = LoggerFactory.getLogger( SelectiveRefinement.class );
+    private static Logger LOG = getLogger( SelectiveRefinement.class );
 
     // associated multiresolution model
     private MultiresolutionMesh mt;

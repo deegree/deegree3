@@ -35,12 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter.mssql;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -49,7 +44,12 @@ import org.deegree.geometry.io.WKBWriter;
 import org.deegree.geometry.io.WKTReader;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.utils.GeometryParticleConverter;
-import org.slf4j.Logger;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link GeometryParticleConverter} for PostGIS databases.

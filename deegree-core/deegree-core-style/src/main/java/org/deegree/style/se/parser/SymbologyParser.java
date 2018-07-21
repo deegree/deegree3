@@ -36,43 +36,7 @@
 
 package org.deegree.style.se.parser;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-import static java.lang.Double.parseDouble;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.xml.CommonNamespaces.SENS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsBoolean;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsRelaxedQName;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
-import static org.deegree.style.se.parser.SymbologyParsingHelper.parseCommon;
-import static org.deegree.style.styling.components.UOM.Foot;
-import static org.deegree.style.styling.components.UOM.Metre;
-import static org.deegree.style.styling.components.UOM.Pixel;
-import static org.deegree.style.styling.components.UOM.mm;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
@@ -92,28 +56,36 @@ import org.deegree.style.se.parser.SymbologyParsingHelper.Common;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
 import org.deegree.style.se.unevaluated.Symbolizer;
-import org.deegree.style.styling.LineStyling;
-import org.deegree.style.styling.PointStyling;
-import org.deegree.style.styling.PolygonStyling;
-import org.deegree.style.styling.RasterChannelSelection;
-import org.deegree.style.styling.RasterStyling;
+import org.deegree.style.styling.*;
 import org.deegree.style.styling.RasterStyling.ContrastEnhancement;
 import org.deegree.style.styling.RasterStyling.Overlap;
 import org.deegree.style.styling.RasterStyling.ShadedRelief;
-import org.deegree.style.styling.TextStyling;
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Font;
+import org.deegree.style.styling.components.*;
 import org.deegree.style.styling.components.Font.Style;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.Halo;
-import org.deegree.style.styling.components.LinePlacement;
-import org.deegree.style.styling.components.PerpendicularOffsetType;
 import org.deegree.style.styling.components.PerpendicularOffsetType.Substraction;
 import org.deegree.style.styling.components.PerpendicularOffsetType.Type;
-import org.deegree.style.styling.components.Stroke;
-import org.deegree.style.styling.components.UOM;
 import org.deegree.workspace.ResourceLocation;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.lang.Double.*;
+import static javax.xml.stream.XMLStreamConstants.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.*;
+import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
+import static org.deegree.style.se.parser.SymbologyParsingHelper.parseCommon;
+import static org.deegree.style.styling.components.UOM.*;
 
 /**
  * <code>SymbologyParser</code> parses the SE part of 1.1.0 and the corresponding SLD 1.0.0 part.

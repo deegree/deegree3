@@ -38,18 +38,18 @@
 
 package org.deegree.services.wpvs.config;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.services.jaxb.wpvs.ColormapDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.workspace.ResourceLocation;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Retrieve the data for a Colormap from the configuration.

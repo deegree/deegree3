@@ -35,24 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
-import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -79,9 +63,24 @@ import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.xml.GetFeature110XMLEncoder;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.metadata.WFSFeatureType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSVersion.WFS_100;
 
 /**
  * API-level client for accessing servers that implement the <a
@@ -121,7 +120,7 @@ import org.w3c.dom.ls.LSInput;
  */
 public class WFSClient extends AbstractOWSClient<WFSCapabilitiesAdapter> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WFSClient.class );
+    private static final Logger LOG = getLogger( WFSClient.class );
 
     private WFSVersion version;
 

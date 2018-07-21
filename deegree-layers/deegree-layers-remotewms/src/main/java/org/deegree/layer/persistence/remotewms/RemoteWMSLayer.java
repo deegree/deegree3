@@ -1,16 +1,6 @@
 package org.deegree.layer.persistence.remotewms;
 
-import static java.util.Collections.singletonList;
-import static org.deegree.commons.utils.RequestUtils.replaceParameters;
-import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.layer.AbstractLayer;
@@ -24,7 +14,13 @@ import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
-import org.slf4j.Logger;
+
+import java.util.*;
+
+import static java.util.Collections.singletonList;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.RequestUtils.replaceParameters;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
 /**
  * TODO add class documentation here

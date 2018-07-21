@@ -35,27 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.datetime;
 
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MILLISECOND;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDate;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDuration;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDuration;
+import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import static java.util.Calendar.*;
+import static junit.framework.TestCase.*;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.*;
 
 /**
  * Test cases for {@link ISO8601Converter}.

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.parsers.XMLGrammarPreparser;
 import org.apache.xerces.util.SymbolTable;
@@ -50,8 +51,8 @@ import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.grammars.XMLGrammarDescription;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Manages pre-populated <code>GrammarPool</code> instances to minimize fetching and parsing of XML schema documents
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 class GrammarPoolManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GrammarPoolManager.class );
+    private static final Logger LOG = getLogger( GrammarPoolManager.class );
 
     /** Property identifier: symbol table. */
     public static final String SYMBOL_TABLE = Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;

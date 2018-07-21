@@ -36,6 +36,7 @@
 package org.deegree.gml.geometry.validation;
 
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.List;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -52,8 +54,6 @@ import org.deegree.geometry.validation.GeometryValidator;
 import org.deegree.geometry.validation.event.GeometryValidationEvent;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Validates all geometry elements (at all levels of the document) of a GML stream.
@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GmlStreamGeometryValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlStreamGeometryValidator.class );
+    private static final Logger LOG = getLogger( GmlStreamGeometryValidator.class );
 
     private final GMLStreamReader gmlStream;
 

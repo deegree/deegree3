@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.utils.RasterBuilder.setNoDataValue;
 import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.Coverage;
@@ -78,8 +80,6 @@ import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Builder for file/dir based coverages.
@@ -91,7 +91,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultCoverageBuilder implements ResourceBuilder<Coverage> {
 
-    private final static Logger LOG = LoggerFactory.getLogger( DefaultCoverageBuilder.class );
+    private final static Logger LOG = getLogger( DefaultCoverageBuilder.class );
 
     private Object config;
 

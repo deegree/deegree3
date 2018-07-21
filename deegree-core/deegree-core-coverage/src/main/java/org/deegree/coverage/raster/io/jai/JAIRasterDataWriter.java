@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.jai;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataToImage;
 
 import java.awt.image.BufferedImage;
@@ -42,9 +43,8 @@ import java.io.OutputStream;
 
 import javax.media.jai.JAI;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.data.RasterData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a simple writer for raster files.
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JAIRasterDataWriter {
 
-    private static Logger LOG = LoggerFactory.getLogger( JAIRasterDataWriter.class );
+    private static Logger LOG = getLogger( JAIRasterDataWriter.class );
 
     /**
      * Saves a RasterData to TIFF file

@@ -35,21 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.client;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.deegree.protocol.i18n.Messages.get;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
@@ -75,8 +62,16 @@ import org.deegree.layer.metadata.MetadataUrl;
 import org.deegree.protocol.ows.capabilities.OWSCapabilitiesAdapter;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.deegree.style.se.unevaluated.Style;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.i18n.Messages.get;
 
 /**
  * TODO add class documentation here
@@ -88,7 +83,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMSCapabilitiesAdapter.class );
+    private static final Logger LOG = getLogger( WMSCapabilitiesAdapter.class );
 
     private Tree<LayerMetadata> layerTree;
 

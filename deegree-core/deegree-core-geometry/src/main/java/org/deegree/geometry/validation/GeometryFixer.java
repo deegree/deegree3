@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
@@ -64,8 +65,8 @@ import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultOrientableCurve;
 import org.deegree.geometry.standard.primitive.DefaultRing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GeometryFixer {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GeometryFixer.class );
+    private static final Logger LOG = getLogger( GeometryFixer.class );
 
     /**
      * Returns a fixed version of the given {@link Ring} object.

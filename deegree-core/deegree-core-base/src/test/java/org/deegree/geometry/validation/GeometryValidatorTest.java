@@ -35,33 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.validation;
 
-import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
-import static org.deegree.gml.GMLVersion.GML_31;
+import org.junit.Assert;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.validation.event.*;
+import org.deegree.gml.geometry.GML3GeometryReaderTest;
+import org.junit.Test;
 
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
-import junit.framework.Assert;
-
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.validation.event.CurveDiscontinuity;
-import org.deegree.geometry.validation.event.CurveSelfIntersection;
-import org.deegree.geometry.validation.event.ExteriorRingOrientation;
-import org.deegree.geometry.validation.event.GeometryValidationEvent;
-import org.deegree.geometry.validation.event.InteriorRingIntersectsExterior;
-import org.deegree.geometry.validation.event.InteriorRingOrientation;
-import org.deegree.geometry.validation.event.InteriorRingOutsideExterior;
-import org.deegree.geometry.validation.event.InteriorRingsIntersect;
-import org.deegree.geometry.validation.event.RingNotClosed;
-import org.deegree.gml.geometry.GML3GeometryReaderTest;
-import org.junit.Test;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_31;
 
 /**
  * Testcases that check the correct determination of topological properties by the {@link GeometryValidator}.
@@ -296,7 +286,7 @@ public class GeometryValidatorTest {
 
 class DummyValidationEventHandler implements GeometryValidationEventHandler {
 
-    private final List<GeometryValidationEvent> events = new ArrayList<GeometryValidationEvent>();
+    private final List<GeometryValidationEvent> events = new ArrayList<>();
 
     @Override
     public boolean fireEvent( GeometryValidationEvent event ) {

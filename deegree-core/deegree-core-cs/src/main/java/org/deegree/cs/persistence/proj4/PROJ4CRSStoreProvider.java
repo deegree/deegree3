@@ -35,14 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.persistence.proj4;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.CRSStoreException;
@@ -51,7 +52,6 @@ import org.deegree.cs.persistence.CRSStoreProvider;
 import org.deegree.cs.persistence.proj4.jaxb.PROJ4CRSStoreConfig;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
 
 /**
  * {@link PROJ4CRSStoreProvider} for {@link PROJ4CRSStore}

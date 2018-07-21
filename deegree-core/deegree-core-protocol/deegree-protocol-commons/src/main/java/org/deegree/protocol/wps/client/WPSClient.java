@@ -35,16 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.ows.capabilities.OWSCapabilities;
@@ -53,8 +45,16 @@ import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.ProcessInfo;
 import org.deegree.protocol.wps.client.wps100.WPS100CapabilitiesAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * API-level client for accessing services that implement the <a
@@ -263,7 +263,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WPSClient {
 
-    private static Logger LOG = LoggerFactory.getLogger( WPSClient.class );
+    private static Logger LOG = getLogger( WPSClient.class );
 
     private final OWSCapabilities metadata;
 

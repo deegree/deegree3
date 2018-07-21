@@ -38,6 +38,10 @@
 
 package org.deegree.coverage.rangeset;
 
+import org.apache.logging.log4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 /**
  * The <code>Interval</code> an intervall.
  * 
@@ -52,7 +56,7 @@ package org.deegree.coverage.rangeset;
  */
 public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( Interval.class );
+    private final static Logger LOG = getLogger( Interval.class );
 
     private final SingleValue<T> min;
 

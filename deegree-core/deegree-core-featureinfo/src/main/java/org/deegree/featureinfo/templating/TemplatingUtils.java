@@ -41,24 +41,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.templating;
 
-import static java.util.Collections.singletonList;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.HashMap;
-
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.featureinfo.FeatureInfoManager;
 import org.deegree.featureinfo.templating.lang.PropertyTemplateCall;
-import org.slf4j.Logger;
+
+import java.io.*;
+import java.util.HashMap;
+
+import static java.util.Collections.singletonList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Utility method to run a template against a feature collection.

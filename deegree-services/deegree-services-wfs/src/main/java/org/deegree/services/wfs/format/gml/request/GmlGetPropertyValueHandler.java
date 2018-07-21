@@ -35,20 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.format.gml.request;
 
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
@@ -73,8 +60,16 @@ import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.format.gml.BufferableXMLStreamWriter;
 import org.deegree.services.wfs.format.gml.GmlFormat;
 import org.deegree.services.wfs.query.QueryAnalyzer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 
 /**
  * Handles {@link GetPropertyValue} requests for the {@link GmlFormat}.
@@ -87,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GmlGetPropertyValueHandler extends AbstractGmlRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlGetPropertyValueHandler.class );
+    private static final Logger LOG = getLogger( GmlGetPropertyValueHandler.class );
 
     /**
      * Creates a new {@link GmlGetPropertyValueHandler} instance.

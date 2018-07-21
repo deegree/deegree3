@@ -36,18 +36,13 @@
 
 package org.deegree.services.wps.storage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wps.ProcessManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates a storage location and it's URL for storing a response document or an output parameter of the
@@ -60,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class StorageLocation {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StorageLocation.class );
+    private static final Logger LOG = getLogger( StorageLocation.class );
 
     protected String id;
 

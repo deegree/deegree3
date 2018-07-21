@@ -34,15 +34,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.watchdog;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Tracks {@link WatchedRequest}s and periodically checks whether they need to be interrupted.

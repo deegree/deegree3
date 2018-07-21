@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -46,10 +47,10 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.LinearRing;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Default implementation of {@link Envelope}.
@@ -61,7 +62,7 @@ import com.vividsolutions.jts.geom.LinearRing;
  */
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultEnvelope.class );
+    private static final Logger LOG = getLogger( DefaultEnvelope.class );
 
     private Point max;
 

@@ -35,42 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.wpsclient.gui;
 
-import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.el.ExpressionFactory;
-import javax.el.MethodExpression;
-import javax.el.ValueExpression;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIParameter;
-import javax.faces.component.UISelectItem;
-import javax.faces.component.behavior.AjaxBehavior;
-import javax.faces.component.html.HtmlCommandButton;
-import javax.faces.component.html.HtmlForm;
-import javax.faces.component.html.HtmlInputText;
-import javax.faces.component.html.HtmlMessage;
-import javax.faces.component.html.HtmlOutputLabel;
-import javax.faces.component.html.HtmlOutputText;
-import javax.faces.component.html.HtmlPanelGrid;
-import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.component.html.HtmlSelectManyCheckbox;
-import javax.faces.component.html.HtmlSelectOneRadio;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ComponentSystemEvent;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.client.core.component.HtmlFieldset;
 import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.component.HtmlInputFile;
@@ -92,7 +57,26 @@ import org.deegree.wpsclient.gui.component.HtmlLiteralInput;
 import org.deegree.wpsclient.gui.component.HtmlSelectFormat;
 import org.deegree.wpsclient.gui.component.SelectFormatRenderer;
 import org.deegree.wpsclient.gui.converter.ComplexFormatConverter;
-import org.slf4j.Logger;
+
+import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
+import javax.el.ValueExpression;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIParameter;
+import javax.faces.component.UISelectItem;
+import javax.faces.component.behavior.AjaxBehavior;
+import javax.faces.component.html.*;
+import javax.faces.context.FacesContext;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ComponentSystemEvent;
+import java.io.IOException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 
 /**
  * <code>FormBean</code> manages the creation of the form dependent of the selected process

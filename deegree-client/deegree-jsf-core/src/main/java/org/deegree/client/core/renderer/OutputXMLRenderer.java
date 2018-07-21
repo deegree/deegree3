@@ -35,15 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.renderer;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.UUID;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+import org.deegree.client.core.component.HtmlOutputXML;
+import org.deegree.client.core.utils.FacesUtils;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -53,11 +48,11 @@ import javax.faces.render.Renderer;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
+import java.io.*;
+import java.net.URL;
+import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
-import org.deegree.client.core.component.HtmlOutputXML;
-import org.deegree.client.core.utils.FacesUtils;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Renderer for {@link HtmlOutputXML}. Renders the value xml indentent and colored, if possible, otherwise as simple

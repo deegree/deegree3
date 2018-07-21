@@ -36,13 +36,7 @@
 
 package org.deegree.services.wpvs.config;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
@@ -54,7 +48,13 @@ import org.deegree.services.jaxb.wpvs.DEMDatasetConfig;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>DemDatasetWrapper</code> class TODO add class documentation here.

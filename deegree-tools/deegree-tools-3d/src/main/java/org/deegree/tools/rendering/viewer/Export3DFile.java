@@ -36,29 +36,18 @@
 
 package org.deegree.tools.rendering.viewer;
 
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.memory.MemoryAware;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
-import org.deegree.commons.utils.memory.MemoryAware;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>Export3DFile</code> shows a dialog to the user in which export parameters can be set, and calls the appropriate
@@ -70,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class Export3DFile {
-    private static Logger LOG = LoggerFactory.getLogger( Export3DFile.class );
+    private static Logger LOG = getLogger( Export3DFile.class );
 
     /**
      * Convenient map, which holds the mapping of the parameters to the components

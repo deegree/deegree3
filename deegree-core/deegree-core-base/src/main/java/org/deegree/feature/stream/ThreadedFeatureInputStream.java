@@ -49,12 +49,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link FeatureInputStream} that uses a separate thread to keep an internal queue of features filled.
@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ThreadedFeatureInputStream implements FeatureInputStream {
 
-    private static Logger LOG = LoggerFactory.getLogger( ThreadedFeatureInputStream.class );
+    private static Logger LOG = getLogger( ThreadedFeatureInputStream.class );
 
     // TODO where to manage this?
     private static ExecutorService service = Executors.newFixedThreadPool( 10 );

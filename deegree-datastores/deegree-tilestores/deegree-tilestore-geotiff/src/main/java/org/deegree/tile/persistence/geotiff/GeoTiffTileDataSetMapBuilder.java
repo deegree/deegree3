@@ -41,22 +41,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.geotiff;
 
-import static javax.imageio.ImageIO.createImageInputStream;
-import static javax.imageio.ImageIO.getImageReadersBySuffix;
-import static org.deegree.tile.persistence.geotiff.GeoTiffUtils.getEnvelope;
-import static org.slf4j.LoggerFactory.getLogger;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.stream.ImageInputStream;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.TileDataSet;
 import org.deegree.tile.persistence.TileStore;
@@ -64,7 +50,20 @@ import org.deegree.tile.persistence.geotiff.jaxb.GeoTIFFTileStoreJAXB;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.ImageInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import static javax.imageio.ImageIO.createImageInputStream;
+import static javax.imageio.ImageIO.getImageReadersBySuffix;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.tile.persistence.geotiff.GeoTiffUtils.getEnvelope;
 
 /**
  * Builds a tile data set map from jaxb config.

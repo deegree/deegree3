@@ -41,14 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.lock;
 
-import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.TempFileManager;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -56,7 +49,14 @@ import org.deegree.db.legacy.LegacyConnectionProviderMetadata;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.db.ConnectionProviderUtils.getSyntheticProvider;
 
 /**
  * ConnectionProviderProvider which provides the feature locking database connection (H2).

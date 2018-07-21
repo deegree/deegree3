@@ -35,28 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
-import static org.deegree.commons.jdbc.TableName.createFromQualifiedName;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.LINE_STRING;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_GEOMETRY;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_LINE_STRING;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POINT;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.MULTI_POLYGON;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POINT;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.POLYGON;
-
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.deegree.commons.config.DeegreeWorkspace;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -70,20 +52,25 @@ import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
-import org.deegree.feature.persistence.sql.jaxb.AbstractIDGeneratorType;
-import org.deegree.feature.persistence.sql.jaxb.AutoIdGenerator;
-import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.*;
 import org.deegree.feature.persistence.sql.jaxb.Join.AutoKeyColumn;
-import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
-import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBElement;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.jdbc.TableName.createFromQualifiedName;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.*;
 
 /**
  * Base class for builders that create {@link MappedAppSchema} instances from JAXB configuration objects.
@@ -95,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractMappedSchemaBuilder {
 
-    private static Logger LOG = LoggerFactory.getLogger( AbstractMappedSchemaBuilder.class );
+    private static Logger LOG = getLogger( AbstractMappedSchemaBuilder.class );
 
     public static MappedAppSchema build( String configURL, SQLFeatureStoreJAXB config, SQLDialect dialect,
                                          Workspace workspace )

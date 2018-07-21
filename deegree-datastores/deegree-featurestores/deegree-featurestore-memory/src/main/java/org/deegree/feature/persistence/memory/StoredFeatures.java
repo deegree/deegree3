@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -70,8 +62,11 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates stored feature instances plus index structures for id and spatial queries.
@@ -83,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 class StoredFeatures {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StoredFeatures.class );
+    private static final Logger LOG = getLogger( StoredFeatures.class );
 
     private final AppSchema schema;
 

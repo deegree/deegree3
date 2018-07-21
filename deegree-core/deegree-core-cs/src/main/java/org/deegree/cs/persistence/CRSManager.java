@@ -36,6 +36,7 @@
 package org.deegree.cs.persistence;
 
 import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.closeQuietly;
 
 import java.io.File;
@@ -55,6 +56,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
@@ -74,8 +76,6 @@ import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.Initializable;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Entry point for creating and retrieving {@link CRSStore} and {@link CRSStoreProvider} instances.
@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CRSManager implements Initializable, Destroyable {
 
-    private static Logger LOG = LoggerFactory.getLogger( CRSManager.class );
+    private static Logger LOG = getLogger( CRSManager.class );
 
     private static Map<String, CRSStoreProvider> nsToProvider = null;
 

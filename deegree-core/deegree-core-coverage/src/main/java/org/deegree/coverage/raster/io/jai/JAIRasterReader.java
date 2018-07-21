@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -53,8 +54,8 @@ import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A JAI based raster reader, rb: should be refactored to use the 'new' tiling raster api.
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JAIRasterReader implements RasterReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( JAIRasterReader.class );
+    private static Logger LOG = getLogger( JAIRasterReader.class );
 
     private File file = null;
 

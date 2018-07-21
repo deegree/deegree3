@@ -41,29 +41,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.BasicStroke.CAP_BUTT;
-import static java.awt.BasicStroke.CAP_ROUND;
-import static java.awt.BasicStroke.CAP_SQUARE;
-import static java.awt.BasicStroke.JOIN_BEVEL;
-import static java.awt.BasicStroke.JOIN_MITER;
-import static java.awt.BasicStroke.JOIN_ROUND;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
-import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.style.styling.components.PerpendicularOffsetType;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.UOM;
 import org.deegree.style.utils.UomCalculator;
-import org.slf4j.Logger;
+
+import java.awt.*;
+
+import static java.awt.BasicStroke.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
+import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
 
 /**
  * Responsible to render stroke styles.

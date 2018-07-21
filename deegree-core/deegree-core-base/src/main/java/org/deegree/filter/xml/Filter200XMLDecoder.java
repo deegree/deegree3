@@ -40,6 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDateTime;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsQName;
@@ -64,6 +65,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -143,8 +145,6 @@ import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.geometry.GMLGeometryVersionHelper;
 import org.deegree.time.TimeObject;
 import org.deegree.time.gml.reader.GmlTimeGeometricPrimitiveReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Decodes XML fragments that comply to the <a href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding
@@ -157,7 +157,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Filter200XMLDecoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Filter200XMLDecoder.class );
+    private static final Logger LOG = getLogger( Filter200XMLDecoder.class );
 
     private static final String FES_NS = "http://www.opengis.net/fes/2.0";
 

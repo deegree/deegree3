@@ -35,14 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.inspectors;
 
-import java.sql.Connection;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -51,8 +48,11 @@ import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataInspectorException;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
 import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.sql.Connection;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HierarchyLevelInspector implements RecordInspector<ISORecord> {
 
-    private static Logger LOG = LoggerFactory.getLogger( HierarchyLevelInspector.class );
+    private static Logger LOG = getLogger( HierarchyLevelInspector.class );
 
     private final NamespaceBindings nsContext = new NamespaceBindings();
 

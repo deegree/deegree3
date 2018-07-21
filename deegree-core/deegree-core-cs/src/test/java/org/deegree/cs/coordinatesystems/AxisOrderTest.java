@@ -35,15 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.coordinatesystems;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.vecmath.Point3d;
-
+import junit.framework.TestCase;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.IAxis;
@@ -51,6 +44,11 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.junit.Test;
+
+import javax.vecmath.Point3d;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Test for correctness of AxisOrder, if x/y forced or not.
@@ -60,7 +58,7 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class AxisOrderTest {
+public class AxisOrderTest extends TestCase {
 
     @Test
     public void testAxisOrderDef()

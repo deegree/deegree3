@@ -34,44 +34,35 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.workspace;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.readLines;
-import static org.deegree.client.core.utils.ActionParams.getParam1;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.console.JsfUtils.indicateException;
-import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
+import org.apache.logging.log4j.Logger;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
-import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.console.client.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.workspace.standard.ModuleInfo;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.context.FacesContext;
+import java.io.*;
+import java.net.URL;
+import java.util.*;
+
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.readLines;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.client.core.utils.ActionParams.getParam1;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.console.JsfUtils.indicateException;
+import static org.deegree.services.controller.OGCFrontController.getModulesInfo;
 
 /**
  * JSF Bean for controlling various global aspects of the {@link DeegreeWorkspace}.
@@ -84,7 +75,7 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class WorkspaceBean implements Serializable {
 
-    private static Logger LOG = LoggerFactory.getLogger( WorkspaceBean.class );
+    private static Logger LOG = getLogger( WorkspaceBean.class );
 
     private static final long serialVersionUID = -2225303815897732019L;
 

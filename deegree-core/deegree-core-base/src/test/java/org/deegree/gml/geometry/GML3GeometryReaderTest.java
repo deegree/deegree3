@@ -37,6 +37,7 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC;
@@ -47,7 +48,6 @@ import static org.deegree.gml.GMLVersion.GML_32;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,6 +58,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -112,7 +113,6 @@ import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.GMLAppSchemaReaderTest;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 /**
  * Tests that check the correct parsing of GML 3 geometry elements.

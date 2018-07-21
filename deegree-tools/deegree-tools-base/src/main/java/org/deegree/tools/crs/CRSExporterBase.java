@@ -36,9 +36,26 @@
 
 package org.deegree.tools.crs;
 
-import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
-import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.cs.CRSCodeType;
+import org.deegree.cs.CRSResource;
+import org.deegree.cs.components.*;
+import org.deegree.cs.coordinatesystems.CRS.CRSType;
+import org.deegree.cs.coordinatesystems.*;
+import org.deegree.cs.projections.IProjection;
+import org.deegree.cs.projections.azimuthal.IStereographicAzimuthal;
+import org.deegree.cs.projections.conic.LambertConformalConic;
+import org.deegree.cs.projections.cylindric.ITransverseMercator;
+import org.deegree.cs.transformations.Transformation;
+import org.deegree.cs.transformations.helmert.Helmert;
+import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -47,40 +64,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.cs.CRSCodeType;
-import org.deegree.cs.CRSResource;
-import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.IAxis;
-import org.deegree.cs.components.IEllipsoid;
-import org.deegree.cs.components.IGeodeticDatum;
-import org.deegree.cs.components.IPrimeMeridian;
-import org.deegree.cs.components.IUnit;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.GeocentricCRS;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.coordinatesystems.ICompoundCRS;
-import org.deegree.cs.coordinatesystems.IGeocentricCRS;
-import org.deegree.cs.coordinatesystems.IGeographicCRS;
-import org.deegree.cs.coordinatesystems.IProjectedCRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
-import org.deegree.cs.coordinatesystems.CRS.CRSType;
-import org.deegree.cs.projections.IProjection;
-import org.deegree.cs.projections.azimuthal.IStereographicAzimuthal;
-import org.deegree.cs.projections.conic.LambertConformalConic;
-import org.deegree.cs.projections.cylindric.ITransverseMercator;
-import org.deegree.cs.transformations.Transformation;
-import org.deegree.cs.transformations.helmert.Helmert;
-import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
+import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 
 /**
  * The <code>CRSExporter</code> exports to the old version format (no version attribute).
@@ -95,7 +81,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about the currently exported coordinate system.")
 public class CRSExporterBase {
 
-    private static Logger LOG = LoggerFactory.getLogger( CRSExporterBase.class );
+    private static Logger LOG = getLogger( CRSExporterBase.class );
 
     public void export( StringBuilder sb, List<ICRS> crsToExport ) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

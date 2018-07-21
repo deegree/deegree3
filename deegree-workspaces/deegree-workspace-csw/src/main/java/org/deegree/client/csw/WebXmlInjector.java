@@ -35,28 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.csw;
 
-import static javax.xml.stream.XMLStreamConstants.CDATA;
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import org.apache.logging.log4j.Logger;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static javax.xml.stream.XMLStreamConstants.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -67,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  */
 public class WebXmlInjector {
-    private static Logger LOG = LoggerFactory.getLogger( WebXmlInjector.class );
+    private static Logger LOG = getLogger( WebXmlInjector.class );
 
     private static final String CLASSPATH_ROOT = WebXmlInjector.class.getResource( "/" ).getPath();
 

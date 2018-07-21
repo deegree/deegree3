@@ -35,27 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wms.ops;
 
-import static org.deegree.commons.utils.CollectionUtils.unzip;
-import static org.deegree.protocol.wms.ops.SLDParser.parse;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.StringReader;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
-import javax.xml.stream.XMLInputFactory;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerRef;
 import org.deegree.style.StyleRef;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLInputFactory;
+import java.io.StringReader;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.CollectionUtils.unzip;
+import static org.deegree.protocol.wms.ops.SLDParser.parse;
 
 /**
  * 

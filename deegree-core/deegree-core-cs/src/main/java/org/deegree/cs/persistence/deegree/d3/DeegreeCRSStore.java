@@ -36,8 +36,6 @@
 
 package org.deegree.cs.persistence.deegree.d3;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -53,6 +51,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
@@ -70,7 +69,8 @@ import org.deegree.cs.projections.Projection;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>DeegreeCRSStore</code> reads the deegree crs-config (based on it's own xml-schema) and creates the CRS's

@@ -496,7 +496,7 @@ Additional information can be found in the deegree log. If you're running the ZI
   If you deployed the WAR version, the location of the deegree log depends on your web application container. For Tomcat, you will find it in file ``catalina.out`` in the ``log/`` directory.
 
 .. tip::
-  More logging can be activated by adjusting file ``log4j.properties`` in the ``/WEB-INF/classes/`` directory of the deegree webapplication.
+  More logging can be activated by adjusting file ``log4j2.xml`` in the ``/WEB-INF/classes/`` directory of the deegree webapplication.
 
 
 

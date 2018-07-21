@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.utilities;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.AffineTransform;
 import java.util.Arrays;
@@ -44,6 +44,7 @@ import java.util.Arrays;
 import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.IAxis;
@@ -53,7 +54,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.i18n.Messages;
-import org.slf4j.Logger;
 
 /**
  * Defines a matrix based on {@link GMatrix}. Also suplies some methods to create a 'swap' matrix between two coordinate

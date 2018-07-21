@@ -36,8 +36,8 @@
 package org.deegree.cs.persistence.deegree.d3;
 
 import static java.util.Collections.singletonMap;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,6 +45,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.exceptions.CRSStoreException;
@@ -53,7 +54,6 @@ import org.deegree.cs.persistence.CRSStoreProvider;
 import org.deegree.cs.persistence.deegree.d3.jaxb.DeegreeCRSStoreConfig;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
 
 /**
  * {@link DeegreeCRSStoreProvider} for the {@link DeegreeCRSStore} (deegree3!)

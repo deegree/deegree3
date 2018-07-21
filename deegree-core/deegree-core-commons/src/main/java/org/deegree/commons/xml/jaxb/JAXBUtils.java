@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.jaxb;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,9 +48,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

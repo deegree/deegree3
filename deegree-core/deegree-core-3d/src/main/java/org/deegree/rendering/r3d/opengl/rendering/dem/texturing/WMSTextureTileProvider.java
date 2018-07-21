@@ -36,14 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
@@ -57,8 +50,15 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link TextureTileProvider} that delegates tile requests to a WMS.
@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WMSTextureTileProvider implements TextureTileProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WMSTextureTileProvider.class );
+    private static final Logger LOG = getLogger( WMSTextureTileProvider.class );
 
     private static GeometryFactory fac = new GeometryFactory();
 

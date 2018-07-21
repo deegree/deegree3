@@ -35,14 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
-import java.util.Arrays;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.VectorUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
+
+import java.util.Arrays;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link LODCriterion} for specifying LODs that are optimized for perspective rendering.
@@ -54,7 +57,7 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
  */
 public class ViewFrustumCrit implements LODCriterion {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ViewFrustumCrit.class );
+    private final static Logger LOG = getLogger( ViewFrustumCrit.class );
 
     private final float maxPixelError;
 

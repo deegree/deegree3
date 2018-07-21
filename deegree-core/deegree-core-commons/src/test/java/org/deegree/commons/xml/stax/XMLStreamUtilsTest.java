@@ -41,18 +41,17 @@
 
 package org.deegree.commons.xml.stax;
 
-import static junit.framework.Assert.assertEquals;
 
-import java.io.IOException;
-import java.net.URL;
+import junit.framework.TestCase;
+import org.junit.Test;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
-import org.junit.Test;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * <code>XMLStreamUtilsTest</code>
@@ -63,7 +62,7 @@ import org.junit.Test;
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
-public class XMLStreamUtilsTest {
+public class XMLStreamUtilsTest extends TestCase {
 
     @Test
     public void testAsRelaxedQName()

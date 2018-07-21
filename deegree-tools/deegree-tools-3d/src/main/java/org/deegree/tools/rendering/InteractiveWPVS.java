@@ -36,39 +36,10 @@
 
 package org.deegree.tools.rendering;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.glu.GLU;
-import javax.swing.JFrame;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import com.sun.opengl.util.GLUT;
+import com.sun.opengl.util.texture.Texture;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tools.CommandUtils;
@@ -108,11 +79,29 @@ import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.GLUT;
-import com.sun.opengl.util.texture.Texture;
+import javax.imageio.ImageIO;
+import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCanvas;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.glu.GLU;
+import javax.swing.*;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+import javax.xml.bind.JAXBException;
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Reads in a configuration document for the {@link WPVSController} and lets the user navigate interactively through the
@@ -126,7 +115,7 @@ import com.sun.opengl.util.texture.Texture;
 @Tool("Reads in a configuration document for the deegree WPVS and allows the user to interactively navigate through the scene.")
 public class InteractiveWPVS extends GLCanvas implements GLEventListener, KeyListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger( InteractiveWPVS.class );
+    private static final Logger LOG = getLogger( InteractiveWPVS.class );
 
     private static final String OPT_WPVS_CONFIG_FILE = "wpvsconfig";
 

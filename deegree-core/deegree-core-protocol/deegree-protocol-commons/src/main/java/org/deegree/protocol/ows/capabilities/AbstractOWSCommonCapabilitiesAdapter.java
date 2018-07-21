@@ -35,34 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
-import static org.deegree.commons.ows.metadata.domain.RangeClosure.CLOSED;
-import static org.deegree.commons.ows.metadata.domain.RangeClosure.CLOSED_OPEN;
-import static org.deegree.commons.ows.metadata.domain.RangeClosure.OPEN;
-import static org.deegree.commons.ows.metadata.domain.RangeClosure.OPEN_CLOSED;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.commons.ows.metadata.domain.AllowedValues;
-import org.deegree.commons.ows.metadata.domain.AnyValue;
-import org.deegree.commons.ows.metadata.domain.Domain;
-import org.deegree.commons.ows.metadata.domain.NoValues;
-import org.deegree.commons.ows.metadata.domain.PossibleValues;
-import org.deegree.commons.ows.metadata.domain.Range;
-import org.deegree.commons.ows.metadata.domain.RangeClosure;
-import org.deegree.commons.ows.metadata.domain.Value;
-import org.deegree.commons.ows.metadata.domain.Values;
-import org.deegree.commons.ows.metadata.domain.ValuesReference;
+import org.deegree.commons.ows.metadata.domain.*;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.party.Address;
 import org.deegree.commons.ows.metadata.party.ContactInfo;
@@ -76,8 +55,16 @@ import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.metadata.domain.RangeClosure.*;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 
 /**
  * Abstract base class for {@link OWSCapabilitiesAdapter} implementations that process <a
@@ -90,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractOWSCommonCapabilitiesAdapter extends XMLAdapter implements OWSCapabilitiesAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractOWSCommonCapabilitiesAdapter.class );
+    private static final Logger LOG = getLogger( AbstractOWSCommonCapabilitiesAdapter.class );
 
     protected static final String XML1998NS = "http://www.w3.org/XML/1998/namespace";
 

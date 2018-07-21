@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -51,8 +53,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A helper class to create and send mail.
@@ -68,7 +69,7 @@ import org.slf4j.LoggerFactory;
 
 public final class MailHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MailHelper.class );
+    private static final Logger LOG = getLogger( MailHelper.class );
 
     /**
      * Creates a mail helper to send a message.

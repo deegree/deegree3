@@ -35,15 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter.function;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.workspace.Destroyable;
+import org.deegree.workspace.Initializable;
+import org.deegree.workspace.Workspace;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.deegree.workspace.Destroyable;
-import org.deegree.workspace.Initializable;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Entry point for accessing {@link SQLFunctionProvider} instances that are registered via Java SPI.
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLFunctionManager implements Initializable, Destroyable {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SQLFunctionManager.class );
+    private static final Logger LOG = getLogger( SQLFunctionManager.class );
 
     private static Map<String, SQLFunctionProvider> nameToFunction;
 

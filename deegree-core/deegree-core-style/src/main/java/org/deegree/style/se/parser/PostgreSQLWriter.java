@@ -35,31 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.se.parser;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-import static java.sql.Types.DOUBLE;
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.VARCHAR;
-import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
@@ -67,21 +43,28 @@ import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.styling.LineStyling;
-import org.deegree.style.styling.PointStyling;
-import org.deegree.style.styling.PolygonStyling;
-import org.deegree.style.styling.Styling;
-import org.deegree.style.styling.TextStyling;
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Font;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.Halo;
-import org.deegree.style.styling.components.LinePlacement;
-import org.deegree.style.styling.components.Stroke;
+import org.deegree.style.styling.*;
+import org.deegree.style.styling.components.*;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static java.sql.Types.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ArrayUtils.join;
 
 /**
  * <code>PostgreSQLWriter</code>

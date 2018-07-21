@@ -41,14 +41,7 @@
 
 package org.deegree.feature.persistence.memory;
 
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
-
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.db.ConnectionProvider;
@@ -71,8 +64,15 @@ import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 /**
  * <code>MemoryFeatureStoreBuilder</code>
@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MemoryFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreBuilder.class );
+    private static final Logger LOG = getLogger( MemoryFeatureStoreBuilder.class );
 
     private MemoryFeatureStoreMetadata metadata;
 

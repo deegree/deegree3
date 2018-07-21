@@ -35,13 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
-import java.net.URL;
-import java.util.TimeZone;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
@@ -50,8 +44,14 @@ import org.deegree.metadata.iso.persistence.TstConstants;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.net.URL;
+import java.util.TimeZone;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Tests the AnyTextElement
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AnyTextHelperTest extends AbstractISOTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( AnyTextHelperTest.class );
+    private static Logger LOG = getLogger( AnyTextHelperTest.class );
 
     @Test
     public void testAnyTextElement_ALL()

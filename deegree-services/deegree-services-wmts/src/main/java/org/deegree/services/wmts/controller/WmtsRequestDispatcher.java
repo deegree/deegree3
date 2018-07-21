@@ -41,14 +41,7 @@
 
 package org.deegree.services.wmts.controller;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Map;
-
-import javax.servlet.ServletException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.protocol.wmts.WMTSConstants.WMTSRequestType;
@@ -57,7 +50,13 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.servlet.ServletException;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 
 /**
  * <code>RequestDispatcher</code>

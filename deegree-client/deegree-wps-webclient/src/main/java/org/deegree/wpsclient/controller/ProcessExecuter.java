@@ -35,19 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.wpsclient.controller;
 
-import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.client.core.model.BBox;
 import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.utils.StringPair;
@@ -60,7 +48,18 @@ import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.protocol.wps.client.process.Process;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
 import org.deegree.protocol.wps.client.process.execute.ExecutionOutputs;
-import org.slf4j.Logger;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.File;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 
 /**
  * <code>ProcessExecuter</code> is the executer of a process, with the given user entries.

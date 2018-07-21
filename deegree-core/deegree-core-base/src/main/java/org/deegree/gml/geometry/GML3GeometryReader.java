@@ -37,6 +37,7 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
 
@@ -51,6 +52,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -110,8 +112,6 @@ import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.geometry.refs.SolidReference;
 import org.deegree.geometry.refs.SurfaceReference;
 import org.deegree.gml.GMLStreamReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Parser for geometry and geometry-related constructs from the GML 3 specification series (3.0/3.1/3.2).
@@ -161,7 +161,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeometryReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML3GeometryReader.class );
+    private static Logger LOG = getLogger( GML3GeometryReader.class );
 
     private static String GID = "gid";
 

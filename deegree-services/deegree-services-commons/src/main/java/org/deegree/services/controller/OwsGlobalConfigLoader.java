@@ -27,15 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import static java.lang.Class.forName;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-
-import javax.xml.bind.JAXBElement;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.controller.utils.StandardRequestLogger;
@@ -45,7 +37,14 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.workspace.Initializable;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
+
+import javax.xml.bind.JAXBElement;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+
+import static java.lang.Class.forName;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is responsible for reading any existing main.xml and metadata.xml upon startup.

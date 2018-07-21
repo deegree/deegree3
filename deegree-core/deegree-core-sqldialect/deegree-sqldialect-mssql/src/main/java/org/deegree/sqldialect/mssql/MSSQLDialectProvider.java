@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.mssql;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.db.dialect.SqlDialectProvider;
+import org.deegree.sqldialect.SQLDialect;
 
 import java.sql.Connection;
 
-import org.deegree.db.dialect.SqlDialectProvider;
-import org.deegree.sqldialect.SQLDialect;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link SqlDialectProvider} for Microsoft SQL databases.

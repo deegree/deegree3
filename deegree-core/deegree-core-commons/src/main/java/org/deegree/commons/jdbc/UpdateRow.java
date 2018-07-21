@@ -35,15 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.jdbc;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.sql.ParticleConversion;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates columns and values for updating one row in a database table.

@@ -36,25 +36,19 @@
 
 package org.deegree.cs.transformations;
 
-import static java.lang.Double.NaN;
-
-import java.util.Collections;
-
-import javax.vecmath.Point3d;
-
-import junit.framework.Assert;
-
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CoordinateTransformer;
-import org.deegree.cs.coordinatesystems.CompoundCRS;
-import org.deegree.cs.coordinatesystems.GeocentricCRS;
-import org.deegree.cs.coordinatesystems.GeographicCRS;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.coordinatesystems.ProjectedCRS;
+import org.deegree.cs.coordinatesystems.*;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
+import org.junit.Assert;
 import org.junit.Test;
+
+import javax.vecmath.Point3d;
+import java.util.Collections;
+
+import static java.lang.Double.NaN;
 
 /**
  * A JUnit test class for testing the accuracy of various transformations, thus testing the functionality of the

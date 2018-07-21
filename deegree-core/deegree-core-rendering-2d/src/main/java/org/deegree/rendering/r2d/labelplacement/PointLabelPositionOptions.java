@@ -35,18 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.labelplacement;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Polygon;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r2d.Label;
+import org.deegree.style.styling.TextStyling;
+import org.deegree.style.utils.UomCalculator;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.deegree.rendering.r2d.Label;
-import org.deegree.style.styling.TextStyling;
-import org.deegree.style.utils.UomCalculator;
-import org.slf4j.Logger;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 
 /**

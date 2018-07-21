@@ -36,13 +36,14 @@
 
 package org.deegree.rendering.r3d.model.geometry;
 
-import java.io.IOException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.model.QualityModelPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array with or without innerrings and a
@@ -62,7 +63,7 @@ public class SimpleAccessGeometry implements QualityModelPart {
      */
     private static final long serialVersionUID = -5069487647474073270L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( SimpleAccessGeometry.class );
+    private final static Logger LOG = getLogger( SimpleAccessGeometry.class );
 
     /**
      * The coordinates of this geometry may be null

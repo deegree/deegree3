@@ -40,17 +40,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.spring;
 
-import java.lang.reflect.Field;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.spring.annotation.InjectMetadata;
 import org.deegree.spring.jaxb.SingleBeanRef;
-
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.Field;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A GenericSpringResourceBuilder can be used to provide a single bean as deegree workspace resource.
@@ -62,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericSpringResourceBuilder<T extends Resource> extends AbstractSpringResourceBuilder<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GenericSpringResourceBuilder.class );
+    private static final Logger LOG = getLogger( GenericSpringResourceBuilder.class );
 
     private final Class<T> clazz;
 

@@ -35,15 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.id;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.ArrayUtils.sortByLengthDescending;
 
 /**
@@ -55,7 +55,7 @@ import static org.deegree.commons.utils.ArrayUtils.sortByLengthDescending;
  */
 public class IdAnalyzer {
 
-    private static Logger LOG = LoggerFactory.getLogger( IdAnalyzer.class );
+    private static Logger LOG = getLogger( IdAnalyzer.class );
 
     private final Map<String, FeatureType> prefixToFt = new HashMap<String, FeatureType>();
 

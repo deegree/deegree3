@@ -28,32 +28,10 @@
 
 package org.deegree.coverage.raster.io.oraclegeoraster;
 
-import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.nio.ByteBuffer;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import oracle.spatial.georaster.JGeoRaster;
 import oracle.spatial.georaster.image.GeoRasterImage;
 import oracle.sql.STRUCT;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.coverage.persistence.oraclegeoraster.jaxb.AbstractOracleGeorasterType;
@@ -79,8 +57,26 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.nio.ByteBuffer;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
 
 /**
  * Oracle GeoRaster Reader
@@ -100,7 +96,7 @@ public class OracleGeorasterReader implements RasterReader {
         public int bands = -1;
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger( OracleGeorasterReader.class );
+    private static final Logger LOG = getLogger( OracleGeorasterReader.class );
 
     private static final Color[] DBG_COLORS = new Color[] { Color.RED, Color.YELLOW, Color.BLUE, Color.CYAN,
                                                            Color.ORANGE };

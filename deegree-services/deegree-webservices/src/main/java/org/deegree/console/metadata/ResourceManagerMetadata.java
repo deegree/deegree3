@@ -35,22 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.metadata;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 
@@ -61,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ResourceManagerMetadata implements Comparable<ResourceManagerMetadata> {
 
-    private static Logger LOG = LoggerFactory.getLogger( ResourceManagerMetadata.class );
+    private static Logger LOG = getLogger( ResourceManagerMetadata.class );
 
     private String name, category;
 

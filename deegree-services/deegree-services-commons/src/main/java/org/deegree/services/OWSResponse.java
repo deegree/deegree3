@@ -36,12 +36,12 @@
 
 package org.deegree.services;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.zip.GZIPOutputStream;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -49,13 +49,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
-import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.utils.io.StreamBufferStore;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.services.controller.exception.serializer.ExceptionSerializer;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Sink for producing the HTTP response to an {@link OWS} request.

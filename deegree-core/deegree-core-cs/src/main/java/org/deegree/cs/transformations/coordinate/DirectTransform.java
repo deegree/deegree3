@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -48,8 +49,8 @@ import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.polynomial.PolynomialTransformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>DirectTransform</code> class wraps the access to a polynomial transformation, by calling it's
@@ -65,7 +66,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about the incoming ordinates of a direct transformation.")
 public class DirectTransform extends Transformation {
 
-    private static Logger LOG = LoggerFactory.getLogger( DirectTransform.class );
+    private static Logger LOG = getLogger( DirectTransform.class );
 
     private final PolynomialTransformation transformation;
 

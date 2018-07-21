@@ -1,23 +1,23 @@
 package org.deegree.cs.transformations;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CoordinateTransformer;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public abstract class TransformationAccuracy {
+import junit.framework.TestCase;
 
-    private static Logger LOG = LoggerFactory.getLogger( TransformationAccuracy.class );
+import static org.apache.logging.log4j.LogManager.getLogger;
+
+public abstract class TransformationAccuracy extends TestCase {
+
+    private static Logger LOG = getLogger( TransformationAccuracy.class );
 
     /**
      * Creates a {@link CoordinateTransformer} for the given coordinate system.
@@ -163,7 +163,6 @@ public abstract class TransformationAccuracy {
         LOG.debug( output.toString() );
         assertEquals( true, forwardSuccess );
         assertEquals( true, inverseSuccess );
-
     }
 
     /**

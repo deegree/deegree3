@@ -41,8 +41,8 @@
       <dependencies>
         <dependency>
           <groupId>com.microsoft</groupId>
-          <artifactId>sqljdbc4</artifactId>
-          <version>3.0</version>
+          <artifactId>mssql-jdbc</artifactId>
+          <version>6.2.2.jre8</version>
         </dependency>
       </dependencies>
     </profile>

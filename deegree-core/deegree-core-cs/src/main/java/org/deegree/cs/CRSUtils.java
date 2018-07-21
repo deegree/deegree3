@@ -35,20 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs;
 
-import static java.lang.Integer.parseInt;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.MapUtils.calcDegreeResFromScale;
 import static org.deegree.commons.utils.MapUtils.calcMetricResFromScale;
 import static org.deegree.cs.components.Unit.DEGREE;
 import static org.deegree.cs.components.Unit.METRE;
-import static org.slf4j.LoggerFactory.getLogger;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
-import org.slf4j.Logger;
 
 /**
  * TODO: move this!

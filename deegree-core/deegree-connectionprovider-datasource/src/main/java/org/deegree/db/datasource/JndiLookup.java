@@ -40,13 +40,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.datasource;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Helper class for using {@link DataSourceConnectionProvider} with JNDI: Provides a static factory method for

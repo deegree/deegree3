@@ -36,19 +36,19 @@
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
-import java.util.ArrayList;
-
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUtessellator;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
 import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.model.geometry.TexturedGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModelPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUtessellator;
+import java.util.ArrayList;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>Tesselator</code> class is a {@link GLUtessellator} utility wrapper. Its main purpose is the creation of a
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class Tesselator {
-    private final transient static Logger LOG = LoggerFactory.getLogger( Tesselator.class );
+    private final transient static Logger LOG = getLogger( Tesselator.class );
 
     private GLU glu;
 

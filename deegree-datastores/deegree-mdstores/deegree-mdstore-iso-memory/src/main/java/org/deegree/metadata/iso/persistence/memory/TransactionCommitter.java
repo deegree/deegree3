@@ -41,22 +41,21 @@
 
 package org.deegree.metadata.iso.persistence.memory;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.metadata.iso.persistence.memory.ISOMemoryMetadataStoreTransaction.TransactionCandidate;
+import org.deegree.metadata.iso.persistence.memory.ISOMemoryMetadataStoreTransaction.TransactionStatus;
+import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
+import org.deegree.protocol.csw.MetadataStoreException;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.deegree.metadata.iso.persistence.memory.ISOMemoryMetadataStoreTransaction.TransactionCandidate;
-import org.deegree.metadata.iso.persistence.memory.ISOMemoryMetadataStoreTransaction.TransactionStatus;
-import org.deegree.protocol.csw.MetadataStoreException;
-import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>TransactionHandler</code>

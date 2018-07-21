@@ -27,19 +27,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.deegree.tile.DefaultTileDataSet;
-import org.deegree.tile.TileDataLevel;
-import org.deegree.tile.TileDataSet;
-import org.deegree.tile.TileMatrix;
-import org.deegree.tile.TileMatrixSet;
+import org.apache.logging.log4j.Logger;
+import org.deegree.tile.*;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.filesystem.jaxb.FileSystemTileStoreJAXB;
 import org.deegree.tile.persistence.filesystem.layout.TileCacheDiskLayout;
@@ -48,7 +37,14 @@ import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class is responsible for building file system tile stores.

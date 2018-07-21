@@ -36,14 +36,14 @@
 
 package org.deegree.commons.xml.stax;
 
+import org.apache.logging.log4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.StringUtils.isSet;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import org.slf4j.Logger;
 
 /**
  * The <code></code> class TODO add class documentation here.

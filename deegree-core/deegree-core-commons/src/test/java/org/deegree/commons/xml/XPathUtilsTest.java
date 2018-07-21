@@ -35,12 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
-import javax.xml.namespace.QName;
-
-import junit.framework.Assert;
 import junit.framework.TestCase;
-
+import org.junit.Assert;
 import org.junit.Test;
+
+import javax.xml.namespace.QName;
 
 /**
  * 

@@ -27,7 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.gdal.pool;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A "keyed" resource pool implementation that pools {@link KeyedResource} object instances and guarantees a maximum

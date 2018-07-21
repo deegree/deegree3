@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeGeometry;
@@ -69,8 +70,6 @@ import org.deegree.geometry.validation.event.InteriorRingOutsideExterior;
 import org.deegree.geometry.validation.event.InteriorRingsIntersect;
 import org.deegree.geometry.validation.event.InteriorRingsNested;
 import org.deegree.geometry.validation.event.RingNotClosed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -79,6 +78,8 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.IsSimpleOp;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Performs topological validation of {@link Geometry} objects.
@@ -136,7 +137,7 @@ import com.vividsolutions.jts.operation.IsSimpleOp;
  */
 public class GeometryValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GeometryValidator.class );
+    private static final Logger LOG = getLogger( GeometryValidator.class );
 
     private CurveLinearizer linearizer;
 

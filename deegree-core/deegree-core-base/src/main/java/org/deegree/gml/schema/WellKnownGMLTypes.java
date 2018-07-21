@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.gml.GMLVersion.GML_31;
@@ -45,11 +46,10 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.types.FeatureCollectionType;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Defines well-known {@link FeatureType}s from the GML / OGC core schemas to support GML processing without schema
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WellKnownGMLTypes {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WellKnownGMLTypes.class );
+    private static final Logger LOG = getLogger( WellKnownGMLTypes.class );
 
     private static final String WFS_NS = "http://www.opengis.net/wfs";
 

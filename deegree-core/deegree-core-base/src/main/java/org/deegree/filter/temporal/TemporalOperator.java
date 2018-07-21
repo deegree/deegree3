@@ -37,6 +37,7 @@ package org.deegree.filter.temporal;
 
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
@@ -45,8 +46,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Defines a predicate based on temporal relationships between two time-valued arguments.
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class TemporalOperator implements Operator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TemporalOperator.class );
+    private static final Logger LOG = getLogger( TemporalOperator.class );
 
     protected final Expression param1;
 

@@ -35,18 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.parsing;
 
-import java.util.List;
-
-import javax.xml.stream.FactoryConfigurationError;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.geometry.Envelope;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.iso.persistence.AbstractISOTest;
-import org.deegree.metadata.iso.persistence.ISOMetadataStore;
-import org.deegree.metadata.iso.persistence.ISOMetadataStoreProvider;
 import org.deegree.metadata.iso.persistence.TstConstants;
 import org.deegree.metadata.iso.persistence.TstUtils;
 import org.deegree.metadata.persistence.MetadataInspectorException;
@@ -55,8 +50,11 @@ import org.deegree.protocol.csw.MetadataStoreException;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.FactoryConfigurationError;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -68,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParseISOTest extends AbstractISOTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( ParseISOTest.class );
+    private static Logger LOG = getLogger( ParseISOTest.class );
 
     protected static final NamespaceBindings nsContext = CommonNamespaces.getNamespaceContext();
 

@@ -41,16 +41,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceException;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
+
+import java.util.*;
 
 /**
  * Responsible for building a graph network based on a list of resource metadata objects. The metadata must obviously be
@@ -65,16 +61,17 @@ public class ResourceGraph {
     private Map<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>> nodeMap;
 
     public ResourceGraph() {
-        nodeMap = new HashMap<ResourceIdentifier<? extends Resource>, ResourceNode<? extends Resource>>();
+        nodeMap = new HashMap<>();
     }
 
     /**
      * @param metadata
      *            a list of prepared metadata objects, never <code>null</code>
      */
+    @SuppressWarnings("unchecked")
     public ResourceGraph( List<ResourceMetadata<? extends Resource>> metadata ) {
         this();
-        List<ResourceNode<? extends Resource>> nodes = new ArrayList<ResourceNode<? extends Resource>>();
+        List<ResourceNode<? extends Resource>> nodes = new ArrayList<>();
         for ( ResourceMetadata<? extends Resource> md : metadata ) {
             ResourceNode<? extends Resource> node = new ResourceNode( this, md );
             nodes.add( node );
@@ -88,6 +85,7 @@ public class ResourceGraph {
      *            may not be <code>null</code>
      * @return a single node of the dependency network, <code>null</code> if no such node exists
      */
+    @SuppressWarnings("unchecked")
     public <T extends Resource> ResourceNode<T> getNode( ResourceIdentifier<T> id ) {
         return (ResourceNode) nodeMap.get( id );
     }
@@ -98,7 +96,7 @@ public class ResourceGraph {
      * @return the new node, never <code>null</code>
      */
     public synchronized <T extends Resource> ResourceNode<T> insertNode( ResourceMetadata<T> metadata ) {
-        ResourceNode<T> node = new ResourceNode<T>( this, metadata );
+        ResourceNode<T> node = new ResourceNode<>( this, metadata );
         nodeMap.put( metadata.getIdentifier(), node );
 
         updateDependencies();
@@ -137,9 +135,10 @@ public class ResourceGraph {
      * 
      * @return a sorted list of resource metadata objects, never <code>null</code>
      */
+    @SuppressWarnings("unchecked")
     public List<ResourceMetadata<? extends Resource>> toSortedList() {
         // sketch: first add resources without dependencies, then add resources whose dependencies are met until done
-        HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<ResourceNode<?>>( nodeMap.values() );
+        HashSet<ResourceNode<? extends Resource>> nodes = new HashSet<>( nodeMap.values() );
 
         List<ResourceMetadata<? extends Resource>> roots = getRoots( nodes );
 
@@ -174,7 +173,7 @@ public class ResourceGraph {
     }
 
     private List<ResourceMetadata<? extends Resource>> getRoots( HashSet<ResourceNode<? extends Resource>> nodes ) {
-        List<ResourceMetadata<? extends Resource>> roots = new ArrayList<ResourceMetadata<? extends Resource>>();
+        List<ResourceMetadata<? extends Resource>> roots = new ArrayList<>();
         for ( ResourceNode<? extends Resource> node : nodeMap.values() ) {
             if ( node.getDependencies().isEmpty() && node.getSoftDependencies().isEmpty() ) {
                 roots.add( node.getMetadata() );

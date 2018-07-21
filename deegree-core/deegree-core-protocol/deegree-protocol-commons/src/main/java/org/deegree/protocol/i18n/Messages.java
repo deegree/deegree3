@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.i18n;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,11 +43,11 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for the access to messages that are visible to the user.
@@ -77,7 +77,7 @@ public class Messages {
 
     private static String lang;
 
-    private static Logger LOG = LoggerFactory.getLogger( Messages.class );
+    private static Logger LOG = getLogger( Messages.class );
 
     /**
      * Initialization done at class loading time.

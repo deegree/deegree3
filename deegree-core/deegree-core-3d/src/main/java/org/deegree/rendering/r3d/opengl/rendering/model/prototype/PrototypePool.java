@@ -36,17 +36,19 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.media.opengl.GL;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
+
+import javax.media.opengl.GL;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>PrototypePool</code> holds a set of prototyes which can be referenced by supplying their id. Before the
@@ -61,7 +63,7 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQuali
  * 
  */
 public class PrototypePool {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( PrototypePool.class );
+    private final static Logger LOG = getLogger( PrototypePool.class );
 
     private static final Map<String, RenderablePrototype> prototypes = new HashMap<String, RenderablePrototype>();
 

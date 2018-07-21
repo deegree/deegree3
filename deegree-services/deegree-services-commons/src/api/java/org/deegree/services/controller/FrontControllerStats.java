@@ -35,20 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller;
 
-import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
-import java.util.TreeSet;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.ConfigManager;
 import org.deegree.commons.utils.Pair;
@@ -60,7 +47,13 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.h2.util.IOUtils;
-import org.slf4j.Logger;
+
+import java.io.*;
+import java.util.Map;
+import java.util.TreeSet;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 
 /**
  * Keeps track of request and runtime statistics for the {@link OGCFrontController}.

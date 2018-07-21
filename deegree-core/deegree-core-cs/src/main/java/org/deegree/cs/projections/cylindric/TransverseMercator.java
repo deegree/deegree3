@@ -36,6 +36,7 @@
 
 package org.deegree.cs.projections.cylindric;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS10;
 import static org.deegree.cs.utilities.ProjectionUtils.HALFPI;
 import static org.deegree.cs.utilities.ProjectionUtils.acosScaled;
@@ -48,6 +49,7 @@ import static org.deegree.cs.utilities.ProjectionUtils.normalizeLongitude;
 
 import javax.vecmath.Point2d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -55,8 +57,6 @@ import org.deegree.cs.EPSGCode;
 import org.deegree.cs.components.IUnit;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>TransverseMercator</code> projection has following properties:
@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about incoming ordinates of the (inverse) projection.")
 public class TransverseMercator extends CylindricalProjection implements ITransverseMercator {
 
-    private static Logger LOG = LoggerFactory.getLogger( TransverseMercator.class );
+    private static Logger LOG = getLogger( TransverseMercator.class );
 
     /**
      * Constants used for the forward and inverse transform for the elliptical case of the Transverse Mercator.

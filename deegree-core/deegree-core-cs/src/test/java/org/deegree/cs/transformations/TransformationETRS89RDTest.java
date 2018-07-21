@@ -35,20 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.transformations;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.vecmath.Point3d;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.vecmath.Point3d;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * test the accurancy of transformation from ETRS89 (epsg:4258) to the dutch RD CRS (epsg:28992) and back.
@@ -60,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TransformationETRS89RDTest extends TransformationAccuracy {
 
-    private static Logger LOG = LoggerFactory.getLogger( TransformationAccuracy.class );
+    private static Logger LOG = getLogger( TransformationAccuracy.class );
     
     private static Map<String, Pair<Point3d, Point3d>> refPoints;
 
@@ -68,8 +67,7 @@ public class TransformationETRS89RDTest extends TransformationAccuracy {
     /** the epsilon for meter based crs */
     public final static Point3d EPSILON_M = new Point3d( 0.22, 0.22, 0.4 );
     
-    @BeforeClass
-    public static void init() {
+    static {
         // reference points from http://www.06-gps.nl (from 2011-03-01)
         refPoints = new HashMap<String, Pair<Point3d, Point3d>>();
         refPoints.put("Aachen        ", new Pair<Point3d, Point3d>(new Point3d(  6.0884131056 ,  50.7679193333  , 263.2272  ), new Point3d(     204471.1828 ,     308901.5450    ,Double.NaN)));

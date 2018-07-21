@@ -35,14 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.id;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -53,8 +46,10 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides access to the {@link KeyPropagation}s defined by a {@link MappedAppSchema}.
@@ -66,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TableDependencies {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TableDependencies.class );
+    private static final Logger LOG = getLogger( TableDependencies.class );
 
     private final Map<TableName, LinkedHashSet<SQLIdentifier>> tableToGenerators = new HashMap<TableName, LinkedHashSet<SQLIdentifier>>();
 

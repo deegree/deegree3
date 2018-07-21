@@ -35,17 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wms.controller.capabilities.theme;
 
-import static org.junit.Assert.fail;
-
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.junit.Assert.fail;
 
 /**
  * This class contains static assert methods for using XML validation results in JUnit test cases.
@@ -60,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 class XMLAssert {
 
-    private static final Logger LOG = LoggerFactory.getLogger( XMLAssert.class );
+    private static final Logger LOG = getLogger( XMLAssert.class );
 
     /**
      * Asserts that the specified XML document is valid with respect to the schemas that it references (using

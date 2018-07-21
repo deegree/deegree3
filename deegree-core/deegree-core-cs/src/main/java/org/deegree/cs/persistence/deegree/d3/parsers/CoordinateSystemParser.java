@@ -36,6 +36,7 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredText;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
@@ -55,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -80,8 +82,6 @@ import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.cs.refs.coordinatesystem.GeographicCRSRef;
 import org.deegree.cs.refs.projections.ProjectionRef;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Stax-based parser for Coordinate system objects.
@@ -94,7 +94,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about the currently parsed crs, as well as a stack trace if something went wrong.")
 public class CoordinateSystemParser extends DefinitionParser {
 
-    private static Logger LOG = LoggerFactory.getLogger( CoordinateSystemParser.class );
+    private static Logger LOG = getLogger( CoordinateSystemParser.class );
 
     private static final QName ROOT = new QName( CRS_NS, "CRSDefinitions" );
 

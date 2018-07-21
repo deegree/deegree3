@@ -35,20 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.templating.lang;
 
-import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.featureinfo.templating.lang.Util.getMatchingObjects;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.geometry.Geometry;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
-import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.featureinfo.templating.lang.Util.getMatchingObjects;
 
 /**
  * <code>PropertyTemplateCall</code>

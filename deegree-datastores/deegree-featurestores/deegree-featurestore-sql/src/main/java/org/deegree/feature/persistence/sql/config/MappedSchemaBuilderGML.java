@@ -35,31 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
-import static java.lang.Boolean.TRUE;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
-import static org.deegree.feature.persistence.sql.jaxb.NullEscalationType.AUTO;
-import static org.deegree.feature.persistence.sql.jaxb.NullEscalationType.FALSE;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
@@ -81,24 +57,12 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.jaxb.AbstractParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.ComplexParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.*;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FeatureParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.NullEscalationType;
-import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
-import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.FeatureMapping;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.*;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
@@ -111,8 +75,27 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.MappingExpression;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+
+import static java.lang.Boolean.TRUE;
+import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
+import static org.deegree.feature.persistence.sql.jaxb.NullEscalationType.AUTO;
+import static org.deegree.feature.persistence.sql.jaxb.NullEscalationType.FALSE;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_3;
 
 /**
  * Generates {@link MappedAppSchema} instances from JAXB {@link BLOBMapping} and JAXB {@link FeatureTypeMapping}
@@ -125,7 +108,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
 
-    private static Logger LOG = LoggerFactory.getLogger( MappedSchemaBuilderGML.class );
+    private static Logger LOG = getLogger( MappedSchemaBuilderGML.class );
 
     private static final String FEATURE_TYPE_TABLE = "feature_types";
 

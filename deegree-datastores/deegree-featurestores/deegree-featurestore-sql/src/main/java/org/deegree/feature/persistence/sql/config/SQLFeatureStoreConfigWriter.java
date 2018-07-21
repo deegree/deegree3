@@ -35,19 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.config;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.utils.Pair;
@@ -56,22 +44,25 @@ import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
-import org.deegree.feature.persistence.sql.id.FIDMapping;
-import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
-import org.deegree.feature.persistence.sql.id.UUIDGenerator;
-import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.FeatureMapping;
-import org.deegree.feature.persistence.sql.rules.GeometryMapping;
-import org.deegree.feature.persistence.sql.rules.Mapping;
-import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.id.*;
+import org.deegree.feature.persistence.sql.rules.*;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 /**
  * Creates configuration documents for the {@link PostGISFeatureStore} from {@link MappedAppSchema} instances.
@@ -83,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SQLFeatureStoreConfigWriter {
 
-    private static Logger LOG = LoggerFactory.getLogger( SQLFeatureStoreConfigWriter.class );
+    private static Logger LOG = getLogger( SQLFeatureStoreConfigWriter.class );
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 

@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter;
 
-import static java.sql.Types.BOOLEAN;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
-
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -52,23 +44,8 @@ import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.filter.Expression;
-import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchAction;
-import org.deegree.filter.Operator;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.comparison.PropertyIsBetween;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.comparison.PropertyIsGreaterThan;
-import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
-import org.deegree.filter.comparison.PropertyIsLessThan;
-import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
-import org.deegree.filter.comparison.PropertyIsLike;
-import org.deegree.filter.comparison.PropertyIsNil;
-import org.deegree.filter.comparison.PropertyIsNotEqualTo;
-import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.*;
+import org.deegree.filter.comparison.*;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
@@ -79,16 +56,20 @@ import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.expression.SQLColumn;
-import org.deegree.sqldialect.filter.expression.SQLExpression;
-import org.deegree.sqldialect.filter.expression.SQLOperation;
-import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+import org.deegree.sqldialect.filter.expression.*;
 import org.deegree.sqldialect.filter.function.SQLFunctionManager;
 import org.deegree.sqldialect.filter.function.SQLFunctionProvider;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.sql.Types.BOOLEAN;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.filter.Filters.extractPrefilterBBoxConstraint;
 
 /**
  * Base class for creating SQL predicates from {@link Filter} expressions. Such an expression restricts an SQL
@@ -115,7 +96,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractWhereBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractWhereBuilder.class );
+    private static final Logger LOG = getLogger( AbstractWhereBuilder.class );
 
     protected final SQLDialect dialect;
 

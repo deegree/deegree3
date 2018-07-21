@@ -41,12 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.legacy;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.dialect.SqlDialectProvider;
@@ -54,7 +49,12 @@ import org.deegree.db.legacy.jaxb.JDBCConnection;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.sql.Connection;
+import java.util.Iterator;
+import java.util.ServiceLoader;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Builds legacy connection providers.

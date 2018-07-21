@@ -35,24 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.process.jaxb.java.ProcessDefinition;
+import org.deegree.services.wps.*;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceInitException;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.commons.tom.ows.CodeType;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.services.wps.ExceptionAwareProcesslet;
-import org.deegree.services.wps.ExceptionCustomizer;
-import org.deegree.services.wps.GenericWPSProcess;
-import org.deegree.services.wps.Processlet;
-import org.deegree.services.wps.WPSProcess;
-import org.deegree.workspace.Resource;
-import org.deegree.workspace.ResourceInitException;
-import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link ProcessProvider} for hand-crafted Java processes with hand-crafted process descriptions.
@@ -64,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JavaProcessProvider implements ProcessProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger( JavaProcessProvider.class );
+    private static final Logger LOG = getLogger( JavaProcessProvider.class );
 
     private final Collection<ProcessDefinition> processDefs;
 

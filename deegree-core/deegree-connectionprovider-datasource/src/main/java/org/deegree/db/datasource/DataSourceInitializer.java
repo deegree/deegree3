@@ -40,20 +40,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db.datasource;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConstructorUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider;
 import org.deegree.db.datasource.jaxb.DataSourceConnectionProvider.DataSource.Argument;
-import org.slf4j.Logger;
+
+import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Creates/retrieves {@link DataSource} instances and applies configuration properties via setters.

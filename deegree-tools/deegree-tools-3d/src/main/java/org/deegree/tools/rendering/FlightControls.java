@@ -36,20 +36,14 @@
 
 package org.deegree.tools.rendering;
 
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-import javax.media.opengl.GLCanvas;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.media.opengl.GLCanvas;
+import java.awt.event.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -61,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FlightControls implements KeyListener, MouseMotionListener, MouseWheelListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FlightControls.class );
+    private static final Logger LOG = getLogger( FlightControls.class );
 
     private final ViewFrustum vf;
 

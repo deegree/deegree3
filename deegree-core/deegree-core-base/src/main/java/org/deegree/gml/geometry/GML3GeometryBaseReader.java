@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
@@ -57,8 +58,8 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.commons.AbstractGMLObjectReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add documentation here
@@ -70,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 class GML3GeometryBaseReader extends AbstractGMLObjectReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML3GeometryBaseReader.class );
+    private static final Logger LOG = getLogger( GML3GeometryBaseReader.class );
 
     protected final GeometryFactory geomFac;
 

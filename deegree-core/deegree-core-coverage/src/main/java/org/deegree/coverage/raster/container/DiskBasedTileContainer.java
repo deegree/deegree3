@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.container;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.QTree;
 import org.deegree.coverage.ResolutionInfo;
@@ -65,7 +66,6 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
 
 /**
  * 

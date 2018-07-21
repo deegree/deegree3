@@ -36,22 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
-import static java.lang.System.currentTimeMillis;
-import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
-
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.LogUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
@@ -83,8 +68,22 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.Styling;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import static java.lang.System.currentTimeMillis;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation.CENTER;
 
 /**
  * Provides a texture created from geometries supplied by a Featurstore and filled with a color or fillpattern, which
@@ -97,7 +96,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StyledGeometryTTProvider implements TextureTileProvider {
 
-    static Logger LOG = LoggerFactory.getLogger( StyledGeometryTTProvider.class );
+    static Logger LOG = getLogger( StyledGeometryTTProvider.class );
 
     private final GeometryFactory fac;
 

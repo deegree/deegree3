@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.test;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,8 +44,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides convenient access to test database configurations defined in {@link TestProperties}.
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TestDBProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( TestDBProperties.class );
+    private static Logger LOG = getLogger( TestDBProperties.class );
 
     private static final String TESTDB_PROPERTY_PREFIX = "testdb.";
 

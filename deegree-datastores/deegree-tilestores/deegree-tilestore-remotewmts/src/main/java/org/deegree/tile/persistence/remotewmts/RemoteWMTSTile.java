@@ -40,21 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.remotewmts;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.operation.Operation;
 import org.deegree.commons.utils.RequestUtils;
@@ -68,7 +54,20 @@ import org.deegree.protocol.wmts.ops.GetFeatureInfo;
 import org.deegree.protocol.wmts.ops.GetTile;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
-import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 
 /**
  * {@link Tile} implementation for {@link RemoteWMTSTileDataLevel}.

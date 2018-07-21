@@ -35,16 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.exporthandling;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -55,40 +46,14 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.Filter.Type;
 import org.deegree.filter.Operator;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.comparison.ComparisonOperator;
-import org.deegree.filter.comparison.PropertyIsBetween;
-import org.deegree.filter.comparison.PropertyIsEqualTo;
-import org.deegree.filter.comparison.PropertyIsGreaterThan;
-import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
-import org.deegree.filter.comparison.PropertyIsLessThan;
-import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
-import org.deegree.filter.comparison.PropertyIsLike;
-import org.deegree.filter.comparison.PropertyIsNotEqualTo;
-import org.deegree.filter.comparison.PropertyIsNull;
-import org.deegree.filter.expression.Add;
-import org.deegree.filter.expression.Div;
-import org.deegree.filter.expression.Function;
-import org.deegree.filter.expression.Literal;
-import org.deegree.filter.expression.Mul;
-import org.deegree.filter.expression.Sub;
-import org.deegree.filter.expression.ValueReference;
+import org.deegree.filter.comparison.*;
+import org.deegree.filter.expression.*;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.spatial.BBOX;
-import org.deegree.filter.spatial.Beyond;
-import org.deegree.filter.spatial.Contains;
-import org.deegree.filter.spatial.Crosses;
-import org.deegree.filter.spatial.DWithin;
-import org.deegree.filter.spatial.Disjoint;
-import org.deegree.filter.spatial.Equals;
-import org.deegree.filter.spatial.Intersects;
-import org.deegree.filter.spatial.Overlaps;
-import org.deegree.filter.spatial.SpatialOperator;
-import org.deegree.filter.spatial.Touches;
-import org.deegree.filter.spatial.Within;
+import org.deegree.filter.spatial.*;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.metadata.ebrim.AdhocQuery;
@@ -99,7 +64,11 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.Query;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Analyses a given {@link AdhocQuery} (from a {@link GetRecords} request and derives a {@link MetadataQuery} as well as

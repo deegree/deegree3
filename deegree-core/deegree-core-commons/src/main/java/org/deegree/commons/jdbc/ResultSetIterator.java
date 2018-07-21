@@ -44,10 +44,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.commons.utils.JDBCUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Abstract base class for easy implementation of {@link CloseableIterator}s that are backed by an SQL result set.
@@ -62,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ResultSetIterator.class );
+    private static final Logger LOG = getLogger( ResultSetIterator.class );
 
     private boolean currentRowRead = true;
 

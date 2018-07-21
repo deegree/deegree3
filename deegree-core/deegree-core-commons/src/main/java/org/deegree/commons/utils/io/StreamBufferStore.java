@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.io;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -46,8 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Scalable alternative to {@link ByteArrayOutputStream} that automatically switches to file-based storage if the amount
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StreamBufferStore extends OutputStream {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StreamBufferStore.class );
+    private static final Logger LOG = getLogger( StreamBufferStore.class );
 
     /** Default limit (1 MB) */
     public static final int DEFAULT_LIMIT = 1024 * 1024;

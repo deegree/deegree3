@@ -36,11 +36,13 @@
 
 package org.deegree.cs.projections;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import javax.vecmath.Point2d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.Ellipsoid;
@@ -50,8 +52,6 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <code>ProjectionTest</code> is the base for all accuracy tests, this class doesn't really test anything.
@@ -108,7 +108,7 @@ public class ProjectionBase {
                                                                                                                    "4258",
                                                                                                                    "ESPG" ) } );
 
-    private static Logger LOG = LoggerFactory.getLogger( ProjectionBase.class );
+    private static Logger LOG = getLogger( ProjectionBase.class );
 
     private final static double METER_EPSILON = 0.15;
 

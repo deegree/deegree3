@@ -36,16 +36,7 @@
 
 package org.deegree.services.wpvs.io.file;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
@@ -58,6 +49,18 @@ import org.deegree.services.wpvs.io.DataObjectInfo;
 import org.deegree.services.wpvs.io.ModelBackendInfo;
 import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 /**
  * The <code>ModelFile</code> class TODO add class documentation here.
  * 
@@ -68,7 +71,7 @@ import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
  * 
  */
 class ModelFile<P extends PositionableModel> {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ModelFile.class );
+    private final static Logger LOG = getLogger( ModelFile.class );
 
     private final IndexFile index;
 

@@ -41,17 +41,17 @@
 
 package org.deegree.services.wmts.controller;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.services.wmts.jaxb.FeatureInfoFormatsType;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.ThemeProvider;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Responsible for extracting/parsing WMTS jaxb config beans.

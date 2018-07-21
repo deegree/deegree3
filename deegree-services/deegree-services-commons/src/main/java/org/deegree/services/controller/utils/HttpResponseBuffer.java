@@ -36,8 +36,19 @@
 
 package org.deegree.services.controller.utils;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.io.StreamBufferStore;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.schema.SchemaValidationEvent;
+import org.deegree.commons.xml.schema.SchemaValidator;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.services.controller.Credentials;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -47,23 +58,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.deegree.commons.utils.io.StreamBufferStore;
-import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.schema.SchemaValidationEvent;
-import org.deegree.commons.xml.schema.SchemaValidator;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.services.controller.Credentials;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Custom {@link HttpServletResponseWrapper} that buffers all written data internally and will only send the result when

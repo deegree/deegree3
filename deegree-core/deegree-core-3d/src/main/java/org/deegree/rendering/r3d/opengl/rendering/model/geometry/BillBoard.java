@@ -36,21 +36,20 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
-import java.io.IOException;
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.GL;
-import javax.vecmath.Point3d;
-
+import com.sun.opengl.util.BufferUtil;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.BufferUtil;
+import javax.media.opengl.GL;
+import javax.vecmath.Point3d;
+import java.io.IOException;
+import java.nio.FloatBuffer;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>BillBoard</code> class represents a billboard an object always facing the viewer, with the z-axis as it's
@@ -70,7 +69,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
      */
     private static final long serialVersionUID = -2746400840307665734L;
 
-    private final static Logger LOG = LoggerFactory.getLogger( BillBoard.class );
+    private final static Logger LOG = getLogger( BillBoard.class );
 
     private final static float[] NORMAL = new float[] { 0, -1, 0 };
 

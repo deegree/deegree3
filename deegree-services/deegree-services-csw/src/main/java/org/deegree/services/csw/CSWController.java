@@ -35,33 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.tom.ows.Version.parseVersion;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_DISCOVERY_SCHEMA;
-import static org.deegree.protocol.csw.CSWConstants.CSW_202_NS;
-import static org.deegree.protocol.csw.CSWConstants.GMD_NS;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAP11Version;
@@ -69,6 +42,7 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.ArrayUtils;
@@ -81,8 +55,7 @@ import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreProvider;
 import org.deegree.protocol.csw.CSWConstants;
-import org.deegree.protocol.csw.CSWConstants.CSWRequestType;
-import org.deegree.protocol.csw.CSWConstants.Sections;
+import org.deegree.protocol.csw.CSWConstants.*;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.services.OWS;
 import org.deegree.services.OWSProvider;
@@ -102,11 +75,7 @@ import org.deegree.services.csw.exporthandling.CapabilitiesHandler;
 import org.deegree.services.csw.exporthandling.DescribeRecordHandler;
 import org.deegree.services.csw.exporthandling.GetRecordsHandler;
 import org.deegree.services.csw.exporthandling.TransactionHandler;
-import org.deegree.services.csw.getrecordbyid.DefaultGetRecordByIdHandler;
-import org.deegree.services.csw.getrecordbyid.GetRecordById;
-import org.deegree.services.csw.getrecordbyid.GetRecordByIdHandler;
-import org.deegree.services.csw.getrecordbyid.GetRecordByIdKVPAdapter;
-import org.deegree.services.csw.getrecordbyid.GetRecordByIdXMLAdapter;
+import org.deegree.services.csw.getrecordbyid.*;
 import org.deegree.services.csw.getrecords.ConfiguredElementName;
 import org.deegree.services.csw.getrecords.GetRecords;
 import org.deegree.services.csw.getrecords.GetRecordsKVPAdapter;
@@ -127,8 +96,22 @@ import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.*;
+import static org.deegree.commons.tom.ows.Version.parseVersion;
+import static org.deegree.protocol.csw.CSWConstants.*;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/specifications/catalog">OpenGIS Catalogue
@@ -154,7 +137,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CSWController extends AbstractOWS {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CSWController.class );
+    private static final Logger LOG = getLogger( CSWController.class );
 
     private static final String SCHEMA_LOCATION = CSW_202_NS + " " + CSW_202_DISCOVERY_SCHEMA + " " + GMD_NS + " "
                                                   + "http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd";

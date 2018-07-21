@@ -38,10 +38,12 @@ package org.deegree.coverage.raster.container;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SampleResolution;
@@ -51,8 +53,6 @@ import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
 import org.deegree.coverage.raster.io.grid.GridMetaInfoFile;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for {@link TileContainer}s based on a rectangular grid of disjunct, equal-sized cells (raster
@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class GriddedTileContainer implements TileContainer {
 
-    private static Logger LOG = LoggerFactory.getLogger( GriddedTileContainer.class );
+    private static Logger LOG = getLogger( GriddedTileContainer.class );
 
     private final Envelope envelope;
 

@@ -36,20 +36,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-
-import javax.media.opengl.GL;
-
+import com.sun.opengl.util.GLUT;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.concurrent.ExecutionFinishedEvent;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.utils.LogUtils;
@@ -63,10 +51,14 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.Colormap;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.GLUT;
+import javax.media.opengl.GL;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TerrainRenderingManager</code> class manages the current fragments, it uses fragment shaders if multiple
@@ -79,7 +71,7 @@ import com.sun.opengl.util.GLUT;
  */
 public class TerrainRenderingManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TerrainRenderingManager.class );
+    private static final Logger LOG = getLogger( TerrainRenderingManager.class );
 
     private final GLUT glut = new GLUT();
 

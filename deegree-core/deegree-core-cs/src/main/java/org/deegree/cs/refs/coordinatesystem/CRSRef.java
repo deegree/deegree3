@@ -36,13 +36,12 @@
 
 package org.deegree.cs.refs.coordinatesystem;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.Serializable;
 import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.components.IAxis;
@@ -54,7 +53,8 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSStore;
 import org.deegree.cs.refs.CRSResourceRef;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Represents a {@link CRSRef} that is not necessarily resolved or resolvable.

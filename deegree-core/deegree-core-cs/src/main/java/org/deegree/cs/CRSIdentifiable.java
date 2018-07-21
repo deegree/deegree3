@@ -36,16 +36,16 @@
 
 package org.deegree.cs;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.ArrayUtils.contains;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.cs.i18n.Messages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>CRSIdentifiable</code> class can be used to identify Coordinate system components.
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about metadata of Coordinate System components.")
 public class CRSIdentifiable implements CRSResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CRSIdentifiable.class );
+    private static final Logger LOG = getLogger( CRSIdentifiable.class );
 
     private CRSCodeType[] codes;
 

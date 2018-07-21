@@ -35,32 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
-import static org.deegree.commons.utils.CollectionUtils.unzipPair;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
-import static org.deegree.filter.Filters.splitOffBBoxConstraint;
-import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import javax.xml.namespace.QName;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -85,11 +61,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.persistence.shape.ShapeFeatureStoreProvider.Mapping;
 import org.deegree.feature.property.GenericProperty;
-import org.deegree.feature.stream.CombinedFeatureInputStream;
-import org.deegree.feature.stream.FeatureInputStream;
-import org.deegree.feature.stream.FilteredFeatureInputStream;
-import org.deegree.feature.stream.IteratorFeatureInputStream;
-import org.deegree.feature.stream.MemoryFeatureInputStream;
+import org.deegree.feature.stream.*;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
@@ -107,7 +79,18 @@ import org.deegree.geometry.GeometryTransformer;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.CollectionUtils.unzipPair;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.ValueRepresentation.BOTH;
+import static org.deegree.filter.Filters.splitOffBBoxConstraint;
+import static org.deegree.geometry.utils.GeometryUtils.createEnvelope;
 
 /**
  * {@link FeatureStore} implementation that uses shape files as backend.

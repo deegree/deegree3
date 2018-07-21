@@ -35,21 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression.custom.se;
 
-import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
-import static org.deegree.commons.utils.JavaUtils.generateToString;
-import static org.deegree.commons.xml.CommonNamespaces.SENS;
-
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -60,8 +46,21 @@ import org.deegree.filter.expression.custom.AbstractCustomExpression;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.styling.RasterStyling;
 import org.deegree.style.utils.RasterDataUtility;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.ColorUtils.decodeWithAlpha;
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 
 /**
  * <code>Categorize</code>
@@ -76,7 +75,7 @@ public class Categorize extends AbstractCustomExpression {
 
     private static final QName ELEMENT_NAME = new QName( SENS, "Categorize" );
 
-    private static final Logger LOG = LoggerFactory.getLogger( Categorize.class );
+    private static final Logger LOG = getLogger( Categorize.class );
 
     private StringBuffer value;
 

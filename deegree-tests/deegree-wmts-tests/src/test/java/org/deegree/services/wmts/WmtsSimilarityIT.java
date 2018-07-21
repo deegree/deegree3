@@ -41,10 +41,13 @@
 
 package org.deegree.services.wmts;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.test.IntegrationTestUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -52,13 +55,10 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import org.deegree.commons.utils.test.IntegrationTestUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.io.Utils.determineSimilarity;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 
 /**
  * <code>WMTSIntegrationTest</code>

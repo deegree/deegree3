@@ -41,24 +41,22 @@
 
 package org.deegree.tile.persistence.cache;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.geometry.Envelope;
+import org.deegree.tile.Tile;
+import org.deegree.tile.TileIOException;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.imageio.ImageIO;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
-
-import org.apache.commons.io.IOUtils;
-import org.deegree.feature.FeatureCollection;
-import org.deegree.geometry.Envelope;
-import org.deegree.tile.Tile;
-import org.deegree.tile.TileIOException;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A {@link Tile} that is backed by a {@link CachingTileStore}.

@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
-import static junit.framework.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.deegree.cs.CRSUtils;
 import org.deegree.geometry.linearization.NumPointsCriterion;
@@ -47,18 +42,19 @@ import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.*;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
 
 public class SFSProfilerTest {
 

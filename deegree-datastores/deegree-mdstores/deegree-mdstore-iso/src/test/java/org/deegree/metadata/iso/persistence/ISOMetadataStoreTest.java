@@ -35,8 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.cs.CRSUtils;
 import org.deegree.filter.Filter;
@@ -53,7 +52,8 @@ import org.deegree.metadata.persistence.MetadataQuery;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here

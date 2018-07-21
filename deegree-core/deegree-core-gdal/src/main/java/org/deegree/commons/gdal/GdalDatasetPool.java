@@ -27,8 +27,11 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.gdal;
 
-import static java.util.Collections.synchronizedMap;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.gdal.pool.KeyedResourceFactory;
+import org.deegree.commons.gdal.pool.LimitedKeyedResourcePool;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Envelope;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,11 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.deegree.commons.gdal.pool.KeyedResourceFactory;
-import org.deegree.commons.gdal.pool.LimitedKeyedResourcePool;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
+import static java.util.Collections.synchronizedMap;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Pool for <code>GdalDataset</code> objects that limits the number of open datasets.

@@ -36,18 +36,18 @@
 
 package org.deegree.feature.types.property;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.FEATURE;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.feature.Feature;
 import org.deegree.feature.types.FeatureType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link ObjectPropertyType} that defines a property with a {@link Feature} value.
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FeaturePropertyType extends ObjectPropertyType {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeaturePropertyType.class );
+    private static final Logger LOG = getLogger( FeaturePropertyType.class );
 
     private QName valueFtName;
 

@@ -36,6 +36,7 @@ package org.deegree.gml.geometry;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,6 +50,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -76,8 +78,6 @@ import org.deegree.geometry.refs.PointReference;
 import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.commons.AbstractGMLObjectReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GML2GeometryReader</code> parses the geometry elements in GML 2.1 documents. The following geometries are
@@ -100,7 +100,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GML2GeometryReader extends AbstractGMLObjectReader implements GMLGeometryReader {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML2GeometryReader.class );
+    private static Logger LOG = getLogger( GML2GeometryReader.class );
 
     private static String GID = "gid";
 

@@ -41,9 +41,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.workspace.standard;
 
-import java.io.File;
-import java.util.List;
-
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceProvider;
@@ -51,6 +48,9 @@ import org.deegree.workspace.graph.ResourceGraph;
 import org.deegree.workspace.graph.ResourceNode;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Tests for resource metadata.
@@ -63,6 +63,7 @@ import org.junit.Test;
 public class AbstractResourceMetadataTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSorting() {
         final ResourceIdentifier id1 = new DefaultResourceIdentifier( ResourceProvider.class, "md1" );
         DefaultResourceLocation loc1 = new DefaultResourceLocation( new File( "/tmp/" ), id1 );

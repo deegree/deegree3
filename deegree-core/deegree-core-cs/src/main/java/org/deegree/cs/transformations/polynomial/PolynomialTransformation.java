@@ -40,12 +40,13 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>PolynomialTransformation</code> is the base class for all polynomial transformations.
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class PolynomialTransformation extends Transformation {
 
-    private static Logger LOG = LoggerFactory.getLogger( PolynomialTransformation.class );
+    private static Logger LOG = getLogger( PolynomialTransformation.class );
 
     private List<Double> firstParams;
 

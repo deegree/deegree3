@@ -35,35 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.console.client;
 
-import static java.io.File.separator;
-import static java.util.Collections.sort;
-import static org.deegree.commons.utils.CollectionUtils.unzipPair;
-import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
-import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
-import static org.deegree.workspace.ResourceStates.ResourceState.Initialized;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.logging.log4j.Logger;
+import org.deegree.client.core.utils.MessageUtils;
+import org.deegree.commons.utils.net.DURL;
+import org.deegree.commons.utils.net.HttpUtils;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.services.OWS;
+import org.deegree.services.OWSProvider;
+import org.deegree.services.controller.OGCFrontController;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.Workspace;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -74,24 +62,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.*;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.deegree.client.core.utils.MessageUtils;
-import org.deegree.commons.utils.net.DURL;
-import org.deegree.commons.utils.net.HttpUtils;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.services.OWS;
-import org.deegree.services.OWSProvider;
-import org.deegree.services.controller.OGCFrontController;
-import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+import static java.io.File.separator;
+import static java.util.Collections.sort;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.CollectionUtils.unzipPair;
+import static org.deegree.commons.utils.net.HttpUtils.enableProxyUsage;
+import static org.deegree.services.controller.FrontControllerStats.getKVPRequests;
+import static org.deegree.workspace.ResourceStates.ResourceState.Initialized;
 
 /**
  * A request scoped bean handling the requests (MS: changed to request scope to cope with reload problems).

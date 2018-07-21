@@ -36,26 +36,21 @@
 
 package org.deegree.rendering.r2d.strokes;
 
-import static java.awt.geom.PathIterator.SEG_CLOSE;
-import static java.awt.geom.PathIterator.SEG_CUBICTO;
-import static java.awt.geom.PathIterator.SEG_LINETO;
-import static java.awt.geom.PathIterator.SEG_MOVETO;
-import static java.awt.geom.PathIterator.SEG_QUADTO;
-import static java.lang.Math.sqrt;
-import static org.deegree.commons.utils.CollectionUtils.clearNulls;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.Pair;
+import org.deegree.style.styling.components.PerpendicularOffsetType;
 
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.util.LinkedList;
 
-import org.deegree.commons.utils.Pair;
-import org.deegree.style.styling.components.PerpendicularOffsetType;
-import org.slf4j.Logger;
+import static java.awt.geom.PathIterator.*;
+import static java.lang.Math.sqrt;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.CollectionUtils.clearNulls;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
 
 /**
  * <code>OffsetStroke</code>

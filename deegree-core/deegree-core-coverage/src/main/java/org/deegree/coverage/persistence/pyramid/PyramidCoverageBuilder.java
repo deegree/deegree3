@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.persistence.pyramid;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.io.RasterIOOptions.CRS;
 import static org.deegree.coverage.raster.io.RasterIOOptions.IMAGE_INDEX;
 import static org.deegree.coverage.raster.io.RasterIOOptions.OPT_FORMAT;
@@ -54,6 +55,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.pyramid.jaxb.Pyramid;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -67,8 +69,6 @@ import org.deegree.cs.persistence.CRSManager;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Builder for pyramid coverages.
@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
 
-    private static Logger LOG = LoggerFactory.getLogger( PyramidCoverageBuilder.class );
+    private static Logger LOG = getLogger( PyramidCoverageBuilder.class );
 
     private Pyramid config;
 

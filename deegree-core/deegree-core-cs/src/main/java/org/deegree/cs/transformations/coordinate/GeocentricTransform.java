@@ -36,6 +36,7 @@
 
 package org.deegree.cs.transformations.coordinate;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 import static org.deegree.cs.utilities.ProjectionUtils.length;
 
@@ -44,6 +45,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -55,8 +57,6 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.coordinatesystems.ICompoundCRS;
 import org.deegree.cs.coordinatesystems.IGeocentricCRS;
 import org.deegree.cs.transformations.Transformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GeocentricTransform</code> class is used to create a transformation between a geocentric CRS (having
@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about the incoming ordinates of a geocentric transformation.")
 public class GeocentricTransform extends Transformation {
 
-    private static Logger LOG = LoggerFactory.getLogger( GeocentricTransform.class );
+    private static Logger LOG = getLogger( GeocentricTransform.class );
 
     /**
      * Cosine of 67.5 degrees.

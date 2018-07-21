@@ -35,17 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.process.execute;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.protocol.wps.client.output.BBoxOutput;
 import org.deegree.protocol.wps.client.output.ComplexOutput;
 import org.deegree.protocol.wps.client.output.ExecutionOutput;
 import org.deegree.protocol.wps.client.output.LiteralOutput;
 import org.deegree.protocol.wps.client.process.ProcessExecution;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides access to the outputs from a {@link ProcessExecution}.
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecutionOutputs {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExecutionOutputs.class );
+    private static final Logger LOG = getLogger( ExecutionOutputs.class );
 
     private final Map<CodeType, ExecutionOutput> paramIdToOutput = new LinkedHashMap<CodeType, ExecutionOutput>();
 

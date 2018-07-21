@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -53,11 +45,7 @@ import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
-import org.deegree.metadata.iso.persistence.inspectors.CoupledDataInspector;
-import org.deegree.metadata.iso.persistence.inspectors.FIInspector;
-import org.deegree.metadata.iso.persistence.inspectors.HierarchyLevelInspector;
-import org.deegree.metadata.iso.persistence.inspectors.InspireComplianceInspector;
-import org.deegree.metadata.iso.persistence.inspectors.NamespaceNormalizationInspector;
+import org.deegree.metadata.iso.persistence.inspectors.*;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
 import org.deegree.metadata.iso.persistence.queryable.QueryableConverter;
 import org.deegree.metadata.iso.persistence.sql.QueryService;
@@ -69,16 +57,10 @@ import org.deegree.metadata.persistence.MetadataStore;
 import org.deegree.metadata.persistence.MetadataStoreTransaction;
 import org.deegree.metadata.persistence.inspectors.MetadataSchemaValidationInspector;
 import org.deegree.metadata.persistence.inspectors.RecordInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.CoupledResourceInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.FileIdentifierInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig;
+import org.deegree.metadata.persistence.iso19115.jaxb.*;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.Inspectors;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.QueryableProperties;
-import org.deegree.metadata.persistence.iso19115.jaxb.InspireInspector;
-import org.deegree.metadata.persistence.iso19115.jaxb.NamespaceNormalizer;
-import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty;
 import org.deegree.metadata.persistence.iso19115.jaxb.QueryableProperty.Name;
-import org.deegree.metadata.persistence.iso19115.jaxb.SchemaValidator;
 import org.deegree.protocol.csw.CSWConstants;
 import org.deegree.protocol.csw.CSWConstants.ResultType;
 import org.deegree.protocol.csw.MetadataStoreException;
@@ -86,7 +68,14 @@ import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link MetadataStore} implementation for accessing ISO 19115 records stored in spatial SQL databases (currently only

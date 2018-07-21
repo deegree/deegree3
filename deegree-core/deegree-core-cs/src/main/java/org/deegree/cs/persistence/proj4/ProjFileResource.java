@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.CRSResource;
@@ -57,8 +58,8 @@ import org.deegree.cs.exceptions.CRSConfigurationException;
 import org.deegree.cs.i18n.Messages;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>ProjFileResource</code> reads a list of proj4 definitions from a file.
@@ -75,7 +76,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     private Map<CRSCodeType, Map<String, String>> idToParams = new HashMap<CRSCodeType, Map<String, String>>( 4000 );
 
-    private static Logger LOG = LoggerFactory.getLogger( ProjFileResource.class );
+    private static Logger LOG = getLogger( ProjFileResource.class );
 
     /**
      * @param provider

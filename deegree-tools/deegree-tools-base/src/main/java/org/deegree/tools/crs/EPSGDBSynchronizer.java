@@ -36,17 +36,8 @@
 
 package org.deegree.tools.crs;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.tools.CommandUtils;
 import org.deegree.cs.CRSCodeType;
@@ -61,8 +52,10 @@ import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.tools.coverage.gridifier.RasterTreeGridifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>EPSGDBSynchronizer</code> class sets the Codes for CRS Identifiables that do not have such codes (actually,
@@ -91,7 +84,7 @@ import org.slf4j.LoggerFactory;
 @Tool("Connects to the EPSG database at //hurricane/epsg, and for all projections (other objects to be added!) that have no CRS codetype in the CRS database, the codes are fetched from the EPSG database.")
 public class EPSGDBSynchronizer {
 
-    private static Logger LOG = LoggerFactory.getLogger( EPSGDBSynchronizer.class );
+    private static Logger LOG = getLogger( EPSGDBSynchronizer.class );
 
     // private static final String CRS_CONFIG = "org.deegree.cs.configuration.deegree.db.DatabaseCRSProvider";
 

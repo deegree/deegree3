@@ -36,7 +36,8 @@
 
 package org.deegree.services.wpvs.io.file;
 
-import static org.deegree.commons.utils.memory.AllocatedHeapMemory.LONG_SIZE;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,14 +45,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.memory.AllocatedHeapMemory.LONG_SIZE;
 
 /**
  * The <code>IndexFile</code> class TODO add class documentation here.
@@ -63,7 +60,7 @@ import org.deegree.services.wpvs.io.serializer.ObjectSerializer;
  */
 public class IndexFile {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( IndexFile.class );
+    private final static Logger LOG = getLogger( IndexFile.class );
 
     private static final byte POSITION_SIZE = Long.SIZE / 8;
 

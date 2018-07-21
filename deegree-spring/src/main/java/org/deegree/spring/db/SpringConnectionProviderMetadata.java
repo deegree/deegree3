@@ -40,10 +40,12 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring.db;
 
-import static org.deegree.spring.db.SpringConnectionProviderProvider.CONFIG_SCHEMA;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.db.ConnectionProvider;
+import org.deegree.spring.ApplicationContextHolder;
+import org.deegree.spring.ApplicationContextHolderProvider;
+import org.deegree.spring.db.jaxb.SpringConnectionProviderConfig;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
@@ -51,11 +53,8 @@ import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
 
-import org.deegree.spring.ApplicationContextHolder;
-import org.deegree.spring.ApplicationContextHolderProvider;
-import org.deegree.spring.db.jaxb.SpringConnectionProviderConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.spring.db.SpringConnectionProviderProvider.CONFIG_SCHEMA;
 
 /**
  * SpringConnectionProviderMetadata is used as the 
@@ -71,7 +70,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SpringConnectionProviderMetadata extends AbstractResourceMetadata<ConnectionProvider> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SpringConnectionProviderMetadata.class );
+    private static final Logger LOG = getLogger( SpringConnectionProviderMetadata.class );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.spring.db.jaxb";
 

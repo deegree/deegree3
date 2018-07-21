@@ -36,30 +36,12 @@
 
 package org.deegree.services.wps;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
-import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
@@ -88,12 +70,7 @@ import org.deegree.services.jaxb.wps.DefaultExecutionManager;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wps.capabilities.CapabilitiesXMLWriter;
 import org.deegree.services.wps.describeprocess.DescribeProcessResponseXMLAdapter;
-import org.deegree.services.wps.execute.ExecuteRequest;
-import org.deegree.services.wps.execute.ExecuteRequestKVPAdapter;
-import org.deegree.services.wps.execute.ExecuteRequestXMLAdapter;
-import org.deegree.services.wps.execute.RawDataOutput;
-import org.deegree.services.wps.execute.ResponseDocument;
-import org.deegree.services.wps.execute.ResponseForm;
+import org.deegree.services.wps.execute.*;
 import org.deegree.services.wps.storage.OutputStorage;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageManager;
@@ -101,8 +78,25 @@ import org.deegree.services.wps.wsdl.WSDL;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.protocol.wps.WPSConstants.VERSION_100;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wps">OpenGIS Web Processing Service</a> server
@@ -127,7 +121,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WPService extends AbstractOWS {
 
-    private static final Logger LOG = LoggerFactory.getLogger( WPService.class );
+    private static final Logger LOG = getLogger( WPService.class );
 
     private static final CodeType ALL_PROCESSES_IDENTIFIER = new CodeType( "ALL" );
 

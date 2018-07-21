@@ -35,15 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.memory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -52,8 +45,16 @@ import org.deegree.metadata.MetadataRecordFactory;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.persistence.MetadataQuery;
 import org.deegree.metadata.persistence.MetadataResultSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates the {@link ISORecord}s stored by a {@link org.deegree.metadata.persistence.MetadataStore} instance.
@@ -65,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StoredISORecords {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StoredISORecords.class );
+    private static final Logger LOG = getLogger( StoredISORecords.class );
 
     private final LinkedHashMap<String, File> identifierToFile = new LinkedHashMap<String, File>();
 

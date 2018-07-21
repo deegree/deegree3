@@ -36,13 +36,14 @@
 
 package org.deegree.rendering.r3d.model.geometry;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.memory.AllocatedHeapMemory;
+import org.deegree.commons.utils.memory.MemoryAware;
+
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.deegree.commons.utils.memory.MemoryAware;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>SimpleGeometryStyle</code> class TODO add class documentation here.
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleGeometryStyle implements MemoryAware, Serializable {
 
-    private final static Logger LOG = LoggerFactory.getLogger( SimpleGeometryStyle.class );
+    private final static Logger LOG = getLogger( SimpleGeometryStyle.class );
 
     /**
      *

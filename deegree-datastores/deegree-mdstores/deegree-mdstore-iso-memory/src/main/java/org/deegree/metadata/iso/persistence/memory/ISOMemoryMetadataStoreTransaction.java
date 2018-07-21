@@ -35,12 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.memory;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.metadata.MetadataRecord;
 import org.deegree.metadata.iso.ISORecord;
@@ -50,7 +45,12 @@ import org.deegree.metadata.persistence.transaction.DeleteOperation;
 import org.deegree.metadata.persistence.transaction.InsertOperation;
 import org.deegree.metadata.persistence.transaction.UpdateOperation;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link MetadataStoreTransaction} for the {@link ISOMemoryMetadataStore}.

@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.config;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.layer.dims.Dimension;
 import org.deegree.layer.persistence.base.jaxb.DimensionType;
@@ -61,7 +53,15 @@ import org.deegree.style.se.unevaluated.Style;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Some methods to work with the jaxb beans from the base layer schema.

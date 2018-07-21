@@ -35,12 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client.process;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.xml.XMLAdapter;
@@ -48,8 +43,14 @@ import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.deegree.protocol.wps.client.WPSClient;
 import org.deegree.protocol.wps.client.input.type.InputType;
 import org.deegree.protocol.wps.client.output.type.OutputType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates the properties of a process offered by a WPS instance (id, title, abstract, input parameter types,
@@ -70,7 +71,7 @@ public class Process implements Serializable {
 
     private static final long serialVersionUID = -3360483995269162381L;
 
-    private static final Logger LOG = LoggerFactory.getLogger( Process.class );
+    private static final Logger LOG = getLogger( Process.class );
 
     private final WPSClient client;
 

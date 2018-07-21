@@ -36,8 +36,8 @@
 
 package org.deegree.cs.utilities;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Deque;
 import java.util.Iterator;
@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
@@ -52,7 +53,6 @@ import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory;
 import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.coordinate.MatrixTransform;
-import org.slf4j.Logger;
 
 /**
  * The <code>MappingUtils</code> maps some information onto another.

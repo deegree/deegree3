@@ -36,19 +36,16 @@
 
 package org.deegree.services.wpvs.rendering.jogl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLDrawableFactory;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLPbuffer;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.JOGLChecker;
 import org.deegree.rendering.r3d.opengl.JOGLUtils;
+
+import javax.media.opengl.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>GLPBufferPool</code> supplies methods for the creation of pbuffers. In the future it will be able to pool
@@ -60,7 +57,7 @@ import org.deegree.rendering.r3d.opengl.JOGLUtils;
  * 
  */
 public class GLPBufferPool {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( GLPBufferPool.class );
+    private final static Logger LOG = getLogger( GLPBufferPool.class );
 
     private final int maxTextureSize;
 

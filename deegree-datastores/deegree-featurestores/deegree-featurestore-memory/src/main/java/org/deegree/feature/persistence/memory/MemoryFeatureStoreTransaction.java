@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.memory;
 
-import static org.deegree.feature.i18n.Messages.getMessage;
-import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.Reference;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -65,11 +57,7 @@ import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.transaction.FeatureUpdater;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
-import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.IdFilter;
-import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.ResourceId;
+import org.deegree.filter.*;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.linearization.GeometryLinearizer;
@@ -80,8 +68,15 @@ import org.deegree.gml.utils.GMLObjectVisitor;
 import org.deegree.gml.utils.GMLObjectWalker;
 import org.deegree.protocol.wfs.transaction.action.IDGenMode;
 import org.deegree.protocol.wfs.transaction.action.ParsedPropertyReplacement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.feature.i18n.Messages.getMessage;
+import static org.deegree.protocol.wfs.transaction.action.IDGenMode.USE_EXISTING;
 
 /**
  * {@link FeatureStoreTransaction} implementation used by the {@link MemoryFeatureStore}.
@@ -96,7 +91,7 @@ import org.slf4j.LoggerFactory;
  */
 class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreTransaction.class );
+    private static final Logger LOG = getLogger( MemoryFeatureStoreTransaction.class );
 
     private final GeometryLinearizer linearizer = new GeometryLinearizer();
 

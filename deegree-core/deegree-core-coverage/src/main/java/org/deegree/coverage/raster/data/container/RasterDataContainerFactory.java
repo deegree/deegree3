@@ -37,9 +37,10 @@ package org.deegree.coverage.raster.data.container;
 
 import java.util.ServiceLoader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.io.RasterDataReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class creates a RasterDataContainer. A RasterDataContainer wraps a RasterDataReader and controls the
@@ -55,7 +56,7 @@ public class RasterDataContainerFactory {
 
     private static ServiceLoader<RasterDataContainerProvider> rasterContainerLoader = ServiceLoader.load( RasterDataContainerProvider.class );
 
-    private static Logger LOG = LoggerFactory.getLogger( RasterDataContainerFactory.class );
+    private static Logger LOG = getLogger( RasterDataContainerFactory.class );
 
     /**
      * Defines how raster should be loaded/stored.

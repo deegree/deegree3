@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.net;
 
+import org.apache.logging.log4j.Logger;
+
 import static java.util.Collections.synchronizedMap;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.get;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,8 +49,6 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
 
 /**
  * 

@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -44,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -96,7 +95,8 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Writes {@link Geometry} objects as Well-Known Text (WKT).

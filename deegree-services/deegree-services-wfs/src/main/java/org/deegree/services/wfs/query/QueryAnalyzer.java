@@ -35,31 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
-import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
-import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.Pair;
@@ -87,11 +65,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.deegree.protocol.wfs.query.AdHocQuery;
-import org.deegree.protocol.wfs.query.BBoxQuery;
-import org.deegree.protocol.wfs.query.FeatureIdQuery;
-import org.deegree.protocol.wfs.query.FilterQuery;
-import org.deegree.protocol.wfs.query.StoredQuery;
+import org.deegree.protocol.wfs.query.*;
 import org.deegree.protocol.wfs.query.xml.QueryXMLAdapter;
 import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
@@ -99,8 +73,21 @@ import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
 import org.deegree.services.wfs.WebFeatureService;
 import org.deegree.services.wfs.WfsFeatureStoreManager;
 import org.jaxen.NamespaceContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+
+import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.MISSING_PARAMETER_VALUE;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
 
 /**
  * Responsible for validating a sequence of queries (e.g from {@link GetFeature} requests) and generating a
@@ -118,7 +105,7 @@ public class QueryAnalyzer {
 
     private final GeometryFactory geomFac = new GeometryFactory();
 
-    private static final Logger LOG = LoggerFactory.getLogger( QueryAnalyzer.class );
+    private static final Logger LOG = getLogger( QueryAnalyzer.class );
 
     private final WebFeatureService controller;
 

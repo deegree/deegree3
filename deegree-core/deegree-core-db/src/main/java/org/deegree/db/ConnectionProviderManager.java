@@ -41,14 +41,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.db;
 
-import java.sql.Driver;
-import java.util.ServiceLoader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultResourceManager;
 import org.deegree.workspace.standard.DefaultResourceManagerMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.Driver;
+import java.util.ServiceLoader;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Resource manager for connection providers.
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConnectionProviderManager extends DefaultResourceManager<ConnectionProvider> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ConnectionProviderManager.class );
+    private static final Logger LOG = getLogger( ConnectionProviderManager.class );
 
     public ConnectionProviderManager() {
         super( new DefaultResourceManagerMetadata<ConnectionProvider>( ConnectionProviderProvider.class,

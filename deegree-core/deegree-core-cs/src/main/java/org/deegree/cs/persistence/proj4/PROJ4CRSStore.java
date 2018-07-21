@@ -46,6 +46,7 @@ import java.util.Set;
 
 import javax.vecmath.Point2d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
@@ -71,8 +72,8 @@ import org.deegree.cs.projections.cylindric.TransverseMercator;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.TransformationFactory.DSTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>PROJ4CRSProvider</code> class is capable of parsing the nad/epsg file and use it as a backend for crs's.
@@ -93,7 +94,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "the proj4 format provider")
 public class PROJ4CRSStore extends AbstractCRSStore {
 
-    private static Logger LOG = LoggerFactory.getLogger( PROJ4CRSStore.class );
+    private static Logger LOG = getLogger( PROJ4CRSStore.class );
 
     private static int ellipsCount = 0;
 

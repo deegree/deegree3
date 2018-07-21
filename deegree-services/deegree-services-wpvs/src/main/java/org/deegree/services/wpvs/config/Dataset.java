@@ -36,21 +36,17 @@
 
 package org.deegree.services.wpvs.config;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.services.jaxb.wpvs.DatasetDefinitions;
 import org.deegree.workspace.ResourceLocation;
-import org.slf4j.Logger;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>DatasetWrapper</code> class defines methods for the retrieval of objects which match requested datasets

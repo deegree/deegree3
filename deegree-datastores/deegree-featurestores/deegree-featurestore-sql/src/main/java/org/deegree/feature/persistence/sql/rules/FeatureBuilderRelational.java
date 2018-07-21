@@ -35,37 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import static java.lang.Boolean.TRUE;
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
-import static org.jaxen.saxpath.Axis.CHILD;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.xerces.xs.XSAttributeDeclaration;
-import org.apache.xerces.xs.XSAttributeUse;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSObjectList;
+import org.apache.logging.log4j.Logger;
+import org.apache.xerces.xs.*;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -95,26 +66,35 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
-import org.deegree.gml.GMLInputFactory;
-import org.deegree.gml.GMLOutputFactory;
-import org.deegree.gml.GMLStreamReader;
-import org.deegree.gml.GMLStreamWriter;
-import org.deegree.gml.GMLVersion;
+import org.deegree.gml.*;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.time.TimeObject;
-import org.jaxen.expr.Expr;
-import org.jaxen.expr.LocationPath;
-import org.jaxen.expr.NameStep;
-import org.jaxen.expr.NumberExpr;
-import org.jaxen.expr.Predicate;
-import org.jaxen.expr.Step;
-import org.jaxen.expr.TextNodeStep;
+import org.jaxen.expr.*;
 import org.jaxen.saxpath.Axis;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
+import static java.lang.Boolean.TRUE;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
+import static org.jaxen.saxpath.Axis.CHILD;
 
 /**
  * Builds {@link Feature} instances from SQL result set rows (relational mode).
@@ -126,7 +106,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureBuilderRelational implements FeatureBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderRelational.class );
+    private static final Logger LOG = getLogger( FeatureBuilderRelational.class );
 
     private final SQLFeatureStore fs;
 

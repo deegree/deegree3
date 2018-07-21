@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -48,8 +49,8 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericFeature extends AbstractFeature {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GenericFeature.class );
+    private static final Logger LOG = getLogger( GenericFeature.class );
 
     private List<Property> props;
 

@@ -36,11 +36,13 @@
 
 package org.deegree.cs.projections.cylindric;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.utilities.ProjectionUtils.calcPhiFromConformalLatitude;
 import static org.deegree.cs.utilities.ProjectionUtils.preCalcedThetaSeries;
 
 import javax.vecmath.Point2d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -49,8 +51,6 @@ import org.deegree.cs.components.Unit;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.exceptions.ProjectionException;
 import org.deegree.cs.utilities.ProjectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The <code>Mercator</code> projection has following properties:
@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
 @LoggingNotes(debug = "Get information about incoming ordinates.")
 public class Mercator extends CylindricalProjection implements IMercator {
 
-    private static Logger LOG = LoggerFactory.getLogger( Mercator.class );
+    private static Logger LOG = getLogger( Mercator.class );
 
     /**
      * @param geographicCRS

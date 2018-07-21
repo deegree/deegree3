@@ -35,21 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.parsing;
 
-import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_PREFIX;
-import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -60,7 +48,18 @@ import org.deegree.metadata.iso.types.Constraint;
 import org.deegree.metadata.iso.types.Keyword;
 import org.deegree.metadata.iso.types.OperatesOnData;
 import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_PREFIX;
+import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 
 /**
  * Parses the identification info element of an in ISO profile declared record. This is an outsourced method because of

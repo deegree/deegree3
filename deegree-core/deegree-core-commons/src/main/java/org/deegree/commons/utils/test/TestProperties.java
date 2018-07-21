@@ -35,12 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.test;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates access to the global test configuration file <code>${user.home}/.deegree-test.properties</code>.
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TestProperties {
 
-    private static Logger LOG = LoggerFactory.getLogger( TestProperties.class );
+    private static Logger LOG = getLogger( TestProperties.class );
 
     private static final Properties props = new Properties();
 

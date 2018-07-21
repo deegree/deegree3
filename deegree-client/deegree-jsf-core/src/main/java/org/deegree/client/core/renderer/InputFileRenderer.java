@@ -35,10 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.client.core.renderer;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Logger;
+import org.deegree.client.core.component.HtmlInputFile;
+import org.deegree.client.core.model.UploadedFile;
+import org.deegree.commons.utils.TempFileManager;
 
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
@@ -51,13 +52,12 @@ import javax.faces.render.FacesRenderer;
 import javax.faces.render.Renderer;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import org.apache.commons.fileupload.FileItem;
-import org.deegree.client.core.component.HtmlInputFile;
-import org.deegree.client.core.model.UploadedFile;
-import org.deegree.commons.utils.TempFileManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>InputFileRenderer</code> rendering an input form element of type file.
@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
 @FacesRenderer(componentFamily = "javax.faces.Input", rendererType = "org.deegree.InputFile")
 public class InputFileRenderer extends Renderer {
 
-    private static Logger LOG = LoggerFactory.getLogger( HtmlInputFile.class );
+    private static Logger LOG = getLogger( HtmlInputFile.class );
 
     @Override
     public void encodeBegin( FacesContext context, UIComponent component )

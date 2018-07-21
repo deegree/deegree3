@@ -35,35 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.provider.style;
 
-import static java.awt.RenderingHints.KEY_ANTIALIASING;
-import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
-import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
-import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
-import static org.deegree.services.wps.provider.style.StyleProcessProvider.IN_PARAM_ID;
-import static org.deegree.services.wps.provider.style.StyleProcessProvider.OUT_PARAM_ID;
-
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.OutputStream;
-
-import javax.xml.stream.XMLStreamReader;
-
+import com.sun.media.jai.codec.ImageCodec;
+import com.sun.media.jai.codec.PNGEncodeParam;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.rendering.r2d.legends.Legends;
-import org.deegree.services.wps.Processlet;
-import org.deegree.services.wps.ProcessletException;
-import org.deegree.services.wps.ProcessletExecutionInfo;
-import org.deegree.services.wps.ProcessletInputs;
-import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.*;
 import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.output.ComplexOutput;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.PNGEncodeParam;
+import javax.xml.stream.XMLStreamReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
+
+import static java.awt.RenderingHints.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.services.wps.provider.style.StyleProcessProvider.IN_PARAM_ID;
+import static org.deegree.services.wps.provider.style.StyleProcessProvider.OUT_PARAM_ID;
 
 /**
  * TODO add class documentation here
@@ -75,7 +66,7 @@ import com.sun.media.jai.codec.PNGEncodeParam;
  */
 public class StyleProcesslet implements Processlet {
 
-    private static final Logger LOG = LoggerFactory.getLogger( StyleProcesslet.class );
+    private static final Logger LOG = getLogger( StyleProcesslet.class );
 
     @Override
     public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecutionInfo info )

@@ -35,21 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wcs.getcoverage;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.xml.XPath;
-import org.deegree.coverage.rangeset.AxisSubset;
-import org.deegree.coverage.rangeset.Interval;
+import org.deegree.coverage.rangeset.*;
 import org.deegree.coverage.rangeset.Interval.Closure;
-import org.deegree.coverage.rangeset.RangeSet;
-import org.deegree.coverage.rangeset.SingleValue;
-import org.deegree.coverage.rangeset.ValueType;
 import org.deegree.coverage.raster.geom.Grid;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -60,6 +52,12 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryUtils;
 import org.deegree.protocol.wcs.WCSConstants;
 import org.deegree.services.wcs.WCSRequest100XMLAdapter;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This is an xml adapter for GetCoverage requests after the WCS 1.0.0 spec.
@@ -72,7 +70,7 @@ import org.deegree.services.wcs.WCSRequest100XMLAdapter;
  */
 public class GetCoverage100XMLAdapter extends WCSRequest100XMLAdapter {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( GetCoverage100XMLAdapter.class );
+    private final static Logger LOG = getLogger( GetCoverage100XMLAdapter.class );
 
     /**
      * @param rootElement

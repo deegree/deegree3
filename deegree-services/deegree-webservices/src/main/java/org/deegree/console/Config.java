@@ -27,26 +27,25 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.console;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.deegree.console.JsfUtils.getWorkspace;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.ResourceStates.ResourceState;
+import org.deegree.workspace.WorkspaceUtils;
+import org.deegree.workspace.standard.AbstractResourceProvider;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
-import org.apache.commons.io.IOUtils;
-import org.deegree.workspace.ResourceManager;
-import org.deegree.workspace.ResourceMetadata;
-import org.deegree.workspace.ResourceStates.ResourceState;
-import org.deegree.workspace.WorkspaceUtils;
-import org.deegree.workspace.standard.AbstractResourceProvider;
-import org.slf4j.Logger;
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.console.JsfUtils.getWorkspace;
 
 /**
  * JSF bean that wraps a {@link ResourceMetadata} and actions.

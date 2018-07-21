@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
@@ -42,8 +44,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class contains static utility methods for handling files and filenames.
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( FileUtils.class );
+    private static Logger LOG = getLogger( FileUtils.class );
 
     private static final String DEFAULT_CHARSET = "UTF-8";
 

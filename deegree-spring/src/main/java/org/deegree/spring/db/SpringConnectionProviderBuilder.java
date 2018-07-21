@@ -40,16 +40,16 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.spring.db;
 
-import javax.sql.DataSource;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.spring.AbstractSpringResourceBuilder;
 import org.deegree.spring.db.jaxb.SpringConnectionProviderConfig;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.Workspace;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.sql.DataSource;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * SpringConnectionProviderBuilder is used to build a 
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SpringConnectionProviderBuilder extends AbstractSpringResourceBuilder<ConnectionProvider> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SpringConnectionProviderBuilder.class );
+    private static final Logger LOG = getLogger( SpringConnectionProviderBuilder.class );
 
     private final SpringConnectionProviderConfig config;
 

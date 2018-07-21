@@ -36,12 +36,12 @@
 
 package org.deegree.services.controller;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.resources.ResourcesServlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.services.resources.ResourcesServlet;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Encapsulates security and URL information that are associated with a currently processed {@link OGCFrontController}

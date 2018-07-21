@@ -35,12 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.nio;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.nio.ByteBuffer;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
@@ -48,7 +47,8 @@ import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.

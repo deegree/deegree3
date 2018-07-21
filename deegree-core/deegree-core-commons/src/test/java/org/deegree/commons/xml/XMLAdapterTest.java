@@ -35,23 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
-import static junit.framework.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.AssertionFailedError;
-
+import junit.framework.TestCase;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
@@ -61,6 +47,13 @@ import org.jaxen.JaxenException;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 /**
  * Basic tests for the {@link XMLAdapter} class.
  * 
@@ -69,7 +62,7 @@ import org.junit.Test;
  * 
  * @version $Revision:$, $Date:$
  */
-public class XMLAdapterTest {
+public class XMLAdapterTest extends TestCase {
 
     private static String WFS_NS = "http://www.opengis.net/wfs";
 
@@ -129,7 +122,6 @@ public class XMLAdapterTest {
 
     @Test
     public void testGetNodeAsString() {
-
         OMElement root = adapter.getRootElement();
 
         // select text node
@@ -150,27 +142,34 @@ public class XMLAdapterTest {
         assertEquals( "-1", elementNode );
     }
 
-    @Test(expected = XMLProcessingException.class)
+    @Test
     public void testGetRequiredNodeAsString() {
-
-        OMElement root = adapter.getRootElement();
-        String value = adapter.getRequiredNodeAsString( root,
-                                                        new XPath(
-                                                                   "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
-                                                                   nsContext ) );
-        assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", value );
-
-        adapter.getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
+        try {
+            OMElement root = adapter.getRootElement();
+            String value = adapter.getRequiredNodeAsString(root,
+                    new XPath(
+                            "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
+                            nsContext));
+            assertEquals("app:placeOfBirth/app:Place/app:country/app:Country/app:geom", value);
+            adapter.getRequiredNodeAsString(root, new XPath("wfs:Query/@doesNotExist", nsContext));
+            fail();
+        } catch ( XMLParsingException e ) {
+            // supposed to happen
+        }
     }
 
-    @Test(expected = XMLProcessingException.class)
+    @Test
     public void testGetRequiredNodeAsQName() {
+        try {
+            OMElement root = adapter.getRootElement();
+            QName value = adapter.getRequiredNodeAsQName(root, new XPath("wfs:Query/@typeName", nsContext));
+            assertEquals(new QName(APP_NS, "Philosopher"), value);
 
-        OMElement root = adapter.getRootElement();
-        QName value = adapter.getRequiredNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ) );
-        assertEquals( new QName( APP_NS, "Philosopher" ), value );
-
-        adapter.getRequiredNodeAsQName( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
+            adapter.getRequiredNodeAsQName(root, new XPath("wfs:Query/@doesNotExist", nsContext));
+            fail();
+        } catch (XMLParsingException e) {
+            // supposed to happen
+        }
     }
 
     @Test

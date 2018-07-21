@@ -35,10 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d.legends;
 
-import static org.deegree.style.styling.components.UOM.Metre;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.Pair;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.rendering.r2d.TextRenderer;
+import org.deegree.style.se.unevaluated.Style;
+import org.deegree.style.styling.TextStyling;
 
-import java.awt.Graphics2D;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -46,15 +52,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import org.deegree.commons.utils.Pair;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.rendering.r2d.TextRenderer;
-import org.deegree.style.se.unevaluated.Style;
-import org.deegree.style.styling.TextStyling;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.style.styling.components.UOM.Metre;
 
 /**
  * 

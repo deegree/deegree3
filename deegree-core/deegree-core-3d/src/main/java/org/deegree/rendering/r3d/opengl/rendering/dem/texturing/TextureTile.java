@@ -36,18 +36,17 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
-import static java.lang.Double.doubleToLongBits;
-import static java.lang.Math.round;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.nio.PooledByteBuffer;
 
+import javax.media.opengl.GL;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.media.opengl.GL;
-
-import org.deegree.commons.utils.nio.PooledByteBuffer;
-import org.slf4j.Logger;
+import static java.lang.Double.doubleToLongBits;
+import static java.lang.Math.round;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

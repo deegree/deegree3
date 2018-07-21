@@ -36,6 +36,7 @@
 package org.deegree.gml.schema;
 
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
@@ -89,6 +90,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.StringList;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -120,8 +122,6 @@ import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based writer for exporting {@link AppSchema} or {@link FeatureType} instances as a GML application schema.
@@ -133,7 +133,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLAppSchemaWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLAppSchemaWriter.class );
+    private static final Logger LOG = getLogger( GMLAppSchemaWriter.class );
 
     public static final String GML_2_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
 

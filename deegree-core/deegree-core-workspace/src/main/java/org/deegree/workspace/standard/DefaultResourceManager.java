@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceLocation;
@@ -58,8 +59,8 @@ import org.deegree.workspace.ResourceManagerMetadata;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.ResourceProvider;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Default resource manager implementation. Scans for provider implementations via SPI using the provider class from the
@@ -71,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultResourceManager<T extends Resource> implements ResourceManager<T> {
 
-    private static Logger LOG = LoggerFactory.getLogger( DefaultResourceManager.class );
+    private static Logger LOG = getLogger( DefaultResourceManager.class );
 
     private final ResourceManagerMetadata<T> metadata;
 

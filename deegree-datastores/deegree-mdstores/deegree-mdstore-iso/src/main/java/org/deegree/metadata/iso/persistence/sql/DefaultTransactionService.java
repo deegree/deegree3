@@ -35,23 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso.persistence.sql;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.InsertRow;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.jdbc.TransactionRow;
@@ -67,19 +51,24 @@ import org.deegree.metadata.i18n.Messages;
 import org.deegree.metadata.iso.ISORecord;
 import org.deegree.metadata.iso.parsing.QueryableProperties;
 import org.deegree.metadata.iso.persistence.queryable.Queryable;
-import org.deegree.metadata.iso.types.BoundingBox;
-import org.deegree.metadata.iso.types.CRS;
-import org.deegree.metadata.iso.types.Constraint;
-import org.deegree.metadata.iso.types.Format;
-import org.deegree.metadata.iso.types.Keyword;
-import org.deegree.metadata.iso.types.OperatesOnData;
+import org.deegree.metadata.iso.types.*;
 import org.deegree.metadata.persistence.iso19115.jaxb.ISOMetadataStoreConfig.AnyText;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.postgis.PostGISDialect;
-import org.slf4j.Logger;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import java.io.StringWriter;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JDBCUtils.close;
 
 /**
  * Here are all the queryable properties encapsulated which have to put into the backend. Here is the functionality of

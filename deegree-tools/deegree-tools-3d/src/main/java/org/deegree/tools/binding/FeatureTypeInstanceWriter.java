@@ -35,56 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tools.binding;
 
-import static org.deegree.tools.binding.FeatureClass.FIELD_NS;
-import static org.deegree.tools.binding.FeatureClass.QNAME;
-import static org.deegree.tools.binding.FeatureInstanceWriter.PROP;
-import static org.deegree.tools.binding.ModelClass.SP;
-import static org.deegree.tools.binding.ModelClass.SP2;
-import static org.deegree.tools.binding.ModelClass.SP3;
-import static org.deegree.tools.binding.ModelClass.arlist;
-import static org.deegree.tools.binding.ModelClass.closeMethod;
-import static org.deegree.tools.binding.ModelClass.linkedHashMap;
-import static org.deegree.tools.binding.ModelClass.list;
-import static org.deegree.tools.binding.ModelClass.map;
-import static org.deegree.tools.binding.ModelClass.oif;
-import static org.deegree.tools.binding.ModelClass.openMethod;
-import static org.deegree.tools.binding.ModelClass.writeField;
-import static org.deegree.tools.binding.RootFeature.FEAT;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
-
-import javax.lang.model.type.PrimitiveType;
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.StringPair;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericAppSchema;
-import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.EnvelopePropertyType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.*;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.StringOrRefPropertyType;
-import org.deegree.feature.types.property.ValueRepresentation;
 import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
+
+import javax.lang.model.type.PrimitiveType;
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.tools.binding.FeatureClass.FIELD_NS;
+import static org.deegree.tools.binding.FeatureClass.QNAME;
+import static org.deegree.tools.binding.FeatureInstanceWriter.PROP;
+import static org.deegree.tools.binding.ModelClass.*;
+import static org.deegree.tools.binding.RootFeature.FEAT;
 
 /**
  * TODO add class documentation here

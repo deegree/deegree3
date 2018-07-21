@@ -39,11 +39,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.Initializable;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Entry point for retrieving {@link FunctionProvider} instances that are registered via Java SPI.
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FunctionManager implements Initializable, Destroyable {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FunctionManager.class );
+    private static final Logger LOG = getLogger( FunctionManager.class );
 
     private static Map<String, FunctionProvider> nameToFunction;
 

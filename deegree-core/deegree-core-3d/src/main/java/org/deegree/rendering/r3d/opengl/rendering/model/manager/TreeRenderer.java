@@ -36,17 +36,9 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.media.opengl.GL;
-import javax.vecmath.Point3d;
-
+import com.sun.opengl.util.BufferUtil;
+import com.sun.opengl.util.texture.Texture;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
@@ -54,8 +46,12 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 
-import com.sun.opengl.util.BufferUtil;
-import com.sun.opengl.util.texture.Texture;
+import javax.media.opengl.GL;
+import javax.vecmath.Point3d;
+import java.nio.FloatBuffer;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TreeManager</code> will hold the bill board references depending on their texture id.
@@ -67,7 +63,7 @@ import com.sun.opengl.util.texture.Texture;
  */
 public class TreeRenderer extends RenderableManager<BillBoard> {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( TreeRenderer.class );
+    private final static Logger LOG = getLogger( TreeRenderer.class );
 
     // private static final FloatBuffer tncBuffer;
     // static {

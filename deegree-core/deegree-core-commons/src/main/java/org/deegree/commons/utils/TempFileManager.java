@@ -35,13 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Manages temporary file system resources for deegree.
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TempFileManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TempFileManager.class );
+    private static final Logger LOG = getLogger( TempFileManager.class );
 
     private static File baseDir;
 

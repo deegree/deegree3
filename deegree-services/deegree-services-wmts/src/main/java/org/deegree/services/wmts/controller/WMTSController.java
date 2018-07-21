@@ -40,20 +40,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts.controller;
 
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.tom.ows.Version.parseVersion;
-import static org.deegree.protocol.wmts.WMTSConstants.VERSION_100;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.RequestUtils;
@@ -69,7 +57,18 @@ import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.wmts.jaxb.DeegreeWMTS;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.tom.ows.Version.parseVersion;
+import static org.deegree.protocol.wmts.WMTSConstants.VERSION_100;
 
 /**
  * OWS implementation for WMTS protocol.

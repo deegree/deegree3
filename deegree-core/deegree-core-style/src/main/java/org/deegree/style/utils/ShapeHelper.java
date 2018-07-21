@@ -36,38 +36,27 @@
 
 package org.deegree.style.utils;
 
-import static java.awt.geom.AffineTransform.getScaleInstance;
-import static java.lang.Math.PI;
-import static java.lang.Math.max;
-import static java.lang.Math.toRadians;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.bridge.*;
+import org.apache.batik.gvt.GVTTreeWalker;
+import org.apache.batik.gvt.GraphicsNode;
+import org.apache.batik.gvt.RootGraphicsNode;
+import org.apache.logging.log4j.Logger;
+import org.deegree.style.styling.components.Mark;
+import org.w3c.dom.svg.SVGDocument;
 
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
 
-import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.DocumentLoader;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgent;
-import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
-import org.apache.batik.gvt.GVTTreeWalker;
-import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.gvt.RootGraphicsNode;
-import org.deegree.style.styling.components.Mark;
-import org.slf4j.Logger;
-import org.w3c.dom.svg.SVGDocument;
+import static java.awt.geom.AffineTransform.getScaleInstance;
+import static java.lang.Math.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>RenderHelper</code>

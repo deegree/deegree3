@@ -38,50 +38,15 @@
 
 package org.deegree.tools.crs;
 
-import static java.lang.Math.toDegrees;
-import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
-import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
-import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
-import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
-import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.IAxis;
-import org.deegree.cs.components.IEllipsoid;
-import org.deegree.cs.components.IGeodeticDatum;
-import org.deegree.cs.components.IPrimeMeridian;
-import org.deegree.cs.components.IUnit;
-import org.deegree.cs.components.Unit;
+import org.deegree.cs.components.*;
 import org.deegree.cs.coordinatesystems.CRS.CRSType;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.coordinatesystems.ICompoundCRS;
-import org.deegree.cs.coordinatesystems.IGeocentricCRS;
-import org.deegree.cs.coordinatesystems.IGeographicCRS;
-import org.deegree.cs.coordinatesystems.IProjectedCRS;
+import org.deegree.cs.coordinatesystems.*;
 import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.azimuthal.ILambertAzimuthalEqualArea;
 import org.deegree.cs.projections.azimuthal.IStereographicAlternative;
@@ -99,7 +64,23 @@ import org.deegree.db.ConnectionProviderUtils;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
+import static java.lang.Math.toDegrees;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.CommonNamespaces.CRSNS;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.COMPOUND;
+import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
+import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 
 /**
  * Exports a list of coordinate systems into the deegree CRS format.

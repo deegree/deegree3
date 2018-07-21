@@ -36,6 +36,7 @@
 
 package org.deegree.gml.feature;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -53,6 +54,7 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -100,8 +102,6 @@ import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.time.gml.writer.GmlTimeGeometricPrimitiveWriter;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based GML writer for {@link Feature} (and {@link FeatureCollection}) instances.
@@ -114,7 +114,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureWriter.class );
+    private static final Logger LOG = getLogger( GMLFeatureWriter.class );
 
     private final QName fidAttr;
 

@@ -38,12 +38,13 @@ package org.deegree.commons.xml.schema;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas (e.g. GML) to a local copy on
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RedirectingEntityResolver implements XMLEntityResolver {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RedirectingEntityResolver.class );
+    private static final Logger LOG = getLogger( RedirectingEntityResolver.class );
 
     private static final String SCHEMAS_OPENGIS_NET_URL = "http://schemas.opengis.net/";
 

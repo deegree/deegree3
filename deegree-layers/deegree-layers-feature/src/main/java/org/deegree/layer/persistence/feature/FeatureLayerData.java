@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
@@ -58,7 +50,14 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.layer.LayerData;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.style.se.unevaluated.Style;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

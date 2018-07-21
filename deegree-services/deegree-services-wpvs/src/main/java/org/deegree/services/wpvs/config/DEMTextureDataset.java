@@ -36,16 +36,7 @@
 
 package org.deegree.services.wpvs.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.stream.XMLInputFactory;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.CoverageProvider;
@@ -70,8 +61,17 @@ import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLInputFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TextureDatasetWrapper</code> extracts data from jaxb configuration elements and creates texture managers,
@@ -85,7 +85,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DEMTextureDataset extends Dataset<TextureManager> {
 
-    private final static Logger LOG = LoggerFactory.getLogger( DEMTextureDataset.class );
+    private final static Logger LOG = getLogger( DEMTextureDataset.class );
 
     private final int maxCachedTextureTiles;
 

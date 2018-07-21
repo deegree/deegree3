@@ -36,30 +36,9 @@
 
 package org.deegree.services.wcs;
 
-import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
-import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
-import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -106,8 +85,23 @@ import org.deegree.services.wcs.model.CoverageResult;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.*;
+
+import static javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.wcs.WCSConstants.VERSION_100;
+import static org.deegree.protocol.wcs.WCSConstants.WCS_100_NS;
+import static org.deegree.services.wcs.WCSProvider.IMPLEMENTATION_METADATA;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wcs">OpenGIS Web Coverage Service</a> server
@@ -124,7 +118,7 @@ public class WCSController extends AbstractOWS {
 
     private static final String COVERAGE_NOT_DEFINED = "CoverageNotDefined";
 
-    private static final Logger LOG = LoggerFactory.getLogger( WCSController.class );
+    private static final Logger LOG = getLogger( WCSController.class );
 
     private WCService wcsService;
 

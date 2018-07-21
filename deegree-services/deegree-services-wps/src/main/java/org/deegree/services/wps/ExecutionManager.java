@@ -36,43 +36,13 @@
 
 package org.deegree.services.wps;
 
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.protocol.wps.WPSConstants.ExecutionState.FAILED;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
-import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;
-import org.deegree.process.jaxb.java.ComplexOutputDefinition;
-import org.deegree.process.jaxb.java.LiteralOutputDefinition;
-import org.deegree.process.jaxb.java.ProcessDefinition;
-import org.deegree.process.jaxb.java.ProcessletOutputDefinition;
+import org.deegree.process.jaxb.java.*;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.wps.execute.ExecuteRequest;
-import org.deegree.services.wps.execute.ExecuteResponse;
-import org.deegree.services.wps.execute.ExecuteResponseXMLWriter;
-import org.deegree.services.wps.execute.RawDataOutput;
-import org.deegree.services.wps.execute.RequestedOutput;
-import org.deegree.services.wps.execute.ResponseDocument;
+import org.deegree.services.wps.execute.*;
 import org.deegree.services.wps.output.BoundingBoxOutputImpl;
 import org.deegree.services.wps.output.ComplexOutputImpl;
 import org.deegree.services.wps.output.LiteralOutputImpl;
@@ -80,8 +50,23 @@ import org.deegree.services.wps.output.ProcessletOutput;
 import org.deegree.services.wps.storage.ResponseDocumentStorage;
 import org.deegree.services.wps.storage.StorageLocation;
 import org.deegree.services.wps.storage.StorageManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.protocol.wps.WPSConstants.ExecutionState.FAILED;
 
 /**
  * Responsible for handling <code>Execute</code> requests for the {@link WPService}. Also keeps track of the process
@@ -97,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ExecutionManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ExecutionManager.class );
+    private static final Logger LOG = getLogger( ExecutionManager.class );
 
     private final StorageManager storageManager;
 

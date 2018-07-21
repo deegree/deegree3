@@ -35,7 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.http;
 
-import static org.deegree.commons.utils.net.HttpUtils.handleProxies;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.io.StreamBufferStore;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -45,17 +54,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.deegree.commons.utils.io.StreamBufferStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.net.HttpUtils.handleProxies;
 
 /**
  * Default implementation of {@link OwsHttpClient}.
@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OwsHttpClientImpl implements OwsHttpClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger( OwsHttpClientImpl.class );
+    private static final Logger LOG = getLogger( OwsHttpClientImpl.class );
 
     private static final int DEFAULT_CONNECTION_TIMEOUT_MILLIS = 5 * 1000;
 

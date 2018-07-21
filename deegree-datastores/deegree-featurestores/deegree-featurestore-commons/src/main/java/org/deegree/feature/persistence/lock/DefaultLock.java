@@ -36,18 +36,7 @@
 
 package org.deegree.feature.persistence.lock;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
-import static org.deegree.commons.utils.JDBCUtils.rollbackQuietly;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
-
-import javax.xml.namespace.QName;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.CloseableIterator;
 import org.deegree.db.ConnectionProvider;
@@ -58,8 +47,14 @@ import org.deegree.feature.persistence.query.Query;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.protocol.wfs.getfeature.TypeName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import java.sql.*;
+import java.util.Date;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.utils.JDBCUtils.rollbackQuietly;
 
 /**
  * {@link Lock} implementation that is based on an SQL database.
@@ -73,7 +68,7 @@ import org.slf4j.LoggerFactory;
  */
 class DefaultLock implements Lock {
 
-    private static final Logger LOG = LoggerFactory.getLogger( DefaultLock.class );
+    private static final Logger LOG = getLogger( DefaultLock.class );
 
     private final DefaultLockManager manager;
 

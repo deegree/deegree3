@@ -59,9 +59,10 @@ public class PreparedResources {
 
     public PreparedResources( Workspace workspace ) {
         this.workspace = workspace;
-        map = new HashMap<ResourceMetadata<?>, ResourceBuilder<?>>();
+        map = new HashMap<>();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Resource> ResourceBuilder<T> getBuilder( ResourceIdentifier<T> id ) {
         ResourceBuilder<T> builder = (ResourceBuilder<T>) map.get( workspace.getResourceMetadata( id.getProvider(),
                                                                                                   id.getId() ) );

@@ -36,21 +36,8 @@
 
 package org.deegree.tools.rendering.manager.stage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.cli.CommandLine;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.dataaccess.CSVReader;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.geometry.Envelope;
@@ -64,6 +51,12 @@ import org.deegree.services.wpvs.io.ModelBackend;
 import org.deegree.services.wpvs.io.ModelBackend.Type;
 import org.deegree.tools.rendering.manager.ModelManager;
 
+import java.io.*;
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+
 /**
  * The <code>StageManager</code> imports stage definitions from a csv file.
  * 
@@ -76,7 +69,7 @@ public class StageManager extends ModelManager<WorldRenderableObject> {
 
     private static final GeometryFactory geomFac = new GeometryFactory();
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( StageManager.class );
+    private final static Logger LOG = getLogger( StageManager.class );
 
     private Set<String> usedTextures = new HashSet<String>();
 

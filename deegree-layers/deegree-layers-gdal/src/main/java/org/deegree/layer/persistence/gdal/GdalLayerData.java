@@ -27,29 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.gdal;
 
-import static java.awt.color.ColorSpace.CS_sRGB;
-import static java.awt.image.DataBuffer.TYPE_BYTE;
-import static org.deegree.cs.components.Axis.AO_EAST;
-import static org.deegree.cs.components.Axis.AO_WEST;
-import static org.gdal.gdalconst.gdalconstConstants.CE_None;
-import static org.gdal.gdalconst.gdalconstConstants.GDT_Byte;
-import static org.gdal.osr.CoordinateTransformation.CreateCoordinateTransformation;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.color.ColorSpace;
-import java.awt.image.BandedSampleModel;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.gdal.GdalDataset;
 import org.deegree.commons.gdal.GdalDatasetPool;
 import org.deegree.commons.gdal.GdalSettings;
@@ -68,7 +46,21 @@ import org.gdal.gdal.Driver;
 import org.gdal.gdal.gdal;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
-import org.slf4j.Logger;
+
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.awt.color.ColorSpace.CS_sRGB;
+import static java.awt.image.DataBuffer.TYPE_BYTE;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.cs.components.Axis.AO_EAST;
+import static org.deegree.cs.components.Axis.AO_WEST;
+import static org.gdal.gdalconst.gdalconstConstants.CE_None;
+import static org.gdal.gdalconst.gdalconstConstants.GDT_Byte;
+import static org.gdal.osr.CoordinateTransformation.CreateCoordinateTransformation;
 
 /**
  * {@link LayerData} implementation for layers that are rendered from GDAL datasets.

@@ -41,11 +41,7 @@
 
 package org.deegree.feature.persistence.sql;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.net.MalformedURLException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.persistence.FeatureStore;
@@ -53,7 +49,11 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.io.File;
+import java.net.MalformedURLException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>SqlFeatureStoreBuilder</code>

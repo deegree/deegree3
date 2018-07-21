@@ -35,17 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.blob;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.Feature;
+import org.deegree.feature.persistence.sql.FeatureBuilder;
+import org.deegree.feature.persistence.sql.SQLFeatureStore;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.feature.Feature;
-import org.deegree.feature.persistence.sql.FeatureBuilder;
-import org.deegree.feature.persistence.sql.SQLFeatureStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Builds {@link Feature} instances from SQL result set rows (BLOB/hybrid mode).
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureBuilderBlob implements FeatureBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureBuilderBlob.class );
+    private static final Logger LOG = getLogger( FeatureBuilderBlob.class );
 
     private final SQLFeatureStore fs;
 

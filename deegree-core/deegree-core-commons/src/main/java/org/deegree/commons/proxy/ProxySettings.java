@@ -35,8 +35,8 @@
 
 package org.deegree.commons.proxy;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,13 +46,13 @@ import java.net.URLConnection;
 import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.proxy.jaxb.ProxyConfiguration;
 import org.deegree.workspace.Initializable;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
 
 /**
  * Utility class for accessing and modifying the VM's proxy configuration and for opening URL connections that respect

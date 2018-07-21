@@ -36,22 +36,19 @@
 
 package org.deegree.services.wpvs.io.serializer;
 
-import static org.deegree.commons.utils.memory.AllocatedHeapMemory.INT_SIZE;
-import static org.deegree.commons.utils.memory.AllocatedHeapMemory.LONG_SIZE;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.index.PositionableModel;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.services.wpvs.io.DataObjectInfo;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.memory.AllocatedHeapMemory.INT_SIZE;
+import static org.deegree.commons.utils.memory.AllocatedHeapMemory.LONG_SIZE;
 
 /**
  * The <code>ObjectSerializer</code> class TODO add class documentation here.
@@ -66,7 +63,7 @@ public abstract class ObjectSerializer<T extends PositionableModel> {
 
     static GeometryFactory geomFac = new GeometryFactory();
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ObjectSerializer.class );
+    private final static Logger LOG = getLogger( ObjectSerializer.class );
 
     /**
      * Write the given {@link PositionableModel} to the buffer.

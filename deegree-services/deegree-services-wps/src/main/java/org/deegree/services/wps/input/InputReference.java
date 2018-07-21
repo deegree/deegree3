@@ -36,16 +36,17 @@
 
 package org.deegree.services.wps.input;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.net.HttpUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.utils.net.HttpUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Reference to an input value that is provided by a web-accessible resource.
@@ -58,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InputReference {
 
-    private static final Logger LOG = LoggerFactory.getLogger( InputReference.class );
+    private static final Logger LOG = getLogger( InputReference.class );
 
     private URL href;
 

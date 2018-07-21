@@ -35,13 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.csw.getrecordbyid;
 
-import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -49,8 +43,14 @@ import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.protocol.csw.CSWConstants.ReturnableElement;
 import org.deegree.protocol.csw.MetadataStoreException;
 import org.deegree.protocol.i18n.Messages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.protocol.csw.CSWConstants.VERSION_202;
 
 /**
  * Encapsulates the method for parsing a {@link GetRecordById} KVP request via Http-GET.
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GetRecordByIdKVPAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GetRecordByIdKVPAdapter.class );
+    private static final Logger LOG = getLogger( GetRecordByIdKVPAdapter.class );
 
     /**
      * Parses the {@link GetRecordById} kvp request and decides which version has to parse because of the requested

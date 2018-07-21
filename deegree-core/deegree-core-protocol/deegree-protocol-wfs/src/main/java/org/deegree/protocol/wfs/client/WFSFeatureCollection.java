@@ -35,17 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.client;
 
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-
-import java.math.BigInteger;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -58,8 +48,17 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.reference.GmlDocumentIdContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.math.BigInteger;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 /**
  * Provides convenient stream-based access to the payload of a WFS <code>GetFeature</code> response.
@@ -83,7 +82,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WFSFeatureCollection<T> {
 
-    private static Logger LOG = LoggerFactory.getLogger( WFSFeatureCollection.class );
+    private static Logger LOG = getLogger( WFSFeatureCollection.class );
 
     private static final QName WFS200_MEMBER = new QName( WFS_200_NS, "member" );
 

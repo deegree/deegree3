@@ -35,18 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.transformations.helmert;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.transformations.TransformationFactory.createWGSAlligned;
 import static org.deegree.cs.transformations.coordinate.ConcatenatedTransform.concatenate;
 import static org.deegree.cs.transformations.coordinate.MatrixTransform.createMatrixTransform;
 import static org.deegree.cs.utilities.Matrix.swapAndRotateGeoAxis;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -59,7 +60,6 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
 import org.deegree.cs.transformations.coordinate.GeocentricTransform;
 import org.deegree.cs.utilities.Matrix;
-import org.slf4j.Logger;
 
 /**
  * Parameters for a geographic transformation into another datum. The Bursa Wolf parameters should be applied to

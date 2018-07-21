@@ -40,6 +40,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -55,8 +56,8 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link XPathEvaluator} implementation for {@link TypedObjectNode} graphs.
@@ -68,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TypedObjectNodeXPathEvaluator implements XPathEvaluator<TypedObjectNode> {
 
-    private static Logger LOG = LoggerFactory.getLogger( TypedObjectNodeXPathEvaluator.class );
+    private static Logger LOG = getLogger( TypedObjectNodeXPathEvaluator.class );
 
     private Map<String, QName> bindings;
 

@@ -36,9 +36,11 @@
 
 package org.deegree.commons.utils;
 
+import org.apache.logging.log4j.Logger;
+
 import static java.lang.Integer.toHexString;
 import static java.lang.reflect.Modifier.STATIC;
-import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -47,8 +49,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-
-import org.slf4j.Logger;
 
 /**
  * <code>JavaUtils</code>

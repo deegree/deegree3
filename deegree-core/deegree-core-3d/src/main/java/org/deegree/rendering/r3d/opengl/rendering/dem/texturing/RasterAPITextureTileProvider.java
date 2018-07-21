@@ -36,8 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
-import java.nio.ByteBuffer;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -45,13 +44,15 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.nio.ByteBuffer;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterAPITextureTileProvider implements TextureTileProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger( RasterAPITextureTileProvider.class );
+    private static Logger LOG = getLogger( RasterAPITextureTileProvider.class );
 
     private final GeometryFactory fac;
 

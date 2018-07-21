@@ -41,10 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.shape;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
@@ -55,8 +52,12 @@ import org.deegree.feature.persistence.shape.jaxb.ShapeFeatureStoreConfig.Mappin
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * TODO add class documentation here
@@ -68,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ShapeFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ShapeFeatureStoreBuilder.class );
+    private static final Logger LOG = getLogger( ShapeFeatureStoreBuilder.class );
 
     private ShapeFeatureStoreConfig config;
 

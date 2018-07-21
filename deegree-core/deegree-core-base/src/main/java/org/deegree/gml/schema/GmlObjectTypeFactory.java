@@ -1,5 +1,6 @@
 package org.deegree.gml.schema;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_MIXED;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_SIMPLE;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.dv.XSSimpleType;
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -41,12 +43,10 @@ import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.EnvelopePropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class GmlObjectTypeFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GmlObjectTypeFactory.class );
+    private static final Logger LOG = getLogger( GmlObjectTypeFactory.class );
 
     private final GMLSchemaInfoSet gmlSchema;
 

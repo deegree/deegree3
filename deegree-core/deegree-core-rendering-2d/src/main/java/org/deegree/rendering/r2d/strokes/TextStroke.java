@@ -50,35 +50,27 @@
 
 package org.deegree.rendering.r2d.strokes;
 
-import static java.awt.geom.PathIterator.SEG_CLOSE;
-import static java.awt.geom.PathIterator.SEG_LINETO;
-import static java.awt.geom.PathIterator.SEG_MOVETO;
-import static java.lang.Math.atan2;
-import static java.lang.Math.sqrt;
-import static java.util.Arrays.asList;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
-import static org.deegree.geometry.utils.GeometryUtils.measurePathLengths;
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.annotations.LoggingNotes;
+import org.deegree.style.styling.components.LinePlacement;
 
-import java.awt.Font;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.FlatteningPathIterator;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
+import java.awt.geom.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.deegree.commons.annotations.LoggingNotes;
-import org.deegree.style.styling.components.LinePlacement;
-import org.slf4j.Logger;
+import static java.awt.geom.PathIterator.*;
+import static java.lang.Math.atan2;
+import static java.lang.Math.sqrt;
+import static java.util.Arrays.asList;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.geometry.utils.GeometryUtils.measurePathLengths;
 
 /**
  * <code>TextStroke</code>

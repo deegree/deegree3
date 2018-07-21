@@ -36,11 +36,7 @@
 
 package org.deegree.style.se.unevaluated;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.LinkedList;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
@@ -51,7 +47,11 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
 import org.deegree.style.styling.Styling;
-import org.slf4j.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>Symbolizer</code>

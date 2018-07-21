@@ -36,19 +36,18 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.texture;
 
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureIO;
+import org.apache.logging.log4j.Logger;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
+
+import javax.media.opengl.GLException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GLException;
-
-import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sun.opengl.util.texture.Texture;
-import com.sun.opengl.util.texture.TextureIO;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * The <code>TexturePool</code> holds static references to texture files, used in the scene.
@@ -62,7 +61,7 @@ import com.sun.opengl.util.texture.TextureIO;
  */
 public class TexturePool {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( TexturePool.class );
+    private final transient static Logger LOG = getLogger( TexturePool.class );
 
     private static Map<String, Texture> idToTexture = new HashMap<String, Texture>();
 

@@ -38,9 +38,9 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -53,6 +53,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSIdentifiable;
@@ -71,7 +72,6 @@ import org.deegree.cs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.projections.cylindric.Mercator;
 import org.deegree.cs.projections.cylindric.TransverseMercator;
-import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for projection objects.

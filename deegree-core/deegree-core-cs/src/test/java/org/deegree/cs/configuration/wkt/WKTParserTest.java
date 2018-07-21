@@ -35,31 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.cs.configuration.wkt;
 
-import static org.deegree.cs.projections.SupportedProjectionParameters.FALSE_EASTING;
-import static org.deegree.cs.projections.SupportedProjectionParameters.FALSE_NORTHING;
-import static org.deegree.cs.projections.SupportedProjectionParameters.FIRST_PARALLEL_LATITUDE;
-import static org.deegree.cs.projections.SupportedProjectionParameters.LATITUDE_OF_NATURAL_ORIGIN;
-import static org.deegree.cs.projections.SupportedProjectionParameters.LONGITUDE_OF_NATURAL_ORIGIN;
-import static org.deegree.cs.projections.SupportedProjectionParameters.SCALE_AT_NATURAL_ORIGIN;
-import static org.deegree.cs.projections.SupportedProjectionParameters.SECOND_PARALLEL_LATITUDE;
-import static org.deegree.cs.utilities.ProjectionUtils.DTR;
-
-import java.io.IOException;
-
-import junit.framework.Assert;
-
-import org.deegree.cs.components.GeodeticDatum;
-import org.deegree.cs.components.IDatum;
-import org.deegree.cs.components.IEllipsoid;
-import org.deegree.cs.components.IPrimeMeridian;
-import org.deegree.cs.components.Unit;
+import org.deegree.commons.utils.math.MathUtils;
+import org.deegree.cs.components.*;
 import org.deegree.cs.coordinatesystems.CRS;
 import org.deegree.cs.coordinatesystems.IGeographicCRS;
 import org.deegree.cs.coordinatesystems.ProjectedCRS;
 import org.deegree.cs.projections.IProjection;
 import org.deegree.cs.projections.conic.LambertConformalConic;
 import org.deegree.cs.utilities.ProjectionUtils;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.deegree.cs.projections.SupportedProjectionParameters.*;
+import static org.deegree.cs.utilities.ProjectionUtils.DTR;
 
 /**
  * The <code>WKTParserTest</code> class provides a detailed check for the {@link WKTParser} class.
@@ -140,25 +130,25 @@ public class WKTParserTest {
         IEllipsoid ellipsoid = ( (GeodeticDatum) datum ).getEllipsoid();
         Assert.assertEquals( ellipsoidName, ellipsoid.getName() );
         Assert.assertEquals( ellipsoidName + ":" + ellipsoidCode, ellipsoid.getCode().getOriginal() );
-        Assert.assertEquals( semiMajorAxis, ellipsoid.getSemiMajorAxis() );
-        Assert.assertEquals( inverseFlattening, ellipsoid.getInverseFlattening() );
+        Assert.assertEquals( semiMajorAxis, ellipsoid.getSemiMajorAxis(), MathUtils.EPSILON );
+        Assert.assertEquals( inverseFlattening, ellipsoid.getInverseFlattening(), MathUtils.EPSILON );
 
         IPrimeMeridian pm = ( (GeodeticDatum) datum ).getPrimeMeridian();
         Assert.assertEquals( pmName, pm.getName() );
         Assert.assertEquals( pmName + ":" + pmCode, pm.getCode().getOriginal() );
         Assert.assertEquals( Unit.DEGREE, pm.getAngularUnit() );
-        Assert.assertEquals( pmLongitude, pm.getLongitude() );
+        Assert.assertEquals( pmLongitude, pm.getLongitude(), MathUtils.EPSILON );
         IProjection proj = projCRS.getProjection();
         Assert.assertTrue( proj instanceof LambertConformalConic );
 
         LambertConformalConic lcc = (LambertConformalConic) proj;
-        Assert.assertEquals( falseEasting, lcc.getFalseEasting() );
-        Assert.assertEquals( falseNorthing, lcc.getFalseNorthing() );
+        Assert.assertEquals( falseEasting, lcc.getFalseEasting(), MathUtils.EPSILON );
+        Assert.assertEquals( falseNorthing, lcc.getFalseNorthing(), MathUtils.EPSILON );
         Assert.assertEquals( DTR * stdParallel1, lcc.getFirstParallelLatitude(), 1e-12 );
         Assert.assertEquals( DTR * stdParallel2, lcc.getSecondParallelLatitude(), 1e-12 );
-        Assert.assertEquals( DTR * lonNatOrigin, lcc.getNaturalOrigin().x );
-        Assert.assertEquals( DTR * latNatOrigin, lcc.getNaturalOrigin().y );
-        Assert.assertEquals( scaleFactor, lcc.getScale() );
+        Assert.assertEquals( DTR * lonNatOrigin, lcc.getNaturalOrigin().x, MathUtils.EPSILON );
+        Assert.assertEquals( DTR * latNatOrigin, lcc.getNaturalOrigin().y, MathUtils.EPSILON );
+        Assert.assertEquals( scaleFactor, lcc.getScale(), MathUtils.EPSILON );
     }
 
     private String buildPROJCS( String name, String code, String unitName, double unitConversion ) {

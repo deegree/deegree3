@@ -38,10 +38,10 @@
 
 package org.deegree.cs.persistence.deegree.d3.parsers;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getElementTextAsDouble;
 import static org.deegree.cs.persistence.deegree.d3.DeegreeCRSStore.CRS_NS;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -57,6 +57,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -76,7 +77,6 @@ import org.deegree.cs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.cs.transformations.helmert.Helmert;
 import org.deegree.cs.transformations.ntv2.NTv2Transformation;
 import org.deegree.cs.transformations.polynomial.LeastSquareApproximation;
-import org.slf4j.Logger;
 
 /**
  * Stax-based configuration parser for transformation objects.

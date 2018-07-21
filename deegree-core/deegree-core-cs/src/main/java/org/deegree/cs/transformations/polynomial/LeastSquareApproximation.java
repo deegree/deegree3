@@ -36,6 +36,7 @@
 
 package org.deegree.cs.transformations.polynomial;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.cs.utilities.ProjectionUtils.EPS11;
 
 import java.awt.geom.Point2D;
@@ -48,14 +49,13 @@ import javax.media.jai.WarpPolynomial;
 import javax.media.jai.WarpQuadratic;
 import javax.vecmath.Point3d;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.i18n.Messages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <code>LeastSquareApproximation</code> is a polynomial transformation which uses the least square method to
@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class LeastSquareApproximation extends PolynomialTransformation {
-    private static Logger LOG = LoggerFactory.getLogger( LeastSquareApproximation.class );
+    private static Logger LOG = getLogger( LeastSquareApproximation.class );
 
     private WarpPolynomial leastSquarePolynomial;
 

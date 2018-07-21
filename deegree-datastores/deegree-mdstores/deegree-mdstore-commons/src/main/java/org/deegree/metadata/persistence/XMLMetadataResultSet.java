@@ -35,20 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.persistence;
 
+import org.apache.logging.log4j.Logger;
+import org.deegree.commons.utils.JDBCUtils;
+import org.deegree.metadata.MetadataRecord;
+import org.deegree.protocol.csw.MetadataStoreException;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.commons.utils.JDBCUtils;
-import org.deegree.metadata.MetadataRecord;
-import org.deegree.protocol.csw.MetadataStoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * abstract base class for {@link MetadataResultSet}s. The reults set must contain the XML representation of the
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class XMLMetadataResultSet<T extends MetadataRecord> implements MetadataResultSet<T> {
 
-    private static Logger LOG = LoggerFactory.getLogger( XMLMetadataResultSet.class );
+    private static Logger LOG = getLogger( XMLMetadataResultSet.class );
 
     private final ResultSet rs;
 

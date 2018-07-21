@@ -35,15 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.sqrt;
-import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.IOException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.MapUtils;
 import org.deegree.cs.configuration.wkt.WKTParser;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -51,7 +43,12 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
-import org.slf4j.Logger;
+
+import java.io.IOException;
+
+import static java.lang.Math.*;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 
 /**
  * <code>Utils</code>

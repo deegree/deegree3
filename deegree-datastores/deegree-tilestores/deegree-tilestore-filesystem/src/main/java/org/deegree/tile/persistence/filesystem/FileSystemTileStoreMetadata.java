@@ -27,9 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.filesystem;
 
-import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
-import static org.slf4j.LoggerFactory.getLogger;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.tile.TileMatrixSet;
 import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreProvider;
@@ -43,7 +41,9 @@ import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.AbstractResourceMetadata;
 import org.deegree.workspace.standard.AbstractResourceProvider;
 import org.deegree.workspace.standard.DefaultResourceIdentifier;
-import org.slf4j.Logger;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
 /**
  * Resource metadata implementation for file system tile stores.

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
@@ -43,8 +44,8 @@ import org.deegree.filter.XPathEvaluator;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link SpatialOperator} that checks for the intersection of the two geometry operands' envelopes.
@@ -66,7 +67,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BBOX extends SpatialOperator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( BBOX.class );
+    private static final Logger LOG = getLogger( BBOX.class );
 
     private final Envelope param2;
 

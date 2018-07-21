@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io.jai;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 
 import java.awt.image.RenderedImage;
@@ -44,12 +45,11 @@ import java.io.InputStream;
 
 import javax.media.jai.JAI;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.io.RasterDataReader;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.SeekableStream;
@@ -70,7 +70,7 @@ import com.sun.media.jai.codec.SeekableStream;
  */
 public class JAIRasterDataReader implements RasterDataReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( JAIRasterDataReader.class );
+    private static final Logger LOG = getLogger( JAIRasterDataReader.class );
 
     private File file;
 

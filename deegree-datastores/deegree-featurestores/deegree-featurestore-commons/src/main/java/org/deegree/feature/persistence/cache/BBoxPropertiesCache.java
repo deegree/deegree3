@@ -35,22 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.cache;
 
-import static java.util.Collections.synchronizedMap;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-
-import javax.xml.namespace.QName;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.cs.persistence.CRSManager;
@@ -58,7 +44,16 @@ import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
-import org.slf4j.Logger;
+
+import javax.xml.namespace.QName;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import static java.util.Collections.synchronizedMap;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link BBoxCache} based on a Java properties file.

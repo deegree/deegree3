@@ -40,18 +40,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
+
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Default implementation of {@link TileDataSet}.

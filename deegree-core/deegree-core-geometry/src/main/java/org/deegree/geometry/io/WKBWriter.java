@@ -35,16 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
+import com.vividsolutions.jts.io.OutputStreamOutStream;
+import com.vividsolutions.jts.io.ParseException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 
-import com.vividsolutions.jts.io.OutputStreamOutStream;
-import com.vividsolutions.jts.io.ParseException;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Writes {@link Geometry} objects encoded as Well-Known Binary (WKB).
@@ -61,6 +60,7 @@ public class WKBWriter {
     // TODO remove the need for this object
     private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
 
+    @SuppressWarnings("unchecked")
     public static byte[] write( Geometry geom )
                             throws ParseException {
         if ( geom instanceof GeometryReference ) {

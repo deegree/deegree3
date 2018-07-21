@@ -36,19 +36,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.media.opengl.GL;
-import javax.vecmath.Point3d;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.VectorUtils;
 import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
@@ -60,8 +48,12 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureRequest;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTileRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.media.opengl.GL;
+import javax.vecmath.Point3d;
+import java.util.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Manages the loading, unloading and caching of {@link FragmentTexture} objects and the enabling/disabling in a certain
@@ -74,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TextureManager {
 
-    static final Logger LOG = LoggerFactory.getLogger( TextureManager.class );
+    static final Logger LOG = getLogger( TextureManager.class );
 
     private final DirectByteBufferPool bufferPool;
 

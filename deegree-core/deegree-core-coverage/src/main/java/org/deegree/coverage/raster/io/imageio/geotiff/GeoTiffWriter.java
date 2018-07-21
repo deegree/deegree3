@@ -36,6 +36,7 @@
 
 package org.deegree.coverage.raster.io.imageio.geotiff;
 
+import static org.apache.logging.log4j.LogManager.getLogger;
 import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.GTModelTypeGeoKey;
 import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.GTRasterTypeGeoKey;
 import static org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffKey.GeographicTypeGeoKey;
@@ -64,6 +65,7 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageOutputStream;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
@@ -94,7 +96,7 @@ import com.sun.media.imageioimpl.plugins.tiff.TIFFImageWriter;
  */
 public class GeoTiffWriter {
 
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( GeoTiffWriter.class );
+    private final static Logger LOG = getLogger( GeoTiffWriter.class );
 
     private static final GeoTIFFTagSet GEO_TAG_SET = GeoTIFFTagSet.getInstance();
 

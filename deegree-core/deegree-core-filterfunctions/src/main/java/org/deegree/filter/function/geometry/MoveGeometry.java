@@ -35,16 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function.geometry;
 
-import static org.deegree.filter.function.ParameterType.DOUBLE;
-import static org.deegree.filter.function.ParameterType.GEOMETRY;
-import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
-import static org.deegree.geometry.utils.GeometryUtils.move;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -54,7 +45,16 @@ import org.deegree.filter.function.FunctionProvider;
 import org.deegree.filter.function.ParameterType;
 import org.deegree.geometry.Geometry;
 import org.deegree.workspace.Workspace;
-import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.filter.function.ParameterType.DOUBLE;
+import static org.deegree.filter.function.ParameterType.GEOMETRY;
+import static org.deegree.filter.utils.FilterUtils.getGeometryValue;
+import static org.deegree.geometry.utils.GeometryUtils.move;
 
 /**
  * 

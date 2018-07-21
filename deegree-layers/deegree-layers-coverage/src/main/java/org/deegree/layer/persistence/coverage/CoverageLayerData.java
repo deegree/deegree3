@@ -35,12 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
-import static java.lang.Integer.MAX_VALUE;
-import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFromRaster;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.util.LinkedList;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.Triple;
 import org.deegree.coverage.filter.raster.RasterFilter;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -60,7 +55,12 @@ import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.RasterStyling;
 import org.deegree.style.styling.Styling;
-import org.slf4j.Logger;
+
+import java.util.LinkedList;
+
+import static java.lang.Integer.MAX_VALUE;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.deegree.coverage.rangeset.RangeSetBuilder.createBandRangeSetFromRaster;
 
 /**
  * 

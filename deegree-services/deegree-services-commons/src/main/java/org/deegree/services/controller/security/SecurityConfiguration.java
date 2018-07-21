@@ -35,25 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.security;
 
-import static java.io.File.separator;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ServiceLoader;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.config.ResourceManager;
 import org.deegree.services.controller.Credentials;
 import org.deegree.services.controller.CredentialsProvider;
@@ -63,7 +45,24 @@ import org.deegree.services.controller.security.authorities.AuthenticationAuthor
 import org.deegree.workspace.Initializable;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
-import org.slf4j.Logger;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ServiceLoader;
+
+import static java.io.File.separator;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * 

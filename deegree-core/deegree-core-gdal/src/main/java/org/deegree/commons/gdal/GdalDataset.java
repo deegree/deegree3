@@ -27,27 +27,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.gdal;
 
-import static java.awt.color.ColorSpace.CS_sRGB;
-import static java.awt.image.DataBuffer.TYPE_BYTE;
-import static java.lang.Math.round;
-import static org.gdal.gdalconst.gdalconstConstants.CE_None;
-import static org.gdal.gdalconst.gdalconstConstants.GDT_Byte;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.color.ColorSpace;
-import java.awt.image.BandedSampleModel;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.gdal.pool.KeyedResource;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -55,13 +35,20 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.gdal.gdal.Band;
-import org.gdal.gdal.ColorTable;
-import org.gdal.gdal.Dataset;
-import org.gdal.gdal.Driver;
-import org.gdal.gdal.gdal;
+import org.gdal.gdal.*;
 import org.gdal.gdalconst.gdalconstConstants;
-import org.slf4j.Logger;
+
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
+
+import static java.awt.color.ColorSpace.CS_sRGB;
+import static java.awt.image.DataBuffer.TYPE_BYTE;
+import static java.lang.Math.round;
+import static org.apache.logging.log4j.LogManager.getLogger;
+import static org.gdal.gdalconst.gdalconstConstants.CE_None;
+import static org.gdal.gdalconst.gdalconstConstants.GDT_Byte;
 
 /**
  * Encapsulates access to <code>org.gdal.gdal.Dataset</code>.

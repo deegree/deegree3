@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
+import org.apache.logging.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,8 +46,7 @@ import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Provides utility methods for outputting/logging the deegree 3 ascii art logo.
@@ -57,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DeegreeAALogoUtils {
 
-    private static Logger LOG = LoggerFactory.getLogger( DeegreeAALogoUtils.class );
+    private static Logger LOG = getLogger( DeegreeAALogoUtils.class );
 
     private static List<String> lines = new LinkedList<String>();
 

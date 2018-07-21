@@ -36,12 +36,14 @@
 package org.deegree.geometry.standard;
 
 import static java.util.Collections.emptyList;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.uom.Measure;
@@ -68,8 +70,6 @@ import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 
@@ -91,7 +91,7 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
  */
 public abstract class AbstractDefaultGeometry implements Geometry {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractDefaultGeometry.class );
+    private static final Logger LOG = getLogger( AbstractDefaultGeometry.class );
 
     /**
      * Used to built JTS geometries.

@@ -40,18 +40,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.Color.RED;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
-import org.slf4j.Logger;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+
+import static java.awt.Color.RED;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * <code>Java2DTileRenderer</code>

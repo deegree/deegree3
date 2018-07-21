@@ -35,16 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wps.storage;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.services.controller.OGCFrontController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.*;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * {@link StorageLocation} for process outputs.
@@ -56,7 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OutputStorage extends StorageLocation {
 
-    private static final Logger LOG = LoggerFactory.getLogger( OutputStorage.class );
+    private static final Logger LOG = getLogger( OutputStorage.class );
 
     OutputStorage( File file, String id, String mimeType ) throws IOException {
         super( file, id, mimeType );

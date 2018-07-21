@@ -34,13 +34,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.controller.watchdog;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import org.apache.logging.log4j.Logger;
+import org.deegree.services.OWS;
+import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestTimeoutMilliseconds;
 
 import java.util.List;
 
-import org.deegree.services.OWS;
-import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestTimeoutMilliseconds;
-import org.slf4j.Logger;
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Watchdog for enforcing time-outs on {@link OWS} requests.

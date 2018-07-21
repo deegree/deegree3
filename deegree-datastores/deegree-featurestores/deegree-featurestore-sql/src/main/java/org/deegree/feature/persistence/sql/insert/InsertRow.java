@@ -35,19 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TransactionRow;
 import org.deegree.commons.tom.sql.ParticleConversion;
@@ -57,8 +45,12 @@ import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
 import org.deegree.feature.persistence.sql.id.SequenceIDGenerator;
 import org.deegree.feature.persistence.sql.id.UUIDGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * A {@link TransactionRow} that can not be inserted until the values for the foreign keys are known.
@@ -70,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class InsertRow extends TransactionRow {
 
-    private static Logger LOG = LoggerFactory.getLogger( InsertRow.class );
+    private static Logger LOG = getLogger( InsertRow.class );
 
     protected final InsertRowManager mgr;
 

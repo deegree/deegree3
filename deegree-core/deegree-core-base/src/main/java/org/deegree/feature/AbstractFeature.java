@@ -41,6 +41,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.Logger;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -50,8 +51,8 @@ import org.deegree.feature.timeslice.TimeSlice;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * Abstract base class for common {@link Feature} implementations.
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractFeature implements Feature {
 
-    private static final Logger LOG = LoggerFactory.getLogger( AbstractFeature.class );
+    private static final Logger LOG = getLogger( AbstractFeature.class );
 
     /** Feature id */
     protected String fid;
