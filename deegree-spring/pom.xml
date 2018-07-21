@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.deegree</groupId>
 		<artifactId>deegree</artifactId>
-		<version>3.4.0-SNAPSHOT</version>
+		<version>3.4.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>deegree-spring</artifactId>
 	<description>deegree Spring framework integration module</description>
@@ -20,7 +20,7 @@
 
 	<properties>
 		<deegree.module.status>ok</deegree.module.status>
-		<spring.version>3.2.15.RELEASE</spring.version>
+		<spring.version>3.2.18.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>

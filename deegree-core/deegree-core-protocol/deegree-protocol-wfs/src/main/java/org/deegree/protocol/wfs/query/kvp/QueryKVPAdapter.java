@@ -403,10 +403,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         } else if ( !typeNamesList.isEmpty() ) {
             if ( bbox != null ) {
                 for ( int i = 0; i < numQueries; i++ ) {
-                    TypeName[] typeNames = new TypeName[0];
-                    if ( !typeNamesList.isEmpty() ) {
-                        typeNames = typeNamesList.get( i );
-                    }
+                    TypeName[] typeNames = typeNamesList.get( i );
                     ICRS srsName = null;
                     if ( !srsNames.isEmpty() ) {
                         srsName = srsNames.get( i );
@@ -419,7 +416,10 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     if ( !sortByList.isEmpty() ) {
                         sortBy = sortByList.get( i );
                     }
-                    queries.add( new BBoxQuery( null, typeNames, null, srsName, projectionClauses, sortBy, bbox ) );
+                    for ( TypeName typeName : typeNames ) {
+                        queries.add( new BBoxQuery( null, new TypeName[] { typeName }, null, srsName,
+                                                    projectionClauses, sortBy, bbox ) );
+                    }
                 }
             } else {
                 for ( int i = 0; i < numQueries; i++ ) {
@@ -427,10 +427,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     if ( !filterList.isEmpty() ) {
                         filter = filterList.get( i );
                     }
-                    TypeName[] typeNames = new TypeName[0];
-                    if ( !typeNamesList.isEmpty() ) {
-                        typeNames = typeNamesList.get( i );
-                    }
+                    TypeName[] typeNames = typeNamesList.get( i );
                     ICRS srsName = null;
                     if ( !srsNames.isEmpty() ) {
                         srsName = srsNames.get( i );
@@ -443,7 +440,14 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                     if ( !sortByList.isEmpty() ) {
                         sortBy = sortByList.get( i );
                     }
-                    queries.add( new FilterQuery( null, typeNames, null, srsName, projectionClauses, sortBy, filter ) );
+                    if ( filter == null ) {
+                        for ( TypeName typeName : typeNames ){
+                            queries.add( new FilterQuery( null, new TypeName[] { typeName }, null, srsName,
+                                                          projectionClauses, sortBy, null ) );    
+                        }
+                    } else {
+                        queries.add( new FilterQuery( null, typeNames, null, srsName, projectionClauses, sortBy, filter ) );
+                    }
                 }
             }
         }

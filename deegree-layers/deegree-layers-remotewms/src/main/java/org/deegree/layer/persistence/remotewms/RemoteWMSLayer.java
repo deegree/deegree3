@@ -14,6 +14,7 @@ import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.style.StyleRef;
 
 import java.util.*;
 
@@ -161,6 +162,14 @@ class RemoteWMSLayer extends AbstractLayer {
                                                  query.getHeight(), query.getX(), query.getY(), query.getEnvelope(),
                                                  crs, query.getFeatureCount() );
         return new RemoteWMSLayerData( client, gfi, extraParams );
+    }
+
+    @Override
+    public boolean isStyleApplicable( StyleRef style ) {
+        if ( "default".equals( style.getName() ) ) {
+            return true;
+        }
+        return resolveStyleRef( style ) != null;
     }
 
 }

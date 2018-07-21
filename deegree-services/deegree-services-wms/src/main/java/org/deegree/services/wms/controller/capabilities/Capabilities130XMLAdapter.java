@@ -186,7 +186,7 @@ public class Capabilities130XMLAdapter {
         writer.writeEndElement();
 
         writeExtendedCapabilities( writer );
-        soapExtendedCapabilitesWriter.writeSoapWmsExtendedCapabilites( writer, postUrl );
+        soapExtendedCapabilitesWriter.writeSoapWmsExtendedCapabilites( writer, postUrl, controller.getSupportedEncodings() );
 
         writeThemes( writer, service.getThemes() );
 

@@ -33,27 +33,24 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.services.wfs.encoding;
+package org.deegree.services.encoding;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.deegree.protocol.wfs.WFSRequestType;
 
 /**
  * {@link SupportedEncodings} implementation with limited encodings.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public class LimitedSupportedEncodings implements SupportedEncodings {
+public class LimitedSupportedEncodings<E extends Enum> implements SupportedEncodings<E> {
 
-    private final Map<WFSRequestType, Set<String>> enabledEncodingsPerRequestType = new HashMap<WFSRequestType, Set<String>>();
+    private final Map<E, Set<String>> enabledEncodingsPerRequestType = new HashMap<E, Set<String>>();
 
     /**
      * Instantiate a new {@link LimitedSupportedEncodings} instance, by default all encodings are disabled! Add enabled
-     * encodings by {@link LimitedSupportedEncodings#addEnabledEncodings(WFSRequestType, List)}.
+     * encodings by {@link LimitedSupportedEncodings#addEnabledEncodings(E, Set)}.
      */
     public LimitedSupportedEncodings() {
     }
@@ -67,12 +64,12 @@ public class LimitedSupportedEncodings implements SupportedEncodings {
      *            a list of encodings enabled for the request type. May be empty (all encodings are disabled), but never
      *            <code>null</code>.
      */
-    public void addEnabledEncodings( WFSRequestType requestType, Set<String> enabledEncodingsPerRequestType ) {
+    public void addEnabledEncodings( E requestType, Set<String> enabledEncodingsPerRequestType ) {
         this.getEnabledEncodingsPerRequestType().put( requestType, enabledEncodingsPerRequestType );
     }
 
     @Override
-    public boolean isEncodingSupported( WFSRequestType requestType, String encoding ) {
+    public boolean isEncodingSupported( E requestType, String encoding ) {
         if ( getEnabledEncodingsPerRequestType().containsKey( requestType ) ) {
             Set<String> enabledEncodings = getEnabledEncodingsPerRequestType().get( requestType );
             for ( String enabledEncoding : enabledEncodings ) {
@@ -86,7 +83,7 @@ public class LimitedSupportedEncodings implements SupportedEncodings {
     /**
      * @return the enabled encodings, never <code>null</code>
      */
-    public Map<WFSRequestType, Set<String>> getEnabledEncodingsPerRequestType() {
+    public Map<E, Set<String>> getEnabledEncodingsPerRequestType() {
         return enabledEncodingsPerRequestType;
     }
 

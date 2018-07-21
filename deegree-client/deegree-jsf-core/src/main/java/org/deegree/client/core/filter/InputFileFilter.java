@@ -72,6 +72,7 @@ public class InputFileFilter implements Filter {
                 request = new InputFileWrapper( httpRequest );
             }
         }
+        request.setCharacterEncoding( "UTF-8" );
         chain.doFilter( request, response );
     }
 

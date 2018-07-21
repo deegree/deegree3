@@ -64,9 +64,9 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.encoding.SupportedEncodings;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.wfs.encoding.SupportedEncodings;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
