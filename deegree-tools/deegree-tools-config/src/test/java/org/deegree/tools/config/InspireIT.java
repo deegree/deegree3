@@ -21,7 +21,6 @@
  */
 package org.deegree.tools.config;
 
-import org.deegree.tools.config.Exec;
 import org.junit.Test;
 
 /**
@@ -36,77 +35,77 @@ public class InspireIT {
     public void schemaOnly()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfig()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=deegree" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigWithSrid()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=deegree", "--srid=31468" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdl()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--srid=31468" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdlAndIdTypeInteger()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--srid=4326", "--idtype=int" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdlAndIdTypeUuid()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--srid=4326", "--idtype=uuid" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToSqlDdl()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=ddl" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdlWithBlobMapping()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--mapping=blob" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdlWithBlobMappingAndAllOptions()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--srid=4326", "--mapping=blob" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdlWithForOracle()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--srid=4326", "--dialect=oracle" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
     public void schemaToDeegreeConfigAndSqlDdlWithBlobMappingForOracle()
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=all", "--srid=4326", "--mapping=blob", "--dialect=oracle" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
     @Test
@@ -114,7 +113,7 @@ public class InspireIT {
                     throws Exception {
         String[] args = { SCHEMA_URL_CP, "--format=deegree",
                          "--listOfPropertiesWithPrimitiveHref=src/test/resources/listOfPropertiesWithPrimitiveHref" };
-        Exec.main( args );
+        SqlFeatureStoreConfigCreator.main( args );
     }
 
 }

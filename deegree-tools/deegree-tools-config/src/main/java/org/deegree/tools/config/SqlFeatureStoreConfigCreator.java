@@ -60,7 +60,7 @@ import org.deegree.sqldialect.postgis.PostGISDialect;
  * @author Juergen Weichand
  */
 @Tool(value = "Creates SQLFeatureStore configuration and DDL from a GML application schema")
-public class Exec {
+public class SqlFeatureStoreConfigCreator {
 
     private static final PropertyNameParser propertyNameParser = new PropertyNameParser();
 
