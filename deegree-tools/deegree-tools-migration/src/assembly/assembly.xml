@@ -5,6 +5,7 @@
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
   <id>distribution</id>
   <formats>
+    <format>tar.gz</format>
     <format>zip</format>
   </formats>
   <fileSets>
@@ -12,10 +13,13 @@
       <directory>target/appassembler/bin</directory>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
-  </fileSets>
-  <dependencySets>
-    <dependencySet>
+    <fileSet>
+      <directory>target/appassembler/etc</directory>
+      <outputDirectory>etc</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/appassembler/repo</directory>
       <outputDirectory>repo</outputDirectory>
-    </dependencySet>
-  </dependencySets>
+    </fileSet>
+  </fileSets>
 </assembly>
