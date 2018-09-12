@@ -39,6 +39,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.deegree.commons.annotations.Tool;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.cs.refs.coordinatesystem.CRSRef;
@@ -58,7 +59,8 @@ import org.deegree.sqldialect.postgis.PostGISDialect;
  * 
  * @author Juergen Weichand
  */
-public class Exec {
+@Tool(value = "Creates SQLFeatureStore configuration and DDL from a GML application schema")
+public class SqlFeatureStoreConfigCreator {
 
     private static final PropertyNameParser propertyNameParser = new PropertyNameParser();
 
