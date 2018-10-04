@@ -12,8 +12,7 @@ deegree webservices work on any platform with a compatible Java SE 8 installatio
 
 * Microsoft Windows
 * Linux
-* Mac OS X
-* Solaris
+* Apple macOS
 
 Supported Java SE 8 versions are `Oracle JDK 8 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ [#f1]_, `OpenJDK 8 <http://openjdk.java.net>`_ [#f2]_. Newer Java SE versions may work, but are not officially supported by the deegree development team.
 
@@ -28,17 +27,17 @@ deegree webservices downloads are available on the `deegree home page <http://ww
 * *ZIP*: Distribution bundle with Apache Tomcat [#f5]_
 
 .. tip::
-  If you are confused by the two options and unsure which version to pick, use the ZIP. Both variants contain exactly the same deegree software, they only differ in packaging.
+  If you are confused by the two options and unsure which version to pick, use the ZIP. All variants contain exactly the same deegree webservices webapp, they only differ in packaging.
 
 ---------------------
 Starting and stopping
 ---------------------
 
-In order to run the ZIP version, extract it into a directory of your choice. Afterwards, fire up the included start script for your operating system:
+In order to run the ZIP version, extract it into a local directory of your choice. Afterwards, change to the directory ``deegree-webservices-tomcat-bundle-3.4.x/apache-tomcat-8.x.y/bin`` and fire up the included start script for your operating system:
 
-* Microsoft Windows: ``start-deegree-windows`` 
-* Linux/Solaris: ``start-deegree-linux.sh`` (when starting via a Desktop Environment such as Gnome, choose "Run in terminal")
-* Mac OS X: ``start-deegree-osx.cmd``
+* Microsoft Windows: ``startup.bat``
+* Linux/macOS: ``startup.sh`` (when starting via a Desktop Environment, choose "Run in terminal" and you may need to grant permission to execute the scripts with ``chmod a+x *.sh`` before)
+
 
 You should now see a terminal window on your screen with a lot of log messages: 
 
