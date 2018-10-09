@@ -31,7 +31,7 @@ These resources define connections to SQL databases, such as PostgreSQL/PostGIS,
 
 deegree currently supports the following backends:
 
-* PostgreSQL 9.x with PostGIS extension 2.x
+* PostgreSQL 9.3, 9.4, 9.5, 9.6 with PostGIS extension 2.2, 2.3, 2.4
 * Oracle Spatial 12c
 * Microsoft SQL Server 2012
 
