@@ -269,14 +269,7 @@ The configuration format is defined by schema file http://schemas.deegree.org/da
 SQL feature store
 -----------------
 
-The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational mapping, it additionally offers so-called BLOB mapping which stores any kind of rich feature using a fixed and very simple database schema. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and ideally suited for mapping rich GML application schemas. It currently supports the following databases:
-
-* PostgreSQL (8.3, 8.4, 9.0, 9.1, 9.2) with PostGIS extension (1.4, 1.5, 2.0, 2.1)
-* Oracle Spatial (10g, 11g)
-* Microsoft SQL Server (2008, 2012)
-
-.. tip::
-  If you want to use the SQL feature store with Oracle Spatial or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
+The SQL feature store allows to configure highly flexible mappings between feature types and database tables. It can be used for simple mapping tasks (mapping a single database table to a feature type) as well as sophisticated ones (mapping a complete INSPIRE Data Theme to dozens or hundreds of database tables). As an alternative to relational mapping, it additionally offers so-called BLOB mapping which stores any kind of rich feature using a fixed and very simple database schema. In contrast to the simple SQL feature store, the SQL feature store is transaction capable (even for complex mappings) and ideally suited for mapping rich GML application schemas.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Minimal configuration example
@@ -507,6 +500,9 @@ The following table lists all available configuration options for ``<Primitive>`
 | ``<StorageCRS>``      | 0..1        | Complex | CRS of stored geometries and database srid (only for ``<Geometry>``)         |
 +-----------------------+-------------+---------+------------------------------------------------------------------------------+
 
+.. hint::
+  If your configuration file is stored in UTF-8 encoding deegree allows special chars from this charset in the mapping (e.g. the property Straße can be stored in the column 'strasse' or 'straße'). Required is that the database supports UTF-8 as well.
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Mapping GML application schemas
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -570,6 +566,8 @@ In order to successfully create a mapping for a feature type from a GML applicat
 
 .. hint::
    The deegree project aims for a user-interface to help with all steps of creating mapping configurations. If you are interested in working on this (or funding it), don't hesitate to contact the project bodies.
+
+.. _anchor-mapping-rich-feature-types:
 
 """"""""""""""""""""""""""
 Mapping rich feature types
@@ -686,6 +684,38 @@ Here is an overview on all options for ``<Feature>`` elements:
 +-----------------------+-------------+---------+------------------------------------------------------------------------------+
 | ``<Href>``            | 0..1        | Complex | Defines the column that stores the value for ``xlink:href``                  |
 +-----------------------+-------------+---------+------------------------------------------------------------------------------+
+
+.. _anchor-mapping-strategies-href-attributes:
+
+""""""""""""""""""""""""""""""""""""""""""""
+Mapping strategies for xlink:href attributes
+""""""""""""""""""""""""""""""""""""""""""""
+
+There are two different use cases when xlink:href attributes are used:
+
+* 1. Reference on other feature.
+* 2. xlink:href value is used as static value. For example, if a user wants to filter on INSPIRE codelists, filtering is executed on the value of xlink:href.
+
+Case 1. does not allow filtering on the value of xlink:href itself. Case 2. allows filtering on the static value of the xlink:href attribute but the linked feature is not resolved anymore.
+
+Those two cases can be realized by different mappings in SQL feature store configuration:
+
+* 1. Feature mapping is used:
+
+.. code-block:: xml
+
+    <Feature path=".">
+      <Join table="?" fromColumns="designationtype_designation_fk" toColumns="id"/>
+      <Href mapping="designationtype_designation_href"/>
+    </Feature>
+
+* 2. Primitive mapping is used:
+
+.. code-block:: xml
+
+    <Primitive path="@xlink:href" mapping="designationtype_designation_href"/>
+
+For more details see chapter :ref:`anchor-mapping-rich-feature-types`.
 
 """"""""""""""""""""""""""
 Changing the table context
@@ -948,6 +978,9 @@ This walkthrough is based on the INSPIRE Annex I schemas, but you should be able
 
 .. tip::
   Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft SQL Server database. In order to enable support for these databases, see :ref:`anchor-db-libraries`.
+
+.. hint::
+  If the application schema contains UTF-8 characters which are not part of the 7-bit ASCII subset they are normalised during the generation of the feature store configuration for the database mapping (but kept for the feature type names). So the mapping to table and column names contains only 7-bit ASCII character and it is no requirement to the database to use UTF-8.
 
 As a first step, create a JDBC connection to your database. Click **server connections -> jdbc** and enter **inspire** (or an other identifier) as connection id:
 

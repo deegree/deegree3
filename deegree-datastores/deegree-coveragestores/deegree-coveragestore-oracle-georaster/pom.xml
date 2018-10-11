@@ -78,7 +78,7 @@
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
+      <artifactId>ojdbc8</artifactId>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
@@ -98,11 +98,7 @@
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>xdb</artifactId>
+      <artifactId>xdb6</artifactId>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>

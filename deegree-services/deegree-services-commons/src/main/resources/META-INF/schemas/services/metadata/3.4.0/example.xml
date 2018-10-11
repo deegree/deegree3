@@ -8,24 +8,24 @@
   </ServiceIdentification>
 
   <ServiceProvider>
-    <ProviderName>lat/lon GmbH</ProviderName>
-    <ProviderSite>http://www.lat-lon.de</ProviderSite>
+    <ProviderName>Technical Management Committe</ProviderName>
+    <ProviderSite>http://www.deegree.org</ProviderSite>
     <ServiceContact>
-      <IndividualName>Andreas Schmitz</IndividualName>
-      <PositionName>Software developer</PositionName>
-      <Phone>0228/18496-0</Phone>
-      <Facsimile>0228/18496-29</Facsimile>
-      <ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
+      <IndividualName>Technical Management Committe</IndividualName>
+      <PositionName>Technical Management Committe</PositionName>
+      <Phone>-</Phone>
+      <Facsimile>-</Facsimile>
+      <ElectronicMailAddress>tmc@deegree.org</ElectronicMailAddress>
       <Address>
-        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
-        <City>Bonn</City>
-        <AdministrativeArea>NRW</AdministrativeArea>
-        <PostalCode>53177</PostalCode>
-        <Country>Germany</Country>
+        <DeliveryPoint>-</DeliveryPoint>
+        <City>-</City>
+        <AdministrativeArea>-</AdministrativeArea>
+        <PostalCode>-</PostalCode>
+        <Country>-</Country>
       </Address>
       <OnlineResource>http://www.deegree.org</OnlineResource>
-      <HoursOfService>24x7</HoursOfService>
-      <ContactInstructions>Do not hesitate to call</ContactInstructions>
+      <HoursOfService>-</HoursOfService>
+      <ContactInstructions>-</ContactInstructions>
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>

@@ -109,9 +109,9 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.encoding.SupportedEncodings;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
-import org.deegree.services.wfs.encoding.SupportedEncodings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -155,7 +155,7 @@
           <exclusions>
             <exclusion>
               <groupId>com.oracle</groupId>
-              <artifactId>ojdbc6</artifactId>
+              <artifactId>ojdbc8</artifactId>
             </exclusion>
           </exclusions>
         </dependency>
@@ -163,11 +163,6 @@
     </profile>
   </profiles>
   <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-tomcat</artifactId>
-      <version>${project.version}</version>
-    </dependency>  
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-services-wmts</artifactId>

@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms;
 
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
@@ -303,7 +304,9 @@ public class MapService {
                 }
 
                 if ( !l.getMetadata().isQueryable() ) {
-                    continue;
+                    throw new OWSException( "GetFeatureInfo is requested on a Layer (name: "
+                                            + l.getMetadata().getName() + ") that is not queryable.",
+                                            LAYER_NOT_QUERYABLE );
                 }
 
                 list.add( l.infoQuery( query, headers ) );
