@@ -32,11 +32,11 @@
   <distributionManagement>
     <repository>
       <id>xplanbox-release</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/xplanbox-release/</url>
+      <url>http://repo/nexus/content/repositories/xplanbox-release/</url>
     </repository>
     <snapshotRepository>
       <id>xplanbox-snapshot</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/xplanbox-snapshot/</url>
+      <url>http://repo/nexus/content/repositories/xplanbox-snapshot/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
