@@ -45,6 +45,7 @@ import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.Upload.upload;
+import static org.deegree.services.config.actions.Validate.validate;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -92,6 +93,8 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
             data.append( "GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n" );
             data.append( "GET /config/crs/list                                         - list available CRS definitions\n" );
+            data.append( "GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n" );
+            data.append( "GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace\n" );
             data.append( "POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n" );
             data.append( "GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n" );
             data.append( "PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n" );
@@ -149,6 +152,10 @@ public class ConfigServlet extends HttpServlet {
             getCodes( req, resp );
         } else if ( path.toLowerCase().startsWith( "/crs" ) ) {
             checkCrs( path.substring( 4 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/validate" ) ) {
+            validate( path.substring( 9 ), resp );
         }
     }
 
