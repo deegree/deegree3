@@ -101,6 +101,8 @@ public class Validate {
         Workspace newWorkspace = ws.getNewWorkspace();
         ErrorHandler errorHandler = newWorkspace.getErrorHandler();
         if ( !errorHandler.hasErrors() ) {
+            resp.setStatus( 200 );
+            resp.setContentType( "text/plain" );
             write( "Workspace is valid.", resp.getOutputStream() );
         } else {
             Map<String, java.util.List<String>> resourcesToErrors = collectErrors( ws, newWorkspace, pathMatcher,
