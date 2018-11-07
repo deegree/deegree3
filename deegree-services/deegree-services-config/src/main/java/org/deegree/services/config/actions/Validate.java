@@ -19,7 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Pair;
-import org.deegree.workspace.*;
+import org.deegree.workspace.ErrorHandler;
+import org.deegree.workspace.Resource;
+import org.deegree.workspace.ResourceIdentifier;
+import org.deegree.workspace.ResourceManager;
+import org.deegree.workspace.ResourceMetadata;
+import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
 /**
