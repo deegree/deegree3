@@ -22,11 +22,9 @@ import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.ErrorHandler;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
-import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceManager;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
-import org.deegree.workspace.standard.DefaultResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -144,11 +142,9 @@ public class Validate {
                                                                       ResourceMetadata<? extends Resource> rm,
                                                                       PathMatcher pathMatcher,
                                                                       ErrorHandler errorHandler,
-                                                                      Map<String, java.util.List<String>> resourceToErrors )
-                            throws IOException {
-        ResourceLocation<? extends Resource> location = rm.getLocation();
-        if ( location instanceof DefaultResourceLocation ) {
-            File resourceLocation = ( (DefaultResourceLocation) location ).getFile();
+                                                                      Map<String, java.util.List<String>> resourceToErrors ) {
+        File resourceLocation = rm.getLocation().getAsFile();
+        if ( resourceLocation != null ) {
             ResourceIdentifier<? extends Resource> identifier = rm.getIdentifier();
             java.util.List<String> errors = errorHandler.getErrors( identifier );
             if ( isResourceRequestedAndHasErrors( pathMatcher, resourceLocation, errors ) ) {
@@ -156,7 +152,7 @@ public class Validate {
                 resourceToErrors.put( id, errors );
             }
         } else {
-            LOG.warn( "Validation of resources without DefaultResourceLocation is not implemented yet." );
+            LOG.warn( "Validation of resources without file location is not implemented yet." );
         }
         return resourceToErrors;
     }
