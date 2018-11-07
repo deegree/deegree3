@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.utils.Pair;
-import org.deegree.services.controller.OGCFrontController;
 import org.deegree.workspace.ErrorHandler;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceIdentifier;
@@ -34,7 +33,7 @@ import org.slf4j.Logger;
  */
 public class Validate {
 
-    private static final Logger LOG = getLogger( OGCFrontController.class );
+    private static final Logger LOG = getLogger( Validate.class );
 
     /**
      *
