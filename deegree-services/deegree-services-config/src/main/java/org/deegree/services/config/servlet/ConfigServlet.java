@@ -44,6 +44,7 @@ import static org.deegree.services.config.actions.Invalidate.invalidate;
 import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
+import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
 import static org.deegree.services.config.actions.Upload.upload;
 import static org.deegree.services.config.actions.Validate.validate;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -95,6 +96,8 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/crs/list                                         - list available CRS definitions\n" );
             data.append( "GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n" );
             data.append( "GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace\n" );
+            data.append( "GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n" );
+            data.append( "GET /config/update/bboxcache/wsname[?featureStoreId=]        - recalculates the bounding boxes of all feature stores of the workspace with name <wsname>, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n" );
             data.append( "POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n" );
             data.append( "GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n" );
             data.append( "PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n" );
@@ -156,6 +159,9 @@ public class ConfigServlet extends HttpServlet {
 
         if ( path.toLowerCase().startsWith( "/validate" ) ) {
             validate( path.substring( 9 ), resp );
+        }
+        if ( path.toLowerCase().startsWith( "/update/bboxcache" ) ) {
+            updateBboxCache( path.substring( 17 ), req.getQueryString(), resp );
         }
     }
 
