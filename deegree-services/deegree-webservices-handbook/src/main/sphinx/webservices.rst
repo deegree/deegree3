@@ -321,11 +321,13 @@ Adding GeoJSON output formats
 Using option element ``GeoJSONFormat``, it possible to enable GeoJSON as GetFeature output format.
 The ``GeoJSON`` option has the following sub-options:
 
-+-----------+-------------+---------+------------------------------------------------------+
-| Option    | Cardinality | Value   | Description                                          |
-+===========+=============+=========+======================================================+
-| MimeType  | 1..n        | String  | Mime types associated with this format configuration |
-+-----------+-------------+---------+------------------------------------------------------+
++-------------------------+-------------+---------+------------------------------------------------------+
+| Option                  | Cardinality | Value   | Description                                          |
++=========================+=============+=========+======================================================+
+| @allowOtherCrsThanWGS84 | 0..1        | Boolean  | GeoJson only allows geometries in WGS84. With this option the default behaviour of a WFS can be enabled: the CRS of the requested geometries are written in the requested CRS of the DefaultCRS of the WFS. Default: false |
++-------------------------+-------------+---------+------------------------------------------------------+
+| MimeType                | 1..n        | String  | Mime types associated with this format configuration |
++-------------------------+-------------+---------+------------------------------------------------------+
 
 ``Example for GeoJSON output format``
 
