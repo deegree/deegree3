@@ -130,6 +130,7 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.DisabledResources;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.GeoJSONFormat;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
 import org.deegree.services.jaxb.wfs.RequestType;
 import org.deegree.services.metadata.MetadataUtils;
@@ -140,6 +141,7 @@ import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.format.geojson.GeoJsonFormat;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
@@ -549,6 +551,7 @@ public class WebFeatureService extends AbstractOWS {
                                                                                                                      this,
 
                                                                                                                      GML_32 );
+
             mimeTypeToFormat.put( "application/gml+xml; version=2.1", gml21 );
             mimeTypeToFormat.put( "application/gml+xml; version=3.0", gml30 );
             mimeTypeToFormat.put( "application/gml+xml; version=3.1", gml31 );
@@ -561,6 +564,7 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "application/geo+json", new GeoJsonFormat( this ) );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -569,6 +573,8 @@ public class WebFeatureService extends AbstractOWS {
                 Format format = null;
                 if ( formatDef instanceof GMLFormat ) {
                     format = new org.deegree.services.wfs.format.gml.GmlFormat( this, (GMLFormat) formatDef );
+                } else if (formatDef instanceof  GeoJSONFormat ){
+                    format = new GeoJsonFormat( this );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();

@@ -94,6 +94,8 @@ The deegree WFS config file format is defined by schema file http://schemas.deeg
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 | GMLFormat               | 0..n        | Complex | GML format configuration                                         |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
+| GeoJSONFormat           | 0..n        | Complex | GeoJSON format configuration                                     |
++-------------------------+-------------+---------+------------------------------------------------------------------+
 | CustomFormat            | 0..n        | Complex | Custom format configuration                                      |
 +-------------------------+-------------+---------+------------------------------------------------------------------+
 
@@ -311,6 +313,32 @@ Here's an example of a linearized version of the example geometry as it would be
 
    .. literalinclude:: xml/wfs_linearization_curve2.xml
       :language: xml
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Adding GeoJSON output formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using option element ``GeoJSONFormat``, it possible to enable GeoJSON as GetFeature output format.
+The ``GeoJSON`` option has the following sub-options:
+
++-----------+-------------+---------+------------------------------------------------------+
+| Option    | Cardinality | Value   | Description                                          |
++===========+=============+=========+======================================================+
+| MimeType  | 1..n        | String  | Mime types associated with this format configuration |
++-----------+-------------+---------+------------------------------------------------------+
+
+``Example for GeoJSON output format``
+
+.. code-block:: xml
+
+...
+  <GeoJSONFormat>
+    <MimeType>application/geo+json</MimeType>
+  </GeoJSONFormat>
+...
+
+.. warning::
+  GeoJSON output format is currently only implemented for GetFeature requests!
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Adding custom output formats

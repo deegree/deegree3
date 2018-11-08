@@ -165,6 +165,14 @@
       </complexContent>
     </complexType>
   </element>
+  <element name="GeoJSONFormat" substitutionGroup="wfs:AbstractFormat" >
+    <complexType>
+      <complexContent>
+        <extension base="wfs:AbstractFormatType" />
+      </complexContent>
+    </complexType>
+  </element>
+
 
   <!-- AbstractCoordinateFormatter and substitutions -->
   <element name="AbstractCoordinateFormatter" abstract="true" />
