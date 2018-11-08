@@ -574,7 +574,8 @@ public class WebFeatureService extends AbstractOWS {
                 if ( formatDef instanceof GMLFormat ) {
                     format = new org.deegree.services.wfs.format.gml.GmlFormat( this, (GMLFormat) formatDef );
                 } else if (formatDef instanceof  GeoJSONFormat ){
-                    format = new GeoJsonFormat( this );
+                    boolean allowOtherCrsThanWGS84 = ((GeoJSONFormat) formatDef).isAllowOtherCrsThanWGS84();
+                    format = new GeoJsonFormat( this, allowOtherCrsThanWGS84 );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();

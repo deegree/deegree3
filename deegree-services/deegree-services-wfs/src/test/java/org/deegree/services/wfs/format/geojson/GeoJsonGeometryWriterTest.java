@@ -15,6 +15,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
@@ -39,10 +40,13 @@ public class GeoJsonGeometryWriterTest {
 
     private static ICRS CRS_4326;
 
+    private static ICRS CRS_25832;
+
     @BeforeClass
     public static void initCrs()
                             throws UnknownCRSException {
         CRS_4326 = CRSManager.lookup( "crs:84" );
+        CRS_25832 = CRSManager.lookup( "EPSG:25832" );
     }
 
     @Test
@@ -52,7 +56,7 @@ public class GeoJsonGeometryWriterTest {
 
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( point );
 
@@ -72,7 +76,7 @@ public class GeoJsonGeometryWriterTest {
 
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( point );
 
@@ -92,7 +96,7 @@ public class GeoJsonGeometryWriterTest {
 
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( lineString );
 
@@ -114,7 +118,7 @@ public class GeoJsonGeometryWriterTest {
 
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( polygon );
 
@@ -136,7 +140,7 @@ public class GeoJsonGeometryWriterTest {
 
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( polygon );
 
@@ -168,7 +172,7 @@ public class GeoJsonGeometryWriterTest {
         MultiPoint multiPoint = geometryFactory.createMultiPoint( "multiPointId", CRS_4326, asList( point1, point2 ) );
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( multiPoint );
 
@@ -191,7 +195,7 @@ public class GeoJsonGeometryWriterTest {
                                                                                  asList( lineString1, lineString2 ) );
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( multiLineString );
 
@@ -220,7 +224,7 @@ public class GeoJsonGeometryWriterTest {
                                                                         asList( polygon1, polygon2 ) );
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( multiPolygon );
 
@@ -263,9 +267,34 @@ public class GeoJsonGeometryWriterTest {
 
         StringWriter json = new StringWriter();
         JsonWriter jsonWriter = instantiateJsonWriter( json );
-        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_4326 );
 
         geoJsonGeometryWriter.writeGeometry( curve );
+    }
+
+    @Test
+    public void testWriteGeometry_LineInEpsg25832()
+                            throws Exception {
+        LineString lineString = createLineStringBonn();
+
+        StringWriter json = new StringWriter();
+        JsonWriter jsonWriter = instantiateJsonWriter( json );
+        GeoJsonGeometryWriter geoJsonGeometryWriter = new GeoJsonGeometryWriter( jsonWriter, CRS_25832 );
+
+        geoJsonGeometryWriter.writeGeometry( lineString );
+
+        GeometryTransformer geometryTransformer = new GeometryTransformer( CRS_25832 );
+        LineString lineStringIn25832 = geometryTransformer.transform( lineString );
+
+        String geometry = json.toString();
+        assertThat( geometry, isJson() );
+        assertThat( geometry, hasJsonPath( "$.type", is( "LineString" ) ) );
+        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 3 ) ) );
+        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
+        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0]", is( lineStringIn25832.getStartPoint().get0() ) ) );
+        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1]", is( lineStringIn25832.getStartPoint().get1() ) ) );
+        assertThat( geometry, hasJsonPath( "$.coordinates[2].[0]", is( lineStringIn25832.getEndPoint().get0() ) ) );
+        assertThat( geometry, hasJsonPath( "$.coordinates[2].[1]", is( lineStringIn25832.getEndPoint().get1() ) ) );
     }
 
     private Polygon createPolygonWithInteriorRing() {

@@ -16,6 +16,7 @@ import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -45,6 +46,8 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
 
     private final GeoJsonGeometryWriter geoJsonGeometryWriter;
 
+    private final ICRS crs;
+
     private boolean isStarted = false;
 
     /**
@@ -52,14 +55,17 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
      *
      * @param writer
      *            the writer to write the GeoJSON into, never <code>null</code>
+     * @param crs
+     *            the target crs of the geometries, may be <code>null</code>, then "EPSG:4326" will be used
      * @throws UnknownCRSException
      *             if "crs:84" is not known as CRS (should never happen)
      */
-    public GeoJsonWriter( Writer writer ) throws UnknownCRSException {
+    public GeoJsonWriter( Writer writer, ICRS crs ) throws UnknownCRSException {
         super( writer );
         setIndent( "  " );
         setHtmlSafe( true );
-        this.geoJsonGeometryWriter = new GeoJsonGeometryWriter( this );
+        this.geoJsonGeometryWriter = new GeoJsonGeometryWriter( this, crs );
+        this.crs = crs;
     }
 
     @Override
@@ -97,7 +103,8 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         beginObject();
         name( "type" ).value( "Feature" );
         writeGeometry( feature );
-        WriteProperties( feature );
+        writeProperties( feature );
+        writeCrs();
         endObject();
     }
 
@@ -117,7 +124,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         }
     }
 
-    private void WriteProperties( Feature feature )
+    private void writeProperties( Feature feature )
                             throws IOException, TransformationException, UnknownCRSException {
         List<Property> properties = feature.getProperties();
         name( "properties" );
@@ -125,6 +132,14 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
             nullValue();
         } else {
             exportProperties( properties );
+        }
+    }
+
+    private void writeCrs()
+                            throws IOException {
+        if ( crs != null ) {
+            name( "srsName" );
+            value( crs.getAlias() );
         }
     }
 

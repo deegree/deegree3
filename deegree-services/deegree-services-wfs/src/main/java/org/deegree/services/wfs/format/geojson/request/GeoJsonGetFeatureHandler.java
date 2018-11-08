@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -14,8 +15,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.wfs.WebFeatureService;
-import org.deegree.services.wfs.format.geojson.GeoJsonWriter;
 import org.deegree.services.wfs.format.geojson.GeoJsonFeatureWriter;
+import org.deegree.services.wfs.format.geojson.GeoJsonWriter;
 import org.deegree.services.wfs.query.QueryAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,14 +36,15 @@ public class GeoJsonGetFeatureHandler {
         this.webFeatureService = webFeatureService;
     }
 
-    public void doGetFeatureResults( GetFeature request, HttpResponseBuffer response )
+    public void doGetFeatureResults( GetFeature request, HttpResponseBuffer response, boolean allowOtherCrsThanWGS84 )
                             throws Exception {
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), webFeatureService,
                                                     webFeatureService.getStoreManager(),
                                                     webFeatureService.getCheckAreaOfUse() );
         response.setCharacterEncoding( Charset.defaultCharset().name() );
         response.setContentType( determineMimeType( request ) );
-        try (GeoJsonFeatureWriter geoJsonStreamWriter = new GeoJsonWriter( response.getWriter() )) {
+        ICRS requestedCRS = determineCrs( analyzer, allowOtherCrsThanWGS84 );
+        try (GeoJsonFeatureWriter geoJsonStreamWriter = new GeoJsonWriter( response.getWriter(), requestedCRS )) {
             geoJsonStreamWriter.startFeatureCollection();
             int startIndex = getStartIndex( request );
             int maxFeatures = getMaxFeatures( request );
@@ -77,6 +79,12 @@ public class GeoJsonGetFeatureHandler {
             }
             geoJsonStreamWriter.endFeatureCollection();
         }
+    }
+
+    private ICRS determineCrs( QueryAnalyzer analyzer, boolean allowOtherCrsThanWGS84 ) {
+        if ( allowOtherCrsThanWGS84 )
+            return analyzer.getRequestedCRS();
+        return null;
     }
 
     private FeatureInputStream retrieveFeatures( Map.Entry<FeatureStore, List<Query>> fsToQueries )

@@ -21,6 +21,8 @@ public class GeoJsonFormat implements Format {
 
     private final GeoJsonGetFeatureHandler geoJsonGetFeatureHandler;
 
+    private boolean allowOtherCrsThanWGS84;
+
     /**
      * Instantiate {@link GeoJsonFormat}
      *
@@ -29,6 +31,20 @@ public class GeoJsonFormat implements Format {
      */
     public GeoJsonFormat( WebFeatureService webFeatureService ) {
         this.geoJsonGetFeatureHandler = new GeoJsonGetFeatureHandler( webFeatureService );
+    }
+
+    /**
+     * Instantiate {@link GeoJsonFormat}
+     *
+     * @param webFeatureService
+     *            the {@link WebFeatureService} using this format, never <code>null</code>
+     * @param allowOtherCrsThanWGS84
+     *            <code>true</code> if the DefaultCRS of the WFS or the CRS of the GetFeature request should be used,
+     *            otherwise <code>false</code> (default is WGS84 as specified in GeoJson)
+     */
+    public GeoJsonFormat( WebFeatureService webFeatureService, boolean allowOtherCrsThanWGS84 ) {
+        this.geoJsonGetFeatureHandler = new GeoJsonGetFeatureHandler( webFeatureService );
+        this.allowOtherCrsThanWGS84 = allowOtherCrsThanWGS84;
     }
 
     @Override
@@ -42,7 +58,7 @@ public class GeoJsonFormat implements Format {
 
         ResultType type = request.getPresentationParams().getResultType();
         if ( type == RESULTS || type == null ) {
-            geoJsonGetFeatureHandler.doGetFeatureResults( request, response );
+            geoJsonGetFeatureHandler.doGetFeatureResults( request, response, allowOtherCrsThanWGS84 );
         } else {
             throw new UnsupportedOperationException( "GetFeature with RESULTTYPE=HITS for GeoJSON is not supported" );
         }

@@ -44,13 +44,14 @@ public class GeoJsonGeometryWriter {
      *
      * @param jsonWriter
      *            used to write the GeoJSON geometries, never <code>null</code>
+     * @param crs
+     *            the target crs of the geometries, may be <code>null</code>, then "EPSG:4326" will be used
      * @throws UnknownCRSException
      *             if "crs:84" is not known as CRS (should never happen)
      */
-    public GeoJsonGeometryWriter( JsonWriter jsonWriter ) throws UnknownCRSException {
+    public GeoJsonGeometryWriter( JsonWriter jsonWriter, ICRS crs ) throws UnknownCRSException {
         this.jsonWriter = jsonWriter;
-        this.geoJsonCrs = CRSManager.lookup( "crs:84" );
-
+        this.geoJsonCrs = ensureCrs( crs );
     }
 
     /**
@@ -260,4 +261,12 @@ public class GeoJsonGeometryWriter {
         }
         return true;
     }
+
+    private ICRS ensureCrs( ICRS crs )
+                            throws UnknownCRSException {
+        if ( crs != null )
+            return crs;
+        return CRSManager.lookup( "crs:84" );
+    }
+
 }
