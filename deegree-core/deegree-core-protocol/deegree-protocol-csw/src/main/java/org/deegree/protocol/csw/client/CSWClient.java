@@ -185,6 +185,27 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         return this.getRecords( getRecords );
     }
 
+    public GetRecordsResponse getIsoRecords( int startPosition, int maxRecords, Filter constraint )
+                            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
+        return getIsoRecords( startPosition, maxRecords, constraint, null );
+    }
+    
+    public GetRecordsResponse getIsoRecords( int startPosition, int maxRecords, Filter constraint,
+                                             Map<String, String> headers )
+                            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
+        GetRecords getRecords = new GetRecords(
+                new Version( 2, 0, 2 ),
+                startPosition,
+                maxRecords,
+                "application/xml",
+                "http://www.isotc211.org/2005/gmd",
+                Collections.singletonList( new QName(CommonNamespaces.ISOAP10GMDNS, "MD_Metadata", CommonNamespaces.ISOAP10GMD_PREFIX ) ),
+                ResultType.results,
+                ReturnableElement.full,
+                constraint );
+        return this.getRecords( getRecords, headers );
+    }
+
     public GetRecordsResponse getRecords( int startPosition, int maxRecords, String outputFormat, String outputSchema,
                                           List<QName> typeNames, ResultType resultType,
                                           ReturnableElement elementSetName, Filter constraint )
@@ -196,6 +217,11 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
 
     public GetRecordsResponse getRecords( GetRecords getRecords )
                             throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
+        return getRecords( getRecords, null );
+    }
+
+    public GetRecordsResponse getRecords( GetRecords getRecords, Map<String, String> headers )
+                            throws IOException, XMLProcessingException, OWSExceptionReport, XMLStreamException {
 
         URL endPoint = getXMLPostUrl();
 
@@ -206,11 +232,10 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             xmlWriter.close();
             request.close();
         } catch ( Throwable t ) {
-            throw new RuntimeException( "Error creating XML request: " + getRecords );
+            throw new RuntimeException( "Error creating XML request: " + getRecords, t );
         }
-        OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
+        OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, headers );
         return new GetRecordsResponse( response );
-
     }
 
     public List<MetadataRecord> getRecordById( List<String> fileIdentifiers ) {
@@ -218,19 +243,27 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
     }
 
     public MetadataRecord getIsoRecordById( String fileIdentifier )
-
                             throws IOException, OWSExceptionReport, XMLStreamException {
-        return getRecordById( fileIdentifier, "http://www.isotc211.org/2005/gmd" );
+        return getIsoRecordById( fileIdentifier, null );
+    }    
+    
+    public MetadataRecord getIsoRecordById( String fileIdentifier, Map<String, String> headers )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getRecordById( fileIdentifier, "http://www.isotc211.org/2005/gmd", headers );
     }
 
     public MetadataRecord getRecordById( String fileIdentifier, String schema )
+                            throws IOException, OWSExceptionReport, XMLStreamException {
+        return getRecordById( fileIdentifier, schema, null );
+    }
 
+    public MetadataRecord getRecordById( String fileIdentifier, String schema, Map<String, String> headers )
                             throws IOException, OWSExceptionReport, XMLStreamException {
         URL endPoint = getGetUrl( "GetRecordById" );
 
         Map<String, String> params = getGetRecordByIdKvpParams( fileIdentifier, schema );
 
-        OwsHttpResponse response = httpClient.doGet( endPoint, params, null );
+        OwsHttpResponse response = httpClient.doGet( endPoint, params, headers );
 
         XMLStreamReader xmlStream = response.getAsXMLStream();
         XMLStreamUtils.skipStartDocument( xmlStream );
@@ -274,7 +307,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             xmlWriter.close();
             request.close();
         } catch ( Throwable t ) {
-            throw new RuntimeException( "Error insering " + records.size() + " records" );
+            throw new RuntimeException( "Error insering " + records.size() + " records", t );
         }
         OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
         return new TransactionResponse( response );
