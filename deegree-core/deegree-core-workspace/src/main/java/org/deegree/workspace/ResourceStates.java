@@ -58,6 +58,14 @@ public class ResourceStates {
     /**
      * @param id
      *            may not be <code>null</code>
+     */
+    public void remove( ResourceIdentifier<? extends Resource> id ) {
+        map.remove( id );
+    }
+
+    /**
+     * @param id
+     *            may not be <code>null</code>
      * @return will return <code>null</code> if the state is not known
      */
     public ResourceState getState( ResourceIdentifier<? extends Resource> id ) {
