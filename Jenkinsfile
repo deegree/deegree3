@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.6.0'
+        maven 'Maven 3.6'
         jdk 'JDK 1.8'
     }
     stages {
@@ -15,6 +15,7 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
+                sh 'docker --version'
             }
         }
         stage ('Build') {
