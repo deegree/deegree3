@@ -46,6 +46,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -106,9 +107,14 @@ public class GMLInputFactory {
 
         URLConnection conn = ProxySettings.openURLConnection( url );
         InputStream is = conn.getInputStream();
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
-        // skip START_DOCUMENT event
-        xmlStream.nextTag();
-        return new GMLStreamReader( version, new XMLStreamReaderWrapper( xmlStream, url.toString() ) );
+        try {
+            XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+            // skip START_DOCUMENT event
+            xmlStream.nextTag();
+            return new GMLStreamReader( version, new XMLStreamReaderWrapper( xmlStream, url.toString() ) );
+        } catch ( XMLStreamException | FactoryConfigurationError e ) {
+            IOUtils.closeQuietly( is );
+            throw e;
+        }
     }
 }
