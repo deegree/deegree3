@@ -7,8 +7,8 @@ language: java
 jdk:
   - oraclejdk8
   - openjdk8
-install: "travis_retry mvn install -Pintegration-tests -DskipTests=true -B -V"
-script: "travis_retry mvn verify -Pintegration-tests -B -V"
+install: "travis_retry mvn install -Pintegration-tests -DskipTests=true -B -V -C -q"
+script: "travis_retry mvn verify -Pintegration-tests -B -V -C -q"
 env: MAVEN_OPTS="-XX:MaxPermSize=256m"
 cache:
   directories:
