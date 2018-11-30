@@ -20,25 +20,30 @@ pipeline {
         }
         stage ('Build') {
             steps {
-               echo 'running Maven'
+               echo 'Unit testing'
                sh 'mvn -B -C -fae clean test'
             }
             post {
                 always {
-                    junit 'target/surefire-reports/**/*.xml'
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
         stage ('Integration Test') {
             steps {
-                echo 'Testing...'
-                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify'
+                echo 'Integration testing'
+                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests'
+            }
+            post {
+                always {
+                    junit '**/target/failsafe-reports/*.xml'
+                }
             }
         }
         stage ('Quality Checks') {
             steps {
-                echo 'Checking...'
-                sh 'mvn -B -C -fae site'
+                echo 'Quality checking'
+                sh 'mvn -B -C -fae site -Psite-all-reports'
             }
             post {
                 success {
@@ -55,7 +60,6 @@ pipeline {
             }
             post {
                 success {
-                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
                 }
             }
         }
