@@ -60,6 +60,7 @@ pipeline {
             }
             post {
                 success {
+                    echo 'FAT passed successfully'
                 }
             }
         }
