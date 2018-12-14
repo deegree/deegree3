@@ -155,6 +155,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
+    private final GMLReferenceResolver internalResolver;
+
     // TODO should be final, but is currently modified by GMLFeatureReader
     protected AppSchema schema;
 
@@ -167,6 +169,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader ) {
         this.gmlStreamReader = gmlStreamReader;
         this.specialResolver = gmlStreamReader.getResolver();
+        this.internalResolver = gmlStreamReader.getInternalResolver();
         this.idContext = gmlStreamReader.getIdContext();
         // TODO
         this.schema = gmlStreamReader.getAppSchema();
@@ -198,6 +201,9 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     // required since GML 3.2
     private boolean isGmlIdRequired() {
+        if ( gmlStreamReader.getLaxMode() ) {
+            return false;
+        }
         return version != GML_2 && version != GML_30 || version != GML_31;
     }
 
@@ -319,9 +325,17 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         if ( href != null ) {
             FeatureReference refFeature = null;
             if ( specialResolver != null ) {
-                refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
+                if( internalResolver == null ) {
+                    refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
+                } else {
+                    refFeature = new FeatureReference( specialResolver, internalResolver, href, xmlStream.getSystemId() );
+                }
             } else {
+                if( internalResolver == null ) {
                 refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
+                } else {
+                    refFeature = new FeatureReference( idContext, internalResolver, href, xmlStream.getSystemId() );
+                }
             }
             idContext.addReference( refFeature );
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();
@@ -426,10 +440,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             if ( xmlStream.nextTag() == START_ELEMENT ) {
                 final GmlTimeGeometricPrimitiveReader timeReader = new GmlTimeGeometricPrimitiveReader( gmlStreamReader );
                 final TimeGeometricPrimitive timeObject = timeReader.read( xmlStream );
-                property = new GenericProperty( propDecl, propName, timeObject, isNilled );
+                property = new GenericProperty( propDecl, propName, timeObject, attrs );
                 xmlStream.nextTag();
             } else {
-                property = new GenericProperty( propDecl, propName, null, isNilled );
+                property = new GenericProperty( propDecl, propName, null, attrs );
             }
         }
         return property;

@@ -45,6 +45,10 @@ import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElement;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetLegendGraphic;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
 import java.util.List;
 
@@ -58,6 +62,7 @@ import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.wms.controller.WMSController;
 
 /**
@@ -120,32 +125,40 @@ class WmsCapabilities111MetadataWriter {
                             throws XMLStreamException {
         writer.writeStartElement( "Request" );
 
-        writer.writeStartElement( "GetCapabilities" );
-        writeElement( writer, "Format", "application/vnd.ogc.wms_xml" );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
+        if ( isGetSupported( GetCapabilities ) ) {
+            writer.writeStartElement( "GetCapabilities" );
+            writeElement( writer, "Format", "application/vnd.ogc.wms_xml" );
+            writeDCP( writer, true, false );
+            writer.writeEndElement();
+        }
 
-        writer.writeStartElement( "GetMap" );
-        writeImageFormats( writer );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
+        if ( isGetSupported( GetMap ) ) {
+            writer.writeStartElement( "GetMap" );
+            writeImageFormats( writer );
+            writeDCP( writer, true, false );
+            writer.writeEndElement();
+        }
 
-        writer.writeStartElement( "GetFeatureInfo" );
-        writeInfoFormats( writer );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
+        if ( isGetSupported( GetFeatureInfo ) ) {
+            writer.writeStartElement( "GetFeatureInfo" );
+            writeInfoFormats( writer );
+            writeDCP( writer, true, false );
+            writer.writeEndElement();
+        }
 
-        writer.writeStartElement( "GetLegendGraphic" );
-        writeImageFormats( writer );
-        writeDCP( writer, true, false );
-        writer.writeEndElement();
+        if ( isGetSupported( GetLegendGraphic ) ) {
+            writer.writeStartElement( "GetLegendGraphic" );
+            writeImageFormats( writer );
+            writeDCP( writer, true, false );
+            writer.writeEndElement();
+        }
 
         writer.writeEndElement();
     }
 
     void writeImageFormats( XMLStreamWriter writer )
                             throws XMLStreamException {
-        for ( String f : controller.supportedImageFormats ) {
+        for ( String f : controller.getSupportedImageFormats() ) {
             writeElement( writer, "Format", f );
         }
     }
@@ -272,5 +285,8 @@ class WmsCapabilities111MetadataWriter {
             writeElement( writer, "AccessConstraints", "none" );
         }
     }
-
+    private boolean isGetSupported( WMSConstants.WMSRequestType requestType ) {
+        return controller.getSupportedEncodings().isEncodingSupported( requestType, "KVP" );
+    }
+    
 }

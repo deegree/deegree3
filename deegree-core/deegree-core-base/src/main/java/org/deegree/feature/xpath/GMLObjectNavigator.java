@@ -64,7 +64,6 @@ import org.deegree.feature.xpath.node.PropertyNode;
 import org.deegree.feature.xpath.node.XMLElementNode;
 import org.deegree.feature.xpath.node.XPathNode;
 import org.jaxen.DefaultNavigator;
-import org.jaxen.JaxenConstants;
 import org.jaxen.XPath;
 import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.util.SingleObjectIterator;
@@ -133,6 +132,15 @@ class GMLObjectNavigator extends DefaultNavigator {
                                                                            (GenericXMLElement) value );
                 return getAttributeAxisIterator( n );
             }
+            Map<QName, PrimitiveValue> attributes = ( (PropertyNode) node ).getValue().getAttributes();
+            if ( attributes != null ) {
+                List<AttributeNode<?>> attrNodes = new ArrayList<AttributeNode<?>>( attributes.size() );
+                for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
+                    attrNodes.add( new AttributeNode<Property>( (PropertyNode) node, attribute.getKey(),
+                                                                attribute.getValue() ) );
+                }
+                return attrNodes.iterator();
+            }
         } else if ( node instanceof XMLElementNode<?> ) {
             org.deegree.commons.tom.ElementNode value = ( (XMLElementNode<?>) node ).getValue();
             Map<QName, PrimitiveValue> attributes = value.getAttributes();
@@ -146,7 +154,7 @@ class GMLObjectNavigator extends DefaultNavigator {
                 return attrNodes.iterator();
             }
         }
-        return JaxenConstants.EMPTY_ITERATOR;
+        return EMPTY_ITERATOR;
     }
 
     /**
@@ -252,13 +260,15 @@ class GMLObjectNavigator extends DefaultNavigator {
                 }
                 iter = xpathNodes.iterator();
             } else {
-                Object propValue = prop.getValue();
+                final Object propValue = prop.getValue();
                 if ( propValue instanceof GMLObject ) {
                     GMLObject castNode = (GMLObject) propValue;
                     iter = new SingleObjectIterator( new GMLObjectNode<GMLObject, Property>( propNode, castNode ) );
                 } else if ( propValue instanceof PrimitiveValue ) {
                     iter = new SingleObjectIterator( new PrimitiveNode<Property>( (PropertyNode) node,
                                                                                   (PrimitiveValue) propValue ) );
+                } else if ( propValue == null ) {
+                    iter = EMPTY_ITERATOR;
                 } else {
                     // TODO remove this case
                     iter = new SingleObjectIterator(

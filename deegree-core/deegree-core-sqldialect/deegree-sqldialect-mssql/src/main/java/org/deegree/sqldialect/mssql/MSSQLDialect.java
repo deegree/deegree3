@@ -64,6 +64,7 @@ import org.deegree.sqldialect.filter.mssql.MSSQLGeometryConverter;
 import org.deegree.sqldialect.filter.mssql.MSSQLWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.deegree.sqldialect.AbstractSQLDialect;
 
 /**
  * {@link SQLDialect} for Microsoft SQL databases.
@@ -74,9 +75,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 417 $, $Date: 2011-11-02 11:09:47 +0100 (Mi, 02 Nov 2011) $
  */
-public class MSSQLDialect implements SQLDialect {
+public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 
     private static Logger LOG = LoggerFactory.getLogger( MSSQLDialect.class );
+
+    private final char escapeChar = 0;
 
     @Override
     public int getMaxColumnNameLength() {

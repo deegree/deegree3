@@ -459,11 +459,26 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
     private ColumnMetadata getColumn( TableName qTable, SQLIdentifier columnName )
                             throws SQLException, FeatureStoreException {
         ColumnMetadata md = getColumnMetadataFromDb( qTable ).get( columnName );
+        if ( md == null )
+            md = getUnescapedColumnMetadata( qTable, columnName );
         if ( md == null ) {
             throw new FeatureStoreException( "Table '" + qTable + "' does not have a column with name '" + columnName
                                              + "'" );
         }
         return md;
+    }
+
+    private ColumnMetadata getUnescapedColumnMetadata( TableName qTable, SQLIdentifier columnName )
+                            throws SQLException {
+        String name = columnName.getName();
+        char leadingEscapeChar = dialect.getLeadingEscapeChar();
+        char tailingEscapeChar = dialect.getTailingEscapeChar();
+
+        if ( leadingEscapeChar == name.charAt( 0 ) && tailingEscapeChar == name.charAt( name.length() - 1 ) ) {
+            SQLIdentifier unescapedColumnName = new SQLIdentifier( name.substring( 1, name.length() - 1 ) );
+            return getColumnMetadataFromDb( qTable ).get( unescapedColumnName );
+        }
+        return null;
     }
 
     private LinkedHashMap<SQLIdentifier, ColumnMetadata> getColumnMetadataFromDb( TableName qTable )

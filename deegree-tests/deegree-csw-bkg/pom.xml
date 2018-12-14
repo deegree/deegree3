@@ -250,8 +250,8 @@
           </plugin>
 
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>tomcat-maven-plugin</artifactId>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
             <executions>
               <execution>
                 <id>start-tomcat</id>
@@ -293,7 +293,7 @@
         </dependency>
         <dependency>
           <groupId>com.oracle</groupId>
-          <artifactId>ojdbc6</artifactId>
+          <artifactId>ojdbc8</artifactId>
         </dependency>
       </dependencies>
     </profile>

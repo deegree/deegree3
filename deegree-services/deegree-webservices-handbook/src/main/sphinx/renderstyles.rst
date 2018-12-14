@@ -280,7 +280,7 @@ Including an SVG graphic within a mark might look like this:
      <Size>10</Size>
       ...
     </Graphic>
-
+    
 ----
 Size
 ----
@@ -664,10 +664,6 @@ text rendering along lines:
 | WordWise              | Boolean    | true    | Tries to place individual words instead of individual characters| 
 +-----------------------+------------+---------+-----------------------------------------------------------------+
 
-^^^^^^^
-Example
-^^^^^^^ 
-
 .. code-block:: xml
 
     <LinePlacement>
@@ -677,7 +673,22 @@ Example
 	    <Center>true</Center>
 	    <WordWise>false</WordWise>
     </LinePlacement>
+  
+--------------------------
+ExternalGraphic extensions
+--------------------------
 
+deegree extends the OnlineResource element of ExternalGraphics to support ogc:Expressions as child elements. Example:
+
+.. code-block:: xml
+
+      <ExternalGraphic>
+        <OnlineResource>
+            <ogc:PropertyName>app:icon</ogc:PropertyName>
+        </OnlineResource>
+        <Format>image/svg</Format>
+      </ExternalGraphic> 
+      
 __________________________
 SE & FE Functions
 __________________________
@@ -876,7 +887,9 @@ For Interpolate only linear interpolation is currently supported.
 .. code-block:: xml
 
     <Recode xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/se" fallbackValue="">
-      <LookupValue>app:code</LookupValue>
+      <LookupValue>
+	<ogc:PropertyName>app:code</ogc:PropertyName>
+      </LookupValue>
       <MapItem>
         <Data>1000</Data>
         <Value>water</Value>

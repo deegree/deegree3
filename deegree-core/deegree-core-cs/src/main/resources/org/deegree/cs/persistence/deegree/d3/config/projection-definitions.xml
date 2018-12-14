@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<crs:ProjectionDefinitions configVersion="3.0.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+<crs:ProjectionDefinitions configVersion="3.4.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.4.0/crsdefinition.xsd">
 	<crs:LambertAzimuthalEqualArea>
 		<crs:Id>epsg:19986</crs:Id>
 		<crs:Name>Europe Equal Area 2001</crs:Name>
@@ -10774,6 +10774,15 @@
 		<crs:FalseNorthing>0.0</crs:FalseNorthing>
 	</crs:Mercator>
 	<crs:Mercator>
+		<crs:Id>epsg:3856</crs:Id>
+		<crs:Name>Pseudo-Mercator</crs:Name>
+		<crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+		<crs:LongitudeOfNaturalOrigin>0.0</crs:LongitudeOfNaturalOrigin>
+		<crs:ScaleFactor>1.0</crs:ScaleFactor>
+		<crs:FalseEasting>0.0</crs:FalseEasting>
+		<crs:FalseNorthing>0.0</crs:FalseNorthing>
+	</crs:Mercator>
+	<crs:Mercator>
 		<crs:Id>projection_for_epsg:900913</crs:Id>
 		<crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
 		<crs:LongitudeOfNaturalOrigin>0.0</crs:LongitudeOfNaturalOrigin>
@@ -10799,4 +10808,13 @@
     <crs:FalseEasting>32500000.0</crs:FalseEasting>
     <crs:FalseNorthing>0.0</crs:FalseNorthing>
   </crs:TransverseMercator>
+	<crs:TransverseMercator>
+		<crs:Id>epsg:5648</crs:Id>
+		<crs:Name>UTM zone 33N with prefix</crs:Name>
+		<crs:LatitudeOfNaturalOrigin>0.0</crs:LatitudeOfNaturalOrigin>
+		<crs:LongitudeOfNaturalOrigin>15.0</crs:LongitudeOfNaturalOrigin>
+		<crs:ScaleFactor>0.9996</crs:ScaleFactor>
+		<crs:FalseEasting>33500000.0</crs:FalseEasting>
+		<crs:FalseNorthing>0.0</crs:FalseNorthing>
+	</crs:TransverseMercator>
 </crs:ProjectionDefinitions>

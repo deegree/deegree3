@@ -38,6 +38,9 @@
 
 package org.deegree.cs;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -55,27 +58,74 @@ import org.junit.Test;
 public class CRSCodeTypeTest extends TestCase {
 
     @Test
-    public void test1() {
-        CRSCodeType code1 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" );
-        assertTrue( "Should be: " + "epsg:6.11:4326" + " but was " + code1.toString(),
-                    "epsg:6.11:4326".equals( code1.toString() ) );
+    public void test_urn_x_ogc() {
+        CRSCodeType code = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" );
+        assertThat( code.toString(), is( "epsg:6.11:4326" ) );
+        assertThat( code.getCode(), is( "4326" ) );
+        assertThat( code.getCodeVersion(), is( "6.11" ) );
+        assertThat( code.getCodeSpace(), is( "epsg" ) );
+    }
 
-        CRSCodeType code2 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" );
-        assertEquals( "epsg:6.11.2:4326", code2.toString() );
+    @Test
+    public void test_urn_x_ogc_3PartVersion() {
+        CRSCodeType code = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" );
+        assertThat( code.toString(), is( "epsg:6.11.2:4326" ) );
+        assertThat( code.getCode(), is( "4326" ) );
+        assertThat( code.getCodeVersion(), is( "6.11.2" ) );
+        assertThat( code.getCodeSpace(), is( "epsg" ) );
+    }
 
-        CRSCodeType code3 = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326" );
-        assertTrue( code3.toString().equals( "epsg:4326" ) );
+    @Test
+    public void test_http_opengis_gml() {
+        CRSCodeType code = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326" );
+        assertThat( code.toString(), is( "epsg:4326" ) );
+        assertThat( code.getCode(), is( "4326" ) );
+        assertThat( code.getCodeVersion(), is( "" ) );
+        assertThat( code.getCodeSpace(), is( "epsg" ) );
+    }
 
-        CRSCodeType code4 = new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::4326" );
-        assertTrue( code4.toString().equals( "epsg:4326" ) );
+    @Test
+    public void test_urn_opengis() {
+        CRSCodeType code = new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::4326" );
+        assertThat( code.toString(), is( "epsg:4326" ) );
+        assertThat( code.getCode(), is( "4326" ) );
+        assertThat( code.getCodeVersion(), is( "" ) );
+        assertThat( code.getCodeSpace(), is( "epsg" ) );
+    }
 
-        CRSCodeType code5 = new CRSCodeType( "CRS:84" );
-        assertTrue( code5.toString().equals( "CRS:84" ) );
+    @Test
+    public void test_crs() {
+        CRSCodeType code = new CRSCodeType( "CRS:84" );
+        assertThat( code.toString(), is( "CRS:84" ) );
+        assertThat( code.getCode(), is( "" ) );
+        assertThat( code.getCodeVersion(), is( "" ) );
+        assertThat( code.getCodeSpace(), is( "" ) );
+    }
 
-        CRSCodeType code6 = new CRSCodeType( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" );
-        assertTrue( code6.toString().equals( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" ) );
+    @Test
+    public void test_urn_ogc() {
+        CRSCodeType code = new CRSCodeType( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" );
+        assertThat( code.toString(), is( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" ) );
+        assertThat( code.getCode(), is( "" ) );
+        assertThat( code.getCodeVersion(), is( "" ) );
+        assertThat( code.getCodeSpace(), is( "" ) );
+    }
 
-        CRSCodeType code7 = new CRSCodeType( "WGS84(DD)" );
-        assertTrue( code7.toString().equals( "WGS84(DD)" ) );
+    @Test
+    public void test_wgs84() {
+        CRSCodeType code = new CRSCodeType( "WGS84(DD)" );
+        assertThat( code.toString(), is( "WGS84(DD)" ) );
+        assertThat( code.getCode(), is( "" ) );
+        assertThat( code.getCodeVersion(), is( "" ) );
+        assertThat( code.getCodeSpace(), is( "" ) );
+    }
+
+    @Test
+    public void test_http_opengis_def() {
+        CRSCodeType code = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/DEF/CRS/EPSG/0/4326" );
+        assertThat( code.toString(), is( "epsg:0:4326" ) );
+        assertThat( code.getCode(), is( "4326" ) );
+        assertThat( code.getCodeVersion(), is( "0" ) );
+        assertThat( code.getCodeSpace(), is( "epsg" ) );
     }
 }

@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms;
 
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
@@ -96,19 +97,13 @@ public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
 
-    /**
-     * 
-     */
     public StyleRegistry registry;
 
     MapOptionsMaps layerOptions = new MapOptionsMaps();
 
     MapOptions defaultLayerOptions;
 
-    /**
-     * The current update sequence.
-     */
-    public int updateSequence = 0; // TODO how to restore this after restart?
+    private int updateSequence; // TODO how to restore this after restart?
 
     private List<Theme> themes;
 
@@ -123,7 +118,9 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, Workspace workspace ) throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
+                            throws MalformedURLException {
+        this.updateSequence = updateSequence;
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -292,6 +289,13 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
+
+                if ( !l.getMetadata().isQueryable() ) {
+                    throw new OWSException( "GetFeatureInfo is requested on a Layer (name: "
+                                            + l.getMetadata().getName() + ") that is not queryable.",
+                                            LAYER_NOT_QUERYABLE );
+                }
+
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -325,15 +329,7 @@ public class MapService {
             LayerRef lr = layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-            int layerRadius = 0;
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                if ( l.getMetadata().getMapOptions() != null
-                     && l.getMetadata().getMapOptions().getFeatureInfoRadius() != 1 ) {
-                    layerRadius = l.getMetadata().getMapOptions().getFeatureInfoRadius();
-                } else {
-                    layerRadius = defaultLayerOptions.getFeatureInfoRadius();
-                }
-            }
+            final int layerRadius = defaultLayerOptions.getFeatureInfoRadius();
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
                                                gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(),
@@ -376,7 +372,8 @@ public class MapService {
         return getLegendHandler.getLegendSize( style );
     }
 
-    public BufferedImage getLegend( GetLegendGraphic req ) {
+    public BufferedImage getLegend( GetLegendGraphic req )
+                            throws OWSException {
         return getLegendHandler.getLegend( req );
     }
 
@@ -399,6 +396,13 @@ public class MapService {
      */
     public int getGlobalMaxFeatures() {
         return defaultLayerOptions.getMaxFeatures();
+    }
+
+    /**
+     * @return the current update sequence
+     */
+    public int getCurrentUpdateSequence() {
+        return updateSequence;
     }
 
 }

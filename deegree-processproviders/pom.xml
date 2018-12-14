@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-pre17-SNAPSHOT</version>
+    <version>3.4.4-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -26,7 +26,6 @@
 
   <modules>
     <module>deegree-processprovider-example</module>
-    <module>deegree-processprovider-jrxml</module>
     <module>deegree-processprovider-style</module>
   </modules>
 

@@ -130,7 +130,7 @@ class GdalLayerStoreBuilder implements ResourceBuilder<LayerStore> {
                     if ( env == null ) {
                         env = gdalSettings.getDatasetPool().getEnvelope( file );
                     } else {
-                        env.merge( gdalSettings.getDatasetPool().getEnvelope( file ) );
+                        env = env.merge( gdalSettings.getDatasetPool().getEnvelope( file ) );
                     }
                 }
             } catch ( Exception e ) {

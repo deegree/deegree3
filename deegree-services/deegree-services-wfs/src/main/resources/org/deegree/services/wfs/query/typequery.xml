@@ -5,6 +5,7 @@
     applies to any supported feature type.
   </wfs:Abstract>
   <wfs:Parameter name="typeName" type="xs:QName">
+    <wfs:Title>Feature type name</wfs:Title>
     <wfs:Abstract>Feature type name (mandatory)</wfs:Abstract>
   </wfs:Parameter>
   <wfs:QueryExpressionText returnFeatureTypes="${deegreewfs:ServedFeatureTypes}"

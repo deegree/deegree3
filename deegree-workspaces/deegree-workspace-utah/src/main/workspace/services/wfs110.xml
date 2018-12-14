@@ -1,0 +1,25 @@
+<deegreeWFS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+  <SupportedVersions>
+    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+  <!-- [0..n] FeatureStoreId: If ommited all featurestores will be published as feature types  -->
+  <!--  
+  <FeatureStoreId>MyStore1</FeatureStoreId>
+  <FeatureStoreId>MyStore2</FeatureStoreId>
+   -->
+  <EnableTransactions>false</EnableTransactions>
+  <QueryCRS>EPSG:26912</QueryCRS>
+  <QueryCRS>EPSG:4326</QueryCRS>
+  <QueryMaxFeatures>-1</QueryMaxFeatures>
+  
+  <GMLFormat gmlVersion="GML_31">
+    <MimeType>text/xml; subtype=gml/3.1.1</MimeType>
+    <GenerateBoundedByForFeatures>true</GenerateBoundedByForFeatures>
+    <GetFeatureResponse>
+      <DisableStreaming>true</DisableStreaming>
+    </GetFeatureResponse>
+  </GMLFormat>
+  
+</deegreeWFS>

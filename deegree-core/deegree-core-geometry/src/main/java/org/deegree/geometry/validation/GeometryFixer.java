@@ -36,6 +36,7 @@
 package org.deegree.geometry.validation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.geometry.composite.CompositeCurve;
@@ -197,6 +198,7 @@ public class GeometryFixer {
             for ( Curve memberCurve : compositeCurve ) {
                 fixedMemberCurves.add( invertOrientation( memberCurve ) );
             }
+            
             fixedCurve = new DefaultCompositeCurve( curve.getId(), curve.getCoordinateSystem(), curve.getPrecision(),
                                                     fixedMemberCurves );
             break;
@@ -206,6 +208,7 @@ public class GeometryFixer {
             for ( CurveSegment segment : curve.getCurveSegments() ) {
                 fixedSegments.add( invertOrientation( segment ) );
             }
+            Collections.reverse( fixedSegments );
             fixedCurve = new DefaultCurve( curve.getId(), curve.getCoordinateSystem(), curve.getPrecision(),
                                            fixedSegments );
             break;

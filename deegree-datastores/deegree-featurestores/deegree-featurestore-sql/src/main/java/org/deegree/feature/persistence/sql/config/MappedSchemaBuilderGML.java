@@ -65,7 +65,6 @@ import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -78,7 +77,6 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
-import org.deegree.feature.persistence.sql.expressions.StringConst;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
@@ -97,7 +95,6 @@ import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHin
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.persistence.sql.mapper.XPathSchemaWalker;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.ConstantMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -113,7 +110,6 @@ import org.deegree.filter.expression.ValueReference;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
-import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +155,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         gmlSchema = buildGMLSchema( configURL, gmlSchemas );
 
         CRSRef crs = CRSManager.getCRSRef( storageCRS.getValue() );
-        CoordinateDimension dim = crs.getDimension() == 3 ? DIM_2 : DIM_3;
+        CoordinateDimension dim = crs.getDimension() == 3 ? DIM_3 : DIM_2;
         geometryParams = new GeometryStorageParams( crs, storageCRS.getSrid(), dim );
 
         // add namespace bindings
@@ -402,19 +398,10 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
         }
 
         MappingExpression me = parseMappingExpression( config.getMapping() );
-        if ( me instanceof DBField ) {
-            List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
-            LOG.debug( "Targeted primitive type: " + pt );
-            boolean escalateVoid = determineParticleVoidability( pt.second, config.getNullEscalation() );
-            return new PrimitiveMapping( path, escalateVoid, me, pt.first, joinedTable, config.getCustomConverter() );
-        } else if ( me instanceof StringConst ) {
-            String s = me.toString();
-            s = s.substring( 1, s.length() - 1 );
-            PrimitiveValue value = new PrimitiveValue( s, pt.first );
-            return new ConstantMapping<PrimitiveValue>( path, value, config.getCustomConverter() );
-        }
-        throw new IllegalArgumentException( "Mapping expressions of type '" + me.getClass()
-                                            + "' are not supported yet." );
+        List<TableJoin> joinedTable = buildJoinTable( currentTable, config.getJoin() );
+        LOG.debug( "Targeted primitive type: " + pt );
+        boolean escalateVoid = determineParticleVoidability( pt.second, config.getNullEscalation() );
+        return new PrimitiveMapping( path, escalateVoid, me, pt.first, joinedTable, config.getCustomConverter() );
     }
 
     private GeometryMapping buildMapping( TableName currentTable, Pair<XSElementDeclaration, Boolean> elDecl,

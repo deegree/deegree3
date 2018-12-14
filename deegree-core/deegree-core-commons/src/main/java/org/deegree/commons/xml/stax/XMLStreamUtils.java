@@ -76,6 +76,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.xerces.parsers.DOMParser;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.utils.io.StreamBufferStore;
@@ -749,6 +750,29 @@ public class XMLStreamUtils {
     }
 
     /**
+     * Returns the text in the required element as a inz. If the name of the reader does not match the given qName, an
+     * exception will be thrown. If the value is not a double, an exception will be thrown. Post: reader will be
+     * unchanged or at {@link XMLStreamConstants #END_ELEMENT} of the matching element or at
+     * {@link XMLStreamConstants #START_ELEMENT} of the next element if requested.
+     * 
+     * @param reader
+     * @param elementName
+     * @param nextElemOnSucces
+     *            if true the reader will be move to the next element if the operation was successful.
+     * @return the double value of the required element.
+     * @throws XMLStreamException
+     */
+    public static int getRequiredElementTextAsInteger( XMLStreamReader reader, QName elementName,
+                                                       boolean nextElemOnSucces )
+                            throws XMLStreamException {
+        if ( !elementName.equals( reader.getName() ) ) {
+            throw new XMLParsingException( reader, "The current element: " + reader.getName() + " is not expected: "
+                                                   + elementName );
+        }
+        return getElementTextAsInteger( reader );
+    }
+
+    /**
      * Move the reader to the first element which matches the given name. The reader will be positioned on the
      * {@link XMLStreamConstants#START_ELEMENT} event or after the {@link XMLStreamConstants#END_DOCUMENT} which ever
      * comes first.
@@ -862,6 +886,20 @@ public class XMLStreamUtils {
     }
 
     /**
+     * Creates a {@link XMLStreamReader} out of an {@link OMElement}
+     *
+     * @param omElement the omElement to convert, never <code>null</code>
+     * @return the omElement as {@link XMLStreamReader} the START_DOCUMENT node is skipped, never <code>null</code>
+     * @throws XMLStreamException if an error occurred creating the {@link XMLStreamReader}
+     */
+    public static XMLStreamReader getAsXmlStrem( OMElement omElement )
+                            throws XMLStreamException {
+        XMLStreamReader bodyXmlStream = omElement.getXMLStreamReaderWithoutCaching();
+        skipStartDocument( bodyXmlStream );
+        return bodyXmlStream;
+    }
+
+    /**
      * Copies an XML element (including all attributes and subnodes) from the given {@link XMLStreamReader} to the given
      * {@link XMLStreamWriter}.
      * 
@@ -907,6 +945,25 @@ public class XMLStreamUtils {
                             throws XMLStreamException {
         if ( !prefix.equals( xmlStream.getPrefix( nsUri ) ) ) {
             xmlStream.writeNamespace( prefix, nsUri );
+        }
+    }
+
+    /**
+     * Unconditionally close a {@link XMLStreamReader}.
+     * 
+     * Equivalent to XMLStreamReader.close(), except any exceptions will be ignored. This is typically used in finally
+     * blocks.
+     * 
+     * @param xmlReader
+     *            to close, may be null or already closed
+     */
+    public static void closeQuietly( XMLStreamReader xmlReader ) {
+        if ( xmlReader != null ) {
+            try {
+                xmlReader.close();
+            } catch ( Exception e ) {
+                LOG.info( "XMLStreamReader could not be closed: {}", e.getMessage() );
+            }
         }
     }
 

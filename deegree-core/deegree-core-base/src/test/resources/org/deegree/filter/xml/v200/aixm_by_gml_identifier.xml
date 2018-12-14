@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Filter xmlns="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filter.xsd">
-  <PropertyIsEqualTo>
+  <PropertyIsEqualTo matchCase="true">
     <ValueReference>gml:identifier</ValueReference>
     <Literal>c225ae5c-540f-4a48-8867-809b393b2407</Literal>
   </PropertyIsEqualTo>

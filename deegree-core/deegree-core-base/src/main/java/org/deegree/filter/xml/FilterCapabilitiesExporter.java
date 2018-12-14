@@ -145,7 +145,7 @@ public class FilterCapabilitiesExporter {
         exportIdCapabilities200( writer );
         exportScalarCapabilities200( writer );
         exportSpatialCapabilities200( writer );
-        // exportTemporalCapabilities200( writer );
+        exportTemporalCapabilities200( writer );
         exportFunctions200( writer );
         exportExtendedCapabilities200( writer );
 
@@ -163,8 +163,8 @@ public class FilterCapabilitiesExporter {
         exportConstraint200( writer, "ImplementsStandardFilter", true );
         exportConstraint200( writer, "ImplementsMinSpatialFilter", true );
         exportConstraint200( writer, "ImplementsSpatialFilter", true );
-        exportConstraint200( writer, "ImplementsMinTemporalFilter", false );
-        exportConstraint200( writer, "ImplementsTemporalFilter", false );
+        exportConstraint200( writer, "ImplementsMinTemporalFilter", true );
+        exportConstraint200( writer, "ImplementsTemporalFilter", true );
         exportConstraint200( writer, "ImplementsVersionNav", false );
         exportConstraint200( writer, "ImplementsSorting", true );
         exportConstraint200( writer, "ImplementsExtendedOperators", false );
@@ -227,7 +227,7 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( FES_20_NS, "Spatial_Capabilities" );
         writer.writeStartElement( FES_20_NS, "GeometryOperands" );
         writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GML3_2_NS );
         exportGeometryOperand( writer, "gml:Box" );
         exportGeometryOperand( writer, "gml:Envelope" );
         exportGeometryOperand( writer, "gml:Point" );
@@ -244,10 +244,14 @@ public class FilterCapabilitiesExporter {
         exportGeometryOperand( writer, "gml:CompositeSurface" );
         exportGeometryOperand( writer, "gml32:Envelope" );
         exportGeometryOperand( writer, "gml32:Point" );
+        exportGeometryOperand( writer, "gml32:LineString" );
         exportGeometryOperand( writer, "gml32:Curve" );
+        exportGeometryOperand( writer, "gml32:Polygon" );
         exportGeometryOperand( writer, "gml32:Surface" );
         exportGeometryOperand( writer, "gml32:MultiPoint" );
+        exportGeometryOperand( writer, "gml32:MultiLineString" );
         exportGeometryOperand( writer, "gml32:MultiCurve" );
+        exportGeometryOperand( writer, "gml32:MultiPolygon" );
         exportGeometryOperand( writer, "gml32:MultiSurface" );
         exportGeometryOperand( writer, "gml32:CompositeCurve" );
         exportGeometryOperand( writer, "gml32:CompositeSurface" );
@@ -281,34 +285,34 @@ public class FilterCapabilitiesExporter {
         writer.writeAttribute( "name", name );
     }
 
-    // private static void exportTemporalCapabilities200( XMLStreamWriter writer )
-    // throws XMLStreamException {
-    // writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
-    // writer.writeStartElement( FES_20_NS, "TemporalOperands" );
-    // writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-    // writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
-    // exportTemporalOperand( writer, "gml:TimeInstant" );
-    // exportTemporalOperand( writer, "gml:TimePeriod" );
-    // exportTemporalOperand( writer, "gml32:TimeInstant" );
-    // exportTemporalOperand( writer, "gml32:TimePeriod" );
-    // writer.writeEndElement();
-    // writer.writeStartElement( FES_20_NS, "TemporalOperators" );
-    // exportTemporalOperator( writer, "After" );
-    // exportTemporalOperator( writer, "Before" );
-    // exportTemporalOperator( writer, "Begins" );
-    // exportTemporalOperator( writer, "BegunBy" );
-    // exportTemporalOperator( writer, "TContains" );
-    // exportTemporalOperator( writer, "During" );
-    // exportTemporalOperator( writer, "TEquals" );
-    // exportTemporalOperator( writer, "TOverlaps" );
-    // exportTemporalOperator( writer, "Meets" );
-    // exportTemporalOperator( writer, "OverlappedBy" );
-    // exportTemporalOperator( writer, "MetBy" );
-    // exportTemporalOperator( writer, "Ends" );
-    // exportTemporalOperator( writer, "EndedBy" );
-    // writer.writeEndElement();
-    // writer.writeEndElement();
-    // }
+    private static void exportTemporalCapabilities200( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
+        writer.writeStartElement( FES_20_NS, "TemporalOperands" );
+        writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GML3_2_NS );
+        exportTemporalOperand( writer, "gml:TimeInstant" );
+        exportTemporalOperand( writer, "gml:TimePeriod" );
+        exportTemporalOperand( writer, "gml32:TimeInstant" );
+        exportTemporalOperand( writer, "gml32:TimePeriod" );
+        writer.writeEndElement();
+        writer.writeStartElement( FES_20_NS, "TemporalOperators" );
+        exportTemporalOperator( writer, "After" );
+        exportTemporalOperator( writer, "Before" );
+        // exportTemporalOperator( writer, "Begins" );
+        // exportTemporalOperator( writer, "BegunBy" );
+        // exportTemporalOperator( writer, "TContains" );
+        exportTemporalOperator( writer, "During" );
+        exportTemporalOperator( writer, "TEquals" );
+        // exportTemporalOperator( writer, "TOverlaps" );
+        // exportTemporalOperator( writer, "Meets" );
+        // exportTemporalOperator( writer, "OverlappedBy" );
+        // exportTemporalOperator( writer, "MetBy" );
+        // exportTemporalOperator( writer, "Ends" );
+        // exportTemporalOperator( writer, "EndedBy" );
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
 
     private static void exportTemporalOperand( XMLStreamWriter writer, String name )
                             throws XMLStreamException {

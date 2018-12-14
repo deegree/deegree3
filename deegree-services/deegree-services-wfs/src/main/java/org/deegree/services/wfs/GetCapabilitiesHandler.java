@@ -59,6 +59,7 @@ import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
 import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
 import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
 import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
@@ -87,8 +88,13 @@ import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
 import org.deegree.commons.ows.metadata.operation.DCP;
 import org.deegree.commons.ows.metadata.operation.Operation;
+import org.deegree.commons.tom.ows.CodeType;
+import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.TransformationException;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -103,6 +109,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.wfs.WFSRequestType;
 import org.deegree.services.controller.OGCFrontController;
+import org.deegree.services.encoding.SupportedEncodings;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.capabilities.OWSCapabilitiesXMLAdapter;
 import org.slf4j.Logger;
@@ -150,6 +157,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     private final List<ICRS> querySRS;
 
+    private SupportedEncodings supportedEncodings;
+
     private final WfsFeatureStoreManager service;
 
     private final WebFeatureService master;
@@ -158,7 +167,8 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
     GetCapabilitiesHandler( WebFeatureService master, WfsFeatureStoreManager service, Version version,
                             XMLStreamWriter xmlWriter, Collection<FeatureType> servedFts, Set<String> sections,
-                            boolean enableTransactions, List<ICRS> querySRS, OWSMetadataProvider mdProvider ) {
+                            boolean enableTransactions, List<ICRS> querySRS, SupportedEncodings supportedEncodings,
+                            OWSMetadataProvider mdProvider ) {
         this.master = master;
         this.service = service;
         this.version = version;
@@ -167,6 +177,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         this.sections = sections;
         this.enableTransactions = enableTransactions;
         this.querySRS = querySRS;
+        this.supportedEncodings = supportedEncodings;
         this.mdProvider = mdProvider;
 
         List<String> offeredVersions = master.getOfferedVersions();
@@ -278,8 +289,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // }
 
             // wfs:SRS (minOccurs=1, maxOccurs=1)
+            ICRS querySrs = querySRS.get( 0 );
             writer.writeStartElement( WFS_NS, "SRS" );
-            writer.writeCharacters( querySRS.get( 0 ).getAlias() );
+            writer.writeCharacters( querySrs.getAlias() );
             writer.writeEndElement();
 
             // wfs:Operations (minOccurs=0, maxOccurs=1)
@@ -295,7 +307,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             if ( env != null ) {
                 try {
-                    env = transformer.transform( env );
+                    env = transformEnvelopeIntoQuerySrs( querySrs, env );
                     Point min = env.getMin();
                     Point max = env.getMax();
                     double minX = min.get0();
@@ -314,13 +326,16 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
 
             // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-            if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
-                    writer.writeStartElement( WFS_NS, "MetadataURL" );
-                    writer.writeAttribute( "type", "TC211" );
-                    writer.writeAttribute( "format", "XML" );
-                    writer.writeCharacters( metadataUrl.getUrl() );
-                    writer.writeEndElement();
+            List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+            if ( ftMds != null ) {
+                for ( DatasetMetadata datasetMetadata : ftMds ) {
+                    for ( final MetadataUrl metadataUrl : datasetMetadata.getMetadataUrls() ) {
+                        writer.writeStartElement( WFS_NS, "MetadataURL" );
+                        writer.writeAttribute( "type", "TC211" );
+                        writer.writeAttribute( "format", "XML" );
+                        writer.writeCharacters( metadataUrl.getUrl() );
+                        writer.writeEndElement();
+                    }
                 }
             }
 
@@ -332,7 +347,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         FilterCapabilitiesExporter.export100( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void exportCapability100()
@@ -345,53 +359,77 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         String postURL = OGCFrontController.getHttpPostURL();
 
         // wfs:GetCapabilities
-        writer.writeStartElement( WFS_NS, WFSRequestType.GetCapabilities.name() );
-        exportGetDCPType100( getURL );
-        exportPostDCPType100( postURL );
-        writer.writeEndElement();
+        if ( isPostSupported( GetCapabilities ) || isGetSupported( GetCapabilities ) ) {
+            writer.writeStartElement( WFS_NS, WFSRequestType.GetCapabilities.name() );
+            if ( isGetSupported( WFSRequestType.GetCapabilities ) )
+                exportGetDCPType100( getURL );
+            if ( isPostSupported( WFSRequestType.GetCapabilities ) )
+                exportPostDCPType100( postURL );
+            writer.writeEndElement();
+        }
 
         // wfs:DescribeFeatureType
-        writer.writeStartElement( WFS_NS, WFSRequestType.DescribeFeatureType.name() );
-        writer.writeStartElement( WFS_NS, "SchemaDescriptionLanguage" );
-        writer.writeStartElement( WFS_NS, "XMLSCHEMA" );
-        writer.writeEndElement();
-        writer.writeEndElement();
-        exportGetDCPType100( getURL );
-        exportPostDCPType100( postURL );
-        writer.writeEndElement();
+        if ( isPostSupported( DescribeFeatureType ) || isGetSupported( DescribeFeatureType ) ) {
+            writer.writeStartElement( WFS_NS, WFSRequestType.DescribeFeatureType.name() );
+            writer.writeStartElement( WFS_NS, "SchemaDescriptionLanguage" );
+            writer.writeStartElement( WFS_NS, "XMLSCHEMA" );
+            writer.writeEndElement();
+            writer.writeEndElement();
+            if ( isGetSupported( WFSRequestType.DescribeFeatureType ) )
+                exportGetDCPType100( getURL );
+            if ( isPostSupported( WFSRequestType.DescribeFeatureType ) )
+                exportPostDCPType100( postURL );
+            writer.writeEndElement();
+        }
 
-        if ( enableTransactions ) {
+        if ( enableTransactions
+             && ( isPostSupported( WFSRequestType.Transaction ) || isGetSupported( WFSRequestType.Transaction ) ) ) {
             // wfs:Transaction
             writer.writeStartElement( WFS_NS, WFSRequestType.Transaction.name() );
-            exportGetDCPType100( getURL );
-            exportPostDCPType100( postURL );
+            if ( isGetSupported( WFSRequestType.Transaction ) )
+                exportGetDCPType100( getURL );
+            if ( isPostSupported( WFSRequestType.Transaction ) )
+                exportPostDCPType100( postURL );
             writer.writeEndElement();
         }
 
         // wfs:GetFeature
-        writer.writeStartElement( WFS_NS, WFSRequestType.GetFeature.name() );
-        writer.writeStartElement( WFS_NS, "ResultFormat" );
-        writer.writeEmptyElement( WFS_NS, "GML2" );
-        writer.writeEndElement();
-        exportGetDCPType100( getURL );
-        exportPostDCPType100( postURL );
-        writer.writeEndElement();
-
-        if ( enableTransactions ) {
-            // wfs:GetFeatureWithLock
-            writer.writeStartElement( WFS_NS, WFSRequestType.GetFeatureWithLock.name() );
+        if ( isPostSupported( WFSRequestType.GetFeature ) || isGetSupported( WFSRequestType.GetFeature ) ) {
+            writer.writeStartElement( WFS_NS, WFSRequestType.GetFeature.name() );
             writer.writeStartElement( WFS_NS, "ResultFormat" );
             writer.writeEmptyElement( WFS_NS, "GML2" );
             writer.writeEndElement();
-            exportGetDCPType100( getURL );
-            exportPostDCPType100( postURL );
+            if ( isGetSupported( WFSRequestType.GetFeature ) )
+                exportGetDCPType100( getURL );
+            if ( isPostSupported( WFSRequestType.GetFeature ) )
+                exportPostDCPType100( postURL );
             writer.writeEndElement();
+        }
+
+        if ( enableTransactions ) {
+            // wfs:GetFeatureWithLock
+            if ( isPostSupported( WFSRequestType.GetFeatureWithLock )
+                 || isGetSupported( WFSRequestType.GetFeatureWithLock ) ) {
+                writer.writeStartElement( WFS_NS, WFSRequestType.GetFeatureWithLock.name() );
+                writer.writeStartElement( WFS_NS, "ResultFormat" );
+                writer.writeEmptyElement( WFS_NS, "GML2" );
+                writer.writeEndElement();
+                if ( isGetSupported( WFSRequestType.GetFeatureWithLock ) )
+                    exportGetDCPType100( getURL );
+                if ( isPostSupported( WFSRequestType.GetFeatureWithLock ) )
+                    exportPostDCPType100( postURL );
+                writer.writeEndElement();
+            }
 
             // wfs:LockFeature
-            writer.writeStartElement( WFS_NS, WFSRequestType.LockFeature.name() );
-            exportGetDCPType100( getURL );
-            exportPostDCPType100( postURL );
-            writer.writeEndElement();
+            if ( isPostSupported( WFSRequestType.LockFeature ) || isGetSupported( WFSRequestType.LockFeature ) ) {
+                writer.writeStartElement( WFS_NS, WFSRequestType.LockFeature.name() );
+                if ( isGetSupported( WFSRequestType.LockFeature ) )
+                    exportGetDCPType100( getURL );
+                if ( isPostSupported( WFSRequestType.LockFeature ) )
+                    exportPostDCPType100( postURL );
+                writer.writeEndElement();
+            }
         }
 
         writer.writeEndElement();
@@ -518,9 +556,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         // ows:OperationsMetadata
         if ( sections == null || sections.contains( "OPERATIONSMETADATA" ) ) {
             List<Operation> operations = new ArrayList<Operation>();
-            List<DCP> dcps = null;
+            List<DCP> getAndPost = null;
+            List<DCP> get = null;
+            List<DCP> post = null;
             try {
-                dcps = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
+                getAndPost = Collections.singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
+                post = singletonList( new DCP( null, new URL( getHttpPostURL() ) ) );
+                get = singletonList( new DCP( new URL( getHttpGetURL() ), null ) );
             } catch ( MalformedURLException e ) {
                 // should never happen
             }
@@ -529,7 +571,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             List<Domain> params = new ArrayList<Domain>();
             List<String> outputFormats = new ArrayList<String>( master.getOutputFormats() );
             params.add( new Domain( "outputFormat", outputFormats ) );
-            operations.add( new Operation( WFSRequestType.DescribeFeatureType.name(), dcps, params, null, null ) );
+            addOperation( DescribeFeatureType, params, getAndPost, post, get, operations );
 
             // GetCapabilities
             params = new ArrayList<Domain>();
@@ -542,33 +584,33 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // sections.add( "FeatureTypeList" );
             // sections.add( "Filter_Capabilities" );
             // params.add( new Domain( "Sections", sections ) );
-            operations.add( new Operation( WFSRequestType.GetCapabilities.name(), dcps, params, null, null ) );
+            addOperation( GetCapabilities, params, getAndPost, post, get, operations );
 
             // GetFeature
             params = new ArrayList<Domain>();
             params.add( new Domain( "resultType", Arrays.asList( new String[] { "results", "hits" } ) ) );
             params.add( new Domain( "outputFormat", outputFormats ) );
-            operations.add( new Operation( WFSRequestType.GetFeature.name(), dcps, params, null, null ) );
+            addOperation( GetFeature, params, getAndPost, post, get, operations );
 
             // GetFeatureWithLock
             if ( enableTransactions ) {
                 params = new ArrayList<Domain>();
                 params.add( new Domain( "resultType", Arrays.asList( new String[] { "results", "hits" } ) ) );
                 params.add( new Domain( "outputFormat", outputFormats ) );
-                operations.add( new Operation( WFSRequestType.GetFeatureWithLock.name(), dcps, params, null, null ) );
+                addOperation( GetFeatureWithLock, params, getAndPost, post, get, operations );
             }
 
             // GetGmlObject
             params = new ArrayList<Domain>();
             params.add( new Domain( "outputFormat", outputFormats ) );
-            operations.add( new Operation( WFSRequestType.GetGmlObject.name(), dcps, params, null, null ) );
+            addOperation( GetGmlObject, params, getAndPost, post, get, operations );
 
             if ( enableTransactions ) {
 
                 // LockFeature
                 params = new ArrayList<Domain>();
                 params.add( new Domain( "lockAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
-                operations.add( new Operation( WFSRequestType.LockFeature.name(), dcps, params, null, null ) );
+                addOperation( LockFeature, params, getAndPost, post, get, operations );
 
                 // Transaction
                 params = new ArrayList<Domain>();
@@ -576,7 +618,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 params.add( new Domain( "idgen", Arrays.asList( new String[] { "GenerateNew", "UseExisting",
                                                                               "ReplaceDuplicate" } ) ) );
                 params.add( new Domain( "releaseAction", Arrays.asList( new String[] { "ALL", "SOME" } ) ) );
-                operations.add( new Operation( WFSRequestType.Transaction.name(), dcps, params, null, null ) );
+                addOperation( Transaction, params, getAndPost, post, get, operations );
             }
             Map<String, List<OMElement>> versionToExtendedCaps = mdProvider.getExtendedCapabilities();
             exportOperationsMetadata100( writer,
@@ -689,13 +731,18 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 // TODO Operations
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
-                        writer.writeStartElement( WFS_NS, "MetadataURL" );
-                        writer.writeAttribute( "type", "19139" );
-                        writer.writeAttribute( "format", "text/xml" );
-                        writer.writeCharacters( metadataUrl.getUrl() );
-                        writer.writeEndElement();
+                List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+                if ( ftMds != null ) {
+                    for ( DatasetMetadata datasetMetadata : ftMds ) {
+                        for ( final MetadataUrl metadataUrl : datasetMetadata.getMetadataUrls() ) {
+                            writer.writeStartElement( WFS_NS, "MetadataURL" );
+                            String type = metadataUrl.getType() != null ? metadataUrl.getType() : "19139";
+                            String format = metadataUrl.getFormat() != null ? metadataUrl.getFormat() : "text/xml";
+                            writer.writeAttribute( "type", type );
+                            writer.writeAttribute( "format", format );
+                            writer.writeCharacters( metadataUrl.getUrl() );
+                            writer.writeEndElement();
+                        }
                     }
                 }
 
@@ -718,7 +765,6 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         FilterCapabilitiesExporter.export110( writer );
 
         writer.writeEndElement();
-        writer.writeEndDocument();
     }
 
     private void writeOutputFormats110( XMLStreamWriter writer )
@@ -769,9 +815,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             List<Operation> operations = new ArrayList<Operation>();
             List<DCP> getAndPost = null;
             List<DCP> post = null;
+            List<DCP> get = null;
             try {
                 getAndPost = singletonList( new DCP( new URL( getHttpGetURL() ), new URL( getHttpPostURL() ) ) );
                 post = singletonList( new DCP( null, new URL( getHttpPostURL() ) ) );
+                get = singletonList( new DCP( new URL( getHttpGetURL() ), null ) );
             } catch ( MalformedURLException e ) {
                 // should never happen
             }
@@ -787,35 +835,38 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             sections.add( "FeatureTypeList" );
             sections.add( "Filter_Capabilities" );
             params.add( new Domain( "Sections", sections ) );
-            operations.add( new Operation( GetCapabilities.name(), getAndPost, params, null, null ) );
+
+            // GetCapabilities
+            addOperation( GetCapabilities, params, getAndPost, post, get, operations );
 
             // DescribeFeatureType
-            operations.add( new Operation( DescribeFeatureType.name(), getAndPost, null, null, null ) );
+            addOperation( DescribeFeatureType, getAndPost, post, get, operations );
 
             // ListStoredQueries
-            operations.add( new Operation( ListStoredQueries.name(), getAndPost, null, null, null ) );
+            addOperation( ListStoredQueries, getAndPost, post, get, operations );
 
             // DescribeStoredQueries
-            operations.add( new Operation( DescribeStoredQueries.name(), getAndPost, null, null, null ) );
+            addOperation( DescribeStoredQueries, getAndPost, post, get, operations );
 
             // GetFeature
-            operations.add( new Operation( GetFeature.name(), getAndPost, null, null, null ) );
+            addOperation( GetFeature, getAndPost, post, get, operations );
 
             // GetPropertyValue
-            operations.add( new Operation( GetPropertyValue.name(), getAndPost, null, null, null ) );
+            addOperation( GetPropertyValue, getAndPost, post, get, operations );
 
             if ( enableTransactions ) {
                 // Transaction
                 List<Domain> constraints = new ArrayList<Domain>();
                 constraints.add( new Domain( "AutomaticDataLocking", "TRUE" ) );
                 constraints.add( new Domain( "PreservesSiblingOrder", "TRUE" ) );
-                operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
+                if ( supportedEncodings.isEncodingSupported( Transaction, "POST" ) )
+                    operations.add( new Operation( Transaction.name(), post, null, constraints, null ) );
 
                 // GetFeatureWithLock
-                operations.add( new Operation( GetFeatureWithLock.name(), getAndPost, null, null, null ) );
+                addOperation( GetFeatureWithLock, getAndPost, post, get, operations );
 
                 // LockFeature
-                operations.add( new Operation( LockFeature.name(), getAndPost, null, null, null ) );
+                addOperation( LockFeature, getAndPost, post, get, operations );
             }
 
             // global parameter domains
@@ -856,10 +907,18 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             }
             constraints.add( new Domain( "KVPEncoding", "TRUE" ) );
             constraints.add( new Domain( "XMLEncoding", "TRUE" ) );
-            constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            if ( master.isSoapSupported() ) {
+                constraints.add( new Domain( "SOAPEncoding", "TRUE" ) );
+            } else {
+                constraints.add( new Domain( "SOAPEncoding", "FALSE" ) );
+            }
             constraints.add( new Domain( "ImplementsInheritance", "FALSE" ) );
             constraints.add( new Domain( "ImplementsRemoteResolve", "FALSE" ) );
-            constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
+            if ( master.isEnableResponsePaging() ) {
+                constraints.add( new Domain( "ImplementsResultPaging", "TRUE" ) );
+                constraints.add( new Domain( "PagingIsTransactionSafe", "FALSE" ) );
+            } else
+                constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
             constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
@@ -870,7 +929,9 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             if ( master.getQueryMaxFeatures() != -1 ) {
                 constraints.add( new Domain( "CountDefault", "" + master.getQueryMaxFeatures() ) );
             }
-
+            if ( master.getResolveTimeOutInSeconds() != null ) {
+                constraints.add( new Domain( "ResolveTimeoutDefault", master.getResolveTimeOutInSeconds().toString() ) );
+            }
             constraints.add( new Domain( "ResolveLocalScope", "*" ) );
 
             List<String> queryExprs = new ArrayList<String>();
@@ -930,10 +991,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                     writer.writeEndElement();
                 }
 
-                // ows:Keywords (minOccurs=0, maxOccurs=unbounded)
-                // writer.writeStartElement( OWS_NS, "Keywords" );
-                // writer.writeCharacters( "keywords" );
-                // writer.writeEndElement();
+                exportKeywords200( ftMd );
 
                 // wfs:DefaultCRS / wfs:NoCRS
                 FeatureStore fs = service.getStore( ftName );
@@ -994,10 +1052,13 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 writer.writeEndElement();
 
                 // wfs:MetadataURL (minOccurs=0, maxOccurs=unbounded)
-                if ( ftMd != null && ftMd.getMetadataUrls() != null ) {
-                    for ( final MetadataUrl metadataUrl : ftMd.getMetadataUrls() ) {
-                        writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
-                        writer.writeAttribute( XLN_NS, "href", metadataUrl.getUrl() );
+                List<DatasetMetadata> ftMds = mdProvider.getAllDatasetMetadata( ftName );
+                if ( ftMds != null ) {
+                    for ( DatasetMetadata datasetMetadata : ftMds ) {
+                        for ( final MetadataUrl metadataUrl : datasetMetadata.getMetadataUrls() ) {
+                            writer.writeEmptyElement( WFS_200_NS, "MetadataURL" );
+                            writer.writeAttribute( XLN_NS, "href", metadataUrl.getUrl() );
+                        }
                     }
                 }
 
@@ -1012,7 +1073,39 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
 
         writer.writeEndElement();
-        writer.writeEndDocument();
+    }
+
+    private void exportKeywords200( DatasetMetadata ftMd )
+                            throws XMLStreamException {
+        if ( ftMd != null ) {
+            List<Pair<List<LanguageString>, CodeType>> keywords = ftMd.getKeywords();
+            if ( keywords != null && !keywords.isEmpty() ) {
+                writer.writeStartElement( OWS110_NS, "Keywords" );
+                for ( Pair<List<LanguageString>, CodeType> keywordsPerCodeType : keywords ) {
+                    for ( LanguageString keyword : keywordsPerCodeType.getFirst() ) {
+                        writer.writeStartElement( OWS110_NS, "Keyword" );
+                        writer.writeCharacters( keyword.getString() );
+                        writer.writeEndElement();
+                    }
+                }
+                writer.writeEndElement();
+            }
+        }
+    }
+
+    private void addOperation( WFSRequestType wfsRequestType, List<DCP> getAndPost, List<DCP> post, List<DCP> get,
+                               List<Operation> operations ) {
+        addOperation( wfsRequestType, null, getAndPost, post, get, operations );
+    }
+
+    private void addOperation( WFSRequestType wfsRequestType, List<Domain> params, List<DCP> getAndPost,
+                               List<DCP> post, List<DCP> get, List<Operation> operations ) {
+        if ( isGetSupported( wfsRequestType ) && isPostSupported( wfsRequestType ) )
+            operations.add( new Operation( wfsRequestType.name(), getAndPost, params, null, null ) );
+        else if ( isPostSupported( wfsRequestType ) )
+            operations.add( new Operation( wfsRequestType.name(), post, params, null, null ) );
+        else if ( isGetSupported( wfsRequestType ) )
+            operations.add( new Operation( wfsRequestType.name(), get, params, null, null ) );
     }
 
     private void writeOutputFormats200( XMLStreamWriter writer )
@@ -1025,4 +1118,20 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
         }
         writer.writeEndElement();
     }
+
+    private boolean isGetSupported( WFSRequestType requestType ) {
+        return supportedEncodings.isEncodingSupported( requestType, "KVP" );
+    }
+
+    private boolean isPostSupported( WFSRequestType requestType ) {
+        return supportedEncodings.isEncodingSupported( requestType, "XML" )
+               || supportedEncodings.isEncodingSupported( requestType, "SOAP" );
+    }
+
+    private Envelope transformEnvelopeIntoQuerySrs( ICRS querySrs, Envelope env )
+                            throws TransformationException, UnknownCRSException {
+        GeometryTransformer transformer = new GeometryTransformer( querySrs );
+        return transformer.transform( env );
+    }
+
 }

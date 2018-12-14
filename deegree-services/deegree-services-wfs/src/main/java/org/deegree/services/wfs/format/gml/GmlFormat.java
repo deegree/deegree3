@@ -35,6 +35,7 @@
 package org.deegree.services.wfs.format.gml;
 
 import static java.lang.Integer.MAX_VALUE;
+import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
@@ -116,7 +117,7 @@ public class GmlFormat implements Format {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
                                              master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false,
-                                             null, null );
+                                             null, null, master.isEnableResponsePaging() );
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
@@ -198,12 +199,13 @@ public class GmlFormat implements Format {
         }
 
         final GMLVersion gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
-        final String mimeType = formatDef.getMimeType().get( 0 );
+        final String mimeType = trim( formatDef.getMimeType().get( 0 ) );
         final SFSProfiler geometrySimplifier = getSfsProfiler( formatDef.getGeometryLinearization() );
         this.options = new GmlFormatOptions( gmlVersion, responseContainerEl, responseFeatureMemberEl, schemaLocation,
                                              disableStreaming, generateBoundedByForFeatures, queryMaxFeatures,
                                              checkAreaOfUse, formatter, appSchemaBaseURL, mimeType,
-                                             exportOriginalSchema, geometrySimplifier, prebindNamespaces );
+                                             exportOriginalSchema, geometrySimplifier, prebindNamespaces,
+                                             master.isEnableResponsePaging() );
 
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );

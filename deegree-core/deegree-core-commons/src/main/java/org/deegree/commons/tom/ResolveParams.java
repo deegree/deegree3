@@ -51,7 +51,7 @@ public class ResolveParams {
 
     private final String resolveDepth;
 
-    private final BigInteger resolveTimeout;
+    private BigInteger resolveTimeout;
 
     public ResolveParams( ResolveMode resolve, String resolveDepth, BigInteger resolveTimeout ) {
         this.resolve = resolve;
@@ -70,4 +70,9 @@ public class ResolveParams {
     public BigInteger getTimeout() {
         return resolveTimeout;
     }
+
+    public void setTimeout( BigInteger resolveTimeout ) {
+        this.resolveTimeout = resolveTimeout;
+    }
+
 }

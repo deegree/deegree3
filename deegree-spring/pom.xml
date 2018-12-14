@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>org.deegree</groupId>
 		<artifactId>deegree</artifactId>
-		<version>3.4-pre17-SNAPSHOT</version>
+		<version>3.4.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>deegree-spring</artifactId>
 	<description>deegree Spring framework integration module</description>
-    <name>deegree-spring</name>
+	<name>deegree-spring</name>
 
 	<build>
 		<plugins>
@@ -20,7 +20,7 @@
 
 	<properties>
 		<deegree.module.status>ok</deegree.module.status>
-		<spring.version>3.2.3.RELEASE</spring.version>
+		<spring.version>3.2.18.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>
@@ -36,6 +36,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -45,10 +45,10 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter.writeDimensions;
 import static org.deegree.services.wms.controller.capabilities.WmsCapabilities130SpatialMetadataWriter.writeSrsAndEnvelope;
-import static org.deegree.theme.Themes.getAllLayers;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,7 +68,6 @@ import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.metadata.SpatialMetadata;
-import org.deegree.layer.Layer;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.services.metadata.OWSMetadataProvider;
@@ -81,10 +80,10 @@ import org.deegree.theme.Theme;
  * <p>
  * Data/Metadata is considered from the Theme/Layer tree as well as from the {@link OWSMetadataProvider}.
  * </p>
- *
+ * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- *
+ * 
  * @since 3.3
  */
 public class WmsCapabilities130ThemeWriter {
@@ -99,7 +98,7 @@ public class WmsCapabilities130ThemeWriter {
 
     /**
      * Creates a new {@link WmsCapabilities130ThemeWriter} instance.
-     *
+     * 
      * @param metadataProvider
      *            provider for metadata on OWS datasets, can be <code>null</code>
      * @param styleWriter
@@ -120,7 +119,7 @@ public class WmsCapabilities130ThemeWriter {
 
     /**
      * Writes the given {@link Theme} as a WMS 1.3.0 Layer element.
-     *
+     * 
      * @param writer
      *            used to write the XML, must not be <code>null</code>
      * @param theme
@@ -131,20 +130,22 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         final LayerMetadata layerMetadata = new LayerMetadataMerger().merge( theme );
         final DatasetMetadataFactory factory = new DatasetMetadataFactory();
-        final DatasetMetadata dsMd1 = getDatasetMetadataFromProvider( theme );
+        final List<DatasetMetadata> dsMd1 = getDatasetMetadataFromProvider( theme );
         final DatasetMetadata dsMd2 = factory.buildDatasetMetadata( layerMetadata, theme, mdUrlTemplate );
-        final DatasetMetadata datasetMetadata = new DatasetMetadataMerger().merge( dsMd1, dsMd2 );
+        if ( dsMd1 != null && dsMd2 != null )
+            dsMd1.add( dsMd2 );
+        final DatasetMetadata datasetMetadata = new DatasetMetadataMerger().merge( dsMd1 );
         final DoublePair scaleDenominators = new LayerMetadataMerger().mergeScaleDenominators( theme );
         final Map<String, String> authorityNameToUrl = getExternalAuthorityNameToUrlMap( metadataProvider );
         writeTheme( writer, layerMetadata, datasetMetadata, authorityNameToUrl, scaleDenominators, theme.getThemes() );
     }
 
-    private DatasetMetadata getDatasetMetadataFromProvider( final Theme theme ) {
-        final String datasetName = getNameFromThemeOrFirstNamedLayer( theme );
+    private List<DatasetMetadata> getDatasetMetadataFromProvider( final Theme theme ) {
+        final String datasetName = getNameFromTheme( theme );
         if ( metadataProvider != null && datasetName != null ) {
-            return metadataProvider.getDatasetMetadata( new QName( datasetName ) );
+            return metadataProvider.getAllDatasetMetadata( new QName( datasetName ) );
         }
-        return null;
+        return new ArrayList<DatasetMetadata>();
     }
 
     private Map<String, String> getExternalAuthorityNameToUrlMap( final OWSMetadataProvider metadataProvider ) {
@@ -154,14 +155,9 @@ public class WmsCapabilities130ThemeWriter {
         return null;
     }
 
-    private String getNameFromThemeOrFirstNamedLayer( final Theme theme ) {
+    private String getNameFromTheme( final Theme theme ) {
         if ( theme.getLayerMetadata().getName() != null ) {
             return theme.getLayerMetadata().getName();
-        }
-        for ( final Layer layer : getAllLayers( theme ) ) {
-            if ( layer.getMetadata().getName() != null ) {
-                return layer.getMetadata().getName();
-            }
         }
         return null;
     }
@@ -176,6 +172,14 @@ public class WmsCapabilities130ThemeWriter {
                                 && layerMetadata.getName() != null );
         // <attribute name="cascaded" type="nonNegativeInteger"/>
         writeCascaded( writer, layerMetadata.getCascaded() );
+        // <attribute name="opaque" type="boolean" default="0"/>
+        writeOpaque( writer, layerMetadata.getMapOptions() != null && layerMetadata.getMapOptions().isOpaque() );
+        // <attribute name="noSubsets" type="boolean" default="0"/>
+        writeNoSubset( writer );
+        // <attribute name="fixedWidth" type="nonNegativeInteger"/>
+        writeFixedWidth( writer );
+        // <attribute name="fixedHeight" type="nonNegativeInteger"/>
+        writeFixedHeight( writer );
         // <element ref="wms:Name" minOccurs="0"/>
         if ( layerMetadata.isRequestable() ) {
             writeName( writer, layerMetadata.getName() );
@@ -222,6 +226,8 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         if ( queryable ) {
             writer.writeAttribute( "queryable", "1" );
+        } else {
+            writer.writeAttribute( "queryable", "0" );
         }
     }
 
@@ -229,7 +235,34 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         if ( cascaded > 0 ) {
             writer.writeAttribute( "cascaded", cascaded + "" );
+        } else {
+            writer.writeAttribute( "cascaded", "0" );
         }
+    }
+
+    private void writeOpaque( final XMLStreamWriter writer, final boolean opaque )
+                            throws XMLStreamException {
+        if ( opaque ) {
+            writer.writeAttribute( "opaque", "1" );
+        } else {
+            writer.writeAttribute( "opaque", "0" );
+        }
+    }
+
+    private void writeNoSubset( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "noSubsets", "0" );
+
+    }
+
+    private void writeFixedWidth( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "fixedWidth", "0" );
+    }
+
+    private void writeFixedHeight( final XMLStreamWriter writer )
+                            throws XMLStreamException {
+        writer.writeAttribute( "fixedHeight", "0" );
     }
 
     private void writeName( final XMLStreamWriter writer, final String name )

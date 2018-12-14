@@ -77,7 +77,6 @@ import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -126,7 +125,7 @@ public class GetMap extends RequestBase {
 
     private double resolution;
 
-    private MapOptionsMaps extensions;
+    private MapOptionsMaps extensions = new MapOptionsMaps();
 
     private double queryBoxSize = -1;
 
@@ -202,6 +201,22 @@ public class GetMap extends RequestBase {
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
+    }
+
+    public GetMap( List<LayerRef> layers, List<StyleRef> styles, int width, int height, Envelope envelope, ICRS crs,
+                   String format, boolean transparent, Color bgcolor, Map<String, String> parameterMap,
+                   Map<String, List<?>> dimensions ) {
+        this.layers.addAll( layers );
+        this.styles.addAll( styles );
+        this.width = width;
+        this.height = height;
+        this.bbox = envelope;
+        this.crs = crs;
+        this.format = format;
+        this.transparent = transparent;
+        this.bgcolor = bgcolor;
+        this.parameterMap.putAll( parameterMap );
+        this.dimensions.putAll( dimensions );
     }
 
     public GetMap( List<String> layers, List<String> styles, int width, int height, Envelope envelope, ICRS crs,
@@ -403,7 +418,6 @@ public class GetMap extends RequestBase {
         if ( defaults == null ) {
             defaults = new MapOptionsMaps();
         }
-        extensions = new MapOptionsMaps();
         handleEnumVSP( Quality.class, getQualitySetter( extensions ), NORMAL, map.get( "QUALITY" ),
                        getQualityGetter( defaults ) );
         handleEnumVSP( Interpolation.class, getInterpolationSetter( extensions ), NEARESTNEIGHBOR,

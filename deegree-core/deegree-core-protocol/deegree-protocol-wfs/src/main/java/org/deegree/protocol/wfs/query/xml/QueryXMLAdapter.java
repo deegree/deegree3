@@ -40,6 +40,7 @@ import static org.deegree.commons.xml.CommonNamespaces.FES_20_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 
 import java.math.BigInteger;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +55,13 @@ import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.ValueReference;
@@ -247,7 +250,11 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         ICRS crs = null;
         String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
         if ( srsName != null ) {
-            crs = CRSManager.getCRSRef( srsName );
+            try {
+                crs = CRSManager.lookup( srsName );
+            } catch ( UnknownCRSException e ) {
+                throw new InvalidParameterValueException( e.getMessage(), "srsName" );
+            }
         }
 
         // <xsd:attribute name="featureVersion" type="xsd:string"/>

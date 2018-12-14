@@ -52,11 +52,11 @@ import org.deegree.feature.Feature;
 public interface FeatureBuilder {
 
     /**
-     * Returns the columns for the SELECT statement that is used to retrieve the {@link ResultSet}.
+     * Returns the columns/expression for the SELECT statement that is used to retrieve the {@link ResultSet}.
      * 
-     * @return list of columns, never <code>null</code>
+     * @return list of columns/expression, never <code>null</code>
      */
-    public List<String> getInitialSelectColumns();
+    public List<String> getInitialSelectList();
 
     /**
      * Builds a {@link Feature} instance from the current row of the given {@link ResultSet}.

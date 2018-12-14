@@ -89,7 +89,7 @@ public class LayerMetadata {
     private List<Pair<String, String>> authorities = new ArrayList<Pair<String, String>>();
 
     private boolean requestable = true;
-    
+
     public LayerMetadata( String name, Description description, SpatialMetadata spatialMetadata ) {
         this.name = name;
         this.description = description;
@@ -165,13 +165,16 @@ public class LayerMetadata {
     }
 
     /**
-     * @return the queryable
+     * @return true if the layer can be queried
+     * @see MapOptions#getFeatureInfoRadius()
      */
     public boolean isQueryable() {
         if ( mapOptions == null ) {
             return true;
         }
-        return mapOptions.getFeatureInfoRadius() > 0;
+
+        // TRICKY assume that, the service is query able by default (<0)
+        return mapOptions.getFeatureInfoRadius() != 0;
     }
 
     /**
@@ -211,35 +214,6 @@ public class LayerMetadata {
         this.spatialMetadata = spatialMetadata;
     }
 
-    private void mergeDescription( Description desc ) {
-        if ( desc != null ) {
-            if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
-                description.setTitles( desc.getTitles() );
-            }
-            if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
-                description.setAbstracts( desc.getAbstracts() );
-            }
-            if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
-                description.setKeywords( desc.getKeywords() );
-            }
-        }
-    }
-
-    private void mergeSpatialMetadata( SpatialMetadata smd ) {
-        if ( smd != null ) {
-            if ( spatialMetadata.getCoordinateSystems() == null || spatialMetadata.getCoordinateSystems().isEmpty() ) {
-                spatialMetadata.setCoordinateSystems( smd.getCoordinateSystems() );
-            }
-            if ( spatialMetadata.getEnvelope() == null ) {
-                spatialMetadata.setEnvelope( smd.getEnvelope() );
-            } else {
-                if ( smd.getEnvelope() != null ) {
-                    spatialMetadata.setEnvelope( spatialMetadata.getEnvelope().merge( smd.getEnvelope() ) );
-                }
-            }
-        }
-    }
-
     /**
      * Copies any fields from md which are currently not set (applies to description and spatial metadata only).
      * 
@@ -254,10 +228,12 @@ public class LayerMetadata {
         } else {
             mergeDescription( md.getDescription() );
         }
-        if ( spatialMetadata == null ) {
-            spatialMetadata = md.getSpatialMetadata();
-        } else {
-            mergeSpatialMetadata( md.getSpatialMetadata() );
+        if ( spatialMetadata == null && md.getSpatialMetadata() != null ) {
+            spatialMetadata = new SpatialMetadata( md.getSpatialMetadata() );
+        } else if ( spatialMetadata != null && md.getSpatialMetadata() == null ) {
+            spatialMetadata = new SpatialMetadata( spatialMetadata );
+        } else if ( spatialMetadata != null && md.getSpatialMetadata() != null ) {
+            spatialMetadata = this.spatialMetadata.merge( md.getSpatialMetadata() );
         }
     }
 
@@ -394,6 +370,25 @@ public class LayerMetadata {
      */
     public void setAuthorities( List<Pair<String, String>> authorities ) {
         this.authorities = authorities;
+    }
+
+    private void mergeDescription( Description desc ) {
+        if ( desc != null ) {
+            if ( description.getTitles() == null || description.getTitles().isEmpty() ) {
+                description.setTitles( desc.getTitles() );
+            }
+            if ( description.getAbstracts() == null || description.getAbstracts().isEmpty() ) {
+                description.setAbstracts( desc.getAbstracts() );
+            }
+            if ( description.getKeywords() == null || description.getKeywords().isEmpty() ) {
+                description.setKeywords( desc.getKeywords() );
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "LayerMetadata [description=" + description + ", spatialMetadata=" + spatialMetadata + ", ...]";
     }
 
 }

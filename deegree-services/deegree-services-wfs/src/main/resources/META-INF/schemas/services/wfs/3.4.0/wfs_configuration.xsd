@@ -18,6 +18,25 @@
             </sequence>
           </complexType>
         </element>
+        <element name="SupportedRequests" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element name="SupportedEncodings" type="wfs:Encodings" minOccurs="0" />
+              <element name="GetCapabilities" minOccurs="0" type="wfs:RequestType"/>
+              <element name="DescribeFeatureType" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetFeature" minOccurs="0" type="wfs:RequestType"/>
+              <element name="Transaction" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetFeatureWithLock" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetGmlObject" minOccurs="0" type="wfs:RequestType"/>
+              <element name="LockFeature" minOccurs="0" type="wfs:RequestType"/>
+              <element name="GetPropertyValue" minOccurs="0" type="wfs:RequestType"/>
+              <element name="CreateStoredQuery" minOccurs="0" type="wfs:RequestType"/>
+              <element name="DropStoredQuery" minOccurs="0" type="wfs:RequestType" />
+              <element name="ListStoredQueries" minOccurs="0" type="wfs:RequestType"/>
+              <element name="DescribeStoredQueries" minOccurs="0" type="wfs:RequestType"/>
+            </sequence>
+          </complexType>
+        </element>
         <element name="FeatureStoreId" minOccurs="0" maxOccurs="unbounded" type="string" />
         <element name="EnableTransactions" minOccurs="0" default="false">
           <complexType>
@@ -33,8 +52,11 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
+        <element ref="wfs:DisabledResources" minOccurs="0" />
+        <element name="EnableResponsePaging" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
+        <element name="ResolveTimeOutInSeconds" type="positiveInteger" minOccurs="0" />
         <element name="QueryCheckAreaOfUse" type="boolean" minOccurs="0" default="false" />
         <element name="StoredQuery" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element ref="wfs:AbstractFormat" minOccurs="0" maxOccurs="unbounded" />
@@ -71,6 +93,18 @@
       </attribute>
     </complexType>
   </element>
+
+  <element name="DisabledResources">
+    <annotation>
+      <documentation>Contains a sequence of url patterns which should not be resolved during transaction response.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Pattern" type="string" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+
 
   <!-- AbstractFormat and substitutions -->
   <element name="AbstractFormat" abstract="true" type="wfs:AbstractFormatType" />
@@ -178,6 +212,12 @@
       </sequence>
     </complexType>
   </element>
+  
+  <complexType name="RequestType">
+    <sequence>
+      <element name="SupportedEncodings" minOccurs="0" type="wfs:Encodings" />
+    </sequence>
+  </complexType>
 
   <simpleType name="WFSVersionType">
     <restriction base="string">
@@ -195,7 +235,19 @@
       <enumeration value="GML_32" />
     </restriction>
   </simpleType>
-
+  
+  <simpleType name="Encodings">
+    <list>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="kvp" />
+          <enumeration value="xml" />
+          <enumeration value="soap" />
+        </restriction>
+      </simpleType>
+    </list>
+  </simpleType>    
+                    
   <simpleType name="IdentifierGenerationOptionType">
     <restriction base="string">
       <enumeration value="UseExisting">
@@ -223,6 +275,17 @@
           </documentation>
         </annotation>
       </enumeration>
+      <enumeration value="UseExistingResolvingReferencesInternally">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            raise an exception.
+            Furthermore it is allowed to insert features with references to already inserted features as well as features from the GML to insert.
+          </documentation>
+        </annotation>
+      </enumeration>
     </restriction>
   </simpleType>
+
 </schema>

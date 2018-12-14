@@ -162,8 +162,7 @@ class LockFeatureHandler {
         }
 
         writer.writeEndElement();
-        writer.writeEndDocument();
-        writer.close();
+        writer.flush();
     }
 
     private void writeLockFeatureResponse110( HttpResponseBuffer response, Lock lock )
@@ -186,8 +185,7 @@ class LockFeatureHandler {
         }
 
         writer.writeEndElement();
-        writer.writeEndDocument();
-        writer.close();
+        writer.flush();
     }
 
     private void writeLockFeatureResponse200( HttpResponseBuffer response, Lock lock )
@@ -210,8 +208,7 @@ class LockFeatureHandler {
         }
 
         writer.writeEndElement();
-        writer.writeEndDocument();
-        writer.close();
+        writer.flush();
     }
 
     private void writeFeaturesLocked100or110( Lock lock, XMLStreamWriter writer )

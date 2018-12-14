@@ -80,6 +80,8 @@ public class GmlFormatOptions {
 
     private final NamespaceBindings prebindNamespaces;
 
+    private final boolean enableResponsePaging;
+
     /**
      * Creates a new {@link GmlFormatOptions} instance.
      * 
@@ -103,6 +105,8 @@ public class GmlFormatOptions {
      *            simplifier to apply to exported geometries, can be <code>null</code> (no simplification performed)
      * @param prebindNamespaces
      *            namespaces to bind in the root element of GetFeature responses, can be <code>null</code>
+     * @param enableResponsePaging
+     *            is response paging enabled
      */
     public GmlFormatOptions( final GMLVersion gmlVersion, final QName responseContainerEl,
                              final QName responseFeatureMemberEl, final String schemaLocation,
@@ -110,7 +114,7 @@ public class GmlFormatOptions {
                              final int queryMaxFeatures, final boolean checkAreaOfUse,
                              final CoordinateFormatter formatter, final String appSchemaBaseURL, final String mimeType,
                              final boolean exportOriginalSchema, final SFSProfiler geometrySimplifier,
-                             final NamespaceBindings prebindNamespaces ) {
+                             final NamespaceBindings prebindNamespaces, final boolean enableResponsePaging ) {
         this.gmlVersion = gmlVersion;
         this.responseContainerEl = responseContainerEl;
         this.responseFeatureMemberEl = responseFeatureMemberEl;
@@ -125,6 +129,7 @@ public class GmlFormatOptions {
         this.exportOriginalSchema = exportOriginalSchema;
         this.geometrySimplifier = geometrySimplifier;
         this.prebindNamespaces = prebindNamespaces;
+        this.enableResponsePaging = enableResponsePaging;
     }
 
     /**
@@ -225,6 +230,13 @@ public class GmlFormatOptions {
      */
     public NamespaceBindings getPrebindNamespaces() {
         return prebindNamespaces;
+    }
+
+    /**
+     * @return is response paging enabled
+     */
+    public boolean isEnableResponsePaging() {
+        return enableResponsePaging;
     }
 
 }

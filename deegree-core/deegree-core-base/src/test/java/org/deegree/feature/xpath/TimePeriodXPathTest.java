@@ -52,17 +52,32 @@ public class TimePeriodXPathTest {
         assertEquals( "2001-05-23", value.getAsText() );
     }
 
+    @Test
+    public void evaluateEndPositionIndeterminatePosition()
+                            throws Exception {
+        final TypedObjectNode[] result = evaluate( "time_period_indeterminate.gml",
+                                                   "/gml:TimePeriod/gml:endPosition/@indeterminatePosition" );
+        assertEquals( 1, result.length );
+        final PrimitiveValue value = (PrimitiveValue) result[0];
+        assertEquals( "unknown", value.getAsText() );
+    }
+
     private TypedObjectNode[] evaluate( final String xpath )
+                            throws Exception, FilterEvaluationException {
+        return evaluate( "time_period_minimal.gml", xpath );
+    }
+
+    private TypedObjectNode[] evaluate( final String example, final String xpath )
                             throws Exception, FilterEvaluationException {
         final SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml/3.2" );
-        final TimeObject object = readMinimalExample();
+        final TimeObject object = readExample( example );
         return new TypedObjectNodeXPathEvaluator().eval( object, new ValueReference( xpath, nsContext ) );
     }
 
-    private TimeObject readMinimalExample()
+    private TimeObject readExample( final String example )
                             throws Exception {
-        final GMLStreamReader reader = getGmlStreamReader( "time_period_minimal.gml" );
+        final GMLStreamReader reader = getGmlStreamReader( example );
         final XMLStreamReader xmlStream = reader.getXMLReader();
         return new GmlTimePeriodReader( reader ).read( xmlStream );
     }

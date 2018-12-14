@@ -327,7 +327,7 @@ class TransactionXmlReader200 extends AbstractTransactionXmlReader {
         if ( new QName( WFS_200_NS, "Value" ).equals( xmlStream.getName() ) ) {
             replacement = new PropertyReplacement( propertyName, xmlStream, updateAction );
         } else {
-            xmlStream.require( END_ELEMENT, WFS_200_NS, "ValueReference" );
+            xmlStream.require( END_ELEMENT, WFS_200_NS, "Property" );
             replacement = new PropertyReplacement( propertyName, null, updateAction );
             nextElement( xmlStream );
         }

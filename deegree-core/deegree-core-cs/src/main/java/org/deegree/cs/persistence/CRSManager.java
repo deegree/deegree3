@@ -36,9 +36,11 @@
 package org.deegree.cs.persistence;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +54,7 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
@@ -206,14 +209,20 @@ public class CRSManager implements Initializable, Destroyable {
     public synchronized CRSStore create( URL configURL )
                             throws CRSStoreException {
         String namespace = null;
+        XMLStreamReader xmlReader = null;
+        InputStream urlStream = null;
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            urlStream = configURL.openStream();
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( urlStream );
             XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = Messages.get( "CRSManager.CREATING_STORE_FAILED", configURL );
             LOG.error( msg );
             throw new CRSStoreException( msg );
+        } finally {
+            closeQuietly( xmlReader );
+            IOUtils.closeQuietly( urlStream );
         }
         LOG.debug( "Config namespace: '" + namespace + "'" );
         CRSStoreProvider provider = getProviders().get( namespace );

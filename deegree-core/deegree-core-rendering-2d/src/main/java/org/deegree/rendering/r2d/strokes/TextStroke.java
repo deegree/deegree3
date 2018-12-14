@@ -230,13 +230,18 @@ public class TextStroke implements Stroke {
             t.rotate( angle );
             t.translate( gap + length, lineHeight / 4 );
 
-            result.append( t.createTransformedShape( text ), false );
+            Shape transformedShape = t.createTransformedShape( text );
+            appendShape( result, transformedShape );
 
             length += gap + text.getBounds2D().getWidth();
 
             sog = wordsToRender.poll();
 
         }
+    }
+
+    protected void appendShape( GeneralPath result, Shape transformedShape ) {
+        result.append( transformedShape, false );
     }
 
     private LinkedList<String> extractWords() {
@@ -445,25 +450,19 @@ public class TextStroke implements Stroke {
         double textWidth = glyphVector.getLogicalBounds().getWidth();
         double shapeLength = getShapeLength( shape );
 
-        if ( !linePlacement.center ) {
-            textWidth += linePlacement.initialGap;
+        double initialGap = linePlacement.initialGap;
+        if ( linePlacement.center && !linePlacement.repeat ) {
+            double intialGapCenter = shapeLength / 2 - textWidth / 2;
+            if ( intialGapCenter >= linePlacement.initialGap ) {
+                initialGap = intialGapCenter;
+            }
         }
 
-        if ( textWidth > shapeLength ) {
+        if ( textWidth + initialGap > shapeLength ) {
             return new GeneralPath();
         }
 
         shape = handleUpsideDown( shape );
-
-        double initialGap;
-        if ( linePlacement.center && !linePlacement.repeat ) {
-            initialGap = shapeLength / 2 - textWidth / 2;
-            if ( initialGap < linePlacement.initialGap ) {
-                initialGap = linePlacement.initialGap;
-            }
-        } else {
-            initialGap = linePlacement.initialGap;
-        }
 
         if ( linePlacement.wordWise ) {
             GeneralPath path = tryWordWise( shape, initialGap );
@@ -551,7 +550,9 @@ public class TextStroke implements Stroke {
             t.setToTranslation( x, y );
             t.rotate( angle );
             t.translate( -px - advance, -py + lineHeight / 4 );
-            result.append( t.createTransformedShape( glyph ), false );
+
+            appendShape( result, t.createTransformedShape( glyph ) );
+
             state.next += ( advance + state.nextAdvance );
             state.currentChar++;
             if ( linePlacement.repeat && state.currentChar >= length ) {

@@ -161,6 +161,29 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
     }
 
     /**
+     * Parses an OWS 2.0.0 <code>GetCapabilitiesType</code> into a {@link GetCapabilities} object.
+     * 
+     * @return <code>GetCapabilities</code> object corresponding to the input document
+     * @throws XMLParsingException
+     *             if the document contains syntactic or semantic errors
+     */
+    public GetCapabilities parse200()
+                            throws XMLParsingException {
+        // @updateSequence (optional)
+        String updateSequence = rootElement.getAttributeValue( new QName( "updateSequence" ) );
+        // ows200:AcceptVersions (optional)
+        String[] versions = getNodesAsStrings( rootElement, new XPath( "ows200:AcceptVersions/ows200:Version/text()",
+                                                                       nsContext ) );
+        // ows200:Sections (optional)
+        List<String> sections = parseSections( OWS200_PREFIX );
+        // ows200:AcceptFormats (optional)
+        List<String> formats = parse200Formats();
+        // ows200:AcceptLanguages (optional)
+        List<String> languages = parse200Languages();
+        return new GetCapabilities( null, Arrays.asList( versions ), sections, formats, updateSequence, languages );
+    }
+
+    /**
      * @return all parsed Sections
      */
     private List<String> parseSections( String nsPrefix ) {
@@ -180,4 +203,26 @@ public class GetCapabilitiesXMLParser extends OWSCommonXMLAdapter {
         }
         return sections;
     }
+
+    private List<String> parse200Formats() {
+        List<OMElement> formatElements = getElements( rootElement,
+                                                      new XPath( "ows200:AcceptFormats/ows200:OutputFormat", nsContext ) );
+        List<String> formats = new ArrayList<String>( formatElements.size() );
+        for ( OMElement formatElement : formatElements ) {
+            formats.add( formatElement.getText() );
+        }
+        return formats;
+    }
+
+    private List<String> parse200Languages() {
+        List<OMElement> languageElements = getElements( rootElement,
+                                                        new XPath( "ows200:AcceptLanguages/ows200:Language", nsContext ) );
+        List<String> languages = new ArrayList<String>();
+        for ( OMElement languageElement : languageElements ) {
+            String language = languageElement.getText();
+            languages.add( language );
+        }
+        return languages;
+    }
+
 }

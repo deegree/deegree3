@@ -201,6 +201,26 @@ If you specify an HTTP URL instead of a relative path the behaviour is the same 
     <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
   </l:Style>
 
+A full example you will find below:
+
+.. code-block:: xml
+
+  <l:StyleRef>
+  <l:StyleStoreId>road_styles</l:StyleStoreId>
+    <l:Style>
+      <l:StyleName>highways</l:StyleName>
+      <l:LayerNameRef>highways</l:LayerNameRef>
+      <l:StyleNameRef>highways</l:StyleNameRef>
+      <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
+    </l:Style>
+    <l:Style>
+      <l:LegendStyle>
+        <l:LayerNameRef>highways</l:LayerNameRef>
+        <l:StyleNameRef>highways_legend</l:StyleNameRef>
+      </l:LegendStyle>
+    </l:Style>
+  </l:StyleRef>
+
 ^^^^^^^^^^^^^^^^^
 Rendering options
 ^^^^^^^^^^^^^^^^^
@@ -341,7 +361,7 @@ In most cases, a configuration like the following is sufficient:
   <TileLayers xmlns="http://www.deegree.org/layers/tile"
               xmlns:d="http://www.deegree.org/metadata/description" 
               xmlns:l="http://www.deegree.org/layers/base"
-              configVersion="3.2.0">
+              configVersion="3.4.0">
     <TileLayer>
       <l:Name>example</l:Name>
       <d:Title>Example INSPIRE layer</d:Title>
@@ -373,7 +393,7 @@ All you need to configure is the coverage store and an optional style store:
   <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                   xmlns:d="http://www.deegree.org/metadata/description"
                   xmlns:l="http://www.deegree.org/layers/base"
-                  configVersion="3.2.0">
+                  configVersion="3.4.0">
     <AutoLayers>
       <CoverageStoreId>dem</CoverageStoreId>
       <StyleStoreId>heightmap</StyleStoreId>
@@ -393,7 +413,7 @@ The manual configuration requires the definition of a coverage store, and one or
   <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                   xmlns:d="http://www.deegree.org/metadata/description"
                   xmlns:l="http://www.deegree.org/layers/base"
-                  configVersion="3.2.0">
+                  configVersion="3.4.0">
     <CoverageStoreId>dem</CoverageStoreId>
     <CoverageLayer>
     <!-- standard layer options -->
@@ -412,7 +432,7 @@ The remote WMS layer configuration is always based on a single ``RemoteWMS`` res
 
 .. code-block:: xml
 
-  <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" configVersion="3.2.0">
+  <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" configVersion="3.4.0">
     <RemoteWMSId>d3</RemoteWMSId>
     <!-- more detailed options would follow here -->
   </RemoteWMSLayers>

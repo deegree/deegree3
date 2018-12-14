@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ogc="http://www.opengis.net/ogc" xmlns="http://www.opengis.net/se"
+  targetNamespace="http://www.opengis.net/se" elementFormDefault="qualified">
+
+  <xsd:import namespace="http://www.opengis.net/ogc" schemaLocation="http://schemas.opengis.net/filter/1.1.0/filter.xsd" />
+  <xsd:redefine schemaLocation="http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+
+    <xsd:complexType name="SymbolizerType">
+      <xsd:complexContent>
+        <xsd:extension base="SymbolizerType">
+          <xsd:sequence>
+            <xsd:element name="GeometryExt" minOccurs="0">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element ref="ogc:expression" />
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="LinePlacementType">
+      <xsd:complexContent>
+        <xsd:extension base="LinePlacementType">
+          <xsd:sequence>
+            <xsd:element name="PreventUpsideDown" minOccurs="0" type="xsd:boolean" />
+            <xsd:element name="Center" minOccurs="0" type="xsd:boolean" />
+            <xsd:element name="WordWise" minOccurs="0" type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ShadedReliefType">
+      <xsd:complexContent>
+        <xsd:extension base="ShadedReliefType">
+          <xsd:sequence>
+            <xsd:element name="AzimuthAngle" type="xsd:double" default="315.0" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Specifies the Azimuth in degrees (0 to 360).
+                  This is the position of the light source.
+                  0
+                  degrees means North,
+                  and counting is done clock-wise. The default value is 315
+                  (North-West).
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="IlluminationAngle" type="xsd:double" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Specifies the vertical angle of the light
+                  source (0 to 90). Default is 45 degrees.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ParameterValueType" mixed="true">
+      <xsd:complexContent>
+        <xsd:extension base="ParameterValueType">
+          <xsd:attribute name="type">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="Standard" />
+                <xsd:enumeration value="Round" />
+                <xsd:enumeration value="Edged" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+          <xsd:attribute name="substraction">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="None" />
+                <xsd:enumeration value="NegativeOffset" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="GraphicStrokeType">
+      <xsd:complexContent>
+        <xsd:extension base="GraphicStrokeType">
+          <xsd:sequence>
+            <xsd:element name="PositionPercentage" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="OnlineResourceType">
+      <xsd:complexContent>
+        <xsd:extension base="OnlineResourceType">
+          <xsd:sequence>
+            <xsd:element ref="ogc:expression" minOccurs="0" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+  </xsd:redefine>
+</xsd:schema>
