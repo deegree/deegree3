@@ -72,13 +72,13 @@ import org.deegree.geometry.validation.event.RingNotClosed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.operation.IsSimpleOp;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.IsSimpleOp;
 
 /**
  * Performs topological validation of {@link Geometry} objects.
@@ -361,7 +361,7 @@ public class GeometryValidator {
             LOG.debug( "Surface patch. Validating spatial relations between exterior ring and interior rings." );
             for ( int ringIdx = 0; ringIdx < interiorJTSRings.size(); ringIdx++ ) {
                 LinearRing interiorJTSRing = interiorJTSRings.get( ringIdx );
-                com.vividsolutions.jts.geom.Geometry intersection = interiorJTSRing.intersection( exteriorJTSRing );
+                org.locationtech.jts.geom.Geometry intersection = interiorJTSRing.intersection( exteriorJTSRing );
                 if ( !intersection.isEmpty() ) {
                     LOG.debug( "Exterior ring intersects interior ring." );
                     Point location = getPoint( intersection.getCoordinate(), null );
@@ -400,7 +400,7 @@ public class GeometryValidator {
                     }
                     LinearRing interior1JTSRing = interiorJTSRings.get( ring1Idx );
                     LinearRing interior2JTSRing = interiorJTSRings.get( ring2Idx );
-                    com.vividsolutions.jts.geom.Geometry intersection = interior1JTSRing.intersection( interior2JTSRing );
+                    org.locationtech.jts.geom.Geometry intersection = interior1JTSRing.intersection( interior2JTSRing );
                     if ( !intersection.isEmpty() ) {
                         LOG.debug( "Interior ring intersects interior ring." );
                         Point location = getPoint( intersection.getCoordinate(), null );
@@ -433,7 +433,7 @@ public class GeometryValidator {
         return isValid;
     }
 
-    private boolean isSinglePoint( com.vividsolutions.jts.geom.Geometry intersection ) {
+    private boolean isSinglePoint( org.locationtech.jts.geom.Geometry intersection ) {
         System.out.println (intersection);
         if ( intersection.getNumGeometries() != 1 ) {
             return false;
