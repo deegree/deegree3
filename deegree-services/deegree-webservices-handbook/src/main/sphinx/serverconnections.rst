@@ -29,6 +29,15 @@ JDBC connections
 
 These resources define connections to SQL databases, such as PostgreSQL/PostGIS, Oracle Spatial or Microsoft SQL Server.
 
+deegree currently supports the following backends:
+
+* PostgreSQL 9.3, 9.4, 9.5, 9.6 with PostGIS extension 2.2, 2.3, 2.4
+* Oracle Spatial 12c
+* Microsoft SQL Server 2012
+
+.. tip::
+    If you want to use Oracle Spatial or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
+
 .. hint::
    By default, deegree webservices includes JDBC drivers for connecting to PostgreSQL and Derby databases. If you want to make a connection to other SQL databases (e.g. Oracle), you will need to add a compatible JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
 

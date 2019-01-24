@@ -39,10 +39,18 @@ import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMS_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.deegree.services.wms.controller.capabilities.Wms130SoapExtendedCapabilitesWriter.SOAPWMS_NS;
 import static org.deegree.services.wms.controller.capabilities.Wms130SoapExtendedCapabilitesWriter.SOAPWMS_PREFIX;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.xmlmatchers.XmlMatchers.hasXPath;
 import static org.xmlmatchers.transform.XmlConverters.xml;
 
@@ -54,6 +62,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.Schema;
 
+import org.deegree.services.encoding.SupportedEncodings;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -74,12 +83,36 @@ public class Wms130SoapExtendedCapabilitesWriterTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
         String postUrl = "http://post.url/soap";
-        writer.writeSoapWmsExtendedCapabilites( streamWriter, postUrl );
+        SupportedEncodings supportedEncodings = mockSupportedEncodings();
+        writer.writeSoapWmsExtendedCapabilites( streamWriter, postUrl, supportedEncodings );
         streamWriter.close();
 
         assertThat( xml( stream.toString() ),
                     hasXPath( "//soapwms:ExtendedCapabilities/soapwms:SOAP/wms:OnlineResource/@xlink:href",
                               nsBindings(), equalTo( postUrl ) ) );
+    }
+
+    @Test
+    public void testWriteSoapWmsExtendedCapabilites_NotContainsGetMap()
+                            throws Exception {
+        Wms130SoapExtendedCapabilitesWriter writer = new Wms130SoapExtendedCapabilitesWriter();
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+        String postUrl = "http://post.url/soap";
+        SupportedEncodings supportedEncodings = mockSupportedEncodingsNoGetMap();
+        writer.writeSoapWmsExtendedCapabilites( streamWriter, postUrl, supportedEncodings );
+        streamWriter.close();
+
+        assertThat( xml( stream.toString() ),
+                    hasXPath( "//soapwms:ExtendedCapabilities/soapwms:SOAP/soapwms:SupportedOperations/soapwms:Operation[@name = 'GetCapabilities']",
+                              nsBindings() ) );
+        assertThat( xml( stream.toString() ),
+                    hasXPath( "//soapwms:ExtendedCapabilities/soapwms:SOAP/soapwms:SupportedOperations/soapwms:Operation[@name = 'GetFeatureInfo']",
+                              nsBindings() ) );
+        assertThat( xml( stream.toString() ),
+                    not( hasXPath( "//soapwms:ExtendedCapabilities/soapwms:SOAP/soapwms:SupportedOperations/soapwms:Operation[@name = 'GetMap']",
+                                   nsBindings() ) ) );
     }
 
     @Ignore("Requires access to referenced schema")
@@ -90,7 +123,8 @@ public class Wms130SoapExtendedCapabilitesWriterTest {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
-        writer.writeSoapWmsExtendedCapabilites( streamWriter, "http://post.url/soap" );
+        SupportedEncodings supportedEncodings = mockSupportedEncodings();
+        writer.writeSoapWmsExtendedCapabilites( streamWriter, "http://post.url/soap", supportedEncodings );
         streamWriter.close();
 
         assertThat( xml( stream.toString() ), XmlMatchers.conformsTo( schema() ) );
@@ -108,6 +142,20 @@ public class Wms130SoapExtendedCapabilitesWriterTest {
         simpleNamespaceContext.withBinding( WMS_PREFIX, WMSNS );
         simpleNamespaceContext.withBinding( XLINK_PREFIX, XLNNS );
         return simpleNamespaceContext;
+    }
+
+    private SupportedEncodings mockSupportedEncodings() {
+        SupportedEncodings supportedEncodings = mock( SupportedEncodings.class );
+        when( supportedEncodings.isEncodingSupported( any( Enum.class ), anyString() ) ).thenReturn( true );
+        return supportedEncodings;
+    }
+
+    private SupportedEncodings mockSupportedEncodingsNoGetMap() {
+        SupportedEncodings supportedEncodings = mock( SupportedEncodings.class );
+        when( supportedEncodings.isEncodingSupported( GetCapabilities, "SOAP" ) ).thenReturn( true );
+        when( supportedEncodings.isEncodingSupported( GetFeatureInfo, "SOAP" ) ).thenReturn( true );
+        when( supportedEncodings.isEncodingSupported( GetMap, "SOAP" ) ).thenReturn( false );
+        return supportedEncodings;
     }
 
 }

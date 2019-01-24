@@ -37,7 +37,7 @@ package org.deegree.protocol.wps.client.output;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -61,7 +61,7 @@ public class ComplexOutput extends ExecutionOutput {
 
     private final ComplexFormat complexAttribs;
 
-    private final URL url;
+    private final URI uri;
 
     private final StreamBufferStore store;
 
@@ -70,8 +70,8 @@ public class ComplexOutput extends ExecutionOutput {
      * 
      * @param id
      *            output parameter identifier, must not be <code>null</code>
-     * @param url
-     *            web-accessible URL for accessing the resource, must not be <code>null</code>
+     * @param uri
+     *            web-accessible URI for accessing the resource, must not be <code>null</code>
      * @param mimeType
      *            mime type of the complex data, can be <code>null</code> (unspecified)
      * @param encoding
@@ -79,9 +79,9 @@ public class ComplexOutput extends ExecutionOutput {
      * @param schema
      *            XML schema of the complex data, can be <code>null</code> (unspecified)
      */
-    public ComplexOutput( CodeType id, URL url, String mimeType, String encoding, String schema ) {
+    public ComplexOutput( CodeType id, URI uri, String mimeType, String encoding, String schema ) {
         super( id );
-        this.url = url;
+        this.uri = uri;
         this.store = null;
         this.complexAttribs = new ComplexFormat( mimeType, null, schema );
     }
@@ -102,7 +102,7 @@ public class ComplexOutput extends ExecutionOutput {
      */
     public ComplexOutput( CodeType id, StreamBufferStore store, String mimeType, String encoding, String schema ) {
         super( id );
-        this.url = null;
+        this.uri = null;
         this.store = store;
         this.complexAttribs = new ComplexFormat( mimeType, encoding, schema );
     }
@@ -134,7 +134,7 @@ public class ComplexOutput extends ExecutionOutput {
         store.close();
         is.close();
         this.complexAttribs = new ComplexFormat( mimeType, encoding, schema );
-        this.url = null;
+        this.uri = null;
     }
 
     /**
@@ -147,16 +147,16 @@ public class ComplexOutput extends ExecutionOutput {
     }
 
     /**
-     * Returns the web-accessible URL for the complex data (as provided by the process).
+     * Returns the web-accessible URI for the complex data (as provided by the process).
      * <p>
      * This method is only applicable if the parameter has been requested as reference.
      * </p>
      * 
-     * @return the web-accessible URL, or <code>null</code> if the parameter has been returned in the response document
+     * @return the web-accessible URI, or <code>null</code> if the parameter has been returned in the response document
      *         or raw
      */
-    public URL getWebAccessibleURL() {
-        return url;
+    public URI getWebAccessibleURI() {
+        return uri;
     }
 
     /**
@@ -174,8 +174,8 @@ public class ComplexOutput extends ExecutionOutput {
                             throws XMLStreamException, IOException {
         XMLStreamReader xmlReader = null;
         XMLInputFactory inFactory = XMLInputFactory.newInstance();
-        if ( url != null ) {
-            xmlReader = inFactory.createXMLStreamReader( url.openStream() );
+        if ( uri != null ) {
+            xmlReader = inFactory.createXMLStreamReader( uri.toURL().openStream() );
         } else {
             xmlReader = inFactory.createXMLStreamReader( store.getInputStream() );
         }
@@ -200,8 +200,8 @@ public class ComplexOutput extends ExecutionOutput {
     public InputStream getAsBinaryStream()
                             throws IOException {
         InputStream is = null;
-        if ( url != null ) {
-            is = url.openStream();
+        if ( uri != null ) {
+            is = uri.toURL().openStream();
         } else {
             is = store.getInputStream();
         }

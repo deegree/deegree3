@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-coveragestores</artifactId>
-    <version>3.4-RC4-SNAPSHOT</version>
+    <version>3.4.4-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -78,7 +78,7 @@
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
+      <artifactId>ojdbc8</artifactId>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
@@ -98,11 +98,7 @@
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>xdb</artifactId>
+      <artifactId>xdb6</artifactId>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>

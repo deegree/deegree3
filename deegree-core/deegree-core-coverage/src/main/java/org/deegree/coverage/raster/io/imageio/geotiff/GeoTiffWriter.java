@@ -299,6 +299,12 @@ public class GeoTiffWriter {
      */
     private static void write( AbstractRaster raster, ImageWriter writer )
                             throws IOException {
+        write( RasterFactory.imageFromRaster( raster ), raster.getRasterReference(), writer );
+
+    }
+
+    private static void write( BufferedImage img, RasterGeoReference ref, ImageWriter writer )
+                            throws IOException {
         ImageWriteParam encodeParam = writer.getDefaultWriteParam();
         IIOMetadata metadata = writer.getDefaultImageMetadata( null, encodeParam );
         TIFFDirectory tiffDir = null;
@@ -309,21 +315,20 @@ public class GeoTiffWriter {
                                    + e.getLocalizedMessage(), e );
         }
 
-        TIFFField tag = createModelTiePointTag( raster.getRasterReference() );
+        TIFFField tag = createModelTiePointTag( ref );
         if ( tag != null ) {
             tiffDir.addTIFFField( tag );
         }
-        tag = createModelPixelScaleTag( raster.getRasterReference() );
+        tag = createModelPixelScaleTag( ref );
         if ( tag != null ) {
             tiffDir.addTIFFField( tag );
         }
-        tag = createDirectoryTag( raster.getRasterReference() );
+        tag = createDirectoryTag( ref );
         if ( tag != null ) {
             tiffDir.addTIFFField( tag );
         }
         metadata = tiffDir.getAsMetadata();
-        BufferedImage image = RasterFactory.imageFromRaster( raster );
-        IIOImage wImage = new IIOImage( image, null, metadata );
+        IIOImage wImage = new IIOImage( img, null, metadata );
         writer.write( wImage );
 
     }
@@ -372,5 +377,14 @@ public class GeoTiffWriter {
         write( raster, writer );
         stream.flush();
         stream.close();
+    }
+
+    public static void save( BufferedImage img, RasterGeoReference ref, OutputStream out )
+                            throws IOException {
+        ImageOutputStream stream = ImageIO.createImageOutputStream( out );
+        ImageWriter writer = getWriter();
+        writer.setOutput( stream );
+        write( img, ref, writer );
+        stream.flush();
     }
 }

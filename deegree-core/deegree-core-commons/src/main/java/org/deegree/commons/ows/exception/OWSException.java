@@ -122,7 +122,11 @@ public class OWSException extends Exception {
      * what the text says
      */
     public static final String LOCK_HAS_EXPIRED = "LockHasExpired";
-    
+
+    /**
+     * the layer is not queryable by get feature info
+     */
+    public static final String LAYER_NOT_QUERYABLE = "LayerNotQueryable";
 
     // OSW standard exceptions (+GetCapabilities exceptions)
     /**
