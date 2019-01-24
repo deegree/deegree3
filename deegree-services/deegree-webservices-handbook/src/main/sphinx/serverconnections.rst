@@ -29,6 +29,15 @@ JDBC connections
 
 These resources define connections to SQL databases, such as PostgreSQL/PostGIS, Oracle Spatial or Microsoft SQL Server.
 
+deegree currently supports the following backends:
+
+* PostgreSQL 9.3, 9.4, 9.5, 9.6 with PostGIS extension 2.2, 2.3, 2.4
+* Oracle Spatial 12c
+* Microsoft SQL Server 2012
+
+.. tip::
+    If you want to use Oracle Spatial or Microsoft SQL Server, you will need to add additional modules first. This is described in :ref:`anchor-db-libraries`.
+
 .. hint::
    By default, deegree webservices includes JDBC drivers for connecting to PostgreSQL and Derby databases. If you want to make a connection to other SQL databases (e.g. Oracle), you will need to add a compatible JDBC driver manually. This is described in :ref:`anchor-oraclejars`.
 
@@ -292,7 +301,7 @@ Prior to deegree webservices release 3.4, a simpler (but limited) configuration 
 
 .. code-block:: xml
 
-  <JDBCConnection configVersion="3.0.0" xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <JDBCConnection configVersion="3.4.0" xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd">
     <Url>jdbc:postgresql://localhost:5432/inspire</Url>
     <User>postgres</User>
@@ -329,7 +338,7 @@ Let's have a look at an example:
 
 .. code-block:: xml
 
-  <RemoteWMS xmlns="http://www.deegree.org/remoteows/wms" configVersion="3.1.0">
+  <RemoteWMS xmlns="http://www.deegree.org/remoteows/wms" configVersion="3.4.0">
     <CapabilitiesDocumentLocation
       location="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1" />
     <ConnectionTimeout>10</ConnectionTimeout>
@@ -357,7 +366,7 @@ Let's have a look at an example:
 
 .. code-block:: xml
 
-  <RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts" configVersion="3.2.0">
+  <RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts" configVersion="3.4.0">
     <CapabilitiesDocumentLocation
       location="http://deegree3-testing.deegree.org/utah-workspace/services?request=GetCapabilities&amp;service=WMTS&amp;version=1.0.0" />
     <ConnectionTimeout>10</ConnectionTimeout>

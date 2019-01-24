@@ -55,7 +55,6 @@ import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.utils.CloseableIterator;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -95,8 +94,7 @@ public class DefaultLockManager implements LockManager {
      * @throws FeatureStoreException
      *             if the initialization of the locking backend fails
      */
-    public DefaultLockManager( FeatureStore store, ConnectionProvider connection )
-                            throws FeatureStoreException {
+    public DefaultLockManager( FeatureStore store, ConnectionProvider connection ) throws FeatureStoreException {
         this.store = store;
         this.connection = connection;
         initDatabase();
@@ -329,7 +327,7 @@ public class DefaultLockManager implements LockManager {
                 LOG.debug( "Using connection: " + conn );
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery( "SELECT ID,ACQUIRED,EXPIRES FROM LOCKS" );
-                lockIter = new ResultSetIterator<Lock>( rs, conn, stmt ) {
+                lockIter = new ResultSetIterator<Lock>( rs, conn, stmt) {
                     @Override
                     protected Lock createElement( ResultSet rs )
                                             throws SQLException {
@@ -382,7 +380,7 @@ public class DefaultLockManager implements LockManager {
                 rs = stmt.executeQuery( "SELECT ACQUIRED,EXPIRES FROM LOCKS WHERE ID=" + lockIdInt + "" );
                 if ( !rs.next() ) {
                     String msg = Messages.getMessage( "LOCK_NO_SUCH_ID", lockId );
-                    throw new InvalidParameterValueException( msg, "lockId" );
+                    throw new LockHasExpiredException( msg, "lockId" );
                 }
                 Timestamp acquired = rs.getTimestamp( 1 );
                 Timestamp expires = rs.getTimestamp( 2 );

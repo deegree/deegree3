@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms;
 
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
@@ -97,19 +98,13 @@ public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
 
-    /**
-     * 
-     */
     public StyleRegistry registry;
 
     MapOptionsMaps layerOptions = new MapOptionsMaps();
 
     MapOptions defaultLayerOptions;
 
-    /**
-     * The current update sequence.
-     */
-    public int updateSequence = 0; // TODO how to restore this after restart?
+    private int updateSequence; // TODO how to restore this after restart?
 
     private List<Theme> themes;
 
@@ -124,7 +119,9 @@ public class MapService {
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, Workspace workspace ) throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
+                            throws MalformedURLException {
+        this.updateSequence = updateSequence;
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -303,9 +300,11 @@ public class MapService {
                 }
 
                 if ( !l.getMetadata().isQueryable() ) {
-                    continue;
+                    throw new OWSException( "GetFeatureInfo is requested on a Layer (name: "
+                                            + l.getMetadata().getName() + ") that is not queryable.",
+                                            LAYER_NOT_QUERYABLE );
                 }
-
+                
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -406,6 +405,13 @@ public class MapService {
      */
     public int getGlobalMaxFeatures() {
         return defaultLayerOptions.getMaxFeatures();
+    }
+
+    /**
+     * @return the current update sequence
+     */
+    public int getCurrentUpdateSequence() {
+        return updateSequence;
     }
 
 }

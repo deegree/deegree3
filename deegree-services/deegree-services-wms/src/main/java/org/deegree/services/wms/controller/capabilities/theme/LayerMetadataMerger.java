@@ -61,13 +61,13 @@ import org.deegree.theme.Themes;
  * @since 3.3
  */
 class LayerMetadataMerger {
-    
+
     private static final int QUERYABLE_DEFAULT_MASK = 1;
-    
+
     private static final int QUERYABLE_DISABLED_MASK = 2;
-    
+
     private static final int QUERYABLE_ENABLED_MASK = 4;
-    
+
     /**
      * Returns the combined layer metadata for the given theme/sublayers.
      *
@@ -79,31 +79,22 @@ class LayerMetadataMerger {
      */
     LayerMetadata merge( final Theme theme ) {
         final LayerMetadata themeMetadata = theme.getLayerMetadata();
-        LayerMetadata layerMetadata = null;
-        
+        LayerMetadata layerMetadata = new LayerMetadata( null, null, null );
+
         int queryable = 0;
+        boolean opaque = false;
+        int cascaded = 0;
         
         for ( final Layer l : Themes.getAllLayers( theme ) ) {
             queryable |= analyseQueryable( l.getMetadata() );
-            
-            if ( layerMetadata == null ) {
-                layerMetadata = l.getMetadata();
-            } else {
-                layerMetadata.merge( l.getMetadata() );
-            }
+            if ( checkIfOpaque( l.getMetadata() ) )
+                opaque = true;
+            if ( checkIfLargerCascadedValue( cascaded, l.getMetadata() ) )
+                cascaded = l.getMetadata().getCascaded();
+            layerMetadata.merge( l.getMetadata() );
         }
         themeMetadata.merge( layerMetadata );
-        
-        if ( themeMetadata.getMapOptions() == null ) {
-            themeMetadata.setMapOptions( new MapOptions( null, null, null, -1, -1 ) );
-        }
-        
-        if ( queryable == QUERYABLE_DISABLED_MASK ) {
-            themeMetadata.getMapOptions().setFeatureInfoRadius( 0 );
-        } else {
-            themeMetadata.getMapOptions().setFeatureInfoRadius( -1 );
-        }
-            
+        adjustMapOptions( themeMetadata, queryable, opaque, cascaded );
         return themeMetadata;
     }
 
@@ -144,9 +135,9 @@ class LayerMetadataMerger {
     private int analyseQueryable( LayerMetadata m ) {
         if ( m.getMapOptions() == null )
             return QUERYABLE_DEFAULT_MASK;
-        
+
         int r = m.getMapOptions().getFeatureInfoRadius();
-        
+
         if ( r < 0 )
             return QUERYABLE_DEFAULT_MASK;
         else if ( r == 0 )
@@ -154,4 +145,26 @@ class LayerMetadataMerger {
         else
             return QUERYABLE_ENABLED_MASK;
     }
+
+    private boolean checkIfOpaque( LayerMetadata metadata ) {
+        return metadata != null && metadata.getMapOptions() != null && metadata.getMapOptions().isOpaque();
+    }
+
+    private boolean checkIfLargerCascadedValue( int cascaded, LayerMetadata metadata ) {
+        return metadata != null && cascaded < metadata.getCascaded();
+    }
+
+    private void adjustMapOptions( LayerMetadata themeMetadata, int queryable, boolean opaque, int cascaded ) {
+        if ( themeMetadata.getMapOptions() == null ) {
+            themeMetadata.setMapOptions( new MapOptions( null, null, null, -1, -1 ) );
+        }
+        if ( queryable == QUERYABLE_DISABLED_MASK ) {
+            themeMetadata.getMapOptions().setFeatureInfoRadius( 0 );
+        } else {
+            themeMetadata.getMapOptions().setFeatureInfoRadius( -1 );
+        }
+        themeMetadata.getMapOptions().setOpaque( opaque );
+        themeMetadata.setCascaded( cascaded );
+    }
+
 }

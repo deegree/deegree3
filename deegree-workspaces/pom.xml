@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-pre22-SNAPSHOT</version>
+    <version>3.4.4-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -47,7 +47,6 @@
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
-    <module>deegree-workspace-wps-jrxml</module>
     <module>deegree-workspace-wpvs</module>
     <module>deegree-workspace-xplan40</module>
   </modules>

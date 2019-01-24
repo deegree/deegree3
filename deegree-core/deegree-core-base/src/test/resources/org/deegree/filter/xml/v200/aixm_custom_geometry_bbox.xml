@@ -5,8 +5,8 @@
   <BBOX>
     <ValueReference>aixm:timeSlice/aixm:AirportHeliportTimeSlice/aixm:ARP</ValueReference>
     <gml:Envelope srsName="urn:ogc:def:crs:EPSG:4326">
-      <gml:lowerCorner>-32.04 52.27</gml:lowerCorner>
-      <gml:upperCorner>-32.03 52.29</gml:upperCorner>
+      <gml:lowerCorner>-32.040 52.270</gml:lowerCorner>
+      <gml:upperCorner>-32.030 52.290</gml:upperCorner>
     </gml:Envelope>
   </BBOX>
 </Filter>

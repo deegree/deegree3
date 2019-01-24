@@ -41,6 +41,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +54,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.codec.binary.Base64;
-import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.io.StreamBufferStore;
 import org.deegree.commons.xml.XMLAdapter;
@@ -175,7 +176,7 @@ public class ExecuteResponse100Reader {
                     String href = reader.getAttributeValue( null, "href" );
                     ComplexFormat attribs = parseComplexAttributes();
                     String mimeType = attribs.getMimeType();
-                    output = new ComplexOutput( id, new URL( href ), mimeType, attribs.getEncoding(),
+                    output = new ComplexOutput( id, new URI( href ), mimeType, attribs.getEncoding(),
                                                 attribs.getSchema() );
                     XMLStreamUtils.nextElement( reader );
                 }
@@ -188,7 +189,7 @@ public class ExecuteResponse100Reader {
                 XMLStreamUtils.nextElement( reader ); // </Output>
                 XMLStreamUtils.nextElement( reader );
             }
-        } catch ( MalformedURLException e ) {
+        } catch ( URISyntaxException e ) {
             e.printStackTrace();
         }
 
@@ -287,7 +288,8 @@ public class ExecuteResponse100Reader {
 
         StreamBufferStore tmpSink = new StreamBufferStore();
         try {
-            if ( attribs.getMimeType().startsWith( "text/xml" ) || attribs.getMimeType().startsWith( "application/xml" ) ) {
+            if ( attribs.getMimeType().matches( "^text/.*\\bxml\\b.*" ) || 
+                 attribs.getMimeType().matches( "^application/.*\\bxml\\b.*" ) ) {
                 XMLOutputFactory fac = XMLOutputFactory.newInstance();
                 fac.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
                 XMLStreamWriter xmlWriter = fac.createXMLStreamWriter( tmpSink, "UTF-8" );

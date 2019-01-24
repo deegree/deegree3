@@ -1353,7 +1353,15 @@ public class WKTWriter {
         if ( writer == null ) {
             throw new NullPointerException( "The writer may not be null." );
         }
-        WKTWriter wktW = new WKTWriter( null, null );
+        Set<WKTFlag> flags = new HashSet<WKTFlag>();
+        int dim =geom.getCoordinateDimension();
+        if (dim == 3){
+            flags.add( WKTWriter.WKTFlag.USE_3D );
+        }
+        else{
+            flags = null;
+        }
+        WKTWriter wktW = new WKTWriter( flags, null );
         wktW.writeGeometry( geom, writer );
     }
 

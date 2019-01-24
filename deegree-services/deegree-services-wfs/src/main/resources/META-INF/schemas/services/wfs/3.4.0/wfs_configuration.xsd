@@ -52,6 +52,8 @@
           <!-- DisableResponseBuffering is deprecated -->
           <element name="DisableResponseBuffering" type="boolean" minOccurs="0" default="true" />
         </choice>
+        <element ref="wfs:DisabledResources" minOccurs="0" />
+        <element name="EnableResponsePaging" type="boolean" minOccurs="0" default="false" />
         <element name="QueryCRS" type="string" minOccurs="1" maxOccurs="unbounded" />
         <element name="QueryMaxFeatures" type="integer" minOccurs="0" default="15000" />
         <element name="ResolveTimeOutInSeconds" type="positiveInteger" minOccurs="0" />
@@ -91,6 +93,18 @@
       </attribute>
     </complexType>
   </element>
+
+  <element name="DisabledResources">
+    <annotation>
+      <documentation>Contains a sequence of url patterns which should not be resolved during transaction response.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Pattern" type="string" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+
 
   <!-- AbstractFormat and substitutions -->
   <element name="AbstractFormat" abstract="true" type="wfs:AbstractFormatType" />
@@ -258,6 +272,16 @@
         <annotation>
           <documentation>
             Indicates that the WFS will generate new and unique feature identifiers for inserted features.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="UseExistingResolvingReferencesInternally">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            raise an exception.
+            Furthermore it is allowed to insert features with references to already inserted features as well as features from the GML to insert.
           </documentation>
         </annotation>
       </enumeration>

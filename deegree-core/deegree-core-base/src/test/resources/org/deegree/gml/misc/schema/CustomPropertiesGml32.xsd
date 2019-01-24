@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:app="http://www.deegree.org/app" targetNamespace="http://www.deegree.org/app"
+        elementFormDefault="qualified">
+
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd" />
+
+  <element name="ComplexFeature" type="app:ComplexFeatureType" substitutionGroup="gml:AbstractFeature" />
+  <complexType name="ComplexFeatureType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="simple" type="string" minOccurs="0" maxOccurs="unbounded" />
+          <!-- reference to codelist as often seen in INSPIRE schemas -->
+          <element name="type" nillable="true" type="gml:ReferenceType">
+            <annotation>
+              <documentation>-- Definition --</documentation>
+            </annotation>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+</schema>

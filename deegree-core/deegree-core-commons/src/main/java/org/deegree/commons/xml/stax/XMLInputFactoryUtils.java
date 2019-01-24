@@ -61,6 +61,7 @@ public class XMLInputFactoryUtils {
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 
         inputFactory.setProperty( XMLInputFactory.SUPPORT_DTD, false );
+	inputFactory.setProperty( XMLInputFactory.IS_COALESCING, true );
 
         return inputFactory;
     }
