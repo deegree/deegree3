@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 
@@ -84,15 +85,24 @@ public class Upload {
                 // unzip a workspace
                 String wsName = p.second.substring( 0, p.second.length() - 4 );
                 String dirName = p.second.endsWith( ".zip" ) ? wsName : p.second;
-                File dir = new File( getWorkspaceRoot(), dirName );
-                if ( isWorkspace( dirName ) ) {
+                File workspaceRoot = new File ( getWorkspaceRoot() );
+                File dir = new File( workspaceRoot, dirName );
+                if ( !FileUtils.directoryContains( workspaceRoot, dir ) ) {
+                    IOUtils.write( "Workspace " + wsName + " invalid.\n", resp.getOutputStream() );
+                    return;
+                } else if ( isWorkspace( dirName ) ) {
                     IOUtils.write( "Workspace " + wsName + " exists.\n", resp.getOutputStream() );
                     return;
                 }
                 unzip( in, dir );
                 IOUtils.write( "Workspace " + wsName + " uploaded.\n", resp.getOutputStream() );
             } else {
-                File dest = new File( p.first.getLocation(), p.second );
+                File workspaceDir = p.first.getLocation();
+                File dest = new File( workspaceDir, p.second );
+                if ( !FileUtils.directoryContains( workspaceDir, dest ) ) {
+                    IOUtils.write( "Unable to upload file: " + p.second + ".\n", resp.getOutputStream() );
+                    return;
+                }
                 if ( !dest.getParentFile().exists() && !dest.getParentFile().mkdirs() ) {
                     IOUtils.write( "Unable to create parent directory for upload.\n", resp.getOutputStream() );
                     return;
