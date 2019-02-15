@@ -75,7 +75,7 @@ import org.slf4j.Logger;
 
 @SupportedAnnotationTypes(value = { "org.deegree.commons.annotations.PackageLoggingNotes",
                                    "org.deegree.commons.annotations.LoggingNotes" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions({ "log4j.outputdir" })
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
