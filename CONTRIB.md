@@ -212,37 +212,3 @@ All committers are responsible for having read, and understood this document. An
 guidelines by sending an email to the mailing list with subject `Committer guidelines acceptance` and body 
 `I hereby accept the deegree committer guidelines. <Date> <Your Full Name>`.
 
-## Copyright holders
-
-The following list of committers (alphabetical order) will be considered as authorized deegree committers and copyright holders:
-- Andrei Aiordachioaie
-- Rutger Bezema
-- Florian Bingel
-- Reijer Copier
-- Alexander Erben
-- Lyn Goltz
-- Sebastian Goerke
-- Torsten Friebe
-- Jerry Huxtable
-- Andrei Ionita
-- Christian Kiehle
-- Ulrich Neumeister
-- Mike Nidel
-- Sebastian Niklasch
-- Jens Pabel
-- Alexander Padberg
-- Andreas Poth
-- Rammi aka Andreas M. Rammelt
-- Stephan Reichhelm
-- Andreas Schmitz
-- Markus Schneider
-- Dirk Stenger
-- Jason R. Surratt
-- Ugo Taddei
-- Steffen Thomas
-- Oliver Tonnhofer
-- Sven Tschirner
-- Georg Walenciak
-- Jeronimo Wanhoff
-- Juergen Weichand
-- Johannes Wilden
