@@ -290,7 +290,9 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportServiceProvider100( XMLStreamWriter writer, ServiceProvider serviceProvider )
                             throws XMLStreamException {
-        exportServiceProvider( writer, serviceProvider, OWS_NS );
+        if ( serviceProvider != null ) {
+            exportServiceProvider( writer, serviceProvider, OWS_NS );
+        }
     }
 
     /**
@@ -304,7 +306,9 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportServiceProvider110New( XMLStreamWriter writer, ServiceProvider serviceProvider )
                             throws XMLStreamException {
-        exportServiceProvider( writer, serviceProvider, OWS110_NS );
+        if ( serviceProvider != null ) {
+            exportServiceProvider( writer, serviceProvider, OWS110_NS );
+        }
     }
 
     /**
