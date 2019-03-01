@@ -11,9 +11,10 @@ deegree offers a REST like web interface to access and configure the deegree wor
 Setting up the interface
 ------------------------
 
-The servlet that handles the REST interface is already running if you use the standard ``web.xml`` deployment descriptor. For security reasons, you'll need to add a user with the role ``deegree`` to your Tomcat configuration, eg. by adding an appropriate line to the ``conf/tomcat-users.xml`` file.
+The servlet that handles the REST interface is already running if you use the standard ``web.xml`` deployment descriptor. For security reasons the REST API is only accessible after successful authentication against the servlet container.
+When using Apache Tomcat you'll need to add a user with the role ``deegree`` to your Tomcat configuration ``conf/tomcat-users.xml`` file.
 
-Once you did that, you can get an overview of available 'commands' by requesting ``http://localhost:8080/deegree-webservices/config``. You'll need to provide the username/password you configured in your Tomcat configuration.
+Once you did that, you can get an overview of available 'commands' by requesting ``http://localhost:8080/deegree-webservices/config``. You'll need to provide the username/password credentials you configured for every request within the HTTP header (HTTP BASIC authentication).
 
 Here's an example output::
 
@@ -42,7 +43,7 @@ Here's an example output::
    200 - ok
    403 - if you tried something you shouldn't have
    404 - if a file or directory needed to fulfill a request was not found
-   500 - if something serious went wrong on the server side
+   500 - if something seriously went wrong on the server side
 
 ----------------------------
 Detailed explanation

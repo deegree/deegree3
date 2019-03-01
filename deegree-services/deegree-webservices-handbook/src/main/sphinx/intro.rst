@@ -18,7 +18,7 @@ Characteristics of deegree WFS
 
 deegree WFS is an implementation of the `OGC Web Feature Service specification <http://www.opengeospatial.org/standards/wfs>`_. Notable features:
 
-* Official OGC reference implementation fo WFS 1.1.0 and WFS 2.0.0 Simple
+* Official OGC reference implementation for WFS 1.1.0 and WFS 2.0.0 Simple
 * Implements WFS standards 1.0.0, 1.1.0 and 2.0.0 [#f1]_
 * Fully transactional (even for rich data models)
 * Supports KVP, XML and SOAP requests
