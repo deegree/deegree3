@@ -54,7 +54,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.layer.dims.Dimension;
-import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.wms.MapService;
@@ -63,7 +62,6 @@ import org.deegree.services.wms.controller.capabilities.theme.WmsCapabilities111
 import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.theme.Theme;
-import org.deegree.theme.Themes;
 
 /**
  * <code>Capabilities111XMLAdapter</code>
@@ -103,7 +101,7 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 		this.controller = controller;
 		metadataWriter = new WmsCapabilities111MetadataWriter(identification, provider, getUrl, postUrl, controller);
 		final String mdUrlTemplate = getMetadataUrlTemplate(controller, getUrl);
-		themeWriter = new WmsCapabilities111ThemeWriter(metadata, this, mdUrlTemplate);
+		themeWriter = new WmsCapabilities111ThemeWriter(metadata, this, mdUrlTemplate, controller.getMetadataMerger());
 	}
 
 	private String getMetadataUrlTemplate(final WMSController controller, final String getUrl) {
@@ -163,19 +161,8 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 			writeElement(writer, "Title", "Root");
 
 			// TODO think about a push approach instead of a pull approach
-			LayerMetadata lmd = null;
-			for (Theme t : themes) {
-				for (org.deegree.layer.Layer l : Themes.getAllLayers(t)) {
-					if (lmd == null) {
-						lmd = l.getMetadata();
-					}
-					else {
-						lmd.merge(l.getMetadata());
-					}
-				}
-			}
-			if (lmd != null) {
-				SpatialMetadata smd = lmd.getSpatialMetadata();
+			SpatialMetadata smd = mergeSpatialMetadata(themes);
+			if (smd != null) {
 				writeSrsAndEnvelope(writer, smd.getCoordinateSystems(), smd.getEnvelope());
 			}
 
@@ -246,6 +233,10 @@ public class Capabilities111XMLAdapter extends XMLAdapter {
 		for (String format : exceptionsManager.getSupportedFormats(WMSConstants.VERSION_111)) {
 			writeElement(writer, "Format", format);
 		}
+	}
+
+	private SpatialMetadata mergeSpatialMetadata(List<Theme> themes) {
+		return controller.getMetadataMerger().mergeSpatialMetadata(themes);
 	}
 
 }

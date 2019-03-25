@@ -59,6 +59,12 @@ public class WmsMetadata extends AbstractResourceMetadata<OWS> {
 
 	private static final String CONFIG_JAXB_PACKAGE = "org.deegree.services.jaxb.wms";
 
+	public DeegreeWMS getCfg() {
+		return cfg;
+	}
+
+	private DeegreeWMS cfg;
+
 	public WmsMetadata(Workspace workspace, ResourceLocation<OWS> location, AbstractResourceProvider<OWS> provider) {
 		super(workspace, location, provider);
 	}
@@ -66,8 +72,8 @@ public class WmsMetadata extends AbstractResourceMetadata<OWS> {
 	@Override
 	public ResourceBuilder<OWS> prepare() {
 		try {
-			DeegreeWMS cfg = (DeegreeWMS) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(),
-					location.getAsStream(), workspace);
+			cfg = (DeegreeWMS) JAXBUtils.unmarshall(CONFIG_JAXB_PACKAGE, provider.getSchema(), location.getAsStream(),
+					workspace);
 
 			String id = cfg.getMetadataStoreId();
 			if (id != null) {

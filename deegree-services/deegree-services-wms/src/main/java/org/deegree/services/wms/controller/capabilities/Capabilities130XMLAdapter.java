@@ -115,7 +115,8 @@ public class Capabilities130XMLAdapter {
 		this.metadataWriter = new WmsCapabilities130MetadataWriter(identification, provider, getUrl, postUrl,
 				controller);
 		final String mdUrlTemplate = getMetadataUrlTemplate(controller, getUrl);
-		this.themeWriter = new WmsCapabilities130ThemeWriter(metadata, this, mdUrlTemplate);
+		this.themeWriter = new WmsCapabilities130ThemeWriter(metadata, this, mdUrlTemplate,
+				controller.getMetadataMerger());
 	}
 
 	private String getMetadataUrlTemplate(final WMSController controller, final String getUrl) {
@@ -274,15 +275,7 @@ public class Capabilities130XMLAdapter {
 	}
 
 	private SpatialMetadata mergeSpatialMetadata(List<Theme> themes) {
-		if (themes.isEmpty())
-			return null;
-		SpatialMetadata smd = new SpatialMetadata();
-		for (Theme t : themes) {
-			for (org.deegree.layer.Layer l : Themes.getAllLayers(t)) {
-				smd.merge(l.getMetadata().getSpatialMetadata());
-			}
-		}
-		return smd;
+		return controller.getMetadataMerger().mergeSpatialMetadata(themes);
 	}
 
 }
