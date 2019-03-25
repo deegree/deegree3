@@ -41,6 +41,7 @@
 package org.deegree.layer.persistence.feature;
 
 import static org.deegree.filter.Filters.addBBoxConstraint;
+import static org.deegree.filter.MatchAction.ANY;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
 import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -52,12 +53,16 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.query.Query;
 import org.deegree.feature.types.AppSchemas;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filters;
+import org.deegree.filter.MatchAction;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
@@ -135,6 +140,7 @@ public class FeatureLayer extends AbstractLayer {
             return null;
         }
 
+        filter = PlanWerkFilter.addFilter( query, filter );
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), ftName ) );
 
         QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
