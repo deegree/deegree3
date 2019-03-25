@@ -17,13 +17,22 @@ import static org.deegree.filter.MatchAction.ANY;
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
-public class PlanWerkFilter {
+public class PlanwerkByManagerIdFilter {
 
     private static final String PARAM_NAME_MANAGERID = "PLANWERK_MANAGERID";
 
     private static final QName PROP_NAME_MANAGERID = new QName( "http://www.deegree.org/xplanung/1/0",
                                                                 "xplanMgrPlanId" );
 
+    /**
+     * Adds a filter selecting the requested plans by the passed manager id.
+     *
+     * @param query
+     *                 which may contain the requested manager id as vendor specific parameter, mever <code>null</code>
+     * @param filter
+     *                 to append the filter by manager id, never <code>null</code>
+     * @return
+     */
     public static OperatorFilter addFilter( LayerQuery query, OperatorFilter filter ) {
         if ( query.getParameters().containsKey( PARAM_NAME_MANAGERID ) ) {
             String[] requestedManagerIds = retrieveRequestedManagerIds( query );
