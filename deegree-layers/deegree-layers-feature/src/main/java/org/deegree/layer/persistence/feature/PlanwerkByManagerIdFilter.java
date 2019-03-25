@@ -24,6 +24,9 @@ public class PlanwerkByManagerIdFilter {
     private static final QName PROP_NAME_MANAGERID = new QName( "http://www.deegree.org/xplanung/1/0",
                                                                 "xplanMgrPlanId" );
 
+    private PlanwerkByManagerIdFilter() {
+    }
+
     /**
      * Adds a filter selecting the requested plans by the passed manager id.
      *
