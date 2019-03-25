@@ -135,6 +135,7 @@ public class FeatureLayer extends AbstractLayer {
             return null;
         }
 
+        filter = PlanwerkByManagerIdFilter.addFilter( query, filter );
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), ftName ) );
 
         QueryBuilder builder = new QueryBuilder( featureStore, filter, ftName, bbox, query, geomProp, sortBy,
@@ -173,6 +174,7 @@ public class FeatureLayer extends AbstractLayer {
 
         QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
 
+        filter = PlanwerkByManagerIdFilter.addFilter( query, filter );
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), featureType ) );
 
         LOG.debug( "Querying the feature store(s)..." );
