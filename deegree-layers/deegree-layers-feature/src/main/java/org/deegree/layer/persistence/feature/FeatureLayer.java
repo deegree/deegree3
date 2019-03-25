@@ -177,6 +177,7 @@ public class FeatureLayer extends AbstractLayer {
 
         QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
 
+        filter = PlanwerkByManagerIdFilter.addFilter( query, filter );
         filter = Filters.repair( filter, AppSchemas.collectProperyNames( featureStore.getSchema(), featureType ) );
 
         LOG.debug( "Querying the feature store(s)..." );
