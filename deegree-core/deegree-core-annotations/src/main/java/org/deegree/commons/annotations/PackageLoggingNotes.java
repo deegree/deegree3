@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
 public @interface PackageLoggingNotes {
 
     /**
-     * @return the string that can be used as title string delimiting a log4j.properties section
+     * @return the string that can be used as title string delimiting a log4j2.xml section
      */
     String title() default "";
 

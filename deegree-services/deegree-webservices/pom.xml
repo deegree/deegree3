@@ -32,6 +32,7 @@
         <executions>
           <execution>
             <goals>
+              <goal>assemble-log4j</goal>
               <goal>generate-buildinfo</goal>
             </goals>
           </execution>
