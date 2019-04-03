@@ -786,6 +786,10 @@ public class WMSController extends AbstractOWS {
         return exceptionsManager;
     }
 
+    public void setMetadataProvider( OWSMetadataProvider metadataProvider ) {
+        this.metadataProvider = metadataProvider;
+    }
+
     private void initOfferedVersions( SupportedVersions supportedVersions ) {
         List<String> versions = null;
         if ( supportedVersions != null ) {
