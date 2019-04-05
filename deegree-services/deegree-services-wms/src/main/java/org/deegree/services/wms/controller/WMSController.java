@@ -158,6 +158,8 @@ import org.deegree.services.jaxb.wms.ServiceConfigurationType;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.wms.MapService;
+import org.deegree.services.wms.controller.capabilities.theme.DefaultMetadataMerger;
+import org.deegree.services.wms.controller.capabilities.theme.MetadataMerger;
 import org.deegree.services.wms.controller.capabilities.serialize.CapabilitiesManager;
 import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
@@ -784,6 +786,10 @@ public class WMSController extends AbstractOWS {
         return exceptionsManager;
     }
 
+    public void setMetadataProvider( OWSMetadataProvider metadataProvider ) {
+        this.metadataProvider = metadataProvider;
+    }
+
     private void initOfferedVersions( SupportedVersions supportedVersions ) {
         List<String> versions = null;
         if ( supportedVersions != null ) {
@@ -1148,6 +1154,10 @@ public class WMSController extends AbstractOWS {
         xmlWriter.writeAttribute( xsiNS, "schemaLocation",
                                   "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
         xmlWriter.writeStartElement( soapEnvNS, "Body" );
+    }
+
+    public MetadataMerger getMetadataMerger() {
+        return new DefaultMetadataMerger();
     }
 
     /**
