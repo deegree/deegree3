@@ -240,6 +240,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private IDGenMode idGenMode;
 
+    private boolean transactionCheckAreaOfUse = false;
+
     private boolean disableBuffering = true;
 
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
@@ -285,6 +287,7 @@ public class WebFeatureService extends AbstractOWS {
             IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
             this.idGenMode = parseIdGenMode( configuredIdGenMode );
             this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
+            this.transactionCheckAreaOfUse = enableTransactions.isCheckAreaOfUse();
         }
         if ( jaxbConfig.isEnableResponseBuffering() != null ) {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
@@ -1447,6 +1450,10 @@ public class WebFeatureService extends AbstractOWS {
      */
     public ReferencePatternMatcher getReferencePatternMatcher() {
         return referencePatternMatcher;
+    }
+
+    public boolean isTransactionCheckAreaOfUse() {
+        return this.transactionCheckAreaOfUse;
     }
 
     /**

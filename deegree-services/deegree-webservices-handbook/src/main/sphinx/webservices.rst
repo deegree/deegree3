@@ -124,6 +124,9 @@ By default, WFS-T requests will be rejected. Setting the ``EnableTransactions`` 
 * **GenerateNew** (default): New and unique ids are generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
 * **ReplaceDuplicate**: The WFS will try to use the original gml:id values that have been provided in the input. In case a certain identifier already exists in the backend, a new and unique identifier will be generated. References in the input GML (xlink:href) that point to a feature with an reassigned id are fixed as well, so reference consistency is maintained.
 
+Furthermore the option ``EnableTransactions`` has the optional attribute ``checkAreaOfUse`` which is false by default. This means that
+it is not checked if the geometries in a transaction request are in the valid area of the CRS. The check can be activated by setting the attribute to true.
+
 .. hint::
   Currently, transactions can only be enabled if your WFS is attached to a single feature store.
 

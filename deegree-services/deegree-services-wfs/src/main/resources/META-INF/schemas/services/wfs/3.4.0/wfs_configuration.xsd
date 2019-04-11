@@ -43,6 +43,7 @@
             <simpleContent>
               <extension base="boolean">
                 <attribute name="idGen" type="wfs:IdentifierGenerationOptionType" use="optional" default="GenerateNew" />
+                <attribute name="checkAreaOfUse" type="boolean" use="optional" default="false" />
               </extension>
             </simpleContent>
           </complexType>
