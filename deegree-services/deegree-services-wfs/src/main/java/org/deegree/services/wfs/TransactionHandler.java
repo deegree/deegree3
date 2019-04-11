@@ -209,14 +209,12 @@ class TransactionHandler {
      * 
      * @param response
      *            response that is used to write the result
-     * @param queryCRS
-     *            list of all supported CRS
      * @throws OWSException
      *             if a WFS specific exception occurs, e.g. a feature type is not served
      * @throws IOException
      * @throws XMLStreamException
      */
-    void doTransaction( HttpResponseBuffer response, List<ICRS> queryCRS )
+    void doTransaction( HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
 
         LOG.debug( "doTransaction: " + request );
@@ -243,7 +241,7 @@ class TransactionHandler {
                     break;
                 }
                 case INSERT: {
-                    doInsert( (Insert) operation, queryCRS );
+                    doInsert( (Insert) operation );
                     break;
                 }
                 case NATIVE: {
@@ -375,7 +373,7 @@ class TransactionHandler {
         }
     }
 
-    private void doInsert( Insert insert, List<ICRS> queryCRS )
+    private void doInsert( Insert insert )
                             throws OWSException {
 
         LOG.debug( "doInsert: " + insert );
@@ -392,17 +390,15 @@ class TransactionHandler {
             throw new OWSException( msg, NO_APPLICABLE_CODE );
         }
 
-        ICRS defaultCRS = determineDefaultCrs( insert, queryCRS );
+        ICRS defaultCRS = determineDefaultCrs( insert );
         GMLVersion inputFormat = determineFormat( request.getVersion(), insert.getInputFormat() );
 
         // TODO streaming
-        FeatureStoreTransaction ta = null;
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
-            evaluateSrsNameForFeatureCollection( fc, queryCRS, insert.getHandle() );
             FeatureStore fs = service.getStores()[0];
-            ta = acquireTransaction( fs );
+            FeatureStoreTransaction ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
             if ( mode == null ) {
                 if ( VERSION_110.equals( request.getVersion() ) ) {
@@ -930,78 +926,18 @@ class TransactionHandler {
         return ft.getName().getNamespaceURI();
     }
 
-    private ICRS determineDefaultCrs( Insert insert, List<ICRS> queryCRS )
-                            throws OWSException {
+    private ICRS determineDefaultCrs( Insert insert )
+                    throws OWSException {
         String srsName = insert.getSrsName();
         if ( srsName != null ) {
             try {
-                ICRS defaultCrs = CRSManager.lookup( insert.getSrsName() );
-                if ( !isCrsSupported( defaultCrs, queryCRS ) ) {
-                    String msg = "The value of the srsName parameter is not one of the SRS values the server claims to support in its capabilities document.";
-                    throw new OWSException( msg, INVALID_PARAMETER_VALUE, "srsName" );
-                }
-                return defaultCrs;
+                return CRSManager.lookup( insert.getSrsName() );
             } catch ( UnknownCRSException e ) {
                 String msg = "Cannot perform insert. Specified srsName '" + srsName + "' is not supported by this WFS.";
                 throw new OWSException( msg, INVALID_PARAMETER_VALUE, "srsName" );
             }
         }
         return null;
-    }
-
-    private void evaluateSrsNameForFeatureCollection( FeatureCollection fc, List<ICRS> queryCRS, String handle )
-                            throws OWSException {
-        for ( Feature feature : fc )
-            evaluateSrsNameForFeature( feature, queryCRS, handle );
-    }
-
-    private void evaluateSrsNameForFeature( Feature feature, List<ICRS> queryCRS, String handle )
-                            throws OWSException {
-        Set<Geometry> geometries = new LinkedHashSet<Geometry>();
-        findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<Feature>(), new LinkedHashSet<String>(),
-                                   new LinkedHashSet<String>() );
-        for ( Geometry geometry : geometries ) {
-            ICRS crs = geometry.getCoordinateSystem();
-            evaluateSrsName( crs, queryCRS, handle );
-            evaluateValidDomain( crs, geometry, handle );
-        }
-    }
-
-    private void evaluateSrsName( ICRS crs, List<ICRS> supportedCrs, String handle )
-                            throws OWSException {
-        if ( !isCrsSupported( crs, supportedCrs ) ) {
-            String message = "The value of the at least one geometrie srs is not one of the SRS values "
-                             + "the server claims to support in its capabilities document.";
-            if ( handle == null || "".equals( handle ) )
-                handle = "Transaction";
-            throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
-        }
-    }
-
-    private void evaluateValidDomain( ICRS crs, Geometry geometry, String handle )
-                            throws OWSException {
-        double[] validDomain = crs.getValidDomain();
-        if ( validDomain == null ) {
-            LOG.warn( "Valid domain of crs {} is not available. Check if geometry is inside the valid "
-                      + "domain not possible. The check is skipped and insert processed.", crs.getAlias() );
-            return;
-        }
-        Envelope validDomainBbox = GEOM_FACTORY.createEnvelope( validDomain[0], validDomain[1], validDomain[2],
-                                                                validDomain[3], crs );
-        if ( !geometry.isWithin( validDomainBbox ) ) {
-            String message = "At least one geometry is not in the valid domain of the srs.";
-            if ( handle == null || "".equals( handle ) )
-                handle = "Transaction";
-            throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
-        }
-    }
-
-    private boolean isCrsSupported( ICRS crs, List<ICRS> supportedCrs )
-                            throws OWSException {
-        if ( crs != null && supportedCrs != null )
-            if ( !supportedCrs.contains( crs ) )
-                return false;
-        return true;
     }
 
 }
