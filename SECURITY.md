@@ -10,6 +10,8 @@ currently being supported with security updates.
 | 3.4.x   | :white_check_mark: |
 | < 3.3   | :x:                |
 
+Please check also our [support matrix](https://github.com/deegree/deegree3/wiki/End-of-Life-and-Support-Matrix) for more detailed information.
+
 ## Reporting a Vulnerability
 
 If you encounter a security vulnerability in deegree please take care to report the issue in a responsible fashion:
