@@ -41,6 +41,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
@@ -123,6 +125,7 @@ public final class ProxySettings implements Initializable {
             LOG.info( "Using global 'proxy.xml'." );
             proxyConfigFile = globalProxy;
         } else {
+            setDefaultAuthenticator();
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
             return;
         }
@@ -141,6 +144,7 @@ public final class ProxySettings implements Initializable {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
             throw new ResourceInitException( msg, e );
         }
+        setDefaultAuthenticator();
         logProxyConfiguration( LOG );
         LOG.info( "" );
     }
@@ -450,6 +454,16 @@ public final class ProxySettings implements Initializable {
                   + ", ftp.proxyPassword=" + getFtpProxyPassword( false ) );
         log.info( "- nonProxyHosts=" + getNonProxyHosts() + ", http.nonProxyHosts=" + getHttpNonProxyHosts( false )
                   + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
+    }
+
+    private void setDefaultAuthenticator() {
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication( getHttpProxyUser( true ),
+                        getHttpProxyPassword( true ).toCharArray() );
+            }
+        } );
     }
 
 }
