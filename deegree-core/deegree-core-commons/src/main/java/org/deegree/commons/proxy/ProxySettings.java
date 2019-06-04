@@ -109,10 +109,9 @@ public final class ProxySettings implements Initializable {
 
     /**
      * Sets/augments the VM's proxy configuration.
-     * 
-     * @param dir
-     *            fallback directory, in case the workspace root has no proxy.xml
-     * 
+     *
+     * @param workspace proxy.xml located in the workspaces is used
+     *                  in case the workspace root has no proxy.xml, never <code>null</code>
      */
     public void init( Workspace workspace ) {
 
@@ -125,7 +124,7 @@ public final class ProxySettings implements Initializable {
             LOG.info( "Using global 'proxy.xml'." );
             proxyConfigFile = globalProxy;
         } else {
-            setDefaultAuthenticator();
+            setupAuthenticator();
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
             return;
         }
@@ -144,7 +143,7 @@ public final class ProxySettings implements Initializable {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
             throw new ResourceInitException( msg, e );
         }
-        setDefaultAuthenticator();
+        setupAuthenticator();
         logProxyConfiguration( LOG );
         LOG.info( "" );
     }
@@ -456,7 +455,7 @@ public final class ProxySettings implements Initializable {
                   + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
     }
 
-    private void setDefaultAuthenticator() {
+    private void setupAuthenticator() {
         Authenticator.setDefault(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
