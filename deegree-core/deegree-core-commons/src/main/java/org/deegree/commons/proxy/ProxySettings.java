@@ -456,13 +456,19 @@ public final class ProxySettings implements Initializable {
     }
 
     private void setupAuthenticator() {
-        Authenticator.setDefault(new Authenticator() {
+        String httpProxyUser = getHttpProxyUser( true );
+        String httpProxyPassword = getHttpProxyPassword( true );
+        if ( httpProxyUser != null && httpProxyPassword != null )
+            Authenticator.setDefault( createAuthenticator( httpProxyUser, httpProxyPassword ) );
+    }
+
+    private Authenticator createAuthenticator( String httpProxyUser, String httpProxyPassword ) {
+        return new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication( getHttpProxyUser( true ),
-                        getHttpProxyPassword( true ).toCharArray() );
+                return new PasswordAuthentication( httpProxyUser, httpProxyPassword.toCharArray() );
             }
-        } );
+        };
     }
 
 }
