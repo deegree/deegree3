@@ -47,7 +47,9 @@ import org.slf4j.Logger;
  * @author last edited by: $Author: stranger $
  * 
  * @version $Revision: $, $Date: $
+ * @deprecated This class is deprecated as of version 3.4 of deegree.
  */
+@Deprecated
 public class DuplicateMessageFilter extends AbstractFilter {
 
     private static final Logger LOG = getLogger( DuplicateMessageFilter.class );

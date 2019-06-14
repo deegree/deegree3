@@ -48,7 +48,9 @@ import java.lang.annotation.Target;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @deprecated This annotation is deprecated as of version 3.4 of deegree.
  */
+@Deprecated
 @Retention(SOURCE)
 @Target(TYPE)
 public @interface LoggingNotes {

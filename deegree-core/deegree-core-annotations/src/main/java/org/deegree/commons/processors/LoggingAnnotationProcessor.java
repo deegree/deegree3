@@ -71,12 +71,14 @@ import org.slf4j.Logger;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @deprecated This class is deprecated as of version 3.4 of deegree.
  */
 
 @SupportedAnnotationTypes(value = { "org.deegree.commons.annotations.PackageLoggingNotes",
                                    "org.deegree.commons.annotations.LoggingNotes" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions({ "log4j.outputdir" })
+@Deprecated
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
     private static final Logger LOG = getLogger( LoggingAnnotationProcessor.class );

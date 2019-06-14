@@ -43,15 +43,6 @@
               <goal>generate-portnumber</goal>
             </goals>
           </execution>
-          <execution>
-            <id>default</id>
-            <goals>
-              <goal>assemble-log4j</goal>
-            </goals>
-            <configuration>
-              <deegreeLoggingLevel>WARN</deegreeLoggingLevel>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
 
