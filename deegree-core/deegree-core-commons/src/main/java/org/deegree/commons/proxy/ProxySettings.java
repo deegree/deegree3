@@ -41,6 +41,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
@@ -107,10 +109,9 @@ public final class ProxySettings implements Initializable {
 
     /**
      * Sets/augments the VM's proxy configuration.
-     * 
-     * @param dir
-     *            fallback directory, in case the workspace root has no proxy.xml
-     * 
+     *
+     * @param workspace proxy.xml located in the workspaces is used
+     *                  in case the workspace root has no proxy.xml, never <code>null</code>
      */
     public void init( Workspace workspace ) {
 
@@ -123,6 +124,7 @@ public final class ProxySettings implements Initializable {
             LOG.info( "Using global 'proxy.xml'." );
             proxyConfigFile = globalProxy;
         } else {
+            setupAuthenticator();
             LOG.info( "No 'proxy.xml' file -- skipping set up of proxy configuration." );
             return;
         }
@@ -141,6 +143,7 @@ public final class ProxySettings implements Initializable {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
             throw new ResourceInitException( msg, e );
         }
+        setupAuthenticator();
         logProxyConfiguration( LOG );
         LOG.info( "" );
     }
@@ -450,6 +453,22 @@ public final class ProxySettings implements Initializable {
                   + ", ftp.proxyPassword=" + getFtpProxyPassword( false ) );
         log.info( "- nonProxyHosts=" + getNonProxyHosts() + ", http.nonProxyHosts=" + getHttpNonProxyHosts( false )
                   + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
+    }
+
+    private void setupAuthenticator() {
+        String httpProxyUser = getHttpProxyUser( true );
+        String httpProxyPassword = getHttpProxyPassword( true );
+        if ( httpProxyUser != null && httpProxyPassword != null )
+            Authenticator.setDefault( createAuthenticator( httpProxyUser, httpProxyPassword ) );
+    }
+
+    private Authenticator createAuthenticator( String httpProxyUser, String httpProxyPassword ) {
+        return new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication( httpProxyUser, httpProxyPassword.toCharArray() );
+            }
+        };
     }
 
 }
