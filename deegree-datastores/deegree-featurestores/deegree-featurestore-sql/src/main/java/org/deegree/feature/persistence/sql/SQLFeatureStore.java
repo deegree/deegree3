@@ -1554,6 +1554,8 @@ public class SQLFeatureStore implements FeatureStore {
 
             @SuppressWarnings("deprecation")
             private boolean isProperty( ValueReference propName, String expectedLocalPart ) {
+                if ( propName == null )
+                    return false;
                 Expr xPath = propName.getAsXPath();
                 if ( xPath instanceof LocationPath && !( (LocationPath) xPath ).getSteps().isEmpty() ) {
                     List<?> steps = ( (LocationPath) xPath ).getSteps();
