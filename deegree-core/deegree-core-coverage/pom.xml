@@ -48,10 +48,6 @@
       <artifactId>ehcache-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jai</groupId>
       <artifactId>jai-codec</artifactId>
     </dependency>
