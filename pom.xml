@@ -671,6 +671,11 @@
         <artifactId>netty</artifactId>
         <version>3.2.10.Final</version>
       </dependency>
+      <dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>Saxon-HE</artifactId>
+        <version>9.9.1-4</version>
+      </dependency>
       <!-- JAI -->
       <dependency>
         <groupId>jai</groupId>
