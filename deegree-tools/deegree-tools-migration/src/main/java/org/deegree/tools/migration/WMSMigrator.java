@@ -69,7 +69,7 @@ public class WMSMigrator {
             ws = new DefaultWorkspace( wsloc );
             ws.initAll();
             new FeatureLayerExtractor( ws ).extract();
-            new ThemeExtractor( ws ).transform();
+            ThemeExtractor.transform(ws);
         } catch ( Throwable e ) {
             System.out.println( "There was a problem transforming the configuration." );
             e.printStackTrace();
