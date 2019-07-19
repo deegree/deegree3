@@ -49,7 +49,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
+      <groupId>javax.media</groupId>
       <artifactId>jai-core</artifactId>
     </dependency>
     <dependency>

@@ -52,16 +52,12 @@
       <artifactId>xercesImpl</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
+      <groupId>com.sun.media</groupId>
       <artifactId>jai-codec</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-imageio</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-mlibwrapper</artifactId>
+      <groupId>com.github.jai-imageio</groupId>
+      <artifactId>jai-imageio-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
