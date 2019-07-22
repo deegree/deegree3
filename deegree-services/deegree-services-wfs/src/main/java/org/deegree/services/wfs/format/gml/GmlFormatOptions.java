@@ -41,6 +41,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 
 /**
  * Configuration options for {@link GmlFormat}.
@@ -82,6 +83,9 @@ public class GmlFormatOptions {
 
     private final boolean enableResponsePaging;
 
+    private final GMLSchemaInfoSet originalSchemaLocation;
+
+
     /**
      * Creates a new {@link GmlFormatOptions} instance.
      * 
@@ -114,7 +118,8 @@ public class GmlFormatOptions {
                              final int queryMaxFeatures, final boolean checkAreaOfUse,
                              final CoordinateFormatter formatter, final String appSchemaBaseURL, final String mimeType,
                              final boolean exportOriginalSchema, final SFSProfiler geometrySimplifier,
-                             final NamespaceBindings prebindNamespaces, final boolean enableResponsePaging ) {
+                             final NamespaceBindings prebindNamespaces, final boolean enableResponsePaging,
+                             final GMLSchemaInfoSet originalSchemaLocation ) {
         this.gmlVersion = gmlVersion;
         this.responseContainerEl = responseContainerEl;
         this.responseFeatureMemberEl = responseFeatureMemberEl;
@@ -130,6 +135,7 @@ public class GmlFormatOptions {
         this.geometrySimplifier = geometrySimplifier;
         this.prebindNamespaces = prebindNamespaces;
         this.enableResponsePaging = enableResponsePaging;
+        this.originalSchemaLocation = originalSchemaLocation;
     }
 
     /**
@@ -237,6 +243,11 @@ public class GmlFormatOptions {
      */
     public boolean isEnableResponsePaging() {
         return enableResponsePaging;
+    }
+
+
+    public GMLSchemaInfoSet getOriginalSchemaLocation() {
+        return originalSchemaLocation;
     }
 
 }

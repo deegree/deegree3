@@ -39,6 +39,7 @@ import static org.apache.commons.lang.StringUtils.trim;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -52,12 +53,14 @@ import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.geometry.io.DecimalCoordinateFormatter;
 import org.deegree.geometry.linearization.MaxErrorCriterion;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.ResultType;
 import org.deegree.protocol.wfs.getgmlobject.GetGmlObject;
 import org.deegree.protocol.wfs.getpropertyvalue.GetPropertyValue;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse;
 import org.deegree.services.jaxb.wfs.GMLFormat.GetFeatureResponse.PrebindNamespace;
 import org.deegree.services.jaxb.wfs.GeometryLinearization;
@@ -117,7 +120,7 @@ public class GmlFormat implements Format {
         this.master = master;
         this.options = new GmlFormatOptions( gmlVersion, null, null, null, false, false, master.getQueryMaxFeatures(),
                                              master.getCheckAreaOfUse(), null, null, gmlVersion.getMimeType(), false,
-                                             null, null, master.isEnableResponsePaging() );
+                                             null, null, master.isEnableResponsePaging(), null );
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
         this.gpvHandler = new GmlGetPropertyValueHandler( this );
@@ -136,6 +139,7 @@ public class GmlFormat implements Format {
     public GmlFormat( WebFeatureService master, org.deegree.services.jaxb.wfs.GMLFormat formatDef )
                             throws ResourceInitException {
         this.master = master;
+        final GMLVersion gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
 
         boolean generateBoundedByForFeatures = false, disableStreaming = false;
         if ( formatDef.isGenerateBoundedByForFeatures() != null ) {
@@ -144,6 +148,7 @@ public class GmlFormat implements Format {
 
         QName responseContainerEl = null, responseFeatureMemberEl = null;
         String schemaLocation = null, appSchemaBaseURL = null;
+        GMLSchemaInfoSet originalSchemaLocation = null;
 
         GetFeatureResponse responseConfig = formatDef.getGetFeatureResponse();
         boolean exportOriginalSchema = false;
@@ -170,6 +175,9 @@ public class GmlFormat implements Format {
                 if ( appSchemaBaseURL != null && appSchemaBaseURL.isEmpty() ) {
                     appSchemaBaseURL = null;
                 }
+            }
+            if ( responseConfig.getSchemaLocation() != null ) {
+                originalSchemaLocation = createGmlSchemaInfoSet(gmlVersion, responseConfig);
             }
             prebindNamespaces = getNamespaceBindings( responseConfig.getPrebindNamespace() );
         }
@@ -198,14 +206,13 @@ public class GmlFormat implements Format {
             throw new ResourceInitException( "Error initializing coordinate formatter: " + e.getMessage(), e );
         }
 
-        final GMLVersion gmlVersion = GMLVersion.valueOf( formatDef.getGmlVersion().value() );
         final String mimeType = trim( formatDef.getMimeType().get( 0 ) );
         final SFSProfiler geometrySimplifier = getSfsProfiler( formatDef.getGeometryLinearization() );
         this.options = new GmlFormatOptions( gmlVersion, responseContainerEl, responseFeatureMemberEl, schemaLocation,
                                              disableStreaming, generateBoundedByForFeatures, queryMaxFeatures,
                                              checkAreaOfUse, formatter, appSchemaBaseURL, mimeType,
                                              exportOriginalSchema, geometrySimplifier, prebindNamespaces,
-                                             master.isEnableResponsePaging() );
+                                             master.isEnableResponsePaging(), originalSchemaLocation );
 
         this.dftHandler = new GmlDescribeFeatureTypeHandler( this );
         this.gfHandler = new GmlGetFeatureHandler( this );
@@ -293,4 +300,15 @@ public class GmlFormat implements Format {
     public GmlFormatOptions getGmlFormatOptions() {
         return options;
     }
+
+    private GMLSchemaInfoSet createGmlSchemaInfoSet( GMLVersion gmlVersion,
+                                                     GetFeatureResponse responseConfig ) {
+        try {
+            URL url = this.master.getMetadata().getLocation().resolveToUrl( responseConfig.getSchemaLocation() );
+            return new GMLSchemaInfoSet( gmlVersion, url.toString() );
+        } catch ( Exception e ) {
+            throw new ResourceInitException( "Error resolving of initializing schema location: " + e.getMessage(), e );
+        }
+    }
+    
 }

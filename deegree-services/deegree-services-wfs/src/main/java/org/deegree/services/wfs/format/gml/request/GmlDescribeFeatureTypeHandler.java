@@ -250,12 +250,16 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
             if ( options.isExportOriginalSchema() ) {
-                GMLSchemaInfoSet gmlSchema = findGmlSchema( namespaces, version );
-                if ( gmlSchema != null ) {
-                    exportOriginalInfoSet( writer, gmlSchema, targetNs );
+                if (options.getOriginalSchemaLocation() != null) {
+                    exportOriginalInfoSet(writer, options.getOriginalSchemaLocation(), targetNs);
                 } else {
-                    LOG.warn( "Could not find original schema corresponding to the requested schema, try to reencode the schema!" );
-                    reencodeSchema( request, writer, targetNs, namespaces, version );
+                    GMLSchemaInfoSet gmlSchema = findGmlSchema(namespaces, version);
+                    if (gmlSchema != null) {
+                        exportOriginalInfoSet(writer, gmlSchema, targetNs);
+                    } else {
+                        LOG.warn("Could not find original schema corresponding to the requested schema, try to reencode the schema!");
+                        reencodeSchema(request, writer, targetNs, namespaces, version);
+                    }
                 }
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
