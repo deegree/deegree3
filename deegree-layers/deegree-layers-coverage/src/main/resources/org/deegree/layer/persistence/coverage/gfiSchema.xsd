@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://www.deegree.org/app"
+  xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/2.1.2/feature.xsd" />
+  <element name="data" substitutionGroup="gml:_Feature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="value" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <simpleContent>
+                  <extension base="decimal">
+                    <attribute name="uom" type="string" use="optional" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+</schema>
