@@ -138,30 +138,45 @@ public class AppSchemaMapper {
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      *
      * @param appSchema
-     *            application schema to be mapped, must not be <code>null</code>
+     *                         application schema to be mapped, must not be <code>null</code>
      * @param createBlobMapping
-     *            true, if BLOB mapping should be performed, false otherwise
+     *                         true, if BLOB mapping should be performed, false otherwise
      * @param createRelationalMapping
-     *            true, if relational mapping should be performed, false otherwise
+     *                         true, if relational mapping should be performed, false otherwise
      * @param geometryParams
-     *            parameters for storing geometries, must not be <code>null</code>
+     *                         parameters for storing geometries, must not be <code>null</code>
+     * @param maxLength
+     *                         max length of column names
+     * @param usePrefixedSQLIdentifiers
+     *                         <code>true</code> if the sql identifiers should be prefixed, <code>false</code> otherwise
+     * @param useIntegerFids
+     *                         <code>true</code> if the integer fids should be used, <code>false</code> for uuids
      */
     public AppSchemaMapper(AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                            GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
                            boolean useIntegerFids) {
         this(appSchema, createBlobMapping, createRelationalMapping, geometryParams, maxLength, usePrefixedSQLIdentifiers, useIntegerFids, DEFAULT_ALLOWED_CYCLE_DEPTH);
     }
+
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      *
      * @param appSchema
-     *            application schema to be mapped, must not be <code>null</code>
+     *                         application schema to be mapped, must not be <code>null</code>
      * @param createBlobMapping
-     *            true, if BLOB mapping should be performed, false otherwise
+     *                         true, if BLOB mapping should be performed, false otherwise
      * @param createRelationalMapping
-     *            true, if relational mapping should be performed, false otherwise
+     *                         true, if relational mapping should be performed, false otherwise
      * @param geometryParams
-     *            parameters for storing geometries, must not be <code>null</code>
+     *                         parameters for storing geometries, must not be <code>null</code>
+     * @param maxLength
+     *                         max length of column names
+     * @param usePrefixedSQLIdentifiers
+     *                         <code>true</code> if the sql identifiers should be prefixed, <code>false</code> otherwise
+     * @param useIntegerFids
+     *                         <code>true</code> if the integer fids should be used, <code>false</code> for uuids
+     * @param allowedCycleDepth
+     *                         depth of the allowed cycles
      */
     public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
