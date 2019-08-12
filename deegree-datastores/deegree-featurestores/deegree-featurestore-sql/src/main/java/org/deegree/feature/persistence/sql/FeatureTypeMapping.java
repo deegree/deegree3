@@ -68,7 +68,7 @@ public class FeatureTypeMapping {
 
     private final FIDMapping fidMapping;
 
-    private final List<SortCriterion> sortCriterion;
+    private final List<SortCriterion> defaultSortCriteria;
 
     private final Map<QName, Mapping> propToMapping;
 
@@ -85,15 +85,15 @@ public class FeatureTypeMapping {
      *            mapping for the feature id, must not be <code>null</code>
      * @param particleMappings
      *            particle mappings for the feature type, must not be <code>null</code>
-     * @param sortCriterion
+     * @param defaultSortCriteria
      *            default sort criterion for the feature type, must not be <code>null</code>
      */
     public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings,
-                               List<SortCriterion> sortCriterion ) {
+                               List<SortCriterion> defaultSortCriteria ) {
         this.ftName = ftName;
         this.table = table;
         this.fidMapping = fidMapping;
-        this.sortCriterion = sortCriterion;
+        this.defaultSortCriteria = defaultSortCriteria;
         this.propToMapping = new HashMap<QName, Mapping>();
         // TODO cope with non-QName XPaths as well
         for ( Mapping mapping : particleMappings ) {
@@ -161,8 +161,8 @@ public class FeatureTypeMapping {
      *
      * @return sort criterions, may be empty, but never <code>null</code>
      */
-    public List<SortCriterion> getSortCriterion() {
-        return sortCriterion;
+    public List<SortCriterion> getDefaultSortCriteria() {
+        return defaultSortCriteria;
     }
 
     /**

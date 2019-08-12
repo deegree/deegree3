@@ -138,7 +138,6 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -1485,7 +1484,7 @@ public class SQLFeatureStore implements FeatureStore {
         List<SortCriterion> defaultSortCriteria = null;
         FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
         if ( ftMapping != null ) {
-            defaultSortCriteria = ftMapping.getSortCriterion();
+            defaultSortCriteria = ftMapping.getDefaultSortCriteria();
         }
         PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
         AbstractWhereBuilder whereBuilder = dialect.getWhereBuilder( mapper, filter, sortCrit, defaultSortCriteria, allowInMemoryFiltering );
