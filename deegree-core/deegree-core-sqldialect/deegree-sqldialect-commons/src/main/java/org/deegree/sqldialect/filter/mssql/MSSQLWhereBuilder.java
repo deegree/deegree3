@@ -63,6 +63,7 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -71,6 +72,8 @@ import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
 import org.deegree.sqldialect.filter.islike.IsLikeString;
+
+import java.util.List;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Microsoft SQL Server databases.
@@ -93,6 +96,8 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
      *            filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use for generating the ORDER BY clause, can be <code>null</code>
+     * @param defaultSortCriteria
+     *             criteria to use for generating the ORDER-BY clause if the sort order is not specified by the query, may be <code>null</code>
      * @param allowPartialMappings
      *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
      * @throws FilterEvaluationException
@@ -101,9 +106,9 @@ public class MSSQLWhereBuilder extends AbstractWhereBuilder {
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
     public MSSQLWhereBuilder( SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                              SortProperty[] sortCrit, boolean allowPartialMappings ) throws FilterEvaluationException,
+                              SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings ) throws FilterEvaluationException,
                             UnmappableException {
-        super( dialect, mapper, filter, sortCrit );
+        super( dialect, mapper, filter, sortCrit, defaultSortCriteria );
         build( allowPartialMappings );
     }
 

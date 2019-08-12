@@ -89,7 +89,7 @@ public class MSSQLWhereBuilderTest {
         OperatorFilter filter = null;
         SortProperty[] sortCrit = null;
         boolean allowPartialMappings = false;
-        whereBuilder = new MSSQLWhereBuilder( sqldialect, mapper, filter, sortCrit, allowPartialMappings );
+        whereBuilder = new MSSQLWhereBuilder( sqldialect, mapper, filter, sortCrit, null, allowPartialMappings );
     }
 
     @Test

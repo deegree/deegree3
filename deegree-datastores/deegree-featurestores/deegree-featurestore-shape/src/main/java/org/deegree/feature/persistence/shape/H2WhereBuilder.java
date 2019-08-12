@@ -75,7 +75,7 @@ public class H2WhereBuilder extends AbstractWhereBuilder {
      */
     public H2WhereBuilder( SQLDialect dialect, OperatorFilter filter, SortProperty[] sort )
                             throws FilterEvaluationException {
-        super( dialect, null, filter, sort );
+        super( dialect, null, filter, sort, null );
         try {
             build( true );
         } catch ( UnmappableException e ) {

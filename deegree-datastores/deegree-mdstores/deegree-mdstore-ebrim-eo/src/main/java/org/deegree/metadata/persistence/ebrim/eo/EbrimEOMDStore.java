@@ -354,7 +354,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             }
 
             AbstractWhereBuilder wb = new PostGISWhereBuilder( null, propMapper, (OperatorFilter) query.getFilter(),
-                                                               query.getSorting(), false, useLegacyPredicates );
+                                                               query.getSorting(), null, false, useLegacyPredicates );
             AliasedRIMType returnType = propMapper.getReturnType( query.getReturnTypeNames() );
             StringBuilder idSelect = new StringBuilder( "SELECT DISTINCT(" );
             idSelect.append( propMapper.getTableAlias( returnType ) );
@@ -454,7 +454,7 @@ public class EbrimEOMDStore implements MetadataStore<RegistryObject> {
             }
 
             AbstractWhereBuilder wb = new PostGISWhereBuilder( null, propMapper, (OperatorFilter) query.getFilter(),
-                                                               query.getSorting(), false, useLegacyPredicates );
+                                                               query.getSorting(), null, false, useLegacyPredicates );
             AliasedRIMType returnType = propMapper.getReturnType( query.getReturnTypeNames() );
             StringBuilder sql = new StringBuilder( "SELECT COUNT(DISTINCT(" );
             sql.append( propMapper.getTableAlias( returnType ) );

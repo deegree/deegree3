@@ -68,6 +68,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Geometry;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -75,6 +76,8 @@ import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+
+import java.util.List;
 
 /**
  * {@link AbstractWhereBuilder} implementation for Oracle Spatial databases.
@@ -96,12 +99,14 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
      * 
      * @param dialect
      *            SQL dialect, must not be <code>null</code>
-     * @param mapping
+     * @param mapper
      *            provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
      * @param filter
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use generating the ORDER BY clause, can be <code>null</code>
+     * @param defaultSortCriteria
+     *             criteria to use for generating the ORDER-BY clause if the sort order is not specified by the query, may be <code>null</code>
      * @param allowPartialMappings
      *            if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
      * @throws FilterEvaluationException
@@ -109,9 +114,9 @@ class OracleWhereBuilder extends AbstractWhereBuilder {
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
     OracleWhereBuilder( OracleDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                        SortProperty[] sortCrit, boolean allowPartialMappings, int databaseMajorVersion )
+                        SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings, int databaseMajorVersion )
                             throws FilterEvaluationException, UnmappableException {
-        super( dialect, mapper, filter, sortCrit );
+        super( dialect, mapper, filter, sortCrit, defaultSortCriteria );
         this.databaseMajorVersion = databaseMajorVersion;
         build( allowPartialMappings );
     }
