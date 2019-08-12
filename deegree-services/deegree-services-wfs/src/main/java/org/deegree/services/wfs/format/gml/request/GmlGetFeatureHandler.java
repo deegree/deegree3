@@ -151,8 +151,19 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
         GMLVersion gmlVersion = options.getGmlVersion();
 
+        int returnMaxFeatures = options.getQueryMaxFeatures();
+        BigInteger count = request.getPresentationParams().getCount();
+        if ( count != null && ( options.getQueryMaxFeatures() < 1 || count.intValue() < options.getQueryMaxFeatures() ) ) {
+            returnMaxFeatures = count.intValue();
+        }
+
+        int startIndex = 0;
+        if ( request.getPresentationParams().getStartIndex() != null ) {
+            startIndex = request.getPresentationParams().getStartIndex().intValue();
+        }
+
         QueryAnalyzer analyzer = new QueryAnalyzer( request.getQueries(), format.getMaster(),
-                                                    format.getMaster().getStoreManager(), options.isCheckAreaOfUse() );
+                                                    format.getMaster().getStoreManager(), options.isCheckAreaOfUse(), returnMaxFeatures, startIndex );
         Lock lock = acquireLock( request, analyzer );
 
         String schemaLocation = getSchemaLocation( request.getVersion(), analyzer.getFeatureTypes() );
@@ -249,17 +260,6 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
                 xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
             }
-        }
-
-        int returnMaxFeatures = options.getQueryMaxFeatures();
-        BigInteger count = request.getPresentationParams().getCount();
-        if ( count != null && ( options.getQueryMaxFeatures() < 1 || count.intValue() < options.getQueryMaxFeatures() ) ) {
-            returnMaxFeatures = count.intValue();
-        }
-
-        int startIndex = 0;
-        if ( request.getPresentationParams().getStartIndex() != null ) {
-            startIndex = request.getPresentationParams().getStartIndex().intValue();
         }
 
         GMLStreamWriter gmlStream = createGMLStreamWriter( gmlVersion, xmlStream );
