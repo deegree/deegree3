@@ -48,12 +48,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -74,17 +76,13 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.id.IDGenerator;
-import org.deegree.feature.persistence.sql.jaxb.AbstractParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB;
+import org.deegree.feature.persistence.sql.jaxb.*;
 import org.deegree.feature.persistence.sql.jaxb.FIDMappingJAXB.ColumnJAXB;
-import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
-import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
-import org.deegree.feature.persistence.sql.jaxb.Join;
-import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
@@ -200,14 +198,15 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
         List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
+        List<SortCriterion> sortCriteria = createSortCriteria( ftDecl );
         if ( propDecls != null && !propDecls.isEmpty() ) {
-            buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls );
+            buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls, sortCriteria );
         } else {
-            buildFeatureTypeAndMapping( table, ftName, fidMapping );
+            buildFeatureTypeAndMapping( table, ftName, fidMapping, sortCriteria );
         }
     }
 
-    private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping )
+    private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping, List<SortCriterion> sortCriteria )
                             throws SQLException {
 
         LOG.debug( "Deriving properties and mapping for feature type '" + ftName + "' from table '" + table + "'" );
@@ -257,12 +256,12 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings, sortCriteria );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
     private void buildFeatureTypeAndMapping( TableName table, QName ftName, FIDMapping fidMapping,
-                                             List<JAXBElement<? extends AbstractParticleJAXB>> propDecls )
+                                             List<JAXBElement<? extends AbstractParticleJAXB>> propDecls, List<SortCriterion> sortCriteria  )
                             throws FeatureStoreException, SQLException {
 
         List<PropertyType> pts = new ArrayList<PropertyType>();
@@ -279,7 +278,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings, sortCriteria );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

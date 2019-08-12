@@ -47,6 +47,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -258,7 +259,7 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings, Collections.emptyList() );
         ftNameToMapping.put( ftName, ftMapping );
     }
 
@@ -279,7 +280,7 @@ public class MappedSchemaBuilderTableOld extends AbstractMappedSchemaBuilder {
         FeatureType ft = new GenericFeatureType( ftName, pts, false );
         ftNameToFt.put( ftName, ft );
 
-        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings );
+        FeatureTypeMapping ftMapping = new FeatureTypeMapping( ftName, table, fidMapping, mappings, Collections.emptyList() );
         ftNameToMapping.put( ftName, ftMapping );
     }
 

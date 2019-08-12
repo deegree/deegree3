@@ -49,10 +49,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
@@ -75,6 +77,7 @@ import org.deegree.feature.persistence.sql.BBoxTableMapping;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.feature.persistence.sql.blob.BlobCodec;
 import org.deegree.feature.persistence.sql.blob.BlobMapping;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
@@ -89,6 +92,7 @@ import org.deegree.feature.persistence.sql.jaxb.FeatureParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.GeometryParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.NullEscalationType;
+import org.deegree.feature.persistence.sql.jaxb.OrderByJAXB;
 import org.deegree.feature.persistence.sql.jaxb.PrimitiveParticleJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
@@ -327,7 +331,8 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             particleMappings.add( buildMapping( ftTable, new Pair<XSElementDeclaration, Boolean>( elDecl, TRUE ),
                                                 particle.getValue() ) );
         }
-        return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings );
+        List<SortCriterion> sortCriteria = createSortCriteria( ftMappingConf );
+        return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings, sortCriteria );
     }
 
     private FIDMapping buildFIDMapping( TableName table, QName ftName, FIDMappingJAXB config )

@@ -118,7 +118,7 @@ public class IdAnalyzerTest {
     private FeatureTypeMapping buildFeatureTypeMapping( final FeatureType ft, final String fidPrefix ) {
         final FIDMapping fidMapping = buildFidMapping( fidPrefix );
         return new FeatureTypeMapping( ft.getName(), new TableName( ft.getName().getLocalPart() ), fidMapping,
-                                       Collections.<Mapping> emptyList() );
+                                       Collections.<Mapping> emptyList(), Collections.emptyList() );
     }
 
     private FIDMapping buildFidMapping( final String fidPrefix ) {
