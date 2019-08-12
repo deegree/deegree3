@@ -113,6 +113,32 @@
       <attribute name="prefix" type="string" use="optional" />
     </complexType>
   </element>
+  <!-- === Order By === -->
+  <element name="OrderBy" >
+    <annotation>
+      <documentation>Defines the default sort order of features</documentation>
+      <appinfo>
+        <jaxb:class name="OrderByJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Column" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="name" type="string" use="required" />
+            <attribute name="sortOrder" default="ASC">
+              <simpleType>
+                <restriction base="string">
+                  <enumeration value="ASC" />
+                  <enumeration value="DESC" />
+                </restriction>
+              </simpleType>
+            </attribute>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
   <element name="AbstractIDGenerator" abstract="true" type="sqlfs:AbstractIDGeneratorType" />
   <complexType name="AbstractIDGeneratorType" abstract="true">
     <sequence />
@@ -150,6 +176,7 @@
     <complexType>
       <sequence>
         <element ref="sqlfs:FIDMapping" minOccurs="0" />
+        <element ref="sqlfs:OrderBy" minOccurs="0" />
         <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="table" type="string" use="required">
