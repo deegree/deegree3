@@ -137,7 +137,6 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -1356,6 +1355,11 @@ public class SQLFeatureStore implements FeatureStore {
             if ( wb.getOrderBy() != null ) {
                 sql.append( " ORDER BY " );
                 sql.append( wb.getOrderBy().getSQL() );
+            }
+
+            String fetchClause = dialect.getOffsetAndFetch( query.getMaxFeatures(), query.getStartIndex() );
+            if ( fetchClause != null ) {
+                sql.append( " " ).append( fetchClause ).append( " " );
             }
 
             LOG.debug( "SQL: {}", sql );

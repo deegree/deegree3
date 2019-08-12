@@ -307,4 +307,12 @@ public class Query {
     public int getMaxFeatures() {
         return maxFeatures;
     }
+
+    /**
+     * @return the index of the first feature to return
+     */
+    public int getStartIndex() {
+        return startIndex;
+    }
+
 }
