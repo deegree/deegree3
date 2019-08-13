@@ -35,7 +35,8 @@ public class AppSchemaMapperTest {
 
     private static final QName FEATURE_A = new QName( "http://test.de/schema", "FeatureA" );
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     private File schemaWithCycle;
 
@@ -43,7 +44,8 @@ public class AppSchemaMapperTest {
 
     private File schemaWithCycle3;
 
-    @Before public void copySchemas()
+    @Before
+    public void copySchemas()
                             throws IOException {
         InputStream resourceAsStream = AppSchemaMapperTest.class.getResourceAsStream( "schemaWithCycle.xsd" );
         this.schemaWithCycle = folder.newFile( "schemaWithCycle.xsd" );
@@ -58,7 +60,8 @@ public class AppSchemaMapperTest {
         IOUtils.copy( resourceAsStream3, new FileOutputStream( schemaWithCycle3 ) );
     }
 
-    @Test public void testWithDepth0()
+    @Test
+    public void testWithDepth0()
                             throws Exception {
         GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaWithCycle );
         AppSchema appSchema = xsdDecoder.extractAppSchema();
@@ -86,7 +89,8 @@ public class AppSchemaMapperTest {
         assertThat( featureCDepth1, is( nullValue() ) );
     }
 
-    @Test public void testWithDepth1_default()
+    @Test
+    public void testWithDepth0_default()
                             throws Exception {
         GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaWithCycle );
         AppSchema appSchema = xsdDecoder.extractAppSchema();
@@ -107,19 +111,15 @@ public class AppSchemaMapperTest {
         // Depth 0
         CompoundMapping featureCDepth0 = getFeatureC( mappings );
         List<Mapping> featureCDepth0Mapping = featureCDepth0.getParticles();
-        assertThat( featureCDepth0Mapping.size(), is( 3 ) );
+        assertThat( featureCDepth0Mapping.size(), is( 2 ) );
 
         // Depth 1
         CompoundMapping featureCDepth1 = getFeatureC( featureCDepth0Mapping );
-        List<Mapping> featureCDepth1Mapping = featureCDepth1.getParticles();
-        assertThat( featureCDepth1Mapping.size(), is( 2 ) );
-
-        // Depth 2
-        CompoundMapping featureCDepth2 = getFeatureC( featureCDepth1Mapping );
-        assertThat( featureCDepth2, is( nullValue() ) );
+        assertThat( featureCDepth1, is( nullValue() ) );
     }
 
-    @Test public void testWithDepth2()
+    @Test
+    public void testWithDepth2()
                             throws Exception {
         GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaWithCycle );
         AppSchema appSchema = xsdDecoder.extractAppSchema();
@@ -158,7 +158,8 @@ public class AppSchemaMapperTest {
         assertThat( featureCDepth3, is( nullValue() ) );
     }
 
-    @Test public void test_assertNoLoop_Schema2()
+    @Test
+    public void test_assertNoLoop_Schema2()
                             throws Exception {
         GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaWithCycle2 );
         AppSchema appSchema = xsdDecoder.extractAppSchema();
@@ -173,7 +174,8 @@ public class AppSchemaMapperTest {
         assertThat( ftMappings.size(), is( 1 ) );
     }
 
-    @Test public void test_assertNoLoop_Schema3()
+    @Test
+    public void test_assertNoLoop_Schema3()
                             throws Exception {
         GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaWithCycle3 );
         AppSchema appSchema = xsdDecoder.extractAppSchema();

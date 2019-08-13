@@ -78,7 +78,7 @@ public class SqlFeatureStoreConfigCreator {
     private static SQLDialect sqlDialect = instantiateDialect( null ); // generates mapping for PostGIS dialect (per
                                                                        // default)
 
-    private static int depth = 1;
+    private static int depth = 0;
 
     private static List<QName> propertiesWithPrimitiveHref; // primitive href mapping instead of feature mapping is used
                                                             // in deegree configuration for listed properties
@@ -95,7 +95,7 @@ public class SqlFeatureStoreConfigCreator {
             System.out.println( " --idtype={int|uuid}" );
             System.out.println( " --mapping={relational|blob}" );
             System.out.println( " --dialect={postgis|oracle}" );
-            System.out.println( " --cycledepth=INT (positive integer value to specify the depth of cycles; default: 1)" );
+            System.out.println( " --cycledepth=INT (positive integer value to specify the depth of cycles; default: 0)" );
             System.out.println( " --listOfPropertiesWithPrimitiveHref=<path/to/file>" );
             System.out.println( "" );
             System.out.println( "The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):" );

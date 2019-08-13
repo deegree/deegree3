@@ -114,7 +114,7 @@ public class AppSchemaMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger( AppSchemaMapper.class );
 
-    private static final int DEFAULT_ALLOWED_CYCLE_DEPTH = 1;
+    private static final int DEFAULT_ALLOWED_CYCLE_DEPTH = 0;
 
     private final AppSchema appSchema;
 
