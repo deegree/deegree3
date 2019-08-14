@@ -61,9 +61,9 @@ public abstract class AbstractSQLDialect implements SQLDialect{
     @Override public String getOffsetAndFetch( int maxFeatures, int startIndex ) {
         StringBuilder sql = new StringBuilder();
         if ( startIndex > 0 )
-            sql.append( "OFFSET " ).append( startIndex );
+            sql.append( "OFFSET " ).append( startIndex ).append( " ROWS" );
         if ( maxFeatures > -1 )
-            sql.append( " ROWS FETCH NEXT " ).append( maxFeatures ).append( " ROWS ONLY" );
+            sql.append( " FETCH NEXT " ).append( maxFeatures ).append( " ROWS ONLY" );
         String offsetAndFetch = sql.toString();
         if ( !offsetAndFetch.isEmpty() ) {
             return offsetAndFetch;
