@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect;
 
-import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
-
 /**
  * Implementations provide the vendor-specific behavior for a spatial DBMS so it can be accessed by deegree.
  *
@@ -56,19 +54,6 @@ public abstract class AbstractSQLDialect implements SQLDialect{
     @Override
     public char getTailingEscapeChar() {
         return defaultEscapeChar;
-    }
-
-    @Override public String getOffsetAndFetch( int maxFeatures, int startIndex ) {
-        StringBuilder sql = new StringBuilder();
-        if ( startIndex > 0 )
-            sql.append( "OFFSET " ).append( startIndex ).append( " ROWS" );
-        if ( maxFeatures > -1 )
-            sql.append( " FETCH NEXT " ).append( maxFeatures ).append( " ROWS ONLY" );
-        String offsetAndFetch = sql.toString();
-        if ( !offsetAndFetch.isEmpty() ) {
-            return offsetAndFetch;
-        }
-        return null;
     }
 
 }

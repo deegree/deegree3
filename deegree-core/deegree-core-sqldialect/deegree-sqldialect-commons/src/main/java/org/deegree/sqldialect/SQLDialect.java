@@ -226,18 +226,4 @@ public interface SQLDialect {
      */
     char getTailingEscapeChar();
 
-    /**
-     * Returns the FETCH clause to apply maxFeatures and startIndex if
-     *  <ul>
-     *      <li>maxFeatures > -1 and </li>
-     *      <li>startIndex  > 0 </li>
-     *  </ul>
-     *
-     * @param maxFeatures
-     *        number of features to return
-     * @param startIndex
-     *        index of the first item
-     * @return the FETCH clause to apply maxFeatures and startIndex
-     */
-    String getOffsetAndFetch( int maxFeatures, int startIndex );
 }

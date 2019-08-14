@@ -1357,10 +1357,7 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( wb.getOrderBy().getSQL() );
             }
 
-            String fetchClause = dialect.getOffsetAndFetch( query.getMaxFeatures(), query.getStartIndex() );
-            if ( fetchClause != null ) {
-                sql.append( " " ).append( fetchClause ).append( " " );
-            }
+            appendOffsetAndFetch(sql,  query.getMaxFeatures(), query.getStartIndex() );
 
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
@@ -1649,6 +1646,13 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new InvalidParameterValueException( "Requested feature does not match the requested feature type.",
                                                           "RESOURCEID" );
         }
+    }
+
+    private void appendOffsetAndFetch( StringBuilder sql, int maxFeatures, int startIndex ) {
+        if ( startIndex > 0 )
+            sql.append( " OFFSET " ).append( startIndex ).append( " ROWS" );
+        if ( maxFeatures > -1 )
+            sql.append( " FETCH NEXT " ).append( maxFeatures ).append( " ROWS ONLY " );
     }
 
 }
