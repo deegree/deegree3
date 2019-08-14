@@ -129,7 +129,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
     /**
      * Creates a new {@link GmlGetFeatureHandler} instance.
      * 
-     * @param gmlFormat
+     * @param format
      *            never <code>null</code>
      */
     public GmlGetFeatureHandler( GmlFormat format ) {
@@ -481,8 +481,6 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         // retrieve and write result features
-        int featuresAdded = 0;
-        int featuresSkipped = 0;
         GmlXlinkOptions resolveState = gmlStream.getReferenceResolveStrategy().getResolveOptions();
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
@@ -493,16 +491,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( lock != null && !lock.isLocked( member.getId() ) ) {
                         continue;
                     }
-                    if ( featuresAdded == maxFeatures ) {
-                        // limit the number of features written to maxfeatures
-                        break;
-                    }
-                    if ( featuresSkipped < startIndex ) {
-                        featuresSkipped++;
-                    } else {
-                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
-                        featuresAdded++;
-                    }
+                    writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
                 }
             } finally {
                 LOG.debug( "Closing FeatureResultSet (stream)" );
@@ -521,8 +510,6 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         Set<String> fids = new HashSet<String>();
 
         // retrieve maxfeatures features
-        int featuresAdded = 0;
-        int featuresSkipped = 0;
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
@@ -532,15 +519,9 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( lock != null && !lock.isLocked( feature.getId() ) ) {
                         continue;
                     }
-                    if ( featuresAdded == maxFeatures ) {
-                        break;
-                    }
-                    if ( featuresSkipped < startIndex ) {
-                        featuresSkipped++;
-                    } else if ( !fids.contains( feature.getId() ) ) {
+                    if ( !fids.contains( feature.getId() ) ) {
                         allFeatures.add( feature );
                         fids.add( feature.getId() );
-                        featuresAdded++;
                     }
                 }
             } finally {
