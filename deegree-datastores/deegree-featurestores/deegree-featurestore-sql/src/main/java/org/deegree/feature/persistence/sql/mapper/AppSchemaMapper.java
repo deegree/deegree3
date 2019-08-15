@@ -97,6 +97,7 @@ import java.util.Map;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -107,7 +108,6 @@ import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NON
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
 public class AppSchemaMapper {
@@ -132,8 +132,6 @@ public class AppSchemaMapper {
 
     private final int allowedCycleDepth;
 
-    private int currentCycleDepth = -1;
-
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      *
@@ -152,10 +150,11 @@ public class AppSchemaMapper {
      * @param useIntegerFids
      *                         <code>true</code> if the integer fids should be used, <code>false</code> for uuids
      */
-    public AppSchemaMapper(AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
-                           GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
-                           boolean useIntegerFids) {
-        this(appSchema, createBlobMapping, createRelationalMapping, geometryParams, maxLength, usePrefixedSQLIdentifiers, useIntegerFids, DEFAULT_ALLOWED_CYCLE_DEPTH);
+    public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
+                            GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
+                            boolean useIntegerFids ) {
+        this( appSchema, createBlobMapping, createRelationalMapping, geometryParams, maxLength,
+              usePrefixedSQLIdentifiers, useIntegerFids, DEFAULT_ALLOWED_CYCLE_DEPTH );
     }
 
     /**
@@ -258,6 +257,7 @@ public class AppSchemaMapper {
     }
 
     private FeatureTypeMapping generateFtMapping( FeatureType ft ) {
+        CycleAnalyser cycleAnalyser = new CycleAnalyser( allowedCycleDepth );
         LOG.info( "Mapping feature type '" + ft.getName() + "'" );
         MappingContext mc = mcManager.newContext( ft.getName(), detectPrimaryKeyColumnName() );
 
@@ -265,45 +265,41 @@ public class AppSchemaMapper {
         TableName table = new TableName( mc.getTable() );
         // TODO
 
-        FIDMapping fidMapping = null;
-        String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
-        if ( useIntegerFids ) {
-            IDGenerator generator = new AutoIDGenerator();
-            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>( new SQLIdentifier( "gid" ),
-                                                                                         BaseType.INTEGER );
-            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
-        } else {
-            IDGenerator generator = new UUIDGenerator();
-            Pair<SQLIdentifier, BaseType> fidColumn = new Pair<SQLIdentifier, BaseType>(
-                                                                                         new SQLIdentifier(
-                                                                                                            "attr_gml_id" ),
-                                                                                         STRING );
-            fidMapping = new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
-        }
+        FIDMapping fidMapping = generateFidMapping( ft );
 
-        List<Mapping> mappings = new ArrayList<Mapping>();
-        this.currentCycleDepth = 0;
+        List<Mapping> mappings = new ArrayList<>();
         for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+            cycleAnalyser.start( pt );
             if ( !pt.getName().getNamespaceURI().equals( appSchema.getGMLSchema().getVersion().getNamespace() ) ) {
-                mappings.addAll( generatePropMapping( pt, mc ) );
+                mappings.addAll( generatePropMapping( pt, mc, cycleAnalyser ) );
             } else if ( pt.getName().getLocalPart().equals( "identifier" ) ) {
-                mappings.addAll( generatePropMapping( pt, mc ) );
+                mappings.addAll( generatePropMapping( pt, mc, cycleAnalyser ) );
             }
+            cycleAnalyser.stop( pt );
         }
 
         return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
     }
 
-    private List<Mapping> generatePropMapping( PropertyType pt, MappingContext mc ) {
+    private FIDMapping generateFidMapping( FeatureType ft ) {
+        String prefix = ft.getName().getPrefix().toUpperCase() + "_" + ft.getName().getLocalPart().toUpperCase() + "_";
+        IDGenerator generator;
+        Pair<SQLIdentifier, BaseType> fidColumn;
+        if ( useIntegerFids ) {
+            generator = new AutoIDGenerator();
+            fidColumn = new Pair<>( new SQLIdentifier( "gid" ), INTEGER );
+        } else {
+            generator = new UUIDGenerator();
+            fidColumn = new Pair<>( new SQLIdentifier( "attr_gml_id" ), STRING );
+        }
+        return new FIDMapping( prefix, "_", Collections.singletonList( fidColumn ), generator );
+    }
 
+    private List<Mapping> generatePropMapping( PropertyType pt, MappingContext mc, CycleAnalyser cycleAnalyser ) {
         LOG.debug( "Mapping property '" + pt.getName() + "'" );
-
-        List<Mapping> mappings = new ArrayList<Mapping>();
-
+        List<Mapping> mappings = new ArrayList<>();
         XSElementDeclaration elDecl = pt.getElementDecl();
-
         int before = mcManager.getContextCount();
-
         try {
             if ( elDecl != null && elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) {
 
@@ -323,19 +319,16 @@ public class AppSchemaMapper {
                             propMc = mcManager.mapOneToManyElements( mc, eName );
                             jc = generateJoinChain( mc, propMc );
                         }
-                        List<Mapping> particles = null;
                         ObjectPropertyType opt = appSchema.getGMLSchema().getCustomElDecl( substitution );
 
                         before = mcManager.getContextCount();
 
+                        XSComplexTypeDefinition typeDefinition = (XSComplexTypeDefinition) substitution.getTypeDefinition();
+                        List<Mapping> particles;
                         if ( opt != null ) {
-                            particles = generateMapping( (XSComplexTypeDefinition) substitution.getTypeDefinition(),
-                                                         propMc, new ArrayList<XSElementDeclaration>(),
-                                                         new ArrayList<XSComplexTypeDefinition>(), opt );
+                            particles = generateMapping( typeDefinition, propMc, opt );
                         } else {
-                            particles = generateMapping( (XSComplexTypeDefinition) substitution.getTypeDefinition(),
-                                                         propMc, new ArrayList<XSElementDeclaration>(),
-                                                         new ArrayList<XSComplexTypeDefinition>(),
+                            particles = generateMapping( typeDefinition, propMc, cycleAnalyser,
                                                          substitution.getNillable() );
                         }
 
@@ -362,14 +355,15 @@ public class AppSchemaMapper {
             } else if ( pt instanceof FeaturePropertyType ) {
                 mappings.add( generatePropMapping( (FeaturePropertyType) pt, mc ) );
             } else if ( pt instanceof CustomPropertyType ) {
-                mappings.add( generatePropMapping( (CustomPropertyType) pt, mc ) );
+                mappings.add( generatePropMapping( (CustomPropertyType) pt, mc, cycleAnalyser ) );
             } else if ( pt instanceof CodePropertyType ) {
                 mappings.add( generatePropMapping( (CodePropertyType) pt, mc ) );
             } else {
                 LOG.warn( "Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName() );
             }
         } catch ( Throwable t ) {
-            LOG.warn( "Unable to create relational mapping for property type '" + pt.getName() + "': " + t.getMessage() );
+            LOG.warn( "Unable to create relational mapping for property type '" + pt.getName() + "': "
+                      + t.getMessage() );
         }
 
         int complexity = mcManager.getContextCount() - before;
@@ -450,10 +444,12 @@ public class AppSchemaMapper {
             LOG.warn( "Ambigous feature property type '" + pt.getName() + "'. Not creating a Join mapping." );
         }
 
-        return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( hrefMC.getColumn() ), pt.getFTName(), jc );
+        return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( hrefMC.getColumn() ), pt.getFTName(),
+                                   jc );
     }
 
-    private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc ) {
+    private CompoundMapping generatePropMapping( CustomPropertyType pt, MappingContext mc,
+                                                 CycleAnalyser cycleAnalyser ) {
 
         LOG.debug( "Mapping custom property '" + pt.getName() + "'" );
 
@@ -474,19 +470,15 @@ public class AppSchemaMapper {
             jc = generateJoinChain( mc, propMc );
         }
 
-        List<XSElementDeclaration> parentEls = new ArrayList<XSElementDeclaration>();
-        parentEls.add( pt.getElementDecl() );
+        //cycleAnalyser.add( pt.getElementDecl() );
 
-        List<XSComplexTypeDefinition> parentCts = new ArrayList<XSComplexTypeDefinition>();
-
-        List<Mapping> particles = new ArrayList<Mapping>();
         try {
-            particles = generateMapping( pt.getXSDValueType(), propMc, parentEls, parentCts, pt.isNillable() );
+            List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, cycleAnalyser, pt.isNillable() );
             return new CompoundMapping( path, pt.getMinOccurs() == 0, particles, jc, pt.getElementDecl() );
         } catch ( Throwable t ) {
             LOG.warn( "Full relational mapping of property '" + pt.getName() + "' failed: " + t.getMessage() );
         }
-        return new CompoundMapping( path, pt.getMinOccurs() == 0, particles, jc, pt.getElementDecl() );
+        return new CompoundMapping( path, pt.getMinOccurs() == 0, Collections.emptyList(), jc, pt.getElementDecl() );
     }
 
     private CompoundMapping generatePropMapping( CodePropertyType pt, MappingContext mc ) {
@@ -539,20 +531,15 @@ public class AppSchemaMapper {
         Map<SQLIdentifier, IDGenerator> keyColumnToIdGenerator = new HashMap<SQLIdentifier, IDGenerator>();
         keyColumnToIdGenerator.put( new SQLIdentifier( "id" ), new AutoIDGenerator() );
         return new TableJoin( fromTable, toTable, fromColumns, toColumns, Collections.EMPTY_LIST, false,
-                                keyColumnToIdGenerator );
+                              keyColumnToIdGenerator );
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls,
-                                           List<XSComplexTypeDefinition> parentCTs, boolean isNillable ) {
-        boolean isCycle = isCycle(typeDef, parentCTs);
-        if (isCycle) {
-            currentCycleDepth++;
-            if (this.currentCycleDepth > this.allowedCycleDepth)
-                return Collections.emptyList();
+                                           CycleAnalyser cycleAnalyser, boolean isNillable ) {
+        boolean stopAtThisCycle = cycleAnalyser.checkStopAtCycle( typeDef );
+        if ( stopAtThisCycle ) {
+            return Collections.emptyList();
         }
-
-        parentCTs.add( typeDef );
 
         List<Mapping> particles = new ArrayList<Mapping>();
 
@@ -603,16 +590,15 @@ public class AppSchemaMapper {
         // child elements
         XSParticle particle = typeDef.getParticle();
         if ( particle != null ) {
-            List<Mapping> childElMappings = generateMapping( particle, 1, mc, parentEls, parentCTs );
+            List<Mapping> childElMappings = generateMapping( particle, 1, mc, cycleAnalyser );
             particles.addAll( childElMappings );
         }
+        cycleAnalyser.remove( typeDef );
         return particles;
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls,
-                                           List<XSComplexTypeDefinition> parentCTs, ObjectPropertyType opt ) {
-
+                                           ObjectPropertyType opt ) {
         List<Mapping> particles = new ArrayList<Mapping>();
 
         // attributes
@@ -650,7 +636,8 @@ public class AppSchemaMapper {
         if ( opt instanceof GeometryPropertyType ) {
             GeometryType gt = GeometryType.GEOMETRY;
             MappingContext elMC = mcManager.mapOneToOneElement( mc, new QName( "value" ) );
-            particles.add( new GeometryMapping( path, true, new DBField( elMC.getColumn() ), gt, geometryParams, null ) );
+            particles.add( new GeometryMapping( path, true, new DBField( elMC.getColumn() ), gt, geometryParams,
+                                                null ) );
         } else if ( opt instanceof FeaturePropertyType ) {
             QName valueFtName = ( (FeaturePropertyType) opt ).getFTName();
             MappingContext fkMC = mcManager.mapOneToOneElement( mc, new QName( "fk" ) );
@@ -670,7 +657,7 @@ public class AppSchemaMapper {
     }
 
     private List<Mapping> generateMapping( XSParticle particle, int maxOccurs, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
+                                           CycleAnalyser cycleAnalyser ) {
 
         List<Mapping> childElMappings = new ArrayList<Mapping>();
 
@@ -696,12 +683,10 @@ public class AppSchemaMapper {
         // }
         if ( childElMappings.isEmpty() ) {
             if ( particle.getMaxOccursUnbounded() ) {
-                childElMappings.addAll( generateMapping( particle.getTerm(), -1, mc, parentEls, parentCTs ) );
+                childElMappings.addAll( generateMapping( particle.getTerm(), -1, mc, cycleAnalyser ) );
             } else {
                 for ( int i = 1; i <= particle.getMaxOccurs(); i++ ) {
-                    childElMappings.addAll( generateMapping( particle.getTerm(), i, mc,
-                                                             new ArrayList<XSElementDeclaration>( parentEls ),
-                                                             new ArrayList<XSComplexTypeDefinition>( parentCTs ) ) );
+                    childElMappings.addAll( generateMapping( particle.getTerm(), i, mc, cycleAnalyser ) );
                 }
             }
         }
@@ -709,21 +694,21 @@ public class AppSchemaMapper {
     }
 
     private List<Mapping> generateMapping( XSTerm term, int occurence, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
+                                           CycleAnalyser cycleAnalyser ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
         if ( term instanceof XSElementDeclaration ) {
-            mappings.addAll( generateMapping( (XSElementDeclaration) term, occurence, mc, parentEls, parentCTs ) );
+            mappings.addAll( generateMapping( (XSElementDeclaration) term, occurence, mc, cycleAnalyser ) );
         } else if ( term instanceof XSModelGroup ) {
-            mappings.addAll( generateMapping( (XSModelGroup) term, occurence, mc, parentEls, parentCTs ) );
+            mappings.addAll( generateMapping( (XSModelGroup) term, occurence, mc, cycleAnalyser ) );
         } else {
-            mappings.addAll( generateMapping( (XSWildcard) term, occurence, mc, parentEls, parentCTs ) );
+            mappings.addAll( generateMapping( (XSWildcard) term, occurence, mc, cycleAnalyser ) );
         }
         return mappings;
     }
 
     private List<Mapping> generateMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
-        parentEls.add( elDecl );
+                                           CycleAnalyser cycleAnalyser ) {
+        //cycleAnalyser.add( elDecl );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
 
@@ -747,7 +732,8 @@ public class AppSchemaMapper {
         // }
 
         // consider every concrete element substitution
-        List<XSElementDeclaration> substitutions = appSchema.getGMLSchema().getSubstitutions( elDecl, null, true, true );
+        List<XSElementDeclaration> substitutions = appSchema.getGMLSchema().getSubstitutions( elDecl, null, true,
+                                                                                              true );
         if ( eName.equals( new QName( "http://www.isotc211.org/2005/gco", "CharacterString" ) ) ) {
             substitutions.clear();
             substitutions.add( elDecl );
@@ -763,7 +749,7 @@ public class AppSchemaMapper {
         for ( XSElementDeclaration substitution : substitutions ) {
             ObjectPropertyType opt = appSchema.getGMLSchema().getCustomElDecl( substitution );
             if ( opt != null ) {
-                mappings.addAll( generatePropMapping( opt, mc ) );
+                mappings.addAll( generatePropMapping( opt, mc, cycleAnalyser ) );
             } else {
                 QName elName = new QName( substitution.getName() );
                 if ( substitution.getNamespace() != null ) {
@@ -786,13 +772,11 @@ public class AppSchemaMapper {
 
                 ValueReference path = new ValueReference( getName( elName ), nsContext );
                 if ( typeDef instanceof XSComplexTypeDefinition ) {
-                    List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC,
-                                                               new ArrayList<XSElementDeclaration>( parentEls ),
-                                                               new ArrayList<XSComplexTypeDefinition>( parentCTs ),
+                    List<Mapping> particles = generateMapping( (XSComplexTypeDefinition) typeDef, elMC, cycleAnalyser,
                                                                substitution.getNillable() );
                     // TODO
-                    if (!particles.isEmpty())
-                        mappings.add(new CompoundMapping(path, false, particles, jc, substitution));
+                    if ( !particles.isEmpty() )
+                        mappings.add( new CompoundMapping( path, false, particles, jc, substitution ) );
                 } else {
                     MappingExpression mapping = new DBField( elMC.getColumn() );
                     PrimitiveType pt = new PrimitiveType( (XSSimpleTypeDefinition) typeDef );
@@ -800,50 +784,33 @@ public class AppSchemaMapper {
                 }
             }
         }
+        //cycleAnalyser.remove( elDecl );
         return mappings;
     }
 
     private List<Mapping> generateMapping( XSModelGroup modelGroup, int occurrence, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
+                                           CycleAnalyser cycleAnalyser ) {
         List<Mapping> mappings = new ArrayList<Mapping>();
         XSObjectList particles = modelGroup.getParticles();
         for ( int i = 0; i < particles.getLength(); i++ ) {
             XSParticle particle = (XSParticle) particles.item( i );
-            mappings.addAll( generateMapping( particle, occurrence, mc,
-                                              new ArrayList<XSElementDeclaration>( parentEls ),
-                                              new ArrayList<XSComplexTypeDefinition>( parentCTs ) ) );
+            mappings.addAll( generateMapping( particle, occurrence, mc, cycleAnalyser ) );
         }
         return mappings;
     }
 
     private List<Mapping> generateMapping( XSWildcard wildCard, int occurrence, MappingContext mc,
-                                           List<XSElementDeclaration> parentEls, List<XSComplexTypeDefinition> parentCTs ) {
+                                           CycleAnalyser cycleAnalyser ) {
         LOG.debug( "Handling of wild cards not implemented yet." );
+
         StringBuffer sb = new StringBuffer( "Path: " );
-        for ( XSElementDeclaration parentEl : parentEls ) {
+        for ( XSElementDeclaration parentEl : cycleAnalyser.getParentEls() ) {
             sb.append( parentEl.getName() );
             sb.append( " -> " );
         }
         sb.append( "wildcard" );
         LOG.debug( "Skipping wildcard at path: " + sb );
-        return new ArrayList<Mapping>();
-    }
-
-    //
-    // private String getPrimitiveTypeName( XSSimpleTypeDefinition typeDef ) {
-    // if ( typeDef == null ) {
-    // return "string";
-    // }
-    // return XMLValueMangler.getPrimitiveType( typeDef ).getXSTypeName();
-    // }
-    //
-
-    private QName getQName( XSTypeDefinition xsType ) {
-        QName name = null;
-        if ( !xsType.getAnonymous() ) {
-            name = new QName( xsType.getNamespace(), xsType.getName() );
-        }
-        return name;
+        return new ArrayList<>();
     }
 
     private String getName( QName name ) {
@@ -867,33 +834,6 @@ public class AppSchemaMapper {
 
     private String detectPrimaryKeyColumnName() {
         return useIntegerFids ? "gid" : "attr_gml_id";
-    }
-
-    private boolean isCycle( XSComplexTypeDefinition typeDef,
-                             List<XSComplexTypeDefinition> parentCTs ) {
-        if ( typeDef.getName() != null ) {
-            for ( XSComplexTypeDefinition ct : parentCTs ) {
-                if ( ct.getName() != null ) {
-                    if ( typeDef.getName().equals( ct.getName() ) && typeDef.getNamespace().equals( ct.getNamespace() ) ) {
-                        handleCycleOnComplexTypeDefinition( parentCTs );
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private void handleCycleOnComplexTypeDefinition( List<XSComplexTypeDefinition> parentCTs ) {
-        StringBuffer sb = new StringBuffer( "Path: " );
-        for ( XSComplexTypeDefinition qName : parentCTs ) {
-            sb.append( "{" );
-            sb.append( qName.getNamespace() );
-            sb.append( "}" );
-            sb.append( qName.getName() );
-            sb.append( " -> " );
-        }
-        LOG.warn( "Detected unhandled cycle '" + sb + "'." );
     }
 
 }

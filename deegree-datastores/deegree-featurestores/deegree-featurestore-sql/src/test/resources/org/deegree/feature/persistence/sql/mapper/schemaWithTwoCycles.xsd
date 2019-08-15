@@ -17,22 +17,7 @@
           -->
           <element ref="te:FeatureB" />
           <element ref="te:FeatureC" />
-          <!--
-          <element name="featureB" >
-            <complexType>
-              <sequence>
-                <element ref="te:FeatureB"/>
-              </sequence>
-            </complexType>
-          </element>
-          <element name="featureC">
-            <complexType>
-              <sequence>
-                <element ref="te:FeatureC"/>
-              </sequence>
-            </complexType>
-          </element>
-          -->
+          <element ref="te:FeatureE" />
         </sequence>
       </extension>
     </complexContent>
@@ -51,16 +36,7 @@
     <sequence>
       <element name="prop_C1" type="string"/>
       <element name="prop_C2" type="int"/>
-      <element ref="te:FeatureC" />
-      <!--
-      <element name="featureD">
-        <complexType>
-          <sequence>
-            <element ref="te:FeatureD"/>
-          </sequence>
-        </complexType>
-      </element>
-      -->
+      <element ref="te:FeatureD" />
     </sequence>
   </complexType>
 
@@ -70,17 +46,24 @@
       <element name="prop_D1" type="string"/>
       <element name="prop_D2" type="int"/>
       <element ref="te:FeatureC" />
-      <!--
-      <element name="featureC">
-        <complexType>
-          <sequence>
-            <element ref="te:FeatureC"/>
-          </sequence>
-        </complexType>
-      </element>
-      -->
     </sequence>
   </complexType>
 
-</schema>
+  <element name="FeatureE" substitutionGroup="gml:AbstractObject" type="te:FeatureEType"/>
+  <complexType name="FeatureEType">
+    <sequence>
+      <element name="prop_E1" type="string"/>
+      <element name="prop_E2" type="int"/>
+      <element ref="te:FeatureF" />
+    </sequence>
+  </complexType>
 
+  <element name="FeatureF" substitutionGroup="gml:AbstractObject" type="te:FeatureFType"/>
+  <complexType name="FeatureFType">
+    <sequence>
+      <element name="prop_F1" type="string"/>
+      <element name="prop_F2" type="int"/>
+      <element ref="te:FeatureE" />
+    </sequence>
+  </complexType>
+</schema>
