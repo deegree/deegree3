@@ -382,11 +382,8 @@ public class AppSchemaMapperTest {
         assertThat( featureFDepth7Mapping.size(), is( 2 ) );
 
         // Depth 8 - End
-        CompoundMapping featureCDepth8 = getFeatureD( featureDDepth7Mapping );
-        assertThat( featureCDepth8, is( nullValue() ) );
-
-        CompoundMapping featureEDepth8 = getFeatureF( featureFDepth7Mapping );
-        assertThat( featureEDepth8, is( nullValue() ) );
+        assertThat( getFeatureD( featureDDepth7Mapping ), is( nullValue() ) );
+        assertThat( getFeatureF( featureFDepth7Mapping ), is( nullValue() ) );
     }
 
     @Test
@@ -397,7 +394,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 1 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -406,58 +403,53 @@ public class AppSchemaMapperTest {
 
         FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
         List<Mapping> mappings = featureA.getMappings();
-        assertThat( mappings.size(), is( 6 ) );
+        assertThat( mappings.size(), is( 5 ) );
 
         // Depth 0 - Cycle 0
         CompoundMapping featureCDepth0 = getFeatureC( mappings );
         List<Mapping> featureCDepth0Mapping = featureCDepth0.getParticles();
-        assertThat( featureCDepth0Mapping.size(), is( 3 ) );
-
-        CompoundMapping featureEDepth0 = getFeatureE( mappings );
-        List<Mapping> featureEDepth0Mapping = featureEDepth0.getParticles();
-        assertThat( featureEDepth0Mapping.size(), is( 3 ) );
+        assertThat( featureCDepth0Mapping.size(), is( 4 ) );
 
         // Depth 1
         CompoundMapping featureDDepth1 = getFeatureD( featureCDepth0Mapping );
         List<Mapping> featureDDepth1Mapping = featureDDepth1.getParticles();
         assertThat( featureDDepth1Mapping.size(), is( 3 ) );
 
-        CompoundMapping featureFDepth1 = getFeatureF( featureEDepth0Mapping );
-        List<Mapping> featureFDepth1Mapping = featureFDepth1.getParticles();
-        assertThat( featureFDepth1Mapping.size(), is( 3 ) );
+        CompoundMapping featureEDepth1 = getFeatureE( featureCDepth0Mapping );
+        List<Mapping> featureEDepth1Mapping = featureEDepth1.getParticles();
+        assertThat( featureEDepth1Mapping.size(), is( 3 ) );
 
         // Depth 2 - Cycle 1
-        CompoundMapping featureCDepth2 = getFeatureC( mappings );
+        CompoundMapping featureCDepth2 = getFeatureC( featureDDepth1Mapping );
         List<Mapping> featureCDepth2Mapping = featureCDepth2.getParticles();
-        assertThat( featureCDepth2Mapping.size(), is( 3 ) );
+        assertThat( featureCDepth2Mapping.size(), is( 4 ) );
 
-        CompoundMapping featureEDepth2 = getFeatureE( mappings );
+        CompoundMapping featureEDepth2 = getFeatureC( featureEDepth1Mapping );
         List<Mapping> featureEDepth2Mapping = featureEDepth2.getParticles();
         assertThat( featureEDepth2Mapping.size(), is( 4 ) );
 
         // Depth 3
-        CompoundMapping featureDDepth3 = getFeatureD( featureCDepth0Mapping );
-        List<Mapping> featureDDepth3Mapping = featureDDepth3.getParticles();
-        assertThat( featureDDepth3Mapping.size(), is( 3 ) );
+        CompoundMapping featureDofCDepth2Depth3 = getFeatureD( featureCDepth2Mapping );
+        List<Mapping> featureDofCDepth2Depth3Mapping = featureDofCDepth2Depth3.getParticles();
+        assertThat( featureDofCDepth2Depth3Mapping.size(), is( 2 ) );
 
-        CompoundMapping featureFDepth3 = getFeatureF( featureCDepth0Mapping );
-        List<Mapping> featureFDepth3Mapping = featureFDepth3.getParticles();
-        assertThat( featureFDepth3Mapping.size(), is( 3 ) );
+        CompoundMapping featureEofCDepth2Depth3 = getFeatureE( featureCDepth2Mapping );
+        List<Mapping> featureEofCDepth2Depth3Mapping = featureEofCDepth2Depth3.getParticles();
+        assertThat( featureEofCDepth2Depth3Mapping.size(), is( 2 ) );
 
-        // Depth 4 - Cycle 1
-        CompoundMapping featureCDepth4 = getFeatureC( mappings );
-        List<Mapping> featureCDepth4Mapping = featureCDepth4.getParticles();
-        assertThat( featureCDepth4Mapping.size(), is( 3 ) );
+        CompoundMapping featureDofEDepth2Depth3 = getFeatureD( featureEDepth2Mapping );
+        List<Mapping> featureDofEDepth2Depth3Mapping = featureDofEDepth2Depth3.getParticles();
+        assertThat( featureDofEDepth2Depth3Mapping.size(), is( 2 ) );
 
-        CompoundMapping featureEDepth4 = getFeatureE( mappings );
-        List<Mapping> featureEDepth4Mapping = featureEDepth4.getParticles();
-        assertThat( featureEDepth4Mapping.size(), is( 3 ) );
+        CompoundMapping featureEofEDepth2Depth3 = getFeatureE( featureEDepth2Mapping );
+        List<Mapping> featureEofEDepth2Depth3Mapping = featureEofEDepth2Depth3.getParticles();
+        assertThat( featureEofEDepth2Depth3Mapping.size(), is( 2 ) );
 
-        // Depth 5
-        CompoundMapping featureDDepth5 = getFeatureD( featureCDepth0Mapping );
-        assertThat( featureDDepth5, is( nullValue() ) );
-        CompoundMapping featureFDepth5 = getFeatureF( featureCDepth0Mapping );
-        assertThat( featureFDepth5, is( nullValue() ) );
+        // Depth 4 - End
+        assertThat( getFeatureC( featureDofCDepth2Depth3Mapping ), is( nullValue() ) );
+        assertThat( getFeatureC( featureEofCDepth2Depth3Mapping ), is( nullValue() ) );
+        assertThat( getFeatureC( featureDofEDepth2Depth3Mapping ), is( nullValue() ) );
+        assertThat( getFeatureC( featureEofEDepth2Depth3Mapping ), is( nullValue() ) );
     }
 
     private CompoundMapping getFeatureC( List<Mapping> mappings ) {

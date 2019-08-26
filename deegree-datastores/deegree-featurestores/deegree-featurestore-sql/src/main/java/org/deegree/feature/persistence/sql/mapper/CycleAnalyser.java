@@ -68,10 +68,10 @@ public class CycleAnalyser {
 
     public void remove( XSComplexTypeDefinition typeDef ) {
         if ( isLast( parentCTs, typeDef ) )
-            parentCTs.remove( typeDef );
+            parentCTs.remove( parentCTs.size() - 1 );
         QName qName = getQName( typeDef );
         if ( isLast( path, qName ) )
-            path.remove( qName );
+            path.remove( path.size() - 1 );
     }
 
     public void remove( XSElementDeclaration elDecl ) {
