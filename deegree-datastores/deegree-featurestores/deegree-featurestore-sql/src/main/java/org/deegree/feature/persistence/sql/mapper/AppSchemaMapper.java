@@ -275,7 +275,7 @@ public class AppSchemaMapper {
             } else if ( pt.getName().getLocalPart().equals( "identifier" ) ) {
                 mappings.addAll( generatePropMapping( pt, mc, cycleAnalyser ) );
             }
-            cycleAnalyser.stop( pt );
+            cycleAnalyser.stop();
         }
 
         return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
@@ -470,7 +470,7 @@ public class AppSchemaMapper {
             jc = generateJoinChain( mc, propMc );
         }
 
-        //cycleAnalyser.add( pt.getElementDecl() );
+        cycleAnalyser.add( pt.getElementDecl() );
 
         try {
             List<Mapping> particles = generateMapping( pt.getXSDValueType(), propMc, cycleAnalyser, pt.isNillable() );
@@ -708,7 +708,7 @@ public class AppSchemaMapper {
 
     private List<Mapping> generateMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
                                            CycleAnalyser cycleAnalyser ) {
-        //cycleAnalyser.add( elDecl );
+        cycleAnalyser.add( elDecl );
 
         List<Mapping> mappings = new ArrayList<Mapping>();
 
@@ -784,7 +784,7 @@ public class AppSchemaMapper {
                 }
             }
         }
-        //cycleAnalyser.remove( elDecl );
+        cycleAnalyser.remove( elDecl );
         return mappings;
     }
 
@@ -804,7 +804,7 @@ public class AppSchemaMapper {
         LOG.debug( "Handling of wild cards not implemented yet." );
 
         StringBuffer sb = new StringBuffer( "Path: " );
-        for ( XSElementDeclaration parentEl : cycleAnalyser.getParentEls() ) {
+        for ( XSElementDeclaration parentEl : cycleAnalyser.getElementDeclarations() ) {
             sb.append( parentEl.getName() );
             sb.append( " -> " );
         }

@@ -20,18 +20,29 @@ public class CycleAnalyser {
 
     private static final Logger LOG = LoggerFactory.getLogger( CycleAnalyser.class );
 
-    private final int allowedCycleDepth;
-
     private final List<QName> path = new ArrayList<>();
 
     private final List<XSElementDeclaration> parentEls = new ArrayList<>();
 
     private final List<XSComplexTypeDefinition> parentCTs = new ArrayList<>();
 
+    private final int allowedCycleDepth;
+
+    /**
+     * @param allowedCycleDepth
+     *                         the allowed depth of cycles
+     */
     CycleAnalyser( int allowedCycleDepth ) {
         this.allowedCycleDepth = allowedCycleDepth;
     }
 
+    /**
+     * Checks if a cycle occurs and the allowed cycle depth is reached.
+     *
+     * @param typeDef
+     *                         the type definition to check, never <code>null</code>
+     * @return <code>true</code> if a cycle was found and the allowed cycle depth reached, <code>false</code> otherwise
+     */
     public boolean checkStopAtCycle( XSComplexTypeDefinition typeDef ) {
         log();
         boolean isCycle = isCycle( typeDef );
@@ -46,26 +57,53 @@ public class CycleAnalyser {
         return false;
     }
 
+    /**
+     * Start with a new path with a property.
+     *
+     * @param pt
+     *                         never <code>null</code>
+     */
     public void start( PropertyType pt ) {
         path.add( pt.getName() );
     }
 
-    public void stop( PropertyType pt ) {
+    /**
+     * Stops the current path.
+     */
+    public void stop() {
         path.clear();
         parentEls.clear();
         parentCTs.clear();
     }
 
+    /**
+     * Adds a new step.
+     *
+     * @param typeDef
+     *                         step to add, never <code>null</code>
+     */
     public void add( XSComplexTypeDefinition typeDef ) {
         parentCTs.add( typeDef );
         path.add( getQName( typeDef ) );
     }
 
+    /**
+     * Adds a new step.
+     *
+     * @param elDecl
+     *                         step to add, never <code>null</code>
+     */
     public void add( XSElementDeclaration elDecl ) {
         parentEls.add( elDecl );
         path.add( getQName( elDecl ) );
     }
 
+    /**
+     * Removes the last step if matching.
+     *
+     * @param typeDef
+     *                         step to remove, never <code>null</code>
+     */
     public void remove( XSComplexTypeDefinition typeDef ) {
         if ( isLast( parentCTs, typeDef ) )
             parentCTs.remove( parentCTs.size() - 1 );
@@ -74,20 +112,28 @@ public class CycleAnalyser {
             path.remove( path.size() - 1 );
     }
 
+    /**
+     * Removes the last step if matching.
+     *
+     * @param elDecl
+     *                         step to remove, never <code>null</code>
+     */
     public void remove( XSElementDeclaration elDecl ) {
         if ( isLast( parentEls, elDecl ) )
-            parentEls.remove( elDecl );
+            parentEls.remove( parentEls.size() - 1 );
         QName qName = getQName( elDecl );
-        if ( isLast( path, qName ) ) {
-            path.remove( qName );
-        }
+        if ( isLast( path, qName ) )
+            path.remove( path.size() - 1 );
     }
 
-    public List<XSElementDeclaration> getParentEls() {
+    /**
+     * @return the current element declarations of the path, may be empty but never <code>null</code>
+     */
+    public List<XSElementDeclaration> getElementDeclarations() {
         return parentEls;
     }
 
-    public void log() {
+    private void log() {
         StringBuffer sb = new StringBuffer();
         Map<QName, Integer> nameToCycleDepth = new HashMap<>();
         for ( QName step : path ) {
@@ -98,16 +144,12 @@ public class CycleAnalyser {
                 nameToCycleDepth.put( step, 0 );
             sb.append( step );
             sb.append( " (cycle depth: " ).append( nameToCycleDepth.get( step ) ).append( ")" );
-
         }
         LOG.info( "Current path:" + sb.toString() );
     }
 
     private QName getQName( XSTypeDefinition xsType ) {
-        if ( !xsType.getAnonymous() ) {
-            return new QName( xsType.getNamespace(), xsType.getName() );
-        }
-        return null;
+        return new QName( xsType.getNamespace(), xsType.getName() );
     }
 
     private QName getQName( XSElementDeclaration elDecl ) {
@@ -120,7 +162,6 @@ public class CycleAnalyser {
                 if ( ct.getName() != null ) {
                     if ( typeDef.getName().equals( ct.getName() ) && typeDef.getNamespace().equals(
                                             ct.getNamespace() ) ) {
-                        //logCycle( parentCTs );
                         LOG.info( "Found cycle at " + getQName( typeDef ) );
                         return true;
                     }
@@ -128,18 +169,6 @@ public class CycleAnalyser {
             }
         }
         return false;
-    }
-
-    private void logCycle( List<XSComplexTypeDefinition> parentCTs ) {
-        StringBuffer sb = new StringBuffer( "Path: " );
-        for ( XSComplexTypeDefinition qName : parentCTs ) {
-            sb.append( "{" );
-            sb.append( qName.getNamespace() );
-            sb.append( "}" );
-            sb.append( qName.getName() );
-            sb.append( " -> " );
-        }
-        LOG.info( "Found cycle '" + sb + "'." );
     }
 
     private boolean stop( QName qname ) {
