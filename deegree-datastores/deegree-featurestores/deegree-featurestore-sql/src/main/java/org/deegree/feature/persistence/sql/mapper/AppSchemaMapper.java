@@ -116,6 +116,8 @@ public class AppSchemaMapper {
 
     private static final int DEFAULT_ALLOWED_CYCLE_DEPTH = 0;
 
+    private static final int DEFAULT_COMPLEXITY_INDEX = 500;
+
     private final AppSchema appSchema;
 
     private final MappingContextManager mcManager;
@@ -128,9 +130,11 @@ public class AppSchemaMapper {
 
     private final boolean useIntegerFids;
 
-    private final int MAX_COMPLEXITY_INDEX = 500;
+    private final int maxComplexityIndex;
 
     private final int allowedCycleDepth;
+
+
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -184,6 +188,7 @@ public class AppSchemaMapper {
         this.geometryParams = geometryParams;
         this.useIntegerFids = useIntegerFids;
         this.allowedCycleDepth = allowedCycleDepth;
+        this.maxComplexityIndex = DEFAULT_COMPLEXITY_INDEX * ( allowedCycleDepth + 1 );
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         List<FeatureType> blackList = new ArrayList<FeatureType>();
@@ -334,7 +339,7 @@ public class AppSchemaMapper {
 
                         int complexity = mcManager.getContextCount() - before;
                         LOG.info( "Mapping complexity index of property type '" + eName + "': " + complexity );
-                        if ( complexity > MAX_COMPLEXITY_INDEX ) {
+                        if ( complexity > maxComplexityIndex ) {
                             LOG.warn( "Mapping property type '" + eName + "' exceeds complexity limit: " + complexity );
                             mappings.clear();
                         } else {
@@ -368,7 +373,7 @@ public class AppSchemaMapper {
 
         int complexity = mcManager.getContextCount() - before;
         LOG.debug( "Mapping complexity index of property type '" + pt.getName() + "': " + complexity );
-        if ( complexity > MAX_COMPLEXITY_INDEX ) {
+        if ( complexity > maxComplexityIndex ) {
             LOG.warn( "Mapping property type '" + pt.getName() + "' exceeds complexity limit: " + complexity );
             mappings.clear();
         }
