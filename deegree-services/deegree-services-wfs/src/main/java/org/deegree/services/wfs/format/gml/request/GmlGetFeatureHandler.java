@@ -481,8 +481,12 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         }
 
         // retrieve and write result features
+        int featuresAdded = 0;
+        int featuresSkipped = 0;
+        Map<FeatureStore, List<Query>> analysedQueries = analyzer.getQueries();
+        boolean applyMaxFeaturesAndStartIndex = checkIfMaxFeaturesAndStartIndexMustBeApplied( analysedQueries );
         GmlXlinkOptions resolveState = gmlStream.getReferenceResolveStrategy().getResolveOptions();
-        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
+        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analysedQueries.entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
             FeatureInputStream rs = fs.query( queries );
@@ -491,7 +495,19 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( lock != null && !lock.isLocked( member.getId() ) ) {
                         continue;
                     }
-                    writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+                    if ( applyMaxFeaturesAndStartIndex ) {
+                        if ( featuresAdded == maxFeatures ) {
+                            // limit the number of features written to maxfeatures
+                            break;
+                        }
+                        if ( featuresSkipped < startIndex ) {
+                            featuresSkipped++;
+                        } else {
+                            featuresAdded++;
+                        }
+                    } else {
+                        writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+                    }
                 }
             } finally {
                 LOG.debug( "Closing FeatureResultSet (stream)" );
@@ -499,6 +515,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             }
         }
     }
+
 
     private void writeFeatureMembersCached( Version wfsVersion, GMLStreamWriter gmlStream, QueryAnalyzer analyzer,
                                             GMLVersion outputFormat, int maxFeatures, int startIndex,
@@ -510,7 +527,12 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         Set<String> fids = new HashSet<String>();
 
         // retrieve maxfeatures features
-        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analyzer.getQueries().entrySet() ) {
+        int featuresAdded = 0;
+        int featuresSkipped = 0;
+        Map<FeatureStore, List<Query>> analysedQueries = analyzer.getQueries();
+        boolean applyMaxFeaturesAndStartIndex = checkIfMaxFeaturesAndStartIndexMustBeApplied( analysedQueries );
+        System.out.println( "#########APPLY??? " + applyMaxFeaturesAndStartIndex );
+        for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analysedQueries.entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
             FeatureInputStream rs = fs.query( queries );
@@ -519,7 +541,18 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                     if ( lock != null && !lock.isLocked( feature.getId() ) ) {
                         continue;
                     }
-                    if ( !fids.contains( feature.getId() ) ) {
+                    if ( applyMaxFeaturesAndStartIndex ) {
+                        if ( featuresAdded == maxFeatures ) {
+                            break;
+                        }
+                        if ( featuresSkipped < startIndex ) {
+                            featuresSkipped++;
+                        } else if ( !fids.contains( feature.getId() ) ) {
+                            allFeatures.add( feature );
+                            fids.add( feature.getId() );
+                            featuresAdded++;
+                        }
+                    } else {
                         allFeatures.add( feature );
                         fids.add( feature.getId() );
                     }
@@ -713,6 +746,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
     private String createUrlWithStartindex( Map<String, String> kvpGetFeature, int startIndex ) {
         kvpGetFeature.put( "STARTINDEX", "" + startIndex );
         return OGCFrontController.getHttpGetURL() + KVPUtils.toQueryString( kvpGetFeature );
+    }
+
+    private boolean checkIfMaxFeaturesAndStartIndexMustBeApplied( Map<FeatureStore, List<Query>> analysedQueries ) {
+        if ( analysedQueries.size() == 1 ) {
+            FeatureStore fs = analysedQueries.keySet().iterator().next();
+            List<Query> values = analysedQueries.values().iterator().next();
+            Query[] queries = values.toArray( new Query[values.size()] );
+            return !fs.isMaxFeaturesAndStartIndexApplicable( queries );
+        }
+        return true;
     }
 
     private class ResponsePagingUris {
