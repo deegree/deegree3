@@ -31,12 +31,12 @@
 
   <distributionManagement>
     <repository>
-      <id>xplanbox-release</id>
-      <url>http://repo/nexus/content/repositories/xplanbox-release/</url>
+      <id>latlon-deploy</id>
+      <url>https://repo.lat-lon.de/repository/xplanbox-releases/</url>
     </repository>
     <snapshotRepository>
-      <id>xplanbox-snapshot</id>
-      <url>http://repo/nexus/content/repositories/xplanbox-snapshot/</url>
+      <id>latlon-deploy</id>
+      <url>https://repo.lat-lon.de/repository/xplanbox-snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
