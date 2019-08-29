@@ -503,6 +503,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                         if ( featuresSkipped < startIndex ) {
                             featuresSkipped++;
                         } else {
+                            writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
                             featuresAdded++;
                         }
                     } else {
