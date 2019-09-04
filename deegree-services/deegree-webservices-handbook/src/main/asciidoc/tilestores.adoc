@@ -10,8 +10,7 @@ level by clicking on the *tile stores* link in the administration
 console. The configuration files are located in the *datasources/tile/*
 directory of the deegree workspace.
 
-image::workspace-overview-tile.png[Tile store resources provide
-access to pre-rendered map tiles,scaledwidth=80.0%]
+image::workspace-overview-tile.png[Tile store resources provide access to pre-rendered map tiles,scaledwidth=80.0%]
 
 === Tile stores, tile data sets and tile matrix sets
 

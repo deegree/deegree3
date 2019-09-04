@@ -7,8 +7,7 @@ in the administration console. The corresponding configuration files are
 located in the _services/_ subdirectory of the active deegree
 workspace directory.
 
-image::workspace-overview-services.png[Web services are the
-top-level resources of the deegree workspace,scaledwidth=80.0%]
+image::workspace-overview-services.png[Web services are the top-level resources of the deegree workspace,scaledwidth=80.0%]
 
 TIP: The identifier of a web service resource has a special purpose. If your
 deegree instance can be reached at
@@ -33,8 +32,7 @@ e.g. in shapefiles or spatial databases such as PostGIS or Oracle
 Spatial). In transactional mode (WFS-T), feature stores are also used
 for modification of stored features:
 
-image::workspace-wfs.png[A WFS resource is connected to any number
-of feature store resources,scaledwidth=80.0%]
+image::workspace-wfs.png[A WFS resource is connected to any number of feature store resources,scaledwidth=80.0%]
 
 ==== Minimal example
 
@@ -768,8 +766,7 @@ configured in a layer configuration, and _how_ it is shown is configured
 in a style file. Supported style languages are StyledLayerDescriptor
 (SLD) and Symbology Encoding (SE).
 
-image::workspace-wms.png[A WMS resource is connected to exactly
-one theme resource,scaledwidth=80.0%]
+image::workspace-wms.png[A WMS resource is connected to exactly one theme resource,scaledwidth=80.0%]
 
 TIP: In order to fully understand deegree WMS configuration, you will have to
 learn configuration of other workspace aspects as well. Chapter
@@ -1753,8 +1750,7 @@ in tile stores. The WMTS is configured using so-called _themes_. A theme
 can be thought of as a collection of layers, organized in a tree
 structure.
 
-image::workspace-wmts.png[A WMTS resource is connected to any
-number of theme resources (with tile layers),scaledwidth=80.0%]
+image::workspace-wmts.png[A WMTS resource is connected to any number of theme resources (with tile layers),scaledwidth=80.0%]
 
 TIP: In order to fully understand deegree WMTS configuration, you will have
 to learn configuration of other workspace aspects as well. Chapter
@@ -1853,8 +1849,7 @@ records stored in a metadata store. If the metadata store is
 transaction-capable, CSW transactions can be used to modify the stored
 records.
 
-image::workspace-csw.png[A CSW resource is connected to exactly
-one metadata store resource,scaledwidth=80.0%]
+image::workspace-csw.png[A CSW resource is connected to exactly one metadata store resource,scaledwidth=80.0%]
 
 TIP: In order to fully understand deegree CSW configuration, you will have to
 learn configuration of other workspace aspects as well. Chapter
@@ -1949,8 +1944,7 @@ Request to get the matching records in JSON.
 A deegree WPS allows the invocation of geospatial processes. The offered
 processes are determined by the attached process provider resources.
 
-image::workspace-wps.png[Workspace components involved in a
-deegree WPS configuration,scaledwidth=90.0%]
+image::workspace-wps.png[Workspace components involved in a deegree WPS configuration,scaledwidth=90.0%]
 
 TIP: In order to fully master deegree WPS configuration, you will have to
 understand <<anchor-configuration-processproviders>> as well.

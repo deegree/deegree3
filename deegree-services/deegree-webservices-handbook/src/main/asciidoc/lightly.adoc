@@ -22,8 +22,7 @@ configuring your deegree webservices installation. If deegree
 webservices are running on your machine, you can usually access the
 console from your browser via http://localhost:8080
 
-image::console_start.png[deegree webservices administration
-console,scaledwidth=50.0%]
+image::console_start.png[deegree webservices administration console,scaledwidth=50.0%]
 
 TIP: If you're not running the ZIP version, but deployed the WAR version into
 a web container, you most probably will have to use a different URL for
@@ -75,8 +74,7 @@ is the largest one and about 70 MB in size).
 After downloading has completed, the new workspace will be listed in
 section "Available workspaces":
 
-image::console_workspace_imported.png[Downloaded, but inactive
-workspace,scaledwidth=50.0%]
+image::console_workspace_imported.png[Downloaded, but inactive workspace,scaledwidth=50.0%]
 
 You can now activate the downloaded workspace by clicking *Start*.
 Again, this may take a bit, as it may require some initialization. The
@@ -107,14 +105,12 @@ workspace, you can click the *see layers* link, which opens a simple map
 client that displays a base map (not rendered by deegree, but loaded
 from the OpenStreetMap servers).
 
-image::console_workspace_inspire1.png[Map client showing base
-map,scaledwidth=50.0%]
+image::console_workspace_inspire1.png[Map client showing base map,scaledwidth=50.0%]
 
 Click the *+* on the right to see a list of available layers. You can
 now tick the INSPIRE layers offered by the deegree WMS.
 
-image::console_workspace_inspire2.png[INSPIRE layers rendered by
-the deegree WMS,scaledwidth=50.0%]
+image::console_workspace_inspire2.png[INSPIRE layers rendered by the deegree WMS,scaledwidth=50.0%]
 
 TIP: The map client is based on http://openlayers.org/[OpenLayers]. Drag the
 map by holding the mouse button and moving your mouse. Zoom using the
@@ -133,8 +129,7 @@ Use the third drop-down menu to select an example request. Entries
 *Insert_200.xml* or *Insert_110.xml* can be used to insert a small
 number of INSPIRE Address features using WFS-T insert requests:
 
-image::console_workspace_inspire3.png[WFS-T example
-requests,scaledwidth=50.0%]
+image::console_workspace_inspire3.png[WFS-T example requests,scaledwidth=50.0%]
 
 Click *Send* to execute the request. After successful insertion, the
 internal storage contains a few addresses, and you may want to move back
@@ -142,14 +137,12 @@ to the layer overview (*see layers*). If you activate layer AD.Address
 this time, the newly inserted features will be rendered by the deegree
 WMS (look for them in the area of Enkhuizen):
 
-image::console_workspace_inspire4.png[Ad.Address layer after
-insertion of example Address features,scaledwidth=50.0%]
+image::console_workspace_inspire4.png[Ad.Address layer after insertion of example Address features,scaledwidth=50.0%]
 
 The example requests also contain a lot of query examples, e.g.
 requesting of INSPIRE Addresses by street name:
 
-image::console_workspace_inspire5.png[WFS query
-examples,scaledwidth=50.0%]
+image::console_workspace_inspire5.png[WFS query examples,scaledwidth=50.0%]
 
 TIP: This workspace is a good starting point for implementing scalable and
 compliant INSPIRE View and/or Download Services. It can easily be
@@ -179,15 +172,13 @@ you can click on the *see layers* link, which opens a simple map client
 that displays a base map (not rendered by deegree, but loaded from the
 OpenStreetMap servers).
 
-image::console_workspace_utah1.png[Map client showing base
-map,scaledwidth=50.0%]
+image::console_workspace_utah1.png[Map client showing base map,scaledwidth=50.0%]
 
 Click the *+* on the right to see a list of available layers. Tick the
 ones you want to see. They will be rendered by your deegree webservices
 instance.
 
-image::console_workspace_utah2.png[Selecting WMS layers to be
-displayed,scaledwidth=50.0%]
+image::console_workspace_utah2.png[Selecting WMS layers to be displayed,scaledwidth=50.0%]
 
 TIP: The map client is based on http://openlayers.org/[OpenLayers]. Drag the
 map by holding the mouse button and moving your mouse. Zoom using the
@@ -195,8 +186,7 @@ controls on the left or with the mouse wheel. Alternatively, you can
 open a zoom rectangle by holding the SHIFT key and clicking the mouse
 button in the map area.
 
-image::console_workspace_utah3.png[Exploring Utah
-layers,scaledwidth=50.0%]
+image::console_workspace_utah3.png[Exploring Utah layers,scaledwidth=50.0%]
 
 In order to send requests against the WFS, you may use the *send
 requests* link in the service console (you may need to go back in your
@@ -204,15 +194,13 @@ browser first). A simple interface for sending XML requests will open
 up. This interface is meant for accessing OGC web services on the
 protocol level and contains some reasonable example requests.
 
-image::console_workspace_utah4.png[Sending example
-requests,scaledwidth=50.0%]
+image::console_workspace_utah4.png[Sending example requests,scaledwidth=50.0%]
 
 Select one of the example requests from the third drop-down menu and
 click *Send*. The server response will be displayed in the lower
 section.
 
-image::console_workspace_utah5.png[Sending example
-requests,scaledwidth=50.0%]
+image::console_workspace_utah5.png[Sending example requests,scaledwidth=50.0%]
 
 TIP: WFS request types and their format are specified in the
 http://www.opengeospatial.org/standards/wfs[OGC Web Feature Service
@@ -225,8 +213,7 @@ plugin for accessing WFS), uDig, OpenJUMP and deegree iGeoDesktop. The
 service address to enter in your client is:
 http://localhost:8080/services.
 
-image::qgis_workspace_utah.png[Quantum GIS displaying a WMS layer
-from the Utah workspace,scaledwidth=50.0%]
+image::qgis_workspace_utah.png[Quantum GIS displaying a WMS layer from the Utah workspace,scaledwidth=50.0%]
 
 [[anchor-workspace-csw]]
 === Example workspace 3: An ISO Catalogue Service setup
@@ -244,43 +231,36 @@ for these databases, see <<anchor-db-libraries>>.
 After downloading and starting the workspace, some errors will be
 indicated (red exclamation marks):
 
-image::console_workspace_csw1.png[Initial startup of
-deegree-workspace-csw,scaledwidth=50.0%]
+image::console_workspace_csw1.png[Initial startup of deegree-workspace-csw,scaledwidth=50.0%]
 
 Don't worry, this is just because we're missing the correct connection
 information to connect to our database. We're going to fix that right
 away. Click *connections -> databases*:
 
-image::console_workspace_csw2.png[JDBC connection
-view,scaledwidth=50.0%]
+image::console_workspace_csw2.png[JDBC connection view,scaledwidth=50.0%]
 
 Click *Edit*:
 
-image::console_workspace_csw3.png[Editing the JDBC resource
-configuration file,scaledwidth=50.0%]
+image::console_workspace_csw3.png[Editing the JDBC resource configuration file,scaledwidth=50.0%]
 
 Make sure to enter the correct connection parameters and click *Save*.
 You should now have a working connection to your database, and the
 exclamation mark for *conn1* should disappear. Click *Reload* to force a
 full reinitialization of the workspace:
 
-image::console_workspace_csw4.png[Reinitializing the
-workspace,scaledwidth=50.0%]
+image::console_workspace_csw4.png[Reinitializing the workspace,scaledwidth=50.0%]
 
 The indicated problems are gone now, but we still need to create the
 required database tables. Change to the metadata store view (*data
 stores -> metadata*) and click *Setup tables*:
 
-image::console_workspace_csw5.png[Metadata store
-view,scaledwidth=50.0%]
+image::console_workspace_csw5.png[Metadata store view,scaledwidth=50.0%]
 
 In the next view, click *Execute*:
 
-image::console_workspace_csw6.png[Creating tables for storing ISO
-metadata records,scaledwidth=50.0%]
+image::console_workspace_csw6.png[Creating tables for storing ISO metadata records,scaledwidth=50.0%]
 
-image::console_workspace_csw7.png[After table
-creation,scaledwidth=50.0%]
+image::console_workspace_csw7.png[After table creation,scaledwidth=50.0%]
 
 If all went well, you should now have a working, but empty CSW setup.
 You can connect to the CSW with compliant clients or use the *send
@@ -289,15 +269,13 @@ comes with some suitable example requests. Use the third drop-down menu
 to select an example request. Entry *complex_insert.xml* can be used to
 insert some ISO example records using a CSW transaction request:
 
-image::console_workspace_csw8.png[Choosing example
-requests,scaledwidth=50.0%]
+image::console_workspace_csw8.png[Choosing example requests,scaledwidth=50.0%]
 
 Click *Send*. After successful insertion, some records have been
 inserted into the CSW (respectively the database). You may want to
 explore other example requests as well, e.g. for retrieving records:
 
-image::console_workspace_csw9.png[Other example CSW
-requests,scaledwidth=50.0%]
+image::console_workspace_csw9.png[Other example CSW requests,scaledwidth=50.0%]
 
 [[anchor-workspace-wps]]
 === Example workspace 4: Web Processing Service demo
@@ -309,25 +287,21 @@ starting it, click *send requests* in order to find example requests
 that can be sent to the WPS. Use the third drop-down menu to select an
 example request:
 
-image::console_workspace_wps1.png[Choosing a WPS example
-request,scaledwidth=50.0%]
+image::console_workspace_wps1.png[Choosing a WPS example request,scaledwidth=50.0%]
 
 Click *Send* to fire it against the WPS:
 
-image::console_workspace_wps2.png[Sending an example request
-against the WPS,scaledwidth=50.0%]
+image::console_workspace_wps2.png[Sending an example request against the WPS,scaledwidth=50.0%]
 
 The response of the WPS will be displayed in the lower section:
 
-image::console_workspace_wps3.png[WPS response is
-displayed,scaledwidth=50.0%]
+image::console_workspace_wps3.png[WPS response is displayed,scaledwidth=50.0%]
 
 Besides the geometry example processes, the parameter example process
 and example requests may be interesting to developers who want to learn
 development of WPS processes with deegree webservices:
 
-image::console_workspace_wps4.png[Example requests for the
-parameter demo process,scaledwidth=50.0%]
+image::console_workspace_wps4.png[Example requests for the parameter demo process,scaledwidth=50.0%]
 
 The process has four input parameters (literal, bounding box, xml and
 binary) that are simply piped to four corresponding output parameters.
@@ -340,8 +314,7 @@ demonstrate many of the possibilities of the WPS protocol:
 * Storing of response documents
 * Asynchronous execution
 
-image::console_workspace_wps5.png[Example requests for the
-ParameterDemo process,scaledwidth=50.0%]
+image::console_workspace_wps5.png[Example requests for the ParameterDemo process,scaledwidth=50.0%]
 
 TIP: WPS request types and their format are specified in the
 http://www.opengeospatial.org/standards/wps[OGC Web Processing Service

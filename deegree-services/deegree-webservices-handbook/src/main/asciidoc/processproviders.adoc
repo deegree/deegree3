@@ -10,8 +10,7 @@ configuration level by clicking on the *processes* link in the
 administration console. The corresponding resource files are located in
 the *processes/* subdirectory of the active deegree workspace directory.
 
-image::workspace-overview-process.png[Process providers plug
-geospatial processes into the WPS,scaledwidth=80.0%]
+image::workspace-overview-process.png[Process providers plug geospatial processes into the WPS,scaledwidth=80.0%]
 
 === Java process provider
 
@@ -633,8 +632,7 @@ _ProcessletInput_ is the parent of three Java types that directly
 correspond to three input parameter types of the process provider
 configuration:
 
-image::java_processprovider_inputtypes.png[ProcessletInput
-interface and sub types for each parameter type]
+image::java_processprovider_inputtypes.png[ProcessletInput interface and sub types for each parameter type]
 
 For example, if your input parameter definition "A" is a
 _BoundingBoxInput_, then the Java type for this parameter will be
@@ -732,8 +730,7 @@ public interface ProcessletOutput {
 Again, there are three subtypes. Each subtype of _ProcessletOutput_
 corresponds to one output parameter type:
 
-image::java_processprovider_outputtypes.png[ProcessletOutput
-interface and sub types for each parameter type]
+image::java_processprovider_outputtypes.png[ProcessletOutput interface and sub types for each parameter type]
 
 ===== Literal parameters
 

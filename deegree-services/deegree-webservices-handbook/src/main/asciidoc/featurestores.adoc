@@ -14,8 +14,7 @@ The corresponding resource configuration files are located in
 subdirectory _datasources/feature/_ of the active deegree workspace
 directory.
 
-image::workspace-overview-feature.png[Feature store resources
-provide access to geo objects,scaledwidth=80.0%]
+image::workspace-overview-feature.png[Feature store resources provide access to geo objects,scaledwidth=80.0%]
 
 === Features, feature types and application schemas
 
@@ -1805,51 +1804,43 @@ As a first step, create a JDBC connection to your database. Click
 *server connections -> jdbc* and enter *inspire* (or an other
 identifier) as connection id:
 
-image::console_featurestore_mapping1.jpg[Creating a JDBC
-connection,scaledwidth=50.0%]
+image::console_featurestore_mapping1.jpg[Creating a JDBC connection,scaledwidth=50.0%]
 
 Afterwards, click *Create new* and enter the connection details to your
 database:
 
-image::console_featurestore_mapping2.jpg[Creating a JDBC
-connection,scaledwidth=50.0%]
+image::console_featurestore_mapping2.jpg[Creating a JDBC connection,scaledwidth=50.0%]
 
 By clicking *Test connection*, you can ensure that deegree can connect
 to your database:
 
-image::console_featurestore_mapping3.jpg[Testing the JDBC
-connection,scaledwidth=50.0%]
+image::console_featurestore_mapping3.jpg[Testing the JDBC connection,scaledwidth=50.0%]
 
 If everything works, click *Create* to finish the creation of your JDBC
 resource:
 
-image::console_featurestore_mapping4.jpg[Testing the JDBC
-connection,scaledwidth=50.0%]
+image::console_featurestore_mapping4.jpg[Testing the JDBC connection,scaledwidth=50.0%]
 
 Now, change to *data stores -> feature*. We will have to delete the
 existing (memory-based) feature store first. Click *Delete*:
 
-image::console_featurestore_mapping5.jpg[Deleting the memory-based
-feature store,scaledwidth=50.0%]
+image::console_featurestore_mapping5.jpg[Deleting the memory-based feature store,scaledwidth=50.0%]
 
 Enter "inspire" as name for the new feature store, select "SQL" from the
 drop-down box and click *Create new*:
 
-image::console_featurestore_mapping6.jpg[Creating a new SQL
-feature store resource,scaledwidth=50.0%]
+image::console_featurestore_mapping6.jpg[Creating a new SQL feature store resource,scaledwidth=50.0%]
 
 Select "Create tables from GML application schema" and click *Next*:
 
-image::console_featurestore_mapping7.jpg[Mapping a new SQL feature
-store configuration,scaledwidth=50.0%]
+image::console_featurestore_mapping7.jpg[Mapping a new SQL feature store configuration,scaledwidth=50.0%]
 
 You can now select the GML application schema files to be used. For this
 walkthrough, tick _Addresses.xsd_, _AdministrativeUnits.xsd_ and
 _CadastralParcels.xsd_ (if you select all schema files, hundreds of
 feature types from INPIRE Annex I will be mapped):
 
-image::console_featurestore_mapping8.jpg[Selecting the GML schema
-files to be considered,scaledwidth=50.0%]
+image::console_featurestore_mapping8.jpg[Selecting the GML schema files to be considered,scaledwidth=50.0%]
 
 NOTE: This view presents any .xsd files that are located below the
 *appschemas/* directory of your deegree workspace. If you want to map
@@ -1859,13 +1850,11 @@ copy of the application schema files into the *appschemas/* directory
 You should now have the option to select the files of this application
 schema in the services console view.
 
-image::console_featurestore_mapping9.jpg[Selecting the GML schema
-files to be considered,scaledwidth=50.0%]
+image::console_featurestore_mapping9.jpg[Selecting the GML schema files to be considered,scaledwidth=50.0%]
 
 Scroll down and click *Next*.
 
-image::console_featurestore_mapping10.jpg[Selecting mapping type
-and storage CRS,scaledwidth=50.0%]
+image::console_featurestore_mapping10.jpg[Selecting mapping type and storage CRS,scaledwidth=50.0%]
 
 You will be presented with a rough analysis of the feature types
 contained in the selected GML application schema files. Select
@@ -1875,26 +1864,22 @@ ETRS89, the recommmended CRS for harmonized INSPIRE datasets). After
 clicking *Next*, an SQL feature store configuration will be
 automatically derived from the application schema:
 
-image::console_featurestore_mapping11.jpg[The auto-generated SQL
-feature store configuration,scaledwidth=50.0%]
+image::console_featurestore_mapping11.jpg[The auto-generated SQL feature store configuration,scaledwidth=50.0%]
 
 Click *Save* to store this configuration:
 
-image::console_featurestore_mapping12.jpg[Auto-generated SQL
-statements for creating tables,scaledwidth=50.0%]
+image::console_featurestore_mapping12.jpg[Auto-generated SQL statements for creating tables,scaledwidth=50.0%]
 
 Now, click *Create DB tables*. You will be presented with an
 auto-generated SQL script for creating the required tables in the
 database:
 
-image::console_featurestore_mapping13.jpg[Auto-generated SQL
-statements for creating tables,scaledwidth=50.0%]
+image::console_featurestore_mapping13.jpg[Auto-generated SQL statements for creating tables,scaledwidth=50.0%]
 
 Click *Execute*. The SQL statements will now be executed against your
 database and the tables will be created:
 
-image::console_featurestore_mapping15.jpg[Mapping
-finished,scaledwidth=50.0%]
+image::console_featurestore_mapping15.jpg[Mapping finished,scaledwidth=50.0%]
 
 Click *Start feature store*:
 
@@ -1911,8 +1896,7 @@ Use the third drop-down menu to select an example request. Entries
 "Insert_200.xml" or "Insert_110.xml" can be used to insert a small
 number of INSPIRE Address features using WFS-T insert requests:
 
-image::console_workspace_inspire3.png[WFS-T example
-requests,scaledwidth=50.0%]
+image::console_workspace_inspire3.png[WFS-T example requests,scaledwidth=50.0%]
 
 Click *Send* to execute the request. After successful insertion, the
 database contains a few addresses, and you may want to move back to the
@@ -1920,27 +1904,23 @@ layer overview (*see layers*). If you activate the AD.Address layer, the
 newly inserted features will be rendered by the deegree WMS (look for
 them in the area of Enkhuizen):
 
-image::console_workspace_inspire4.png[Ad.Address layer after
-insertion of example Address features,scaledwidth=50.0%]
+image::console_workspace_inspire4.png[Ad.Address layer after insertion of example Address features,scaledwidth=50.0%]
 
 Of course, you can also perform WFS queries against the database
 backend, such as requesting of INSPIRE Addresses by street name:
 
-image::console_workspace_inspire5.png[More WFS
-examples,scaledwidth=50.0%]
+image::console_workspace_inspire5.png[More WFS examples,scaledwidth=50.0%]
 
 Besides WFS-T requests, there's another handy option for inserting
 GML-encoded features. Click *data stores -> feature* to access the
 feature store view again:
 
-image::console_featurestore_mapping18.jpg[Accessing the feature
-store loader,scaledwidth=50.0%]
+image::console_featurestore_mapping18.jpg[Accessing the feature store loader,scaledwidth=50.0%]
 
 After clicking *Loader*, you will be presented with a simple view where
 you can insert a URL of a valid GML dataset:
 
-image::console_featurestore_mapping19.jpg[The feature store
-loader,scaledwidth=50.0%]
+image::console_featurestore_mapping19.jpg[The feature store loader,scaledwidth=50.0%]
 
 Basically, you can use this view to insert any valid, GML-encoded
 dataset, as long as it conforms to the application schema. The INSPIRE
@@ -1959,5 +1939,4 @@ directory.
 
 After entering the URL, click *Import*:
 
-image::console_featurestore_mapping20.jpg[Imported INSPIRE
-datasets via the Loader,scaledwidth=50.0%]
+image::console_featurestore_mapping20.jpg[Imported INSPIRE datasets via the Loader,scaledwidth=50.0%]

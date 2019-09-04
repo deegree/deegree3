@@ -19,9 +19,7 @@ There are currently two categories of server connection resources, JDBC
 connections (to connect to SQL databases) and remote OWS connections (to
 connect to other OGC webservices).
 
-image::workspace-overview-connection.png[Server connection
-resources define how to obtain a connection to a remote
-server,scaledwidth=80.0%]
+image::workspace-overview-connection.png[Server connection resources define how to obtain a connection to a remote server,scaledwidth=80.0%]
 
 [[anchor-configuration-jdbc]]
 === JDBC connections
