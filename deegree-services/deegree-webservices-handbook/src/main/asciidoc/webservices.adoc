@@ -45,7 +45,18 @@ configuration example looks like this:
 
 *WFS config example 1: Minimal configuration*
 
-xml/wfs_basic.xml
+[source,xml]
+----
+<deegreeWFS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wfs"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs
+  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+
+  <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
+
+</deegreeWFS>
+----
 
 This will create a deegree WFS with the feature types from all
 configured feature stores in the workspace and
@@ -58,7 +69,61 @@ A more complex configuration example looks like this:
 
 *WFS config example 2: More complex configuration*
 
-xml/wfs_complex.xml
+[source,xml]
+----
+<deegreeWFS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wfs"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs
+  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+
+  <SupportedVersions>
+    <Version>2.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+
+  <FeatureStoreId>inspire-ad</FeatureStoreId>
+
+  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
+  <EnableResponseBuffering>false</EnableResponseBuffering>
+  <DisabledResources>
+    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
+  </DisabledResources>
+
+  <SupportedRequests>
+    <SupportedEncodings>kvp</SupportedEncodings>
+     <GetCapabilities>
+      <SupportedEncodings>xml soap</SupportedEncodings>
+    </GetCapabilities>
+    <DescribeFeatureType/>
+    <GetFeature>
+      <SupportedEncodings>xml</SupportedEncodings>
+    </GetFeature>
+  </SupportedRequests>
+
+  <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
+  <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
+  <QueryMaxFeatures>-1</QueryMaxFeatures>
+  <QueryCheckAreaOfUse>false</QueryCheckAreaOfUse>
+
+  <GMLFormat gmlVersion="GML_32">
+    <MimeType>application/gml+xml; version=3.2</MimeType>
+    <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+    <GenerateBoundedByForFeatures>false</GenerateBoundedByForFeatures>
+    <GetFeatureResponse xmlns:gml="http://www.opengis.net/gml/3.2">
+      <ContainerElement>gml:FeatureCollection</ContainerElement>
+      <FeatureMemberElement>gml:featureMember</FeatureMemberElement>
+      <AdditionalSchemaLocation>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
+      </AdditionalSchemaLocation>
+      <DisableStreaming>false</DisableStreaming>
+      <PrebindNamespace prefix="ad" uri="urn:x-inspire:specification:gmlas:Addresses:3.0"/>
+      <PrebindNamespace prefix="base" uri="urn:x-inspire:specification:gmlas:BaseTypes:3.2"/>
+      <PrebindNamespace prefix="xlink" uri="http://www.w3.org/1999/xlink"/>
+    </GetFeatureResponse>
+  </GMLFormat>
+
+</deegreeWFS>
+----
 
 ==== Configuration overview
 
@@ -291,15 +356,22 @@ Example: To limit the provided request types to GetCapabilities and
 GetFeature this request types can be added without SupportedEncodings
 sub-option:
 
+[source,xml]
 ____
-xml/supportedRequests.xml
+<SupportedRequests>
+  <GetCapabilities />
+  <GetFeature />
+</SupportedRequests>
 ____
 
 Example: To disable SOAP encoding the other encodings can be added
 without SupportedRequests sub-option:
 
+[source,xml]
 ____
-xml/deactivateSoap.xml
+<SupportedRequests>
+  <SupportedEncodings>kvp xml</SupportedEncodings>
+</SupportedRequests>
 ____
 
 Warning
@@ -325,7 +397,31 @@ and other output-format related aspects can be controlled by element
 
 *Example for WFS config option `+GMLFormat+`*
 
-xml/wfs_gmlformat.xml
+[source,xml]
+----
+<GMLFormat gmlVersion="GML_32">
+
+  <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+
+  <GenerateBoundedByForFeatures>false</GenerateBoundedByForFeatures>
+
+  <GetFeatureResponse>
+    <ContainerElement xmlns:gml="http://www.opengis.net/gml/3.2">gml:FeatureCollection</ContainerElement>
+    <FeatureMemberElement xmlns:gml="http://www.opengis.net/gml/3.2">gml:featureMember</FeatureMemberElement>
+    <AdditionalSchemaLocation>
+      http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
+    </AdditionalSchemaLocation>
+    <DisableDynamicSchema>true</DisableDynamicSchema>
+    <DisableStreaming>false</DisableStreaming>
+    <GeometryLinearization>
+      <Accuracy>0.1</Accuracy>
+    </GeometryLinearization>
+  </GetFeatureResponse>
+
+  <DecimalCoordinateFormatter places="8"/>
+
+</GMLFormat>
+----
 
 The `+GMLFormat+` option has the following sub-options:
 
@@ -473,7 +569,29 @@ would be returned by the WFS:
 
 *Example for a non-linear GML geometry*
 
-xml/wfs_linearization_curve1.xml
+[source,xml]
+----
+...
+<gml:Polygon srsName="urn:ogc:def:crs:EPSG::28992">
+  <gml:exterior>
+    <gml:Ring srsName="urn:ogc:def:crs:EPSG::28992">
+      <gml:curveMember>
+        <gml:Curve srsName="urn:ogc:def:crs:EPSG::28992">
+          <gml:segments>
+            <gml:Arc>
+              <gml:posList>240190.182 488008.760 240160.182 487978.760 240190.182 487948.760</gml:posList>
+            </gml:Arc>
+            <gml:Arc>
+              <gml:posList>240190.182 487948.760 240220.182 487978.760 240190.182 488008.760</gml:posList>
+            </gml:Arc>
+          </gml:segments>
+        </gml:Curve>
+      </gml:curveMember>
+    </gml:Ring>
+  </gml:exterior>
+</gml:Polygon>
+...
+----
 
 This is perfectly valid GML, but there are two reasons why you may not
 want your WFS to return non-linear GML geometries:
@@ -489,7 +607,14 @@ are encoded to GML. Here's an example usage of this GML format option:
 
 *Example config snippet for activating geometry linearization*
 
-xml/wfs_linearization_example.xml
+[source,xml]
+----
+...
+<GeometryLinearization>
+  <Accuracy>0.1</Accuracy>
+</GeometryLinearization>
+...
+----
 
 `+GeometryLinearization+` has a single mandatory option `+Accuracy+`. It
 defines the numerical accuracy of the linear approximation in units of
@@ -503,7 +628,29 @@ would be generated by the WFS:
 
 *Example for linearized GML output*
 
-xml/wfs_linearization_curve2.xml
+[source,xml]
+----
+...
+<gml:Polygon srsName="urn:ogc:def:crs:EPSG::28992">
+  <gml:exterior>
+    <gml:Ring srsName="urn:ogc:def:crs:EPSG::28992">
+      <gml:curveMember>
+        <gml:Curve srsName="urn:ogc:def:crs:EPSG::28992">
+          <gml:segments>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>240190.182 488008.760 240177.165 488005.789 240166.727 487997.465 240160.934 487985.436 240160.934 487972.084 240166.727 487960.055 240177.165 487951.731 240190.182 487948.760</gml:posList>
+            </gml:LineStringSegment>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>240190.182 487948.760 240203.199 487951.731 240213.637 487960.055 240219.430 487972.084 240219.430 487985.436 240213.637 487997.465 240203.199 488005.789 240190.182 488008.760</gml:posList>
+            </gml:LineStringSegment>
+          </gml:segments>
+        </gml:Curve>
+      </gml:curveMember>
+    </gml:Ring>
+  </gml:exterior>
+</gml:Polygon>
+...
+----
 
 ==== Adding custom output formats
 
@@ -544,7 +691,32 @@ StoredQueryDefinition file. Here's an example:
 
 *Example for a WFS 2.0.0 StoredQueryDefinition file*
 
-xml/wfs_storedquerydefinition.xml
+[source,xml]
+----
+<StoredQueryDefinition id="urn:x-inspire:query:GetAddressesForStreet"
+  xmlns="http://www.opengis.net/wfs/2.0"
+  xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
+  xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0">
+  <Title>GetAddressesForStreet</Title>
+  <Abstract>Returns the ad:Address features located in the specified street.</Abstract>
+  <Parameter name="streetName" type="xs:string">
+    <Abstract>Name of the street (mandatory)</Abstract>
+  </Parameter>
+  <QueryExpressionText returnFeatureTypes="ad:Address"
+   language="urn:ogc:def:queryLanguage:OGC-:WFSQueryExpression">
+    <Query typeNames="ad:Address">
+      <Filter xmlns="http://www.opengis.net/fes/2.0">
+        <PropertyIsEqualTo>
+          <ValueReference>
+ad:component/ad:ThoroughfareName/ad:name/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text
+          </ValueReference>
+          <Literal>${streetName}</Literal>
+        </PropertyIsEqualTo>
+      </Filter>
+    </Query>
+  </QueryExpressionText>
+</StoredQueryDefinition>
+----
 
 This example is actually usable if your WFS is set up to serve the
 ad:Address feature type from INSPIRE Annex I. It defines the stored
@@ -787,16 +959,24 @@ Example: To limit the provided request types to GetCapabilities and
 GetFeature this request types can be added without SupportedEncodings
 sub-option:
 
-____
-xml/supportedRequests.xml
-____
+[source,xml]
+----
+<SupportedRequests>
+  <GetCapabilities />
+  <GetFeature />
+</SupportedRequests>
+----
 
 Example: To disable SOAP encoding the other encodings can be added
 without SupportedRequests sub-option:
 
-____
-xml/deactivateSoap.xml
-____
+
+[source,xml]
+----
+<SupportedRequests>
+  <SupportedEncodings>kvp xml</SupportedEncodings>
+</SupportedRequests>
+----
 
 Warning
 
@@ -1324,7 +1504,11 @@ schema:
 *GetCapabilities XML request body example (can be used with Utah example
 workspace)*
 
-xml/wms_getcapabilities_xml_request_body.xml
+[source,xml]
+----
+<GetCapabilities xmlns="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd"/>
+----
 
 ===== GetMap
 
@@ -1335,7 +1519,48 @@ The GetMap XML request body has to be compliant to following schema:
 *GetMap XML request body example (can be used with Utah example
 workspace)*
 
-xml/wms_getmap_xml_request_body.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se"
+  xmlns:wms="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1/GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>municipalities</se:Name>
+      <NamedStyle>
+        <se:Name>Municipalities</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>counties</se:Name>
+      <NamedStyle>
+        <se:Name>CountyBoundary</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>zipcodes</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:4326</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>-115.4 35.0</ows:LowerCorner>
+    <ows:UpperCorner>-108.0 44.0</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>true</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+----
 
 ===== GetFeatureInfo
 
@@ -1388,7 +1613,54 @@ schema:
 *GetFeatureInfo XML request body example (can be used with Utah example
 workspace)*
 
-xml/wms_getfeatureinfo_xml_request_body.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeatureInfo xmlns="http://www.opengis.net/ows" xmlns:sld="http://www.opengis.net/sld" xmlns:se="http://www.opengis.net/se"
+  xmlns:wms="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows ../xsd/GFI.xsd"
+  version="1.3.0" service="WMS">
+  <sld:GetMap version="1.3.0">
+    <sld:StyledLayerDescriptor version="1.1.0">
+      <sld:NamedLayer>
+        <se:Name>municipalities</se:Name>
+        <sld:NamedStyle>
+          <se:Name>Municipalities</se:Name>
+        </sld:NamedStyle>
+      </sld:NamedLayer>
+      <sld:NamedLayer>
+        <se:Name>counties</se:Name>
+        <sld:NamedStyle>
+          <se:Name>CountyBoundary</se:Name>
+        </sld:NamedStyle>
+      </sld:NamedLayer>
+      <sld:NamedLayer>
+        <se:Name>zipcodes</se:Name>
+        <sld:NamedStyle>
+          <se:Name>default</se:Name>
+        </sld:NamedStyle>
+      </sld:NamedLayer>
+    </sld:StyledLayerDescriptor>
+    <sld:CRS>EPSG:4326</sld:CRS>
+    <sld:BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+      <LowerCorner>-115.4 35.0</LowerCorner>
+      <UpperCorner>-108.0 44.0</UpperCorner>
+    </sld:BoundingBox>
+    <sld:Output>
+      <sld:Size>
+        <sld:Width>1024</sld:Width>
+        <sld:Height>512</sld:Height>
+      </sld:Size>
+      <wms:Format>image/png</wms:Format>
+    </sld:Output>
+  </sld:GetMap>
+  <QueryLayer>counties</QueryLayer>
+  <I>50</I>
+  <J>15</J>
+  <Output>
+    <InfoFormat>text/xml</InfoFormat>
+  </Output>
+</GetFeatureInfo>
+----
 
 ==== SOAP request encoding
 
@@ -1405,7 +1677,16 @@ request encoding.
 *GetCapabilities SOAP request body example (can be used with Utah
 example workspace)*
 
-xml/wms_getcapabilities_soap_request_body.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <GetCapabilities xmlns="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd"/>
+  </soapenv:Body>
+</soapenv:Envelope>
+----
 
 Hint
 
@@ -1520,7 +1801,18 @@ empty), therefore a minimal WMTS configuration example looks like this:
 
 *WMTS config example 1: Minimal configuration*
 
-xml/wmts_basic.xml
+[source,xml]
+----
+<deegreeWMTS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wmts"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wmts
+  http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd">
+
+  <ServiceConfiguration />
+
+</deegreeWMTS>
+----
 
 This will create a deegree WMTS resource that connects to all configured
 themes of the workspace.
@@ -1532,7 +1824,21 @@ like this:
 
 *WMTS config example 2: More complex configuration*
 
-xml/wmts_complex.xml
+[source,xml]
+----
+<deegreeWMTS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wmts"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wmts
+  http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd">
+
+  <ServiceConfiguration>
+    <ThemeId>water</ThemeId>
+    <ThemeId>roads</ThemeId>
+  </ServiceConfiguration>
+
+</deegreeWMTS>
+----
 
 ==== Configuration overview
 
@@ -1594,7 +1900,17 @@ example looks like this:
 
 *CSW config example 1: Minimal configuration*
 
-xml/csw_basic.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeCSW configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/csw"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/csw
+  http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd">
+</deegreeCSW>
+----
 
 ==== Configuration overview
 
@@ -1633,9 +1949,25 @@ ____
 
 |===
 
-____
-xml/csw_elementNames.snippet
-____
+[source,xml]
+----
+...
+ <ElementNames>
+   <!-- Can contain multiuple sets of element names -->
+   <ElementName>
+     <!-- name of this set. Used <csw:ElementName>Base</csw:ElementName>
+          in a reqest to query this profile -->
+     <name>Base</name>
+     <!-- List of XPath elements to return. If an element node is specified
+          the complete node is returned -->
+     <XPath>/gmd:MD_Metadata/gmd:language</XPath>
+     <XPath>/gmd:MD_Metadata/gmd:fileIdentifier</XPath>
+     <XPath>/gmd:MD_Metadata/gmd:hierarchyLevel</XPath>
+  </ElementName>
+  ...
+ <ElementName>
+...
+----
 
 ==== Extended Functionality
 
@@ -1777,7 +2109,74 @@ configuration works for all types of service alike.
 
 *Example for `+deegreeServicesMetadata+`*
 
-xml/service_metadata.xml
+[source,xml]
+----
+<deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
+  xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd">
+
+  <ServiceIdentification>
+    <Title>INSPIRE Addresses</Title>
+    <Abstract>Direct Access Download Service for INSPIRE Addresses</Abstract>
+  </ServiceIdentification>
+
+  <ServiceProvider>
+    <ProviderName>The deegree project</ProviderName>
+    <ProviderSite>http://www.deegree.org</ProviderSite>
+    <ServiceContact>
+      <IndividualName>Markus Schneider</IndividualName>
+      <PositionName>deegree TMC</PositionName>
+      <Phone>0228/18496-0</Phone>
+      <Facsimile>0228/18496-29</Facsimile>
+      <ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
+      <Address>
+        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
+        <City>Bonn</City>
+        <AdministrativeArea>NRW</AdministrativeArea>
+        <PostalCode>53177</PostalCode>
+        <Country>Germany</Country>
+      </Address>
+      <OnlineResource>http://www.deegree.org</OnlineResource>
+      <HoursOfService>24x7</HoursOfService>
+      <ContactInstructions>Do not hesitate to call</ContactInstructions>
+      <Role>PointOfContact</Role>
+    </ServiceContact>
+  </ServiceProvider>
+
+  <DatasetMetadata>
+    <MetadataUrlTemplate>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</MetadataUrlTemplate>
+    <Dataset>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:Address</Name>
+      <Title>ad:Address</Title>
+      <Abstract>Harmonized INSPIRE Addresses (Annex I)</Abstract>
+      <MetadataSetId>beefcafe-beef-cafe-beef-cafebeefcaf</MetadataSetId>
+    </Dataset>
+  </DatasetMetadata>
+
+  <ExtendedCapabilities protocolVersions="2.0.0">
+    <inspire_dls:ExtendedCapabilities xmlns:inspire_dls="http://inspire.ec.europa.eu/schemas/inspire_dls/1.0"
+      xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
+      xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd http://inspire.ec.europa.eu/schemas/inspire_dls/1.0 http://inspire.ec.europa.eu/schemas/inspire_dls/1.0/inspire_dls.xsd">
+      <inspire_common:MetadataUrl>
+        <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=eea97fc0-8291-11e1-afa6-0800200c9a66</inspire_common:URL>
+        <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
+      </inspire_common:MetadataUrl>
+      <inspire_common:SupportedLanguages>
+        <inspire_common:DefaultLanguage>
+          <inspire_common:Language>ger</inspire_common:Language>
+        </inspire_common:DefaultLanguage>
+      </inspire_common:SupportedLanguages>
+      <inspire_common:ResponseLanguage>
+        <inspire_common:Language>ger</inspire_common:Language>
+      </inspire_common:ResponseLanguage>
+      <inspire_dls:SpatialDataSetIdentifier>
+        <inspire_common:Code>eea97fc0-8291-11e1-afa6-0800200c9a66</inspire_common:Code>
+      </inspire_dls:SpatialDataSetIdentifier>
+    </inspire_dls:ExtendedCapabilities>
+  </ExtendedCapabilities>
+
+</deegreeServicesMetadata>
+----
 
 The metadata config file format is defined by schema file
 http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The

@@ -247,7 +247,17 @@ element to specify it:
 
 *Example for wiring workspace resources*
 
-xml/workspace_dependencies.xml
+[source,xml]
+----
+<ISOMetadataStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/metadata/iso19115">
+
+  <!-- [1] Identifier of JDBC connection -->
+  <JDBCConnId>conn1</JDBCConnId>
+
+  [...]
+
+</ISOMetadataStore>
+----
 
 In this example, the ISO metadata store is wired to JDBC connection pool
 `+conn1+`. Many deegree resource configuration files contain such

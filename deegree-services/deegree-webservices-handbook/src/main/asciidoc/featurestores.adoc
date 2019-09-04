@@ -49,7 +49,47 @@ using a single database table or a single shape file. In contrast,
 
 *Example of a rich feature instance encoded in GML*
 
-xml/feature_complex.xml
+[source,xml]
+----
+<ad:Address gml:id="AD_ADDRESS_b15cd863-1b47-4f3c-9cd5-d5283d674a2b">
+  <ad:inspireId>
+    <base:Identifier xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2">
+      <base:localId>0532200000000003</base:localId>
+      <base:namespace>NL.KAD.BAG</base:namespace>
+    </base:Identifier>
+  </ad:inspireId>
+  <ad:position>
+    <ad:GeographicPosition>
+      <ad:geometry>
+        <gml:Point gml:id="POINT_64fae7bf-a836-44af-a63c-349bed1c6f55" srsName="urn:ogc:def:crs:EPSG::4258">
+          <gml:pos>52.689618 5.246345</gml:pos>
+        </gml:Point>
+      </ad:geometry>
+      <ad:specification>entrance</ad:specification>
+      <ad:method>byOtherParty</ad:method>
+      <ad:default>true</ad:default>
+    </ad:GeographicPosition>
+  </ad:position>
+  <ad:locator>
+    <ad:AddressLocator>
+      <ad:designator>
+        <ad:LocatorDesignator>
+          <ad:designator>1</ad:designator>
+          <ad:type>2</ad:type>
+        </ad:LocatorDesignator>
+      </ad:designator>
+      <ad:level>unitLevel</ad:level>
+    </ad:AddressLocator>
+  </ad:locator>
+  <ad:validFrom>2009-01-05T23:00:00.000</ad:validFrom>
+  <ad:validTo>2299-12-30T23:00:00.000</ad:validTo>
+  <ad:beginLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+  <ad:endLifespanVersion xsi:nil="true" nilReason="UNKNOWN" />
+  <ad:component xlink:href="#FEATURE_d4a54e57-91cd-410d-9c3d-b0fafdaa080f" />
+  <ad:component xlink:href="#FEATURE_240b3dd2-fc1c-448e-82a4-210cffe6dd34" />
+  <ad:component xlink:href="#FEATURE_64f481f4-8a21-4474-8efd-28d01db5e2e3" />
+</ad:Address>
+----
 
 Hint
 
@@ -93,7 +133,19 @@ example looks like this:
 
 *Shape Feature Store config (minimal configuration example)*
 
-xml/shapefeaturestore_minimal.xml
+[source,xml]
+----
+<ShapeFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/shape"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
+  http://schemas.deegree.org/datasource/feature/shape/3.4.0/shape.xsd">
+
+  <!-- Required: Path to shape file on file system (can be relative) -->
+  <File>/tmp/rivers.shp</File>
+
+</ShapeFeatureStore>
+----
 
 This configuration will set up a feature store based on the shape file
 `+/tmp/rivers.shp+` with the following settings:
@@ -116,7 +168,26 @@ A more complex example that uses all available configuration options:
 
 *Shape Feature Store config (more complex configuration example)*
 
-xml/shapefeaturestore_complex.xml
+[source,xml]
+----
+<ShapeFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/shape"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
+  http://schemas.deegree.org/datasource/feature/shape/3.4.0/shape.xsd">
+  <StorageCRS>EPSG:4326</StorageCRS>
+  <FeatureTypeName>River</FeatureTypeName>
+  <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
+  <FeatureTypePrefix>app</FeatureTypePrefix>
+  <File>/tmp/rivers.shp</File>
+  <Encoding>ISO-8859-1</Encoding>
+  <GenerateAlphanumericIndexes>false</GenerateAlphanumericIndexes>
+  <Mapping>
+    <SimpleProperty name="objectid" mapping="OBJECTID" />
+    <GeometryProperty name="mygeom" />
+  </Mapping>
+</ShapeFeatureStore>
+----
 
 This configuration will set up a feature store based on the shape file
 `+/tmp/rivers.shp+` with the following settings:
@@ -180,7 +251,19 @@ configuration example looks like this:
 
 *Memory Feature Store config (minimal configuration example)*
 
-xml/memoryfeaturestore_minimal.xml
+[source,xml]
+----
+<MemoryFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
+  http://schemas.deegree.org/datasource/feature/memory/3.4.0/memory.xsd">
+
+  <!-- Required: GML application schema file / directory to read feature types from -->
+  <GMLSchema version="GML_32">../../appschemas/inspire/annex1/addresses.xsd</GMLSchema>
+
+</MemoryFeatureStore>
+----
 
 This configuration will set up a memory feature store with the following
 settings:
@@ -197,7 +280,18 @@ A more complex example that uses all available configuration options:
 
 *Memory Feature Store config (more complex configuration example)*
 
-xml/memoryfeaturestore_complex.xml
+[source,xml]
+----
+<MemoryFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
+  http://schemas.deegree.org/datasource/feature/memory/3.4.0/memory.xsd">
+  <StorageCRS>urn:ogc:def:crs:EPSG::4258</StorageCRS>
+  <GMLSchema version="GML_32">../../appschemas/inspire/annex1/</GMLSchema>
+  <GMLFeatureCollection version="GML_32">../../data/gml/address.gml</GMLFeatureCollection>
+  <GMLFeatureCollection version="GML_32">../../data/gml/parcels.gml</GMLFeatureCollection>
+</MemoryFeatureStore>
+----
 
 This configuration will set up a memory feature store with the following
 settings:
@@ -256,13 +350,55 @@ There are three mandatory elements: `+JDBCConnId+`, `+SQLStatement+` and
 
 *Simple SQL feature store config (minimal configuration example)*
 
-xml/simplesqlfeaturestore_minimal.xml
+[source,xml]
+----
+<SimpleSQLFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/simplesql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
+  http://schemas.deegree.org/datasource/feature/simplesql/3.4.0/simplesql.xsd">
+
+  <!-- Required: Database connection -->
+  <JDBCConnId>connid</JDBCConnId>
+
+  <!-- Required: Query statement -->
+  <SQLStatement>
+    SELECT name, title, asbinary(the_geom) FROM some_table
+    WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
+  </SQLStatement>
+
+  <!-- Required: Bounding box statement -->
+  <BBoxStatement>SELECT astext(ST_Estimated_Extent('some_table', 'the_geom')) as bbox</BBoxStatement>
+
+</SimpleSQLFeatureStore>
+----
 
 ==== More complex configuration example
 
 *Simple SQL feature store config (more complex configuration example)*
 
-xml/simplesqlfeaturestore_complex.xml
+[source,xml]
+----
+<SimpleSQLFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/simplesql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
+  http://schemas.deegree.org/datasource/feature/simplesql/3.4.0/simplesql.xsd">
+
+  <!-- Required: Database connection -->
+  <JDBCConnId>connid</JDBCConnId>
+
+  <!-- Required: Query statement -->
+  <SQLStatement>
+    SELECT name, title, asbinary(the_geom) FROM some_table
+    WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
+  </SQLStatement>
+
+  <!-- Required: Bounding box statement -->
+  <BBoxStatement>SELECT astext(ST_Estimated_Extent('some_table', 'the_geom')) as bbox</BBoxStatement>
+
+</SimpleSQLFeatureStore>
+----
 
 ==== Configuration options
 
@@ -317,7 +453,17 @@ A very minimal valid configuration example looks like this:
 
 *SQL feature store: Minimal configuration*
 
-xml/sqlfeaturestore_tabledriven1.xml
+[source,xml]
+----
+<SQLFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/sql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
+  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  <JDBCConnId>postgis</JDBCConnId>
+  <FeatureTypeMapping table="country"/>
+</SQLFeatureStore>
+----
 
 This configuration defines a SQL feature store resource with the
 following properties:
@@ -345,7 +491,96 @@ A more complex example:
 
 *SQL feature store: More complex configuration*
 
-xml/sqlfeaturestore_complex.xml
+[source,xml]
+----
+<SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  <JDBCConnId>inspire</JDBCConnId>
+  <StorageCRS srid="-1" dim="2D">EPSG:4258</StorageCRS>
+  <GMLSchema>../../appschemas/inspire/annex1/Addresses.xsd</GMLSchema>
+  <GMLSchema>../../appschemas/inspire/annex1/AdministrativeUnits.xsd</GMLSchema>
+  <GMLSchema>../../appschemas/inspire/annex1/CadastralParcels.xsd</GMLSchema>
+
+  <FeatureTypeMapping name="ad:Address" table="ad_address">
+    <FIDMapping prefix="AD_ADDRESS_">
+      <Column name="attr_gml_id" type="string" />
+      <UUIDGenerator />
+    </FIDMapping>
+    <Complex path="ad:inspireId">
+      <Complex path="base:Identifier">
+        <Primitive path="base:localId" mapping="localid" />
+        <Primitive path="base:namespace" mapping="'NL.KAD.BAG'" />
+      </Complex>
+    </Complex>
+    <Complex path="ad:position">
+      <Join table="ad_address_ad_position" fromColumns="fid" toColumns="fk" />
+      <Complex path="ad:GeographicPosition">
+        <Complex path="ad:geometry">
+          <Geometry path="." mapping="value" />
+        </Complex>
+        <Complex path="ad:specification">
+          <Primitive path="text()" mapping="'entrance'" />
+        </Complex>
+        <Complex path="ad:method">
+          <Primitive path="text()" mapping="'byOtherParty'" />
+        </Complex>
+        <Primitive path="ad:default" mapping="'true'" />
+      </Complex>
+    </Complex>
+    <Complex path="ad:locator">
+      <Join table="ad_address_ad_locator" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num"
+        numbered="true" />
+      <Complex path="ad:AddressLocator">
+        <Complex path="ad:designator">
+          <Join table="ad_address_ad_locator_ad_addresslocator_ad_designator" fromColumns="id" toColumns="parentfk"
+            orderColumns="num" numbered="true" />
+          <Complex path="ad:LocatorDesignator">
+            <Primitive path="ad:designator" mapping="ad_addresslocator_ad_locatordesignator_ad_designator" />
+            <Complex path="ad:type">
+              <Primitive path="text()" mapping="ad_addresslocator_ad_locatordesignator_ad_type" />
+              <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_locatordesignator_ad_type_attr_codespace" />
+            </Complex>
+          </Complex>
+        </Complex>
+        <Complex path="ad:level">
+          <Primitive path="text()" mapping="ad_addresslocator_ad_level" />
+          <Primitive path="@codeSpace" mapping="ad_addresslocator_ad_level_attr_codespace" />
+        </Complex>
+      </Complex>
+    </Complex>
+    <Complex path="ad:validFrom">
+      <Primitive path="text()" mapping="ad_validfrom" />
+      <Primitive path="@nilReason" mapping="ad_validfrom_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_validfrom_attr_xsi_nil" />
+    </Complex>
+    <Complex path="ad:validTo">
+      <Primitive path="text()" mapping="ad_validto" />
+      <Primitive path="@nilReason" mapping="ad_validto_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_validto_attr_xsi_nil" />
+    </Complex>
+    <Complex path="ad:beginLifespanVersion">
+      <Primitive path="text()" mapping="ad_beginlifespanversion" />
+      <Primitive path="@nilReason" mapping="ad_beginlifespanversion_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_beginlifespanversion_attr_xsi_nil" />
+    </Complex>
+    <Complex path="ad:endLifespanVersion">
+      <Primitive path="text()" mapping="ad_endlifespanversion" />
+      <Primitive path="@nilReason" mapping="ad_endlifespanversion_attr_nilreason" />
+      <Primitive path="@xsi:nil" mapping="ad_endlifespanversion_attr_xsi_nil" />
+    </Complex>
+    <Complex path="ad:component">
+      <Join table="ad_address_ad_component" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num"
+        numbered="true" />
+      <Feature path=".">
+        <Href mapping="href" />
+      </Feature>
+    </Complex>
+  </FeatureTypeMapping>
+
+</SQLFeatureStore>
+----
 
 This configuration snippet defines a SQL feature store resource with the
 following properties:
@@ -410,7 +645,17 @@ between one table and one feature type:
 
 *SQL feature store: Mapping a single table*
 
-xml/sqlfeaturestore_tabledriven1.xml
+[source,xml]
+----
+<SQLFeatureStore configVersion="3.4.0"
+xmlns="http://www.deegree.org/datasource/feature/sql"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
+  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+<JDBCConnId>postgis</JDBCConnId>
+<FeatureTypeMapping table="country"/>
+</SQLFeatureStore>
+----
 
 This example assumes that the database contains a table named
 `+country+` within the default database schema (for PostgreSQL
@@ -432,7 +677,17 @@ example defines two feature types, based on tables `+country+` and
 
 *SQL feature store: Mapping two tables*
 
-xml/sqlfeaturestore_tabledriven2.xml
+[source,xml]
+----<SQLFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/sql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
+  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  <JDBCConnId>postgis</JDBCConnId>
+  <FeatureTypeMapping table="country"/>
+  <FeatureTypeMapping table="city"/>
+</SQLFeatureStore>
+----
 
 There are several options for `+<FeatureTypeMapping>+` that give you
 more control over the derived feature type definition. The following
@@ -474,7 +729,12 @@ following example, it will be `+app:Land+` (Land is German for country).
 
 *SQL feature store: Customizing the feature type name*
 
-xml/sqlfeaturestore_tabledriven3.xml
+[source,xml]
+----
+...
+  <FeatureTypeMapping table="country" name="Land"/>
+...
+----
 
 The name of a feature type is always a qualified XML name. You can use
 standard XML namespace binding mechanisms to control the namespace and
@@ -482,7 +742,12 @@ prefix of the feature type name:
 
 *SQL feature store: Customizing the feature type namespace and prefix*
 
-xml/sqlfeaturestore_tabledriven4.xml
+[source,xml]
+----
+...
+  <FeatureTypeMapping xmlns:myns="http://mydomain.org/myns" table="country" name="myns:Land"/>
+...
+----
 
 ===== Customizing the feature id
 
@@ -500,7 +765,16 @@ column fails, customize the feature id mapping using the
 
 *SQL feature store: Customizing the feature id mapping*
 
-xml/sqlfeaturestore_fidmapping1.xml
+[source,xml]
+----
+...
+<FeatureTypeMapping table="country">
+  <FIDMapping prefix="C_">
+    <Column name="fid" />
+  </FIDMapping>
+</FeatureTypeMapping>
+...
+----
 
 Here are the options for `+<FIDMapping>+`:
 
@@ -519,7 +793,9 @@ feature id is constructed from multiple columns:
 
 *SQL feature store: Customizing the feature id mapping*
 
-xml/sqlfeaturestore_fidmapping2.xml
+[source,xml]
+----
+----sqlfeaturestore_fidmapping2.xml
 
 Here are the options for `+<Column>+`:
 
@@ -554,7 +830,9 @@ definitions of the feature type and the column-to-property mapping:
 *SQL feature store: Customizing property definitions and the
 column-to-property mapping*
 
-xml/sqlfeaturestore_tabledriven5.xml
+[source,xml]
+----
+----sqlfeaturestore_tabledriven5.xml
 
 This example defines a feature type with three properties:
 
@@ -633,7 +911,9 @@ GML application schema files:
 
 *SQL FeatureStore (schema-driven mode): Skeleton config*
 
-xml/sqlfeaturestore_schemadriven1.xml
+[source,xml]
+----
+----xmlsqlfeaturestore_schemadriven1.xml
 
 ===== Recommended workflow
 
@@ -750,7 +1030,9 @@ key column named `+fid+`:
 
 *SQL feature store (schema-driven mode): Start configuration*
 
-xml/sqlfeaturestore_schemadriven2.xml
+[source,xml]
+----
+----sqlfeaturestore_schemadriven2.xml
 
 Tip
 
@@ -782,7 +1064,22 @@ corresponding column. We want this element to have the fixed value
 *SQL feature store (schema-driven mode): Complex elements and constant
 mappings*
 
-xml/sqlfeaturestore_schemadriven3.xml
+[source,xml]
+----
+<FeatureTypeMapping name="ad:Address" table="ad_address" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">
+  <FIDMapping>
+    <Column name="fid" />
+  </FIDMapping>
+
+  <Complex path="ad:inspireId">
+    <Complex path="base:Identifier">
+      <Primitive path="base:localId" mapping="localid"/>
+      <Primitive path="base:namespace" mapping="'NL.KAD.BAG'"/>
+    </Complex>
+  </Complex>
+
+</FeatureTypeMapping>
+----
 
 There are several things to observe here. The `+Complex+` element occurs
 twice. In the `+path+` attribute of the first occurrence, we specified
@@ -811,7 +1108,38 @@ extended mapping:
 *SQL feature store (schema-driven mode): Join elements and XPath
 expressions*
 
-xml/sqlfeaturestore_schemadriven4.xml
+[source,xml]
+----
+<FeatureTypeMapping name="ad:Address" table="ad_address" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">
+  <FIDMapping>
+    <Column name="fid" />
+  </FIDMapping>
+
+  <Complex path="ad:inspireId">
+    <Complex path="base:Identifier">
+      <Primitive path="base:localId" mapping="localid" />
+      <Primitive path="base:namespace" mapping="'NL.KAD.BAG'" />
+    </Complex>
+  </Complex>
+
+  <Complex path="ad:position">
+    <Join table="ad_address_ad_position" fromColumns="fid" toColumns="fk" />
+    <Complex path="ad:GeographicPosition">
+      <Complex path="ad:geometry">
+        <Geometry path="." mapping="value" />
+      </Complex>
+      <Complex path="ad:specification">
+        <Primitive path="text()" mapping="'entrance'" />
+      </Complex>
+      <Complex path="ad:method">
+        <Primitive path="text()" mapping="'byOtherParty'" />
+      </Complex>
+      <Primitive path="ad:default" mapping="'true'" />
+    </Complex>
+  </Complex>
+
+</FeatureTypeMapping>
+----
 
 Again, the `+Complex+` element is used to drill into the XML structure
 of the property and several elements are mapped to constant values. But
@@ -834,7 +1162,18 @@ can occur multiple times and contains (a reference to) another feature.
 
 *SQL feature store (schema-driven mode): Feature elements*
 
-xml/sqlfeaturestore_schemadriven5.xml
+[source,xml]
+----
+<FeatureTypeMapping name="ad:Address" table="ad_address" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">
+    [...]
+    <Complex path="ad:component">
+      <Join table="ad_address_ad_component" fromColumns="fid" toColumns="fk"/>
+      <Feature path=".">
+        <Href mapping="href"/>
+      </Feature>
+    </Complex>
+</FeatureTypeMapping>
+----
 
 As in the mapping of `+ad:position+`, a `+<Join>+` is used to change the
 table context. The table that stores the information for
@@ -942,7 +1281,17 @@ following example snippet, this would be table `+ad_address+`.
 
 *SQL feature store: Initial table context*
 
-xml/sqlfeaturestore_tablecontext.xml
+[source,xml]
+----
+<FeatureTypeMapping name="ad:Address" table="ad_address">
+ [...]
+  <Complex path="gml:identifier">
+    <Primitive path="text()" mapping="gml_identifier"/>
+    <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace"/>
+  </Complex>
+ [...]
+</FeatureTypeMapping>
+----
 
 Note that all mapped columns stem from table `+ad_address+`. This is
 fine, as each feature can only have a single `+gml:identifier+`
@@ -952,7 +1301,31 @@ table.
 
 *SQL feature store: Changing the table context*
 
-xml/sqlfeaturestore_join1.xml
+[source,xml]
+----
+<FeatureTypeMapping name="ad:Address" table="ad_address">
+ [...]
+  <Complex path="gml:identifier">
+    <Primitive path="text()" mapping="gml_identifier"/>
+    <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace"/>
+  </Complex>
+ [...]
+  <Complex path="ad:position">
+    <Join table="ad_address_ad_position" fromColumns="attr_gml_id" toColumns="parentfk" orderColumns="num" numbered="true"/>
+    <Complex path="ad:GeographicPosition">
+     <Complex path="ad:geometry">
+       <Primitive path="@nilReason" mapping="ad_geographicposition_ad_geometry_attr_nilreason"/>
+       <Primitive path="@gml:remoteSchema" mapping="ad_geographicposition_ad_geometry_attr_gml_remoteschema"/>
+       <Primitive path="@owns" mapping="ad_geographicposition_ad_geometry_attr_owns"/>
+       <Geometry path="." mapping="ad_geographicposition_ad_geometry_value"/>
+     </Complex>
+     [...]
+     <Primitive path="ad:default" mapping="ad_geographicposition_ad_default"/>
+   </Complex>
+ </Complex>
+ [...]
+</FeatureTypeMapping>
+----
 
 In this example, property `+gml:identifier+` is mapped as before (the
 data values stem from table `+ad_address+`). In contrast to that,
@@ -1013,7 +1386,22 @@ mapped to SQL WHERE clauses as in the following WFS example request.
 
 *SQL feature store: WFS query with child index*
 
-xml/sqlfeaturestore_indexquery.xml
+[source,xml]
+----
+<GetFeature version="2.0.0" service="WFS">
+  <Query typeNames="ad:Address">
+    <fes:Filter>
+      <fes:BBOX>
+        <fes:ValueReference>ad:position[3]/ad:GeographicPosition/ad:geometry</fes:ValueReference>
+        <gml:Envelope srsName="urn:ogc:def:crs:EPSG::4258">
+          <gml:lowerCorner>52.691 5.244</gml:lowerCorner>
+          <gml:upperCorner>52.711 5.245</gml:upperCorner>
+        </gml:Envelope>
+      </fes:BBOX>
+    </fes:Filter>
+  </Query>
+</GetFeature>
+----
 
 In the above example, only those `+ad:Address+` features will be
 returned where the geometry in the third `+ad:position+` property has an
@@ -1046,7 +1434,19 @@ example:
 
 *SQL feature store: Key propagation for transactions*
 
-xml/sqlfeaturestore_join2.xml
+[source,xml]
+----
+[...]
+<Join table="B" fromColumns="id" toColumns="parentfk" orderColumns="num" numbered="true">
+  <AutoKeyColumn name="pk1">
+    <UUIDGenerator />
+  </AutoKeyColumn>
+  [...]
+  <Join table="C" fromColumns="pk1" toColumns="parentfk" />
+  [...]
+</Join>
+[...]
+----
 
 In this example snippet, the primary key for table `+B+` is stored in
 column `+pk1+` and values for this column are generated using the UUID
@@ -1072,7 +1472,12 @@ configuration has been finished.
 
 *SQL feature store: Activating NULL value escalation*
 
-xml/sqlfeaturestore_nullescalation1.xml
+[source,xml]
+----
+[...]
+<NullEscalation>true</NullEscalation>
+[...]
+----
 
 If this option is turned on and a `+NULL+` value is found in a mapped
 column, the following strategy is applied:
@@ -1096,7 +1501,20 @@ manually switched off for this very particle.
 
 *SQL feature store: Customizing NULL value escalation*
 
-xml/sqlfeaturestore_nullescalation2.xml
+[source,xml]
+----
+[...]
+<Complex path="gml:TimePeriod">
+  <Complex path="gml:beginPosition">
+    <Primitive path="text()" mapping="begin_position"/>
+  </Complex>
+  <Complex path="gml:endPosition">
+    <Primitive path="@indeterminatePosition" mapping="end_position_indeterminate_position"/>
+    <Primitive path="text()" mapping="end_position" nullEscalation="false"/>
+  </Complex>
+</Complex>
+[...]
+----
 
 The following values are supported for attribute `+nullEscalation+` on
 `+<Primitive>+`, `+<Complex>+`, `+<Geometry>+` or `+<Feature>+`
@@ -1238,7 +1656,15 @@ PostgreSQL).
 
 *SQL feature store: Auto id generator example*
 
-xml/sqlfeaturestore_idgenerator1.xml
+[source,xml]
+----
+[...]
+<FIDMapping prefix="AD_ADDRESS_">
+  <Column name="attr_gml_id" />
+  <AutoIDGenerator />
+</FIDMapping>
+[...]
+----
 
 This snippet defines the feature id mapping and the id generation
 behaviour for a feature type called `+ad:Address+`
@@ -1264,7 +1690,15 @@ value generation for this column (e.g triggers).
 
 *SQL feature store: UUID generator example*
 
-xml/sqlfeaturestore_idgenerator2.xml
+[source,xml]
+----
+[...]
+<FIDMapping prefix="AD_ADDRESS_">
+  <Column name="attr_gml_id" />
+  <UUIDGenerator />
+</FIDMapping>
+[...]
+----
 
 This snippet defines the feature id mapping and the id generation
 behaviour for a feature type called `+ad:Address+`
@@ -1290,7 +1724,15 @@ this column (e.g triggers).
 
 *SQL feature store: Database sequence generator example*
 
-xml/sqlfeaturestore_idgenerator3.xml
+[source,xml]
+----
+[...]
+<FIDMapping prefix="AD_ADDRESS_">
+  <Column name="attr_gml_id" />
+  <SequenceIDGenerator sequence="SEQ_FID">
+</FIDMapping>
+[...]
+----
 
 This snippet defines the feature id mapping and the id generation
 behaviour for a feature type called `+ad:Address+`

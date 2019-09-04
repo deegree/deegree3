@@ -38,7 +38,21 @@ A very minimal valid configuration example looks like this:
 
 *Java process provider: Minimal example (resource configuration)*
 
-xml/java_processprovider_minimal.xml
+[source,xml]
+----
+<ProcessDefinition configVersion="3.4.0" processVersion="1.0.0" xmlns="http://www.deegree.org/processes/java"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/processes/java/3.4.0/java.xsd">
+  <Identifier>Process42</Identifier>
+  <JavaClass>Processlet42</JavaClass>
+  <Title>Calculates the answer to life, the universe and everything</Title>
+  <OutputParameters>
+    <LiteralOutput>
+      <Identifier>Answer</Identifier>
+      <Title>The universal answer</Title>
+    </LiteralOutput>
+  </OutputParameters>
+</ProcessDefinition>
+----
 
 This example defines a bogus process with the following properties:
 
@@ -91,7 +105,44 @@ A more complex configuration example looks like this:
 
 *Java process provider: More complex example (resource configuration)*
 
-xml/java_processprovider_complex.xml
+[source,xml]
+----
+<ProcessDefinition configVersion="3.4.0" processVersion="1.0.0" storeSupported="true" statusSupported="false"
+  xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/processes/java/3.4.0/java.xsd">
+  <Identifier>Addition</Identifier>
+  <JavaClass>AdditionProcesslet</JavaClass>
+  <Title>Process for adding two integer values.</Title>
+  <Abstract>The purpose of this process is to provide new users with a simple example process.</Abstract>
+  <InputParameters>
+    <LiteralInput>
+      <Identifier>SummandA</Identifier>
+      <Title>First summand </Title>
+      <Abstract>This parameter specifies the first summand for a simple addition.</Abstract>
+      <DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+      <DefaultUOM>meters</DefaultUOM>
+      <OtherUOM>centimeters</OtherUOM>
+    </LiteralInput>
+    <LiteralInput>
+      <Identifier>SummandB</Identifier>
+      <Title>Second summand </Title>
+      <Abstract>This parameter specifies the second summand for a simple addition.</Abstract>
+      <DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+      <DefaultUOM>meters</DefaultUOM>
+      <OtherUOM>centimeters</OtherUOM>
+    </LiteralInput>
+  </InputParameters>
+  <OutputParameters>
+    <LiteralOutput>
+      <Identifier>Sum</Identifier>
+      <Title>The result of the addition operation</Title>
+      <DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+      <DefaultUOM>meters</DefaultUOM>
+      <OtherUOM>centimeters</OtherUOM>
+    </LiteralOutput>
+  </OutputParameters>
+</ProcessDefinition>
+----
 
 This example defines a demonstration process with the following
 properties:
@@ -308,7 +359,45 @@ Apache Maven for this. Here's an example POM for your convenience:
 
 *Java process provider: Example Maven POM for compiling processlets*
 
-xml/java_processprovider_pom.xml
+[source,xml]
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>processlet-examples</artifactId>
+  <packaging>jar</packaging>
+  <name>processlet-examples</name>
+  <description>Maven project for compiling Processlets</description>
+
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree</artifactId>
+    <version>${project.version}</version>
+  </parent>
+
+  <repositories>
+    <repository>
+      <id>deegree-repo</id>
+      <url>http://repo.deegree.org/content/groups/public</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wps</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>
+----
 
 Tip
 
@@ -409,13 +498,66 @@ Here's an `+InputParameters+` example that defines four parameters:
 
 *Java process provider: Example for `+InputParameters+` section*
 
-xml/java_processprovider_inputs.xml
+[source,xml]
+----
+<InputParameters>
+  <LiteralInput>
+    <Identifier>LiteralInput</Identifier>
+    <Title>Example literal input </Title>
+    <Abstract>This parameter specifies how long the execution of the process takes (the process sleeps for this time).
+      May be specified in seconds or minutes.</Abstract>
+    <DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+    <DefaultUOM>seconds</DefaultUOM>
+    <OtherUOM>minutes</OtherUOM>
+  </LiteralInput>
+  <BoundingBoxInput>
+    <Identifier>BBOXInput</Identifier>
+    <Title>BBOXInput</Title>
+    <DefaultCRS>EPSG:4326</DefaultCRS>
+  </BoundingBoxInput>
+  <ComplexInput>
+    <Identifier>XMLInput</Identifier>
+    <Title>XMLInput</Title>
+    <DefaultFormat mimeType="text/xml" />
+  </ComplexInput>
+  <ComplexInput>
+    <Identifier>BinaryInput</Identifier>
+    <Title>BinaryInput</Title>
+    <DefaultFormat mimeType="image/png" encoding="base64" />
+  </ComplexInput>
+</InputParameters>
+----
 
 Here's an `+OutputParameters+` example that defines four parameters:
 
 *Java process provider: Example for `+OutputParameters+` section*
 
-xml/java_processprovider_outputs.xml
+[source,xml]
+----
+<OutputParameters>
+  <LiteralOutput>
+    <Identifier>LiteralOutput</Identifier>
+    <Title>A literal output parameter</Title>
+    <DataType reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</DataType>
+    <DefaultUOM>seconds</DefaultUOM>
+  </LiteralOutput>
+  <BoundingBoxOutput>
+    <Identifier>BBOXOutput</Identifier>
+    <Title>A bounding box output parameter</Title>
+    <DefaultCRS>EPSG:4326</DefaultCRS>
+  </BoundingBoxOutput>
+  <ComplexOutput>
+    <Identifier>XMLOutput</Identifier>
+    <Title>An XML output parameter</Title>
+    <DefaultFormat mimeType="text/xml" />
+  </ComplexOutput>
+  <ComplexOutput>
+    <Identifier>BinaryOutput</Identifier>
+    <Title>A binary output parameter</Title>
+    <DefaultFormat mimeType="image/png" encoding="base64" />
+  </ComplexOutput>
+</OutputParameters>
+----
 
 Each parameter definition element has the following common options:
 
