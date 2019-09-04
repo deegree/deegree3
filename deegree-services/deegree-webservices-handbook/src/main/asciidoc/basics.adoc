@@ -22,7 +22,7 @@ The deegree workspace is the modular, resource-oriented and extensible
 configuration concept used by deegree webservices. The following diagram
 shows the different types of resources that it contains:
 
-image:images/workspace-overview.png[Configuration aspects of deegree
+image::workspace-overview.png[Configuration aspects of deegree
 workspaces]
 
 The following table provides a short description of the different types
@@ -79,7 +79,7 @@ shapefile, database, etc) must be configured. With a rasterfile, like a
 GeoTIFF, you can configured a tile store and a coverage store to offer a
 Web Map Service.
 
-image:images/workspace-configuration-dependencies.png[Workspace
+image::workspace-configuration-dependencies.png[Workspace
 configuration dependencies]
 
 === Location of the deegree workspace directory
@@ -126,7 +126,7 @@ If you downloaded all four example workspaces (as described in
 `+anchor-lightly+`), set a console password and the proxy parameters,
 your `+.deegree+` directory will look like this:
 
-image:images/workspace-root.png[Example `+.deegree+` directory]
+image::workspace-root.png[Example `+.deegree+` directory]
 
 As you see, this `+.deegree+` directory contains four subdirectories.
 Every subdirectory corresponds to a deegree workspace. Besides the
@@ -203,7 +203,7 @@ Some common ones are:
 In order to clarify the relation between workspace files and resources,
 let's have a look at an example:
 
-image:images/workspace-example.png[Example workspace directory]
+image::workspace-example.png[Example workspace directory]
 
 As noted, deegree scans the well-known resource directories for XML
 files (`+*.xml+`) on startup (note that it will omit directory
@@ -271,7 +271,7 @@ for this task. The service console has a corresponding menu entry for
 every type of workspace resource. All resource menu entries are grouped
 in the lower menu on the left:
 
-image:images/console_resources.png[Workspace resource menu
+image::console_resources.png[Workspace resource menu
 entries,scaledwidth=50.0%]
 
 Although the console offers additional functionality for some resource
@@ -283,7 +283,7 @@ In order to display the configured workspace resources of a certain
 type, click on the corresponding menu entry. The following screenshot
 shows the metadata store resources in deegree-workspace-csw:
 
-image:images/console_metadata_stores.png[Displaying metadata store
+image::console_metadata_stores.png[Displaying metadata store
 resources,scaledwidth=50.0%]
 
 The right part of the window displays a table with all configured
@@ -295,14 +295,14 @@ resource with identifier "iso19115" which is in status "On".
 The "Deactivate" link allows to turn off a resource temporarily (while
 keeping the configuration):
 
-image:images/console_deactivate.png[Deactivate action,scaledwidth=50.0%]
+image::console_deactivate.png[Deactivate action,scaledwidth=50.0%]
 
 After clicking on "Deactivate", the status of the resource will be
 "Off", and the "Deactivate" link will change to "Activate". Also, the
 "Reload" link at the top will turn red to notify that there may be
 changes that need to be propagated to dependent resources:
 
-image:images/console_deactivated.png[Deactivated a
+image::console_deactivated.png[Deactivated a
 resource,scaledwidth=50.0%]
 
 Tip
@@ -316,11 +316,11 @@ suffix back to ".xml".
 By clicking on the "Edit" link, you can edit the corresponding XML
 configuration inside your browser:
 
-image:images/console_edit.png[Edit action,scaledwidth=50.0%]
+image::console_edit.png[Edit action,scaledwidth=50.0%]
 
 The XML configuration will be displayed:
 
-image:images/console_editing.png[Editing a resource
+image::console_editing.png[Editing a resource
 configuration,scaledwidth=50.0%]
 
 You can now perform configuration changes in the text area and click on
@@ -336,7 +336,7 @@ link will take you back to the corresponding resource view. Before
 actually saving the file, the service console will perform an XML
 validation of the file and display any syntactical errors:
 
-image:images/console_edit_error.png[Displaying a syntax
+image::console_edit_error.png[Displaying a syntax
 error,scaledwidth=50.0%]
 
 In this case, the mandatory "JDBCConnId" element was removed, which
@@ -348,7 +348,7 @@ violates the configuration schema. This needs to be corrected, before
 The "Delete" link will deactivate the resource and delete the
 corresponding configuration file from the workspace:
 
-image:images/console_delete.png[Delete action,scaledwidth=50.0%]
+image::console_delete.png[Delete action,scaledwidth=50.0%]
 
 ==== Creating a new resource
 
@@ -356,7 +356,7 @@ In order to add a new resource, enter a new identifier in the text
 field, select a resource sub-type from the drop-down and click on
 "Create new":
 
-image:images/console_add.png[Adding a WMS resource with identifier
+image::console_add.png[Adding a WMS resource with identifier
 "mywms",scaledwidth=50.0%]
 
 The next steps depend on the type of resource, but generally you have to
@@ -371,20 +371,20 @@ detect and fix errors in a workspace setup. For example, if you delete
 (or deactivate) JDBC connection "conn1" in deegree-workspace-csw and
 click "[Reload]", you will see the following:
 
-image:images/console_error.png[Errors in resource
+image::console_error.png[Errors in resource
 categories,scaledwidth=50.0%]
 
 The red exclamation marks near "services" and "metadata" show that these
 resource categories have resources with errors. Let's click on the
 metadata link to see what's going on:
 
-image:images/console_error2.png[Resource "iso19115" has an
+image::console_error2.png[Resource "iso19115" has an
 error,scaledwidth=50.0%]
 
 The metadata resource view reveals that the metadata store "iso19115"
 has an error. Clicking on "Show errors" leads to:
 
-image:images/console_error3.png[Details on the problem with
+image::console_error3.png[Details on the problem with
 "iso19115",scaledwidth=50.0%]
 
 The error message gives an important hint: "No JDBC connection pool with
@@ -392,7 +392,7 @@ id 'conn1' defined." deegree was unable to initialize the metadata
 store, because it refers to a JDBC connection pool "conn1". You may
 wonder what the error in the services category is about:
 
-image:images/console_error4.png[Details on the problem with
+image::console_error4.png[Details on the problem with
 "csw",scaledwidth=50.0%]
 
 As you see, the problem with the service resource ("There is no
@@ -435,7 +435,7 @@ View and Download Services, it is a good option to use
 In order to create a new workspace, simply create a new directory in the
 `+.deegree+` directory.
 
-image:images/workspace-new.png[Creating the new workspace
+image::workspace-new.png[Creating the new workspace
 `+myscenario+`]
 
 Afterwards, switch to the new workspace using the services console, as
@@ -489,7 +489,7 @@ the services console performs validation when you save a configuration
 file. If the contents is not valid according to the schema, the file
 will not be saved, but an error message will be displayed:
 
-image:images/console_edit_error.png[The services console displays an XML
+image::console_edit_error.png[The services console displays an XML
 syntax error,scaledwidth=50.0%]
 
 If you prefer to use a different editor for editing deegree's
@@ -508,7 +508,7 @@ schema files are hosted at http://schemas.deegree.org.
 As pointed out in `+anchor-console-errors+`, the service console
 indicates errors if resources cannot be initialized. Here's an example:
 
-image:images/console_error3.png[Error message,scaledwidth=50.0%]
+image::console_error3.png[Error message,scaledwidth=50.0%]
 
 In this case, it was not possible to initialize the JDBC connection (and
 the resources that depend on it). You can spot resource categories and
@@ -523,7 +523,7 @@ running the ZIP version, switch to the terminal window. When
 initializing workspace resources, information on every resource will be
 logged, along with error messages.
 
-image:images/terminal.png[Log messages in the deegree
+image::terminal.png[Log messages in the deegree
 log,scaledwidth=50.0%]
 
 Tip

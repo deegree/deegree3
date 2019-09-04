@@ -23,7 +23,7 @@ an SLD file the style store may contain multiple styles, each identified
 by the layer (only NamedLayers make sense here) and the name of the
 style (only UserStyles make sense) when referenced later.
 
-image:images/workspace-overview-style.png[Style resources define how geo
+image::workspace-overview-style.png[Style resources define how geo
 objects are rendered,scaledwidth=80.0%]
 
 Tip
@@ -40,7 +40,8 @@ files validate and you have no warnings in the log.
 === Overview
 
 From the point of view of the Symbology Encoding Standard, there are 5
-kinds of symbolizations, which can be present in a map image:::
+kinds of symbolizations, which can be present in a map image:
+
   * *Point symbolizations*
   * *Line symbolizations*
   * *Polygon symbolizations*

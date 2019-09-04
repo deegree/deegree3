@@ -19,7 +19,7 @@ which extracts a theme from a remote WMS resource's layer tree.
 A theme always has exactly one root node (theme). A theme can contain
 zero or more sub-themes, and zero or more layers.
 
-image:images/workspace-overview-theme.png[Theme resources group layers
+image::workspace-overview-theme.png[Theme resources group layers
 into trees,scaledwidth=80.0%]
 
 === Standard themes

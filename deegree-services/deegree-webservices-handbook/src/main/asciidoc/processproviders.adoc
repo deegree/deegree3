@@ -10,7 +10,7 @@ configuration level by clicking on the *processes* link in the
 administration console. The corresponding resource files are located in
 the *processes/* subdirectory of the active deegree workspace directory.
 
-image:images/workspace-overview-process.png[Process providers plug
+image::workspace-overview-process.png[Process providers plug
 geospatial processes into the WPS,scaledwidth=80.0%]
 
 === Java process provider
@@ -403,7 +403,7 @@ This interface does not provide access to the passed value, but
 correspond to three input parameter types of the process provider
 configuration:
 
-image:images/java_processprovider_inputtypes.png[ProcessletInput
+image::java_processprovider_inputtypes.png[ProcessletInput
 interface and sub types for each parameter type]
 
 For example, if your input parameter definition "A" is a
@@ -504,7 +504,7 @@ public interface ProcessletOutput {
 Again, there are three subtypes. Each subtype of `+ProcessletOutput+`
 corresponds to one output parameter type:
 
-image:images/java_processprovider_outputtypes.png[ProcessletOutput
+image::java_processprovider_outputtypes.png[ProcessletOutput
 interface and sub types for each parameter type]
 
 ===== Literal parameters

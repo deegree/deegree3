@@ -8,7 +8,7 @@ layers. You can access this configuration level by clicking the
 resource configuration files are located in subdirectory
 *datasources/coverage/* of the active deegree workspace directory.
 
-image:images/workspace-overview-coverage.png[Coverage store resources
+image::workspace-overview-coverage.png[Coverage store resources
 provide access to raster data,scaledwidth=80.0%]
 
 For raster data there are three different possible configurations. One

@@ -13,7 +13,7 @@ configuration level by clicking on the *metadata stores* link in the
 administration console. The configuration files are located in the
 *datasources/metadata/* directory of the deegree workspace.
 
-image:images/workspace-overview-metadata.png[Metadata store resources
+image::workspace-overview-metadata.png[Metadata store resources
 provide access to metadata records,scaledwidth=80.0%]
 
 === Memory ISO Metadata store
