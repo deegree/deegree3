@@ -40,9 +40,7 @@ are removed from the website. Download the ZIP from the
 http://repo.deegree.org/content/groups/public/org/deegree/deegree-webservices-tomcat-bundle/[Nexus
 repository] instead.]
 
-Tip
-
-If you are confused by the two options and unsure which version to pick,
+TIP: If you are confused by the two options and unsure which version to pick,
 use the ZIP. Both variants contain exactly the same deegree software,
 they only differ in packaging.
 
@@ -63,9 +61,7 @@ messages:
 image::terminal.png[deegree webservices starting
 up,scaledwidth=50.0%]
 
-Tip
-
-If you don't see this terminal window, make sure that the `+java+`
+TIP: If you don't see this terminal window, make sure that the `+java+`
 command is on the system path. You can verify this by entering
 `+java -version+` at the command prompt. Also ensure that `+JAVA_HOME+`
 system environment variable points to the correct installation directory
@@ -82,9 +78,7 @@ console,scaledwidth=50.0%]
 To shut deegree webservices down, switch back to the terminal window and
 press `+CTRL+C+` or simply close it.
 
-Tip
-
-If you want to run deegree webservices on system startup automatically,
+TIP: If you want to run deegree webservices on system startup automatically,
 consider installing http://tomcat.apache.org[Apache Tomcat 8] as a
 system service. Afterwards, download the WAR version of deegree
 webservices and deploy it into your Tomcat installation (e.g. by copying
@@ -112,9 +106,7 @@ releases of software:
 * Third-party libraries such as GDAL, JDBC driver, and
 * deegree webservices itself.
 
-Tip
-
-If you are running Apache Tomcat we recommend that you read and apply
+TIP: If you are running Apache Tomcat we recommend that you read and apply
 all recommendations as documented in
 https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html[Apache
 Tomcat Security Considerations].
@@ -125,9 +117,7 @@ When operating deegree in a production environment enable HTTPS with SSL
 or TLS. Either enable HTTPS on your Java Servlet Container or operate it
 behind a web server such as Apache httpd oder NGINX.
 
-Tip
-
-If you are running Apache Tomcat read the
+TIP: If you are running Apache Tomcat read the
 http://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html[SSL HowTo].
 
 ==== Securing deegree console and REST API
@@ -144,9 +134,7 @@ limit the access to both resources. Apply a filter by IP or hostname to
 only allow a subset of machines to connect and access the deegree
 console and REST API.
 
-Warning
-
-The deegree console provides access to the server file system. Therefore
+WARNING: The deegree console provides access to the server file system. Therefore
 you must not operate the Java Servlet container as root user!
 Furthermore you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java

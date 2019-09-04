@@ -91,9 +91,7 @@ using a single database table or a single shape file. In contrast,
 </ad:Address>
 ----
 
-Hint
-
-All deegree feature stores support simple feature types, but only the
+NOTE: All deegree feature stores support simple feature types, but only the
 SQL feature store and the memory feature store support rich feature
 types.
 
@@ -115,9 +113,7 @@ schema in UML form:
 
 image::address_schema.png[image,scaledwidth=50.0%]
 
-Hint
-
-The SQL feature store or the memory feature store can be used with GML
+NOTE: The SQL feature store or the memory feature store can be used with GML
 application schemas.
 
 === Shape feature store
@@ -337,9 +333,7 @@ suited for mapping rich GML application schemas and does not support
 transactions. If you need these capabilities, use the SQL feature store
 instead.
 
-Tip
-
-If you want to use the simple SQL feature store with Oracle or Microsoft
+TIP: If you want to use the simple SQL feature store with Oracle or Microsoft
 SQL Server, you will need to add additional modules first. This is
 described in `+anchor-db-libraries+`.
 
@@ -711,9 +705,7 @@ primitive-valued column
 column
 |===
 
-Hint
-
-The order of child elements `+<Primitive>+` and `+<Geometry>+` is not
+NOTE: The order of child elements `+<Primitive>+` and `+<Geometry>+` is not
 restricted. They may appear in any order.
 
 These options and their sub-options are explained in the following
@@ -795,7 +787,15 @@ feature id is constructed from multiple columns:
 
 [source,xml]
 ----
-----sqlfeaturestore_fidmapping2.xml
+...
+<FeatureTypeMapping table="country">
+  <FIDMapping prefix="C_">
+    <Column name="key1" />
+    <Column name="key2" />
+  </FIDMapping>
+</FeatureTypeMapping>
+...
+----
 
 Here are the options for `+<Column>+`:
 
@@ -808,9 +808,7 @@ Here are the options for `+<Column>+`:
 or integer), default: auto
 |===
 
-Hint
-
-Technically, the feature id prefix is important to determine the feature
+NOTE: Technically, the feature id prefix is important to determine the feature
 type when performing queries by feature id. Every
 `+<FeatureTypeMapping>+` must have a unique feature id prefix.
 
@@ -832,7 +830,16 @@ column-to-property mapping*
 
 [source,xml]
 ----
-----sqlfeaturestore_tabledriven5.xml
+...
+  <FeatureTypeMapping table="country">
+    <Primitive path="property1" mapping="prop1" type="string"/>
+    <Geometry path="property2" mapping="the_geom" type="Point">
+      <StorageCRS srid="-1">EPSG:4326</StorageCRS>
+    </Geometry>
+    <Primitive path="property3" mapping="prop2" type="integer"/>
+  </FeatureTypeMapping>
+...
+----
 
 This example defines a feature type with three properties:
 
@@ -862,9 +869,7 @@ DB-to-ObjectModel converter implementation
 srid (only for `+<Geometry>+`)
 |===
 
-Hint
-
-If your configuration file is stored in UTF-8 encoding deegree allows
+NOTE: If your configuration file is stored in UTF-8 encoding deegree allows
 special chars from this charset in the mapping (e.g. the property Straße
 can be stored in the column 'strasse' or 'straße'). Required is that the
 database supports UTF-8 as well.
@@ -895,9 +900,7 @@ schema
 |Supported mapping complexity |Low |Very high
 |===
 
-Hint
-
-If you want to create a relational mapping for an existing GML
+NOTE: If you want to create a relational mapping for an existing GML
 application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML,
 XPlanung, AAA), always copy the schema files into the `+appschemas/+`
 directory of your workspace and reference the schema in your
@@ -913,13 +916,22 @@ GML application schema files:
 
 [source,xml]
 ----
-----xmlsqlfeaturestore_schemadriven1.xml
+<SQLFeatureStore configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/feature/sql"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
+  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+
+  <JDBCConnId>postgis</JDBCConnId>
+  <StorageCRS dim="2D" srid="-1">EPSG:4258</StorageCRS>
+  <GMLSchema>../../appschemas/inspire/annex1/ad_address.xsd</GMLSchema>
+
+</SQLFeatureStore>
+----
 
 ===== Recommended workflow
 
-Hint
-
-This section assumes that you already have an existing database that you
+NOTE: This section assumes that you already have an existing database that you
 want to map to a GML application schema. If you want to derive a
 database model from a GML application schema, see
 `+anchor-mapping-wizard+`.
@@ -974,9 +986,7 @@ that you don't want to map.
 * Use the deegree support options (mailing lists, commercial support) to
 get help.
 
-Hint
-
-The deegree project aims for a user-interface to help with all steps of
+NOTE: The deegree project aims for a user-interface to help with all steps of
 creating mapping configurations. If you are interested in working on
 this (or funding it), don't hesitate to contact the project bodies.
 
@@ -1015,9 +1025,7 @@ node
 node
 |===
 
-Hint
-
-The order of child elements `+<Primitive>+`, `+<Geometry>+`,
+NOTE: The order of child elements `+<Primitive>+`, `+<Geometry>+`,
 `+<Complex>+` and `+<Feature>+` is not restricted. They may appear in
 any order.
 
@@ -1032,17 +1040,20 @@ key column named `+fid+`:
 
 [source,xml]
 ----
-----sqlfeaturestore_schemadriven2.xml
+...
+<FeatureTypeMapping name="ad:Address" table="ad_address" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">
+  <FIDMapping>
+    <Column name="fid" />
+  </FIDMapping>
+</FeatureTypeMapping>
+...
+----
 
-Tip
-
-In schema-driven mode, there is no automatic detection of columns,
+TIP: In schema-driven mode, there is no automatic detection of columns,
 column types or primary keys. You always have to specify
 `+<FIDMapping>+`.
 
-Tip
-
-If this configuration matches your database and you have a working WFS
+TIP: If this configuration matches your database and you have a working WFS
 resource, you should be able to query the feature type (although no
 properties will be returned):
 http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
@@ -1208,9 +1219,7 @@ node
 node
 |===
 
-Hint
-
-The order of child elements `+<Primitive>+`, `+<Geometry>+`,
+NOTE: The order of child elements `+<Primitive>+`, `+<Geometry>+`,
 `+<Complex>+` and `+<Feature>+` is not restricted. They may appear in
 any order.
 
@@ -1580,24 +1589,18 @@ of feature type names to feature type identifiers:
 type
 |===
 
-Hint
-
-In order for `+<BLOBMapping>+` to work, you need to have the correct
+NOTE: In order for `+<BLOBMapping>+` to work, you need to have the correct
 tables in your database and initialize the feature type table with the
 names of all feature types you want to use. We recommend not to do this
 manually, see `+anchor-mapping-wizard+`. The wizard will also create
 suitable indexes to speed up queries.
 
-Hint
-
-You may wonder how to get data into the database in BLOB mode. As for
+NOTE: You may wonder how to get data into the database in BLOB mode. As for
 standard mapping, you can do this by executing WFS-T requests or by
 using the feature store loader. Its usage is described in the last steps
 of `+anchor-mapping-wizard+`.
 
-Hint
-
-In BLOB mode, only spatial and feature id queries can be mapped to SQL
+NOTE: In BLOB mode, only spatial and feature id queries can be mapped to SQL
 WHERE-constraints. All other kinds of filter conditions are performed in
 memory. See `+anchor-filtering+` for more information.
 
@@ -1635,9 +1638,7 @@ identifier already exists in the database, the configured generator is
 used to produce a new and unique identifier. NOTE: Support for this mode
 is not implemented yet.
 
-Hint
-
-In a WFS 1.1.0 insert request, the id generation mode is controlled by
+NOTE: In a WFS 1.1.0 insert request, the id generation mode is controlled by
 attribute `+idGenMode+`. WFS 1.0.0 and WFS 2.0.0 don't support to
 specify it on a request basis. However, in the deegree WFS configuration
 you can control it in the option `+EnableTransactions+`.
@@ -1779,9 +1780,7 @@ if you have an existing database you need to map manually, this
 functionality can be prove very helpful to generate a valid mapping
 configuration to start with.
 
-Hint
-
-As every (optional) attribute and element will be considered in the
+NOTE: As every (optional) attribute and element will be considered in the
 mapping, you may easily end up with hundreds of tables or columns.
 
 This walkthrough is based on the INSPIRE Annex I schemas, but you should
@@ -1791,15 +1790,11 @@ activated as described in `+anchor-workspace-inspire+`. As another
 prerequisite, you will have to create an empty, spatially-enabled
 PostGIS database that you can connect to from your deegree installation.
 
-Tip
-
-Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft
+TIP: Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft
 SQL Server database. In order to enable support for these databases, see
 `+anchor-db-libraries+`.
 
-Hint
-
-If the application schema contains UTF-8 characters which are not part
+NOTE: If the application schema contains UTF-8 characters which are not part
 of the 7-bit ASCII subset they are normalised during the generation of
 the feature store configuration for the database mapping (but kept for
 the feature type names). So the mapping to table and column names
@@ -1856,9 +1851,7 @@ feature types from INPIRE Annex I will be mapped):
 image::console_featurestore_mapping8.jpg[Selecting the GML schema
 files to be considered,scaledwidth=50.0%]
 
-Hint
-
-This view presents any .xsd files that are located below the
+NOTE: This view presents any .xsd files that are located below the
 *appschemas/* directory of your deegree workspace. If you want to map
 any other GML application schema (such as GeoSciML or CityGML), place a
 copy of the application schema files into the *appschemas/* directory
@@ -1960,9 +1953,7 @@ file-URL like:
 * file:/home/kelvin/.deegree/deegree-workspace-inspire/data/cadastralparcels-limburg.xml
 * file:/home/kelvin/.deegree/deegree-workspace-inspire/data/cadastralparcels-northholland.xml
 
-Tip
-
-The above URLs are for a UNIX system with a user named "kelvin". You
+TIP: The above URLs are for a UNIX system with a user named "kelvin". You
 will need to adapt the URLs to match the location of your workspace
 directory.
 

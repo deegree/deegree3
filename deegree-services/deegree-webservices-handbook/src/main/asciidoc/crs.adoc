@@ -16,9 +16,7 @@ coordinate reference systems. Some examples for valid CRS identifiers:
 * `+urn:ogc:def:crs:epsg::4258+`
 * `+urn:opengis:def:crs:epsg::4258+`
 
-Tip
-
-As a rule of thumb, deegree's CRS database uses the `+EPSG:12345+`
+TIP: As a rule of thumb, deegree's CRS database uses the `+EPSG:12345+`
 identifier variant to indicate XY axis order, while the URN variants
 (such as `+urn:ogc:def:crs:epsg::12345+`) always use the official axis
 order defined by the EPSG. For example `+EPSG:4258+` and
@@ -26,9 +24,7 @@ order defined by the EPSG. For example `+EPSG:4258+` and
 means ETRS89 in XY-order, while `+urn:ogc:def:crs:epsg::4258+` is YX
 (the official order defined by the EPSG for this CRS).
 
-Note
-
-The CRS subsystem is not fully integrated with the deegree workspace
+NOTE: The CRS subsystem is not fully integrated with the deegree workspace
 yet. Rework and proper documentation are on the roadmap for one of the
 next releases. If you have trouble finding a specific CRS, please
 http://www.deegree.org/Community[contact the deegree mailing lists for

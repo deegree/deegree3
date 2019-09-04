@@ -10,9 +10,7 @@ workspace directory.
 image::workspace-overview-services.png[Web services are the
 top-level resources of the deegree workspace,scaledwidth=80.0%]
 
-Tip
-
-The identifier of a web service resource has a special purpose. If your
+TIP: The identifier of a web service resource has a special purpose. If your
 deegree instance can be reached at
 `+http://localhost:8080/deegree-webservices+`, the common endpoint for
 connecting to your services is
@@ -260,31 +258,21 @@ generated. References in the input GML (xlink:href) that point to a
 feature with an reassigned id are fixed as well, so reference
 consistency is maintained.
 
-Hint
-
-Currently, transactions can only be enabled if your WFS is attached to a
+NOTE: Currently, transactions can only be enabled if your WFS is attached to a
 single feature store.
 
-Hint
-
-Not every feature store implementation supports transactions, so you may
+NOTE: Not every feature store implementation supports transactions, so you may
 encounter that transactions are rejected, even though you activated them
 in the WFS configuration.
 
-Hint
-
-The details of the id generation depend on the feature store
+NOTE: The details of the id generation depend on the feature store
 implementation/configuration.
 
-Hint
-
-In a WFS 1.1.0 insert, the id generation mode can be overridden by
+NOTE: In a WFS 1.1.0 insert, the id generation mode can be overridden by
 attribute _idGenMode_ of the `+Insert+` element. WFS 1.0.0 and WFS 2.0.0
 don't support to specify the id generation mode on a request basis.
 
-Hint
-
-When a feature is replaced the `+UseExisting+` option is always
+NOTE: When a feature is replaced the `+UseExisting+` option is always
 activated for that transaction. The gml:id of the feature is used for
 the new version of the feature. The filter is used to identify the
 feature to be replaced.
@@ -374,9 +362,7 @@ ____
 </SupportedRequests>
 ____
 
-Warning
-
-It is not checked if the configuration is valid against the WFS
+WARNING: It is not checked if the configuration is valid against the WFS
 specification!
 
 ==== Adapting GML output formats
@@ -738,9 +724,7 @@ Query-Elements should be used. An exception is thrown as
 DescribeStoredQueries response, if the configured feature type is not
 served by the WFS.
 
-Tip
-
-deegree WFS supports the execution of stored queries using
+TIP: deegree WFS supports the execution of stored queries using
 `+GetFeature+` and `+GetPropertyValue+` requests. It also implements the
 `+ListStoredQueries+` and the `+DescribeStoredQueries+` operations.
 However, there is no support for `+CreateStoredQuery+` and
@@ -768,9 +752,7 @@ supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and
 2.0.0), you may include multiple `+ExtendedCapabilities+` elements in
 the metadata configuration.
 
-Warning
-
-The extended capabilities set in the WFS service configuration are
+WARNING: The extended capabilities set in the WFS service configuration are
 ignored, if a metadata configuration file (see chapter
 `+anchor-configuration-service-metadata+`) exists. Instead, the extended
 capabilities must be configured there.
@@ -789,9 +771,7 @@ in a style file. Supported style languages are StyledLayerDescriptor
 image::workspace-wms.png[A WMS resource is connected to exactly
 one theme resource,scaledwidth=80.0%]
 
-Tip
-
-In order to fully understand deegree WMS configuration, you will have to
+TIP: In order to fully understand deegree WMS configuration, you will have to
 learn configuration of other workspace aspects as well. Chapter
 `+anchor-configuration-renderstyles+` describes the creation of layers
 and styling rules. Chapter `+anchor-configuration-featurestore+`
@@ -978,14 +958,10 @@ without SupportedRequests sub-option:
 </SupportedRequests>
 ----
 
-Warning
-
-It is not checked if the configuration is valid against the WMS
+WARNING: It is not checked if the configuration is valid against the WMS
 specification!
 
-Warning
-
-WMS 1.1.1 just supports KVP. SOAP can only be used for GetCapabilities,
+WARNING: WMS 1.1.1 just supports KVP. SOAP can only be used for GetCapabilities,
 GetMap and GetFeatureInfo operations of WMS 1.3.0. Nevertheless,
 configuration of all combinations is possible.
 
@@ -1446,9 +1422,7 @@ blocks to the extended capabilities element of the configuration:
 </ExtendedCapabilities>
 ----
 
-Warning
-
-The extended capabilities set in the WMS service configuration are
+WARNING: The extended capabilities set in the WMS service configuration are
 ignored, if a metadata configuration file (see chapter
 `+anchor-configuration-service-metadata+`) exists. Instead, the extended
 capabilities must be configured there.
@@ -1688,9 +1662,7 @@ example workspace)*
 </soapenv:Envelope>
 ----
 
-Hint
-
-SOAP encoding can be deactivated. Chapter
+NOTE: SOAP encoding can be deactivated. Chapter
 `+anchor-wms-supportedrequests+` describes and gives an example how to
 disable it.
 
@@ -1784,9 +1756,7 @@ structure.
 image::workspace-wmts.png[A WMTS resource is connected to any
 number of theme resources (with tile layers),scaledwidth=80.0%]
 
-Tip
-
-In order to fully understand deegree WMTS configuration, you will have
+TIP: In order to fully understand deegree WMTS configuration, you will have
 to learn configuration of other workspace aspects as well. Chapter
 `+anchor-configuration-tilestore+` describes the configuration of tile
 data access. Chapter `+anchor-configuration-layers+` describes the
@@ -1886,9 +1856,7 @@ records.
 image::workspace-csw.png[A CSW resource is connected to exactly
 one metadata store resource,scaledwidth=80.0%]
 
-Tip
-
-In order to fully understand deegree CSW configuration, you will have to
+TIP: In order to fully understand deegree CSW configuration, you will have to
 learn configuration of other workspace aspects as well. Chapter
 `+anchor-configuration-metadatastore+` describes the configuration of
 metadatastores.
@@ -1984,9 +1952,7 @@ processes are determined by the attached process provider resources.
 image::workspace-wps.png[Workspace components involved in a
 deegree WPS configuration,scaledwidth=90.0%]
 
-Tip
-
-In order to fully master deegree WPS configuration, you will have to
+TIP: In order to fully master deegree WPS configuration, you will have to
 understand `+anchor-configuration-processproviders+` as well.
 
 ==== Minimal example
@@ -2204,9 +2170,7 @@ OperationsMetadata section
 The remainder of this section describes these options and their
 sub-options in detail.
 
-Warning
-
-If a metadata configuration file exists, extended capabilities
+WARNING: If a metadata configuration file exists, extended capabilities
 configured in any service configuration (see chapters
 `+anchor-configuration-wfs+` and `+anchor-configuration-wms+`) are
 ignored. Instead, all extended capabilities must be configured in this
@@ -2396,9 +2360,7 @@ has multiple network interfaces or hostnames. However, sometimes it is
 required to override these URLs, for example when using deegree behind a
 proxy or load balancer.
 
-Tip
-
-If you don't have a proxy setup that requires it, don't configure the
+TIP: If you don't have a proxy setup that requires it, don't configure the
 reported URLs. In standard setups, the default behaviour works best.
 
 To override the reported URLs, put a fragment like the following into
@@ -2487,9 +2449,7 @@ are supported by RequestTimeoutMilliseconds:
 |@request |1 |String |Service request
 |===
 
-Note
-
-A time-out value can be configured for any service type and request.
+NOTE: A time-out value can be configured for any service type and request.
 However, a correct termination of requests requires that the relevant
 Java code is actually interruptible. So far, this has only been verified
 for GetMap requests to WMS based on feature layers.

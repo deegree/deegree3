@@ -48,9 +48,7 @@ non-linear curves)
 * Supports numerous backends, such as PostGIS, Oracle Spatial, MS SQL
 Server, Shapefiles or GML instance documents
 
-Tip
-
-In order to learn the setup and configuration of a deegree-based WFS, we
+TIP: In order to learn the setup and configuration of a deegree-based WFS, we
 recommend to read chapters `+anchor-installation+` and
 `+anchor-lightly+` first. Check out `+anchor-workspace-inspire+` and
 `+anchor-workspace-utah+` for example deegree WFS configurations.
@@ -84,9 +82,7 @@ feature and raster data
 Shapefiles or GML instance documents
 * Can render rich data models directly
 
-Tip
-
-In order to learn the setup and configuration of a deegree-based WMS, we
+TIP: In order to learn the setup and configuration of a deegree-based WMS, we
 recommend to read chapters `+anchor-installation+` and
 `+anchor-lightly+` first. Check out `+anchor-workspace-utah+` and
 `+anchor-workspace-inspire+` for example deegree WMS configurations.
@@ -106,9 +102,7 @@ system tile image hierarchies
 * Supports on-the-fly caching (using EHCache)
 * Supports GetFeatureInfo for remote WMS backends
 
-Tip
-
-In order to learn the setup and configuration of a deegree-based WMTS,
+TIP: In order to learn the setup and configuration of a deegree-based WMTS,
 we recommend to read `+anchor-installation+` and `+anchor-lightly+`
 first. Continue with `+anchor-configuration-basics+` and
 `+anchor-configuration-wmts+`.
@@ -134,9 +128,7 @@ requirements
 ISO profile)
 * Complex filter expressions
 
-Tip
-
-In order to learn the setup and configuration of a deegree-based CSW, we
+TIP: In order to learn the setup and configuration of a deegree-based CSW, we
 recommend to read `+anchor-installation+` and `+anchor-lightly+` first.
 Check out `+anchor-workspace-csw+` for an example deegree CSW
 configuration. Continue with `+anchor-configuration-basics+` and
@@ -161,9 +153,7 @@ complex (binary and xml)
 * Supports RawDataOutput/ResponseDocument responses
 * Supports asynchronous execution (with polling of process status)
 
-Tip
-
-In order to learn the setup and configuration of a deegree-based WPS, we
+TIP: In order to learn the setup and configuration of a deegree-based WPS, we
 recommend to read`+anchor-installation+` and `+anchor-lightly+` first.
 Check out `+anchor-workspace-wps+` for an example deegree WPS
 configuration. Continue with `+anchor-configuration-basics+` and

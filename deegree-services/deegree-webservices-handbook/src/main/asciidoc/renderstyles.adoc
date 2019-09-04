@@ -26,9 +26,7 @@ style (only UserStyles make sense) when referenced later.
 image::workspace-overview-style.png[Style resources define how geo
 objects are rendered,scaledwidth=80.0%]
 
-Tip
-
-When defining styles, take note of the log file. Upon startup the log
+TIP: When defining styles, take note of the log file. Upon startup the log
 will warn you about potential problems or errors during parsing, and
 upon rendering warnings will be emitted when rendering is unsuccessful
 eg. because you had a typo in a geometry property name. When you're
@@ -79,9 +77,7 @@ It is constructed like this:
 </FeatureTypeStyle>
 ----
 
-Tip
-
-Before you start, always remember that every style is read top-down. So
+TIP: Before you start, always remember that every style is read top-down. So
 be aware the second <Rule> will overpaint the first one, the third
 overpaints the second and so on
 
@@ -328,9 +324,7 @@ Including an SVG graphic within a mark might look like this:
 graphic-file (e.g. SVGs or PNGs). The <OnlineResource> sub-element gives
 the URL of the graphic-file.
 
-Tip
-
-Make sure you don't forget the MIME-type in the <Format>-sub-element
+TIP: Make sure you don't forget the MIME-type in the <Format>-sub-element
 (e.g. "image/svg" or "image/png").
 
 [source,xml]
@@ -708,9 +702,7 @@ labels on the map. To enable AutoPlacement, you can simply set the
 </LabelPlacement> 
 ----
 
-Tip
-
-AutoPlacement for labels only works for PointPlacement. AutoPlacement
+TIP: AutoPlacement for labels only works for PointPlacement. AutoPlacement
 for LinePlacement is not implemented yet.
 
 ===== LinePlacement extensions

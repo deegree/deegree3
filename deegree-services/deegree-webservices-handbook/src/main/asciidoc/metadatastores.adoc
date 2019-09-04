@@ -148,9 +148,7 @@ Detailed informations can be found in the following example:
   ...
 ----
 
-Hint
-
-If a new queryable property is added or the AnyText value changed the
+NOTE: If a new queryable property is added or the AnyText value changed the
 inserted metadata records are not adjusted to this changes! This means
 for the example above that an existing record with
 SpatialRepresentationType 'raster' is not found by searching for all

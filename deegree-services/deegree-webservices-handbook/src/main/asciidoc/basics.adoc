@@ -97,9 +97,7 @@ runs deegree. If you started the ZIP version of deegree as user
 "kelvin", then the directory will be something like
 `+/home/kelvin/.deegree+`.
 
-Tip
-
-In order to use a different folder for deegree's configuration files,
+TIP: In order to use a different folder for deegree's configuration files,
 you can set the system environment variable `+DEEGREE_WORKSPACE_ROOT+`.
 Note that the user running the web application container must have
 read/write access to this directory.
@@ -113,9 +111,7 @@ deegree. If you started the ZIP version of deegree as user "kelvin",
 then the directory will be something like `+C:\Users\kelvin\.deegree+`
 or `+C:\Dokumente und Einstellungen\kelvin\.deegree+`.
 
-Tip
-
-In order to use a different folder for deegree's configuration files,
+TIP: In order to use a different folder for deegree's configuration files,
 you can set the system environment variable `+DEEGREE_WORKSPACE_ROOT+`.
 Note that the user running the web application container must have
 read/write access to this directory.
@@ -145,9 +141,7 @@ files exist:
 Note that only a single workspace can be active at a time. The
 information on the active one is stored in file `+webapps.properties+`.
 
-Tip
-
-Usually, you don't need to care about the three files that are located
+TIP: Usually, you don't need to care about the three files that are located
 at the top level of this directory. The service console creates and
 modifies them as required (e.g. when switching to a different
 workspace). In order to create a deegree webservices setup, you will
@@ -155,9 +149,7 @@ need to create or edit resource configuration files in the active
 workspace directory. The remaining documentation will always refer to
 files in the (active) workspace directory.
 
-Tip
-
-When multiple deegree webservices instances run on a single machine,
+TIP: When multiple deegree webservices instances run on a single machine,
 every instance can use a different workspace. The file
 `+webapps.properties+` stores the active workspace for every deegree
 webapp separately.
@@ -220,16 +212,12 @@ resource. For the example, this results in the following setup:
 The individual XML resource formats and their options are described in
 the later chapters of the documentation.
 
-Tip
-
-You may wonder why the `+main.xml+` and `+metadata.xml+` files are not
+TIP: You may wonder why the `+main.xml+` and `+metadata.xml+` files are not
 considered as web service resource files. These two filenames are
 reserved and treated specifically. See `+anchor-configuration-service+`
 for details.
 
-Tip
-
-The configuration format has to match the workspace subdirectory, e.g.
+TIP: The configuration format has to match the workspace subdirectory, e.g.
 metadata store configuration files are only considered when they are
 located in `+datasources/metadata+`.
 
@@ -268,9 +256,7 @@ reference to the metadata store, it is assumed that there's exactly one
 metadata store defined in the workspace and deegree will automatically
 connect the CSW to this store.
 
-Tip
-
-The required dependencies are specific to every type of resource and are
+TIP: The required dependencies are specific to every type of resource and are
 documented for each resource configuration format.
 
 === Using the service console for managing resources
@@ -315,9 +301,7 @@ changes that need to be propagated to dependent resources:
 image::console_deactivated.png[Deactivated a
 resource,scaledwidth=50.0%]
 
-Tip
-
-When a resource is being deactivated, the suffix of the corresponding
+TIP: When a resource is being deactivated, the suffix of the corresponding
 configuration file is changed to ".ignore". Reactivating changes the
 suffix back to ".xml".
 
@@ -479,9 +463,7 @@ following questions for every encountered resource:
 At the end of this process you should know about the resources that you
 will have to configure for your setup.
 
-Tip
-
-Alternatively, you can approach the resources question bottom-up. Let's
+TIP: Alternatively, you can approach the resources question bottom-up. Let's
 say you have your data ready in a PostGIS database. You want to
 visualize it using a WMS. So you would require a JDBC resource pool that
 connects to your database. You need a simple SQL feature store (or an
@@ -507,9 +489,7 @@ configuration files, it is highly recommended to choose a validating XML
 editor. Successfully tested editors are Eclipse and Altova XML Spy, but
 any schema-aware editor should work.
 
-Tip
-
-In case you are able to understand XML schema, you can also use the
+TIP: In case you are able to understand XML schema, you can also use the
 schema file to find out about the available config options. deegree's
 schema files are hosted at http://schemas.deegree.org.
 
@@ -536,13 +516,9 @@ logged, along with error messages.
 image::terminal.png[Log messages in the deegree
 log,scaledwidth=50.0%]
 
-Tip
-
-If you deployed the WAR version, the location of the deegree log depends
+TIP: If you deployed the WAR version, the location of the deegree log depends
 on your web application container. For Tomcat, you will find it in file
 `+catalina.out+` in the `+log/+` directory.
 
-Tip
-
-More logging can be activated by adjusting file `+log4j.properties+` in
+TIP: More logging can be activated by adjusting file `+log4j.properties+` in
 the `+/WEB-INF/classes/+` directory of the deegree webapplication.

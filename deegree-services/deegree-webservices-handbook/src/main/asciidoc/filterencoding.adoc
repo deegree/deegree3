@@ -131,9 +131,7 @@ ____
 </Overlaps>
 ----
 
-Tip
-
-For further reading on spatial operators, please refer to the OGC Simple
+TIP: For further reading on spatial operators, please refer to the OGC Simple
 Features Specification For SQL.
 
 === Filter expressions
@@ -235,9 +233,7 @@ the filter operator handles it. In the concrete case this means a
 normalization of the value (Which is not usable by default with
 deegree).
 
-Tip
-
-Please note, the use of functions within PropertyIsLike filter operators
+TIP: Please note, the use of functions within PropertyIsLike filter operators
 is only possible with FE 2.0. This is the reason for the FE 2.0
 notation.
 

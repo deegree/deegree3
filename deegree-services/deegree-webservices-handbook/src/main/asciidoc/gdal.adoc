@@ -8,9 +8,7 @@ deegree workspace by using either the
 `+anchor-configuration-gdal-layer+` or the
 `+anchor-configuration-gdal-tilestore+`.
 
-Hint
-
-If there are alternative options for plugging your raster files into the
+NOTE: If there are alternative options for plugging your raster files into the
 deegree workspace (e.g. by using the GeoTIFFTileStore for GeoTIFF
 files), you may want to consider them first. As the GDAL library is not
 written in Java, it is required to install and connect additional
@@ -25,9 +23,7 @@ to be installed correctly and must be accessible by your deegree
 webservices installation. Please see http://www.gdal.org/ for general
 GDAL installation instructions.
 
-Note
-
-Currently, GDAL library version 1.10.1 is supported. Other versions may
+NOTE: Currently, GDAL library version 1.10.1 is supported. Other versions may
 work as well, but have not been tested.
 
 In order to verify that deegree webservices can use the GDAL library,
@@ -133,9 +129,7 @@ access
 * GDAL option GDAL_CACHEMAX is set to 1000
 * GDAL option ECW_CACHE_MAXMEM is set to 419430400
 
-Hint
-
-A list of general GDAL parameters is available at
+NOTE: A list of general GDAL parameters is available at
 http://trac.osgeo.org/gdal/wiki/ConfigOptions. Some parameters (such as
 ECW_CACHE_MAXMEM) are format specific and outlined on the respective
 pages in the GDAL documentation.
@@ -164,9 +158,7 @@ A GDAL Layer is a map layer that is backed by one or more raster files.
 The native GDAL library is used to determine some metadata (e.g.
 bounding box) and to access the actual raster data.
 
-Hint
-
-You may want to refer to the `+anchor-configuration-layers+` chapter for
+NOTE: You may want to refer to the `+anchor-configuration-layers+` chapter for
 general information on using and defining layer resources.
 
 ==== Configuration example
@@ -208,9 +200,7 @@ A GDAL tile store defines one or more tile data sets. Each of these tile
 data sets is based on a single raster file which is accessed using the
 native GDAL library.
 
-Hint
-
-You may want to refer to the `+anchor-configuration-tilestore+` chapter
+NOTE: You may want to refer to the `+anchor-configuration-tilestore+` chapter
 for general information on using and defining tile store resources.
 
 ==== Minimal configuration example

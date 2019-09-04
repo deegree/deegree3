@@ -250,9 +250,7 @@ implementation of a process apply.
 * `+Profile+`: Profile to which the WPS process complies
 * `+WSDL+`: URL of a WSDL document which describes this process
 
-Hint
-
-These options directly relate to metadata defined in the
+NOTE: These options directly relate to metadata defined in the
 http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification].
 
 ==== The Processlet API
@@ -334,16 +332,12 @@ WPS that targets this Processlet. The method usually reads the input
 parameters, performs the actual computation and writes the output
 parameters.
 
-Hint
-
-The Processlet interface mimics the well-known Java Servlet interface
+NOTE: The Processlet interface mimics the well-known Java Servlet interface
 (hence the name). A Servlet developer does not need to care of the
 details of HTTP. Similarly, a Processlet developer does not need to care
 of the details of the WPS protocol.
 
-Hint
-
-The Java process provider instantiates the Processlet class only once.
+NOTE: The Java process provider instantiates the Processlet class only once.
 However, multiple simultaneous executions of a Processlet are possible
 (in case parallel Execute-requests are sent to a WPS), and therefore,
 the Processlet code must be implemented in a thread-safe manner (just
@@ -399,9 +393,7 @@ Apache Maven for this. Here's an example POM for your convenience:
 </project>
 ----
 
-Tip
-
-You can use this POM to compile the example Processlets above. Just
+TIP: You can use this POM to compile the example Processlets above. Just
 create an empty directory somewhere and save the example POM as
 `+pom.xml+`. Place the Processlet Java files into subdirectory
 `+src/main/java/+` (as files `+Processlet42.java+` /
@@ -413,9 +405,7 @@ the deegree workspace.
 
 ===== Testing Processlets using raw WPS requests
 
-Hint
-
-In order to perform WPS request to access your process
+NOTE: In order to perform WPS request to access your process
 provider/Processlet, you need to have an active
 `+anchor-configuration-wps+` resource in your workspace (which handles
 the WPS protocol and forwards the request to the process provider and
@@ -445,9 +435,7 @@ Some simple KVP `+Execute+` request examples for invoking processes:
 * `+http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Process42+`
 * `+http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Addition&datainputs=SummandA=21;SummandB=21+`
 
-Tip
-
-The http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]
+TIP: The http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]
 (and the deegree WPS) support many features with regard to process
 invocation, such as input parameter passing (inline or by reference),
 return parameters (inline or by reference), response variants and
@@ -663,9 +651,7 @@ public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecu
 }
 ----
 
-Tip
-
-If an input parameter can occur multiple times (`+maxOccurs+` > 1 in the
+TIP: If an input parameter can occur multiple times (`+maxOccurs+` > 1 in the
 definition), use method `+getParameters(...)+` instead of
 `+getParameter(...)+`. The latter method returns a `+List+` of
 `+ProcessletInput+` objects.
@@ -1114,8 +1100,6 @@ public void setStartedMessage( String message );
 public void setSucceededMessage( String message );
 ----
 
-Tip
-
-Depending on the type of computation that a Processlet performs, it may
+TIP: Depending on the type of computation that a Processlet performs, it may
 or may not be trivial to provide correct progress information via
 `+setPercentCompleted(...)+`.

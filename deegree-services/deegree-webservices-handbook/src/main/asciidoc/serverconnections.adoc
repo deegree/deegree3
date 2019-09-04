@@ -35,15 +35,11 @@ deegree currently supports the following backends:
 * Oracle Spatial 12c
 * Microsoft SQL Server 2012
 
-Tip
-
-If you want to use Oracle Spatial or Microsoft SQL Server, you will need
+TIP: If you want to use Oracle Spatial or Microsoft SQL Server, you will need
 to add additional modules first. This is described in
 `+anchor-db-libraries+`.
 
-Hint
-
-By default, deegree webservices includes JDBC drivers for connecting to
+NOTE: By default, deegree webservices includes JDBC drivers for connecting to
 PostgreSQL and Derby databases. If you want to make a connection to
 other SQL databases (e.g. Oracle), you will need to add a compatible
 JDBC driver manually. This is described in `+anchor-oraclejars+`.
@@ -88,16 +84,12 @@ to match to your setup.
 these parameters to match your setup.
 * The maximum number of simultaneous connections is 10.
 
-Hint
-
-There are additional properties that can be tweaked and which may
+NOTE: There are additional properties that can be tweaked and which may
 improve performance. See `+anchor-configuration-jdbc-properties+`.
 
 ==== Configuration example (Oracle)
 
-Hint
-
-By default, deegree webservices includes JDBC drivers for connecting to
+NOTE: By default, deegree webservices includes JDBC drivers for connecting to
 PostgreSQL and Derby databases. In order to connect to Oracle databases,
 you need to add a compatible JDBC driver manually. This is described in
 `+anchor-oraclejars+`.
@@ -142,9 +134,7 @@ required). The database identifier is `+deegree+`.
 
 ==== Configuration example (Microsoft SQL Server)
 
-Hint
-
-By default, deegree webservices includes JDBC drivers for connecting to
+NOTE: By default, deegree webservices includes JDBC drivers for connecting to
 PostgreSQL and Derby databases. In order to connect to Microsoft SQL
 Server, you need to add a compatible JDBC driver manually. This is
 described in `+anchor-oraclejars+`.
@@ -214,9 +204,7 @@ Adapt this value to match your setup.
 
 ==== Configuration example (Oracle UCP)
 
-Hint
-
-By default, deegree webservices includes JDBC drivers for connecting to
+NOTE: By default, deegree webservices includes JDBC drivers for connecting to
 PostgreSQL and Derby databases. In order to connect to Oracle databases,
 you need to add a compatible JDBC driver manually. This is described in
 `+anchor-oraclejars+`.
