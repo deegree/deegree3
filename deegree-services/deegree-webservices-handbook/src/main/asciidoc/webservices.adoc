@@ -1342,7 +1342,48 @@ xml/wms_getmap_xml_request_body.xml
 The GetFeatureInfo XML request body has to be compliant to following
 schema:
 
-xsd/GFI.xsd
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.opengis.net/ows"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:sld="http://www.opengis.net/sld"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="http://www.opengis.net/sld" schemaLocation="http://schemas.opengis.net/sld/1.1.0/GetMap.xsd"/>
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+      XML Schema for OGC Web Map Service GetFeatureInfo request.
+    </xs:documentation>
+  </xs:annotation>
+  <!-- Root Element -->
+  <xs:element name="GetFeatureInfo"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sld:GetMap"/>
+        <xs:element name="QueryLayer" type="xs:string"
+          minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element name="I" type="xs:nonNegativeInteger"/>
+        <xs:element name="J" type="xs:nonNegativeInteger"/>
+        <xs:element name="Output">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="InfoFormat" type="xs:string"/>
+              <xs:element name="FeatureCount" type="xs:positiveInteger" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Exceptions" type="xs:string" minOccurs="0"/>
+        <xs:element name="Vendor" minOccurs="0">
+          <!--not sure how to define vendor-specific area in open manner-->
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="service" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+----
 
 *GetFeatureInfo XML request body example (can be used with Utah example
 workspace)*
@@ -1380,7 +1421,76 @@ ExtendedCapabilities element in namespace
 
 The ExtendedCapabilities are compliant to following schema:
 
-xsd/soapwms.xsd
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://schemas.deegree.org/extensions/services/wms/1.3.0" xmlns:wms="http://www.opengis.net/wms"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapwms="http://schemas.deegree.org/extensions/services/wms/1.3.0"
+  targetNamespace="http://schemas.deegree.org/extensions/services/wms/1.3.0">
+
+  <xs:import namespace="http://www.opengis.net/wms" schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd" />
+
+  <xs:element name="SOAP">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="wms:OnlineResource" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="soapwms:Constraint" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="soapwms:SupportedOperations" minOccurs="1" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Value">
+    <xs:simpleType>
+      <xs:restriction base="xs:decimal">
+        <xs:enumeration value="1.1" />
+        <xs:enumeration value="1.2" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Operation">
+    <xs:complexType>
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="GetCapabilities" />
+            <xs:enumeration value="GetFeatureInfo" />
+            <xs:enumeration value="GetMap" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Constraint">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="soapwms:Value" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="SOAPVersion" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SupportedOperations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="soapwms:Operation" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExtendedCapabilities" substitutionGroup="wms:_ExtendedCapabilities">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="soapwms:SOAP" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+----
 
 [[anchor-configuration-wmts]]
 === Web Map Tile Service (WMTS)
