@@ -55,10 +55,10 @@ image::console_workspaces.png[Workspaces view,scaledwidth=50.0%]
 The bottom of the workspaces view lists example workspaces provided by
 the deegree project. You should see the following items:
 
-* *deegree-workspace-csw*: `+anchor-workspace-csw+`
-* *deegree-workspace-inspire*: `+anchor-workspace-inspire+`
-* *deegree-workspace-utah*: `+anchor-workspace-utah+`
-* *deegree-workspace-wps*: `+anchor-workspace-wps+`
+* *deegree-workspace-csw*: <<anchor-workspace-csw>>
+* *deegree-workspace-inspire*: <<anchor-workspace-inspire>>
+* *deegree-workspace-utah*: <<anchor-workspace-utah>>
+* *deegree-workspace-wps*: <<anchor-workspace-wps>>
 
 TIP: If the machine running deegree webservices uses a proxy to access the
 internet and you don't see any available example configurations, you
@@ -100,7 +100,7 @@ INSPIRE GML and supports rich querying facilities.
 TIP: This workspace is pre-configured to load harmonized INSPIRE features
 from GML files into memory, but can easily be adapted to use PostGIS,
 Oracle Spatial or Microsoft SQL Server databases as storage backend (see
-`+anchor-mapping-wizard+` and `+anchor-configuration-sqlfeaturestore+`).
+<<anchor-mapping-wizard>> and <<anchor-configuration-sqlfeaturestore>>).
 
 After downloading and activating the "deegree-workspace-inspire"
 workspace, you can click the *see layers* link, which opens a simple map
@@ -154,11 +154,11 @@ examples,scaledwidth=50.0%]
 TIP: This workspace is a good starting point for implementing scalable and
 compliant INSPIRE View and/or Download Services. It can easily be
 adapted to use PostGIS, Oracle Spatial or Microsoft SQL Server databases
-as storage backend (see `+anchor-mapping-wizard+` and
-`+anchor-configuration-sqlfeaturestore+`). Other things you may want to
-adapt is the configuration of `+anchor-configuration-layers+`, the
-`+anchor-configuration-renderstyles+` or the reported
-`+anchor-configuration-service-metadata+`.
+as storage backend (see <<anchor-mapping-wizard>> and
+<<anchor-configuration-sqlfeaturestore>>). Other things you may want to
+adapt is the configuration of <<anchor-configuration-layers>>, the
+<<anchor-configuration-renderstyles>> or the reported
+<<anchor-configuration-service-metadata>>.
 
 TIP: You can also delete features using WFS transactions. After deletion,
 they will not be rendered anymore as WMS and WFS operate on the same
@@ -239,7 +239,7 @@ accessed from the machine that runs deegree webservices.
 
 TIP: Instead of PostGIS, you can also use the workspace with an Oracle
 Spatial or a Microsoft SQL Server database. In order to enable support
-for these databases, see `+anchor-db-libraries+`.
+for these databases, see <<anchor-db-libraries>>.
 
 After downloading and starting the workspace, some errors will be
 indicated (red exclamation marks):
@@ -347,5 +347,5 @@ TIP: WPS request types and their format are specified in the
 http://www.opengeospatial.org/standards/wps[OGC Web Processing Service
 specification].
 
-TIP: In order to add your own processes, see `+anchor-configuration-wps+` and
-`+anchor-configuration-processproviders+`.
+TIP: In order to add your own processes, see <<anchor-configuration-wps>> and
+<<anchor-configuration-processproviders>>.

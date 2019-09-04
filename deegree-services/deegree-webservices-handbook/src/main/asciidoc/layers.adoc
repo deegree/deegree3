@@ -29,7 +29,7 @@ abstract and so on. The format which is being described here is capable
 of multilingualism, but processing multilingual strings is not supported
 yet (you can still define it, though).
 
-The commonly used prefix for these elements is `+d+`. Let's have a look
+The commonly used prefix for these elements is _d_. Let's have a look
 at an example:
 
 [source,xml]
@@ -43,8 +43,8 @@ at an example:
 </d:Keywords>
 ----
 
-All elements support the `+lang+` attribute to specify the language, and
-all elements may occur multiple times (including the `+Keywords+`
+All elements support the _lang_ attribute to specify the language, and
+all elements may occur multiple times (including the _Keywords_
 element).
 
 [[spatial]]
@@ -54,7 +54,7 @@ The spatial metadata is used to describe coordinate systems and
 envelopes. Typically, the layers can retrieve the native coordinate
 system and envelope from the data source, but sometimes it may be
 desirable to define a special extent, or add more coordinate systems. In
-the example configurations, the prefix `+s+` is used for spatial
+the example configurations, the prefix _s_ is used for spatial
 metadata elements, so it is used here as well:
 
 [source,xml]
@@ -77,7 +77,7 @@ This sections describes a set of common layer options. Not all options
 make sense for all layers, but most of them do.
 
 The namespace for the elements (newly) defined in this section is
-commonly bound to the `+l+` character. Let's have a look at the options
+commonly bound to the _l_ character. Let's have a look at the options
 available:
 
 [width="100%",cols="23%,13%,18%,46%",options="header",]
@@ -105,11 +105,11 @@ layer
 |LayerOptions |0..1 |Complex |Used to configure rendering behaviour
 |===
 
-The `+MetadataSetId+` is used in the WMS to export a MetadataURL based
+The _MetadataSetId_ is used in the WMS to export a MetadataURL based
 on a template. Please refer to the WMS configuration for details on how
 to configure this.
 
-The `+ScaleDenominators+` element has `+min+` and `+max+` attributes
+The _ScaleDenominators_ element has _min_ and _max_ attributes
 which define the constraints in WMS 1.3.0 scale denominators (based on
 0.28mm pixel size).
 
@@ -118,10 +118,10 @@ which define the constraints in WMS 1.3.0 scale denominators (based on
 The WMS specification supports extra dimensions (besides the spatial
 extent) for layers, such as elevation, time or other custom dimensions.
 Since the support must be present at the layer level, this must be
-configured on the layer in deegree. The `+Dimension+` element can have
-the attributes `+isTime+` and `+isElevation+` to indicate that you're
+configured on the layer in deegree. The _Dimension_ element can have
+the attributes _isTime_ and _isElevation_ to indicate that you're
 defining the standard time/elevation dimension. If none is given, you'll
-have to specify the `+Name+` element. Let's see what you can configure
+have to specify the _Name_ element. Let's see what you can configure
 here:
 
 [width="100%",cols="19%,12%,16%,53%",options="header",]
@@ -140,7 +140,7 @@ default is false
 |NearestValue |0..1 |Boolean |Whether jumping to the nearest value is
 supported, default is false
 
-|Current |0..1 |Boolean |Whether `+current+` is supported for time,
+|Current |0..1 |Boolean |Whether _current_ is supported for time,
 default is false
 
 |Units |0..1 |String |What units this dimension uses. Mandatory for non
@@ -152,7 +152,7 @@ time/elevation
 |Extent |1 |String |The extent of the dimension
 |===
 
-Please note that for feature layers, the `+Source+` element content must
+Please note that for feature layers, the _Source_ element content must
 be a qualified property name.
 
 To understand how the omission or specification of the various optional
@@ -164,9 +164,9 @@ the extent is also identical to that used for requests/in the spec.
 
 ===== Layer styles
 
-You can configure any number of `+StyleRef+` elements. Each corresponds
+You can configure any number of _StyleRef_ elements. Each corresponds
 to exactly one style store configuration, specified by the subelement
-`+StyleStoreId+`. The only other allowed subelement is the `+Style+`
+_StyleStoreId_. The only other allowed subelement is the _Style_
 element, which can be used to extract/rename specific styles from the
 style store. If omitted, all styles matching the layers' name are used.
 Let's have a look at an example snippet:
@@ -178,7 +178,7 @@ Let's have a look at an example snippet:
 </l:StyleRef>
 ----
 
-Here's a snippet with `+Style+` elements:
+Here's a snippet with _Style_ elements:
 
 PLEASE NOTE: The following mechanisms using StyleName LayerNameRef and
 StyleNameRef elements will only work with SLD files. Using direct SE
@@ -197,7 +197,7 @@ styles, the only way to configure styles is the above.
 </l:StyleRef>
 ----
 
-If a `+Style+` element is specified, you must first specify what style
+If a _Style_ element is specified, you must first specify what style
 you want extracted:
 
 [source,xml]
@@ -210,11 +210,11 @@ you want extracted:
 </l:Style>
 ----
 
-The `+StyleName+` specifies the name under which the style will be known
-in the WMS. The `+LayerNameRef+` and `+StyleNameRef+` are used to
+The _StyleName_ specifies the name under which the style will be known
+in the WMS. The _LayerNameRef_ and _StyleNameRef_ are used to
 extract the style from the style store.
 
-The next part to configure within the `+Style+` element is the legend
+The next part to configure within the _Style_ element is the legend
 generation, if you don't want to use the default legend generated from
 the rendering style. You can either specify a different style from the
 style store to use for legend generation, or you can specify an external
@@ -246,10 +246,10 @@ as legend:
 
 If you specify an HTTP URL instead of a relative path the behaviour is
 the same by default, the remote images' content is used as legend. If
-you set the optional attribute `+outputGetLegendGraphicUrl+` to
-`+false+` (it's true by default), the specified URL is written as
-`+LegendURL+` in the WMS capabilities (the behaviour for
-`+GetLegendGraphic+` requests is the same anyway):
+you set the optional attribute _outputGetLegendGraphicUrl_ to
+_false_ (it's true by default), the specified URL is written as
+_LegendURL_ in the WMS capabilities (the behaviour for
+_GetLegendGraphic_ requests is the same anyway):
 
 [source,xml]
 ----
@@ -355,9 +355,9 @@ This will create one layer for each (concrete) feature type in the
 feature store. If no style stores are configured, the default style will
 be used for all layers. If style stores are configured, matching styles
 will be automatically used if available. So if you have a feature type
-with (local) name `+Autos+`, deegree will check all configured style
-stores for styles identified by layer name `+Autos+` and use them, if
-available. The name `+Autos+` will be used as name and title as
+with (local) name _Autos_, deegree will check all configured style
+stores for styles identified by layer name _Autos_ and use them, if
+available. The name _Autos_ will be used as name and title as
 appropriate, and spatial metadata will be used as available from the
 feature store.
 
@@ -386,10 +386,10 @@ As you can see, the first thing to do is to bind the configuration to a
 feature store. After that, you can define one or more feature layers.
 
 A feature layer configuration has three optional elements besides the
-common elements. The `+FeatureType+` can be used to restrict a layer to
-a specific feature type (use a qualified name). The `+Filter+` element
+common elements. The _FeatureType_ can be used to restrict a layer to
+a specific feature type (use a qualified name). The _Filter_ element
 can be used to specify a filter that applies to the layer globally (use
-standard OGC filter encoding 1.1.0 `+ogc:Filter+` element within):
+standard OGC filter encoding 1.1.0 _ogc:Filter_ element within):
 
 [source,xml]
 ----
@@ -407,7 +407,7 @@ standard OGC filter encoding 1.1.0 `+ogc:Filter+` element within):
 </FeatureLayer>
 ----
 
-The third extra option is the `+SortBy+` element, which can be used to
+The third extra option is the _SortBy_ element, which can be used to
 influence the order in which features are drawn:
 
 [source,xml]
@@ -425,9 +425,9 @@ influence the order in which features are drawn:
 </FeatureLayer>
 ----
 
-The attribute `+reverseFeatureInfo+` is false by default. If set to
+The attribute _reverseFeatureInfo_ is false by default. If set to
 true, the feature that is drawn first will appear *last* in a
-`+GetFeatureInfo+` feature collection.
+_GetFeatureInfo_ feature collection.
 
 After that the standard options follow, as outlined in the
 link:#common[common] section.
@@ -459,7 +459,7 @@ In most cases, a configuration like the following is sufficient:
 </TileLayers>
 ----
 
-Just repeat the `+TileLayer+` element once for each layer you wish to
+Just repeat the _TileLayer_ element once for each layer you wish to
 configure.
 
 Please note that each tile data set needs to be configured with a unique
@@ -520,7 +520,7 @@ and one or many coverage layer definitions:
 </CoverageLayers>
 ----
 
-Within the `+CoverageLayer+` element you can only define the
+Within the _CoverageLayer_ element you can only define the
 link:#common[common] layer options. While only one coverage is supported
 per coverage store, it might still be desirable to define multiple
 layers based on the store, for example one layer per style.
@@ -534,7 +534,7 @@ the configuration to single layers if you want. The link:#common[common]
 style and dimension options are not used in this layer configuration.
 
 The remote WMS layer configuration is always based on a single
-`+RemoteWMS+` resource, so the most basic configuration which cascades
+_RemoteWMS_ resource, so the most basic configuration which cascades
 all available layers looks like this:
 
 [source,xml]
@@ -546,17 +546,17 @@ all available layers looks like this:
 ----
 
 In many cases that's already sufficient, but if you wish to control the
-way the requests are being sent, you can specify the `+RequestOptions+`.
+way the requests are being sent, you can specify the _RequestOptions_.
 If you want to limit/restrict the layers, you can specify any amount of
-`+Layer+` elements.
+_Layer_ elements.
 
 [[anchor-configuration-layer-request-options]]
 ==== Request options
 
-Use the `+ImageFormat+` element to indicate which format should be
-requested from the remote WMS. Set the attribute `+transparent+` to
-`+false+` if you don't want to request transparent images. Default is to
-request transparent `+image/png+` maps:
+Use the _ImageFormat_ element to indicate which format should be
+requested from the remote WMS. Set the attribute _transparent_ to
+_false_ if you don't want to request transparent images. Default is to
+request transparent _image/png_ maps:
 
 [source,xml]
 ----
@@ -565,18 +565,18 @@ request transparent `+image/png+` maps:
 </RequestOptions>
 ----
 
-The `+DefaultCRS+` element can be used to specify the CRS to request. If
-the `+useAlways+` attribute is true, maps are always requested in this
+The _DefaultCRS_ element can be used to specify the CRS to request. If
+the _useAlways_ attribute is true, maps are always requested in this
 format, and transformed if necessary. If set to false (the default), the
 requested CRS will be requested from the remote service if available. If
 a requested CRS is not available from the remote service, the value of
 this option is used, and the resulting image transformed.
 
-The `+Parameter+` element can be used (multiple times) to add and/or fix
+The _Parameter_ element can be used (multiple times) to add and/or fix
 KVP parameter values used in requests to the remote service. The
-`+name+` attribute (which is required) configures which parameter you're
+_name_ attribute (which is required) configures which parameter you're
 talking about, and the content specifies a default or fixed value. The
-`+use+` and `+scope+` attributes can be used to specify how to handle
+_use_ and _scope_ attributes can be used to specify how to handle
 parameters. Have a look at the following table for default and possible
 values of these attributes:
 
@@ -653,5 +653,5 @@ example:
 
 Please note that once you specify one layer, you'll need to specify each
 layer you want to make available. If you want all layers to be
-available, don't specify a `+Layer+` element. Of course, you can specify
-as many `+Layer+` elements as you like.
+available, don't specify a _Layer_ element. Of course, you can specify
+as many _Layer_ elements as you like.

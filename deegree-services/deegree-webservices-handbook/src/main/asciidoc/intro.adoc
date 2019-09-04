@@ -49,11 +49,11 @@ non-linear curves)
 Server, Shapefiles or GML instance documents
 
 TIP: In order to learn the setup and configuration of a deegree-based WFS, we
-recommend to read chapters `+anchor-installation+` and
-`+anchor-lightly+` first. Check out `+anchor-workspace-inspire+` and
-`+anchor-workspace-utah+` for example deegree WFS configurations.
-Continue with `+anchor-configuration-basics+` and
-`+anchor-configuration-wfs+`.
+recommend to read chapters <<anchor-installation>> and
+<<anchor-lightly>> first. Check out <<anchor-workspace-inspire>> and
+<<anchor-workspace-utah>> for example deegree WFS configurations.
+Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wfs>>.
 
 === Characteristics of deegree WMS
 
@@ -83,11 +83,11 @@ Shapefiles or GML instance documents
 * Can render rich data models directly
 
 TIP: In order to learn the setup and configuration of a deegree-based WMS, we
-recommend to read chapters `+anchor-installation+` and
-`+anchor-lightly+` first. Check out `+anchor-workspace-utah+` and
-`+anchor-workspace-inspire+` for example deegree WMS configurations.
-Continue with `+anchor-configuration-basics+` and
-`+anchor-configuration-wms+`.
+recommend to read chapters <<anchor-installation>> and
+<<anchor-lightly>> first. Check out <<anchor-workspace-utah>> and
+<<anchor-workspace-inspire>> for example deegree WMS configurations.
+Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wms>>.
 
 === Characteristics of deegree WMTS
 
@@ -103,9 +103,9 @@ system tile image hierarchies
 * Supports GetFeatureInfo for remote WMS backends
 
 TIP: In order to learn the setup and configuration of a deegree-based WMTS,
-we recommend to read `+anchor-installation+` and `+anchor-lightly+`
-first. Continue with `+anchor-configuration-basics+` and
-`+anchor-configuration-wmts+`.
+we recommend to read <<anchor-installation>> and <<anchor-lightly>>
+first. Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wmts>>.
 
 === Characteristics of deegree CSW
 
@@ -129,10 +129,10 @@ ISO profile)
 * Complex filter expressions
 
 TIP: In order to learn the setup and configuration of a deegree-based CSW, we
-recommend to read `+anchor-installation+` and `+anchor-lightly+` first.
-Check out `+anchor-workspace-csw+` for an example deegree CSW
-configuration. Continue with `+anchor-configuration-basics+` and
-`+anchor-configuration-csw+`.
+recommend to read <<anchor-installation>> and <<anchor-lightly>> first.
+Check out <<anchor-workspace-csw>> for an example deegree CSW
+configuration. Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-csw>>.
 
 === Characteristics of deegree WPS
 
@@ -154,9 +154,9 @@ complex (binary and xml)
 * Supports asynchronous execution (with polling of process status)
 
 TIP: In order to learn the setup and configuration of a deegree-based WPS, we
-recommend to read`+anchor-installation+` and `+anchor-lightly+` first.
-Check out `+anchor-workspace-wps+` for an example deegree WPS
-configuration. Continue with `+anchor-configuration-basics+` and
-`+anchor-configuration-wps+`.
+recommend to read<<anchor-installation>> and <<anchor-lightly>> first.
+Check out <<anchor-workspace-wps>> for an example deegree WPS
+configuration. Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wps>>.
 
 *Footnotes*

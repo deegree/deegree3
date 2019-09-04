@@ -129,26 +129,22 @@ A <OracleGeoraster> is used to wrap a connection information to a singe
 Oracle GeoRaster element inside a Oracle Database.
 
 To be able to use the module it is required that the Oracle GeoRaster
-libraries are available, see `+anchor-db-libraries+` for details.
+libraries are available, see <<anchor-db-libraries>> for details.
 
 The following example shows, how to configure a GeoRaster coverage
 (minmal required options):
 
-[source,xml
+[source,xml]
+----
 <OracleGeoraster configVersion="3.4.0"
 xmlns="http://www.deegree.org/datasource/coverage/oraclegeoraster"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/datasource/coverage/oraclegeoraster/3.4.0/oraclegeoraster.xsd">]
-----
-<JDBCConnId>oracle</JDBCConnId>
-<StorageCRS>EPSG:25832</StorageCRS>
-
-<Raster id="17" />
-----
-
-____
+  <JDBCConnId>oracle</JDBCConnId>
+  <StorageCRS>EPSG:25832</StorageCRS>
+  <Raster id="17" />
 </OracleGeoraster>
-____
+----
 
 The second example shows a complete configuration, which will load
 faster because no database lookups are required to initiate the coverage
@@ -194,22 +190,22 @@ only want to server a single band you could specifiy the following:
 [width="100%",cols="20%,11%,7%,62%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+@id+` |1 |integer |Identifier of the specified Oracle GeoRaster
+|_@id_ |1 |integer |Identifier of the specified Oracle GeoRaster
 object
 
-|`+@maxLevel+` |0..1 |integer |The number of pyramid levels, specify
+|_@maxLevel_ |0..1 |integer |The number of pyramid levels, specify
 zero if no pyramid is available
 
-|`+@rows+` |0..1 |integer |Number of rows of the GeoRaster
+|_@rows_ |0..1 |integer |Number of rows of the GeoRaster
 
-|`+@columns+` |0..1 |integer |Number of columns of the GeoRaster
+|_@columns_ |0..1 |integer |Number of columns of the GeoRaster
 
-|`+<Table>+` |0..1 |String |Defines the name of table name which
+|_<Table>_ |0..1 |String |Defines the name of table name which
 contains the GeoRaster object
 
-|`+<RDTTable>+` |0..1 |String |The name of the corresponding raster data
+|_<RDTTable>_ |0..1 |String |The name of the corresponding raster data
 table.
 
-|`+<Column>+` |0..1 |String |The column name of the `+<Table>+` in which
-the `+SDO_GEORASTER+` is stored
+|_<Column>_ |0..1 |String |The column name of the _<Table>_ in which
+the _SDO_GEORASTER_ is stored
 |===

@@ -26,7 +26,7 @@ into trees,scaledwidth=80.0%]
 
 The standard theme configuration is used to manually configure themes.
 One configuration can contain one or more themes. A theme configuration
-makes use of the common `+description+` and `+spatial+` elements
+makes use of the common _description_ and _spatial_ elements
 described in the layer chapter. If the metadata is not specified, it
 will be copied from layers within the same node.
 
@@ -51,7 +51,7 @@ layer stores you intend to use:
 
 Let's have a look at the actual theme configuration. First, you have the
 choice to give the theme an identifier or not. Then you can specify the
-description and spatial metadata (only the `+Title+` element is
+description and spatial metadata (only the _Title_ element is
 mandatory here). If it does not have an identifier, it will not be
 requestable in the service configuration:
 

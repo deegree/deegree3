@@ -67,12 +67,12 @@ The following diagram shows the different types of resources and their
 dependencies. The deegree configuration can be divided into several
 sections:
 
-____
+----
 * web sevrices
 * data stores
 * map layers
 * server connections
-____
+----
 
 For example, to offer a Web Feature Service, a feature store (based on a
 shapefile, database, etc) must be configured. With a rasterfile, like a
@@ -84,47 +84,47 @@ configuration dependencies]
 
 === Location of the deegree workspace directory
 
-The active deegree workspace is part of the `+.deegree+` directory which
+The active deegree workspace is part of the _.deegree_ directory which
 stores a few global configuration files along with the workspace. The
 location of this directory depends on your operating system.
 
 ==== Linux/Solaris/Mac OS X
 
 On UNIX-like systems (Linux/Solaris/MacOS X), deegree's configuration
-files are located in folder `+$HOME/.deegree/+`. Note that `+$HOME+` is
+files are located in folder _<$HOME/.deegree/_. Note that _$HOME_ is
 determined by the user that started the web application container that
 runs deegree. If you started the ZIP version of deegree as user
 "kelvin", then the directory will be something like
-`+/home/kelvin/.deegree+`.
+_/home/kelvin/.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the system environment variable `+DEEGREE_WORKSPACE_ROOT+`.
+you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
 Note that the user running the web application container must have
 read/write access to this directory.
 
 ==== Windows
 
 On Windows, deegree's configuration files are located in folder
-`+%USERPROFILE%/.deegree/+`. Note that `+%USERPROFILE%+` is determined
+_%USERPROFILE%/.deegree/_. Note that _%USERPROFILE%_ is determined
 by the user that started the web application container that runs
 deegree. If you started the ZIP version of deegree as user "kelvin",
-then the directory will be something like `+C:\Users\kelvin\.deegree+`
-or `+C:\Dokumente und Einstellungen\kelvin\.deegree+`.
+then the directory will be something like _C:\Users\kelvin\.deegree_
+or _C:\Dokumente und Einstellungen\kelvin\.deegree_.
 
 TIP: In order to use a different folder for deegree's configuration files,
-you can set the system environment variable `+DEEGREE_WORKSPACE_ROOT+`.
+you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
 Note that the user running the web application container must have
 read/write access to this directory.
 
 ==== Global configuration files and the active workspace
 
 If you downloaded all four example workspaces (as described in
-`+anchor-lightly+`), set a console password and the proxy parameters,
-your `+.deegree+` directory will look like this:
+_anchor-lightly_), set a console password and the proxy parameters,
+your _.deegree_ directory will look like this:
 
-image::workspace-root.png[Example `+.deegree+` directory]
+image::workspace-root.png[Example <<.deegree_ directory]
 
-As you see, this `+.deegree+` directory contains four subdirectories.
+As you see, this _.deegree_ directory contains four subdirectories.
 Every subdirectory corresponds to a deegree workspace. Besides the
 configuration files inside the workspace, three global configuration
 files exist:
@@ -139,7 +139,7 @@ files exist:
 |===
 
 Note that only a single workspace can be active at a time. The
-information on the active one is stored in file `+webapps.properties+`.
+information on the active one is stored in file _webapps.properties_.
 
 TIP: Usually, you don't need to care about the three files that are located
 at the top level of this directory. The service console creates and
@@ -151,7 +151,7 @@ files in the (active) workspace directory.
 
 TIP: When multiple deegree webservices instances run on a single machine,
 every instance can use a different workspace. The file
-`+webapps.properties+` stores the active workspace for every deegree
+_webapps.properties_ stores the active workspace for every deegree
 webapp separately.
 
 === Structure of the deegree workspace directory
@@ -198,33 +198,33 @@ let's have a look at an example:
 image::workspace-example.png[Example workspace directory]
 
 As noted, deegree scans the well-known resource directories for XML
-files (`+*.xml+`) on startup (note that it will omit directory
-`+manager+`, as it is not a well-known resource directory). For every
+files (_*.xml_) on startup (note that it will omit directory
+_manager_, as it is not a well-known resource directory). For every
 file found, deegree will check the type of configuration format (by
 determining the name of the XML root element). If it is a recognized
 format, deegree will try to create and initialize a corresponding
 resource. For the example, this results in the following setup:
 
-* A metadata store with id `+iso19115+`
-* A JDBC connection pool with id `+conn1+`
-* A web service with id `+csw+`
+* A metadata store with id _iso19115_
+* A JDBC connection pool with id _conn1_
+* A web service with id _csw_
 
 The individual XML resource formats and their options are described in
 the later chapters of the documentation.
 
-TIP: You may wonder why the `+main.xml+` and `+metadata.xml+` files are not
+TIP: You may wonder why the _main.xml_ and _metadata.xml_ files are not
 considered as web service resource files. These two filenames are
-reserved and treated specifically. See `+anchor-configuration-service+`
+reserved and treated specifically. See <<anchor-configuration-service>>
 for details.
 
 TIP: The configuration format has to match the workspace subdirectory, e.g.
 metadata store configuration files are only considered when they are
-located in `+datasources/metadata+`.
+located in _datasources/metadata_.
 
 ==== Resource identifiers and dependencies
 
 It has already been hinted that resources have an identifier, e.g. for
-file `+jdbc/conn1.xml+` a JDBC connection pool with identifier `+conn1+`
+file _jdbc/conn1.xml_ a JDBC connection pool with identifier _conn1_
 is created. You probably have guessed that the identifier is derived
 from the file name (file name minus suffix), but you may wonder what
 purpose the identifier serves. The identifier is used for wiring
@@ -248,7 +248,7 @@ element to specify it:
 ----
 
 In this example, the ISO metadata store is wired to JDBC connection pool
-`+conn1+`. Many deegree resource configuration files contain such
+_conn1_. Many deegree resource configuration files contain such
 references to dependent resources. Some resources perform auto-wiring.
 For example, every CSW instance needs to connect to a metadata store for
 accessing stored metadata records. If the CSW configuration omits the
@@ -424,16 +424,16 @@ Option 2 is to start from scratch, using an empty workspace. Adapting an
 existing workspace makes a lot of sense if your use-case is close to the
 scenario of the workspace. For example, if you want to set up INSPIRE
 View and Download Services, it is a good option to use
-`+anchor-workspace-inspire+` as a starting point.
+<<anchor-workspace-inspire>> as a starting point.
 
 In order to create a new workspace, simply create a new directory in the
-`+.deegree+` directory.
+_.deegree_ directory.
 
 image::workspace-new.png[Creating the new workspace
-`+myscenario+`]
+_myscenario_]
 
 Afterwards, switch to the new workspace using the services console, as
-described in `+anchor-downloading-workspaces+`.
+described in <<anchor-downloading-workspaces>>.
 
 ==== Find out which resources you need
 
@@ -495,7 +495,7 @@ schema files are hosted at http://schemas.deegree.org.
 
 ==== Check the resource status and error messages
 
-As pointed out in `+anchor-console-errors+`, the service console
+As pointed out in <<anchor-console-errors>>, the service console
 indicates errors if resources cannot be initialized. Here's an example:
 
 image::console_error3.png[Error message,scaledwidth=50.0%]
@@ -518,7 +518,7 @@ log,scaledwidth=50.0%]
 
 TIP: If you deployed the WAR version, the location of the deegree log depends
 on your web application container. For Tomcat, you will find it in file
-`+catalina.out+` in the `+log/+` directory.
+_catalina.out_ in the _log/_ directory.
 
-TIP: More logging can be activated by adjusting file `+log4j.properties+` in
-the `+/WEB-INF/classes/+` directory of the deegree webapplication.
+TIP: More logging can be activated by adjusting file _log4j.properties_ in
+the _/WEB-INF/classes/_ directory of the deegree webapplication.

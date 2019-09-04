@@ -5,7 +5,7 @@ deegree makes extensive use of the OGC Filter Encoding standard. Within
 deegree there are implementations of the versions 1.1.0 and 2.0.0 of
 this standards and several extensions and additional functions. This
 chapter is meant to explain the filter capabilities of deegree which can
-be used within `+anchor-configuration-renderstyles+` and
+be used within <<anchor-configuration-renderstyles>> and
 :ref:`anchor-configuration-wfs´ requests.
 
 === Filter Operators
@@ -21,12 +21,12 @@ In the following, FE 1.1.0 syntax is used.
 
 FE enables the use of the following arithmetic operators:
 
-____
+----
 * Add: used for addition
 * Sub: used for substraction
 * Mul: used for multiplication
 * Div: used for division
-____
+----
 
 *Example:*
 
@@ -42,11 +42,11 @@ ____
 
 FE enables the use of the following logical operators:
 
-____
+----
 * And: Links two conditions with AND
 * Or: links two conditions with OR
 * Not: negates a condition
-____
+----
 
 *Example:*
 
@@ -63,7 +63,7 @@ ____
 deegree has implementations for the following list of comparison
 operators:
 
-____
+----
 * PropertyIsEqualTo: Evaluates if a property value equals to another
 value.
 * PropertyIsNotEqualTo: Evaluates if a property value differs from
@@ -81,7 +81,7 @@ It compares string values which each other.
 * PropertyIsNull: Evaluates if a property value is NULL.
 * PropertyIsBetween: Evaluates if a property value is between 2 defined
 values.
-____
+----
 
 *Example:*
 
@@ -97,7 +97,7 @@ ____
 
 With deegree you can make use of the following spatial operators:
 
-____
+----
 * Equals: Evaluates if geometries are identical
 * Disjoin: Evaluates if geometries are spatially disjoined
 * Touches: Evaluates if geometries are spatially touching
@@ -113,7 +113,7 @@ another.
 another.
 * BBOX: Evaluates if a geometry spatially intersects with a given
 bounding box.
-____
+----
 
 *Example:*
 
@@ -256,7 +256,7 @@ just works if the feature store is configured a certain way. For
 example, this can be useful if a user wants to filter on INSPIRE
 codelists.
 
-Chapter `+anchor-mapping-strategies-href-attributes+` describes how the
+Chapter <<anchor-mapping-strategies-href-attributes>> describes how the
 configuration of the feature store is done and provides further details
 regarding usage.
 

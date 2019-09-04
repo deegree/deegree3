@@ -41,16 +41,16 @@ http://schemas.deegree.org/datasource/metadata/iso19139/3.2.0/memory.xsd
 </ISOMemoryMetadataStore>
 ----
 
-The root element has to be `+ISOMemoryMetadataStore+` and the config
-attribute must be `+3.2.0+`. The only mandatory element is:
+The root element has to be _ISOMemoryMetadataStore_ and the config
+attribute must be _3.2.0_. The only mandatory element is:
 
-* `+ISORecordDirectory+`: A list of directories containing records
+* _ISORecordDirectory_: A list of directories containing records
 loaded in the store during start of the store.
 
 To allow insert transactions one optional element must be declared:
 
-* `+InsertDirectory+`: Directory to store inserted records, can be one
-of the directories declared in the element `+ISORecordDirectory+`.
+* _InsertDirectory_: Directory to store inserted records, can be one
+of the directories declared in the element _ISORecordDirectory_.
 
 === SQL ISO Metadata store
 
@@ -98,26 +98,26 @@ http://schemas.deegree.org/datasource/metadata/iso19115/3.2.0/iso19115.xsd
 </ISOMetadataStore>
 ----
 
-The root element has to be `+ISOMetadataStore+` and the config attribute
-must be `+3.2.0+`. The only mandatory element is:
+The root element has to be _ISOMetadataStore_ and the config attribute
+must be _3.2.0_. The only mandatory element is:
 
-* `+JDBCConnId+`: Id of the JDBC connection to use (see ...)
+* _JDBCConnId_: Id of the JDBC connection to use (see ...)
 
 The optional elements are:
 
-* `+Inspectors+`: List of inspectors inspecting a metadataset before
+* _Inspectors_: List of inspectors inspecting a metadataset before
 inserting. Known inspectors are:
 ** FileIdentifierInspector
 ** InspireInspector
 ** CoupledResourceInspector
 ** SchemaValidator
 ** NamespaceNormalizer
-* `+AnyText+`: Configuration of the values searchable by the queryable
-property `+AnyText+`, possible values are:
+* _AnyText_: Configuration of the values searchable by the queryable
+property _AnyText_, possible values are:
 ** All: all values
 ** Core: the core queryable properties (default)
 ** Custom: a custom set of properties defined as xpath expressions
-* `+QueryableProperties+`: Configuration of additional query properties.
+* _QueryableProperties_: Configuration of additional query properties.
 Detailed informations can be found in the following example:
 +
 

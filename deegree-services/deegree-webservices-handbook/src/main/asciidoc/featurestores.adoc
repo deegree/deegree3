@@ -4,14 +4,14 @@
 Feature stores are workspace resources that provide access to stored
 features. The two most common use cases for feature stores are:
 
-* Accessing via `+anchor-configuration-wfs+`
-* Providing of data for `+anchor-configuration-feature-layers+`
+* Accessing via <<anchor-configuration-wfs>>
+* Providing of data for <<anchor-configuration-feature-layers>>
 
 The remainder of this chapter describes some relevant terms and the
 feature store configuration files in detail. You can access this
 configuration level by clicking *feature stores* in the service console.
 The corresponding resource configuration files are located in
-subdirectory `+datasources/feature/+` of the active deegree workspace
+subdirectory _datasources/feature/_ of the active deegree workspace
 directory.
 
 image::workspace-overview-feature.png[Feature store resources
@@ -24,7 +24,7 @@ buildings, streets or state boundaries. They are the geo objects of a
 particular application domain.
 
 A feature types defines the data model for a class of features. For
-example, a feature type `+River+` could define a class of river features
+example, a feature type _River_ could define a class of river features
 that all have the same properties.
 
 ==== Simple vs. rich features and feature types
@@ -124,7 +124,7 @@ types.
 
 ==== Minimal configuration example
 
-The only mandatory element is `+File+`. A minimal valid configuration
+The only mandatory element is _File_. A minimal valid configuration
 example looks like this:
 
 *Shape Feature Store config (minimal configuration example)*
@@ -144,16 +144,16 @@ example looks like this:
 ----
 
 This configuration will set up a feature store based on the shape file
-`+/tmp/rivers.shp+` with the following settings:
+_/tmp/rivers.shp_ with the following settings:
 
-* The feature store offers the feature type `+app:rivers+` (`+app+`
-bound to `+http://www.deegree.org/app+`)
-* SRS information is taken from file `+/tmp/rivers.prj+` (if it does not
-exist, `+EPSG:4326+` is assumed)
-* The geometry is added as property `+app:GEOMETRY+`
-* All data columns from file `+/tmp/rivers.dbf+` are used as properties
+* The feature store offers the feature type _app:rivers_ (_app_
+bound to _http://www.deegree.org/app_)
+* SRS information is taken from file _/tmp/rivers.prj_ (if it does not
+exist, _EPSG:4326_ is assumed)
+* The geometry is added as property _app:GEOMETRY_
+* All data columns from file _/tmp/rivers.dbf_ are used as properties
 in the feature type
-* Encoding of text columns in `+/tmp/rivers.dbf+` is guessed based on
+* Encoding of text columns in _/tmp/rivers.dbf_ is guessed based on
 actual contents
 * An alphanumeric index is created for the dbf to speed up filtering
 based on non-geometric constraints
@@ -186,20 +186,20 @@ A more complex example that uses all available configuration options:
 ----
 
 This configuration will set up a feature store based on the shape file
-`+/tmp/rivers.shp+` with the following settings:
+_/tmp/rivers.shp_ with the following settings:
 
-* SRS of stored geometries is `+EPSG:4326+` (no auto-detection)
+* SRS of stored geometries is _EPSG:4326_ (no auto-detection)
 * The feature store offers the shape file contents as feature type
-`+app:River+` (`+app+` bound to `+http://www.deegree.org/app+`)
-* Encoding of text columns in `+/tmp/rivers.dbf+` is `+ISO-8859-1+` (no
+_app:River_ (_app_ bound to _http://www.deegree.org/app_)
+* Encoding of text columns in _/tmp/rivers.dbf_ is _ISO-8859-1_ (no
 auto-detection)
 * No alphanumeric index is created for the dbf (filtering based on
 non-geometric constraints has to be performed in-memory)
 * The mapping between the shape file columns and the feature type
 properties is customized.
-* Property `+objectid+` corresponds to column `+OBJECTID+` of the shape
+* Property _objectid_ corresponds to column _OBJECTID_ of the shape
 file
-* Property `+geometry+` corresponds to the geometry of the shape file
+* Property _geometry_ corresponds to the geometry of the shape file
 
 ==== Configuration options
 
@@ -242,7 +242,7 @@ and supports rich GML application schemas.
 
 ==== Minimal configuration example
 
-The only mandatory element is `+GMLSchema+`. A minimal valid
+The only mandatory element is _GMLSchema_. A minimal valid
 configuration example looks like this:
 
 *Memory Feature Store config (minimal configuration example)*
@@ -265,7 +265,7 @@ This configuration will set up a memory feature store with the following
 settings:
 
 * The GML 3.2 application schema from file
-`+../../appschemas/inspire/annex1/addresses.xsd+` is used as application
+_../../appschemas/inspire/annex1/addresses.xsd_ is used as application
 schema (i.e. scanned for feature type definitions)
 * No GML datasets are loaded on startup, so the feature store will be
 empty unless an insertion is performed (e.g. via WFS-T)
@@ -292,17 +292,17 @@ A more complex example that uses all available configuration options:
 This configuration will set up a memory feature store with the following
 settings:
 
-* Directory `+../../appschemas/inspire/annex1/+` is scanned for
-`+*.xsd+` files. All found files are loaded as a GML 3.2 application
+* Directory _../../appschemas/inspire/annex1/_ is scanned for
+_*.xsd_ files. All found files are loaded as a GML 3.2 application
 schema (i.e. analyzed for feature type definitions).
-* Dataset file `+../../data/gml/address.gml+` is loaded on startup. This
+* Dataset file _../../data/gml/address.gml_ is loaded on startup. This
 must be a GML 3.2 file that contains a feature collection with features
 that validates against the application schema.
-* Dataset file `+../../data/gml/parcels.gml+` is loaded on startup. This
+* Dataset file _../../data/gml/parcels.gml_ is loaded on startup. This
 must be a GML 3.2 file that contains a feature collection with features
 that validates against the application schema.
 * The geometries of loaded features are converted to
-`+urn:ogc:def:crs:EPSG::4258+`.
+_urn:ogc:def:crs:EPSG::4258_.
 
 ==== Configuration options
 
@@ -335,12 +335,12 @@ instead.
 
 TIP: If you want to use the simple SQL feature store with Oracle or Microsoft
 SQL Server, you will need to add additional modules first. This is
-described in `+anchor-db-libraries+`.
+described in <<anchor-db-libraries>>.
 
 ==== Minimal configuration example
 
-There are three mandatory elements: `+JDBCConnId+`, `+SQLStatement+` and
-`+BBoxStatement+`. A minimal configuration example looks like this:
+There are three mandatory elements: _JDBCConnId_, _SQLStatement_ and
+_BBoxStatement_. A minimal configuration example looks like this:
 
 *Simple SQL feature store config (minimal configuration example)*
 
@@ -462,10 +462,10 @@ A very minimal valid configuration example looks like this:
 This configuration defines a SQL feature store resource with the
 following properties:
 
-* JDBC connection resource with identifier `+postgis+` is used to
+* JDBC connection resource with identifier _postgis_ is used to
 connect to the database
-* A single table (`+country+`) is mapped
-* Feature type is named `+app:country+` (app=http://www.deegree.org/app)
+* A single table (_country_) is mapped
+* Feature type is named _app:country_ (app=http://www.deegree.org/app)
 * Properties of the feature type are automatically derived from table
 columns
 * Every primitive column (number, string, date) is used as a primitive
@@ -473,8 +473,8 @@ property
 * Every geometry column is used as a geometry property (storage CRS is
 determined automatically, inserted geometries are transformed by
 deegree, if necessary)
-* Feature id (`+gml:id+`) is based on primary key column, prefixed by
-`+COUNTRY_+`
+* Feature id (_gml:id_) is based on primary key column, prefixed by
+_COUNTRY__
 * For insert transactions, it is expected that the database generates
 new primary keys value automatically (primary key column must have a
 trigger or a suitable type such as SERIAL in PostgreSQL)
@@ -579,18 +579,18 @@ A more complex example:
 This configuration snippet defines a SQL feature store resource with the
 following properties:
 
-* JDBC connection resource with identifier `+inspire+` is used to
+* JDBC connection resource with identifier _inspire_ is used to
 connect to the database
-* Storage CRS is `+EPSG:4258+`, database srid is `+-1+` (inserted
+* Storage CRS is _EPSG:4258_, database srid is _-1_ (inserted
 geometries are transformed by deegree to the storage CRS, if necessary)
 * Feature types are read from three GML schema files
-* A single feature type `+ad:Address+`
+* A single feature type _ad:Address_
 (ad=urn:x-inspire:specification:gmlas:Addresses:3.0) is mapped
-* The root table of the mapping is `+ad_address+`
+* The root table of the mapping is _ad_address_
 * Feature type is mapped to several tables
-* Feature id (`+gml:id+`) is based on column `+attr_gml_id+`, prefixed
-by `+AD_ADDRESS__+`
-* For insert transactions, new values for column `+attr_gml_id+` in the
+* Feature id (_gml:id_) is based on column _attr_gml_id_, prefixed
+by _AD_ADDRESS___
+* For insert transactions, new values for column _attr_gml_id_ in the
 root table are created using the UUID generator. For the joined tables,
 the database has to create new primary keys value automatically (primary
 key columns must have a trigger or a suitable type such as SERIAL in
@@ -607,23 +607,23 @@ order must be respected:
 [width="100%",cols="26%,10%,7%,57%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+<JDBCConnId>+` |1 |String |Identifier of the database connection
+|_<JDBCConnId>_ |1 |String |Identifier of the database connection
 
-|`+<DisablePostFiltering>+` |0..1 |Empty |If present, queries that
+|_<DisablePostFiltering>_ |0..1 |Empty |If present, queries that
 require in-memory filtering are rejected
 
-|`+<StorageCRS>+` |0..1 |Complex |CRS of stored geometries
+|_<StorageCRS>_ |0..1 |Complex |CRS of stored geometries
 
-|`+<GMLSchema>+` |0..n |String |Path/URL to GML application schema
+|_<GMLSchema>_ |0..n |String |Path/URL to GML application schema
 files/dirs to read feature types from
 
-|`+<NullEscalation>+` |0..1 |Boolean |Controls the handling of NULL
+|_<NullEscalation>_ |0..1 |Boolean |Controls the handling of NULL
 values on reconstruction from the DB
 
-|`+<BLOBMapping>+` |0..1 |Complex |Activates a special mapping mode that
+|_<BLOBMapping>_ |0..1 |Complex |Activates a special mapping mode that
 uses BLOBs for storing features
 
-|`+<FeatureTypeMapping>+` |0..n |Complex |Mapping between a feature type
+|_<FeatureTypeMapping>_ |0..n |Complex |Mapping between a feature type
 and a database table
 |===
 
@@ -634,7 +634,7 @@ remaining sections.
 ==== Mapping tables to simple feature types
 
 This section describes how to define the mapping of database tables to
-simple feature types. Each `+<FeatureTypeMapping>+` defines the mapping
+simple feature types. Each _<FeatureTypeMapping>_ defines the mapping
 between one table and one feature type:
 
 *SQL feature store: Mapping a single table*
@@ -652,22 +652,22 @@ xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
 ----
 
 This example assumes that the database contains a table named
-`+country+` within the default database schema (for PostgreSQL
-`+public+`). Alternatively, you can qualify the table name with the
-database schema, such as `+public.country+`. The feature store will try
+_country_ within the default database schema (for PostgreSQL
+_public_). Alternatively, you can qualify the table name with the
+database schema, such as _public.country_. The feature store will try
 to automatically determine the columns of the table and derive a
 suitable feature type:
 
-* Feature type name: `+app:country+` (app=http://www.deegree.org/app)
-* Feature id (`+gml:id+`) based on primary key column of table
-`+country+`
+* Feature type name: _app:country_ (app=http://www.deegree.org/app)
+* Feature id (_gml:id_) based on primary key column of table
+_country_
 * Every primitive column (number, string, date) is used as a primitive
 property
 * Every geometry column is used as a geometry property
 
 A single configuration file may map more than one table. The following
-example defines two feature types, based on tables `+country+` and
-`+cities+`.
+example defines two feature types, based on tables _country_ and
+_cities_.
 
 *SQL feature store: Mapping two tables*
 
@@ -683,7 +683,7 @@ example defines two feature types, based on tables `+country+` and
 </SQLFeatureStore>
 ----
 
-There are several options for `+<FeatureTypeMapping>+` that give you
+There are several options for _<FeatureTypeMapping>_ that give you
 more control over the derived feature type definition. The following
 table lists all available options (the complex ones contain nested
 options themselves):
@@ -691,21 +691,21 @@ options themselves):
 [width="100%",cols="17%,11%,8%,64%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+table+` |1 |String |Name of the table to be mapped (can be qualified
+|_table_ |1 |String |Name of the table to be mapped (can be qualified
 with database schema)
 
-|`+name+` |0..1 |QName |Name of the feature type
+|_name_ |0..1 |QName |Name of the feature type
 
-|`+<FIDMapping>+` |0..1 |Complex |Defines the mapping of the feature id
+|_<FIDMapping>_ |0..1 |Complex |Defines the mapping of the feature id
 
-|`+<Primitive>+` |0..n |Complex |Defines the mapping of a
+|_<Primitive>_ |0..n |Complex |Defines the mapping of a
 primitive-valued column
 
-|`+<Geometry>+` |0..n |Complex |Defines the mapping of a geometry-valued
+|_<Geometry>_ |0..n |Complex |Defines the mapping of a geometry-valued
 column
 |===
 
-NOTE: The order of child elements `+<Primitive>+` and `+<Geometry>+` is not
+NOTE: The order of child elements _<Primitive>_ and _<Geometry>_ is not
 restricted. They may appear in any order.
 
 These options and their sub-options are explained in the following
@@ -714,10 +714,10 @@ subsections.
 ===== Customizing the feature type name
 
 By default, the name of a mapped feature type will be derived from the
-table name. If the table is named `+country+`, the feature type name
-will be `+app:country+` (app=http://www.deegree.org/app). The `+name+`
+table name. If the table is named _country_, the feature type name
+will be _app:country_ (app=http://www.deegree.org/app). The _name_
 attribute allows to set the feature type name explicity. In the
-following example, it will be `+app:Land+` (Land is German for country).
+following example, it will be _app:Land_ (Land is German for country).
 
 *SQL feature store: Customizing the feature type name*
 
@@ -743,17 +743,17 @@ prefix of the feature type name:
 
 ===== Customizing the feature id
 
-By default, values for the feature id (`+gml:id+` attribute in GML) will
+By default, values for the feature id (_gml:id_ attribute in GML) will
 be based on the primary key column of the mapped table. Values from this
 column will be prepended with a prefix that is derived from the feature
-type name. For example, if the feature type name is `+app:Country+`, the
-prefix is `+APP_COUNTRY+`. The feature instance that is built from the
-table row with primary key `+42+` will have feature id
-`+APP_COUNTRY42+`.
+type name. For example, if the feature type name is _app:Country_, the
+prefix is _APP_COUNTRY_. The feature instance that is built from the
+table row with primary key _42_ will have feature id
+_APP_COUNTRY42_.
 
 If this is not what you want, or automatic detection of the primary key
 column fails, customize the feature id mapping using the
-`+<FIDMapping>+` option:
+_<FIDMapping>_ option:
 
 *SQL feature store: Customizing the feature id mapping*
 
@@ -768,19 +768,19 @@ column fails, customize the feature id mapping using the
 ...
 ----
 
-Here are the options for `+<FIDMapping>+`:
+Here are the options for _<FIDMapping>_:
 
 [width="100%",cols="17%,11%,8%,64%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+prefix+` |0..1 |String |Feature id prefix, default: derived from
+|_prefix_ |0..1 |String |Feature id prefix, default: derived from
 feature type name
 
-|`+<Column>+` |1..n |Complex |Column that stores (a part of) the feature
+|_<Column>_ |1..n |Complex |Column that stores (a part of) the feature
 id
 |===
 
-As `+<Column>+` may occur more than once, you can define that the
+As _<Column>_ may occur more than once, you can define that the
 feature id is constructed from multiple columns:
 
 *SQL feature store: Customizing the feature id mapping*
@@ -797,20 +797,20 @@ feature id is constructed from multiple columns:
 ...
 ----
 
-Here are the options for `+<Column>+`:
+Here are the options for _<Column>_:
 
 [width="100%",cols="17%,11%,8%,64%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+name+` |1 |String |Name of the database column
+|_name_ |1 |String |Name of the database column
 
-|`+type+` |0..1 |String |Column type (string, boolean, decimal, double
+|_type_ |0..1 |String |Column type (string, boolean, decimal, double
 or integer), default: auto
 |===
 
 NOTE: Technically, the feature id prefix is important to determine the feature
 type when performing queries by feature id. Every
-`+<FeatureTypeMapping>+` must have a unique feature id prefix.
+_<FeatureTypeMapping>_ must have a unique feature id prefix.
 
 ===== Customizing the mapping between columns and properties
 
@@ -822,7 +822,7 @@ property
 * Every geometry column is used as a geometry property
 
 If this is not what you want, or automatic detection of the column types
-fails, use `+<Primitive>+` and `+<Geometry>+` to control the property
+fails, use _<Primitive>_ and _<Geometry>_ to control the property
 definitions of the feature type and the column-to-property mapping:
 
 *SQL feature store: Customizing property definitions and the
@@ -843,30 +843,30 @@ column-to-property mapping*
 
 This example defines a feature type with three properties:
 
-* `+property1+`, type: primitive (string), mapped to column `+prop1+`
-* `+property2+`, type: geometry (point), mapped to column `+the_geom+`,
-storage CRS is `+EPSG:4326+`, database srid is `+-1+`
-* `+property3+`, type: primitive (integer), mapped to column `+prop2+`
+* _property1_, type: primitive (string), mapped to column _prop1_
+* _property2_, type: geometry (point), mapped to column _the_geom_,
+storage CRS is _EPSG:4326_, database srid is _-1_
+* _property3_, type: primitive (integer), mapped to column _prop2_
 
 The following table lists all available configuration options for
-`+<Primitive>+` and `+<Geometry>+`:
+_<Primitive>_ and _<Geometry>_:
 
 [width="100%",cols="20%,11%,7%,62%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+path+` |1 |QName |Name of the property
+|_path_ |1 |QName |Name of the property
 
-|`+mapping+` |1 |String |Name of the database column
+|_mapping_ |1 |String |Name of the database column
 
-|`+type+` |1 |String |Property/column type
+|_type_ |1 |String |Property/column type
 
-|`+<Join>+` |0..1 |Complex |Defines a change in the table context
+|_<Join>_ |0..1 |Complex |Defines a change in the table context
 
-|`+<CustomConverter>+` |0..1 |Complex |Plugs-in a specialized
+|_<CustomConverter>_ |0..1 |Complex |Plugs-in a specialized
 DB-to-ObjectModel converter implementation
 
-|`+<StorageCRS>+` |0..1 |Complex |CRS of stored geometries and database
-srid (only for `+<Geometry>+`)
+|_<StorageCRS>_ |0..1 |Complex |CRS of stored geometries and database
+srid (only for _<Geometry>_)
 |===
 
 NOTE: If your configuration file is stored in UTF-8 encoding deegree allows
@@ -878,7 +878,7 @@ database supports UTF-8 as well.
 
 The former section assumed a mapping configuration that didn't use a
 given GML application schema. If a GML application schema is available
-and specified using `+<GMLSchema>+`, the mapping possibilities and
+and specified using _<GMLSchema>_, the mapping possibilities and
 available options are extended. We refer to these two modes as
 *table-driven mode* (without GML schema) and *schema-driven mode* (with
 GML schema).
@@ -902,7 +902,7 @@ schema
 
 NOTE: If you want to create a relational mapping for an existing GML
 application schema (e.g. INSPIRE Data Themes, GeoSciML, CityGML,
-XPlanung, AAA), always copy the schema files into the `+appschemas/+`
+XPlanung, AAA), always copy the schema files into the _appschemas/_
 directory of your workspace and reference the schema in your
 configuration.
 
@@ -934,7 +934,7 @@ GML application schema files:
 NOTE: This section assumes that you already have an existing database that you
 want to map to a GML application schema. If you want to derive a
 database model from a GML application schema, see
-`+anchor-mapping-wizard+`.
+<<anchor-mapping-wizard>>.
 
 Manually creating a mapping for a rich GML application schema may appear
 to be a dauting task at first sight. Especially when you are still
@@ -968,19 +968,19 @@ http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&type
 In order to successfully create a mapping for a feature type from a GML
 application schema, you have to know the structure and the data types of
 the feature type. For example, if you want to map feature type
-`+ad:Address+` from INSPIRE Annex I, you have to know that it has a
-required property called `+ad:inspireId+` that has a child element with
-name `+base:Identifier+`. Here's a list of possible options to learn the
+_ad:Address_ from INSPIRE Annex I, you have to know that it has a
+required property called _ad:inspireId_ that has a child element with
+name _base:Identifier_. Here's a list of possible options to learn the
 data model of an application schema:
 
 * Manually (or with the help of a generic XML tool such as XMLSpy)
 analyze the GML application schema to determine the feature types and
 understand their data model
 * Use the services console to auto-generate a mapping configuration (see
-`+anchor-mapping-wizard+`). It should reflect the structure and
+<<anchor-mapping-wizard>>). It should reflect the structure and
 datatypes correctly. Auto-generate the mapping, create a copy of the
-file and start with a minimal version (`+FeatureTypeMapping+` by
-`+FeatureTypeMapping+`, property by property). Adapt it to your own
+file and start with a minimal version (_FeatureTypeMapping_ by
+_FeatureTypeMapping_, property by property). Adapt it to your own
 database tables and columns and remove optional elements and attributes
 that you don't want to map.
 * Use the deegree support options (mailing lists, commercial support) to
@@ -993,48 +993,48 @@ this (or funding it), don't hesitate to contact the project bodies.
 [[anchor-mapping-rich-feature-types]]
 ===== Mapping rich feature types
 
-In schema-driven mode, the `+<FeatureTypeMapping>+` element basically
+In schema-driven mode, the _<FeatureTypeMapping>_ element basically
 works as in table-driven mode (see
-`+anchor-configuration-tabledriven+`). It defines a mapping between a
+<<anchor-configuration-tabledriven>>). It defines a mapping between a
 table in the database and a feature type. However, there are additional
 possibilities and it's usually more suitable to focus on feature types
 and XML nodes instead of tables and table columns. Here's an overview of
-the `+<FeatureTypeMapping>+` options and their meaning in schema-driven
+the _<FeatureTypeMapping>_ options and their meaning in schema-driven
 mode:
 
 [width="100%",cols="17%,11%,8%,64%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+table+` |1 |String |Name of the table to be mapped (can be qualified
+|_table_ |1 |String |Name of the table to be mapped (can be qualified
 with database schema)
 
-|`+name+` |0..1 |QName |Name of the feature type
+|_name_ |0..1 |QName |Name of the feature type
 
-|`+<FIDMapping>+` |1 |Complex |Defines the mapping of the feature id
+|_<FIDMapping>_ |1 |Complex |Defines the mapping of the feature id
 
-|`+<Primitive>+` |0..n |Complex |Defines the mapping of a
+|_<Primitive>_ |0..n |Complex |Defines the mapping of a
 primitive-valued node
 
-|`+<Geometry>+` |0..n |Complex |Defines the mapping of a geometry-valued
+|_<Geometry>_ |0..n |Complex |Defines the mapping of a geometry-valued
 node
 
-|`+<Complex>+` |0..n |Complex |Defines the mapping of a complex-valued
+|_<Complex>_ |0..n |Complex |Defines the mapping of a complex-valued
 node
 
-|`+<Feature>+` |0..n |Complex |Defines the mapping of a feature-valued
+|_<Feature>_ |0..n |Complex |Defines the mapping of a feature-valued
 node
 |===
 
-NOTE: The order of child elements `+<Primitive>+`, `+<Geometry>+`,
-`+<Complex>+` and `+<Feature>+` is not restricted. They may appear in
+NOTE: The order of child elements _<Primitive>_, _<Geometry>_,
+_<Complex>_ and _<Feature>_ is not restricted. They may appear in
 any order.
 
 We're going to explore the additional options by describing the
-necessary steps for mapping feature type `+ad:Address+` (from INSPIRE
+necessary steps for mapping feature type _ad:Address_ (from INSPIRE
 Annex I) to an example database. Start with a single
-`+<FeatureTypeMapping>+`. Provide the table name and the mapping for the
-feature identifier. The example uses a table named `+ad_address+` and a
-key column named `+fid+`:
+_<FeatureTypeMapping>_. Provide the table name and the mapping for the
+feature identifier. The example uses a table named _ad_address_ and a
+key column named _fid_:
 
 *SQL feature store (schema-driven mode): Start configuration*
 
@@ -1051,7 +1051,7 @@ key column named `+fid+`:
 
 TIP: In schema-driven mode, there is no automatic detection of columns,
 column types or primary keys. You always have to specify
-`+<FIDMapping>+`.
+_<FIDMapping>_.
 
 TIP: If this configuration matches your database and you have a working WFS
 resource, you should be able to query the feature type (although no
@@ -1061,16 +1061,16 @@ http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&type
 Mapping rich feature types works by associating XML nodes of a feature
 instance with rows and columns in the database. The table context (the
 current row) is changed when necessary. In the beginning of a
-`+<FeatureTypeMapping>+`, the current context node is an `+ad:Address+`
-element and the current table context is a row of table `+ad_address+`.
+_<FeatureTypeMapping>_, the current context node is an _ad:Address_
+element and the current table context is a row of table _ad_address_.
 The first (required) property that we're going to map is
-`+ad:inspireId+`. The schema defines that `+ad:inspireId+` has as child
-element named `+base:Identifier+` which in turn has two child elements
-named `+base:localId+` and `+base:namespace+`. Lets's assume that we
-have a column `+localid+` in our table, that we want to map to
-`+base:localId+`, but for `+base:namespace+`, we don't have a
+_ad:inspireId_. The schema defines that _ad:inspireId_ has as child
+element named _base:Identifier_ which in turn has two child elements
+named _base:localId_ and _base:namespace_. Lets's assume that we
+have a column _localid_ in our table, that we want to map to
+_base:localId_, but for _base:namespace_, we don't have a
 corresponding column. We want this element to have the fixed value
-`+NL.KAD.BAG+` for all instances of `+ad:Address+`. Here's how to do it:
+_NL.KAD.BAG_ for all instances of _ad:Address_. Here's how to do it:
 
 *SQL feature store (schema-driven mode): Complex elements and constant
 mappings*
@@ -1092,28 +1092,28 @@ mappings*
 </FeatureTypeMapping>
 ----
 
-There are several things to observe here. The `+Complex+` element occurs
-twice. In the `+path+` attribute of the first occurrence, we specified
+There are several things to observe here. The _Complex_ element occurs
+twice. In the _path_ attribute of the first occurrence, we specified
 the qualified name of the (complex) property we want to map
-(`+ad:inspireId+`). The nested `+Complex+` targets child element
-`+base:Identifier+` of `+ad:inspireId+`. And finally, the `+Primitive+`
-elements specify that child element `+base:localId+` is mapped to column
-`+localid+` and element `+base:namespace+` is mapped to constant
-`+NL.KAD.BAG+` (note the single quotes around `+NL.KAD.BAG+`).
+(_ad:inspireId_). The nested _Complex_ targets child element
+_base:Identifier_ of _ad:inspireId_. And finally, the _Primitive_
+elements specify that child element _base:localId_ is mapped to column
+_localid_ and element _base:namespace_ is mapped to constant
+_NL.KAD.BAG_ (note the single quotes around _NL.KAD.BAG_).
 
 To summarize:
 
-* `+Complex+` is used to select a (complex) child element to be mapped.
-It is a container for child mapping elements (`+Primitive+`,
-`+Geometry+`, `+Complex+` or `+Feature+`)
-* In the `+mapping+` attribute of `+Primitive+`, you can also use
+* _Complex_ is used to select a (complex) child element to be mapped.
+It is a container for child mapping elements (_Primitive_,
+_Geometry_, _Complex_ or _Feature_)
+* In the _mapping_ attribute of _Primitive_, you can also use
 constants, not only column names
 
-The next property we want to map is `+ad:position+`. It contains the
+The next property we want to map is _ad:position_. It contains the
 geometry of the address, but the actual GML geometry is nested on a
 deeper level and the property can occur multiple times. In our database,
-we have a table named `+ad_address_ad_position+` with columns `+fk+`
-(foreign key to ad_address) and `+value+` (geometry). Here's the
+we have a table named _ad_address_ad_position_ with columns _fk_
+(foreign key to ad_address) and _value_ (geometry). Here's the
 extended mapping:
 
 *SQL feature store (schema-driven mode): Join elements and XPath
@@ -1126,7 +1126,7 @@ expressions*
     <Column name="fid" />
   </FIDMapping>
 
-  <Complex path="ad:inspireId">
+  <Complex path="ad:inspireId">https://xxx[]
     <Complex path="base:Identifier">
       <Primitive path="base:localId" mapping="localid" />
       <Primitive path="base:namespace" mapping="'NL.KAD.BAG'" />
@@ -1152,23 +1152,23 @@ expressions*
 </FeatureTypeMapping>
 ----
 
-Again, the `+Complex+` element is used to drill into the XML structure
+Again, the _Complex_ element is used to drill into the XML structure
 of the property and several elements are mapped to constant values. But
 there are also new things to observe:
 
-* The first child element of a `+<Complex>+` (or `+<Primitive>+`,
-`+<Geometry>+` or `+<Feature>+`) can be `+<Join>+`. `+<Join>+` performs
-a table change: table rows corresponding to `+ad:position+` are not
-stored in the root feature type table (`+ad_address+`), but in a joined
-table. All siblings of `+<Join>+` (or their children) refer to this
-joined table (`+ad_address_ad_position+`). The join condition that
+* The first child element of a _<Complex>_ (or _<Primitive>_,
+_<Geometry>_ or _<Feature>_) can be _<Join>_. _<Join>_ performs
+a table change: table rows corresponding to _ad:position_ are not
+stored in the root feature type table (_ad_address_), but in a joined
+table. All siblings of _<Join>_ (or their children) refer to this
+joined table (_ad_address_ad_position_). The join condition that
 determines the related rows in the joined table is
-`+ad_address.fid=ad_address_ad_position.fk+`. `+<Join>+` is described in
+_ad_address.fid=ad_address_ad_position.fk_. _<Join>_ is described in
 detail in the next section.
-* Valid expressions for `+path+` can also be `+.+` (current node) and
-`+text()+` (primitive value of the current node).
+* Valid expressions for _path_ can also be _._ (current node) and
+_text()_ (primitive value of the current node).
 
-Let's move on to the mapping of property `+ad:component+`. This property
+Let's move on to the mapping of property _ad:component_. This property
 can occur multiple times and contains (a reference to) another feature.
 
 *SQL feature store (schema-driven mode): Feature elements*
@@ -1186,56 +1186,56 @@ can occur multiple times and contains (a reference to) another feature.
 </FeatureTypeMapping>
 ----
 
-As in the mapping of `+ad:position+`, a `+<Join>+` is used to change the
+As in the mapping of _ad:position_, a _<Join>_ is used to change the
 table context. The table that stores the information for
-`+ad:component+` properties is `+ad_address_ad_component+`. The
-`+<Feature>+` declares that we want to map a feature-valued node and
-it's `+<Href>+` sub-element defines that column `+href+` stores the
-value of the `+xlink:href+` attribute.
+_ad:component_ properties is _ad_address_ad_component_. The
+_<Feature>_ declares that we want to map a feature-valued node and
+it's _<Href>_ sub-element defines that column _href_ stores the
+value of the _xlink:href_ attribute.
 
-Here is an overview of all options for `+<Complex>+` elements:
+Here is an overview of all options for _<Complex>_ elements:
 
 [width="100%",cols="20%,11%,7%,62%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+path+` |1 |QName |Name/XPath-expression that determines the element
+|_path_ |1 |QName |Name/XPath-expression that determines the element
 to be mapped
 
-|`+<Join>+` |0..1 |Complex |Defines a change in the table context
+|_<Join>_ |0..1 |Complex |Defines a change in the table context
 
-|`+<CustomConverter>+` |0..1 |Complex |Plugs-in a specialized
+|_<CustomConverter>_ |0..1 |Complex |Plugs-in a specialized
 DB-to-ObjectModel converter implementation
 
-|`+<Primitive>+` |0..n |Complex |Defines the mapping of a
+|_<Primitive>_ |0..n |Complex |Defines the mapping of a
 primitive-valued node
 
-|`+<Geometry>+` |0..n |Complex |Defines the mapping of a geometry-valued
+|_<Geometry>_ |0..n |Complex |Defines the mapping of a geometry-valued
 node
 
-|`+<Complex>+` |0..n |Complex |Defines the mapping of a complex-valued
+|_<Complex>_ |0..n |Complex |Defines the mapping of a complex-valued
 node
 
-|`+<Feature>+` |0..n |Complex |Defines the mapping of a feature-valued
+|_<Feature>_ |0..n |Complex |Defines the mapping of a feature-valued
 node
 |===
 
-NOTE: The order of child elements `+<Primitive>+`, `+<Geometry>+`,
-`+<Complex>+` and `+<Feature>+` is not restricted. They may appear in
+NOTE: The order of child elements _<Primitive>_, _<Geometry>_,
+_<Complex>_ and _<Feature>_ is not restricted. They may appear in
 any order.
 
-Here is an overview on all options for `+<Feature>+` elements:
+Here is an overview on all options for _<Feature>_ elements:
 
 [width="100%",cols="20%,11%,7%,62%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+path+` |1 |QName |Name/XPath-expression that determines the element
+|_path_ |1 |QName |Name/XPath-expression that determines the element
 to be mapped
 
-|`+<CustomConverter>+` |0..1 |Complex |Plugs-in a specialized
+|_<CustomConverter>_ |0..1 |Complex |Plugs-in a specialized
 DB-to-ObjectModel converter implementation
 
-|`+<Href>+` |0..1 |Complex |Defines the column that stores the value for
-`+xlink:href+`
+|_<Href>_ |0..1 |Complex |Defines the column that stores the value for
+_xlink:href_
 |===
 
 [[anchor-mapping-strategies-href-attributes]]
@@ -1280,13 +1280,13 @@ store configuration:
 <Primitive path="@xlink:href" mapping="designationtype_designation_href"/>
 ----
 
-For more details see chapter `+anchor-mapping-rich-feature-types+`.
+For more details see chapter <<anchor-mapping-rich-feature-types>>.
 
 ===== Changing the table context
 
-At the beginning of a `+<FeatureTypeMapping>+`, the current table
-context is the one specified by the `+table+` attribute. In the
-following example snippet, this would be table `+ad_address+`.
+At the beginning of a _<FeatureTypeMapping>_, the current table
+context is the one specified by the _table_ attribute. In the
+following example snippet, this would be table _ad_address_.
 
 *SQL feature store: Initial table context*
 
@@ -1302,8 +1302,8 @@ following example snippet, this would be table `+ad_address+`.
 </FeatureTypeMapping>
 ----
 
-Note that all mapped columns stem from table `+ad_address+`. This is
-fine, as each feature can only have a single `+gml:identifier+`
+Note that all mapped columns stem from table _ad_address_. This is
+fine, as each feature can only have a single _gml:identifier_
 property. However, when mapping a property that may occur any number of
 times, we will have to access the values for this property in a separate
 table.
@@ -1336,60 +1336,60 @@ table.
 </FeatureTypeMapping>
 ----
 
-In this example, property `+gml:identifier+` is mapped as before (the
-data values stem from table `+ad_address+`). In contrast to that,
-property `+ad:position+` can occur any number of times for a single
-`+ad_address+` feature instance. In order to reflect that in the
+In this example, property _gml:identifier_ is mapped as before (the
+data values stem from table _ad_address_). In contrast to that,
+property _ad:position_ can occur any number of times for a single
+_ad_address_ feature instance. In order to reflect that in the
 relational model, the values for this property have to be taken
-from/stored in a separate table. The feature type table (`+ad_address+`)
+from/stored in a separate table. The feature type table (_ad_address_)
 must have a 1:n relation to this table.
 
-The `+<Join>+` element is used to define such a change in the table
+The _<Join>_ element is used to define such a change in the table
 context (in other words: a relation/join between two tables). A
-`+<Join>+` element may only occur as first child element of any of the
-mapping elements (`+<Primitive>+`, `+<Geometry>+`, `+<Feature>+` or
-`+<Complex>+`). It changes from the current table context to another
+_<Join>_ element may only occur as first child element of any of the
+mapping elements (_<Primitive>_, _<Geometry>_, _<Feature>_ or
+_<Complex>_). It changes from the current table context to another
 one. In the example, the table context in the mapping of property
-`+ad:position+` is changed from `+ad_address+` to
-`+ad_address_ad_position+`. All mapping instructions that follow the
-`+<Join>+` element refer to the new table context. For example, the
+_ad:position_ is changed from _ad_address_ to
+_ad_address_ad_position_. All mapping instructions that follow the
+_<Join>_ element refer to the new table context. For example, the
 geometry value is taken from
-`+ad_address_ad_position.ad_geographicposition_ad_geometry_value+`.
+_ad_address_ad_position.ad_geographicposition_ad_geometry_value_.
 
-The following table lists all available options for `+<Join>+` elements:
+The following table lists all available options for _<Join>_ elements:
 
 [width="100%",cols="17%,9%,6%,68%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+table+` |1..1 |String |Name of the target table to change to.
+|_table_ |1..1 |String |Name of the target table to change to.
 
-|`+fromColumns+` |1..1 |String |One or more columns that define the join
+|_fromColumns_ |1..1 |String |One or more columns that define the join
 key in the source table.
 
-|`+toColumns+` |1..1 |String |One or more columns that define the join
+|_toColumns_ |1..1 |String |One or more columns that define the join
 key in the target table.
 
-|`+orderColumns+` |0..1 |String |One or more columns hat define the
+|_orderColumns_ |0..1 |String |One or more columns hat define the
 order of the joined rows.
 
-|`+numbered+` |0..1 |Boolean |Set to true, if orderColumns refers to a
+|_numbered_ |0..1 |Boolean |Set to true, if orderColumns refers to a
 single column that contains natural numbers [1,2,3,...].
 
-|`+<AutoKeyColumn>+` |0..n |Complex |Columns in the target table that
+|_<AutoKeyColumn>_ |0..n |Complex |Columns in the target table that
 store autogenerated keys (only required for transactions).
 |===
 
-Attributes `+fromColumns+`, `+toColumns+` and `+orderColumns+` may each
+Attributes _fromColumns_, _toColumns_ and _orderColumns_ may each
 contain one or more columns. When specifying multiple columns, they must
-be given as a whitespace-separated list. `+orderColumns+` is used to
+be given as a whitespace-separated list. _orderColumns_ is used to
 force a specific ordering on the joined table rows. If this attribute is
 omitted, the order of joined rows is not defined and reconstructed
 feature instances may vary each time they are fetched from the database.
-In the above example, this would mean that the multiple `+ad:position+`
-properties of an `+ad:Address+` feature may change their order.
+In the above example, this would mean that the multiple _ad:position_
+properties of an _ad:Address_ feature may change their order.
 
 In case that the order column stores the child index of the XML element,
-the `+numbered+` attribute should be set to `+true+`. In this special
+the _numbered_ attribute should be set to _true_. In this special
 case, filtering on property names with child indexes will be correctly
 mapped to SQL WHERE clauses as in the following WFS example request.
 
@@ -1412,18 +1412,18 @@ mapped to SQL WHERE clauses as in the following WFS example request.
 </GetFeature>
 ----
 
-In the above example, only those `+ad:Address+` features will be
-returned where the geometry in the third `+ad:position+` property has an
+In the above example, only those _ad:Address_ features will be
+returned where the geometry in the third _ad:position_ property has an
 intersection with the specified bounding box. If only other
-`+ad:position+` properties (e.g. the first one) matches this constraint,
+_ad:position_ properties (e.g. the first one) matches this constraint,
 they will not be included in the output.
 
-The `+<AutoKeyColumn>+` configuration option is only required when you
+The _<AutoKeyColumn>_ configuration option is only required when you
 want to use transactions on your feature store and your relational model
 is non-canonical. Ideally, the mapping will only change the table
 context in case the feature type model allows for multiple child
 elements at that point. In other words: if the XML schema has
-`+maxOccurs+` set to `+unbounded+` for an element, the relational model
+_maxOccurs_ set to _unbounded_ for an element, the relational model
 should have a corresponding 1:n relation. For a 1:n relation, the target
 table of the context change should have a foreign key column that points
 to the primary key column of the source table of the context change.
@@ -1432,11 +1432,11 @@ the source table to the target table and store them there as well.
 
 If the joined table is the origin of other joins, than it is important
 that the SQL feature store can generate primary keys for the join table.
-If not configured otherwise, it is assumed that column `+id+` stores the
+If not configured otherwise, it is assumed that column _id_ stores the
 primary key and that the database will auto-generate values on insert
 using database mechanisms such as sequences or triggers.
 
-If this is not the case, use the `+AutoKeyColumn+` options to define the
+If this is not the case, use the _AutoKeyColumn_ options to define the
 columns that make up the primary key in the join table and how the
 values for these columns should be generated on insert. Here's an
 example:
@@ -1457,26 +1457,26 @@ example:
 [...]
 ----
 
-In this example snippet, the primary key for table `+B+` is stored in
-column `+pk1+` and values for this column are generated using the UUID
+In this example snippet, the primary key for table _B_ is stored in
+column _pk1_ and values for this column are generated using the UUID
 generator. There's another change in the table context from B to C. Rows
-in table C have a key stored in column `+parentfk+` that corresponds to
-the `+B.pk1+`. On insert, values generated for `+B.pk1+` will be
+in table C have a key stored in column _parentfk_ that corresponds to
+the _B.pk1_. On insert, values generated for _B.pk1_ will be
 propagated and stored for new rows in this table as well. The following
-table lists the options for `+<AutoKeyColumn>+` elements.
+table lists the options for _<AutoKeyColumn>_ elements.
 
-Inside a `+<AutoKeyColumn>+`, you may use the same key generators that
+Inside a _<AutoKeyColumn>_, you may use the same key generators that
 are available for feature id generation (see above).
 
 [[anchor-null-handling]]
 ===== Handling of NULL values
 
-By default, a `+NULL+` value in a mapped database column means that just
+By default, a _NULL_ value in a mapped database column means that just
 the mapped particle is omitted from the reconstructed feature. However,
 if the corresponding element/attribute or text node is required
 according to the GML application schema, this will lead to invalid
 feature instances. In order to deal with this, the global option
-`+<NullEscalation>+` should be set to `+true+` after the mapping
+_<NullEscalation>_ should be set to _true_ after the mapping
 configuration has been finished.
 
 *SQL feature store: Activating NULL value escalation*
@@ -1488,24 +1488,24 @@ configuration has been finished.
 [...]
 ----
 
-If this option is turned on and a `+NULL+` value is found in a mapped
+If this option is turned on and a _NULL_ value is found in a mapped
 column, the following strategy is applied:
 
 * If the corresponding particle is not required according to the GML
 application schema, just this particle is omitted.
 * If the container element of the particle is nillable according to the
-GML application schema, the `+xsi:nil+` attribute of the element is set
-to `+true+`.
-* In all other cases, the `+NULL+` is escalated to the container element
+GML application schema, the _xsi:nil_ attribute of the element is set
+to _true_.
+* In all other cases, the _NULL_ is escalated to the container element
 using the same strategy (until the feature level has been reached).
 
 This works well most of the times, but sometimes, it can be handy to
-override this behaviour. For that, each `+<Primitive>+`, `+<Complex>+`,
-`+<Geometry>+` or `+<Feature>+` configuration element supports the
-optional attribute `+nullEscalation+`. The following config snippet
-demonstrates a custom `+NULL+` escalation for element
-`+gml:endPosition+`. By default, the content of this element is
-required, but by setting it to `+false+`, `+NULL+` escalation can be
+override this behaviour. For that, each _<Primitive>_, _<Complex>_,
+_<Geometry>_ or _<Feature>_ configuration element supports the
+optional attribute _nullEscalation_. The following config snippet
+demonstrates a custom _NULL_ escalation for element
+_gml:endPosition_. By default, the content of this element is
+required, but by setting it to _false_, _NULL_ escalation can be
 manually switched off for this very particle.
 
 *SQL feature store: Customizing NULL value escalation*
@@ -1525,88 +1525,88 @@ manually switched off for this very particle.
 [...]
 ----
 
-The following values are supported for attribute `+nullEscalation+` on
-`+<Primitive>+`, `+<Complex>+`, `+<Geometry>+` or `+<Feature>+`
+The following values are supported for attribute _nullEscalation_ on
+_<Primitive>_, _<Complex>_, _<Geometry>_ or _<Feature>_
 elements:
 
-* `+auto+`: Handling of NULL values is derived from the GML application
-schema. Same as omitting the `+nullEscalation+` attribute.
-* `+true+`: `+NULL+` values are escalated to the container element.
-* `+false+`: `+NULL+` values are not escalated to the container element.
+* _auto_: Handling of NULL values is derived from the GML application
+schema. Same as omitting the _nullEscalation_ attribute.
+* _true_: _NULL_ values are escalated to the container element.
+* _false_: _NULL_ values are not escalated to the container element.
 
 [[anchor-blob-mode]]
 ===== BLOB mapping
 
 An alternative approach to mapping each feature type from an application
-schema using `+<FeatureTypeMapping>+` is to specify a single
-`+<BLOBMapping>+` element. This activates a different storage strategy
+schema using _<FeatureTypeMapping>_ is to specify a single
+_<BLOBMapping>_ element. This activates a different storage strategy
 based on a fixed database schema. Central to this schema is a table that
 stores every feature instance (and all of it's properties) as a BLOB
 (binary large object).
 
-Here is an overview on all options for `+<BLOBMapping>+` elements:
+Here is an overview on all options for _<BLOBMapping>_ elements:
 
 [width="100%",cols="22%,10%,7%,61%",options="header",]
 |===
 |Option |Cardinality |Value |Description
-|`+<BlobTable>+` |0..1 |String |Database table that stores features,
-default: `+gml_objects+`
+|_<BlobTable>_ |0..1 |String |Database table that stores features,
+default: _gml_objects_
 
-|`+<FeatureTypeTable>+` |0..1 |String |Database table that stores
-feature types, default: `+feature_types+`
+|_<FeatureTypeTable>_ |0..1 |String |Database table that stores
+feature types, default: _feature_types_
 |===
 
-The central table (controlled by `+<BlobTable>+`) uses the following
+The central table (controlled by _<BlobTable>_) uses the following
 columns:
 
 [width="100%",cols="19%,15%,66%",options="header",]
 |===
 |Column |PostGIS type |Used for
-|`+id+` |serial |Primary key
+|_id_ |serial |Primary key
 
-|`+gml_id+` |text |Feature identifier (used for id queries and resolving
+|_gml_id_ |text |Feature identifier (used for id queries and resolving
 xlink references)
 
-|`+gml_bounded_by+` |geometry |Bounding box (used for spatial queries)
+|_gml_bounded_by_ |geometry |Bounding box (used for spatial queries)
 
-|`+ft_type+` |smallint |Feature type identifier (used to narrow the
+|_ft_type_ |smallint |Feature type identifier (used to narrow the
 result set)
 
-|`+binary_object+` |bytea |Encoded feature instance
+|_binary_object_ |bytea |Encoded feature instance
 |===
 
-The other table (controlled by `+<FeatureTypeTable>+`) stores a mapping
+The other table (controlled by _<FeatureTypeTable>_) stores a mapping
 of feature type names to feature type identifiers:
 
 [width="100%",cols="13%,16%,71%",options="header",]
 |===
 |Column |PostGIS type |Used for
-|`+id+` |smallint |Primary key
+|_id_ |smallint |Primary key
 
-|`+qname+` |text |Name of the feature type
+|_qname_ |text |Name of the feature type
 
-|`+bbox+` |geometry |Aggregated bounding box for all features of this
+|_bbox_ |geometry |Aggregated bounding box for all features of this
 type
 |===
 
-NOTE: In order for `+<BLOBMapping>+` to work, you need to have the correct
+NOTE: In order for _<BLOBMapping>_ to work, you need to have the correct
 tables in your database and initialize the feature type table with the
 names of all feature types you want to use. We recommend not to do this
-manually, see `+anchor-mapping-wizard+`. The wizard will also create
+manually, see <<anchor-mapping-wizard>>. The wizard will also create
 suitable indexes to speed up queries.
 
 NOTE: You may wonder how to get data into the database in BLOB mode. As for
 standard mapping, you can do this by executing WFS-T requests or by
 using the feature store loader. Its usage is described in the last steps
-of `+anchor-mapping-wizard+`.
+of <<anchor-mapping-wizard>>.
 
 NOTE: In BLOB mode, only spatial and feature id queries can be mapped to SQL
 WHERE-constraints. All other kinds of filter conditions are performed in
-memory. See `+anchor-filtering+` for more information.
+memory. See <<anchor-filtering>> for more information.
 
 ==== Transactions and feature id generation
 
-The mapping defined by a `+<FeatureTypeMapping>+` element generally
+The mapping defined by a _<FeatureTypeMapping>_ element generally
 works in both directions:
 
 * *Table-to-feature-type (query)*: Feature instances are created from
@@ -1623,36 +1623,36 @@ modes. These modes control whether feature ids (the values in the gml:id
 attribute) have to be re-generated. There are three id generation modes
 available, which directly relate to the WFS 1.1.0 specification:
 
-* `+UseExisting+`: The feature store will use the original gml:id values
+* _UseExisting_: The feature store will use the original gml:id values
 that have been provided in the input. This may lead to errors if the
 provided ids are already in use or if the format of the id does not
 match the configuration.
-* `+GenerateNew+`: The feature store will discard the original gml:id
+* _GenerateNew_: The feature store will discard the original gml:id
 values and use the configured generator to produce new and unique
 identifiers. References in the input (xlink:href) that point to a
 feature with an reassigned id are fixed as well, so reference
 consistency is ensured.
-* `+ReplaceDuplicate+`: The feature store will try to use the original
+* _ReplaceDuplicate_: The feature store will try to use the original
 gml:id values that have been provided in the input. If a certain
 identifier already exists in the database, the configured generator is
 used to produce a new and unique identifier. NOTE: Support for this mode
 is not implemented yet.
 
 NOTE: In a WFS 1.1.0 insert request, the id generation mode is controlled by
-attribute `+idGenMode+`. WFS 1.0.0 and WFS 2.0.0 don't support to
+attribute _idGenMode_. WFS 1.0.0 and WFS 2.0.0 don't support to
 specify it on a request basis. However, in the deegree WFS configuration
-you can control it in the option `+EnableTransactions+`.
+you can control it in the option _EnableTransactions_.
 
-In order to generate the required ids for `+GenerateNew+`, you can
+In order to generate the required ids for _GenerateNew_, you can
 choose between different generators. These are configured in the
-`+<FIDMapping>+` child element of `+<FeatureTypeMapping>+`:
+_<FIDMapping>_ child element of _<FeatureTypeMapping>_:
 
 ===== Auto id generator
 
 The auto id generator depends on the database to provide new values for
 the feature id column(s) on insert. This requires that the used feature
 id columns are configured appropriately in the database (e.g. that they
-have a trigger or a suitable column type such as `+SERIAL+` in
+have a trigger or a suitable column type such as _SERIAL_ in
 PostgreSQL).
 
 *SQL feature store: Auto id generator example*
@@ -1668,17 +1668,17 @@ PostgreSQL).
 ----
 
 This snippet defines the feature id mapping and the id generation
-behaviour for a feature type called `+ad:Address+`
+behaviour for a feature type called _ad:Address_
 
-* When querying, the prefix `+AD_ADDRESS_+` is prepended to column
-`+attr_gml_id+` to create the exported feature id. If `+attr_gml_id+`
-contains the value `+42+` in the database, the feature instance that is
-created from this row will have the value `+AD_ADDRESS_42+`.
+* When querying, the prefix _AD_ADDRESS__ is prepended to column
+_attr_gml_id_ to create the exported feature id. If _attr_gml_id_
+contains the value _42_ in the database, the feature instance that is
+created from this row will have the value _AD_ADDRESS_42_.
 * On insert (mode=UseExisting), provided gml:id values must have the
-format `+AD_ADDRESS_$+`. The prefix `+AD_ADDRESS_+` is removed and the
-remaining part of the identifier is stored in column `+attr_gml_id+`.
+format _AD_ADDRESS_$_. The prefix _AD_ADDRESS__ is removed and the
+remaining part of the identifier is stored in column _attr_gml_id_.
 * On insert (mode=GenerateNew), the database must automatically create a
-new value for column `+attr_gml_id+` which will be the postfix of the
+new value for column _attr_gml_id_ which will be the postfix of the
 newly assigned feature id.
 
 ===== UUID generator
@@ -1702,18 +1702,18 @@ value generation for this column (e.g triggers).
 ----
 
 This snippet defines the feature id mapping and the id generation
-behaviour for a feature type called `+ad:Address+`
+behaviour for a feature type called _ad:Address_
 
-* When querying, the prefix `+AD_ADDRESS_+` is prepended to column
-`+attr_gml_id+` to create the exported feature id. If `+attr_gml_id+`
-contains the value `+550e8400-e29b-11d4-a716-446655440000+` in the
+* When querying, the prefix _AD_ADDRESS__ is prepended to column
+_attr_gml_id_ to create the exported feature id. If _attr_gml_id_
+contains the value _550e8400-e29b-11d4-a716-446655440000_ in the
 database, the feature instance that is created from this row will have
-the value `+AD_ADDRESS_550e8400-e29b-11d4-a716-446655440000+`.
+the value _AD_ADDRESS_550e8400-e29b-11d4-a716-446655440000_.
 * On insert (mode=UseExisting), provided gml:id values must have the
-format `+AD_ADDRESS_$+`. The prefix `+AD_ADDRESS_+` is removed and the
-remaining part of the identifier is stored in column `+attr_gml_id+`.
+format _AD_ADDRESS_$_. The prefix _AD_ADDRESS__ is removed and the
+remaining part of the identifier is stored in column _attr_gml_id_.
 * On insert (mode=GenerateNew), a new UUID is generated and stored in
-column `+attr_gml_id+`.
+column _attr_gml_id_.
 
 ===== Sequence id generator
 
@@ -1736,26 +1736,26 @@ this column (e.g triggers).
 ----
 
 This snippet defines the feature id mapping and the id generation
-behaviour for a feature type called `+ad:Address+`
+behaviour for a feature type called _ad:Address_
 
-* When querying, the prefix `+AD_ADDRESS_+` is prepended to column
-`+attr_gml_id+` to create the exported feature id. If `+attr_gml_id+`
-contains the value `+42+` in the database, the feature instance that is
-created from this row will have the value `+AD_ADDRESS_42+`.
+* When querying, the prefix _AD_ADDRESS__ is prepended to column
+_attr_gml_id_ to create the exported feature id. If _attr_gml_id_
+contains the value _42_ in the database, the feature instance that is
+created from this row will have the value _AD_ADDRESS_42_.
 * On insert (mode=UseExisting), provided gml:id values must have the
-format `+AD_ADDRESS_$+`. The prefix `+AD_ADDRESS_+` is removed and the
-remaining part of the identifier is stored in column `+attr_gml_id+`.
-* On insert (mode=GenerateNew), the database sequence `+SEQ_FID+` is
-queried for new values to be stored in column `+attr_gml_id+`.
+format _AD_ADDRESS_$_. The prefix _AD_ADDRESS__ is removed and the
+remaining part of the identifier is stored in column _attr_gml_id_.
+* On insert (mode=GenerateNew), the database sequence _SEQ_FID_ is
+queried for new values to be stored in column _attr_gml_id_.
 
 [[anchor-filtering]]
 ==== Evaluation of query filters
 
 The SQL feature store always tries to map filter conditions (e.g. from
-WFS `+GetFeature+` requests or when accessed by the WMS) to SQL-WHERE
+WFS _GetFeature_ requests or when accessed by the WMS) to SQL-WHERE
 conditions. However, this is not possible in all cases. Sometimes a
 filter uses an expression that does not have an equivalent SQL-WHERE
-clause. For example when using `+anchor-blob-mode+` and the filter is
+clause. For example when using _anchor-blob-mode_ and the filter is
 not based on a feature id or a spatial constraint.
 
 In such cases, the SQL feature store falls back to in-memory filtering.
@@ -1765,7 +1765,7 @@ result feature stream. If not, it is skipped.
 
 The downside of this strategy is that it can put a serious load on your
 server. If you want to turn off in-memory filtering completely, use
-`+<DisablePostFiltering>+`. If this option is specified and a filter
+_<DisablePostFiltering>_. If this option is specified and a filter
 requires in-memory filtering, the query will be rejected.
 
 [[anchor-mapping-wizard]]
@@ -1786,13 +1786,13 @@ mapping, you may easily end up with hundreds of tables or columns.
 This walkthrough is based on the INSPIRE Annex I schemas, but you should
 be able to use these instructions with other GML application schemas as
 well. Make sure that the INSPIRE workspace has been downloaded and
-activated as described in `+anchor-workspace-inspire+`. As another
+activated as described in <<anchor-workspace-inspire>>. As another
 prerequisite, you will have to create an empty, spatially-enabled
 PostGIS database that you can connect to from your deegree installation.
 
 TIP: Instead of PostGIS, you can also use an Oracle Spatial or an Microsoft
 SQL Server database. In order to enable support for these databases, see
-`+anchor-db-libraries+`.
+<<anchor-db-libraries>>.
 
 NOTE: If the application schema contains UTF-8 characters which are not part
 of the 7-bit ASCII subset they are normalised during the generation of
@@ -1844,8 +1844,8 @@ image::console_featurestore_mapping7.jpg[Mapping a new SQL feature
 store configuration,scaledwidth=50.0%]
 
 You can now select the GML application schema files to be used. For this
-walkthrough, tick `+Addresses.xsd+`, `+AdministrativeUnits.xsd+` and
-`+CadastralParcels.xsd+` (if you select all schema files, hundreds of
+walkthrough, tick _Addresses.xsd_, _AdministrativeUnits.xsd_ and
+_CadastralParcels.xsd_ (if you select all schema files, hundreds of
 feature types from INPIRE Annex I will be mapped):
 
 image::console_featurestore_mapping8.jpg[Selecting the GML schema

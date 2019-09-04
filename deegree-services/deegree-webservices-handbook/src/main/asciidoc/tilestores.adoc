@@ -64,7 +64,7 @@ Specification 3.1
 |===
 
 You can override these standard definitions by placing an appropriately
-named file into the `+datasources/tile/tilematrixset/+` directory of
+named file into the _datasources/tile/tilematrixset/_ directory of
 your workspace. It is recommended to always use lower case file names to
 avoid confusion.
 
@@ -78,7 +78,7 @@ section).
 
 Like everything else in the deegree workspace, defining a tile matrix
 set means placing a configuration file into a standard location, in this
-case the `+datasources/tile/tilematrixset+` directory.
+case the _datasources/tile/tilematrixset_ directory.
 
 Let's have a look at an example for the explicit configuration:
 
@@ -130,11 +130,11 @@ GeoTIFF/BIGTIFF files. The tile store is currently read-only. The
 requirements for the GeoTIFFs are:
 
 * it must be created as BIGTIFF (eg. with GDAL using the
-`+-co BIGTIFF=YES+` option)
+_-co BIGTIFF=YES_ option)
 * it must be created as a tiled tiff (eg. with GDAL using the
-`+-co TILED=YES+` option)
+_-co TILED=YES_ option)
 * it can contain overviews (it is best to use a recent GDAL version >=
-1.8.0, where you can use `+GDAL_TIFF_OVR_BLOCKSIZE+` to specify the
+1.8.0, where you can use _GDAL_TIFF_OVR_BLOCKSIZE_ to specify the
 overview tile size)
 * it is recommended that the overviews contain the same tile size as the
 main level
@@ -221,9 +221,9 @@ the layer directory and specify the file type of the images (png is
 recommended, but most image formats are supported)
 
 Please note that if you use external tools to seed the tile store, you
-need to make sure the resulting structure is compatible. The `+00+`
+need to make sure the resulting structure is compatible. The _00_
 directory corresponds to the _first_ tile matrix of the referenced tile
-matrix set, `+01+` to the second tile matrix and so on.
+matrix set, _01_ to the second tile matrix and so on.
 
 === Remote WMS tile store
 
@@ -273,12 +273,12 @@ GetMap requests sent to the WMS:::
   * The CRS parameter specifies which CRS to use when requesting
 
 Additionally you can specify default and override values for request
-parameters within the request params block. Just add `+Parameter+` tags
-as described in the `+anchor-configuration-layer-request-options+` layer
+parameters within the request params block. Just add _Parameter_ tags
+as described in the <<anchor-configuration-layer-request-options>> layer
 chapter. The replacing/defaulting currently only works when you
-configure a WMTS on top of this tile store. `+GetTile+` parameters are
-then mapped to `+GetMap+` requests to the backend, and
-`+GetFeatureInfo+` WMTS parameters to `+GetFeatureInfo+` WMS parameters
+configure a WMTS on top of this tile store. _GetTile_ parameters are
+then mapped to _GetMap_ requests to the backend, and
+_GetFeatureInfo_ WMTS parameters to _GetFeatureInfo_ WMS parameters
 on the backend.
 
 === Remote WMTS tile store
@@ -336,9 +336,9 @@ option if they differ), but the structure (coordinate system, tile size,
 number of tiles per matrix etc.) needs to be identical.
 
 Additionally you can specify default and override values for request
-parameters within the request params block. Just add `+Parameter+` tags
-as described in the `+anchor-configuration-layer-request-options+` layer
+parameters within the request params block. Just add _Parameter_ tags
+as described in the <<anchor-configuration-layer-request-options>> layer
 chapter. The replacing/defaulting currently only works when you
 configure a WMTS on top of this tile store. Please note that the
-`+scope+` attribute allows `+GetTile+` and `+GetFeatureInfo+`, as
-`+GetMap+` is not supported by WMTS services.
+_scope_ attribute allows _GetTile_ and _GetFeatureInfo_, as
+_GetMap_ is not supported by WMTS services.

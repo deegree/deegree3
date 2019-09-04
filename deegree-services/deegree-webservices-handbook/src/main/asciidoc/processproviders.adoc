@@ -2,7 +2,7 @@
 == Process providers
 
 Process provider resources define geospatial processes that can be
-accessed via the `+anchor-configuration-wps+`.
+accessed via the <<anchor-configuration-wps>>.
 
 The remainder of this chapter describes some relevant terms and the
 process provider configuration files in detail. You can access this
@@ -27,10 +27,10 @@ deegree resource configuration. The second is special to this kind of
 resource. It provides the byte code with the process logic and has to be
 accessible by deegree's classloader. There are several options to make
 custom Java code available to deegree webservices (see
-`+anchor-adding-jars+` for details), but the most common options are:
+<<anchor-adding-jars>> for details), but the most common options are:
 
-* Putting class files into the `+classes/+` directory of the workspace
-* Putting JAR files into the `+modules/+` directory of the workspace
+* Putting class files into the _classes/_ directory of the workspace
+* Putting JAR files into the _modules/_ directory of the workspace
 
 ==== Minimal configuration example
 
@@ -56,12 +56,12 @@ A very minimal valid configuration example looks like this:
 
 This example defines a bogus process with the following properties:
 
-* Identifier: `+Process42+`
-* Bound to Java code from class `+Processlet42+`
+* Identifier: _Process42_
+* Bound to Java code from class _Processlet42_
 * Title *Calculates the answer to life, the universe and everything*
 (returned in WPS responses)
 * No input parameters
-* Single output parameter with identifier `+Answer+` and title *The
+* Single output parameter with identifier _Answer_ and title *The
 universal answer*
 
 In order to make this configuration work, a matching Processlet class is
@@ -147,13 +147,13 @@ A more complex configuration example looks like this:
 This example defines a demonstration process with the following
 properties:
 
-* Identifier: `+AdditionProcess+`
-* Bound to Java code from class `+AdditionProcesslet+`
+* Identifier: _AdditionProcess_
+* Bound to Java code from class _AdditionProcesslet_
 * Title *Process for adding two integer values.* (returned in WPS
 responses)
-* Two integer input parameters `+SummandA+` and `+SummandB+` with title,
+* Two integer input parameters _SummandA_ and _SummandB_ with title,
 abstract and unit of measure
-* Single integer output parameter with identifier `+Sum+`, title and
+* Single integer output parameter with identifier _Sum_, title and
 unit of measure
 
 In order to make this configuration work, a matching Processlet class is
@@ -239,24 +239,24 @@ detail, as well as the Processlet API.
 All general options just provide metadata that the WPS reports to
 client. They don't affect the behaviour of the configured process.
 
-* `+processVersion+`: The processVersion attribute has to be managed by
+* _processVersion_: The processVersion attribute has to be managed by
 the process developer and describes the version of the process
 implementation. This parameter is usually increased when changes to the
 implementation of a process apply.
-* `+Identifier+`: An unambiguous identifier
-* `+Title+`: Short and meaningful title
-* `+Abstract+`: Short, human readable description
-* `+Metadata+`: Additional metadata
-* `+Profile+`: Profile to which the WPS process complies
-* `+WSDL+`: URL of a WSDL document which describes this process
+* _Identifier_: An unambiguous identifier
+* _Title_: Short and meaningful title
+* _Abstract_: Short, human readable description
+* _Metadata_: Additional metadata
+* _Profile_: Profile to which the WPS process complies
+* _WSDL_: URL of a WSDL document which describes this process
 
 NOTE: These options directly relate to metadata defined in the
 http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification].
 
 ==== The Processlet API
 
-Option `+JavaClass+` specifies the fully qualified name of a Java class
-that implement deegree's `+Processlet+` Java interface. This interface
+Option _JavaClass_ specifies the fully qualified name of a Java class
+that implement deegree's _Processlet_ Java interface. This interface
 is part of an API that hides the complexity of the WPS protocol while
 providing efficient and scalable handling of input and output
 parameters. By using this API, the process developer can focus on
@@ -323,11 +323,11 @@ public interface Processlet {
 
 As you can see, the interface defines three methods:
 
-* `+init()+`: Called once when the workspace initializes the Java
+* _init()_: Called once when the workspace initializes the Java
 process provider resource that references the class.
-* `+destroy()+`: Called once when the workspace destroys the Java
+* _destroy()_: Called once when the workspace destroys the Java
 process provider resource that references the class.
-* `+process(...)+`: Called every time an Execute request is sent to the
+* _process(...)_: Called every time an Execute request is sent to the
 WPS that targets this Processlet. The method usually reads the input
 parameters, performs the actual computation and writes the output
 parameters.
@@ -345,9 +345,9 @@ like Servlets).
 
 ===== Processlet compilation
 
-In order to succesfully compile a `+Processlet+` implementation, you
+In order to succesfully compile a _Processlet_ implementation, you
 will need to make the Processlet API available to the compiler.
-Generally, this means that the Java module `+deegree-services-wps+` (and
+Generally, this means that the Java module _deegree-services-wps_ (and
 it's dependencies) have to be on the build path. We suggest to use
 Apache Maven for this. Here's an example POM for your convenience:
 
@@ -395,19 +395,19 @@ Apache Maven for this. Here's an example POM for your convenience:
 
 TIP: You can use this POM to compile the example Processlets above. Just
 create an empty directory somewhere and save the example POM as
-`+pom.xml+`. Place the Processlet Java files into subdirectory
-`+src/main/java/+` (as files `+Processlet42.java+` /
-`+AdditionProcesslet.java+`). On the command line, change to the project
-directory and use `+mvn package+` (Apache Maven 3.0 and a compatible
-Java JDK have to be installed). Subdirectory `+target+` should now
-contain a JAR file that you can copy into the `+modules/+` directory of
+_pom.xml_. Place the Processlet Java files into subdirectory
+_src/main/java/_ (as files _Processlet42.java_ /
+_AdditionProcesslet.java_). On the command line, change to the project
+directory and use _mvn package_ (Apache Maven 3.0 and a compatible
+Java JDK have to be installed). Subdirectory _target_ should now
+contain a JAR file that you can copy into the _modules/_ directory of
 the deegree workspace.
 
 ===== Testing Processlets using raw WPS requests
 
 NOTE: In order to perform WPS request to access your process
 provider/Processlet, you need to have an active
-`+anchor-configuration-wps+` resource in your workspace (which handles
+<<anchor-configuration-wps>> resource in your workspace (which handles
 the WPS protocol and forwards the request to the process provider and
 the processlet).
 
@@ -423,23 +423,23 @@ use-case. For sending KVP-requests, you can simply use your web browser
 (or a command line tools like wget or curl). XML or SOAP requests can be
 send using deegree's generic client.
 
-Some KVP `+GetCapabilities+`/`+DescribeProcess+` request examples for
+Some KVP _GetCapabilities_/_DescribeProcess_ request examples for
 checking the metadata of processes:
 
-* `+http://127.0.0.1:8080/services/wps?service=WPS&request=GetCapabilities+`
-* `+http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&identifier=Process42+`
-* `+http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&identifier=AdditionProcess+`
+* _http://127.0.0.1:8080/services/wps?service=WPS&request=GetCapabilities_
+* _http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&identifier=Process42_
+* _http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=DescribeProcess&identifier=AdditionProcess_
 
-Some simple KVP `+Execute+` request examples for invoking processes:
+Some simple KVP _Execute_ request examples for invoking processes:
 
-* `+http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Process42+`
-* `+http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Addition&datainputs=SummandA=21;SummandB=21+`
+* _http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Process42_
+* _http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Addition&datainputs=SummandA=21;SummandB=21_
 
 TIP: The http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]
 (and the deegree WPS) support many features with regard to process
 invocation, such as input parameter passing (inline or by reference),
 return parameters (inline or by reference), response variants and
-asynchronous execution. `+anchor-workspace-wps+` contains XML example
+asynchronous execution. <<anchor-workspace-wps>> contains XML example
 requests which demonstrate most of these features.
 
 ==== Input and output parameters
@@ -450,11 +450,11 @@ input and output parameters. The deegree WPS and the Java process
 provider support all parameter types that are defined by the
 http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]:
 
-* `+LiteralInput+`/`+LiteralOutput+`: Literal values, e.g. "red", "42"
+* _LiteralInput_/_LiteralOutput_: Literal values, e.g. "red", "42"
 or "highway 66"
-* `+BoundingBoxInput+`/`+BoundingBoxOutput+`: A geo-referenced bounding
+* _BoundingBoxInput_/_BoundingBoxOutput_: A geo-referenced bounding
 box
-* `+ComplexInput+`/`+ComplexOutput+`: Either an XML structure (e.g. GML
+* _ComplexInput_/_ComplexOutput_: Either an XML structure (e.g. GML
 encoded features) or binary data (e.g. coverage data as GeoTIFF)
 
 In order to create your own process, first find out which input and
@@ -466,10 +466,10 @@ parameter has to be considered twice:
 
 The definition in the resource configuration is mostly to specify
 metadata (identifier, title, abstract, datatype) of the parameter. The
-WPS will report it in response to `+DescribeProcess+` requests. When
-performing `+Execute+` requests, the deegree WPS will also perform a
+WPS will report it in response to _DescribeProcess_ requests. When
+performing _Execute_ requests, the deegree WPS will also perform a
 basic check of the validity of the input parameters (identifier, number
-of occurences, type) and respond with an `+ExceptionReport+` if the
+of occurences, type) and respond with an _ExceptionReport_ if the
 constraints are not met.
 
 ===== Basics of defining input and output parameters
@@ -477,14 +477,14 @@ constraints are not met.
 In order to define a parameter of a process, create a new child element
 in your process provider configuration:
 
-* Input: Add a `+LiteralInput+`, `+BoundingBoxInput+` or
-`+ComplexInput+` element to section `+InputParameters+`
-* Output: Add a `+LiteralOutput+`, `+BoundingBoxOutput+` or
-`+ComplexOutput+` element to section `+OutputParameters+`
+* Input: Add a _LiteralInput_, _BoundingBoxInput_ or
+_ComplexInput_ element to section _InputParameters_
+* Output: Add a _LiteralOutput_, _BoundingBoxOutput_ or
+_ComplexOutput_ element to section _OutputParameters_
 
-Here's an `+InputParameters+` example that defines four parameters:
+Here's an _InputParameters_ example that defines four parameters:
 
-*Java process provider: Example for `+InputParameters+` section*
+*Java process provider: Example for _InputParameters_ section*
 
 [source,xml]
 ----
@@ -516,9 +516,9 @@ Here's an `+InputParameters+` example that defines four parameters:
 </InputParameters>
 ----
 
-Here's an `+OutputParameters+` example that defines four parameters:
+Here's an _OutputParameters_ example that defines four parameters:
 
-*Java process provider: Example for `+OutputParameters+` section*
+*Java process provider: Example for _OutputParameters_ section*
 
 [source,xml]
 ----
@@ -578,11 +578,11 @@ sections.
 
 ===== Basics of accessing input and output parameters
 
-The first two arguments of `+Processlet#process(..)+` provide access to
+The first two arguments of _Processlet#process(..)_ provide access to
 the input parameter values and output parameter sinks. The first
-argument is of type `+ProcessletInputs+` and encapsulates the process
+argument is of type _ProcessletInputs_ and encapsulates the process
 input parameters. Here's an example snippet that shows how to access the
-input parameter with identifier `+LiteralInput+`:
+input parameter with identifier _LiteralInput_:
 
 [source,java]
 ----
@@ -594,10 +594,10 @@ public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecu
 }
 ----
 
-The `+getParameter(...)+` method of `+ProcessletInputs+` takes the
+The _getParameter(...)_ method of _ProcessletInputs_ takes the
 identifier of the process parameter as an argument and returns a
-`+ProcessletInput+` (without the *s*) object that provides access to the
-actual value of the process parameter. Here's the `+ProcessletInput+`
+_ProcessletInput_ (without the *s*) object that provides access to the
+actual value of the process parameter. Here's the _ProcessletInput_
 interface:
 
 [source,java]
@@ -629,7 +629,7 @@ public interface ProcessletInput {
 ----
 
 This interface does not provide access to the passed value, but
-`+ProcessletInput+` is the parent of three Java types that directly
+_ProcessletInput_ is the parent of three Java types that directly
 correspond to three input parameter types of the process provider
 configuration:
 
@@ -637,8 +637,8 @@ image::java_processprovider_inputtypes.png[ProcessletInput
 interface and sub types for each parameter type]
 
 For example, if your input parameter definition "A" is a
-`+BoundingBoxInput+`, then the Java type for this parameter will be
-`+BoundingBoxInput+` as well. In your Java code, use a type cast to
+_BoundingBoxInput_, then the Java type for this parameter will be
+_BoundingBoxInput_ as well. In your Java code, use a type cast to
 narrow the return type (and gain access to the passed value):
 
 [source,java]
@@ -651,14 +651,14 @@ public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecu
 }
 ----
 
-TIP: If an input parameter can occur multiple times (`+maxOccurs+` > 1 in the
-definition), use method `+getParameters(...)+` instead of
-`+getParameter(...)+`. The latter method returns a `+List+` of
-`+ProcessletInput+` objects.
+TIP: If an input parameter can occur multiple times (_maxOccurs_ > 1 in the
+definition), use method _getParameters(...)_ instead of
+_getParameter(...)_. The latter method returns a _List_ of
+_ProcessletInput_ objects.
 
 Output parameters are treated in a similar manner. The second parameter
-of `+Processlet#process(..)+` provides to output parameter sinks. It is
-of type `+ProcessletOutputs+`. Here's a basic usage example:
+of _Processlet#process(..)_ provides to output parameter sinks. It is
+of type _ProcessletOutputs_. Here's a basic usage example:
 
 [source,java]
 ----
@@ -670,7 +670,7 @@ public void process( ProcessletInputs in, ProcessletOutputs out, ProcessletExecu
 }
 ----
 
-Here's the `+ProcessletOutput+` interface:
+Here's the _ProcessletOutput_ interface:
 
 [source,java]
 ----
@@ -729,7 +729,7 @@ public interface ProcessletOutput {
 }
 ----
 
-Again, there are three subtypes. Each subtype of `+ProcessletOutput+`
+Again, there are three subtypes. Each subtype of _ProcessletOutput_
 corresponds to one output parameter type:
 
 image::java_processprovider_outputtypes.png[ProcessletOutput
@@ -761,13 +761,13 @@ value sets and ranges (only for inputs)
 |===
 
 These options basically define metadata that the WPS publishes to
-clients. For the sub-options of the `+AllowedValues+` and
-`+ValidValueReference+` options, please refer to the
+clients. For the sub-options of the _AllowedValues_ and
+_ValidValueReference_ options, please refer to the
 http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification] or
 the XML schema for the Java process provider configuration format
 (http://schemas.deegree.org/processes/java/3.0.0/java.xsd).
 
-In order to work with a `+LiteralInput+` parameter in the Processlet
+In order to work with a _LiteralInput_ parameter in the Processlet
 code, the corresponding Java type offers the following methods:
 
 [source,java]
@@ -798,7 +798,7 @@ public String getUOM();
 public String getDataType();
 ----
 
-Similarly, the `+LiteralOutput+` type offers the following methods:
+Similarly, the _LiteralOutput_ type offers the following methods:
 
 [source,java]
 ----
@@ -843,7 +843,7 @@ system
 system
 |===
 
-In order to work with a `+BoundingBoxInput+` parameter in the Processlet
+In order to work with a _BoundingBoxInput_ parameter in the Processlet
 code, the corresponding Java type offers the following methods:
 
 [source,java]
@@ -878,7 +878,7 @@ public String getCRSName();
 public Envelope getValue();
 ----
 
-Similarly, the `+BoundingBoxOutput+` type offers the following methods:
+Similarly, the _BoundingBoxOutput_ type offers the following methods:
 
 [source,java]
 ----
@@ -929,7 +929,7 @@ format
 format
 |===
 
-A complex format (`+DefaultFormat+`/`+OtherFormat+`) is defined via
+A complex format (_DefaultFormat_/_OtherFormat_) is defined via
 three attributes (compare with the
 http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]):
 
@@ -941,7 +941,7 @@ http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]):
 |@schema |0..1 |String |XML schema of the content, default: unspecified
 |===
 
-In order to work with a `+ComplexInput+` parameter in the Processlet
+In order to work with a _ComplexInput_ parameter in the Processlet
 code, the corresponding Java type offers the following methods:
 
 [source,java]
@@ -1002,7 +1002,7 @@ public XMLStreamReader getValueAsXMLStream()
                         throws IOException, XMLStreamException;
 ----
 
-Similarly, the `+ComplexOutput+` type offers the following methods:
+Similarly, the _ComplexOutput_ type offers the following methods:
 
 [source,java]
 ----
@@ -1056,21 +1056,21 @@ The WPS protocol offers support for asynchronous execution of processes
 as well as providing status information for long running processes. The
 following two options of the Java process provider deal with this:
 
-* `+@storeSupported+`: If the storeSupported attribute is set to true,
+* _@storeSupported_: If the storeSupported attribute is set to true,
 asynchronous execution of the process will be possible. A WPS client can
 then choose between synchronous execution (default) and asynchronous
 execution. Note that this doesn't add any requirements to the
 implementation of the Processlet code, this is taken care of
 automatically by the deegree WPS.
-* `+@statusSupported+`: If statusSupported is set to true, the WPS will
+* _@statusSupported_: If statusSupported is set to true, the WPS will
 announce that the process can provide status information, i.e. execution
 percentage. In order for this to work, the Processlet code has to
 provide status information.
 
 ===== Providing status information in the Processlet code
 
-The third parameter that's passed to the `+execute(...)+` method is of
-type `+ProcessletExecutionInfo+`. This type provides the following
+The third parameter that's passed to the _execute(...)_ method is of
+type _ProcessletExecutionInfo_. This type provides the following
 methods:
 
 [source,java]
@@ -1102,4 +1102,4 @@ public void setSucceededMessage( String message );
 
 TIP: Depending on the type of computation that a Processlet performs, it may
 or may not be trivial to provide correct progress information via
-`+setPercentCompleted(...)+`.
+_setPercentCompleted(...)_.

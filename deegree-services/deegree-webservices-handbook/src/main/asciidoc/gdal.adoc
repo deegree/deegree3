@@ -3,10 +3,10 @@
 
 The GDAL library (http://www.gdal.org/) provides very comprehensive
 support for all kinds of geospatial raster formats. Any of these raster
-formats can be used to create `+anchor-configuration-layers+` for a
+formats can be used to create <<anchor-configuration-layers>> for a
 deegree workspace by using either the
-`+anchor-configuration-gdal-layer+` or the
-`+anchor-configuration-gdal-tilestore+`.
+<<anchor-configuration-gdal-layer>> or the
+<<anchor-configuration-gdal-tilestore>>.
 
 NOTE: If there are alternative options for plugging your raster files into the
 deegree workspace (e.g. by using the GeoTIFFTileStore for GeoTIFF
@@ -27,9 +27,9 @@ NOTE: Currently, GDAL library version 1.10.1 is supported. Other versions may
 work as well, but have not been tested.
 
 In order to verify that deegree webservices can use the GDAL library,
-check the log file of the web container (e.g. `+catalina.out+` for
+check the log file of the web container (e.g. _catalina.out_ for
 Tomcat). If you didn't configure a
-`+anchor-configuration-gdal-settings+` file in your workspace yet, you
+<<anchor-configuration-gdal-settings>> file in your workspace yet, you
 should be able to locate the following lines upon workspace startup:
 
 [source,text]
@@ -40,7 +40,7 @@ should be able to locate the following lines upon workspace startup:
 [13:06:40]  INFO: [GdalSettings] No gdal.xml in workspace. Not initializing GDAL JNI adapter.
 ----
 
-If a valid `+anchor-configuration-gdal-settings+` file is present in the
+If a valid <<anchor-configuration-gdal-settings>> file is present in the
 active deegree workspace, the corresponding lines should look similar to
 this:
 
@@ -54,7 +54,7 @@ this:
 [13:16:54]  INFO: [GdalSettings] GDAL initialized successfully.
 ----
 
-In case a the `+anchor-configuration-gdal-settings+` file is present,
+In case a the <<anchor-configuration-gdal-settings>> file is present,
 but the GDAL library cannot be accessed, you will see something like the
 following:
 
@@ -158,7 +158,7 @@ A GDAL Layer is a map layer that is backed by one or more raster files.
 The native GDAL library is used to determine some metadata (e.g.
 bounding box) and to access the actual raster data.
 
-NOTE: You may want to refer to the `+anchor-configuration-layers+` chapter for
+NOTE: You may want to refer to the <<anchor-configuration-layers>> chapter for
 general information on using and defining layer resources.
 
 ==== Configuration example
@@ -200,7 +200,7 @@ A GDAL tile store defines one or more tile data sets. Each of these tile
 data sets is based on a single raster file which is accessed using the
 native GDAL library.
 
-NOTE: You may want to refer to the `+anchor-configuration-tilestore+` chapter
+NOTE: You may want to refer to the <<anchor-configuration-tilestore>> chapter
 for general information on using and defining tile store resources.
 
 ==== Minimal configuration example

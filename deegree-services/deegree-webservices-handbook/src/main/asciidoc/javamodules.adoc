@@ -41,8 +41,8 @@ classpath and ignore the web application classpath.
 
 As deegree webservices is a Java web application, standard paths apply:
 
-* Directory `+WEB-INF/lib+` of the deegree web application (for JARs)
-* Directory `+WEB-INF/classes+` of the deegree web application (for Java
+* Directory _WEB-INF/lib_ of the deegree web application (for JARs)
+* Directory _WEB-INF/classes_ of the deegree web application (for Java
 class files)
 * Global directories for all web applications running in the container
 (depends on the actual web container)
@@ -52,21 +52,21 @@ the web application or the web application container to make the new
 code available to deegree webservices.
 
 NOTE: All Java libraries shipped with deegree webservices are located in the
-`+WEB-INF/lib+` directory of the deegree webservices webapp. If you
+_WEB-INF/lib_ directory of the deegree webservices webapp. If you
 downloaded the ZIP version, this directory is located in
-`+webapps/ROOT/WEB-INF/lib+`.
+_webapps/ROOT/WEB-INF/lib_.
 
 ==== Workspace classpath
 
 When deegree webservices initializes the workspace, it scans directory
-`+modules/+` of the active deegree workspace for files ending with
-`+.jar+` and adds them to the classpath. This can be very handy, as it
+_modules/_ of the active deegree workspace for files ending with
+_.jar_ and adds them to the classpath. This can be very handy, as it
 allows to create self-contained workspaces (no fiddling with other
 directories required) and also has the benefit the you can reload the
 deegree workspace only after adding your libraries (instead of
 restarting the deegree webapp or the whole web application container).
 
-NOTE: In addition to workspace directory `+modules/+`, directory `+classes/+`
+NOTE: In addition to workspace directory _modules/_, directory _classes/_
 can be used to add individual Java classes (and other files) to the
 classpath. This is usually not required.
 
@@ -107,21 +107,21 @@ The following deegree resources support Oracle Spatial databases:
 * ISOMetadataStore
 
 In order to enable Oracle connectivity for these resources, you need to
-add two JAR files (see `+anchor-adding-jars+`):
+add two JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC8-type driver (e.g.
-`+ojdbc8.jar+`)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
+_ojdbc8.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 (registration required)]
 * Module
 deegree-sqldialect-oraclefootnote:[http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/$%7Bproject.version%7D/deegree-sqldialect-oracle-$%7Bproject.version}.jar]
 
 ==== Adding Oracle GeoRaster support
 
-The `+OracleGeoraster+` coverage store supports GeoRaster Objects stored
+The _OracleGeoraster_ coverage store supports GeoRaster Objects stored
 in Oracle databases.
 
 In order to enable Oracle connectivity for these resources, you need to
-add the following JAR files (see `+anchor-adding-jars+`):
+add the following JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC-type
 driverfootnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
@@ -139,13 +139,13 @@ deegree-coveragestore-oracle-georasterfootnote:[http://repo.deegree.org/content/
 
 NOTE: The Oracle Spatial and GeoRaster libraries can be found, without version
 number in filename, inside the Oracle Database installation directory.
-The `+sdo*+` files can be found at `+ORACLE_HOME/md/jlib+`, xdb6.jar at
-`+ORACLE_HOME/rdbms/jlib+` and xmlparserv2_sans_jaxp_services or
-xmlparserv2 at `+ORACLE_HOME/xdk/lib+`.
+The _sdo*_ files can be found at _ORACLE_HOME/md/jlib_, xdb6.jar at
+_ORACLE_HOME/rdbms/jlib_ and xmlparserv2_sans_jaxp_services or
+xmlparserv2 at _ORACLE_HOME/xdk/lib_.
 
-NOTE: The `+xmlparserv2_sans_jaxp_services+` is the recommended library, as it
-does not contain `+META-INF/services/+` entries. But if this library is
-not available the `+xmlparserv2+` can be used instead. (In rare
+NOTE: The _xmlparserv2_sans_jaxp_services_ is the recommended library, as it
+does not contain _META-INF/services/_ entries. But if this library is
+not available the _xmlparserv2_ can be used instead. (In rare
 conditions this could set the oracle library as default XML parser,
 which could lead to unexpected behavior).
 
@@ -158,10 +158,10 @@ The following deegree resources support Microsoft SQL Server:
 * ISOMetadataStore
 
 In order to enable Microsoft SQL Server connectivity for these
-resources, you need to add two JAR files (see `+anchor-adding-jars+`):
+resources, you need to add two JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Microsoft JDBC driver (e.g.
-`+sqljdbc4.jar+`)footnote:[http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx]
+_sqljdbc4.jar_)footnote:[http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx]
 * Module
 deegree-sqldialect-mssqlfootnote:[http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/$%7Bproject.version%7D/deegree-sqldialect-mssql-$%7Bproject.version}.jar]
 

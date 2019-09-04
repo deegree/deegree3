@@ -50,10 +50,10 @@ In order to run the ZIP version, extract it into a directory of your
 choice. Afterwards, fire up the included start script for your operating
 system:
 
-* Microsoft Windows: `+start-deegree-windows+`
-* Linux/Solaris: `+start-deegree-linux.sh+` (when starting via a Desktop
+* Microsoft Windows: _start-deegree-windows_
+* Linux/Solaris: _start-deegree-linux.sh_ (when starting via a Desktop
 Environment such as Gnome, choose "Run in terminal")
-* Mac OS X: `+start-deegree-osx.cmd+`
+* Mac OS X: _start-deegree-osx.cmd_
 
 You should now see a terminal window on your screen with a lot of log
 messages:
@@ -61,9 +61,9 @@ messages:
 image::terminal.png[deegree webservices starting
 up,scaledwidth=50.0%]
 
-TIP: If you don't see this terminal window, make sure that the `+java+`
+TIP: If you don't see this terminal window, make sure that the _java_
 command is on the system path. You can verify this by entering
-`+java -version+` at the command prompt. Also ensure that `+JAVA_HOME+`
+_java -version_ at the command prompt. Also ensure that _JAVA_HOME_
 system environment variable points to the correct installation directory
 of a compatible JDK.
 
@@ -76,13 +76,13 @@ image::console_start.png[deegree webservices administration
 console,scaledwidth=50.0%]
 
 To shut deegree webservices down, switch back to the terminal window and
-press `+CTRL+C+` or simply close it.
+press _CTRL+C_ or simply close it.
 
 TIP: If you want to run deegree webservices on system startup automatically,
 consider installing http://tomcat.apache.org[Apache Tomcat 8] as a
 system service. Afterwards, download the WAR version of deegree
 webservices and deploy it into your Tomcat installation (e.g. by copying
-the WAR file into the `+webapps+` folder). Consult the
+the WAR file into the _webapps_ folder). Consult the
 https://tomcat.apache.org/tomcat-8.5-doc/index.html[Tomcat
 documentation] for more information and options.
 
@@ -124,12 +124,12 @@ http://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html[SSL HowTo].
 
 It is as a huge security problem to operate the deegree web app without
 setting a password for the deegree console. How to set the password for
-the deegree console is described in `+anchor-configuration-basics+`. The
+the deegree console is described in _anchor-configuration-basics>>. The
 same applies to the deegree REST API. Since both transfer the
 credentials as clear text (with a little bit of obscurity) it is highly
 recommended to enable encryption on the protocol level as described
 above! For further information how to protect the deegree REST API read
-more in `+anchor-configuration-restapi+`. You should also consider to
+more in <<anchor-configuration-restapi>>. You should also consider to
 limit the access to both resources. Apply a filter by IP or hostname to
 only allow a subset of machines to connect and access the deegree
 console and REST API.
