@@ -158,5 +158,3 @@ recommend to read<<anchor-installation>> and <<anchor-lightly>> first.
 Check out <<anchor-workspace-wps>> for an example deegree WPS
 configuration. Continue with <<anchor-configuration-basics>> and
 <<anchor-configuration-wps>>.
-
-*Footnotes*

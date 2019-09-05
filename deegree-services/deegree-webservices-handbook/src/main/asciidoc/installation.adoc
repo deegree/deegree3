@@ -140,6 +140,5 @@ applications we recommend to follow the
 https://docs.oracle.com/javase/8/docs/technotes/guides/security/index.html[Java
 Security Guidelines] and for
 http://tomcat.apache.org/tomcat-8.5-doc/security-manager-howto.html[Apache
-Tomcat the Security Manager HowTo].]
 
-*Footnotes*
+Tomcat the Security Manager HowTo].]

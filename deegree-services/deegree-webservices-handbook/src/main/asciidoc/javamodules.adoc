@@ -163,5 +163,3 @@ resources, you need to add two JAR files (see <<anchor-adding-jars>>):
 _sqljdbc4.jar_)footnote:[http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx]
 * Module
 deegree-sqldialect-mssqlfootnote:[http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/$%7Bproject.version%7D/deegree-sqldialect-mssql-$%7Bproject.version}.jar]
-
-*Footnotes*
