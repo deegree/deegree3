@@ -5,7 +5,7 @@
 :numbered:
 :imagesdir: images
 :source-highlighter: coderay
-:title-logo-image: images/Logo_deegree.png
+:title-logo-image: images/logo_deegree.png
 
 = deegree Webservices
 
