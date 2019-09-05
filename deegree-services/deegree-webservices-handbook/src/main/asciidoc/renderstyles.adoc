@@ -23,6 +23,7 @@ an SLD file the style store may contain multiple styles, each identified
 by the layer (only NamedLayers make sense here) and the name of the
 style (only UserStyles make sense) when referenced later.
 
+.Style resources define how geo objects are rendered
 image::workspace-overview-style.png[Style resources define how geo objects are rendered,scaledwidth=80.0%]
 
 TIP: When defining styles, take note of the log file. Upon startup the log

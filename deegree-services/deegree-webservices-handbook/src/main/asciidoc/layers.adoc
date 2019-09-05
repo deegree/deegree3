@@ -9,6 +9,7 @@ already configured a data source and a style for your layer (although a
 style is not strictly needed; some layer types can do without, and
 others can render in a default style when none is given).
 
+.Layer resources define how data store and style resources are combined
 image::workspace-overview-layer.png[Layer resources define how data store and style resources are combined,scaledwidth=80.0%]
 
 === Common configuration
