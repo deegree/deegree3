@@ -1,8 +1,0 @@
-<ShapeFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/shape"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/feature/shape/3.4.0/shape.xsd">
-
-  <!-- Required: Path to the shape file -->
-  <File>/tmp/rivers.shp</File>
-
-</ShapeFeatureStore>
