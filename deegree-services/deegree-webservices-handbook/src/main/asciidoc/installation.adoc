@@ -108,8 +108,7 @@ releases of software:
 
 TIP: If you are running Apache Tomcat we recommend that you read and apply
 all recommendations as documented in
-https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html[Apache
-Tomcat Security Considerations].
+https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html[Apache Tomcat Security Considerations].
 
 ==== Encryption
 
