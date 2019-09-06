@@ -33,6 +33,37 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/generated-sources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/asciidoc</directory>
+                  <excludes>
+                    <exclude>images/*.*</exclude>
+                  </excludes>
+                  <filtering>true</filtering>
+                </resource>
+                <resource>
+                  <directory>src/main/asciidoc</directory>
+                  <includes>
+                    <include>images/*.*</include>
+                  </includes>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.asciidoctor</groupId>
         <artifactId>asciidoctor-maven-plugin</artifactId>
         <dependencies>
@@ -55,6 +86,7 @@
                 <revdate>${revdate}</revdate>
                 <revnumber>${revnumber}</revnumber>
               </attributes>
+              <sourceDirectory>${project.build.outputDirectory}/generated-sources</sourceDirectory>
               <outputDirectory>${project.build.directory}/pdf</outputDirectory>
               <sourceDocumentName>index.adoc</sourceDocumentName>
             </configuration>
@@ -74,6 +106,7 @@
                 <revdate>${revdate}</revdate>
                 <revnumber>${revnumber}</revnumber>
               </attributes>
+              <sourceDirectory>${project.build.outputDirectory}/generated-sources</sourceDirectory>
               <outputDirectory>${project.build.directory}/html</outputDirectory>
               <sourceDocumentName>index.adoc</sourceDocumentName>
             </configuration>
