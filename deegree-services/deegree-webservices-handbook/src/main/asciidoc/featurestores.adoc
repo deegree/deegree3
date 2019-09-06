@@ -1756,7 +1756,7 @@ The SQL feature store always tries to map filter conditions (e.g. from
 WFS _GetFeature_ requests or when accessed by the WMS) to SQL-WHERE
 conditions. However, this is not possible in all cases. Sometimes a
 filter uses an expression that does not have an equivalent SQL-WHERE
-clause. For example when using _anchor-blob-mode_ and the filter is
+clause. For example when using <<anchor-blob-mode>> and the filter is
 not based on a feature id or a spatial constraint.
 
 In such cases, the SQL feature store falls back to in-memory filtering.

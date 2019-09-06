@@ -1831,13 +1831,13 @@ layer metadata
 Below the _ServiceConfiguration_ section you can specify custom
 featureinfo format handlers:
 
-[source,xml
+[source,xml]
+----
 ...
 </ServiceConfiguration>
 <FeatureInfoFormats>
 ...
 </FeatureInfoFormats>]
-----
 ----
 
 Have a look at section <<anchor-featureinfo-configuration>> (in the WMS

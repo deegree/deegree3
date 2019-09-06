@@ -123,7 +123,7 @@ http://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html[SSL HowTo].
 
 It is as a huge security problem to operate the deegree web app without
 setting a password for the deegree console. How to set the password for
-the deegree console is described in _anchor-configuration-basics>>. The
+the deegree console is described in <<anchor-configuration-basics>>. The
 same applies to the deegree REST API. Since both transfer the
 credentials as clear text (with a little bit of obscurity) it is highly
 recommended to enable encryption on the protocol level as described

@@ -5,8 +5,7 @@ deegree makes extensive use of the OGC Filter Encoding standard. Within
 deegree there are implementations of the versions 1.1.0 and 2.0.0 of
 this standards and several extensions and additional functions. This
 chapter is meant to explain the filter capabilities of deegree which can
-be used within <<anchor-configuration-renderstyles>> and
-:ref:`anchor-configuration-wfs´ requests.
+be used within <<anchor-configuration-renderstyles>> and <<anchor-configuration-wfs>> requests.
 
 === Filter Operators
 

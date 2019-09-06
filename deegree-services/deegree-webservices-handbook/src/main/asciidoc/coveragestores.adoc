@@ -180,11 +180,11 @@ store.
 If your GeoRaster coverage only consist in a greyscale coverage or you
 only want to server a single band you could specifiy the following:
 
-[source,xml
+[source,xml]
+----
 <Bands>
 <Single>1</Single>
 </Bands>]
-----
 ----
 
 [width="100%",cols="20%,11%,7%,62%",options="header",]

@@ -118,8 +118,7 @@ read/write access to this directory.
 
 ==== Global configuration files and the active workspace
 
-If you downloaded all four example workspaces (as described in
-_anchor-lightly_), set a console password and the proxy parameters,
+If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set a console password and the proxy parameters,
 your _.deegree_ directory will look like this:
 
 .Example _.deegree_ directory
