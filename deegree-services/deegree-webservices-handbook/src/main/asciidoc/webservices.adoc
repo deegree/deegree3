@@ -1427,6 +1427,8 @@ ignored, if a metadata configuration file (see chapter
 <<anchor-configuration-service-metadata>>) exists. Instead, the extended
 capabilities must be configured there.
 
+WARNING: Extended Capabilities are currently not supported for WMS 1.1.1. Configured extended capabilities for WMS 1.1.1 are ignored and not included in the capabilities document.
+
 ==== Vendor specific parameters
 
 The deegree WMS supports a number of vendor specific parameters. Some
