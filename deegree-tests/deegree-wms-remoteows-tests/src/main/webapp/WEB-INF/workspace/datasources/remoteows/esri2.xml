@@ -1,3 +1,0 @@
-<RemoteWMS xmlns="http://www.deegree.org/remoteows/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/remoteows/wms http://schemas.deegree.org/remoteows/wms/3.1.0/remotewms.xsd" configVersion="3.1.0">
-  <CapabilitiesDocumentLocation location="http://service.schleswig-holstein.de/OGCFassade/SH_WMS_VwG_MRH.aspx?REQUEST=GetCapabilities&amp;SERVICE=WMS&amp;VERSION=1.1.1"/>
-</RemoteWMS>

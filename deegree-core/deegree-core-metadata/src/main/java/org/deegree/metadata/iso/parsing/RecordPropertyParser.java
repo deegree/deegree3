@@ -36,6 +36,8 @@
 package org.deegree.metadata.iso.parsing;
 
 import static org.deegree.commons.tom.datetime.ISO8601Converter.parseDate;
+import static org.deegree.protocol.csw.CSWConstants.SDS_NS;
+import static org.deegree.protocol.csw.CSWConstants.SDS_PREFIX;
 import static org.deegree.protocol.csw.CSWConstants.SRV_NS;
 import static org.deegree.protocol.csw.CSWConstants.SRV_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -88,6 +90,7 @@ public final class RecordPropertyParser extends XMLAdapter {
 
     static {
         nsContext.addNamespace( SRV_PREFIX, SRV_NS );
+        nsContext.addNamespace( SDS_PREFIX, SDS_NS );
     }
 
     public RecordPropertyParser( OMElement element ) {
@@ -347,11 +350,10 @@ public final class RecordPropertyParser extends XMLAdapter {
         Date dateSpecificationDate = null;
 
         try {
-            if ( specificationDateString != null ) {
+            if ( specificationDateString != null && !"".equals( specificationDateString ) ) {
                 dateSpecificationDate = parseDate( specificationDateString );
             }
         } catch ( Exception e ) {
-
             String msg = Messages.getMessage( "ERROR_PARSING", specificationDateString, e.getMessage() );
             LOG.debug( msg );
             throw new IllegalArgumentException( msg );

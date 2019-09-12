@@ -36,9 +36,12 @@
 
 package org.deegree.services.wms;
 
+import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
+import static org.deegree.theme.Themes.getAllLayers;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -61,6 +64,7 @@ import org.deegree.feature.Features;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.layer.Layer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.LayerRef;
@@ -93,19 +97,13 @@ public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
 
-    /**
-     * 
-     */
     public StyleRegistry registry;
 
     MapOptionsMaps layerOptions = new MapOptionsMaps();
 
     MapOptions defaultLayerOptions;
 
-    /**
-     * The current update sequence.
-     */
-    public int updateSequence = 0; // TODO how to restore this after restart?
+    private int updateSequence; // TODO how to restore this after restart?
 
     private List<Theme> themes;
 
@@ -113,14 +111,16 @@ public class MapService {
 
     HashMap<String, Theme> themeMap;
 
-    private GetLegendHandler getLegendHandler;
+    private final GetLegendHandler getLegendHandler;
 
     /**
      * @param conf
      * @param adapter
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, Workspace workspace ) throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
+                            throws MalformedURLException {
+        this.updateSequence = updateSequence;
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -189,8 +189,6 @@ public class MapService {
         Iterator<StyleRef> styleItr = gm.getStyles().iterator();
         MapOptionsMaps options = gm.getRenderingOptions();
         List<MapOptions> mapOptions = new ArrayList<MapOptions>();
-        List<LayerData> list = new ArrayList<LayerData>();
-
         double scale = gm.getScale();
 
         List<LayerQuery> queries = new ArrayList<LayerQuery>();
@@ -211,23 +209,53 @@ public class MapService {
 
         ScaleFunction.getCurrentScaleValue().set( scale );
 
-        for ( LayerRef lr : gm.getLayers() ) {
-            LayerQuery query = queryIter.next();
-            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-                if ( l.getMetadata().getScaleDenominators().first > scale
-                     || l.getMetadata().getScaleDenominators().second < scale ) {
-                    continue;
-                }
-                list.add( l.mapQuery( query, headers ) );
+        List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );
+        Iterator<MapOptions> optIter = mapOptions.iterator();
+        for ( LayerData d : layerDataList ) {
+            ctx.applyOptions( optIter.next() );
+            try {
+                d.render( ctx );
+            } catch ( InterruptedException e ) {
+                String msg = "Request time-out.";
+                throw new OWSException( msg, NO_APPLICABLE_CODE );
             }
         }
-        Iterator<MapOptions> optIter = mapOptions.iterator();
-        for ( LayerData d : list ) {
-            ctx.applyOptions( optIter.next() );
-            d.render( ctx );
-        }
+        ctx.optimizeAndDrawLabels();
 
         ScaleFunction.getCurrentScaleValue().remove();
+    }
+
+    private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
+                                                                  List<String> headers, double scale,
+                                                                  ListIterator<LayerQuery> queryIter )
+                            throws OWSException {
+        List<LayerData> layerDataList = new ArrayList<LayerData>();
+        for ( LayerRef lr : gm.getLayers() ) {
+            LayerQuery query = queryIter.next();
+            List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
+            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
+            for ( org.deegree.layer.Layer layer : layers ) {
+                if ( layer.getMetadata().getScaleDenominators().first > scale
+                     || layer.getMetadata().getScaleDenominators().second < scale ) {
+                    continue;
+                }
+                if ( layer.isStyleApplicable( query.getStyle() ) ) {
+                    layerDataList.add( layer.mapQuery( query, headers ) );
+                }
+            }
+        }
+        return layerDataList;
+    }
+
+    private void assertStyleApplicableForAtLeastOneLayer( List<Layer> layers, StyleRef style, String name )
+                            throws OWSException {
+        for ( Layer layer : layers ) {
+            if ( layer.isStyleApplicable( style ) ) {
+                return;
+            }
+        }
+        throw new OWSException( "Style " + style.getName() + " is not defined for layer " + name + ".",
+                                "StyleNotDefined", "styles" );
     }
 
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
@@ -261,6 +289,13 @@ public class MapService {
                      || l.getMetadata().getScaleDenominators().second < scale ) {
                     continue;
                 }
+
+                if ( !l.getMetadata().isQueryable() ) {
+                    throw new OWSException( "GetFeatureInfo is requested on a Layer (name: "
+                                            + l.getMetadata().getName() + ") that is not queryable.",
+                                            LAYER_NOT_QUERYABLE );
+                }
+
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -294,10 +329,11 @@ public class MapService {
             LayerRef lr = layerItr.next();
             StyleRef sr = styleItr.next();
             OperatorFilter f = filterItr == null ? null : filterItr.next();
-
+            final int layerRadius = defaultLayerOptions.getFeatureInfoRadius();
             LayerQuery query = new LayerQuery( gfi.getEnvelope(), gfi.getWidth(), gfi.getHeight(), gfi.getX(),
                                                gfi.getY(), gfi.getFeatureCount(), f, sr, gfi.getParameterMap(),
-                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope() );
+                                               gfi.getDimensions(), new MapOptionsMaps(), gfi.getEnvelope(),
+                                               layerRadius );
             queries.add( query );
         }
         return queries;
@@ -336,7 +372,8 @@ public class MapService {
         return getLegendHandler.getLegendSize( style );
     }
 
-    public BufferedImage getLegend( GetLegendGraphic req ) {
+    public BufferedImage getLegend( GetLegendGraphic req )
+                            throws OWSException {
         return getLegendHandler.getLegend( req );
     }
 
@@ -359,6 +396,13 @@ public class MapService {
      */
     public int getGlobalMaxFeatures() {
         return defaultLayerOptions.getMaxFeatures();
+    }
+
+    /**
+     * @return the current update sequence
+     */
+    public int getCurrentUpdateSequence() {
+        return updateSequence;
     }
 
 }

@@ -46,8 +46,10 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.getAttributeValueAsQNa
 import static org.deegree.commons.xml.stax.XMLStreamUtils.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.requireNextTag;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.requireStartElement;
 import static org.deegree.filter.MatchAction.ALL;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,21 +120,39 @@ import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
+import org.deegree.filter.temporal.After;
+import org.deegree.filter.temporal.AnyInteracts;
+import org.deegree.filter.temporal.Before;
+import org.deegree.filter.temporal.Begins;
+import org.deegree.filter.temporal.BegunBy;
+import org.deegree.filter.temporal.During;
+import org.deegree.filter.temporal.EndedBy;
+import org.deegree.filter.temporal.Ends;
+import org.deegree.filter.temporal.Meets;
+import org.deegree.filter.temporal.MetBy;
+import org.deegree.filter.temporal.OverlappedBy;
+import org.deegree.filter.temporal.TContains;
+import org.deegree.filter.temporal.TEquals;
+import org.deegree.filter.temporal.TOverlaps;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.geometry.GMLGeometryVersionHelper;
+import org.deegree.time.TimeObject;
+import org.deegree.time.gml.reader.GmlTimeGeometricPrimitiveReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Decodes XML fragments that comply to the <a href="http://www.opengeospatial.org/standards/filter">OGC Filter Encoding
  * Specification</a> 2.0.0.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class Filter200XMLDecoder {
@@ -141,21 +161,7 @@ public class Filter200XMLDecoder {
 
     private static final String FES_NS = "http://www.opengis.net/fes/2.0";
 
-    private static final String GML_NS = CommonNamespaces.GMLNS;
-
-    private static final String GML32_NS = CommonNamespaces.GML3_2_NS;
-
     private static final QName RESOURCE_ID_ELEMENT = new QName( FES_NS, "ResourceId" );
-
-    private static final QName RID_ATTR_NAME = new QName( "rid" );
-
-    private static final QName PREVIOUS_RID_ATTR_NAME = new QName( "previousRid" );
-
-    private static final QName VERSION_ATTR_NAME = new QName( "version" );
-
-    private static final QName START_DATE_ATTR_NAME = new QName( "startDate" );
-
-    private static final QName END_DATE_ATTR_NAME = new QName( "endDate" );
 
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
@@ -285,7 +291,7 @@ public class Filter200XMLDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:Filter&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Filter&gt;)</li>
      * </ul>
-     * 
+     *
      * @param xmlStream
      *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
      *            (&lt;fes:Filter&gt;), points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Filter&gt;)
@@ -338,7 +344,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:expression&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;) afterwards
@@ -390,7 +396,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:Function&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:Function&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/fes:Function&gt;) afterwards
@@ -431,7 +437,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;fes:expression&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/fes:expression&gt;) afterwards
@@ -476,7 +482,7 @@ public class Filter200XMLDecoder {
      * </li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
      *            (&lt;fes:comparisonOps&gt;), points at the corresponding <code>END_ELEMENT</code> event
@@ -538,6 +544,7 @@ public class Filter200XMLDecoder {
      * <li>fes:Begins</li>
      * <li>fes:BegunBy</li>
      * <li>fes:During</li>
+     * <li>fes:Ends</li>
      * <li>fes:EndedBy</li>
      * <li>fes:Meets</li>
      * <li>fes:MetBy</li>
@@ -553,7 +560,7 @@ public class Filter200XMLDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/fes:temporalOps&gt;)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param xmlStream
      *            must not be <code>null</code> and cursor must point at the <code>START_ELEMENT</code> event
      *            (&lt;fes:temporalOps&gt;), points at the corresponding <code>END_ELEMENT</code> event
@@ -563,92 +570,80 @@ public class Filter200XMLDecoder {
      *             if the element is not a valid "ogc:temporalOps" element
      * @throws XMLStreamException
      */
-    public static TemporalOperator parseTemporalOperator( XMLStreamReader xmlStream )
+    public static TemporalOperator parseTemporalOperator( final XMLStreamReader xmlStream )
                             throws XMLStreamException {
+        final TemporalOperator.SubType type = checkTemporalOperatorName( xmlStream );
+        requireNextTag( xmlStream, START_ELEMENT );
+        final Expression param1 = parseExpression( xmlStream );
+        requireNextTag( xmlStream, START_ELEMENT );
+        Expression param2 = null;
+        final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, xmlStream );
+        final GmlTimeGeometricPrimitiveReader timeReader = new GmlTimeGeometricPrimitiveReader( gmlReader );
+        final QName elName = xmlStream.getName();
+        if ( elName.getLocalPart().equals( "TimeInstant" ) || elName.getLocalPart().equals( "TimePeriod" ) ) {
+            final TimeObject to = timeReader.read( xmlStream );
+            param2 = new Literal<TimeObject>( to, elName );
+        } else {
+            param2 = parseExpression( xmlStream );
+        }
+        requireNextTag( xmlStream, END_ELEMENT );
+        TemporalOperator temporalOperator = null;
+        switch ( type ) {
+        case AFTER:
+            return new After( param1, param2 );
+        case ANYINTERACTS:
+            return new AnyInteracts( param1, param2 );
+        case BEFORE:
+            return new Before( param1, param2 );
+        case BEGINS:
+            return new Begins( param1, param2 );
+        case BEGUNBY:
+            return new BegunBy( param1, param2 );
+        case DURING:
+            return new During( param1, param2 );
+        case ENDEDBY:
+            return new EndedBy( param1, param2 );
+        case ENDS:
+            return new Ends( param1, param2 );
+        case MEETS:
+            return new Meets( param1, param2 );
+        case METBY:
+            return new MetBy( param1, param2 );
+        case OVERLAPPEDBY:
+            return new OverlappedBy( param1, param2 );
+        case TCONTAINS:
+            return new TContains( param1, param2 );
+        case TEQUALS:
+            return new TEquals( param1, param2 );
+        case TOVERLAPS:
+            return new TOverlaps( param1, param2 );
+        }
+        throw new RuntimeException();
+    }
 
-        throw new UnsupportedOperationException();
-
-        // TemporalOperator temporalOperator = null;
-        //
-        // // check if element name is a valid comparison operator element
-        // TemporalOperator.SubType type = elementNameToTemporalOperatorType.get( xmlStream.getName() );
-        // if ( type == null ) {
-        // String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
-        // xmlStream.getName(),
-        // elemNames( TemporalOperator.SubType.class,
-        // temporalOperatorTypeToElementName ) );
-        // throw new XMLParsingException( xmlStream, msg );
-        // }
-        //
-        // XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
-        // Expression param1 = parseExpression( xmlStream );
-        //
-        // XMLStreamUtils.requireNextTag( xmlStream, START_ELEMENT );
-        // Expression param2 = null;
-        // QName elName = xmlStream.getName();
-        // GMLTimeReader timeReader = new GMLTimeReader( new GmlDocumentIdContext( GML_32 ) );
-        // if ( timeReader.isTimeObject( elName ) ) {
-        // TimeObject to = timeReader.readTimeObject( xmlStream );
-        // // TODO Always create a Literal?
-        // param2 = new Literal<TimeObject>( to, elName );
-        // } else {
-        // param2 = parseExpression( xmlStream );
-        // }
-        //
-        // XMLStreamUtils.requireNextTag( xmlStream, END_ELEMENT );
-        //
-        // switch ( type ) {
-        // case AFTER:
-        // temporalOperator = new After( param1, param2 );
-        // break;
-        // case ANYINTERACTS:
-        // temporalOperator = new AnyInteracts( param1, param2 );
-        // break;
-        // case BEFORE:
-        // temporalOperator = new Before( param1, param2 );
-        // break;
-        // case BEGUNBY:
-        // temporalOperator = new BegunBy( param1, param2 );
-        // break;
-        // case DURING:
-        // temporalOperator = new During( param1, param2 );
-        // break;
-        // case ENDEDBY:
-        // temporalOperator = new EndedBy( param1, param2 );
-        // break;
-        // case MEETS:
-        // temporalOperator = new Meets( param1, param2 );
-        // break;
-        // case METBY:
-        // temporalOperator = new MetBy( param1, param2 );
-        // break;
-        // case OVERLAPPEDBY:
-        // temporalOperator = new OverlappedBy( param1, param2 );
-        // break;
-        // case TCONTAINS:
-        // temporalOperator = new TContains( param1, param2 );
-        // break;
-        // case TEQUALS:
-        // temporalOperator = new TEquals( param1, param2 );
-        // break;
-        // case TOVERLAPS:
-        // temporalOperator = new TOverlaps( param1, param2 );
-        // break;
-        // }
-        // return temporalOperator;
+    private static TemporalOperator.SubType checkTemporalOperatorName( final XMLStreamReader xmlStream ) {
+        TemporalOperator.SubType type = elementNameToTemporalOperatorType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT",
+                                              xmlStream.getName(),
+                                              elemNames( TemporalOperator.SubType.class,
+                                                         temporalOperatorTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return type;
     }
 
     private static Operator parseOperator( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-
         Operator operator = null;
 
         // check if element name is a valid operator element
         Operator.Type type = elementNameToOperatorType.get( xmlStream.getName() );
         if ( type == null ) {
-            String expectedList = elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
-                                  + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
-                                  + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            String expectedList = elemNames( LogicalOperator.SubType.class, logicalOperatorTypeToElementName ) + ", "
+                                  + elemNames( SpatialOperator.SubType.class, spatialOperatorTypeToElementName ) + ", "
+                                  + elemNames( ComparisonOperator.SubType.class, comparisonOperatorTypeToElementName )
+                                  + "," + elemNames( TemporalOperator.SubType.class, temporalOperatorTypeToElementName );
             String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(), expectedList );
             throw new XMLParsingException( xmlStream, msg );
         }
@@ -666,6 +661,11 @@ public class Filter200XMLDecoder {
             LOG.debug( "Building spatial operator" );
             operator = parseSpatialOperator( xmlStream );
             break;
+        case TEMPORAL: {
+            LOG.debug( "Building temporal operator" );
+            operator = parseTemporalOperator( xmlStream );
+            break;
+        }
         }
         return operator;
     }
@@ -783,6 +783,7 @@ public class Filter200XMLDecoder {
         while ( xmlStream.next() != END_ELEMENT ) {
             int eventType = xmlStream.getEventType();
             if ( eventType == START_ELEMENT ) {
+                checkIfCurrentStartElementIsGmlGeometry( xmlStream );
                 children.add( parseElement( xmlStream ) );
             } else if ( eventType == CHARACTERS || eventType == CDATA ) {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
@@ -1126,7 +1127,7 @@ public class Filter200XMLDecoder {
             break;
         }
         case TOUCHES: {
-            // <xsd:element ref="fes:expression"/> (NOTE: we accept minOccurs="1" as well)
+            // <xsd:element re="fes:expression"/> (NOTE: we accept minOccurs="1" as well)
             Expression param1 = null;
             if ( elementNameToExpressionType.containsKey( xmlStream.getName() ) ) {
                 param1 = parseExpression( xmlStream );
@@ -1170,9 +1171,20 @@ public class Filter200XMLDecoder {
         }
     }
 
+    private static void checkIfCurrentStartElementIsGmlGeometry( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        String ns = xmlStream.getNamespaceURI();
+        if ( CommonNamespaces.GMLNS.equals( ns ) || CommonNamespaces.GML3_2_NS.equals( ns ) ) {
+            GMLGeometryReader gmlReader = GMLGeometryVersionHelper.getGeometryReader( xmlStream.getName(), xmlStream );
+            boolean isGeometryElement = gmlReader.isGeometryOrEnvelopeElement( xmlStream );
+            if ( isGeometryElement )
+                throw new XMLParsingException( xmlStream, "Geometry elements as Literal child are not supported!" );
+        }
+    }
+
     /**
      * Return a String with all element names of the given enum class.
-     * 
+     *
      * @param enumClass
      * @param map
      *            the operator type -> element name map

@@ -44,6 +44,7 @@ package org.deegree.coverage.persistence.pyramid;
 import static org.deegree.coverage.raster.io.RasterIOOptions.CRS;
 import static org.deegree.coverage.raster.io.RasterIOOptions.IMAGE_INDEX;
 import static org.deegree.coverage.raster.io.RasterIOOptions.OPT_FORMAT;
+import static org.deegree.coverage.raster.utils.RasterBuilder.setNoDataValue;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 
 import java.util.Iterator;
@@ -129,8 +130,10 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
                 opts.add( IMAGE_INDEX, "" + i );
                 opts.add( OPT_FORMAT, "tiff" );
                 opts.add( CRS, crs.getAlias() );
+
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( metadata.getLocation().resolveToFile( file ),
                                                                           opts, metadata );
+                setNoDataValue( raster, config.getNodata() );
                 raster.setCoordinateSystem( crs );
                 mrr.addRaster( raster );
             }
@@ -140,6 +143,7 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
             throw new ResourceInitException( "Could not read pyramid configuration file.", e );
         }
     }
+
 
     private static ICRS getCRS( IIOMetadata metaData ) {
         GeoTiffIIOMetadataAdapter geoTIFFMetaData = new GeoTiffIIOMetadataAdapter( metaData );

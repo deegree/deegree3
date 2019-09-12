@@ -1,6 +1,6 @@
 <TileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset http://schemas.deegree.org/datasource/tile/tilematrixset/3.2.0/tilematrixset.xsd"
-  configVersion="3.2.0">
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset http://schemas.deegree.org/datasource/tile/tilematrixset/3.4.0/tilematrixset.xsd"
+  configVersion="3.4.0">
 
   <CRS>urn:ogc:def:crs:EPSG::3857</CRS>
 
@@ -22,7 +22,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>2</MatrixWidth>
-    <MatrixHeight>1</MatrixHeight>
+    <MatrixHeight>2</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>2</Identifier>
@@ -31,7 +31,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>4</MatrixWidth>
-    <MatrixHeight>2</MatrixHeight>
+    <MatrixHeight>4</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>3</Identifier>
@@ -40,7 +40,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>8</MatrixWidth>
-    <MatrixHeight>4</MatrixHeight>
+    <MatrixHeight>8</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>4</Identifier>
@@ -49,7 +49,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>16</MatrixWidth>
-    <MatrixHeight>8</MatrixHeight>
+    <MatrixHeight>16</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>5</Identifier>
@@ -58,7 +58,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>32</MatrixWidth>
-    <MatrixHeight>16</MatrixHeight>
+    <MatrixHeight>32</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>6</Identifier>
@@ -67,7 +67,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>64</MatrixWidth>
-    <MatrixHeight>32</MatrixHeight>
+    <MatrixHeight>64</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>7</Identifier>
@@ -76,7 +76,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>128</MatrixWidth>
-    <MatrixHeight>64</MatrixHeight>
+    <MatrixHeight>128</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>8</Identifier>
@@ -85,7 +85,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>256</MatrixWidth>
-    <MatrixHeight>128</MatrixHeight>
+    <MatrixHeight>256</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>9</Identifier>
@@ -94,7 +94,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>512</MatrixWidth>
-    <MatrixHeight>256</MatrixHeight>
+    <MatrixHeight>512</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>10</Identifier>
@@ -103,7 +103,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>1024</MatrixWidth>
-    <MatrixHeight>512</MatrixHeight>
+    <MatrixHeight>1024</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>11</Identifier>
@@ -112,7 +112,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>2048</MatrixWidth>
-    <MatrixHeight>1024</MatrixHeight>
+    <MatrixHeight>2048</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>12</Identifier>
@@ -121,7 +121,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>4096</MatrixWidth>
-    <MatrixHeight>2048</MatrixHeight>
+    <MatrixHeight>4096</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>13</Identifier>
@@ -130,7 +130,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>8192</MatrixWidth>
-    <MatrixHeight>4096</MatrixHeight>
+    <MatrixHeight>8192</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>14</Identifier>
@@ -139,7 +139,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>16384</MatrixWidth>
-    <MatrixHeight>8192</MatrixHeight>
+    <MatrixHeight>16384</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>15</Identifier>
@@ -148,7 +148,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>32768</MatrixWidth>
-    <MatrixHeight>16384</MatrixHeight>
+    <MatrixHeight>32768</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>16</Identifier>
@@ -157,7 +157,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>65536</MatrixWidth>
-    <MatrixHeight>32768</MatrixHeight>
+    <MatrixHeight>65536</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>17</Identifier>
@@ -166,7 +166,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>131072</MatrixWidth>
-    <MatrixHeight>65536</MatrixHeight>
+    <MatrixHeight>131072</MatrixHeight>
   </TileMatrix>
   <TileMatrix>
     <Identifier>18</Identifier>
@@ -175,7 +175,7 @@
     <TileWidth>256</TileWidth>
     <TileHeight>256</TileHeight>
     <MatrixWidth>262144</MatrixWidth>
-    <MatrixHeight>131072</MatrixHeight>
+    <MatrixHeight>262144</MatrixHeight>
   </TileMatrix>
 
 </TileMatrixSet>

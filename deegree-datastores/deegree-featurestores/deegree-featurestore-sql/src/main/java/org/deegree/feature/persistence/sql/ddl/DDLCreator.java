@@ -50,7 +50,7 @@ import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.AutoIDGenerator;
 import org.deegree.feature.persistence.sql.id.FIDMapping;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.ConstantMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
@@ -156,7 +156,7 @@ public abstract class DDLCreator {
             }
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
-            ddls.addAll( process( sql, ftMapping.getFtTable(), mapping ) );
+            ddls.addAll( process( sql, ftMapping.getFtTable(), mapping, ftMapping.getFidMapping() ) );
         }
         sql.append( ",\n    CONSTRAINT " );
         String pkConstraint = getPkConstraintName( ftMapping.getFtTable() );
@@ -192,14 +192,16 @@ public abstract class DDLCreator {
 
     protected abstract void featureMappingSnippet( StringBuffer sql, FeatureMapping mapping );
 
-    protected abstract StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls );
+    protected abstract StringBuffer createJoinedTable( TableName fromTable, TableJoin jc, List<StringBuffer> ddls,
+                                                       FIDMapping fidMapping );
 
-    private List<StringBuffer> process( StringBuffer sql, TableName table, Mapping mapping ) {
+    private List<StringBuffer> process( StringBuffer sql, TableName table, Mapping mapping,
+                                        FIDMapping fidMapping ) {
         List<StringBuffer> ddls = new ArrayList<StringBuffer>();
 
         if ( !( mapping instanceof FeatureMapping ) && mapping.getJoinedTable() != null ) {
             List<TableJoin> jc = mapping.getJoinedTable();
-            sql = createJoinedTable( table, jc.get( 0 ), ddls );
+            sql = createJoinedTable( table, jc.get( 0 ), ddls, fidMapping );
             table = jc.get( 0 ).getToTable();
             if ( !ddls.contains( sql ) ) {
                 ddls.add( sql );
@@ -215,9 +217,9 @@ public abstract class DDLCreator {
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping compoundMapping = (CompoundMapping) mapping;
             for ( Mapping childMapping : compoundMapping.getParticles() ) {
-                ddls.addAll( process( sql, table, childMapping ) );
+                ddls.addAll( process( sql, table, childMapping, fidMapping ) );
             }
-        } else if ( mapping instanceof ConstantMapping ) {
+        } else if ( mapping instanceof SqlExpressionMapping ) {
             // skip
         } else {
             throw new RuntimeException( "Internal error. Unhandled mapping type '" + mapping.getClass() + "'" );

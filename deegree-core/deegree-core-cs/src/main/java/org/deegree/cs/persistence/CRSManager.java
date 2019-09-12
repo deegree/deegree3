@@ -36,9 +36,11 @@
 package org.deegree.cs.persistence;
 
 import static java.lang.System.currentTimeMillis;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +54,7 @@ import java.util.ServiceLoader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.Object;
 import org.deegree.commons.tom.ReferenceResolver;
 import org.deegree.commons.tom.ows.CodeType;
@@ -206,14 +209,20 @@ public class CRSManager implements Initializable, Destroyable {
     public synchronized CRSStore create( URL configURL )
                             throws CRSStoreException {
         String namespace = null;
+        XMLStreamReader xmlReader = null;
+        InputStream urlStream = null;
         try {
-            XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( configURL.openStream() );
+            urlStream = configURL.openStream();
+            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( urlStream );
             XMLStreamUtils.nextElement( xmlReader );
             namespace = xmlReader.getNamespaceURI();
         } catch ( Exception e ) {
             String msg = Messages.get( "CRSManager.CREATING_STORE_FAILED", configURL );
             LOG.error( msg );
             throw new CRSStoreException( msg );
+        } finally {
+            closeQuietly( xmlReader );
+            IOUtils.closeQuietly( urlStream );
         }
         LOG.debug( "Config namespace: '" + namespace + "'" );
         CRSStoreProvider provider = getProviders().get( namespace );
@@ -471,7 +480,7 @@ public class CRSManager implements Initializable, Destroyable {
      * Creates a direct {@link ICRS} instance with the given name not just a {@link CRSRef} using the given storeId, if
      * no {@link ICRS} was found an {@link UnknownCRSException} will be thrown.
      * 
-     * @param storeId
+     * @param storeIdName
      *            identifier of the store, looking for the {@link ICRS} instance, may be <code>null</code> if in all
      *            {@link CRSStore}s should be searched
      * @param name
@@ -593,7 +602,7 @@ public class CRSManager implements Initializable, Destroyable {
      * @param crsStore
      *            {@link CRSStore} instance, looking for the {@link ICRS} instance, may not be <code>null</code>, if in
      *            all {@link CRSStore}s should be searched
-     * @param name
+     * @param crsCodeType
      *            of the crs, e.g. EPSG:31466
      * @param forceXY
      *            true if the axis order of the coordinate system should be x/y (EAST/NORTH; WEST/SOUTH); false id the
@@ -742,7 +751,7 @@ public class CRSManager implements Initializable, Destroyable {
         } catch ( Throwable e ) {
             LOG.debug( "Could not retrieve a transformation for id: " + id );
         }
-        if ( t != null && t instanceof Transformation ) {
+        if ( t != null ) {
             return (Transformation) t;
         }
         LOG.debug( "The given id: " + id + " is not of type transformation return null." );

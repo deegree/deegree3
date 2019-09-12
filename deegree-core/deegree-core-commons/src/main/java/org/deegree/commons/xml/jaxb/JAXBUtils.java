@@ -74,10 +74,12 @@ public class JAXBUtils {
         try {
             o = u.unmarshal( input );
         } catch ( JAXBException e ) {
-            LOG.error( "Error in configuration file" );
+            LOG.error( "Error in configuration file: " + e.getLocalizedMessage() );
             // whyever they use the linked exception here...
             // http://www.jaxb.com/how/to/hide/important/information/from/the/user/of/the/api/unknown_xml_format.xml
-            LOG.error( "Error: " + e.getLinkedException().getMessage() );
+            if ( e.getLinkedException() != null ) {
+                LOG.error( "Error: " + e.getLinkedException().getLocalizedMessage() );
+            }
             LOG.error( "Hint: Try validating the file with an XML-schema aware editor." );
             throw e;
         } catch ( Exception e ) {
@@ -144,9 +146,9 @@ public class JAXBUtils {
             try {
                 StreamSource origSchema = new StreamSource( new DURL( schemaFile.toExternalForm() ).openStream(),
                                                             schemaFile.toExternalForm() );
-                URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/description/3.1.0/description.xsd" );
-                URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/spatialmetadata/3.1.0/spatialmetadata.xsd" );
-                URL layUrl = JAXBUtils.class.getResource( "/META-INF/schemas/layers/base/3.2.0/base.xsd" );
+                URL descUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/description/3.4.0/description.xsd" );
+                URL spatUrl = JAXBUtils.class.getResource( "/META-INF/schemas/commons/spatialmetadata/3.4.0/spatialmetadata.xsd" );
+                URL layUrl = JAXBUtils.class.getResource( "/META-INF/schemas/layers/base/3.4.0/base.xsd" );
                 StreamSource desc = new StreamSource( new DURL( descUrl.toExternalForm() ).openStream(),
                                                       descUrl.toExternalForm() );
                 List<Source> list = new ArrayList<Source>();

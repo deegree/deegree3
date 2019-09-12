@@ -35,10 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.rules;
 
-import java.util.List;
-
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
+import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.filter.expression.ValueReference;
+
+import java.util.List;
 
 /**
  * A {@link Mapping} describes how a particle of a feature type is mapped to a relational model (tables/columns).
@@ -60,21 +61,23 @@ public abstract class Mapping {
 
     private final boolean voidable;
 
+    private final CustomConverterJAXB converter;
+
     /**
      * Creates a new {@link Mapping} instance.
-     * 
-     * @param path
+     *  @param path
      *            relative xpath expression, must not be <code>null</code>
      * @param voidable
      *            true, if the particle can be omitted from the parent particle (i.e. be <code>null</code>), false
      *            otherwise
      * @param tableChange
-     *            table joins, can be <code>null</code> (no joins involved)
+     * @param converter
      */
-    protected Mapping( ValueReference path, boolean voidable, List<TableJoin> tableChange ) {
+    protected Mapping(ValueReference path, boolean voidable, List<TableJoin> tableChange, CustomConverterJAXB converter) {
         this.path = path;
         this.voidable = voidable;
         this.tableChange = tableChange;
+        this.converter = converter;
     }
 
     /**
@@ -104,6 +107,15 @@ public abstract class Mapping {
      */
     public List<TableJoin> getJoinedTable() {
         return tableChange;
+    }
+
+    /**
+     * Returns custom converter, used to map this value.
+     *
+     * @return converter, can be <code>null</code> (use default)
+     */
+    public CustomConverterJAXB getConverter() {
+        return converter;
     }
 
     @Override

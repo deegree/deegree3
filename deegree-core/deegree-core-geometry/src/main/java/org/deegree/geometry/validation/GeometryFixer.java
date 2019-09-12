@@ -36,6 +36,7 @@
 package org.deegree.geometry.validation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.geometry.composite.CompositeCurve;
@@ -197,6 +198,7 @@ public class GeometryFixer {
             for ( Curve memberCurve : compositeCurve ) {
                 fixedMemberCurves.add( invertOrientation( memberCurve ) );
             }
+            
             fixedCurve = new DefaultCompositeCurve( curve.getId(), curve.getCoordinateSystem(), curve.getPrecision(),
                                                     fixedMemberCurves );
             break;
@@ -206,6 +208,7 @@ public class GeometryFixer {
             for ( CurveSegment segment : curve.getCurveSegments() ) {
                 fixedSegments.add( invertOrientation( segment ) );
             }
+            Collections.reverse( fixedSegments );
             fixedCurve = new DefaultCurve( curve.getId(), curve.getCoordinateSystem(), curve.getPrecision(),
                                            fixedSegments );
             break;
@@ -230,6 +233,40 @@ public class GeometryFixer {
         }
         fixedCurve.setProperties( curve.getProperties() );
         return fixedCurve;
+    }
+
+    public static Ring forceOrientation( Ring ring, boolean ccw ) {
+        double shoelaceSum = 0;
+
+        final List<Curve> curves = ring.getMembers();
+        for ( final Curve curve : curves ) {
+            final List<CurveSegment> curveSegments = curve.getCurveSegments();
+            for ( final CurveSegment curveSegment : curveSegments ) {
+                final CurveSegmentType segmentType = curveSegment.getSegmentType();
+
+                Points points;
+                switch ( segmentType ) {
+                case ARC_STRING:
+                    points = ( (ArcString) curveSegment ).getControlPoints();
+                case LINE_STRING_SEGMENT:
+                    points = ( (LineStringSegment) curveSegment ).getControlPoints();
+                    for ( int i = 0; i < points.size(); i++ ) {
+                        final Point first = points.get( i );
+                        final Point second = points.get( ( i + 1 ) % points.size() );
+
+                        shoelaceSum += ( second.get0() - first.get0() ) * ( second.get1() + first.get1() );
+                    }
+
+                    continue;
+                default:
+                    LOG.warn( "Calculating orientation of " + segmentType.name()
+                              + " segments is not implemented yet. Ring orientation remains unchanged." );
+                    return ring;
+                }
+            }
+        }
+
+        return shoelaceSum > 0 == ccw ? invertOrientation( ring ) : ring;
     }
 
     public static Ring invertOrientation( Ring ring ) {

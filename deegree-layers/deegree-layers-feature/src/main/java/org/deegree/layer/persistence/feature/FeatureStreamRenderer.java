@@ -43,6 +43,7 @@ package org.deegree.layer.persistence.feature;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Triple;
@@ -50,8 +51,11 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.filter.XPathEvaluator;
 import org.deegree.geometry.Geometry;
+import org.deegree.rendering.r2d.labelplacement.AutoLabelPlacement;
 import org.deegree.rendering.r2d.Renderer;
 import org.deegree.rendering.r2d.TextRenderer;
+import org.deegree.rendering.r2d.LabelRenderer;
+import org.deegree.rendering.r2d.Label;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.Styling;
@@ -82,19 +86,27 @@ class FeatureStreamRenderer {
         this.evaluator = evaluator;
     }
 
-    void renderFeatureStream( FeatureInputStream features, Style style ) {
+    void renderFeatureStream( FeatureInputStream features, Style style )
+                            throws InterruptedException {
         int cnt = 0;
 
         Renderer renderer = context.getVectorRenderer();
-        TextRenderer textRenderer = context.getTextRenderer();
-
+        //TextRenderer textRenderer = context.getTextRenderer();
+        LabelRenderer labelRenderer = context.getLabelRenderer();
+        //ArrayList<Label> labelList = new ArrayList<Label>();
+        
         for ( Feature f : features ) {
+            if ( Thread.interrupted() ) {
+                throw new InterruptedException();
+            }
             try {
                 LinkedList<Triple<Styling, LinkedList<Geometry>, String>> evalds = style.evaluate( f,
                                                                                                    (XPathEvaluator<Feature>) evaluator );
                 for ( Triple<Styling, LinkedList<Geometry>, String> evald : evalds ) {
                     if ( evald.first instanceof TextStyling ) {
-                        textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
+                        //textRenderer.render( (TextStyling) evald.first, evald.third, evald.second );
+                       // labelList.addAll( 
+                        labelRenderer.createLabel( (TextStyling) evald.first, evald.third, evald.second );
                     } else {
                         renderer.render( evald.first, evald.second );
                     }
@@ -109,6 +121,8 @@ class FeatureStreamRenderer {
                 break;
             }
         }
+        
+
     }
 
 }

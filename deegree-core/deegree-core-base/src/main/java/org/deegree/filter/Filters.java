@@ -226,19 +226,34 @@ public class Filters {
      *            can be <code>null</code>
      * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
      */
-    public static Filter addBBoxConstraint( Envelope bbox, Filter filter, ValueReference propName ) {
+    public static Filter addBBoxConstraint( final Envelope bbox, final Filter filter, final ValueReference propName ) {
+        return addBBoxConstraint( bbox, filter, propName, false );
+    }
 
+    /**
+     * Adds a bounding box constraint to the given {@link Filter}.
+     * 
+     * @param bbox
+     *            bounding box, can be <code>null</code>
+     * @param filter
+     *            filter expression, can be <code>null</code>
+     * @param propName
+     *            can be <code>null</code>
+     * @param allowFalsePositives
+     *            set to <code>true</code>, if false positives are acceptable (may enable faster index-only checks)
+     * @return combined filter or <code>null</code> (if bbox and filter are <code>null</code>)
+     */
+    public static Filter addBBoxConstraint( final Envelope bbox, final Filter filter, final ValueReference propName,
+                                            final boolean allowFalsePositives ) {
         if ( bbox == null ) {
             return filter;
         }
-
         if ( filter instanceof IdFilter ) {
             LOG.warn( "Not adding bbox to filter, as the filter is an IdFilter." );
             return filter;
         }
-
         Filter bboxFilter = null;
-        BBOX bboxOperator = propName == null ? new BBOX( bbox ) : new BBOX( propName, bbox );
+        BBOX bboxOperator = new BBOX( propName, bbox, allowFalsePositives );
         if ( filter == null ) {
             bboxFilter = new OperatorFilter( bboxOperator );
         } else {

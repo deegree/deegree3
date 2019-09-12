@@ -66,6 +66,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * 
  * @since 3.4
  */
@@ -115,7 +116,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
      *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
      *             <code>META-INF/maven/[..]/pom.properties</code> fails
      */
-    public static Collection<ModuleInfo> extractModulesInfo( Set<URL> classpathURLs )
+    public static Collection<ModuleInfo> extractModulesInfo( Collection<URL> classpathURLs )
                             throws IOException {
         SortedSet<ModuleInfo> modules = new TreeSet<ModuleInfo>();
         for ( URL classpathURL : classpathURLs ) {
@@ -154,7 +155,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
         builder = builder.setScanners( new ResourcesScanner() );
         Reflections r = new Reflections( builder );
 
-        Set<String> resources = r.getResources( Pattern.compile( "buildinfo\\.properties" ) );
+        Set<String> resources = r.getResources( Pattern.compile( "(MANIFEST\\.MF|buildinfo\\.properties)" ) );
         if ( !resources.isEmpty() ) {
             URLClassLoader classLoader = new URLClassLoader( new URL[] { classpathURL }, null );
             String resourcePath = resources.iterator().next();
@@ -163,11 +164,17 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 Properties props = new Properties();
                 buildInfoStream = classLoader.getResourceAsStream( resourcePath );
                 props.load( buildInfoStream );
-                String buildBy = props.getProperty( "build.by" );
-                String buildArtifactId = props.getProperty( "build.artifactId" );
-                String buildDate = props.getProperty( "build.date" );
-                String buildRev = props.getProperty( "build.svnrev" );
+                String buildBy = props.getProperty( "deegree-build-by", props.getProperty( "build.by" ) );
+                String buildArtifactId = props.getProperty( "deegree-build-artifactId",
+                                                            props.getProperty( "build.artifactId" ) );
+                String buildDate = props.getProperty( "deegree-build-date", props.getProperty( "build.date" ) );
+                String buildRev = props.getProperty( "deegree-build-rev", props.getProperty( "build.svnrev" ) );
                 String pomVersion = null;
+
+                if ( buildArtifactId == null ) {
+                    // skipping because this jar is not from deegree
+                    return null;
+                }
 
                 resources = r.getResources( Pattern.compile( "pom\\.properties" ) );
                 InputStream pomInputStream = null;
@@ -179,8 +186,8 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                         props.load( pomInputStream );
                         String pomArtifactId = props.getProperty( "artifactId" );
                         if ( !pomArtifactId.equals( buildArtifactId ) ) {
-                            LOG.warn( "ArtifactId mismatch for module on path: " + classpathURL
-                                      + " (buildinfo.properties vs. pom.properties)." );
+                            LOG.warn( "ArtifactId mismatch for module on path: {} (MANIFEST.MF/buildinfo.properties vs. pom.properties).",
+                                      classpathURL );
                         }
                         pomVersion = props.getProperty( "version" );
                     } finally {
@@ -190,7 +197,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 moduleInfo = new ModuleInfo( buildArtifactId, pomVersion, buildRev, buildDate, buildBy );
             } finally {
                 closeQuietly( buildInfoStream );
-                closeQuietly( classLoader );
+                // * closeQuietly( classLoader ); */ // TODO enable for JDK 1.7
             }
         }
         return moduleInfo;

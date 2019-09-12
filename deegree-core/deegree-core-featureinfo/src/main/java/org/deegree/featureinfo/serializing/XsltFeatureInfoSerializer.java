@@ -4,7 +4,6 @@ import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +15,9 @@ import org.deegree.commons.xml.XsltUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.featureinfo.FeatureInfoContext;
+import org.deegree.featureinfo.FeatureInfoParams;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.workspace.Workspace;
@@ -38,7 +40,9 @@ public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
     }
 
     @Override
-    public void serialize( Map<String, String> nsBindings, FeatureCollection col, OutputStream outputStream ) {
+    public void serialize( FeatureInfoParams params, FeatureInfoContext context ) {
+        Map<String, String> nsBindings = params.getNsBindings();
+        FeatureCollection col = params.getFeatureCollection();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader( workspace.getModuleClassLoader() );
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -52,7 +56,9 @@ public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
                 nsBindings = new HashMap<String, String>();
             }
             for ( Feature f : col ) {
-                nsBindings.putAll( f.getType().getSchema().getNamespaceBindings() );
+                AppSchema schema = f.getType().getSchema();
+                if ( schema != null )
+                    nsBindings.putAll( schema.getNamespaceBindings() );
             }
             writer.setNamespaceBindings( nsBindings );
             writer.write( col );
@@ -62,7 +68,7 @@ public class XsltFeatureInfoSerializer implements FeatureInfoSerializer {
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "GML before XSLT:\n{}", new String( bos.toByteArray(), "UTF-8" ) );
             }
-            XsltUtils.transform( bos.toByteArray(), this.xslt, outputStream );
+            XsltUtils.transform( bos.toByteArray(), this.xslt, context.getOutputStream() );
         } catch ( Throwable e ) {
             LOG.warn( "Unable to transform GML for feature info: {}.", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

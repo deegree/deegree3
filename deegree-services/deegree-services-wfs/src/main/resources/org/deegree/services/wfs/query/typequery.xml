@@ -1,10 +1,11 @@
-<wfs:StoredQueryDefinition id="urn:ogc:def:storedQuery:OGC-WFS::GetFeatureByType" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<wfs:StoredQueryDefinition id="urn:ogc:def:query:OGC-WFS::GetFeatureByType" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2">
   <wfs:Title>GetFeatureByType</wfs:Title>  
   <wfs:Abstract>Returns a collection of features by type. If returnFeatureTypes='gml:AbstractFeatureType', the query
     applies to any supported feature type.
   </wfs:Abstract>
   <wfs:Parameter name="typeName" type="xs:QName">
+    <wfs:Title>Feature type name</wfs:Title>
     <wfs:Abstract>Feature type name (mandatory)</wfs:Abstract>
   </wfs:Parameter>
   <wfs:QueryExpressionText returnFeatureTypes="${deegreewfs:ServedFeatureTypes}"

@@ -36,27 +36,31 @@
 
 package org.deegree.services.wms.controller;
 
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
 import static org.deegree.services.i18n.Messages.get;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.wms.Utils;
+import org.deegree.commons.tom.ows.Version;
+import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wms.MapService;
 import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapter;
+import org.deegree.services.wms.controller.capabilities.serialize.CapabilitiesManager;
+import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 
 /**
  * <code>WMSController130</code>
@@ -68,10 +72,19 @@ import org.deegree.services.wms.controller.capabilities.Capabilities130XMLAdapte
  */
 public class WMSController130 extends WMSControllerBase {
 
+    private static final String TEXT_XML_FORMAT = "text/xml";
+
+    private final CapabilitiesManager capabilitiesManager;
+
     /**
-     * 
+     * @param capabilitiesManager
+     *            handling export of capabilities, never <code>null</code>
+     * @param exceptionsManager
+     *            used to serialize exceptions, never <code>null</code>
      */
-    public WMSController130() {
+    public WMSController130( CapabilitiesManager capabilitiesManager, ExceptionsManager exceptionsManager ) {
+        super( exceptionsManager );
+        this.capabilitiesManager = capabilitiesManager;
         EXCEPTION_DEFAULT = "XML";
         EXCEPTION_BLANK = "BLANK";
         EXCEPTION_INIMAGE = "INIMAGE";
@@ -90,46 +103,46 @@ public class WMSController130 extends WMSControllerBase {
         throw new OWSException( get( "WMS.INVALID_SRS", name ), OWSException.INVALID_CRS );
     }
 
-    /**
-     * @param crs
-     * @return a new CRS
-     */
-    public static ICRS getCRS( String crs ) {
-        return CRSManager.getCRSRef( crs );
-    }
-
-    /**
-     * @param crs
-     * @param bbox
-     * @return a new CRS
-     */
-    public static Envelope getCRSAndEnvelope( String crs, double[] bbox ) {
-        if ( crs.startsWith( "AUTO2:" ) ) {
-            String[] cs = crs.split( ":" )[1].split( "," );
-            int id = Integer.parseInt( cs[0] );
-            // this is not supported
-            double factor = Double.parseDouble( cs[1] );
-            double lon0 = Double.parseDouble( cs[2] );
-            double lat0 = Double.parseDouble( cs[3] );
-
-            return new GeometryFactory().createEnvelope( factor * bbox[0], factor * bbox[1], factor * bbox[2],
-                                                         factor * bbox[3], Utils.getAutoCRS( id, lon0, lat0 ) );
-        }
-        return new GeometryFactory().createEnvelope( bbox[0], bbox[1], bbox[2], bbox[3], CRSManager.getCRSRef( crs ) );
-    }
-
     @Override
     protected void exportCapas( String getUrl, String postUrl, MapService service, HttpResponseBuffer response,
                                 ServiceIdentification identification, ServiceProvider provider,
-                                WMSController controller, OWSMetadataProvider metadata )
-                            throws IOException {
-        response.setContentType( "text/xml" );
+                                Map<String, String> customParameters, WMSController controller,
+                                OWSMetadataProvider metadata )
+                            throws IOException, OWSException {
+        String format = detectFormat( customParameters );
+        response.setContentType( format );
+
         try {
-            XMLStreamWriter xmlWriter = response.getXMLWriter();
-            new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
+            if ( TEXT_XML_FORMAT.equals( format ) ) {
+                XMLStreamWriter xmlWriter = response.getXMLWriter();
+                new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
+            } else {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+                new Capabilities130XMLAdapter( identification, provider, metadata, getUrl, postUrl, service, controller ).export( xmlWriter );
+                xmlWriter.close();
+                capabilitiesManager.serializeCapabilities( format, new ByteArrayInputStream( stream.toByteArray() ),
+                                                           response.getOutputStream() );
+            }
         } catch ( XMLStreamException e ) {
             throw new IOException( e );
         }
+    }
+
+    @Override
+    protected Version getVersion() {
+        return WMSConstants.VERSION_130;
+    }
+
+    private String detectFormat( Map<String, String> customParameters )
+                            throws OWSException {
+        String format = customParameters.get( "FORMAT" );
+        if ( capabilitiesManager.isSupported( format ) )
+            return format;
+
+        if ( capabilitiesManager.isSupported( TEXT_XML_FORMAT ) )
+            return TEXT_XML_FORMAT;
+        throw new OWSException( "Requested format '" + format + "' is not supported!", INVALID_PARAMETER_VALUE );
     }
 
 }

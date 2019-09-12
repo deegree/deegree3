@@ -125,7 +125,7 @@ public class TextStroke implements Stroke {
     // I had none that was practical.
     // the method returns (true, path) if rendering word wise is possible
     // and (false, null) if not
-    private GeneralPath tryWordWise( Shape shape ) {
+    private GeneralPath tryWordWise( Shape shape, double initialGap ) {
         // two steps: first a list is prepared that describes what to render where
         // second the list is rendered
 
@@ -146,7 +146,7 @@ public class TextStroke implements Stroke {
         // end of line tag. Then, the next segment is considered. If repeat is on, the words list will never be empty
         // and the loop will run until the segment lengths list is empty.
         // TODO: Optimization: do not add Strings, add the GlyphVectors
-        if ( !prepareWordsToRender( words, wordsToRender, shape, wordsCopy ) ) {
+        if ( !prepareWordsToRender( words, wordsToRender, shape, wordsCopy, initialGap ) ) {
             return null;
         }
 
@@ -230,13 +230,18 @@ public class TextStroke implements Stroke {
             t.rotate( angle );
             t.translate( gap + length, lineHeight / 4 );
 
-            result.append( t.createTransformedShape( text ), false );
+            Shape transformedShape = t.createTransformedShape( text );
+            appendShape( result, transformedShape );
 
             length += gap + text.getBounds2D().getWidth();
 
             sog = wordsToRender.poll();
 
         }
+    }
+
+    protected void appendShape( GeneralPath result, Shape transformedShape ) {
+        result.append( transformedShape, false );
     }
 
     private LinkedList<String> extractWords() {
@@ -251,10 +256,10 @@ public class TextStroke implements Stroke {
     }
 
     private boolean prepareWordsToRender( LinkedList<String> words, LinkedList<StringOrGap> wordsToRender, Shape shape,
-                                          LinkedList<String> wordsCopy ) {
+                                          LinkedList<String> wordsCopy, double initialGap ) {
         LinkedList<Double> lengths = measurePathLengths( shape );
 
-        double currentGap = isZero( linePlacement.initialGap ) ? 0 : linePlacement.initialGap;
+        double currentGap = isZero( initialGap ) ? 0 : initialGap;
         if ( !isZero( currentGap ) ) {
             StringOrGap sog = new StringOrGap();
             sog.gap = currentGap;
@@ -441,23 +446,37 @@ public class TextStroke implements Stroke {
 
     public Shape createStrokedShape( Shape shape ) {
         GlyphVector glyphVector = font.createGlyphVector( frc, text );
-        if ( glyphVector.getLogicalBounds().getWidth() > getShapeLength( shape ) ) {
+
+        double textWidth = glyphVector.getLogicalBounds().getWidth();
+        double shapeLength = getShapeLength( shape );
+
+        double initialGap = linePlacement.initialGap;
+        if ( linePlacement.center && !linePlacement.repeat ) {
+            double intialGapCenter = shapeLength / 2 - textWidth / 2;
+            if ( intialGapCenter >= linePlacement.initialGap ) {
+                initialGap = intialGapCenter;
+            }
+        }
+
+        if ( textWidth + initialGap > shapeLength ) {
             return new GeneralPath();
         }
 
         shape = handleUpsideDown( shape );
 
-        GeneralPath path = tryWordWise( shape );
-        if ( path != null ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Rendered text '" + text + "' word wise." );
+        if ( linePlacement.wordWise ) {
+            GeneralPath path = tryWordWise( shape, initialGap );
+            if ( path != null ) {
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Rendered text '" + text + "' word wise." );
+                }
+                return path;
             }
-            return path;
         }
-        return renderCharacterWise( shape, glyphVector );
+        return renderCharacterWise( shape, glyphVector, initialGap );
     }
 
-    private Shape renderCharacterWise( Shape shape, GlyphVector glyphVector ) {
+    private Shape renderCharacterWise( Shape shape, GlyphVector glyphVector, double initialGap ) {
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
         double points[] = new double[6];
@@ -480,7 +499,7 @@ public class TextStroke implements Stroke {
                 moveY = lastY = points[1];
                 result.moveTo( moveX, moveY );
                 state.nextAdvance = glyphVector.getGlyphMetrics( state.currentChar ).getAdvance() * 0.5f;
-                state.next = state.nextAdvance + linePlacement.initialGap;
+                state.next = state.nextAdvance + initialGap;
                 break;
 
             case PathIterator.SEG_CLOSE:
@@ -531,7 +550,9 @@ public class TextStroke implements Stroke {
             t.setToTranslation( x, y );
             t.rotate( angle );
             t.translate( -px - advance, -py + lineHeight / 4 );
-            result.append( t.createTransformedShape( glyph ), false );
+
+            appendShape( result, t.createTransformedShape( glyph ) );
+
             state.next += ( advance + state.nextAdvance );
             state.currentChar++;
             if ( linePlacement.repeat && state.currentChar >= length ) {

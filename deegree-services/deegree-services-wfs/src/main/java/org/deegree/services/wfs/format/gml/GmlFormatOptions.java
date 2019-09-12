@@ -1,7 +1,6 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -37,18 +36,19 @@ package org.deegree.services.wfs.format.gml;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.SFSProfiler;
 import org.deegree.geometry.io.CoordinateFormatter;
 import org.deegree.gml.GMLVersion;
-import org.deegree.services.jaxb.wfs.GMLFormat;
 
 /**
- * Configuration options for the {@link GMLFormat}.
+ * Configuration options for {@link GmlFormat}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
  * 
- * @version $Revision: $, $Date: $
+ * @since 3.3
  */
 public class GmlFormatOptions {
 
@@ -76,6 +76,12 @@ public class GmlFormatOptions {
 
     private final boolean exportOriginalSchema;
 
+    private final SFSProfiler geometrySimplifier;
+
+    private final NamespaceBindings prebindNamespaces;
+
+    private final boolean enableResponsePaging;
+
     /**
      * Creates a new {@link GmlFormatOptions} instance.
      * 
@@ -95,11 +101,20 @@ public class GmlFormatOptions {
      * @param appSchemaBaseURL
      * @param mimeType
      * @param exportOriginalSchema
+     * @param geometrySimplifier
+     *            simplifier to apply to exported geometries, can be <code>null</code> (no simplification performed)
+     * @param prebindNamespaces
+     *            namespaces to bind in the root element of GetFeature responses, can be <code>null</code>
+     * @param enableResponsePaging
+     *            is response paging enabled
      */
-    public GmlFormatOptions( GMLVersion gmlVersion, QName responseContainerEl, QName responseFeatureMemberEl,
-                             String schemaLocation, boolean disableStreaming, boolean generateBoundedByForFeatures,
-                             int queryMaxFeatures, boolean checkAreaOfUse, CoordinateFormatter formatter,
-                             String appSchemaBaseURL, String mimeType, boolean exportOriginalSchema ) {
+    public GmlFormatOptions( final GMLVersion gmlVersion, final QName responseContainerEl,
+                             final QName responseFeatureMemberEl, final String schemaLocation,
+                             final boolean disableStreaming, final boolean generateBoundedByForFeatures,
+                             final int queryMaxFeatures, final boolean checkAreaOfUse,
+                             final CoordinateFormatter formatter, final String appSchemaBaseURL, final String mimeType,
+                             final boolean exportOriginalSchema, final SFSProfiler geometrySimplifier,
+                             final NamespaceBindings prebindNamespaces, final boolean enableResponsePaging ) {
         this.gmlVersion = gmlVersion;
         this.responseContainerEl = responseContainerEl;
         this.responseFeatureMemberEl = responseFeatureMemberEl;
@@ -112,6 +127,9 @@ public class GmlFormatOptions {
         this.appSchemaBaseURL = appSchemaBaseURL;
         this.mimeType = mimeType;
         this.exportOriginalSchema = exportOriginalSchema;
+        this.geometrySimplifier = geometrySimplifier;
+        this.prebindNamespaces = prebindNamespaces;
+        this.enableResponsePaging = enableResponsePaging;
     }
 
     /**
@@ -197,4 +215,28 @@ public class GmlFormatOptions {
     public boolean isExportOriginalSchema() {
         return exportOriginalSchema;
     }
+
+    /**
+     * Returns the {@link SFSProfiler} to apply to exported {@link Geometry} instances.
+     * 
+     * @return simplifier, can be <code>null</code> (no simplification performed)
+     */
+    public SFSProfiler getGeometrySimplifier() {
+        return geometrySimplifier;
+    }
+
+    /**
+     * @return namespaces to bind in the root element of GetFeature responses, can be <code>null</code>
+     */
+    public NamespaceBindings getPrebindNamespaces() {
+        return prebindNamespaces;
+    }
+
+    /**
+     * @return is response paging enabled
+     */
+    public boolean isEnableResponsePaging() {
+        return enableResponsePaging;
+    }
+
 }

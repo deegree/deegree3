@@ -55,19 +55,19 @@ public interface SDOEType {
 
     public static final int LINESTRING = 2;
 
-    public static final int POLYGON_UNKNOWN = 3;
+    public static final int POLYGON_RING_UNKNOWN = 3;
 
     public static final int COMPOUND_LINESTRING = 4;
 
-    public static final int POLYGON_EXTERIOR = 1003;
+    public static final int POLYGON_RING_EXTERIOR = 1003;
 
-    public static final int POLYGON_INTERIOR = 2003;
+    public static final int POLYGON_RING_INTERIOR = 2003;
 
-    public static final int COMPOUND_POLYGON_EXTERIOR = 1005;
+    public static final int COMPOUND_POLYGON_RING_EXTERIOR = 1005;
 
-    public static final int COMPOUND_POLYGON_INTERIOR = 2005;
+    public static final int COMPOUND_POLYGON_RING_INTERIOR = 2005;
 
-    public static final int COMPOUND_POLYGON_UNKNOWN = 5;
+    public static final int COMPOUND_POLYGON_RING_UNKNOWN = 5;
 
     /* Oracle 11g Types are currently not supported */
     // public static final int SURFACE_EXTERIOR = 1006;

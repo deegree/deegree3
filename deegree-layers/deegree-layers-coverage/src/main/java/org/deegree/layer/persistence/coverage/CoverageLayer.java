@@ -56,10 +56,10 @@ import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class CoverageLayer extends AbstractLayer {
@@ -70,7 +70,7 @@ public class CoverageLayer extends AbstractLayer {
 
     private final MultiResolutionRaster multiraster;
 
-    private CoverageDimensionHandler dimensionHandler;
+    private final CoverageDimensionHandler dimensionHandler;
 
     public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
         super( md );
@@ -84,14 +84,8 @@ public class CoverageLayer extends AbstractLayer {
                             throws OWSException {
         try {
             Envelope bbox = query.getEnvelope();
-
             RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
-
-            StyleRef ref = query.getStyle();
-            if ( !ref.isResolved() ) {
-                ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
-            }
-            Style style = ref.getStyle();
+            Style style = resolveStyleRef( query.getStyle() );
             // handle SLD/SE scale settings
             style = style == null ? null : style.filter( query.getScale() );
 
@@ -136,7 +130,11 @@ public class CoverageLayer extends AbstractLayer {
     public CoverageLayerData infoQuery( LayerQuery query, List<String> headers )
                             throws OWSException {
         try {
-            Envelope bbox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
+            int layerRadius = -1;
+            if ( getMetadata().getMapOptions() != null ) {
+                layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
+            }
+            final Envelope bbox = query.calcClickBox( layerRadius > -1 ? layerRadius : query.getLayerRadius() );
 
             RangeSet filter = dimensionHandler.getDimensionFilter( query.getDimensions(), headers );
 
@@ -155,7 +153,7 @@ public class CoverageLayer extends AbstractLayer {
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
                                           InterpolationType.NEAREST_NEIGHBOR, filter, style,
-                                          getMetadata().getFeatureTypes().get( 0 ) );
+                                          getMetadata().getFeatureTypes().get( 0 ) , dimensionHandler );
         } catch ( OWSException e ) {
             throw e;
         } catch ( Throwable e ) {

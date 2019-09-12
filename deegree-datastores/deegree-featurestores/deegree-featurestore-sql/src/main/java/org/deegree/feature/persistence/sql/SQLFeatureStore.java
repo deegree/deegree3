@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
-import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
@@ -73,6 +72,7 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.tom.sql.SQLValueMangler;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -101,7 +101,6 @@ import org.deegree.feature.persistence.sql.id.IdAnalysis;
 import org.deegree.feature.persistence.sql.jaxb.CustomConverterJAXB;
 import org.deegree.feature.persistence.sql.jaxb.CustomInspector;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
-import org.deegree.feature.persistence.sql.jaxb.VoidEscalationPolicyType;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureBuilderRelational;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
@@ -109,6 +108,7 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.stream.CombinedFeatureInputStream;
+import org.deegree.feature.stream.EmptyFeatureInputStream;
 import org.deegree.feature.stream.FeatureInputStream;
 import org.deegree.feature.stream.FilteredFeatureInputStream;
 import org.deegree.feature.stream.IteratorFeatureInputStream;
@@ -126,6 +126,7 @@ import org.deegree.filter.spatial.BBOX;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.DBField;
@@ -136,6 +137,7 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
+import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -144,13 +146,12 @@ import org.slf4j.Logger;
 
 /**
  * {@link FeatureStore} that is backed by a spatial SQL database.
- * 
+ *
  * @see SQLDialect
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ *
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ *
+ * @since 3.2
  */
 @LoggingNotes(info = "logs particle converter initialization", debug = "logs the SQL statements sent to the SQL server and startup/shutdown information")
 public class SQLFeatureStore implements FeatureStore {
@@ -173,7 +174,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     private BlobMapping blobMapping;
 
-    private String jdbcConnId;
+    private final String jdbcConnId;
 
     private final Map<Mapping, ParticleConverter<?>> particleMappingToConverter = new HashMap<Mapping, ParticleConverter<?>>();
 
@@ -187,23 +188,25 @@ public class SQLFeatureStore implements FeatureStore {
 
     private DefaultLockManager lockManager;
 
-    private int fetchSize;
+    private final int fetchSize;
 
-    private Boolean readAutoCommit;
+    private final Boolean readAutoCommit;
 
     private final List<FeatureInspector> inspectors = new ArrayList<FeatureInspector>();
 
-    private VoidEscalationPolicyType escalationPolicy;
+    private boolean nullEscalation;
 
-    private SqlFeatureStoreMetadata metadata;
+    private final SqlFeatureStoreMetadata metadata;
 
-    private Workspace workspace;
+    private final Workspace workspace;
 
     private ConnectionProvider connProvider;
 
+    private final ThreadLocal<SQLFeatureStoreTransaction> transaction = new ThreadLocal<SQLFeatureStoreTransaction>();
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
-     * 
+     *
      * @param config
      *            jaxb configuration object
      * @param configURL
@@ -244,15 +247,13 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private void initConverter( Mapping particleMapping ) {
-        if ( particleMapping instanceof PrimitiveMapping ) {
+        if ( particleMapping.getConverter() != null ) {
+            CustomParticleConverter<TypedObjectNode> converter = instantiateConverter( particleMapping.getConverter() );
+            converter.init( particleMapping, this );
+            particleMappingToConverter.put( particleMapping, converter );
+        } else if ( particleMapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) particleMapping;
-            ParticleConverter<?> converter = null;
-            if ( pm.getConverter() == null ) {
-                converter = dialect.getPrimitiveConverter( pm.getMapping().toString(), pm.getType() );
-            } else {
-                converter = instantiateConverter( pm.getConverter() );
-                ( (CustomParticleConverter<TypedObjectNode>) converter ).init( particleMapping, this );
-            }
+            ParticleConverter<?> converter = dialect.getPrimitiveConverter( pm.getMapping().toString(), pm.getType() );
             particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof GeometryMapping ) {
             GeometryMapping gm = (GeometryMapping) particleMapping;
@@ -331,7 +332,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns the relational mapping for the given feature type name.
-     * 
+     *
      * @param ftName
      *            name of the feature type, must not be <code>null</code>
      * @return relational mapping for the feature type, may be <code>null</code> (no relational mapping)
@@ -343,7 +344,7 @@ public class SQLFeatureStore implements FeatureStore {
     /**
      * Returns a {@link ParticleConverter} for the given {@link Mapping} instance from the served
      * {@link MappedAppSchema}.
-     * 
+     *
      * @param mapping
      *            particle mapping, must not be <code>null</code>
      * @return particle converter, never <code>null</code>
@@ -368,10 +369,12 @@ public class SQLFeatureStore implements FeatureStore {
         Envelope env = null;
         Connection conn = null;
         try {
-            conn = connProvider.getConnection();
+            conn = getConnection();
             env = calcEnvelope( ftName, conn );
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( e.getMessage() );
         } finally {
-            JDBCUtils.close( conn );
+            release( null, null, conn );
         }
         return env;
     }
@@ -431,7 +434,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, null, LOG );
+            release( rs, stmt, null );
         }
         return env;
     }
@@ -466,7 +469,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( e.getMessage(), e );
             throw new FeatureStoreException( e.getMessage(), e );
         } finally {
-            close( rs, stmt, null, LOG );
+            release( rs, stmt, null );
         }
         return env;
     }
@@ -508,15 +511,16 @@ public class SQLFeatureStore implements FeatureStore {
             sql.append( blobMapping.getGMLIdColumn() );
             sql.append( "=?" );
 
-            conn = connProvider.getConnection();
+            conn = getConnection();
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             stmt.setString( 1, id );
             rs = stmt.executeQuery();
             if ( rs.next() ) {
                 LOG.debug( "Recreating object '" + id + "' from bytea." );
                 BlobCodec codec = blobMapping.getCodec();
                 geomOrFeature = codec.decode( rs.getBinaryStream( 1 ), getNamespaceContext(), getSchema(),
-                                              blobMapping.getCRS(), new FeatureStoreGMLIdResolver( this ) );
+                                              blobMapping.getCRS(), resolver );
                 if ( getCache() != null ) {
                     getCache().add( geomOrFeature );
                 }
@@ -526,7 +530,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
         }
         return geomOrFeature;
     }
@@ -542,7 +546,7 @@ public class SQLFeatureStore implements FeatureStore {
             throw new UnsupportedOperationException( msg );
         }
 
-        FeatureInputStream rs = queryByIdFilterRelational( new IdFilter( id ), null );
+        FeatureInputStream rs = queryByIdFilterRelational( null, new IdFilter( id ), null );
         try {
             Iterator<Feature> iter = rs.iterator();
             if ( iter.hasNext() ) {
@@ -563,20 +567,32 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
-        FeatureStoreTransaction ta = null;
+        SQLFeatureStoreTransaction ta = null;
         try {
-            Connection conn = getConnection();
+            final Connection conn = getConnection();
             conn.setAutoCommit( false );
             ta = new SQLFeatureStoreTransaction( this, conn, getSchema(), inspectors );
+            transaction.set( ta );
         } catch ( SQLException e ) {
             throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
         }
         return ta;
     }
 
+    void closeAndDetachTransactionConnection()
+                            throws FeatureStoreException {
+        try {
+            transaction.get().getConnection().close();
+        } catch ( final SQLException e ) {
+            LOG.error( "Error closing connection/removing it from the pool: " + e.getMessage() );
+        } finally {
+            transaction.remove();
+        }
+    }
+
     /**
      * Returns the {@link FeatureStoreCache}.
-     * 
+     *
      * @return feature store cache, can be <code>null</code> (no cache configured)
      */
     public FeatureStoreCache getCache() {
@@ -585,7 +601,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns a resolver instance for resolving references to objects that are stored in this feature store.
-     * 
+     *
      * @return resolver, never <code>null</code>
      */
     public GMLReferenceResolver getResolver() {
@@ -629,7 +645,7 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new FilterEvaluationException( msg );
             }
             // should be no problem iterating over the features (id queries usually request only a few ids)
-            hits = queryByIdFilter( (IdFilter) filter, query.getSortProperties() ).count();
+            hits = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() ).count();
         }
         return hits;
     }
@@ -661,7 +677,6 @@ public class SQLFeatureStore implements FeatureStore {
             AbstractWhereBuilder wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
 
             if ( wb.getPostFilter() != null ) {
-                conn.close();
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
                 hits = queryByOperatorFilter( query, ftName, filter ).count();
             } else {
@@ -672,6 +687,8 @@ public class SQLFeatureStore implements FeatureStore {
                 } else {
                     sql.append( "COUNT(*) FROM (SELECT DISTINCT " );
 
+                    String ftTableAlias = wb.getAliasManager().getRootTableAlias();
+
                     FIDMapping fidMapping = ftMapping.getFidMapping();
                     List<Pair<SQLIdentifier, BaseType>> fidCols = fidMapping.getColumns();
                     boolean first = true;
@@ -681,12 +698,10 @@ public class SQLFeatureStore implements FeatureStore {
                         } else {
                             first = false;
                         }
-                        sql.append( fidCol.first );
+                        sql.append( ftTableAlias ).append( '.' ).append( fidCol.first );
                     }
 
                     sql.append( " FROM " );
-
-                    String ftTableAlias = wb.getAliasManager().getRootTableAlias();
 
                     // pure relational query
                     sql.append( ftMapping.getFtTable() );
@@ -729,12 +744,14 @@ public class SQLFeatureStore implements FeatureStore {
                 rs.next();
                 hits = rs.getInt( 1 );
             }
+        } catch( InvalidParameterValueException e ){
+            throw e;
         } catch ( Exception e ) {
             String msg = "Error performing hits query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
-            JDBCUtils.close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
         }
 
         return hits;
@@ -791,6 +808,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
+            stmt.setFetchSize( fetchSize );
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             rs.next();
             hits = rs.getInt( 1 );
@@ -799,7 +817,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
         } finally {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
         }
 
         return hits;
@@ -827,7 +845,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     /**
      * Returns a transformed version of the given {@link Geometry} in the specified CRS.
-     * 
+     *
      * @param literal
      * @param crs
      * @return transformed version of the geometry, never <code>null</code>
@@ -886,7 +904,7 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
                 throw new FilterEvaluationException( msg );
             }
-            result = queryByIdFilter( (IdFilter) filter, query.getSortProperties() );
+            result = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() );
         }
         return result;
     }
@@ -930,6 +948,8 @@ public class SQLFeatureStore implements FeatureStore {
                 FeatureInputStream rs;
                 try {
                     rs = query( queries[i++] );
+                } catch ( InvalidParameterValueException e ){
+                    throw e;
                 } catch ( Throwable e ) {
                     LOG.debug( e.getMessage(), e );
                     throw new RuntimeException( e.getMessage(), e );
@@ -945,15 +965,16 @@ public class SQLFeatureStore implements FeatureStore {
         return new CombinedFeatureInputStream( rsIter );
     }
 
-    private FeatureInputStream queryByIdFilter( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilter( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
         if ( blobMapping != null ) {
-            return queryByIdFilterBlob( filter, sortCrit );
+            return queryByIdFilterBlob( typeNames, filter, sortCrit );
         }
-        return queryByIdFilterRelational( filter, sortCrit );
+        return queryByIdFilterRelational( typeNames, filter, sortCrit );
     }
 
-    private FeatureInputStream queryByIdFilterBlob( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilterBlob( TypeName[] typeNames,
+                                                    IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
         FeatureInputStream result = null;
@@ -968,18 +989,22 @@ public class SQLFeatureStore implements FeatureStore {
             for ( int i = 1; i < filter.getMatchingIds().size(); ++i ) {
                 sb.append( ",?" );
             }
+            long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
                                           + " A WHERE A.gml_id in (" + sb + ")" );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            stmt.setFetchSize( fetchSize );
             int idx = 0;
             for ( String id : filter.getMatchingIds() ) {
                 stmt.setString( ++idx, id );
             }
+            begin = System.currentTimeMillis();
             rs = stmt.executeQuery();
-
-            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping, typeNames );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing id query: " + e.getMessage();
             LOG.debug( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -992,7 +1017,7 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureInputStream queryByIdFilterRelational( IdFilter filter, SortProperty[] sortCrit )
+    private FeatureInputStream queryByIdFilterRelational( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
                             throws FeatureStoreException {
 
         LinkedHashMap<QName, List<IdAnalysis>> ftNameToIdAnalysis = new LinkedHashMap<QName, List<IdAnalysis>>();
@@ -1008,7 +1033,10 @@ public class SQLFeatureStore implements FeatureStore {
                 idKernels.add( analysis );
             }
         } catch ( IllegalArgumentException e ) {
-            throw new FeatureStoreException( e.getMessage(), e );
+            LOG.warn( "No features are returned, as an error occurred during mapping of feature name to id: "
+                      + e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            return new EmptyFeatureInputStream();
         }
 
         if ( ftNameToIdAnalysis.size() != 1 ) {
@@ -1018,6 +1046,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         QName ftName = ftNameToIdAnalysis.keySet().iterator().next();
         FeatureType ft = getSchema().getFeatureType( ftName );
+        checkIfFeatureTypIsRequested( typeNames, ft );
         FeatureTypeMapping ftMapping = getSchema().getFtMapping( ftName );
         FIDMapping fidMapping = ftMapping.getFidMapping();
         List<IdAnalysis> idKernels = ftNameToIdAnalysis.get( ftName );
@@ -1032,8 +1061,8 @@ public class SQLFeatureStore implements FeatureStore {
 
             String tableAlias = "X1";
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, tableAlias,
-                                                                   escalationPolicy );
-            List<String> columns = builder.getInitialSelectColumns();
+                                                                   nullEscalation );
+            List<String> columns = builder.getInitialSelectList();
             StringBuilder sql = new StringBuilder( "SELECT " );
             sql.append( columns.get( 0 ) );
             for ( int i = 1; i < columns.size(); i++ ) {
@@ -1066,6 +1095,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "SQL: {}", sql );
 
             stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
             LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             int i = 1;
@@ -1084,7 +1114,7 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query by id filter (relational mode): " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1094,9 +1124,24 @@ public class SQLFeatureStore implements FeatureStore {
 
     protected Connection getConnection()
                             throws SQLException {
-        Connection conn = connProvider.getConnection();
+        if ( isTransactionActive() ) {
+            return transaction.get().getConnection();
+        }
+        final Connection conn = connProvider.getConnection();
         conn.setAutoCommit( readAutoCommit );
         return conn;
+    }
+
+    private void release( final ResultSet rs, final Statement stmt, final Connection conn ) {
+        if ( isTransactionActive() ) {
+            JDBCUtils.close( rs, stmt, null, LOG );
+        } else {
+            JDBCUtils.close( rs, stmt, conn, LOG );
+        }
+    }
+
+    private boolean isTransactionActive() {
+        return transaction.get() != null;
     }
 
     private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
@@ -1116,14 +1161,11 @@ public class SQLFeatureStore implements FeatureStore {
             FeatureTypeMapping ftMapping = getMapping( ftName );
             BlobMapping blobMapping = getSchema().getBlobMapping();
             FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-
-            List<String> columns = builder.getInitialSelectColumns();
-
+            List<String> columns = builder.getInitialSelectList();
             if ( query.getPrefilterBBox() != null ) {
                 OperatorFilter bboxFilter = new OperatorFilter( query.getPrefilterBBox() );
                 wb = getWhereBuilderBlob( bboxFilter, conn );
                 LOG.debug( "WHERE clause: " + wb.getWhere() );
-                // LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
             }
             String alias = wb != null ? wb.getAliasManager().getRootTableAlias() : "X1";
 
@@ -1225,7 +1267,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1274,8 +1316,8 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
 
             FeatureBuilder builder = new FeatureBuilderRelational( this, ft, ftMapping, conn, ftTableAlias,
-                                                                   escalationPolicy );
-            List<String> columns = builder.getInitialSelectColumns();
+                                                                   nullEscalation );
+            List<String> columns = builder.getInitialSelectList();
 
             BlobMapping blobMapping = getSchema().getBlobMapping();
 
@@ -1339,8 +1381,13 @@ public class SQLFeatureStore implements FeatureStore {
             LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
 
             result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( InvalidParameterValueException e ) {
+            release( rs, stmt, conn );
+            String msg = "Error performing query by operator filter: " + e.getMessage();
+            LOG.error( msg, e );
+            throw e;
         } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
+            release( rs, stmt, conn );
             String msg = "Error performing query by operator filter: " + e.getMessage();
             LOG.error( msg, e );
             throw new FeatureStoreException( msg, e );
@@ -1359,9 +1406,66 @@ public class SQLFeatureStore implements FeatureStore {
 
     private FeatureInputStream queryMultipleFts( Query[] queries, Envelope looseBBox )
                             throws FeatureStoreException {
-
         FeatureInputStream result = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        AbstractWhereBuilder blobWb = null;
+        try {
+            if ( looseBBox != null ) {
+                final OperatorFilter bboxFilter = new OperatorFilter( new BBOX( looseBBox ) );
+                blobWb = getWhereBuilderBlob( bboxFilter, conn );
+            }
+            conn = getConnection();
+            final short[] ftId = getQueriedFeatureTypeIds( queries );
+            final StringBuilder sql = new StringBuilder();
+            for ( int i = 0; i < ftId.length; i++ ) {
+                if ( i > 0 ) {
+                    sql.append( " UNION " );
+                }
+                sql.append( "SELECT gml_id,binary_object" );
+                if ( ftId.length > 1 ) {
+                    sql.append( "," );
+                    sql.append( i );
+                    sql.append( " AS QUERY_POS" );
+                }
+                sql.append( " FROM " );
+                sql.append( blobMapping.getTable() );
+                sql.append( " WHERE ft_type=?" );
+                if ( looseBBox != null ) {
+                    sql.append( " AND gml_bounded_by && ?" );
+                }
+            }
+            if ( ftId.length > 1 ) {
+                sql.append( " ORDER BY QUERY_POS" );
+            }
+            stmt = conn.prepareStatement( sql.toString() );
+            stmt.setFetchSize( fetchSize );
+            int argIdx = 1;
+            for ( final short ftId2 : ftId ) {
+                stmt.setShort( argIdx++, ftId2 );
+                if ( blobWb != null && blobWb.getWhere() != null ) {
+                    for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
+                        o.setArgument( stmt, argIdx++ );
+                    }
+                }
+            }
+            LOG.debug( "Query: {}", sql );
+            LOG.debug( "Prepared: {}", stmt );
+            rs = stmt.executeQuery();
+            final FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
+            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
+        } catch ( Exception e ) {
+            release( rs, stmt, conn );
+            String msg = "Error performing query: " + e.getMessage();
+            LOG.debug( msg );
+            LOG.trace( "Stack trace:", e );
+            throw new FeatureStoreException( msg, e );
+        }
+        return result;
+    }
 
+    private short[] getQueriedFeatureTypeIds( Query[] queries ) {
         short[] ftId = new short[queries.length];
         for ( int i = 0; i < ftId.length; i++ ) {
             Query query = queries[i];
@@ -1371,59 +1475,7 @@ public class SQLFeatureStore implements FeatureStore {
             }
             ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
         }
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        AbstractWhereBuilder blobWb = null;
-        try {
-            if ( looseBBox != null ) {
-                OperatorFilter bboxFilter = new OperatorFilter( new BBOX( looseBBox ) );
-                blobWb = getWhereBuilderBlob( bboxFilter, conn );
-            }
-
-            conn = getConnection();
-            StringBuffer sql = new StringBuffer( "SELECT gml_id,binary_object FROM " + blobMapping.getTable()
-                                                 + " WHERE " );
-            if ( looseBBox != null ) {
-                sql.append( "gml_bounded_by && ? AND " );
-            }
-            sql.append( "ft_type IN(?" );
-            for ( int i = 1; i < ftId.length; i++ ) {
-                sql.append( ",?" );
-            }
-            sql.append( ") ORDER BY " );
-            sql.append( dialect.stringIndex( "'['" + dialect.stringPlus() + dialect.cast( "ft_type", "varchar(2000)" )
-                                             + dialect.stringPlus() + "']'", "?" ) );
-            stmt = conn.prepareStatement( sql.toString() );
-            int firstFtArg = 1;
-            if ( blobWb != null && blobWb.getWhere() != null ) {
-                for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
-                    o.setArgument( stmt, firstFtArg++ );
-                }
-            }
-            StringBuffer orderString = new StringBuffer();
-            for ( int i = 0; i < ftId.length; i++ ) {
-                stmt.setShort( i + firstFtArg, ftId[i] );
-                orderString.append( "[" );
-                orderString.append( "" + ftId[i] );
-                orderString.append( "]" );
-            }
-            stmt.setString( ftId.length + firstFtArg, orderString.toString() );
-            LOG.debug( "Query: {}", sql );
-            LOG.debug( "Prepared: {}", stmt );
-
-            rs = stmt.executeQuery();
-            FeatureBuilder builder = new FeatureBuilderBlob( this, blobMapping );
-            result = new IteratorFeatureInputStream( new FeatureResultSetIterator( builder, rs, conn, stmt ) );
-        } catch ( Exception e ) {
-            close( rs, stmt, conn, LOG );
-            String msg = "Error performing query: " + e.getMessage();
-            LOG.debug( msg );
-            LOG.trace( "Stack trace:", e );
-            throw new FeatureStoreException( msg, e );
-        }
-        return result;
+        return ftId;
     }
 
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
@@ -1466,9 +1518,23 @@ public class SQLFeatureStore implements FeatureStore {
 
         private final FeatureBuilder builder;
 
+        private final ResultSet rs;
+
+        private final Connection conn;
+
+        private final Statement stmt;
+
         public FeatureResultSetIterator( FeatureBuilder builder, ResultSet rs, Connection conn, Statement stmt ) {
             super( rs, conn, stmt );
             this.builder = builder;
+            this.rs = rs;
+            this.conn = conn;
+            this.stmt = stmt;
+        }
+
+        @Override
+        public void close() {
+            release( rs, stmt, conn );
         }
 
         @Override
@@ -1561,10 +1627,24 @@ public class SQLFeatureStore implements FeatureStore {
             }
         }
 
-        escalationPolicy = config.getVoidEscalationPolicy();
-        if ( escalationPolicy == null ) {
-            // defaults don't work in jaxb for element values
-            escalationPolicy = VoidEscalationPolicyType.NONE;
+        if ( config.isNullEscalation() == null ) {
+            nullEscalation = false;
+        } else {
+            nullEscalation = config.isNullEscalation();
         }
     }
+
+    public void checkIfFeatureTypIsRequested( TypeName[] typeNames, FeatureType ft ) {
+        if ( typeNames != null && typeNames.length > 0 ) {
+            boolean isFeatureTypeRequested = false;
+            for ( TypeName typeName : typeNames ) {
+                if ( typeName.getFeatureTypeName().equals( ft.getName() ) )
+                    isFeatureTypeRequested = true;
+            }
+            if ( !isFeatureTypeRequested )
+                throw new InvalidParameterValueException( "Requested feature does not match the requested feature type.",
+                                                          "RESOURCEID" );
+        }
+    }
+
 }

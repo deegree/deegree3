@@ -49,16 +49,19 @@ When deegree webservices initializes the workspace, it scans directory ``modules
 .. hint::
   In addition to workspace directory ``modules/``, directory ``classes/`` can be used to add individual Java classes (and other files) to the classpath. This is usually not required.
 
+.. warning::
+Since deegree 3.4 jdbc drivers are not longer loaded from workspace classpath. Instead deegree follows the commonly used method to only use jdbc drivers which are available either by the system (shared or server libraries) or by the application (WEB-INF/lib).
+
 ^^^^^^^^^^^^^^^^^^^^^^^
 Checking available JARs
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 In order to see which JARs are available to your deegree webservices instance/workspace, use the "module info" link in the general section of the service console:
 
-.. figure:: images/module_info.jpg
+.. figure:: images/module_info.png
    :figwidth: 60%
    :width: 50%
-   :target: _images/module_info.jpg
+   :target: _images/module_info.png
 
    Displaying available JARs using the service console
 
@@ -79,7 +82,7 @@ By default, deegree webservices includes everything that is needed for connectin
 Adding Oracle support
 """""""""""""""""""""
 
-The following deegree resources support Oracle Spatial databases (10g, 11g):
+The following deegree resources support Oracle Spatial databases:
 
 * SimpleSQLFeatureStore
 * SQLFeatureStore
@@ -87,14 +90,44 @@ The following deegree resources support Oracle Spatial databases (10g, 11g):
 
 In order to enable Oracle connectivity for these resources, you need to add two JAR files (see :ref:`anchor-adding-jars`):
 
-* A compatible Oracle JDBC6-type driver (e.g. ``ojdbc6-11.2.0.2.jar``) [#f2]_
+* A compatible Oracle JDBC8-type driver (e.g. ``ojdbc8.jar``) [#f2]_
 * Module deegree-sqldialect-oracle [#f3]_
+
+"""""""""""""""""""""""""""""""
+Adding Oracle GeoRaster support
+"""""""""""""""""""""""""""""""
+
+The ``OracleGeoraster`` coverage store supports GeoRaster Objects stored in Oracle databases.
+
+In order to enable Oracle connectivity for these resources, you need to add the following JAR files (see :ref:`anchor-adding-jars`):
+
+* A compatible Oracle JDBC-type driver [#f2]_
+  * ojdbc8.jar
+* The Oracle Spatial and GeoRaster libraries and their dependencies
+  * sdoapi.jar
+  * sdogr.jar
+  * sdotype.jar
+  * sdoutl.jar
+  * xdb6.jar
+  * xmlparserv2_sans_jaxp_services.jar
+* Module deegree-coveragestore-oracle-georaster [#f6]_
+
+.. hint:: 
+  The Oracle Spatial and GeoRaster libraries can be found, without version number in filename, inside the Oracle Database installation directory.
+  The ``sdo*`` files can be found at ``ORACLE_HOME/md/jlib``, xdb6.jar at ``ORACLE_HOME/rdbms/jlib`` and xmlparserv2_sans_jaxp_services or xmlparserv2 at ``ORACLE_HOME/xdk/lib``.
+  
+
+.. note::
+  The ``xmlparserv2_sans_jaxp_services`` is the recommended library, as it does not contain  ``META-INF/services/`` entries. 
+  But if this library is not available the ``xmlparserv2`` can be used instead.
+  (In rare conditions this could set the oracle library as default XML parser, which could lead to unexpected behavior).
+
 
 """""""""""""""""""""""""""""""""""
 Adding Microsoft SQL server support
 """""""""""""""""""""""""""""""""""
 
-The following deegree resources support Microsoft SQL Server (2008, 2012):
+The following deegree resources support Microsoft SQL Server:
 
 * SimpleSQLFeatureStore
 * SQLFeatureStore
@@ -102,7 +135,7 @@ The following deegree resources support Microsoft SQL Server (2008, 2012):
 
 In order to enable Microsoft SQL Server connectivity for these resources, you need to add two JAR files (see :ref:`anchor-adding-jars`):
 
-* A compatible Microsoft JDBC driver (e.g. ``sqljdbc4-3.0.jar``) [#f4]_
+* A compatible Microsoft JDBC driver (e.g. ``sqljdbc4.jar``) [#f4]_
 * Module deegree-sqldialect-mssql [#f5]_
 
 .. rubric:: Footnotes
@@ -112,4 +145,5 @@ In order to enable Microsoft SQL Server connectivity for these resources, you ne
 .. [#f3] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar
 .. [#f4] http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx
 .. [#f5] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/${project.version}/deegree-sqldialect-mssql-${project.version}.jar
+.. [#f6] http://repo.deegree.org/content/repositories/public/org/deegree/deegree-coveragestore-oracle-georaster/${project.version}/deegree-coveragestore-oracle-georaster-${project.version}.jar
 

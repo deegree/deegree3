@@ -36,6 +36,7 @@
 
 package org.deegree.gml.feature;
 
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.StAXExportingHelper.writeAttribute;
@@ -56,13 +57,11 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
-import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.StringOrRef;
-import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Length;
 import org.deegree.commons.uom.Measure;
@@ -73,6 +72,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.ExtraProps;
 import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.timeslice.TimeSlice;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.property.ArrayPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -98,16 +98,18 @@ import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.deegree.gml.reference.FeatureReference;
 import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.gml.schema.GMLSchemaInfoSet;
+import org.deegree.time.gml.writer.GmlTimeGeometricPrimitiveWriter;
+import org.deegree.time.primitive.TimeGeometricPrimitive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Stream-based GML writer for {@link Feature} (and {@link FeatureCollection}) instances.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
@@ -138,9 +140,11 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
+    private static final QName NIL_REASON = new QName( "nilReason" );
+    
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
-     * 
+     *
      * @param gmlStreamWriter
      *            GML stream writer, must not be <code>null</code>
      */
@@ -181,7 +185,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     /**
      * Exports the given {@link Feature} (or {@link FeatureCollection}).
-     * 
+     *
      * @param feature
      *            feature to be exported, must not be <code>null</code>
      * @throws XMLStreamException
@@ -195,7 +199,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     /**
      * Exports the given {@link Property}.
-     * 
+     *
      * @param prop
      *            property to be exported, must not be <code>null</code>
      * @throws XMLStreamException
@@ -236,6 +240,29 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
+    public void export( final TimeSlice timeSlice, final GmlXlinkOptions resolveState )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        if ( timeSlice.getId() != null ) {
+            referenceExportStrategy.addExportedId( timeSlice.getId() );
+        }
+        final QName featureName = timeSlice.getType().getName();
+        LOG.debug( "Exporting TimeSlice {} with ID {}", featureName, timeSlice.getId() );
+        final String namespaceURI = featureName.getNamespaceURI();
+        final String localName = featureName.getLocalPart();
+        writeStartElementWithNS( namespaceURI, localName );
+        if ( timeSlice.getId() != null ) {
+            if ( fidAttr.getNamespaceURI() == "" ) {
+                writer.writeAttribute( fidAttr.getLocalPart(), timeSlice.getId() );
+            } else {
+                writeAttributeWithNS( fidAttr.getNamespaceURI(), fidAttr.getLocalPart(), timeSlice.getId() );
+            }
+        }
+        for ( final Property prop : timeSlice.getProperties() ) {
+            export( prop, resolveState );
+        }
+        writer.writeEndElement();
+    }
+
     private void export( Property property, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
@@ -270,41 +297,34 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         // TODO check for GML 2 properties (gml:pointProperty, ...) and export
         // as "app:gml2PointProperty" for GML 3
         boolean nilled = false;
-        TypedObjectNode nil = property.getAttributes().get( XSI_NIL );
+        Map<QName, PrimitiveValue> attributes = property.getAttributes();
+        TypedObjectNode nil = attributes.get( XSI_NIL );
         if ( nil instanceof PrimitiveValue ) {
             nilled = Boolean.TRUE.equals( ( (PrimitiveValue) nil ).getValue() );
         }
         if ( pt instanceof FeaturePropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
-                exportFeatureProperty( (FeaturePropertyType) pt, (Feature) value, resolveState );
+                exportFeatureProperty( (FeaturePropertyType) pt, (Feature) value, attributes, resolveState );
             }
         } else if ( pt instanceof SimplePropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
                 // must be a primitive value
                 PrimitiveValue pValue = (PrimitiveValue) value;
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( pValue != null ) {
-                    // TODO
-                    if ( pValue.getType().getBaseType() == BaseType.DECIMAL ) {
-                        writer.writeCharacters( pValue.getValue().toString() );
-                    } else {
-                        writer.writeCharacters( pValue.getAsText() );
-                    }
+                    writer.writeCharacters( pValue.getAsText() );
                 }
                 writer.writeEndElement();
             }
         } else if ( pt instanceof GeometryPropertyType ) {
             if ( nilled ) {
+                writeNilledElement( propName, attributes );
+            } else if ( value == null ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
                 endEmptyElement();
             } else {
                 Geometry gValue = (Geometry) value;
@@ -325,7 +345,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else if ( pt instanceof CodePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( nilled ) {
-                writeAttributeWithNS( XSINS, "nil", "true" );
+                writeNilAttributes( attributes );
             }
             CodeType codeType = (CodeType) value;
 
@@ -340,9 +360,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeEndElement();
         } else if ( pt instanceof EnvelopePropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( value != null ) {
@@ -359,7 +377,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             if ( GML_2 != version ) {
                 if ( nilled ) {
-                    writeAttributeWithNS( XSINS, "nil", "true" );
+                    writeNilAttributes( attributes );
                 }
                 writer.writeAttribute( "uom", length.getUomUri() );
             }
@@ -383,13 +401,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     writeAttributeWithNS( XLNNS, "href", stringOrRef.getRef() );
                 }
                 if ( nilled ) {
-                    writeAttributeWithNS( XSINS, "nil", "true" );
+                    writeNilAttributes( attributes );
                 }
                 endEmptyElement();
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                 if ( nilled ) {
-                    writeAttributeWithNS( XSINS, "nil", "true" );
+                    writeNilAttributes( attributes );
                 }
 
                 if ( stringOrRef.getRef() != null ) {
@@ -401,16 +419,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 writer.writeEndElement();
             }
         } else if ( pt instanceof CustomPropertyType ) {
-            if ( !timeSliceFilters.isEmpty() ) {
-                if ( excludeByTimeSliceFilter( property ) ) {
-                    return;
-                }
-            }
-
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            if ( property.getAttributes() != null ) {
-                for ( Entry<QName, PrimitiveValue> attr : property.getAttributes().entrySet() ) {
-                    writeAttribute( writer, attr.getKey(), attr.getValue().getAsText() );
+            if ( attributes != null ) {
+                for ( Entry<QName, PrimitiveValue> attr : attributes.entrySet() ) {
+                    QName attrKey = attr.getKey();
+                    PrimitiveValue attrValue = attr.getValue();
+                    if ( XSI_NIL.equals( attrKey ) )
+                        writeAttributeWithNS( attrKey.getNamespaceURI(), attrKey.getLocalPart(), attrValue.getAsText() );
+                    else
+                        writeAttribute( writer, attrKey, attrValue.getAsText() );
                 }
             }
             if ( property.getChildren() != null ) {
@@ -421,36 +438,44 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             writer.writeEndElement();
         } else if ( pt instanceof ArrayPropertyType ) {
             if ( nilled ) {
-                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writeAttributeWithNS( XSINS, "nil", "true" );
-                endEmptyElement();
+                writeNilledElement( propName, attributes );
             } else {
                 writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( (TypedObjectNode) property.getValue(), resolveState );
+                export( property.getValue(), resolveState );
                 writer.writeEndElement();
             }
+        } else if ( pt instanceof ObjectPropertyType ) {
+            final ObjectPropertyType objectPt = (ObjectPropertyType) pt;
+            if ( objectPt.getCategory() == TIME_SLICE && !timeSliceFilters.isEmpty() ) {
+                if ( excludeByTimeSliceFilter( property ) ) {
+                    return;
+                }
+            }
+            exportGenericObjectProperty( property, (GMLObject) value, resolveState );
         } else {
             throw new RuntimeException( "Internal error. Unhandled property type '" + pt.getClass() + "'" );
         }
     }
 
+    private void writeNilledElement( QName propName, Map<QName, PrimitiveValue> attributes )
+                            throws XMLStreamException {
+        writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        writeNilAttributes( attributes );
+        endEmptyElement();
+    }
+
+    private void writeNilAttributes( Map<QName, PrimitiveValue> attributes )
+                            throws XMLStreamException {
+        writeAttribute( writer, XSI_NIL, "true" );
+        PrimitiveValue value = attributes.get( NIL_REASON );
+        if ( value != null )
+            writeAttribute( writer, NIL_REASON, value.getAsText() );
+    }
+
+    
     private boolean excludeByTimeSliceFilter( Property property ) {
-        XSElementDeclaration elDecl = property.getXSType();
-        if ( elDecl == null ) {
-            return false;
-        }
-        if ( schemaInfoset.getTimeSlicePropertySemantics( elDecl ) == null ) {
-            return false;
-        }
-        TypedObjectNode timeSlice = property.getValue();
-        // TODO will somebody *please* clean up getChildren() and getValue()!
-        if ( timeSlice instanceof GenericXMLElement ) {
-            GenericXMLElement el = (GenericXMLElement) timeSlice;
-            if ( !el.getChildren().isEmpty() ) {
-                timeSlice = el.getChildren().get( 0 );
-            }
-        }
-        for ( Filter timeSliceFilter : timeSliceFilters ) {
+        final TimeSlice timeSlice = (TimeSlice) property.getValue();
+        for ( final Filter timeSliceFilter : timeSliceFilters ) {
             TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
             try {
                 if ( !timeSliceFilter.evaluate( timeSlice, evaluator ) ) {
@@ -592,13 +617,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return resolveState;
     }
 
-    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature, GmlXlinkOptions resolveState )
+    private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature,
+                                        Map<QName, PrimitiveValue> attributes,
+                                        GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = pt.getName();
         LOG.debug( "Exporting feature property '" + propName + "'" );
         if ( subFeature == null ) {
-            exportEmptyFeatureProperty( propName );
+            exportEmptyProperty( propName, attributes );
         } else if ( subFeature instanceof FeatureReference ) {
             exportFeatureProperty( pt, (FeatureReference) subFeature, resolveState, propName );
         } else {
@@ -621,9 +648,34 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void exportEmptyFeatureProperty( QName propName )
+    private void exportGenericObjectProperty( final Property prop, final GMLObject object,
+                                              final GmlXlinkOptions resolveState )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        final ObjectPropertyType pt = (ObjectPropertyType) prop.getType();
+        final QName propName = pt.getName();
+        LOG.debug( "Exporting object property '" + propName + "'" );
+        if ( object == null ) {
+            exportEmptyProperty( propName, prop.getAttributes() );
+        } else {
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            switch ( pt.getCategory() ) {
+            case TIME_OBJECT:
+                new GmlTimeGeometricPrimitiveWriter().write( writer, (TimeGeometricPrimitive) object );
+                break;
+            case TIME_SLICE:
+                export( (TimeSlice) object, resolveState );
+                break;
+            default:
+                throw new RuntimeException();
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    private void exportEmptyProperty( final QName propName, final Map<QName,PrimitiveValue> attrs)
                             throws XMLStreamException {
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+        writeAttributes( attrs );
         endEmptyElement();
     }
 
@@ -695,9 +747,9 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             ObjectPropertyType gmlPropertyDecl = schemaInfoset.getGMLPropertyDecl( elDecl, elName, 0, 1, null );
             if ( gmlPropertyDecl instanceof FeaturePropertyType ) {
                 List<TypedObjectNode> children = xmlContent.getChildren();
-                if ( children.size() == 1 && children.get( 0 ) instanceof Feature ) {
+                if ( children != null && children.size() == 1 && children.get( 0 ) instanceof Feature ) {
                     LOG.debug( "Exporting as nested feature property." );
-                    exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ),
+                    exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ), null,
                                            resolveState );
                     return;
                 }
@@ -705,19 +757,23 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
 
         writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
-
-        if ( xmlContent.getAttributes() != null ) {
-            for ( Entry<QName, PrimitiveValue> attr : xmlContent.getAttributes().entrySet() ) {
-                writeAttributeWithNS( attr.getKey().getNamespaceURI(), attr.getKey().getLocalPart(),
-                                      attr.getValue().getAsText() );
-            }
-        }
+        writeAttributes (xmlContent.getAttributes());
         if ( xmlContent.getChildren() != null ) {
             for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
                 export( childNode, resolveState );
             }
         }
         writer.writeEndElement();
+    }
+
+    private void writeAttributes( final Map<QName, PrimitiveValue> attrs )
+                            throws XMLStreamException {
+        if ( attrs != null ) {
+            for ( final Entry<QName, PrimitiveValue> attr : attrs.entrySet() ) {
+                writeAttributeWithNS( attr.getKey().getNamespaceURI(), attr.getKey().getLocalPart(),
+                                      attr.getValue().getAsText() );
+            }
+        }
     }
 
     private boolean isPropertyRequested( QName propName ) {

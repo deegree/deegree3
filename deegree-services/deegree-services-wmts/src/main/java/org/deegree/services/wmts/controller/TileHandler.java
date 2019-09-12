@@ -94,33 +94,41 @@ class TileHandler {
         getTile( op, response );
     }
 
-    private void getTile( GetTile op, HttpResponseBuffer response )
+    private void getTile( final GetTile op, final HttpResponseBuffer response )
                             throws OWSException, ServletException {
-        TileLayer layer = layers.get( op.getLayer() );
+        final TileLayer layer = layers.get( op.getLayer() );
         if ( layer == null ) {
             throw new OWSException( "Unknown layer: " + op.getLayer(), INVALID_PARAMETER_VALUE );
         }
 
-        String format = op.getFormat();
-        TileDataSet tds = layer.getTileDataSet( op.getTileMatrixSet() );
-
+        final TileDataSet tds = layer.getTileDataSet( op.getTileMatrixSet() );
         if ( tds == null ) {
             throw new OWSException( "The layer " + op.getLayer()
                                     + " has not been configured to offer the tile matrix set " + op.getTileMatrixSet()
                                     + ".", INVALID_PARAMETER_VALUE );
         }
 
-        if ( !tds.getNativeImageFormat().equals( format ) ) {
+        final String format = op.getFormat();
+        if ( format != null && !format.isEmpty() && !tds.getNativeImageFormat().equals( format ) ) {
             throw new OWSException( "Unknown format: " + format, INVALID_PARAMETER_VALUE );
         }
 
-        TileDataLevel level = tds.getTileDataLevel( op.getTileMatrix() );
+        final TileDataLevel level = tds.getTileDataLevel( op.getTileMatrix() );
         if ( level == null ) {
             throw new OWSException( "No tile matrix with id " + op.getTileMatrix() + " in tile matrix set "
                                     + op.getTileMatrixSet() + ".", INVALID_PARAMETER_VALUE );
         }
 
-        Tile t = level.getTile( op.getTileCol(), op.getTileRow() );
+        List<String> styles = level.getStyles();
+        if ( styles != null ) {
+            for ( String style : styles ) {
+                if ( !style.equals( op.getStyle() ) ) {
+                    throw new OWSException( "The STYLE parameter value of '" + op.getStyle() + "' is not valid.", INVALID_PARAMETER_VALUE, "Style" );
+                }
+            }
+        }
+
+        final Tile t = level.getTile( op.getTileCol(), op.getTileRow() );
         if ( t == null ) {
             // exception or empty tile?
             throw new OWSException( "No such tile found.", INVALID_PARAMETER_VALUE );
@@ -132,6 +140,7 @@ class TileHandler {
             if ( in == null ) {
                 throw new OWSException( "Tile yielded no data.", NO_APPLICABLE_CODE );
             }
+            response.setContentType( format );
             copy( in, response.getOutputStream() );
         } catch ( Throwable e ) {
             throw new OWSException( e.getMessage(), e, NO_APPLICABLE_CODE );

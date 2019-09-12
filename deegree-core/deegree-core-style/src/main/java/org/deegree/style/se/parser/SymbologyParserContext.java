@@ -41,6 +41,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.style.se.parser;
 
+import org.deegree.style.persistence.StyleStore;
+import org.deegree.workspace.ResourceLocation;
+
 /**
  * Context object to hold all SE parser instances for a parser setup.
  * 
@@ -58,6 +61,8 @@ class SymbologyParserContext {
     StrokeSymbologyParser strokeParser;
 
     FillSymbologyParser fillParser;
+
+    ResourceLocation<StyleStore> location;
 
     SymbologyParserContext( SymbologyParser parser ) {
         this.parser = parser;

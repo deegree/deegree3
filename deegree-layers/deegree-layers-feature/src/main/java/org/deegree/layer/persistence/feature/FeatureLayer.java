@@ -40,6 +40,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.feature;
 
+import static org.deegree.filter.Filters.addBBoxConstraint;
 import static org.deegree.layer.persistence.feature.FilterBuilder.buildFilterForMap;
 import static org.deegree.style.utils.Styles.getStyleFilters;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -79,15 +80,15 @@ public class FeatureLayer extends AbstractLayer {
 
     private static final Logger LOG = getLogger( FeatureLayer.class );
 
-    private FeatureStore featureStore;
+    private final FeatureStore featureStore;
 
-    private OperatorFilter filter;
+    private final OperatorFilter filter;
 
     private final QName featureType;
 
     SortProperty[] sortBy, sortByFeatureInfo;
 
-    private DimensionFilterBuilder dimFilterBuilder;
+    private final DimensionFilterBuilder dimFilterBuilder;
 
     public FeatureLayer( LayerMetadata md, FeatureStore featureStore, QName featureType, OperatorFilter filter,
                          List<SortProperty> sortBy, List<SortProperty> sortByFeatureInfo ) {
@@ -107,14 +108,9 @@ public class FeatureLayer extends AbstractLayer {
     @Override
     public FeatureLayerData mapQuery( final LayerQuery query, List<String> headers )
                             throws OWSException {
-        StyleRef ref = query.getStyle();
-        if ( !ref.isResolved() ) {
-            ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
-        }
-        Style style = ref.getStyle();
-
+        Style style = resolveStyleRef( query.getStyle() );
         if ( style == null ) {
-            throw new OWSException( "The style " + ref.getName() + " is not defined for layer "
+            throw new OWSException( "The style " + query.getStyle().getName() + " is not defined for layer "
                                     + getMetadata().getName() + ".", "StyleNotDefined", "styles" );
         }
         style = style.filter( query.getScale() );
@@ -161,18 +157,19 @@ public class FeatureLayer extends AbstractLayer {
                             throws OWSException {
         OperatorFilter filter = this.filter;
         filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
-        StyleRef ref = query.getStyle();
-        if ( !ref.isResolved() ) {
-            ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
-        }
-        Style style = ref.getStyle();
+        Style style = resolveStyleRef( query.getStyle() );
         style = style.filter( query.getScale() );
+
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter() );
 
-        final Envelope clickBox = query.calcClickBox( query.getRenderingOptions().getFeatureInfoRadius( getMetadata().getName() ) );
+        int layerRadius = -1;
+        if ( getMetadata().getMapOptions() != null ) {
+            layerRadius = getMetadata().getMapOptions().getFeatureInfoRadius();
+        }
+        final Envelope clickBox = query.calcClickBox( layerRadius > -1 ? layerRadius : query.getLayerRadius() );
 
-        filter = (OperatorFilter) Filters.addBBoxConstraint( clickBox, filter, null );
+        filter = (OperatorFilter) addBBoxConstraint( clickBox, filter, null, false );
 
         QName featureType = this.featureType == null ? style.getFeatureType() : this.featureType;
 

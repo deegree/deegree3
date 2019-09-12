@@ -38,9 +38,7 @@ package org.deegree.rendering.r2d.context;
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class MapOptions {
 
@@ -54,13 +52,21 @@ public class MapOptions {
 
     private int featureInfoRadius;
 
+    private boolean opaque;
+
     public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
                        int featureInfoRadius ) {
+        this( quality, interpol, antialias, maxFeatures, featureInfoRadius, false );
+    }
+
+    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
+                       int featureInfoRadius, boolean opaque ) {
         this.quality = quality;
         this.interpol = interpol;
         this.antialias = antialias;
         this.maxFeatures = maxFeatures;
-        this.setFeatureInfoRadius( featureInfoRadius );
+        this.featureInfoRadius = featureInfoRadius;
+        this.opaque = opaque;
     }
 
     /**
@@ -124,7 +130,7 @@ public class MapOptions {
     }
 
     /**
-     * @return the featureInfoRadius, a value < 1 means disabled
+     * @return the featureInfoRadius, a value < 1 means default, 0 means disabled and > 0 for the radius
      */
     public int getFeatureInfoRadius() {
         return featureInfoRadius;
@@ -132,10 +138,25 @@ public class MapOptions {
 
     /**
      * @param featureInfoRadius
-     *            the featureInfoRadius to set, a value < 1 means disabled
+     *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
      */
     public void setFeatureInfoRadius( int featureInfoRadius ) {
         this.featureInfoRadius = featureInfoRadius;
+    }
+
+    /**
+     * @return if layer is opaque
+     */
+    public boolean isOpaque() {
+        return opaque;
+    }
+
+    /**
+     * @param opaque
+     *            set if layer is opaque
+     */
+    public void setOpaque( boolean opaque ) {
+        this.opaque = opaque;
     }
 
     /**
@@ -246,5 +267,4 @@ public class MapOptions {
             }
         };
     }
-
 }

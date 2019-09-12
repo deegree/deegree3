@@ -130,6 +130,22 @@ public class DeegreeCRSStoreProviderTest {
         assertTrue( testCRS != null );
     }
 
+    @Test
+    public void testAreaOfUse()
+                            throws CRSStoreException {
+        CRSStore defaultStore = new CRSManager().create( CRSManager.class.getResource( "default.xml" ) );
+        assertNotNull( defaultStore );
+        assertTrue( defaultStore instanceof DeegreeCRSStore );
+        DeegreeCRSStore dStore = (DeegreeCRSStore) defaultStore;
+
+        ICRS testCRS = dStore.getCRSByCode( new CRSCodeType( "epsg:25832" ) );
+        assertTrue( testCRS != null );
+        double[] areaOfUseBBox = testCRS.getAreaOfUseBBox();
+        
+        assertTrue( 11.9539362759596 > areaOfUseBBox[0] && 11.9539362759596 < areaOfUseBBox [2] );
+        assertTrue( 52.3111416255697 > areaOfUseBBox[1] && 52.3111416255697 < areaOfUseBBox [3] );
+    }
+    
     private void testCRS_31466( ICRS testCRS, DeegreeCRSStore provider ) {
         assertNotNull( testCRS );
         assertTrue( testCRS instanceof IProjectedCRS );

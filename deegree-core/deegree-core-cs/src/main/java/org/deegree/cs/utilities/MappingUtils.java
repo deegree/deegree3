@@ -130,9 +130,7 @@ public class MappingUtils {
         if ( originalChain == null || userRequested == null || userRequested.isEmpty() ) {
             return originalChain;
         }
-        Iterator<Transformation> it = userRequested.iterator();
-        while ( it.hasNext() ) {
-            Transformation tbu = it.next();
+        for ( Transformation tbu : userRequested ) {
             if ( tbu != null ) {
                 originalChain = traverseAndReplace( originalChain, tbu );
             }
@@ -144,7 +142,7 @@ public class MappingUtils {
      * Traverse the given original transformation chain and replace some (or all) part(s) of the transformation chain
      * with the given transformation.
      * 
-     * @param createdResult
+     * @param originalChain
      * @param tbu
      * @return the transformation which uses the given tbu (if it matched).
      * @throws TransformationException

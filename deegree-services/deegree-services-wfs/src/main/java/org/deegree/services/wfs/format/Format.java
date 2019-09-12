@@ -65,7 +65,7 @@ public interface Format {
      * @param response
      *            sink for writing the response, never <code>null</code>
      */
-    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
+    public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response, boolean isSoap )
                             throws Exception;
 
     /**

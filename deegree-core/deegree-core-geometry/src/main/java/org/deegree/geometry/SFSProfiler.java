@@ -62,7 +62,7 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
  * {@link Geometry} that matches the capabilities of the <a href="http://www.opengeospatial.org/standards/sfa">Simple
  * Feature Specification (SFS)</a>
  * <p/>
- * <h4>General conversion scheme</h4>
+ * <h4>Conversion scheme</h4>
  * <ul>
  * <li>{@link Point} -> {@link Point}</li>
  * <li>{@link LineString} -> {@link LineString}</li>
@@ -282,7 +282,7 @@ public class SFSProfiler {
         }
         case MULTI_CURVE: {
             MultiCurve<Curve> mc = (MultiCurve<Curve>) geometry;
-            List simplifiedMembers = new ArrayList( mc.size() );
+            List<LineString> simplifiedMembers = new ArrayList<LineString>( mc.size() );
             for ( Curve member : mc ) {
                 simplifiedMembers.add( simplify( member ) );
             }

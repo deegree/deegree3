@@ -57,7 +57,7 @@ public interface ArcByCenterPoint extends CurveSegment {
     /**
      * Returns the center point of the arc.
      * 
-     * @return the center point of the arc
+     * @return the center point of the arc, never <code>null</code>
      */
     public Point getMidPoint();
 
@@ -66,21 +66,21 @@ public interface ArcByCenterPoint extends CurveSegment {
      * 
      * @param requestedUnits
      *            units that the radius should be expressed as
-     * @return the radius of the arc
+     * @return the radius of the arc, never <code>null</code>
      */
     public Measure getRadius( Unit requestedUnits );
 
     /**
      * Returns the bearing of the arc at the start.
      * 
-     * @return the bearing of the arc at the start
+     * @return the bearing of the arc at the start, can be <code>null</code>
      */
     public Angle getStartAngle();
 
     /**
      * Returns the bearing of the arc at the end.
      * 
-     * @return the bearing of the arc at the end
+     * @return the bearing of the arc at the end, can be <code>null</code>
      */
     public Angle getEndAngle();
 }

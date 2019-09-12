@@ -87,6 +87,7 @@ import org.deegree.filter.expression.custom.se.Categorize;
 import org.deegree.filter.expression.custom.se.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLEncoder;
+import org.deegree.style.persistence.StyleStore;
 import org.deegree.style.se.parser.SymbologyParsingHelper.Common;
 import org.deegree.style.se.unevaluated.Continuation;
 import org.deegree.style.se.unevaluated.Continuation.Updater;
@@ -111,6 +112,7 @@ import org.deegree.style.styling.components.PerpendicularOffsetType.Substraction
 import org.deegree.style.styling.components.PerpendicularOffsetType.Type;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.UOM;
+import org.deegree.workspace.ResourceLocation;
 import org.slf4j.Logger;
 
 /**
@@ -139,6 +141,8 @@ public class SymbologyParser {
 
     private SymbologyParserContext context = new SymbologyParserContext( this );
 
+    private ResourceLocation<StyleStore> location;
+
     /**
      * Constructs one which does not collect source snippets.
      */
@@ -152,6 +156,15 @@ public class SymbologyParser {
      */
     public SymbologyParser( boolean collectXMLSnippets ) {
         this.collectXMLSnippets = collectXMLSnippets;
+    }
+
+    /**
+     * @param location
+     *            used to resolve external resources
+     */
+    public SymbologyParser( ResourceLocation<StyleStore> location ) {
+        this.location = location;
+        context.location = location;
     }
 
     private static boolean require( XMLStreamReader in, String elementName ) {
@@ -170,13 +183,18 @@ public class SymbologyParser {
      * @throws XMLStreamException
      * @throws MalformedURLException
      */
-    public static URL parseOnlineResource( XMLStreamReader in )
+    public URL parseOnlineResource( XMLStreamReader in )
                             throws XMLStreamException, MalformedURLException {
         if ( !require( in, "OnlineResource" ) ) {
             return null;
         }
         String url = in.getAttributeValue( XLNNS, "href" );
-        URL resolved = XMLStreamUtils.resolve( url, in );
+        URL resolved;
+        if ( location != null ) {
+            resolved = location.resolveToUrl( url );
+        } else {
+            resolved = XMLStreamUtils.resolve( url, in );
+        }
         in.nextTag();
         in.require( END_ELEMENT, null, "OnlineResource" );
         return resolved;
@@ -760,6 +778,9 @@ public class SymbologyParser {
                     in.nextTag();
 
                     if ( in.getLocalName().equalsIgnoreCase( "PointPlacement" ) ) {
+                        String cssName = in.getAttributeValue( null, "auto" );
+                        baseOrEvaluated.auto = ( cssName != null && cssName.equalsIgnoreCase( "true" ) ); 
+                        
                         while ( !( in.isEndElement() && in.getLocalName().equals( "PointPlacement" ) ) ) {
                             in.nextTag();
                             if ( in.getLocalName().equals( "AnchorPoint" ) ) {
@@ -1110,6 +1131,24 @@ public class SymbologyParser {
                     }
                 }, contn ).second;
             }
+            if ( in.getLocalName().equals( "Center" ) ) {
+                contn = updateOrContinue( in, "Center", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.center = Boolean.parseBoolean( val );
+
+                    }
+                }, contn ).second;
+            }
+            if ( in.getLocalName().equals( "WordWise" ) ) {
+                contn = updateOrContinue( in, "WordWise", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.wordWise = Boolean.parseBoolean( val );
+
+                    }
+                }, contn ).second;
+            }
         }
 
         return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
@@ -1142,8 +1181,7 @@ public class SymbologyParser {
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "OnlineResource" ) ) {
             try {
-                URL url = SymbologyParser.parseOnlineResource( in );
-                System.out.println( "reading url" + url );
+                URL url = parseOnlineResource( in );
                 XMLStreamReader newReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
                                                                                                  url.openStream() );
                 while ( !newReader.isStartElement() )

@@ -36,7 +36,10 @@ import org.deegree.rendering.r3d.persistence.RenderableStore;
 import org.deegree.rendering.r3d.persistence.RenderableStoreManager;
 import org.deegree.services.OWS;
 import org.deegree.services.jaxb.wpvs.DeegreeWPVS;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
@@ -75,6 +78,14 @@ public class WpvsMetadata extends AbstractResourceMetadata<OWS> {
             Collection<ResourceMetadata<RenderableStore>> mds2 = rmgr.getResourceMetadata();
             for ( ResourceMetadata<RenderableStore> md : mds2 ) {
                 softDependencies.add( md.getIdentifier() );
+            }
+            
+            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
+                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
+                    softDependencies.add( mdId );
+                }
             }
 
             return new WpvsBuilder( this, workspace, cfg );

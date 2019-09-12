@@ -45,16 +45,18 @@ import javax.xml.namespace.QName;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.SimpleGeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Tracks feature type envelope information during a {@link FeatureStoreTransaction}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class BBoxTracker {
@@ -68,7 +70,7 @@ public class BBoxTracker {
 
     /**
      * An insert event for the specified feature instance.
-     * 
+     *
      * @param f
      *            feature instance to be inserted, must not be <code>null</code>
      * @param storageSrs
@@ -76,9 +78,17 @@ public class BBoxTracker {
      */
     public void insert( Feature f, ICRS storageSrs ) {
         if ( !recalcFts.contains( f.getName() ) ) {
-            Envelope bbox = f.getEnvelope();
+            Envelope bbox = null;
+            try {
+                bbox = f.getEnvelope();
+            } catch ( Exception e ) {
+                LOG.warn( "Unable to determine bbox of feature with id " + f.getId() + ": " + e.getMessage() );
+            }
             if ( bbox != null ) {
                 try {
+                    if ( bbox.getCoordinateSystem() == null ){
+                        bbox.setCoordinateSystem( storageSrs );
+                    }
                     if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().equals( storageSrs ) ) {
                         GeometryTransformer transformer = new GeometryTransformer( storageSrs );
                         bbox = transformer.transform( bbox );
@@ -99,7 +109,7 @@ public class BBoxTracker {
 
     /**
      * An update event for the specified feature type.
-     * 
+     *
      * @param ft
      *            feature type to be updated, must not be <code>null</code>
      */
@@ -110,7 +120,7 @@ public class BBoxTracker {
 
     /**
      * A delete event for the specified feature type.
-     * 
+     *
      * @param ft
      *            feature type to be deleted, must not be <code>null</code>
      */
@@ -121,7 +131,7 @@ public class BBoxTracker {
 
     /**
      * Returns feature type name to {@link Envelope} mappings for all envelopes to be increased.
-     * 
+     *
      * @return name to envelope mappings, never <code>null</code>
      */
     public Map<QName, Envelope> getIncreaseBBoxes() {
@@ -130,7 +140,7 @@ public class BBoxTracker {
 
     /**
      * Returns the names of all feature types that require a bbox recalculation.
-     * 
+     *
      * @return names of feature types, never <code>null</code>
      */
     public Set<QName> getRecalcFeatureTypes() {

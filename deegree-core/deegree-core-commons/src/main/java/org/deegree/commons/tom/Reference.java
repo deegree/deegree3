@@ -38,12 +38,12 @@ package org.deegree.commons.tom;
 
 /**
  * Represents a lazy reference to an {@link Object}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  * @param <T>
  *            type of the referenced object
  */
@@ -57,11 +57,11 @@ public class Reference<T extends Object> implements Object {
 
     private T object;
 
-    private ReferenceResolvingException exception;
+    protected ReferenceResolvingException exception;
 
     /**
      * Creates a new {@link Reference} instance.
-     * 
+     *
      * @param resolver
      *            used for resolving the reference, must not be <code>null</code>
      * @param uri
@@ -80,7 +80,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Returns the URI of the object.
-     * 
+     *
      * @return the URI of the object, never <code>null</code>
      */
     public String getURI() {
@@ -89,7 +89,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Sets the URI of the object.
-     * 
+     *
      * @param uri
      *            URI of the object, must not be <code>null</code>
      */
@@ -99,11 +99,21 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Returns whether the reference has been resolved.
-     * 
+     *
      * @return true, if the reference has been resolved, false otherwise
      */
     public boolean isResolved() {
         return object != null;
+    }
+
+    /**
+     * Returns whether the reference has been resolved and is an internal reference.
+     *
+     * @return <code>true</code> if the reference is resolved is an internal reference, <code>false</code> if the
+     *         reference has not been resolved or is not internal
+     */
+    public boolean isInternalResolved() {
+        return false;
     }
 
     // TODO can we get rid of this method?
@@ -112,8 +122,17 @@ public class Reference<T extends Object> implements Object {
     }
 
     /**
+     * Returns the base URL for resolving the uri.
+     *
+     * @return base URL for resolving the uri, may be <code>null</code> (no resolving of relative URLs)
+     */
+    public String getBaseURL() {
+        return baseURL;
+    }
+
+    /**
      * Sets the referenced object.
-     * 
+     *
      * @param object
      *            the referenced object, may be <code>null</code>
      */
@@ -123,7 +142,7 @@ public class Reference<T extends Object> implements Object {
 
     /**
      * Returns the referenced {@link Object} instance (may trigger resolving and fetching it).
-     * 
+     *
      * @return the referenced {@link Object} instance
      * @throws ReferenceResolvingException
      *             if the reference cannot be resolved

@@ -32,8 +32,11 @@ import java.util.Collection;
 import org.deegree.commons.xml.jaxb.JAXBUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.jaxb.wps.DeegreeWPS;
+import org.deegree.services.metadata.OWSMetadataProvider;
+import org.deegree.services.metadata.OWSMetadataProviderManager;
 import org.deegree.services.wps.provider.ProcessProvider;
 import org.deegree.workspace.ResourceBuilder;
+import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
 import org.deegree.workspace.ResourceMetadata;
@@ -66,6 +69,14 @@ public class WpsMetadata extends AbstractResourceMetadata<OWS> {
             Collection<ResourceMetadata<ProcessProvider>> mds = mgr.getResourceMetadata();
             for ( ResourceMetadata<ProcessProvider> md : mds ) {
                 softDependencies.add( md.getIdentifier() );
+            }
+            
+            OWSMetadataProviderManager mmgr = workspace.getResourceManager( OWSMetadataProviderManager.class );
+            for ( ResourceMetadata<OWSMetadataProvider> md : mmgr.getResourceMetadata() ) {
+                ResourceIdentifier<OWSMetadataProvider> mdId = md.getIdentifier();
+                if ( mdId.getId().equals( getIdentifier().getId() + "_metadata" ) ) {
+                    softDependencies.add( mdId );
+                }
             }
 
             return new WpsBuilder( this, workspace, cfg );

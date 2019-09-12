@@ -68,9 +68,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.util.base64.Base64EncodingStringBufferOutputStream;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.URITranslator;
@@ -109,6 +111,8 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
     private static final String APPSCHEMAS = "appschemas";
 
+    private static final String OGC_SCHEMA_HOST = "http://schemas.opengis.net";
+
     // URL of workspace appschema directory
     private String wsAppSchemaBaseURL;
 
@@ -132,6 +136,8 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         URL baseUrl = DescribeFeatureType.class.getResource( "/META-INF/SCHEMAS_OPENGIS_NET" );
         if ( baseUrl != null ) {
             this.ogcSchemaJarBaseURL = baseUrl.toString();
+            LOG.debug( "GmlDescribeFeatureTypeHandler OGC Schema Jar Base URL: '" + this.ogcSchemaJarBaseURL + "'" );
+
         }
     }
 
@@ -157,7 +163,6 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
      */
     public void doDescribeFeatureType( DescribeFeatureType request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException {
-
         LOG.debug( "doDescribeFeatureType: " + request );
 
         String mimeType = options.getMimeType();
@@ -168,6 +173,73 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
 
         XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, mimeType, null );
 
+        doDescribeFeatureType( request, version, writer );
+
+        writer.flush();
+    }
+
+    /**
+     * Performs the given {@link DescribeFeatureType} request from SOAP.
+     * <p>
+     * If the request targets feature types in multiple namespaces, a WFS 2.0.0-style wrapper document is generated. The
+     * response document embeds all element and type declarations from one of the namespaces and imports the
+     * declarations from the other namespaces using a KVP-<code>DescribeFeatureType</code> request that refers back to
+     * the service. Result is encoded in base64 and served in wrapping DescribeFeatureTypeResponse element.
+     * </p>
+     * 
+     * @param request
+     *            request to be handled, never <code>null</code>
+     * @param response
+     *            response that is used to write the result, never <code>null</code>
+     * @throws OWSException
+     *             if a WFS specific exception occurs, e.g. a requested feature type is not served
+     * @throws XMLStreamException
+     *             if writing the XML response fails
+     * @throws IOException
+     *             if an IO-error occurs
+     */
+    public void doDescribeFeatureTypeInSoap( DescribeFeatureType request, HttpResponseBuffer response )
+                            throws OWSException, XMLStreamException, IOException {
+        LOG.debug( "doDescribeFeatureTypeInSoap: " + request );
+
+        String mimeType = options.getMimeType();
+        GMLVersion version = options.getGmlVersion();
+
+        LOG.debug( "contentType:" + response.getContentType() );
+        LOG.debug( "characterEncoding:" + response.getCharacterEncoding() );
+
+        XMLStreamWriter writer = WebFeatureService.getXMLResponseWriter( response, mimeType, null );
+
+        StringBuffer base64Schema = new StringBuffer();
+        Base64EncodingStringBufferOutputStream base64OutputStream = new Base64EncodingStringBufferOutputStream(
+                                                                                                                base64Schema );
+        final XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        XMLStreamWriter schemaWriter = factory.createXMLStreamWriter( base64OutputStream );
+
+        // open "wfs:DescribeFeatureTypeResponse" element
+        if ( VERSION_200.equals( request.getVersion() ) ) {
+            writer.setPrefix( WFS_PREFIX, WFS_200_NS );
+            writer.writeStartElement( WFS_200_NS, "DescribeFeatureTypeResponse" );
+            writer.writeNamespace( WFS_PREFIX, WFS_200_NS );
+        } else {
+            writer.setPrefix( WFS_PREFIX, WFS_NS );
+            writer.writeStartElement( WFS_NS, "DescribeFeatureTypeResponse" );
+            writer.writeNamespace( WFS_PREFIX, WFS_NS );
+        }
+
+        doDescribeFeatureType( request, version, schemaWriter );
+
+        // write base64 padding and flush schema to buffer
+        schemaWriter.flush();
+        base64OutputStream.complete();
+
+        writer.writeCharacters( base64Schema.toString() );
+        writer.writeEndElement(); // DescribeFeatureTypeResponse
+        writer.flush();
+    }
+
+    private void doDescribeFeatureType( DescribeFeatureType request, GMLVersion version, XMLStreamWriter writer )
+                            throws XMLStreamException, OWSException {
         // check for deegree-specific DescribeFeatureType request that asks for the WFS schema in a GML
         // version that does not match the WFS schema (e.g. WFS 1.1.0, GML 2)
         if ( request.getTypeNames() != null && request.getTypeNames().length == 1
@@ -177,16 +249,36 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         } else {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
-            WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
-            if ( options.isExportOriginalSchema() && storeManager.getStores().length == 1
-                 && storeManager.getStores()[0].getSchema().getGMLSchema() != null
-                 && storeManager.getStores()[0].getSchema().getGMLSchema().getVersion() == version ) {
-                exportOriginalInfoSet( writer, storeManager.getStores()[0].getSchema().getGMLSchema(), targetNs );
+            if ( options.isExportOriginalSchema() ) {
+                GMLSchemaInfoSet gmlSchema = findGmlSchema( namespaces, version );
+                if ( gmlSchema != null ) {
+                    exportOriginalInfoSet( writer, gmlSchema, targetNs );
+                } else {
+                    LOG.warn( "Could not find original schema corresponding to the requested schema, try to reencode the schema!" );
+                    reencodeSchema( request, writer, targetNs, namespaces, version );
+                }
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
             }
         }
-        writer.flush();
+    }
+
+    private GMLSchemaInfoSet findGmlSchema( Collection<String> namespaces, GMLVersion version ) {
+        LOG.debug( "Try to find GML schema from store supporting namespaces {}", namespaces );
+        WfsFeatureStoreManager storeManager = format.getMaster().getStoreManager();
+        for ( FeatureStore store : storeManager.getStores() ) {
+            if ( storeSupportsAllRequestedNamespaces( store, namespaces ) ) {
+                GMLSchemaInfoSet gmlSchema = store.getSchema().getGMLSchema();
+                if ( gmlSchema != null && gmlSchema.getVersion() == version )
+                    return gmlSchema;
+            }
+        }
+        return null;
+    }
+
+    private boolean storeSupportsAllRequestedNamespaces( FeatureStore store, Collection<String> namespaces ) {
+        Set<String> appNamespaces = store.getSchema().getAppNamespaces();
+        return appNamespaces.containsAll( namespaces );
     }
 
     private void reencodeSchema( DescribeFeatureType request, XMLStreamWriter writer, String targetNs,
@@ -204,7 +296,6 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                 fts.add( ft );
             }
         }
-
         exporter.export( writer, fts );
     }
 
@@ -231,11 +322,37 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
                     return options.getAppSchemaBaseURL() + "/" + relativePath;
                 }
                 if ( uri.startsWith( ogcSchemaJarBaseURL ) ) {
-                    return "http://schemas.opengis.net" + uri.substring( ogcSchemaJarBaseURL.length() );
+                    return translateOGCSchemaLocation( uri );
                 }
                 return uri;
             }
         } );
+    }
+
+    /**
+     * Helper method to translate the internal URI given into a remote OGC Schema location. This method ensures there's
+     * a starting "/" in the path.
+     * 
+     * @param uri
+     *            The URI String to translate
+     * @return The "remote" OGC Schema location.
+     */
+    private String translateOGCSchemaLocation( String uri ) {
+
+        StringBuilder ogcSchemaLocation = new StringBuilder( OGC_SCHEMA_HOST );
+        String ogcSchemaPath = uri.substring( ogcSchemaJarBaseURL.length() );
+        if ( !ogcSchemaPath.startsWith( "/" ) ) {
+            ogcSchemaLocation.append( "/" );
+            LOG.debug( "OGC Schema path from internal Jar did not include starting '/'. Path: '" + ogcSchemaPath
+                       + "'. Prefixed with '/' to complete URL...." );
+        }
+        ogcSchemaLocation.append( ogcSchemaPath );
+
+        LOG.debug( "Translated OGC Schema Jar URL to schemaLocation: '" + ogcSchemaLocation + "'" );
+
+        return ogcSchemaLocation.toString();
+        // Old behaviour
+        // return "http://schemas.opengis.net" + uri.substring( ogcSchemaJarBaseURL.length() );
     }
 
     private void writeWFSSchema( XMLStreamWriter writer, Version version, GMLVersion gmlVersion )
@@ -464,4 +581,5 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         }
         return dependentNamespaces;
     }
+
 }

@@ -157,8 +157,8 @@ public class DimensionConfigBuilder {
             boolean nearest = ( type.isNearestValue() != null ) && type.isNearestValue();
             boolean multiple = ( type.isMultipleValues() != null ) && type.isMultipleValues();
             Dimension<Object> dim;
-            dim = new Dimension<Object>( type.getName(), (List<?>) parseTyped( type.getDefaultValue(), false ), false,
-                                         nearest, multiple, type.getUnits(), type.getUnitSymbol(), type.getSource(),
+            dim = new Dimension<Object>( type.getName(), (List<?>) parseTyped( defaultList, false ), false, nearest,
+                                         multiple, type.getUnits(), type.getUnitSymbol(), type.getSource(),
                                          (List<?>) parseTyped( list, false ) );
             map.put( type.getName(), dim );
         } catch ( ParseException e ) {

@@ -36,8 +36,15 @@
 package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.utils.JDBCUtils.close;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
+import static org.jaxen.saxpath.Axis.CHILD;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,6 +57,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
@@ -68,15 +79,16 @@ import org.deegree.commons.tom.sql.ParticleConverter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
-import org.deegree.feature.persistence.sql.jaxb.VoidEscalationPolicyType;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -84,8 +96,16 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.gml.GMLInputFactory;
+import org.deegree.gml.GMLOutputFactory;
+import org.deegree.gml.GMLStreamReader;
+import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.GmlXlinkOptions;
+import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
+import org.deegree.time.TimeObject;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -123,9 +143,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     // private final GMLVersion gmlVersion;
 
-    private final LinkedHashMap<String, Integer> colToRsIdx = new LinkedHashMap<String, Integer>();
+    private final LinkedHashMap<String, Integer> qualifiedSqlExprToRsIdx = new LinkedHashMap<String, Integer>();
 
-    private VoidEscalationPolicyType escalationPolicy;
+    private final boolean nullEscalation;
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
@@ -142,13 +162,13 @@ public class FeatureBuilderRelational implements FeatureBuilder {
      *            the void escalation policy, must not be <code>null</code>
      */
     public FeatureBuilderRelational( SQLFeatureStore fs, FeatureType ft, FeatureTypeMapping ftMapping, Connection conn,
-                                     String ftTableAlias, VoidEscalationPolicyType escalationPolicy ) {
+                                     String ftTableAlias, boolean nullEscalation ) {
         this.fs = fs;
         this.ft = ft;
         this.ftMapping = ftMapping;
         this.conn = conn;
         this.tableAlias = ftTableAlias;
-        this.escalationPolicy = escalationPolicy;
+        this.nullEscalation = nullEscalation;
         this.nsBindings = new NamespaceBindings();
         for ( String prefix : fs.getNamespaceContext().keySet() ) {
             String ns = fs.getNamespaceContext().get( prefix );
@@ -162,15 +182,15 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     @Override
-    public List<String> getInitialSelectColumns() {
+    public List<String> getInitialSelectList() {
         for ( Pair<SQLIdentifier, BaseType> fidColumn : ftMapping.getFidMapping().getColumns() ) {
-            addColumn( colToRsIdx, tableAlias + "." + fidColumn.first.getName() );
+            addColumn( qualifiedSqlExprToRsIdx, tableAlias + "." + fidColumn.first.getName() );
         }
         for ( Mapping mapping : ftMapping.getMappings() ) {
-            addSelectColumns( mapping, colToRsIdx, true );
+            addSelectColumns( mapping, qualifiedSqlExprToRsIdx, true );
         }
-        LOG.debug( "Initial select columns: " + colToRsIdx );
-        return new ArrayList<String>( colToRsIdx.keySet() );
+        LOG.debug( "Initial select columns: " + qualifiedSqlExprToRsIdx );
+        return new ArrayList<String>( qualifiedSqlExprToRsIdx.keySet() );
     }
 
     private void addColumn( LinkedHashMap<String, Integer> colToRsIdx, String column ) {
@@ -186,7 +206,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     }
 
     private void addSelectColumns( Mapping mapping, LinkedHashMap<String, Integer> colToRsIdx, boolean initial ) {
-
         List<TableJoin> jc = mapping.getJoinedTable();
         if ( jc != null && initial ) {
             if ( mapping instanceof FeatureMapping ) {
@@ -226,7 +245,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 for ( Mapping particle : cm.getParticles() ) {
                     addSelectColumns( particle, colToRsIdx, true );
                 }
-            } else if ( mapping instanceof ConstantMapping<?> ) {
+            } else if ( mapping instanceof SqlExpressionMapping<?> ) {
                 // nothing to do
             } else {
                 LOG.warn( "Mappings of type '" + mapping.getClass() + "' are not handled yet." );
@@ -242,10 +261,10 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         try {
             String gmlId = ftMapping.getFidMapping().getPrefix();
             List<Pair<SQLIdentifier, BaseType>> fidColumns = ftMapping.getFidMapping().getColumns();
-            gmlId += rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
+            gmlId += rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( 0 ).first ) );
             for ( int i = 1; i < fidColumns.size(); i++ ) {
                 gmlId += ftMapping.getFidMapping().getDelimiter()
-                         + rs.getObject( colToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
+                         + rs.getObject( qualifiedSqlExprToRsIdx.get( tableAlias + "." + fidColumns.get( i ).first ) );
             }
             if ( fs.getCache() != null ) {
                 feature = (Feature) fs.getCache().get( gmlId );
@@ -255,17 +274,18 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 List<Property> props = new ArrayList<Property>();
                 for ( Mapping mapping : ftMapping.getMappings() ) {
                     ValueReference propName = mapping.getPath();
-                    if ( propName.getAsQName() != null ) {
-                        PropertyType pt = ft.getPropertyDeclaration( propName.getAsQName() );
+                    QName childEl = getChildElementStepAsQName( propName );
+                    if ( childEl != null ) {
+                        PropertyType pt = ft.getPropertyDeclaration( childEl );
                         String idPrefix = gmlId + "_" + toIdPrefix( propName );
                         addProperties( props, pt, mapping, rs, idPrefix );
                     } else {
-                        // TODO more complex mappings, e.g. "propname[1]"
                         LOG.warn( "Omitting mapping '" + mapping
-                                  + "'. Only simple property names (QNames) are currently supported here." );
+                                  + "'. Only single child element steps (optionally with number predicate)"
+                                  + " are currently supported." );
                     }
                 }
-                feature = ft.newFeature( gmlId, props, null );
+                feature = ft.newFeatureInstance( gmlId, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
                 }
@@ -283,6 +303,8 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         String s = propName.getAsText();
         s = s.replace( "/", "_" );
         s = s.replace( ":", "_" );
+        s = s.replace( "[", "_" );
+        s = s.replace( "]", "_" );
         s = s.toUpperCase();
         return s;
     }
@@ -290,8 +312,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
     private void addProperties( List<Property> props, PropertyType pt, Mapping propMapping, ResultSet rs,
                                 String idPrefix )
                             throws SQLException {
-
-        List<TypedObjectNode> particles = buildParticles( propMapping, rs, colToRsIdx, idPrefix );
+        List<TypedObjectNode> particles = buildParticles( propMapping, rs, qualifiedSqlExprToRsIdx, idPrefix );
         if ( particles.isEmpty() && pt.getMinOccurs() > 0 ) {
             if ( pt.isNillable() ) {
                 Map<QName, PrimitiveValue> attrs = Collections.singletonMap( new QName( CommonNamespaces.XSINS, "nil" ),
@@ -303,14 +324,75 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                           + "' to output. This will result in schema violations." );
             }
         }
-        for ( TypedObjectNode particle : particles ) {
+        for ( final TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
-                GenericXMLElement xmlEl = (GenericXMLElement) particle;
-                props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(), xmlEl.getChildren() ) );
+                if ( pt instanceof ObjectPropertyType && TIME_OBJECT.equals( ( (ObjectPropertyType) pt ).getCategory() ) ) {
+                    props.add( recreatePropertyFromGml( pt, (GenericXMLElement) particle ) );
+                } else {
+                    GenericXMLElement xmlEl = (GenericXMLElement) particle;
+                    props.add( new GenericProperty( pt, xmlEl.getName(), null, xmlEl.getAttributes(),
+                                                    xmlEl.getChildren() ) );
+                }
             } else {
                 props.add( new GenericProperty( pt, pt.getName(), particle ) );
             }
         }
+    }
+
+    // private GMLObject buildGmlObject( final ObjectPropertyType pt, final CompoundMapping propMapping,
+    // final ResultSet rs, final String idPrefix ) {
+    // LOG.debug( "Recreating GML object from db (relational mode)." );
+    // final List<Property> props = new ArrayList<Property>();
+    // for ( final Mapping mapping : propMapping.getParticles()) {
+    // ValueReference propName = mapping.getPath();
+    // QName childEl = getChildElementStepAsQName( propName );
+    // if ( childEl != null ) {
+    // PropertyType pt = ft.getPropertyDeclaration( childEl );
+    // String idPrefix = gmlId + "_" + toIdPrefix( propName );
+    // addProperties( props, pt, mapping, rs, idPrefix );
+    // } else {
+    // LOG.warn( "Omitting mapping '" + mapping
+    // + "'. Only single child element steps (optionally with number predicate)"
+    // + " are currently supported." );
+    // }
+    // }
+    // switch (pt.getCategory()) {
+    // case TIME_SLICE: {
+    // return new GenericTimeSlice( id, type, props );
+    // }
+    // default: {
+    //
+    // }
+    // }
+    // }
+
+    private Property recreatePropertyFromGml( final PropertyType pt, final GenericXMLElement particle ) {
+        try {
+            final GMLSchemaInfoSet gmlSchema = ft.getSchema().getGMLSchema();
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            final XMLStreamWriter xmlWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
+            final GMLVersion version = ft.getSchema().getGMLSchema().getVersion();
+            final GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( version, xmlWriter );
+            gmlWriter.setNamespaceBindings( gmlSchema.getNamespacePrefixes() );
+            final GmlXlinkOptions resolveState = new GmlXlinkOptions();
+            gmlWriter.getFeatureWriter().export( particle, resolveState );
+            gmlWriter.close();
+            xmlWriter.close();
+            bos.close();
+            final InputStream is = new ByteArrayInputStream( bos.toByteArray() );
+            final XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( is );
+            final GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( version, xmlReader );
+            gmlReader.setApplicationSchema( ft.getSchema() );
+            gmlReader.setLaxMode( true );
+            final Property property = gmlReader.getFeatureReader().parseProperty( new XMLStreamReaderWrapper(
+                                                                                                              xmlReader,
+                                                                                                              null ),
+                                                                                  pt, null );
+            return property;
+        } catch ( final Exception e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        return new GenericProperty( pt, particle.getName(), null, particle.getAttributes(), particle.getChildren() );
     }
 
     private List<TypedObjectNode> buildParticles( Mapping mapping, ResultSet rs,
@@ -358,11 +440,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         if ( mapping instanceof PrimitiveMapping ) {
             PrimitiveMapping pm = (PrimitiveMapping) mapping;
             MappingExpression me = pm.getMapping();
-            if ( me instanceof DBField ) {
-                String col = converter.getSelectSnippet( tableAlias );
-                int colIndex = colToRsIdx.get( col );
-                particle = converter.toParticle( rs, colIndex );
-            }
+            String col = converter.getSelectSnippet( tableAlias );
+            int colIndex = colToRsIdx.get( col );
+            particle = converter.toParticle( rs, colIndex );
         } else if ( mapping instanceof GeometryMapping ) {
             GeometryMapping pm = (GeometryMapping) mapping;
             MappingExpression me = pm.getMapping();
@@ -377,13 +457,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             }
         } else if ( mapping instanceof FeatureMapping ) {
             FeatureMapping fm = (FeatureMapping) mapping;
-//            if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
-                String col = converter.getSelectSnippet( tableAlias );
-                int colIndex = colToRsIdx.get( col );
-                particle = converter.toParticle( rs, colIndex );
-//            }
-        } else if ( mapping instanceof ConstantMapping<?> ) {
-            particle = ( (ConstantMapping<?>) mapping ).getValue();
+            // if ( fm.getJoinedTable() != null && !fm.getJoinedTable().isEmpty() ) {
+            String col = converter.getSelectSnippet( tableAlias );
+            int colIndex = colToRsIdx.get( col );
+            particle = converter.toParticle( rs, colIndex );
+            // }
         } else if ( mapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) mapping;
 
@@ -404,7 +482,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             found = true;
                         }
                     }
-                    if ( !found && escalationPolicy.equals( VoidEscalationPolicyType.ALWAYS ) ) {
+                    if ( !found && this.nullEscalation ) {
                         escalateVoid = true;
                     }
                 }
@@ -519,7 +597,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                             }
                         }
                     }
-                    nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
+                    nilAttrs.put( new QName( XSINS, "nil", XSI_PREFIX ), new PrimitiveValue( TRUE ) );
                     particle = new GenericXMLElement( elName, cm.getElementDecl(), nilAttrs, null );
                 }
             } else {
@@ -564,7 +642,9 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                 LOG.warn( "Unhandled particle: " + child );
             }
         }
-
+        if ( geom == null ) {
+            return null;
+        }
         AppSchemaGeometryHierarchy hierarchy = fs.getSchema().getGeometryHierarchy();
 
         if ( hierarchy != null ) {
@@ -587,34 +667,6 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             geom.setProperties( props );
         }
         return geom;
-    }
-
-    private Map<QName, PrimitiveValue> getNilledAttributes( XSElementDeclaration elDecl,
-                                                            Map<QName, PrimitiveValue> attrs ) {
-        // required attributes must still be present even if element is nilled...
-        Map<QName, PrimitiveValue> nilAttrs = new HashMap<QName, PrimitiveValue>();
-        if ( elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ) {
-            XSComplexTypeDefinition complexType = (XSComplexTypeDefinition) elDecl.getTypeDefinition();
-            XSObjectList attrUses = complexType.getAttributeUses();
-            for ( int i = 0; i < attrUses.getLength(); i++ ) {
-                XSAttributeUse attrUse = (XSAttributeUse) attrUses.item( i );
-                if ( attrUse.getRequired() ) {
-                    QName attrName = null;
-                    XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-                    if ( attrDecl.getNamespace() == null || attrDecl.getNamespace().isEmpty() ) {
-                        attrName = new QName( attrDecl.getName() );
-                    } else {
-                        attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-                    }
-                    PrimitiveValue attrValue = attrs.get( attrName );
-                    if ( attrValue != null ) {
-                        nilAttrs.put( attrName, attrValue );
-                    }
-                }
-            }
-        }
-        nilAttrs.put( new QName( CommonNamespaces.XSINS, "nil" ), new PrimitiveValue( Boolean.TRUE ) );
-        return nilAttrs;
     }
 
     private QName getName( ValueReference path ) {
@@ -708,6 +760,30 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         return new Pair<ResultSet, LinkedHashMap<String, Integer>>( rs2, rsToIdx );
     }
 
+    private QName getChildElementStepAsQName( ValueReference ref ) {
+        QName qName = null;
+        Expr xpath = ref.getAsXPath();
+        if ( xpath instanceof LocationPath ) {
+            LocationPath lpath = (LocationPath) xpath;
+            if ( lpath.getSteps().size() == 1 ) {
+                if ( lpath.getSteps().get( 0 ) instanceof NameStep ) {
+                    NameStep step = (NameStep) lpath.getSteps().get( 0 );
+                    if ( isChildElementStepWithoutPredicateOrWithNumberPredicate( step ) ) {
+                        String prefix = step.getPrefix();
+                        if ( prefix.isEmpty() ) {
+                            qName = new QName( step.getLocalName() );
+                        } else {
+                            String ns = ref.getNsContext().translateNamespacePrefixToUri( prefix );
+                            qName = new QName( ns, step.getLocalName(), prefix );
+                        }
+                        LOG.debug( "QName: " + qName );
+                    }
+                }
+            }
+        }
+        return qName;
+    }
+
     private QName getQName( NameStep step ) {
         String prefix = step.getPrefix();
         QName qName;
@@ -718,5 +794,20 @@ public class FeatureBuilderRelational implements FeatureBuilder {
             qName = new QName( ns, step.getLocalName(), prefix );
         }
         return qName;
+    }
+
+    private boolean isChildElementStepWithoutPredicateOrWithNumberPredicate( NameStep step ) {
+        if ( step.getAxis() == CHILD && !step.getLocalName().equals( "*" ) ) {
+            if ( step.getPredicates().isEmpty() ) {
+                return true;
+            } else if ( step.getPredicates().size() == 1 ) {
+                Predicate predicate = (Predicate) step.getPredicates().get( 0 );
+                Expr expr = predicate.getExpr();
+                if ( expr instanceof NumberExpr ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

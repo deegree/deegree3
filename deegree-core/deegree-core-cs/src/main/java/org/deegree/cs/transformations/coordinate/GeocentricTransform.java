@@ -226,7 +226,7 @@ public class GeocentricTransform extends Transformation {
             p.x = Math.atan2( p.y, p.x );// longitude;
             p.y = Math.atan( sinPhi / cosPhi );// latitude;
             if ( hasHeight ) {
-                double height = 1;
+                double height;
                 // rn = radius of curvature of the prime vertical, of the ellipsoid at location
                 final double rn = semiMajorAxis / Math.sqrt( 1 - squaredEccentricity * ( sinPhi * sinPhi ) );
 

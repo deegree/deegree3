@@ -50,7 +50,7 @@ public class BatchedMTStoreManager extends DefaultResourceManager<BatchedMTStore
 
     public BatchedMTStoreManager() {
         super( new DefaultResourceManagerMetadata<BatchedMTStore>( BatchedMTStoreProvider.class, "batched mt stores",
-                                                                   "datasources/batchedmt/" ) );
+                                                                   "datasources/batchedmt" ) );
     }
 
 }

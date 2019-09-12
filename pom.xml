@@ -1,47 +1,65 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4-pre3-SNAPSHOT</version>
+  <version>3.4.10-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
-    <url>https://github.com/lat-lon/deegree3.git</url>
+    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
+    <url>https://github.com/deegree/deegree3</url>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
     <repository>
-      <id>latlon-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+      <id>deegree-repo</id>
+      <url>http://repo.deegree.org/content/groups/public/</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
   <distributionManagement>
     <repository>
-      <id>latlon-releases</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/releases/</url>
+      <id>deegree-releases</id>
+      <url>http://repo.deegree.org/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>latlon-snapshots</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/snapshots/</url>
+      <id>deegree-snapshots</id>
+      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
+    <site>
+      <id>apidoc.deegree.org</id>
+<!--
+      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
+-->
+      <url>file:///${site.dir}/${project.version}/</url>
+    </site>
   </distributionManagement>
 
   <pluginRepositories>
     <pluginRepository>
-      <id>latlon-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+      <id>deegree-plugin-repo</id>
+      <url>http://repo.deegree.org/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
-  <prerequisites>
-    <maven>3.0.3</maven>
-  </prerequisites>
 
   <build>
     <resources>
@@ -76,16 +94,22 @@
                 </schemaIncludes>
                 <schemaDirectory>src/main/resources/META-INF/schemas/</schemaDirectory>
                 <episode>true</episode>
-                <catalog>target/deegree.xmlcatalog</catalog>
-                <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
+                <catalogResolver>org.deegree.uncoupled.jaxb.CatalogResolver</catalogResolver>
               </configuration>
             </execution>
           </executions>
+          <dependencies>
+            <dependency>
+              <groupId>org.deegree</groupId>
+              <artifactId>deegree-jaxb-resolver</artifactId>
+              <version>1.0</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.deegree</groupId>
           <artifactId>deegree-maven-plugin</artifactId>
-          <version>1.20</version>
+          <version>${deegree-maven-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -103,7 +127,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.8</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -111,9 +135,9 @@
           <version>1.1</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>tomcat-maven-plugin</artifactId>
-          <version>1.1</version>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>org.antlr</groupId>
@@ -123,18 +147,22 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.12</version>
+          <version>2.16</version>
+          <configuration>
+            <!-- Travis build workaround -->
+            <argLine>-Xms1024m -Xmx2048m</argLine>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.12</version>
+          <version>2.16</version>
         </plugin>
         <!-- reporting and site -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.3</version>
+          <version>3.4</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
@@ -167,7 +195,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.0</version>
+          <version>3.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -189,6 +217,21 @@
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.5</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -196,8 +239,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
         <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
           <aggregate>false</aggregate>
@@ -206,7 +249,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.4</version>
         <configuration>
           <preparationGoals>clean install</preparationGoals>
           <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -216,26 +258,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.0</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
           <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
         <configuration>
-          <encoding>UTF-8</encoding>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.2</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -250,31 +289,49 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>buildinfo</id>
-            <goals>
-              <goal>generate-buildinfo</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jaxbcatalog</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate-jaxb-catalog</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-plugin</artifactId>
-        <version>1.5</version>
         <configuration>
           <goals>install</goals>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <!-- extend default manifest with deegree build information -->
+            <manifestEntries>
+              <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
+              <deegree-build-by>${user.name}</deegree-build-by>
+              <deegree-build-date>${buildTimestamp}</deegree-build-date>
+              <deegree-build-rev>${buildNumber}</deegree-build-rev>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.0.5</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>1.8</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -282,63 +339,17 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
-        <configuration>
-          <xmlOutput>true</xmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.7.1</version>
-        <configuration>
-          <linkXref>true</linkXref>
-          <sourceEncoding>utf-8</sourceEncoding>
-          <minimumTokens>100</minimumTokens>
-          <targetJdk>1.6</targetJdk>
-          <excludes>
-            <exclude>**/generated/*.java</exclude>
-          </excludes>
-          <excludeRoots>
-            <excludeRoot>target/generated-sources</excludeRoot>
-          </excludeRoots>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.9.1</version>
-        <configuration>
-          <configLocation>checkstyle.xml</configLocation>
-        </configuration>
-      </plugin>
-      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
+        <version>2.10.3</version>
         <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
           <aggregate>false</aggregate>
+          <minmemory>512m</minmemory>
+          <maxmemory>4g</maxmemory>
         </configuration>
-      </plugin-->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <version>1.18</version>
       </plugin>
     </plugins>
   </reporting>
@@ -349,14 +360,37 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>1.9.5</version>
+        <version>1.10.19</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-junit4</artifactId>
+        <version>1.6.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito</artifactId>
+        <version>1.6.3</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>3.20.0-GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xmlmatchers</groupId>
+        <artifactId>xml-matchers</artifactId>
+        <version>1.0-RC1</version>
+      <scope>test</scope>
       </dependency>
       <!-- apache commons -->
       <dependency>
@@ -367,17 +401,18 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.8.3</version>
+        <version>1.9.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
-        <version>3.2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-digester</groupId>
-        <artifactId>commons-digester</artifactId>
-        <version>2.1</version>
+        <version>3.2.2</version>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -392,13 +427,18 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.3</version>
+        <version>1.3.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.2.3</version>
-        <scope>compile</scope>
+        <version>4.3.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -454,13 +494,13 @@
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>el-api</artifactId>
-        <version>6.0.36</version>
+        <version>6.0.53</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>jsp-api</artifactId>
-        <version>6.0.36</version>
+        <version>6.0.53</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -491,17 +531,17 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.13</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.13</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.13</version>
       </dependency>
       <!-- 3d -->
       <dependency>
@@ -549,22 +589,44 @@
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
-        <version>1.2.14</version>
+        <version>1.2.15</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-api</artifactId>
-        <version>1.2.14</version>
+        <version>1.2.15</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jsr173_api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
-        <version>1.1.4</version>
+        <version>1.1.6</version>
         <exclusions>
           <exclusion>
             <groupId>dom4j</groupId>
@@ -597,13 +659,13 @@
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.2</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>serializer</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.2</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -614,12 +676,12 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.3.3</version>
+        <version>1.3.5</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.netty</groupId>
         <artifactId>netty</artifactId>
-        <version>3.2.9.Final</version>
+        <version>3.2.10.Final</version>
       </dependency>
       <!-- JAI -->
       <dependency>
@@ -644,26 +706,51 @@
       </dependency>
       <!-- PostgreSQL -->
       <dependency>
-        <groupId>org.postgis</groupId>
+        <groupId>net.postgis</groupId>
         <artifactId>postgis-jdbc</artifactId>
-        <version>1.3.3</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.postgis</groupId>
-            <artifactId>postgis-stubs</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>2.2.1</version>
       </dependency>
       <dependency>
-        <groupId>postgresql</groupId>
+        <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.1-901-1.jdbc4</version>
+        <version>42.2.5</version>
       </dependency>
       <!-- Oracle -->
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>ojdbc6</artifactId>
-        <version>11.2.0.2</version>
+        <artifactId>ojdbc8</artifactId>
+        <version>12.2.0.1</version>
+      </dependency>
+      <!-- Oracle GeoRaster -->
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdoapi</artifactId>
+        <version>12.2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdotype</artifactId>
+        <version>12.2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdogr</artifactId>
+        <version>12.2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>sdoutl</artifactId>
+        <version>12.2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>xdb6</artifactId>
+        <version>12.2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle</groupId>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
+        <version>12.2.0.1</version>
       </dependency>
       <!-- Batik -->
       <dependency>
@@ -723,8 +810,8 @@
         <version>1.7</version>
         <exclusions>
           <exclusion>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
-            <groupId>fop</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -758,23 +845,6 @@
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis-ext</artifactId>
         <version>1.3.04</version>
-      </dependency>
-      <!-- reporting -->
-      <dependency>
-        <groupId>net.sf.jasperreports</groupId>
-        <artifactId>jasperreports</artifactId>
-        <version>5.0.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.lowagie</groupId>
-        <artifactId>itext</artifactId>
-        <version>4.2.0</version>
       </dependency>
       <!-- CITE -->
       <dependency>
@@ -875,7 +945,7 @@
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-core</artifactId>
-        <version>2.6.5</version>
+        <version>2.6.11</version>
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -896,12 +966,12 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.1.7</version>
+        <version>1.1.9</version>
       </dependency>
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.1.7</version>
+        <version>1.1.9</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -918,9 +988,14 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>it.geosolutions.imageio-ext</groupId>
+        <artifactId>imageio-ext-gdal-bindings</artifactId>
+        <version>1.10.1</version>
+      </dependency>
+      <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.8</version>
+        <version>0.9.10</version>
         <exclusions>
           <exclusion>
             <groupId>ch.qos.logback</groupId>
@@ -973,12 +1048,20 @@
         <artifactId>antlr-runtime</artifactId>
         <version>3.4</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>junidecode</artifactId>
+        <version>0.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+    <java.version>1.8</java.version>
+    <site.dir>${user.home}/Sites</site.dir>
+    <deegree-maven-plugin.version>2.0.2</deegree-maven-plugin.version>
   </properties>
 
   <modules>
@@ -992,6 +1075,7 @@
     <module>deegree-themes</module>
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
+    <module>deegree-spring</module>
   </modules>
 
   <profiles>
@@ -1000,6 +1084,107 @@
       <modules>
         <module>deegree-tests</module>
       </modules>
+    </profile>
+    <profile>
+      <id>deegree-maven-plugin</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jaxbcatalog</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>generate-jaxb-catalog</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>site-all-reports</id>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <version>2.5.2</version>
+            <configuration>
+              <xmlOutput>true</xmlOutput>
+              <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+              <findbugsXmlOutput>true</findbugsXmlOutput>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <version>2.7.1</version>
+            <configuration>
+              <linkXref>true</linkXref>
+              <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+              <minimumTokens>100</minimumTokens>
+              <targetJdk>${java.version}</targetJdk>
+              <excludes>
+                <exclude>**/generated/*.java</exclude>
+              </excludes>
+              <excludeRoots>
+                <excludeRoot>target/generated-sources</excludeRoot>
+              </excludeRoots>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>2.9.1</version>
+            <configuration>
+              <configLocation>checkstyle.xml</configLocation>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.3</version>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+              <detectLinks>false</detectLinks>
+              <detectOfflineLinks>false</detectOfflineLinks>
+              <aggregate>false</aggregate>
+              <minmemory>128m</minmemory>
+              <maxmemory>1g</maxmemory>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jxr-plugin</artifactId>
+            <version>2.3</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+              <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+              <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>3.1.1</version>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>aggregate</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+        </plugins>
+      </reporting>
     </profile>
   </profiles>
 
@@ -1012,24 +1197,33 @@
   </licenses>
 
   <issueManagement>
-    <system>Trac</system>
-    <url>http://tracker.deegree.org/deegree-services/</url>
+    <system>github</system>
+    <url>https://github.com/deegree/deegree3/issues</url>
   </issueManagement>
 
   <developers>
     <developer>
-      <name>Markus Schneider</name>
-      <email>schneider@occamlabs.de</email>
-    </developer>
-    <developer>
-      <name>Andreas Schmitz</name>
-      <email>schmitz@occamlabs.de</email>
-    </developer>
-    <developer>
-      <name>Lyn Goltz</name>
-      <email>goltz@lat-lon.de</email>
+      <id>TMC</id>
+      <name>Technical Management Committee</name>
+      <organization>OSGeo deegree project</organization>
+      <organizationUrl>https://www.deegree.org</organizationUrl>
+      <email>tmc@deegree.org</email>
     </developer>
   </developers>
+  <contributors>
+    <contributor>
+      <name>Markus Schneider</name>
+      <email>schneider@occamlabs.de</email>
+    </contributor>
+    <contributor>
+      <name>Andreas Schmitz</name>
+      <email>schmitz@occamlabs.de</email>
+    </contributor>
+    <contributor>
+      <name>Lyn Goltz</name>
+      <email>goltz@lat-lon.de</email>
+    </contributor>
+  </contributors>
 
   <mailingLists>
     <mailingList>
@@ -1054,4 +1248,8 @@
     </mailingList>
   </mailingLists>
 
+  <ciManagement>
+  	<system>Jenkins CI</system>
+  	<url>http://buildserver.deegree.org/</url>
+  </ciManagement>
 </project>

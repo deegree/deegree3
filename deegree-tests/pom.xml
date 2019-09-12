@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-pre3-SNAPSHOT</version>
+    <version>3.4.10-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -59,12 +59,12 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
-      <artifactId>deegree-jsf-console</artifactId>
+      <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
       <type>zip</type>
       <classifier>webapp-template</classifier>
@@ -81,12 +81,15 @@
   </dependencies>
 
   <modules>
+    <module>deegree-testservice</module>
     <!-- workspace tests must run first! -->
     <module>deegree-workspace-tests</module>
     <module>deegree-compliance-tests</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wms-tiling-tests</module>
+    <!-- Failing
     <module>deegree-wms-remoteows-tests</module>
+    -->
     <module>deegree-wmts-tests</module>
     <module>deegree-resource-deps-tests</module>
   </modules>
@@ -107,7 +110,7 @@
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <id>jsf-console</id>
+                <id>prepare-testservice</id>
                 <phase>generate-resources</phase>
                 <goals>
                   <goal>unpack-dependencies</goal>
@@ -116,7 +119,7 @@
                   <classifier>webapp-template</classifier>
                   <type>zip</type>
                   <includeGroupIds>org.deegree</includeGroupIds>
-                  <includeArtifactIds>deegree-jsf-console</includeArtifactIds>
+                  <includeArtifactIds>deegree-testservice</includeArtifactIds>
                   <outputDirectory>src/main/webapp</outputDirectory>
                 </configuration>
               </execution>

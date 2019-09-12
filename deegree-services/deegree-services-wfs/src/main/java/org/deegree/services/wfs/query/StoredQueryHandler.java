@@ -43,6 +43,7 @@ import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -84,9 +85,9 @@ public class StoredQueryHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( StoredQueryHandler.class );
 
-    public static final String GET_FEATURE_BY_ID = "urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById";
+    public static final String GET_FEATURE_BY_ID = "urn:ogc:def:query:OGC-WFS::GetFeatureById";
 
-    public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:storedQuery:OGC-WFS::GetFeatureByType";
+    public static final String GET_FEATURE_BY_TYPE = "urn:ogc:def:query:OGC-WFS::GetFeatureByType";
 
     private final Map<String, StoredQueryDefinition> idToQuery = Collections.synchronizedMap( new TreeMap<String, StoredQueryDefinition>() );
 
@@ -106,12 +107,6 @@ public class StoredQueryHandler {
             xmlAdapter.load( u );
             addStoredQuery( xmlAdapter.parse(), u );
         }
-    }
-
-    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
-        LOG.info( "Adding stored query definition with id '" + queryDefinition.getId() + "'" );
-        idToQuery.put( queryDefinition.getId(), queryDefinition );
-        idToUrl.put( queryDefinition.getId(), u );
     }
 
     /**
@@ -236,36 +231,9 @@ public class StoredQueryHandler {
                 writer.writeStartElement( WFS_200_NS, "QueryExpressionText" );
 
                 // <xsd:attribute name="returnFeatureTypes" type="wfs:ReturnFeatureTypesListType" use="required"/>
-                List<QName> ftNames = new ArrayList<QName>( wfs.getStoreManager().getFeatureTypes().size() );
-                for ( FeatureType ft : wfs.getStoreManager().getFeatureTypes() ) {
-                    ftNames.add( ft.getName() );
-                }
-                Collections.sort( ftNames, new Comparator<QName>() {
-                    @Override
-                    public int compare( QName arg0, QName arg1 ) {
-                        String s0 = arg0.toString();
-                        String s1 = arg1.toString();
-                        return s0.compareTo( s1 );
-                    }
-                } );
-
-                StringBuilder returnFeatureTypes = new StringBuilder();
-                Set<String> exportedPrefixes = new HashSet<String>();
-                for ( QName ftName : ftNames ) {
-                    if ( returnFeatureTypes.length() != 0 ) {
-                        returnFeatureTypes.append( ' ' );
-                    }
-                    String prefixedName = ftName.getLocalPart();
-                    if ( ftName.getPrefix() != null ) {
-                        prefixedName = ftName.getPrefix() + ":" + ftName.getLocalPart();
-                        if ( !exportedPrefixes.contains( ftName.getPrefix() ) ) {
-                            writer.writeNamespace( ftName.getPrefix(), ftName.getNamespaceURI() );
-                            exportedPrefixes.add( ftName.getPrefix() );
-                        }
-                        returnFeatureTypes.append( prefixedName );
-                    }
-                }
-                writer.writeAttribute( "returnFeatureTypes", returnFeatureTypes.toString() );
+                List<QName> returnFeatureTypes = queryExprText.getReturnFeatureTypes();
+                writer.writeAttribute( "returnFeatureTypes",
+                                       collectReturnFeatureTypesAndTransformToString( writer, returnFeatureTypes ) );
 
                 writer.writeAttribute( "language", queryExprText.getLanguage() );
                 if ( queryExprText.isPrivate() ) {
@@ -326,19 +294,8 @@ public class StoredQueryHandler {
                 writer.writeCharacters( title.getString() );
                 writer.writeEndElement();
 
-                List<QName> ftNames = new ArrayList<QName>( wfs.getStoreManager().getFeatureTypes().size() );
-                for ( FeatureType ft : wfs.getStoreManager().getFeatureTypes() ) {
-                    ftNames.add( ft.getName() );
-                }
-                Collections.sort( ftNames, new Comparator<QName>() {
-                    @Override
-                    public int compare( QName arg0, QName arg1 ) {
-                        String s0 = arg0.toString();
-                        String s1 = arg1.toString();
-                        return s0.compareTo( s1 );
-                    }
-                } );
-
+                List<QName> configuredReturnFeatureTypes = collectFeatureTypes( queryDef );
+                List<QName> ftNames = collectAndSortFeatureTypesToExport( configuredReturnFeatureTypes );
                 for ( QName ftName : ftNames ) {
                     writer.writeStartElement( WFS_200_NS, "ReturnFeatureType" );
                     String prefix = ftName.getPrefix();
@@ -374,4 +331,102 @@ public class StoredQueryHandler {
     public URL getStoredQueryTemplate( String id ) {
         return idToUrl.get( id );
     }
+
+    List<QName> collectAndSortFeatureTypesToExport( List<QName> configuredReturnFeatureTypes ) {
+        Collection<FeatureType> featureTypes = wfs.getStoreManager().getFeatureTypes();
+        List<QName> ftNames = collectFeatureTypes( configuredReturnFeatureTypes, featureTypes );
+        Collections.sort( ftNames, new Comparator<QName>() {
+            @Override
+            public int compare( QName arg0, QName arg1 ) {
+                String s0 = arg0.toString();
+                String s1 = arg1.toString();
+                return s0.compareTo( s1 );
+            }
+        } );
+        return ftNames;
+    }
+
+    private List<QName> collectFeatureTypes( List<QName> configuredReturnFeatureTypes,
+                                             Collection<FeatureType> featureTypes ) {
+        if ( configuredReturnFeatureTypes != null && configuredReturnFeatureTypes.size() > 0 ) {
+            return collectConfiguredFeatureTypes( featureTypes, configuredReturnFeatureTypes );
+        } else
+            return collectAllFeatureTypes( featureTypes );
+    }
+
+    private List<QName> collectFeatureTypes( StoredQueryDefinition queryDef ) {
+        Collection<FeatureType> featureTypes = wfs.getStoreManager().getFeatureTypes();
+        List<QueryExpressionText> queryExpressionTextEls = queryDef.getQueryExpressionTextEls();
+        List<QName> allConfiguredReturnFeatureTypes = new ArrayList<QName>();
+        for ( QueryExpressionText queryExpressionTextEl : queryExpressionTextEls ) {
+            List<QName> configuredReturnFeatureTypes = queryExpressionTextEl.getReturnFeatureTypes();
+            List<QName> featureTypesToExport = collectFeatureTypes( configuredReturnFeatureTypes, featureTypes );
+            for ( QName featureTypeToExport : featureTypesToExport ) {
+                if ( !allConfiguredReturnFeatureTypes.contains( featureTypeToExport ) )
+                    allConfiguredReturnFeatureTypes.add( featureTypeToExport );
+            }
+        }
+        return allConfiguredReturnFeatureTypes;
+    }
+
+    private List<QName> collectAllFeatureTypes( Collection<FeatureType> featureTypes ) {
+        List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
+        for ( FeatureType ft : featureTypes ) {
+            ftNames.add( ft.getName() );
+        }
+        return ftNames;
+    }
+
+    private List<QName> collectConfiguredFeatureTypes( Collection<FeatureType> featureTypes,
+                                                       List<QName> configuredReturnFeatureTypeNames ) {
+        List<QName> ftNames = new ArrayList<QName>( featureTypes.size() );
+        for ( QName configuredReturnFeatureTypeName : configuredReturnFeatureTypeNames ) {
+            FeatureType featureType = findFeatureType( configuredReturnFeatureTypeName, featureTypes );
+            if ( featureType == null )
+                throw new IllegalArgumentException( "The FeatureType name " + configuredReturnFeatureTypeName
+                                                    + " configured in the stored query is not supported by this WFS!" );
+            QName name = featureType.getName();
+            if ( !ftNames.contains( name ) )
+                ftNames.add( name );
+        }
+        return ftNames;
+    }
+
+    private FeatureType findFeatureType( QName configuredReturnFeatureTypeName, Collection<FeatureType> featureTypes ) {
+        for ( FeatureType featureType : featureTypes ) {
+            if ( configuredReturnFeatureTypeName.equals( featureType.getName() ) )
+                return featureType;
+        }
+        return null;
+    }
+
+    private String collectReturnFeatureTypesAndTransformToString( XMLStreamWriter writer,
+                                                                  List<QName> configuredReturnFeatureTypes )
+                            throws XMLStreamException {
+        List<QName> ftNames = collectAndSortFeatureTypesToExport( configuredReturnFeatureTypes );
+        StringBuilder returnFeatureTypes = new StringBuilder();
+        Set<String> exportedPrefixes = new HashSet<String>();
+        for ( QName ftName : ftNames ) {
+            if ( returnFeatureTypes.length() != 0 ) {
+                returnFeatureTypes.append( ' ' );
+            }
+            String prefixedName = ftName.getLocalPart();
+            if ( ftName.getPrefix() != null ) {
+                prefixedName = ftName.getPrefix() + ":" + ftName.getLocalPart();
+                if ( !exportedPrefixes.contains( ftName.getPrefix() ) ) {
+                    writer.writeNamespace( ftName.getPrefix(), ftName.getNamespaceURI() );
+                    exportedPrefixes.add( ftName.getPrefix() );
+                }
+                returnFeatureTypes.append( prefixedName );
+            }
+        }
+        return returnFeatureTypes.toString();
+    }
+
+    private void addStoredQuery( StoredQueryDefinition queryDefinition, URL u ) {
+        LOG.info( "Adding stored query definition with id '{}' from {}", queryDefinition.getId(), u );
+        idToQuery.put( queryDefinition.getId(), queryDefinition );
+        idToUrl.put( queryDefinition.getId(), u );
+    }
+
 }

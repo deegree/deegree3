@@ -72,6 +72,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.datetime.DateTime;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.gml.GMLObject;
@@ -90,6 +91,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.reference.GmlXlinkOptions;
+import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.i18n.Messages;
@@ -100,11 +102,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * Handles {@link DescribeFeatureType} requests for the {@link GmlFormat}.
+ *
+ * @see GmlFormat
+ *
+ * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ *
+ * @since 3.2
  */
 abstract class AbstractGmlRequestHandler {
 
@@ -144,21 +149,61 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeAdditionalObjects( GMLStreamWriter gmlStream, WfsXlinkStrategy additionalObjects,
-                                           QName featureMemberEl )
+                                           QName featureMemberEl, Version requestVersion )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         Collection<GMLReference<?>> nextLevelObjects = additionalObjects.getAdditionalRefs();
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
-
+        boolean wroteStartSection = false;
         while ( !nextLevelObjects.isEmpty() ) {
             Map<GMLReference<?>, GmlXlinkOptions> refToResolveState = additionalObjects.getResolveStates();
             additionalObjects.clear();
             for ( GMLReference<?> ref : nextLevelObjects ) {
-                GmlXlinkOptions resolveState = refToResolveState.get( ref );
-                Feature feature = (Feature) ref;
-                writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
+                if ( isResolvable( ref ) && !isObjectAlreadySerialized( gmlStream, ref.getId() ) ) {
+                    GmlXlinkOptions resolveState = refToResolveState.get( ref );
+                    Feature feature = (Feature) ref;
+                    if ( !wroteStartSection ) {
+                        writeAdditionalObjectsStart( xmlStream, requestVersion );
+                        wroteStartSection = true;
+                    }
+                    writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
+                }
             }
             nextLevelObjects = additionalObjects.getAdditionalRefs();
+        }
+        if ( wroteStartSection ) {
+            writeAdditionalObjectsEnd( xmlStream, requestVersion );
+        }
+    }
+
+    private boolean isObjectAlreadySerialized( final GMLStreamWriter gmlStream, final String id ) {
+        return gmlStream.getReferenceResolveStrategy().isObjectExported( id );
+    }
+
+    private void writeAdditionalObjectsStart( XMLStreamWriter xmlStream, Version requestVersion )
+                            throws XMLStreamException {
+        if ( requestVersion.equals( VERSION_200 ) ) {
+            xmlStream.writeStartElement( "wfs", "additionalObjects", WFS_200_NS );
+            xmlStream.writeStartElement( "wfs", "SimpleFeatureCollection", WFS_200_NS );
+        } else {
+            xmlStream.writeComment( "Additional features (subfeatures of requested features)" );
+        }
+    }
+
+    private void writeAdditionalObjectsEnd( XMLStreamWriter xmlStream, Version requestVersion )
+                            throws XMLStreamException {
+        if ( requestVersion.equals( VERSION_200 ) ) {
+            xmlStream.writeEndElement();
+            xmlStream.writeEndElement();
+        }
+    }
+
+    private boolean isResolvable( GMLReference<?> ref ) {
+        try {
+            ref.getReferencedObject();
+            return true;
+        } catch ( ReferenceResolvingException e ) {
+            return false;
         }
     }
 
@@ -191,7 +236,7 @@ abstract class AbstractGmlRequestHandler {
      * <li>WFS 2.0.0: GetFeature request using stored query (urn:ogc:def:query:OGC-WFS::GetFeatureById)</li>
      * </ul>
      * </p>
-     * 
+     *
      * @param version
      *            WFS protocol version, must not be <code>null</code>
      * @param gmlVersion
@@ -229,7 +274,7 @@ abstract class AbstractGmlRequestHandler {
 
     /**
      * Returns the value for the <code>xsi:schemaLocation</code> attribute in the response document.
-     * 
+     *
      * @param requestVersion
      *            requested WFS version, must not be <code>null</code>
      * @param requestedFts
@@ -252,19 +297,23 @@ abstract class AbstractGmlRequestHandler {
 
     private String getSchemaLocationForWfs100( Collection<FeatureType> requestedFts ) {
         GMLVersion gmlVersion = options.getGmlVersion();
+        String schemaLocation = null;
         if ( GML_2 == gmlVersion ) {
-            return WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
+            schemaLocation = WFS_NS + " " + WFS_100_BASIC_SCHEMA_URL;
+        } else {
+            schemaLocation = getSchemaLocation( VERSION_100, gmlVersion, WFS_FEATURECOLLECTION_NAME );
         }
-        String schemaLocation = getSchemaLocation( VERSION_100, gmlVersion, WFS_FEATURECOLLECTION_NAME );
         return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( VERSION_100, gmlVersion, requestedFts );
     }
 
     private String getSchemaLocationForWfs110( Collection<FeatureType> requestedFts ) {
         GMLVersion gmlVersion = options.getGmlVersion();
+        String schemaLocation = null;
         if ( GML_31 == gmlVersion ) {
-            return WFS_NS + " " + WFS_110_SCHEMA_URL;
+            schemaLocation = WFS_NS + " " + WFS_110_SCHEMA_URL;
+        } else {
+            schemaLocation = getSchemaLocation( VERSION_110, gmlVersion, WFS_FEATURECOLLECTION_NAME );
         }
-        String schemaLocation = getSchemaLocation( VERSION_110, gmlVersion, WFS_FEATURECOLLECTION_NAME );
         return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( VERSION_110, gmlVersion, requestedFts );
     }
 
@@ -384,7 +433,7 @@ abstract class AbstractGmlRequestHandler {
     /**
      * Returns the value for the 'xsi:schemaLocation' attribute to be included in a <code>GetGmlObject</code> or
      * <code>GetFeature</code> response.
-     * 
+     *
      * @param version
      *            WFS protocol version, must not be <code>null</code>
      * @param gmlVersion
@@ -403,9 +452,9 @@ abstract class AbstractGmlRequestHandler {
         baseUrl.append( "&REQUEST=DescribeFeatureType&OUTPUTFORMAT=" );
 
         try {
-            if ( VERSION_100.equals( version ) && gmlVersion == GMLVersion.GML_2 ) {
+            if ( VERSION_100.equals( version ) && gmlVersion == GML_2 ) {
                 baseUrl.append( "XMLSCHEMA" );
-            } else if ( VERSION_200.equals( version ) && gmlVersion == GMLVersion.GML_32 ) {
+            } else if ( VERSION_200.equals( version ) && gmlVersion == GML_32 ) {
                 baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
             } else {
                 baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );

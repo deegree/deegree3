@@ -192,7 +192,7 @@ public class ISO8601ConverterTest {
         assertEquals( "2002-05-30T09:00:00", formatDateTime( begin ) );
     }
 
-    private static void assertTestDate( TimeInstant dt ) {
+    private static void assertTestDate( Temporal dt ) {
         assertEquals( 2002, dt.getCalendar().get( YEAR ) );
         // month is 0-based
         assertEquals( 4, dt.getCalendar().get( MONTH ) );

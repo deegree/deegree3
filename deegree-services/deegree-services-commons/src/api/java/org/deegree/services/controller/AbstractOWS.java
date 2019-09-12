@@ -412,6 +412,10 @@ public abstract class AbstractOWS implements OWS {
     public void sendException( Map<String, String> additionalHeaders, ExceptionSerializer serializer,
                                OWSException exception, HttpResponseBuffer response )
                             throws ServletException {
+        String userAgent = null;
+        if ( OGCFrontController.getContext() != null ) {
+            userAgent = OGCFrontController.getContext().getUserAgent();
+        }
 
         SerializerProviderInitializer spi = workspace.getInitializable( SerializerProviderInitializer.class );
 
@@ -446,6 +450,10 @@ public abstract class AbstractOWS implements OWS {
                 throw new ServletException( e );
             }
             response.setExceptionSent();
+        }
+
+        if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {
+            response.setContentType( "application/xml" );
         }
     }
 

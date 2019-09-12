@@ -77,8 +77,10 @@ public class GeographicCRS extends CRS implements IGeographicCRS {
                                                                                        Axis.AO_NORTH ) },
                                                                  new CRSCodeType[] {
                                                                                     new EPSGCode( 4326 ),
-                                                                                    new CRSCodeType(
-                                                                                                     "urn:ogc:def:crs:EPSG::4326" ) },
+                                                                                    new CRSCodeType( "crs:84" ),
+                                                                                    new CRSCodeType( "urn:ogc:def:crs:ogc:1.3:crs84" ),
+                                                                                    new CRSCodeType( "wgs84(dd)" ),
+                                                                                    new CRSCodeType( "urn:ogc:def:crs:EPSG::4326" )},
                                                                  new String[] { "WGS 84" }, null, null, null );
 
     /**

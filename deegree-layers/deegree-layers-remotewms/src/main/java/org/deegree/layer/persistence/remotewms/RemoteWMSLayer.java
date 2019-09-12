@@ -24,6 +24,8 @@ import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.style.StyleRef;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -131,26 +133,20 @@ class RemoteWMSLayer extends AbstractLayer {
     }
 
     @Override
-    public RemoteWMSLayerData mapQuery( LayerQuery query, List<String> headers ) {
-        try {
-            Map<String, String> extraParams = new HashMap<String, String>();
-            replaceParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
-            ICRS crs = this.crs;
-            if ( !alwaysUseDefaultCrs ) {
-                ICRS envCrs = query.getEnvelope().getCoordinateSystem();
-                if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
-                    crs = envCrs;
-                }
+    public RemoteWMSLayerData mapQuery( LayerQuery query, List<String> headers ) {        
+        Map<String, String> extraParams = new HashMap<String, String>();
+        replaceParameters( extraParams, query.getParameters(), defaultParametersGetMap, hardParametersGetMap );
+        ICRS crs = this.crs;
+        if ( !alwaysUseDefaultCrs ) {
+            ICRS envCrs = query.getEnvelope().getCoordinateSystem();
+            if ( client.getCoordinateSystems( originalName ).contains( envCrs.getAlias() ) ) {
+                crs = envCrs;
             }
-
-            GetMap gm = new GetMap( singletonList( originalName ), query.getWidth(), query.getHeight(),
-                                    query.getEnvelope(), crs, format, transparent );
-            return new RemoteWMSLayerData( client, gm, extraParams );
-        } catch ( Throwable e ) {
-            LOG.warn( "Error when retrieving remote map: {}", e.getLocalizedMessage() );
-            LOG.trace( "Stack trace:", e );
         }
-        return null;
+
+        GetMap gm = new GetMap( singletonList( originalName ), query.getWidth(), query.getHeight(),
+                                query.getEnvelope(), crs, format, transparent );
+        return new RemoteWMSLayerData( client, gm, extraParams );
     }
 
     @Override
@@ -171,6 +167,14 @@ class RemoteWMSLayer extends AbstractLayer {
                                                  query.getHeight(), query.getX(), query.getY(), query.getEnvelope(),
                                                  crs, query.getFeatureCount() );
         return new RemoteWMSLayerData( client, gfi, extraParams );
+    }
+
+    @Override
+    public boolean isStyleApplicable( StyleRef style ) {
+        if ( "default".equals( style.getName() ) ) {
+            return true;
+        }
+        return resolveStyleRef( style ) != null;
     }
 
 }

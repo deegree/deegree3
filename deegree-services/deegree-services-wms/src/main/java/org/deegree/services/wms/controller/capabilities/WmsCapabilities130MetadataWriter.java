@@ -46,6 +46,10 @@ import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.maybeWriteElementNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetFeatureInfo;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetLegendGraphic;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 
 import java.util.List;
 
@@ -59,6 +63,8 @@ import org.deegree.commons.ows.metadata.party.ResponsibleParty;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.utils.Pair;
+import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
+import org.deegree.services.jaxb.wms.DeegreeWMS;
 import org.deegree.services.wms.controller.WMSController;
 
 /**
@@ -119,31 +125,38 @@ class WmsCapabilities130MetadataWriter {
         writer.writeStartElement( WMSNS, "Request" );
 
         writer.writeStartElement( WMSNS, "GetCapabilities" );
-        writeElement( writer, WMSNS, "Format", "text/xml" );
-        writeDCP( writer, true, false );
+        writeCapabilitiesFormats( writer );
+        writeDCP( writer, isGetSupported( GetCapabilities ), isPostSupported( GetCapabilities ) );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetMap" );
         writeImageFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, isGetSupported( GetMap ), isPostSupported( GetMap )  );
         writer.writeEndElement();
 
         writer.writeStartElement( WMSNS, "GetFeatureInfo" );
         writeInfoFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, isGetSupported( GetFeatureInfo ), isPostSupported( GetFeatureInfo )  );
         writer.writeEndElement();
 
         writer.writeStartElement( SLDNS, "GetLegendGraphic" );
         writeImageFormats( writer );
-        writeDCP( writer, true, false );
+        writeDCP( writer, isGetSupported( GetLegendGraphic ), false );
         writer.writeEndElement();
 
         writer.writeEndElement();
     }
 
+    private void writeCapabilitiesFormats( XMLStreamWriter writer )
+                            throws XMLStreamException {
+        for ( String f : controller.getCapabilitiesManager().getSupportedFormats() ) {
+            writeElement( writer, WMSNS, "Format", f );
+        }
+    }
+
     private void writeImageFormats( XMLStreamWriter writer )
                             throws XMLStreamException {
-        for ( String f : controller.supportedImageFormats ) {
+        for ( String f : controller.getSupportedImageFormats() ) {
             writeElement( writer, "Format", f );
         }
     }
@@ -178,6 +191,11 @@ class WmsCapabilities130MetadataWriter {
         writer.writeEndElement();
 
         writeServiceProvider( writer );
+
+        final DeegreeWMS config = controller.getConfig();
+        maybeWriteElementNS( writer, WMSNS, "LayerLimit", config.getLayerLimit() );
+        maybeWriteElementNS( writer, WMSNS, "MaxWidth", config.getMaxWidth() );
+        maybeWriteElementNS( writer, WMSNS, "MaxHeight", config.getMaxHeight() );
 
         writer.writeEndElement();
     }
@@ -231,8 +249,8 @@ class WmsCapabilities130MetadataWriter {
                 }
 
                 maybeWriteElementNS( writer, WMSNS, "ContactPosition", contact.getPositionName() );
-                Address addr = contact.getContactInfo().getAddress();
-                if ( addr != null ) {
+                final Address addr = contact.getContactInfo().getAddress();
+                if ( addr != null && addr.isPhysicalInfoAvailable() ) {
                     writer.writeStartElement( WMSNS, "ContactAddress" );
                     writeElement( writer, WMSNS, "AddressType", "postal" );
                     for ( String s : addr.getDeliveryPoint() ) {
@@ -249,10 +267,9 @@ class WmsCapabilities130MetadataWriter {
                                      contact.getContactInfo().getPhone().getVoice().get( 0 ) );
                 maybeWriteElementNS( writer, WMSNS, "ContactFacsimileTelephone",
                                      contact.getContactInfo().getPhone().getFacsimile().get( 0 ) );
-                if ( addr != null ) {
-                    for ( String email : addr.getElectronicMailAddress() ) {
-                        maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress", email );
-                    }
+                if ( addr != null && !addr.getElectronicMailAddress().isEmpty() ) {
+                    maybeWriteElementNS( writer, WMSNS, "ContactElectronicMailAddress",
+                                         addr.getElectronicMailAddress().get( 0 ) );
                 }
 
                 writer.writeEndElement();
@@ -277,6 +294,14 @@ class WmsCapabilities130MetadataWriter {
             writeElement( writer, WMSNS, "Fees", "none" );
             writeElement( writer, WMSNS, "AccessConstraints", "none" );
         }
+    }
+
+    private boolean isGetSupported( WMSRequestType requestType ) {
+        return controller.getSupportedEncodings().isEncodingSupported( requestType, "KVP" );
+    }
+
+    private boolean isPostSupported( WMSRequestType requestType ) {
+        return controller.getSupportedEncodings().isEncodingSupported( requestType, "XML" );
     }
 
 }

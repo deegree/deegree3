@@ -56,6 +56,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.utils.GeometryParticleConverter;
+import org.deegree.sqldialect.AbstractSQLDialect;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
@@ -90,14 +91,44 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: 31186 $, $Date: 2011-07-01 18:01:58 +0200 (Fr, 01. Jul 2011) $
  */
-public class PostGISDialect implements SQLDialect {
+public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 
     private static Logger LOG = LoggerFactory.getLogger( PostGISDialect.class );
 
+    private final String undefinedSrid;
+
     private final boolean useLegacyPredicates;
 
-    public PostGISDialect( boolean useLegacyPredicates ) {
-        this.useLegacyPredicates = useLegacyPredicates;
+    private final char escapeChar = '"';
+
+    /**
+     * Creates a new {@link PostGISDialect} instance.
+     * 
+     * @param version
+     *            version string, as returned by "SELECT postgis_version()", can be <code>null</code> (unknown)
+     */
+    public PostGISDialect( String version ) {
+        this.undefinedSrid = getUndefinedSrid( version );
+        this.useLegacyPredicates = determineUseLegacyPredicates( version );
+    }
+
+    private String getUndefinedSrid( String version ) {
+        if ( version == null || version.startsWith( "0." ) || version.startsWith( "1." ) ) {
+            LOG.debug( "PostGIS version is " + version + " -- SRID identifier for undefined: -1" );
+            return "-1";
+        }
+        LOG.debug( "PostGIS version is " + version + " -- SRID identifier for undefined: 0" );
+        return "0";
+    }
+
+    private boolean determineUseLegacyPredicates( String version ) {
+        if ( version == null || version.startsWith( "0." ) || version.startsWith( "1.0" )
+             || version.startsWith( "1.1" ) || version.startsWith( "1.2" ) ) {
+            LOG.debug( "PostGIS version is " + version + " -- using legacy (pre-SQL-MM) predicates." );
+            return true;
+        }
+        LOG.debug( "PostGIS version is " + version + " -- using modern (SQL-MM) predicates." );
+        return false;
     }
 
     @Override
@@ -149,7 +180,7 @@ public class PostGISDialect implements SQLDialect {
 
     @Override
     public String getUndefinedSrid() {
-        return "-1";
+        return undefinedSrid;
     }
 
     @Override
@@ -254,6 +285,16 @@ public class PostGISDialect implements SQLDialect {
     @Override
     public String getSelectSequenceNextVal( String sequence ) {
         return "SELECT nextval('" + sequence + "')";
+    }
+
+    @Override
+    public char getLeadingEscapeChar() {
+        return escapeChar;
+    }
+
+    @Override
+    public char getTailingEscapeChar() {
+        return escapeChar;
     }
 
 }

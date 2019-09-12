@@ -35,54 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
-import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_30;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMException;
+import org.apache.axiom.soap.SOAP11Version;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.LanguageString;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.StringPair;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
@@ -95,8 +63,12 @@ import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.lock.LockHasExpiredException;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.matcher.BaseUrlReferencePatternMatcher;
+import org.deegree.gml.reference.matcher.MultipleReferencePatternMatcher;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wfs.WFSRequestType;
@@ -142,6 +114,9 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.encoding.LimitedSupportedEncodings;
+import org.deegree.services.encoding.SupportedEncodings;
+import org.deegree.services.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -150,10 +125,13 @@ import org.deegree.services.jaxb.wfs.CustomFormat;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.EnableTransactions;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
+import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
+import org.deegree.services.jaxb.wfs.DisabledResources;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
+import org.deegree.services.jaxb.wfs.RequestType;
 import org.deegree.services.metadata.MetadataUtils;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.services.metadata.provider.DefaultOWSMetadataProvider;
@@ -170,6 +148,61 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.apache.commons.lang.StringUtils.trim;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
+import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_30;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
+import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
+import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
@@ -207,7 +240,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private IDGenMode idGenMode;
 
-    private boolean disableBuffering;
+    private boolean disableBuffering = true;
 
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
 
@@ -217,11 +250,21 @@ public class WebFeatureService extends AbstractOWS {
 
     private final Map<GMLVersion, Format> gmlVersionToFormat = new HashMap<GMLVersion, Format>();
 
+    private SupportedEncodings supportedEncodings;
+
     private int queryMaxFeatures;
+
+    private BigInteger resolveTimeOutInSeconds;
 
     private boolean checkAreaOfUse;
 
+    private boolean enableResponsePaging;
+
+    private boolean allowFeatureReferencesToDatastore = false;
+
     private OWSMetadataProvider mdProvider;
+
+    private ReferencePatternMatcher referencePatternMatcher;
 
     public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -239,7 +282,9 @@ public class WebFeatureService extends AbstractOWS {
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
         if ( enableTransactions != null ) {
             this.enableTransactions = enableTransactions.isValue();
-            this.idGenMode = parseIdGenMode( enableTransactions.getIdGen() );
+            IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
+            this.idGenMode = parseIdGenMode( configuredIdGenMode );
+            this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
         }
         if ( jaxbConfig.isEnableResponseBuffering() != null ) {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
@@ -249,7 +294,10 @@ public class WebFeatureService extends AbstractOWS {
 
         queryMaxFeatures = jaxbConfig.getQueryMaxFeatures() == null ? DEFAULT_MAX_FEATURES
                                                                    : jaxbConfig.getQueryMaxFeatures().intValue();
+        resolveTimeOutInSeconds = jaxbConfig.getResolveTimeOutInSeconds();
         checkAreaOfUse = jaxbConfig.isQueryCheckAreaOfUse() == null ? false : jaxbConfig.isQueryCheckAreaOfUse();
+        enableResponsePaging = jaxbConfig.isEnableResponsePaging() == null ? false
+                                                                          : jaxbConfig.isEnableResponsePaging();
 
         service = new WfsFeatureStoreManager();
         try {
@@ -273,6 +321,151 @@ public class WebFeatureService extends AbstractOWS {
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
         mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
+
+        supportedEncodings = parseEncodings( jaxbConfig );
+
+        referencePatternMatcher = parseDisabledResources( jaxbConfig );
+    }
+
+    SupportedEncodings parseEncodings( DeegreeWFS jaxbConfig ) {
+        SupportedRequests supportedRequests = jaxbConfig.getSupportedRequests();
+        if ( supportedRequests != null ) {
+            if ( isAtLeastOneRequestTypeConfigured( supportedRequests )
+                 || isGlobalSupportedEncodingsConfigured( supportedRequests ) )
+                return parseEncodings( supportedRequests );
+        }
+        return new UnlimitedSupportedEncodings();
+    }
+
+    private ReferencePatternMatcher parseDisabledResources( DeegreeWFS jaxbConfig ) {
+        DisabledResources disabledResources = jaxbConfig.getDisabledResources();
+        if ( disabledResources != null && !disabledResources.getPattern().isEmpty() ) {
+            MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+            List<String> patterns = disabledResources.getPattern();
+            for ( String pattern : patterns ) {
+                BaseUrlReferencePatternMatcher baseUrlMatcher = new BaseUrlReferencePatternMatcher( pattern );
+                matcher.addMatcherToApply( baseUrlMatcher );
+            }
+            return matcher;
+        }
+        return null;
+    }
+
+    private LimitedSupportedEncodings parseEncodings( SupportedRequests supportedRequests ) {
+        List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
+        if ( isAtLeastOneRequestTypeConfigured( supportedRequests ) )
+            return parseEncodingsWithSpecifiedRequestTypes( supportedRequests, supportedEncodingsForAllRequestTypes );
+        else
+            return parseEncodingWithSupportedEncodings( supportedEncodingsForAllRequestTypes );
+    }
+
+    private LimitedSupportedEncodings parseEncodingWithSupportedEncodings( List<String> supportedEncodingsForAllRequestTypes ) {
+        LimitedSupportedEncodings<WFSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
+        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeStoredQueries,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DropStoredQuery,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeature,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeatureWithLock,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetGmlObject,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetPropertyValue,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( ListStoredQueries,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( LockFeature,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( Transaction,
+                                                       collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
+        return limitedSupportedEncodings;
+    }
+
+    private LimitedSupportedEncodings parseEncodingsWithSpecifiedRequestTypes( SupportedRequests supportedRequests,
+                                                                               List<String> supportedEncodingsForAllRequestTypes ) {
+        LimitedSupportedEncodings<WFSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
+        limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
+                                                       collectEnabledEncodings( supportedRequests.getCreateStoredQuery(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
+                                                       collectEnabledEncodings( supportedRequests.getDescribeFeatureType(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DescribeStoredQueries,
+                                                       collectEnabledEncodings( supportedRequests.getDescribeStoredQueries(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( DropStoredQuery,
+                                                       collectEnabledEncodings( supportedRequests.getDropStoredQuery(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetCapabilities,
+                                                       collectEnabledEncodings( supportedRequests.getGetCapabilities(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeature,
+                                                       collectEnabledEncodings( supportedRequests.getGetFeature(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetFeatureWithLock,
+                                                       collectEnabledEncodings( supportedRequests.getGetFeatureWithLock(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetGmlObject,
+                                                       collectEnabledEncodings( supportedRequests.getGetGmlObject(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( GetPropertyValue,
+                                                       collectEnabledEncodings( supportedRequests.getGetPropertyValue(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( ListStoredQueries,
+                                                       collectEnabledEncodings( supportedRequests.getListStoredQueries(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( LockFeature,
+                                                       collectEnabledEncodings( supportedRequests.getLockFeature(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        limitedSupportedEncodings.addEnabledEncodings( Transaction,
+                                                       collectEnabledEncodings( supportedRequests.getTransaction(),
+                                                                                supportedEncodingsForAllRequestTypes ) );
+        return limitedSupportedEncodings;
+    }
+
+    private boolean isGlobalSupportedEncodingsConfigured( SupportedRequests supportedRequests ) {
+        List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
+        return supportedEncodingsForAllRequestTypes != null && !supportedEncodingsForAllRequestTypes.isEmpty();
+    }
+
+    private boolean isAtLeastOneRequestTypeConfigured( SupportedRequests supportedRequests ) {
+        return supportedRequests.getCreateStoredQuery() != null || supportedRequests.getDescribeFeatureType() != null
+               || supportedRequests.getDescribeStoredQueries() != null
+               || supportedRequests.getDropStoredQuery() != null || supportedRequests.getGetCapabilities() != null
+               || supportedRequests.getGetFeature() != null || supportedRequests.getGetFeatureWithLock() != null
+               || supportedRequests.getGetGmlObject() != null || supportedRequests.getGetPropertyValue() != null
+               || supportedRequests.getListStoredQueries() != null || supportedRequests.getLockFeature() != null
+               || supportedRequests.getTransaction() != null;
+    }
+
+    private Set<String> collectEnabledEncodings( RequestType supportedEncodingsForThisType,
+                                                 List<String> supportedEncodingsForAllTypes ) {
+        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
+        if ( supportedEncodingsForThisType != null ) {
+            allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
+            List<String> encodingsForThisType = supportedEncodingsForThisType.getSupportedEncodings();
+            if ( encodingsForThisType != null && encodingsForThisType.size() > 0 ) {
+                allEnabledEncodingForThisType.addAll( encodingsForThisType );
+            } else if ( supportedEncodingsForAllTypes == null || supportedEncodingsForAllTypes.isEmpty() ) {
+                allEnabledEncodingForThisType.add( "kvp" );
+                allEnabledEncodingForThisType.add( "xml" );
+                allEnabledEncodingForThisType.add( "soap" );
+            }
+        }
+        return allEnabledEncodingForThisType;
+    }
+
+    private Set<String> collectEnabledEncodings( List<String> supportedEncodingsForAllTypes ) {
+        Set<String> allEnabledEncodingForThisType = new HashSet<String>();
+        allEnabledEncodingForThisType.addAll( supportedEncodingsForAllTypes );
+        return allEnabledEncodingForThisType;
     }
 
     private IDGenMode parseIdGenMode( IdentifierGenerationOptionType idGen ) {
@@ -283,6 +476,7 @@ public class WebFeatureService extends AbstractOWS {
         case GENERATE_NEW: {
             return IDGenMode.GENERATE_NEW;
         }
+        case USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY:
         case USE_EXISTING: {
             return IDGenMode.USE_EXISTING;
         }
@@ -390,7 +584,7 @@ public class WebFeatureService extends AbstractOWS {
                                                      + formatDef.getClass() + "'." );
                 }
                 for ( String mimeType : mimeTypes ) {
-                    mimeTypeToFormat.put( mimeType, format );
+                    mimeTypeToFormat.put( trim( mimeType ), format );
                 }
             }
         }
@@ -455,10 +649,14 @@ public class WebFeatureService extends AbstractOWS {
                 List<LanguageString> abstracts = null;
                 // TODO
                 List<Pair<List<LanguageString>, CodeType>> keywords = null;
-                String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
+                final String url = getMetadataURL( metadataUrlTemplate, ftMd );
+                if ( url != null ) {
+                    metadataUrls.add( new MetadataUrl( url, null, null ) );
+                }
                 try {
-                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords, url,
-                                                                Collections.<StringPair> emptyList() );
+                    DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,
+                                                                metadataUrls, null, null, null, null );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
@@ -527,6 +725,11 @@ public class WebFeatureService extends AbstractOWS {
             String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
+            if ( !supportedEncodings.isEncodingSupported( requestType, "KVP" ) ) {
+                throw new OWSException( "GET/KVP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
+
             // check if requested version is supported and offered (except for GetCapabilities)
             if ( requestType != WFSRequestType.GetCapabilities ) {
                 if ( requestVersion == null ) {
@@ -560,7 +763,7 @@ public class WebFeatureService extends AbstractOWS {
             case DescribeFeatureType:
                 DescribeFeatureType describeFt = DescribeFeatureTypeKVPAdapter.parse( kvpParamsUC );
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
-                format.doDescribeFeatureType( describeFt, response );
+                format.doDescribeFeatureType( describeFt, response, false );
                 break;
             case DescribeStoredQueries:
                 DescribeStoredQueries describeStoredQueries = DescribeStoredQueriesKVPAdapter.parse( kvpParamsUC );
@@ -576,6 +779,7 @@ public class WebFeatureService extends AbstractOWS {
                 break;
             case GetFeature:
                 GetFeature getFeature = GetFeatureKVPAdapter.parse( kvpParamsUC, nsMap );
+                updateResolveTimeOut( getFeature.getResolveParams() );
                 format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeature, response );
@@ -583,6 +787,7 @@ public class WebFeatureService extends AbstractOWS {
             case GetFeatureWithLock:
                 checkTransactionsEnabled( requestName );
                 GetFeatureWithLock getFeatureWithLock = GetFeatureWithLockKVPAdapter.parse( kvpParamsUC );
+                updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
@@ -594,6 +799,7 @@ public class WebFeatureService extends AbstractOWS {
                 break;
             case GetPropertyValue:
                 GetPropertyValue getPropertyValue = GetPropertyValueKVPAdapter.parse( kvpParamsUC );
+                updateResolveTimeOut( getPropertyValue.getResolveParams() );
                 format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetPropertyValue( getPropertyValue, response );
@@ -614,7 +820,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -623,10 +829,23 @@ public class WebFeatureService extends AbstractOWS {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, e, response );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
             sendServiceException( requestVersion, new OWSException( e ), response );
+        } catch ( LockHasExpiredException e ) {
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            if ( VERSION_200.equals( requestVersion ) )
+                sendServiceException( requestVersion, new OWSException( e.getMessage(), LOCK_HAS_EXPIRED ), response );
+            else
+                sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
             LOG.debug( "OWS-Exception: {}", e.getMessage() );
             LOG.trace( e.getMessage(), e );
@@ -657,6 +876,11 @@ public class WebFeatureService extends AbstractOWS {
             String requestName = xmlStream.getLocalName();
             WFSRequestType requestType = getRequestTypeByName( requestName );
 
+            if ( !supportedEncodings.isEncodingSupported( requestType, "XML" ) ) {
+                throw new OWSException( "POST/XML is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
+
             // check if requested version is supported and offered (except for GetCapabilities)
             requestVersion = getVersion( XMLStreamUtils.getAttributeValue( xmlStream, "version" ) );
             if ( requestType != WFSRequestType.GetCapabilities ) {
@@ -686,7 +910,7 @@ public class WebFeatureService extends AbstractOWS {
                 describeFtAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 DescribeFeatureType describeFt = describeFtAdapter.parse();
                 Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
-                format.doDescribeFeatureType( describeFt, response );
+                format.doDescribeFeatureType( describeFt, response, false );
                 break;
             case DropStoredQuery:
                 DropStoredQueryXMLAdapter dropStoredQueryAdapter = new DropStoredQueryXMLAdapter();
@@ -710,6 +934,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
                 getFeatureAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeature getFeature = getFeatureAdapter.parse();
+                updateResolveTimeOut( getFeature.getResolveParams() );
                 format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeature, response );
@@ -719,6 +944,8 @@ public class WebFeatureService extends AbstractOWS {
                 GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
                 getFeatureWithLockAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                checkGetFeatureWithLockRequest( requestVersion, getFeatureWithLock );
+                updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
                 format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetFeature( getFeatureWithLock, response );
@@ -734,6 +961,7 @@ public class WebFeatureService extends AbstractOWS {
                 GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
                 getPropertyValueAdapter.setRootElement( new XMLAdapter( xmlStream ).getRootElement() );
                 GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                updateResolveTimeOut( getPropertyValue.getResolveParams() );
                 format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
                                           "outputFormat" );
                 format.doGetPropertyValue( getPropertyValue, response );
@@ -755,7 +983,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -765,10 +993,19 @@ public class WebFeatureService extends AbstractOWS {
             sendServiceException( requestVersion, e, response );
         } catch ( XMLParsingException e ) {
             LOG.trace( "Stack trace:", e );
-            sendServiceException( requestVersion, new OWSException( e.getMessage(), INVALID_PARAMETER_VALUE ), response );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendServiceException( requestVersion, new OWSException( e.getMessage(), exceptionCode ), response );
         } catch ( MissingParameterException e ) {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e ), response );
+        } catch ( LockHasExpiredException e ) {
+            LOG.trace( "Stack trace:", e );
+            if ( VERSION_200.equals( requestVersion ) )
+                sendServiceException( requestVersion, new OWSException( e.getMessage(), LOCK_HAS_EXPIRED ), response );
+            else
+                sendServiceException( requestVersion, new OWSException( e ), response );
         } catch ( InvalidParameterValueException e ) {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e ), response );
@@ -776,6 +1013,182 @@ public class WebFeatureService extends AbstractOWS {
             LOG.trace( "Stack trace:", e );
             sendServiceException( requestVersion, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response );
         }
+    }
+
+    @Override
+    public void doSOAP( SOAPEnvelope soapDoc, HttpServletRequest request, HttpResponseBuffer response,
+                        List<FileItem> multiParts, SOAPFactory factory )
+                            throws ServletException, IOException, org.deegree.services.authentication.SecurityException {
+        LOG.debug( "doSOAP" );
+
+        if ( !isSoapSupported() ) {
+            super.doSOAP( soapDoc, request, response, multiParts, factory );
+            return;
+        }
+
+        Version requestVersion = null;
+        try {
+            if ( soapDoc.getVersion() instanceof SOAP11Version ) {
+                XMLStreamWriter xmlWriter = response.getXMLWriter();
+                String soapEnvNS = "http://schemas.xmlsoap.org/soap/envelope/";
+                String xsiNS = "http://www.w3.org/2001/XMLSchema-instance";
+                xmlWriter.writeStartElement( "soap", "Envelope", soapEnvNS );
+                xmlWriter.writeNamespace( "soap", soapEnvNS );
+                xmlWriter.writeNamespace( "xsi", xsiNS );
+                xmlWriter.writeAttribute( xsiNS, "schemaLocation",
+                                          "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
+                xmlWriter.writeStartElement( soapEnvNS, "Body" );
+            } else {
+                beginSOAPResponse( response );
+            }
+
+            OMElement body = soapDoc.getBody().getFirstElement().cloneOMElement();
+            XMLStreamReader bodyXmlStream = XMLStreamUtils.getAsXmlStrem( body );
+
+            String requestName = body.getLocalName();
+            WFSRequestType requestType = getRequestTypeByName( requestName );
+
+            if ( !supportedEncodings.isEncodingSupported( requestType, "SOAP" ) ) {
+                throw new OWSException( "POST/SOAP is not supported for " + requestName + " requests.",
+                                        OWSException.OPERATION_NOT_SUPPORTED );
+            }
+
+            // check if requested version is supported and offered (except for GetCapabilities)
+            requestVersion = getVersion( body.getAttributeValue( new QName( "version" ) ) );
+            if ( requestType != WFSRequestType.GetCapabilities ) {
+                requestVersion = checkVersion( requestVersion );
+
+                // needed for CITE 1.1.0 compliance
+                String serviceAttr = body.getAttributeValue( new QName( "service" ) );
+                if ( serviceAttr != null && !( "WFS".equals( serviceAttr ) || "".equals( serviceAttr ) ) ) {
+                    throw new OWSException( "Wrong service attribute: '" + serviceAttr + "' -- must be 'WFS'.",
+                                            INVALID_PARAMETER_VALUE, "service" );
+                }
+            }
+
+            switch ( requestType ) {
+            case CreateStoredQuery:
+                CreateStoredQueryXMLAdapter createStoredQueryAdapter = new CreateStoredQueryXMLAdapter();
+                createStoredQueryAdapter.setRootElement( body );
+                CreateStoredQuery createStoredQuery = createStoredQueryAdapter.parse();
+                storedQueryHandler.doCreateStoredQuery( createStoredQuery, response );
+                break;
+            case DescribeFeatureType:
+                DescribeFeatureTypeXMLAdapter describeFtAdapter = new DescribeFeatureTypeXMLAdapter();
+                describeFtAdapter.setRootElement( body );
+                DescribeFeatureType describeFt = describeFtAdapter.parse();
+                Format format = determineFormat( requestVersion, describeFt.getOutputFormat(), "outputFormat" );
+                format.doDescribeFeatureType( describeFt, response, true );
+                break;
+            case DropStoredQuery:
+                DropStoredQueryXMLAdapter dropStoredQueryAdapter = new DropStoredQueryXMLAdapter();
+                dropStoredQueryAdapter.setRootElement( body );
+                DropStoredQuery dropStoredQuery = dropStoredQueryAdapter.parse();
+                storedQueryHandler.doDropStoredQuery( dropStoredQuery, response );
+                break;
+            case DescribeStoredQueries:
+                DescribeStoredQueriesXMLAdapter describeStoredQueriesAdapter = new DescribeStoredQueriesXMLAdapter();
+                describeStoredQueriesAdapter.setRootElement( body );
+                DescribeStoredQueries describeStoredQueries = describeStoredQueriesAdapter.parse();
+                storedQueryHandler.doDescribeStoredQueries( describeStoredQueries, response );
+                break;
+            case GetCapabilities:
+                GetCapabilitiesXMLAdapter getCapabilitiesAdapter = new GetCapabilitiesXMLAdapter();
+                getCapabilitiesAdapter.setRootElement( body );
+                GetCapabilities wfsRequest = getCapabilitiesAdapter.parse( requestVersion );
+                doGetCapabilities( wfsRequest, response );
+                break;
+            case GetFeature:
+                GetFeatureXMLAdapter getFeatureAdapter = new GetFeatureXMLAdapter();
+                getFeatureAdapter.setRootElement( body );
+                GetFeature getFeature = getFeatureAdapter.parse();
+                updateResolveTimeOut( getFeature.getResolveParams() );
+                format = determineFormat( requestVersion, getFeature.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetFeature( getFeature, response );
+                break;
+            case GetFeatureWithLock:
+                checkTransactionsEnabled( requestName );
+                GetFeatureWithLockXMLAdapter getFeatureWithLockAdapter = new GetFeatureWithLockXMLAdapter();
+                getFeatureWithLockAdapter.setRootElement( body );
+                GetFeatureWithLock getFeatureWithLock = getFeatureWithLockAdapter.parse();
+                updateResolveTimeOut( getFeatureWithLock.getResolveParams() );
+                format = determineFormat( requestVersion, getFeatureWithLock.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetFeature( getFeatureWithLock, response );
+                break;
+            case GetGmlObject:
+                GetGmlObjectXMLAdapter getGmlObjectAdapter = new GetGmlObjectXMLAdapter();
+                getGmlObjectAdapter.setRootElement( body );
+                GetGmlObject getGmlObject = getGmlObjectAdapter.parse();
+                format = determineFormat( requestVersion, getGmlObject.getOutputFormat(), "outputFormat" );
+                format.doGetGmlObject( getGmlObject, response );
+                break;
+            case GetPropertyValue:
+                GetPropertyValueXMLAdapter getPropertyValueAdapter = new GetPropertyValueXMLAdapter();
+                getPropertyValueAdapter.setRootElement( body );
+                GetPropertyValue getPropertyValue = getPropertyValueAdapter.parse();
+                updateResolveTimeOut( getPropertyValue.getResolveParams() );
+                format = determineFormat( requestVersion, getPropertyValue.getPresentationParams().getOutputFormat(),
+                                          "outputFormat" );
+                format.doGetPropertyValue( getPropertyValue, response );
+                break;
+            case ListStoredQueries:
+                ListStoredQueriesXMLAdapter listStoredQueriesAdapter = new ListStoredQueriesXMLAdapter();
+                listStoredQueriesAdapter.setRootElement( body );
+                ListStoredQueries listStoredQueries = listStoredQueriesAdapter.parse();
+                storedQueryHandler.doListStoredQueries( listStoredQueries, response );
+                break;
+            case LockFeature:
+                checkTransactionsEnabled( requestName );
+                LockFeatureXMLAdapter lockFeatureAdapter = new LockFeatureXMLAdapter();
+                lockFeatureAdapter.setRootElement( body );
+                LockFeature lockFeature = lockFeatureAdapter.parse();
+                lockFeatureHandler.doLockFeature( lockFeature, response );
+                break;
+            case Transaction:
+                checkTransactionsEnabled( requestName );
+                TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
+                Transaction transaction = transactionReader.read( bodyXmlStream );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                break;
+            default:
+                throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
+            }
+
+            endSOAPResponse( response );
+            response.setContentType( "application/soap+xml" );
+
+        } catch ( OWSException e ) {
+            LOG.debug( e.getMessage(), e );
+            sendSoapException( soapDoc, factory, response, e, request, requestVersion );
+        } catch ( XMLParsingException e ) {
+            LOG.trace( "Stack trace:", e );
+            String exceptionCode = INVALID_PARAMETER_VALUE;
+            if ( VERSION_200.equals( requestVersion ) )
+                exceptionCode = OWSException.OPERATION_PROCESSING_FAILED;
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), exceptionCode ), request,
+                               requestVersion );
+        } catch ( MissingParameterException e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
+
+        } catch ( LockHasExpiredException e ) {
+            LOG.trace( "Stack trace:", e );
+            if ( VERSION_200.equals( requestVersion ) )
+                sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), LOCK_HAS_EXPIRED ),
+                                   request, requestVersion );
+            else
+                sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
+        } catch ( InvalidParameterValueException e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e ), request, requestVersion );
+        } catch ( Throwable e ) {
+            LOG.trace( "Stack trace:", e );
+            sendSoapException( soapDoc, factory, response, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ),
+                               request, requestVersion );
+        }
+
     }
 
     private Version getVersion( String versionString )
@@ -822,8 +1235,43 @@ public class WebFeatureService extends AbstractOWS {
         if ( sectionsUC != null && sectionsUC.size() == 0 ) {
             sectionsUC = null;
         }
+        final Collection<FeatureType> sortedFts = getFeatureTypesToExport();
 
-        // sort the information on the served feature types
+        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
+        GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
+                                                                     sortedFts, sectionsUC, enableTransactions,
+                                                                     queryCRS, supportedEncodings, mdProvider );
+        adapter.export();
+        xmlWriter.flush();
+    }
+
+    private Collection<FeatureType> getFeatureTypesToExport() {
+        if ( mdProvider.getDatasetMetadata() != null && !mdProvider.getDatasetMetadata().isEmpty() ) {
+            LOG.debug( "Dataset metadata available. Only announcing feature types with metadata." );
+            return getFeatureTypesWithMetadata();
+        }
+        LOG.debug( "No dataset metadata available. Announcing feature types from all feature stores." );
+        return getAllFeatureTypes();
+    }
+
+    private Collection<FeatureType> getFeatureTypesWithMetadata() {
+        final Collection<FeatureType> sortedFts = new LinkedHashSet<FeatureType>();
+        for ( final DatasetMetadata datasetMetadata : mdProvider.getDatasetMetadata() ) {
+            final QName ftName = datasetMetadata.getQName();
+            final FeatureStore fs = service.getStore( ftName );
+            if ( fs != null ) {
+                if ( fs.isMapped( ftName ) ) {
+                    sortedFts.add( service.lookupFeatureType( ftName ) );
+                }
+            } else {
+                LOG.warn( "Found metadata for feature type '" + ftName
+                          + "', but feature type is not available from any store." );
+            }
+        }
+        return sortedFts;
+    }
+
+    private Collection<FeatureType> getAllFeatureTypes() {
         Comparator<FeatureType> comp = new Comparator<FeatureType>() {
             @Override
             public int compare( FeatureType ftMd1, FeatureType ftMd2 ) {
@@ -843,13 +1291,7 @@ public class WebFeatureService extends AbstractOWS {
                 sortedFts.add( ft );
             }
         }
-
-        XMLStreamWriter xmlWriter = getXMLResponseWriter( response, "text/xml", null );
-        GetCapabilitiesHandler adapter = new GetCapabilitiesHandler( this, service, negotiatedVersion, xmlWriter,
-                                                                     sortedFts, sectionsUC, enableTransactions,
-                                                                     queryCRS, mdProvider );
-        adapter.export();
-        xmlWriter.flush();
+        return sortedFts;
     }
 
     /**
@@ -884,6 +1326,14 @@ public class WebFeatureService extends AbstractOWS {
                             throws ServletException {
         XMLExceptionSerializer serializer = getExceptionSerializer( requestVersion );
         sendException( null, serializer, e, response );
+    }
+
+    private void sendSoapException( SOAPEnvelope soapDoc, SOAPFactory factory, HttpResponseBuffer response,
+                                    OWSException e, ServletRequest request, Version requestVersion )
+                            throws OMException, ServletException {
+        XMLExceptionSerializer serializer = getExceptionSerializer( requestVersion );
+        sendSOAPException( soapDoc.getHeader(), factory, response, e, serializer, null, null, request.getServerName(),
+                           request.getCharacterEncoding() );
     }
 
     @Override
@@ -950,22 +1400,53 @@ public class WebFeatureService extends AbstractOWS {
         return outputFormat;
     }
 
+    private void updateResolveTimeOut( ResolveParams resolveParams ) {
+        if ( resolveParams.getTimeout() == null && resolveTimeOutInSeconds != null )
+            resolveParams.setTimeout( resolveTimeOutInSeconds );
+    }
+
     Collection<String> getOutputFormats() {
         return mimeTypeToFormat.keySet();
     }
 
     public int getQueryMaxFeatures() {
-        // TODO Auto-generated method stub
         return queryMaxFeatures;
     }
 
+    /**
+     * @return the configured value for ResolveTimeOut in seconds, <code>null</code> if not configured
+     */
+    public BigInteger getResolveTimeOutInSeconds() {
+        return resolveTimeOutInSeconds;
+    }
+
     public boolean getCheckAreaOfUse() {
-        // TODO Auto-generated method stub
         return checkAreaOfUse;
     }
 
     public ICRS getDefaultQueryCrs() {
         return defaultQueryCRS;
+    }
+
+    /**
+     * @return <code>true</code> if response paging is enabled by configuration, <code>false</code> otherwise
+     */
+    public boolean isEnableResponsePaging() {
+        return enableResponsePaging;
+    }
+
+    /**
+     * @return <code>true</code> if soap is supported, <code>false</code> otherwise
+     */
+    public boolean isSoapSupported() {
+        return !disableBuffering;
+    }
+
+    /**
+     * @return the matcher to match disabled urls, may be <code>null</code>
+     */
+    public ReferencePatternMatcher getReferencePatternMatcher() {
+        return referencePatternMatcher;
     }
 
     /**
@@ -998,6 +1479,13 @@ public class WebFeatureService extends AbstractOWS {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         return version;
+    }
+
+    private void checkGetFeatureWithLockRequest( Version requestVersion, GetFeatureWithLock getFeatureWithLock ) {
+        if ( VERSION_200.equals( requestVersion )
+             && HITS.equals( getFeatureWithLock.getPresentationParams().getResultType() ) )
+            throw new InvalidParameterValueException(
+                                                      "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
 
 }

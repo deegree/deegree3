@@ -36,7 +36,7 @@
 
 package org.deegree.gml.feature;
 
-import static junit.framework.Assert.assertEquals;
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.filter.MatchAction.ALL;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
@@ -44,6 +44,7 @@ import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -54,6 +55,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -61,6 +63,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ReferenceResolvingException;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -72,7 +78,9 @@ import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.comparison.PropertyIsEqualTo;
@@ -88,15 +96,14 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Exports the features in the Philosophers example and validates them against the corresponding schema.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class GMLFeatureWriterTest {
@@ -354,7 +361,7 @@ public class GMLFeatureWriterTest {
         assertFalse( memoryWriter.toString().contains( "rsts206" ) );
         assertTrue( memoryWriter.toString().contains( "rsts207" ) );
     }
-    
+
     @Test
     public void testAIXM51RouteSegmentTimeSliceProjection2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -388,4 +395,25 @@ public class GMLFeatureWriterTest {
         assertTrue( memoryWriter.toString().contains( "rsts206" ) );
         assertFalse( memoryWriter.toString().contains( "rsts207" ) );
     }
+    
+    @Test
+    public void testDecimalPropertyEncodedFaithfully()
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
+        final String formattedInputValue = "0.00000009";
+        final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        final XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        final XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
+        final GMLStreamWriter exporter = createGMLStreamWriter( GML_2, writer );
+        final GMLFeatureWriter featureWriter = exporter.getFeatureWriter();
+        final PropertyType decimalPt = new SimplePropertyType( new QName( "property" ), 1, 1, DECIMAL, null, null );
+        final PrimitiveType pt = new PrimitiveType( DECIMAL );
+        final TypedObjectNode value = new PrimitiveValue( formattedInputValue, pt );
+        final Property prop = new GenericProperty( decimalPt, value );
+        featureWriter.export( prop );
+        writer.flush();
+        writer.close();
+        assertEquals( "<property>0.00000009</property>\n", memoryWriter.toString() );
+    }
+
 }

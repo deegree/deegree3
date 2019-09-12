@@ -39,7 +39,7 @@ import static org.deegree.client.core.utils.MessageUtils.getFacesMessage;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -157,7 +157,7 @@ public class ProcessExecuter {
                                                encoding, schema );
                     } else if ( xmlRef != null && xmlRef.trim().length() > 0 ) {
                         execution.addXMLInput( input.getId().getCode(), input.getId().getCodeSpace(),
-                                               new URL( xmlRef ), true, mimeType, encoding, schema );
+                                               new URI( xmlRef ), true, mimeType, encoding, schema );
                     }
                     for ( String key : binaryInputs.keySet() ) {
                         execution.addBinaryInput( input.getId().getCode(), input.getId().getCodeSpace(),

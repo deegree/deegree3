@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4-pre3-SNAPSHOT</version>
+    <version>3.4.10-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -27,6 +27,7 @@
   <modules>
     <module>deegree-layers-coverage</module>  
     <module>deegree-layers-feature</module>
+    <module>deegree-layers-gdal</module> 
     <module>deegree-layers-remotewms</module>
     <module>deegree-layers-tile</module>
   </modules>

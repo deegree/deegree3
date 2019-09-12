@@ -206,7 +206,7 @@ public class OwsHttpClientImpl implements OwsHttpClient {
         // TODO: this method does not work. url.getQuery is the query part not the base url
         String s = url.toString();
         if ( url.getQuery() != null ) {
-            if ( !s.endsWith( "&" ) ) {
+            if ( !s.endsWith( "&" ) && ( !s.endsWith( "?" ) && s.length() == 1 ) ) {
                 s += "&";
             }
         } else {

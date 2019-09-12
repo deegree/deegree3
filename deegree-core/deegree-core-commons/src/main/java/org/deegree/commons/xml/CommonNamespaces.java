@@ -91,6 +91,11 @@ public class CommonNamespaces {
     public static final String OWS_11_NS = "http://www.opengis.net/ows/1.1";
 
     /**
+     * The OWS_11_NS namespace is bound to: "http://www.opengis.net/ows/2.0"
+     */
+    public static final String OWS_20_NS = "http://www.opengis.net/ows/2.0";
+    
+    /**
      * The ISO19115NS namespace is bound to: "http://schemas.opengis.net/iso19115full"
      */
     public static final String ISO19115NS = "http://schemas.opengis.net/iso19115full";
@@ -188,6 +193,11 @@ public class CommonNamespaces {
      * The XMLNS prefix is currently assigned to: "xmlns"
      */
     public static final String XMLNS_PREFIX = "xmlns";
+
+    /**
+     * The XMLNSNS prefix is always assigned to: "xml"
+     */
+    public static final String XMLNSNS_PREFIX = "xml";
 
     /**
      * The XS prefix is currently assigned to: "xs"

@@ -18,6 +18,7 @@ Characteristics of deegree WFS
 
 deegree WFS is an implementation of the `OGC Web Feature Service specification <http://www.opengeospatial.org/standards/wfs>`_. Notable features:
 
+* Official OGC reference implementation for WFS 1.1.0 and WFS 2.0.0 Simple
 * Implements WFS standards 1.0.0, 1.1.0 and 2.0.0 [#f1]_
 * Fully transactional (even for rich data models)
 * Supports KVP, XML and SOAP requests
@@ -40,8 +41,10 @@ Characteristics of deegree WMS
 
 deegree WMS is an implementation of the `OGC Web Map Service specification <http://www.opengeospatial.org/standards/wms>`_. Notable features:
 
+* Official OGC reference implementation for WMS 1.1.1
 * Implements WMS standards 1.1.1 and 1.3.0 [#f2]_
 * Extensive support for styling languages SLD/SE versions 1.0.0 and 1.1.0
+* Supports KVP, XML and SOAP requests (WMS 1.3.0)
 * High performance and excellent scalability
 * High quality rendering
 * Scale dependent styling

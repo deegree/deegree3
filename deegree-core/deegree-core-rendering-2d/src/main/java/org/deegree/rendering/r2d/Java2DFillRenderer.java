@@ -129,9 +129,9 @@ class Java2DFillRenderer {
                 height = graphic.image.getHeight();
             }
         }
-
+        
         double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
-        double y0 = y - height * graphic.anchorPointY - uomCalculator.considerUOM( graphic.displacementY, uom );
+        double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
 
         return new Rectangle2D.Double( x0, y0, width, height );
     }

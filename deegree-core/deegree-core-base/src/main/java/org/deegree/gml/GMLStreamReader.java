@@ -61,6 +61,7 @@ import org.deegree.gml.geometry.GML2GeometryReader;
 import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.reference.GmlDocumentIdContext;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -145,6 +146,10 @@ public class GMLStreamReader {
 
     private GMLDictionaryReader dictReader;
 
+    private boolean laxMode;
+
+    private GMLReferenceResolver internalResolver;
+
     /**
      * Creates a new {@link GMLStreamReader} instance.
      * 
@@ -183,6 +188,16 @@ public class GMLStreamReader {
     public void setApplicationSchema( AppSchema schema ) {
         this.schema = schema;
         idContext.setApplicationSchema( schema );
+    }
+
+
+    /**
+     * Adds a {@link ReferencePatternMatcher} that checks if a url should be skipped or not.
+     *
+     * @param referencePatternMatcher the matcher to add, may be <code>null</code> (all urls are resolved)
+     */
+    public void setReferencePatternMatcher( ReferencePatternMatcher referencePatternMatcher ) {
+        idContext.setReferencePatternMatcher( referencePatternMatcher );
     }
 
     public GMLReferenceResolver getResolver() {
@@ -247,6 +262,33 @@ public class GMLStreamReader {
      */
     public void setResolver( GMLReferenceResolver resolver ) {
         this.resolver = resolver;
+    }
+
+    public void setInternalResolver ( GMLReferenceResolver internalResolver ) {
+            this.internalResolver = internalResolver;
+    }
+
+    public GMLReferenceResolver getInternalResolver () {
+        return internalResolver;
+    }
+
+    /**
+     * Enables or disables lax parsing (disable syntactical checks).
+     * 
+     * @param laxMode
+     *            <code>true</code>, if syntacical issues shall be ignored, <code>false</code> otherwise
+     */
+    public void setLaxMode( final boolean laxMode ) {
+        this.laxMode = laxMode;
+    }
+
+    /**
+     * Returns the state of lax parsing.
+     * 
+     * @return <code>true</code>, if syntacical issues shall be ignored, <code>false</code> otherwise
+     */
+    public boolean getLaxMode() {
+        return laxMode;
     }
 
     /**

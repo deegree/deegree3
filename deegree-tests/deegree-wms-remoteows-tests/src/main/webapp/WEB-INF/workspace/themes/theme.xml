@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Themes configVersion="3.1.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<Themes configVersion="3.4.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd" xmlns:d="http://www.deegree.org/metadata/description">
 
   <LayerStoreId>single</LayerStoreId>
@@ -7,14 +7,10 @@
   <LayerStoreId>multiple</LayerStoreId>
   <LayerStoreId>optionsmultiple</LayerStoreId>
   <LayerStoreId>timeout</LayerStoreId>
-  <LayerStoreId>esri</LayerStoreId>
-  <LayerStoreId>esri2</LayerStoreId>
-  <LayerStoreId>mywms</LayerStoreId>
   <LayerStoreId>deegree2</LayerStoreId>
   <LayerStoreId>parameters</LayerStoreId>
   <LayerStoreId>parametersext</LayerStoreId>
   <LayerStoreId>transformedgif</LayerStoreId>
-  <LayerStoreId>umn</LayerStoreId>
 
   <Theme>
     <d:Title>root</d:Title>
@@ -48,16 +44,6 @@
       <Layer layerStore='timeout'>dem_saltlake</Layer>
     </Theme>
     <Theme>
-      <Identifier>esri</Identifier>
-      <d:Title>esri</d:Title>
-      <Layer layerStore='esri'>REF:FLOODMAPINDEX</Layer>
-    </Theme>
-    <Theme>
-      <Identifier>mywms</Identifier>
-      <d:Title>mywms</d:Title>
-      <Layer layerStore='mywms'>bplan_umringe_mrh</Layer>
-    </Theme>
-    <Theme>
       <Identifier>deegree2</Identifier>
       <d:Title>deegree2</d:Title>
       <Layer layerStore='deegree2'>ZipCodes</Layer>
@@ -76,19 +62,6 @@
       <Identifier>transformedgif</Identifier>
       <d:Title>transformedgif</d:Title>
       <Layer layerStore='transformedgif'>zipcodes</Layer>
-    </Theme>
-    <Theme>
-      <Identifier>umn</Identifier>
-      <d:Title>umn</d:Title>
-      <Layer layerStore='umn'>nsg</Layer>
-    </Theme>
-    <Theme>
-      <Identifier>esri2</Identifier>
-      <d:Title>esri2</d:Title>
-      <Layer layerStore='esri2'>0</Layer>
-      <Layer layerStore='esri2'>1</Layer>
-      <Layer layerStore='esri2'>2</Layer>
-      <Layer layerStore='esri2'>3</Layer>
     </Theme>
   </Theme>
 
