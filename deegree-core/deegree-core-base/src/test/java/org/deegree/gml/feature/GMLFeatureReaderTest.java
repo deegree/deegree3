@@ -605,7 +605,8 @@ public class GMLFeatureReaderTest {
                     throws FactoryConfigurationError, Exception {
         URL docURL = GMLFeatureReaderTest.class.getResource( "../cite/feature/dataset-broken-geometry.xml" );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
-        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature( true );
+        gmlReader.setSkipBrokenGeometries( true );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
         List<String> skippedBrokenGeometryErrors = gmlReader.getSkippedBrokenGeometryErrors();
 
         assertThat( 106, is( fc.size() ) );

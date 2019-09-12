@@ -35,13 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
@@ -57,6 +50,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.dictionary.Dictionary;
 import org.deegree.gml.dictionary.GMLDictionaryReader;
+import org.deegree.gml.feature.FeatureInspector;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.geometry.GML2GeometryReader;
@@ -64,6 +58,13 @@ import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -151,6 +152,10 @@ public class GMLStreamReader {
     private boolean laxMode;
 
     private GMLReferenceResolver internalResolver;
+
+    private boolean skipBrokenGeometries;
+
+    private final List<FeatureInspector> inspectors = new ArrayList<>();
 
     /**
      * Creates a new {@link GMLStreamReader} instance.
@@ -326,24 +331,8 @@ public class GMLStreamReader {
      * @throws UnknownCRSException
      */
     public Feature readFeature()
-                    throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        return readFeature( false );
-    }
-
-    /**
-     * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
-     * stream points to.
-     *
-     * @param skipBrokenGeometries
-     * @return deegree model representation for the current GML feature element, never <code>null</code>
-     * @throws XMLStreamException
-     * @throws XMLParsingException
-     * @throws UnknownCRSException
-     */
-    public Feature readFeature( boolean skipBrokenGeometries )
-                    throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        Feature feature = getFeatureReader( skipBrokenGeometries ).parseFeature( xmlStream, defaultCRS );
-        return feature;
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        return getFeatureReader().parseFeature( xmlStream, defaultCRS );
     }
 
     /**
@@ -468,22 +457,12 @@ public class GMLStreamReader {
      * @return a configured {@link GMLFeatureReader} instance, never <code>null</code>
      */
     public GMLFeatureReader getFeatureReader() {
-        return getFeatureReader( false );
-    }
-
-    /**
-     * Returns a configured {@link GMLFeatureReader} instance for calling specific feature parsing methods.
-     *
-     * @param skipBrokenGeometries
-     * @return a configured {@link GMLFeatureReader} instance, never <code>null</code>
-     */
-    public GMLFeatureReader getFeatureReader( boolean skipBrokenGeometries ) {
         if ( featureReader == null ) {
-            featureReader = new GMLFeatureReader( this, skipBrokenGeometries );
+            featureReader = new GMLFeatureReader( this );
         }
         return featureReader;
     }
-    
+
     /**
      * Returns a configured {@link GMLGeometryReader} instance for calling specific geometry parsing methods.
      * 
@@ -521,6 +500,28 @@ public class GMLStreamReader {
 
     public List<String> getSkippedBrokenGeometryErrors() {
         return featureReader.getSkippedBrokenGeometryErrors();
+    }
+
+    /**
+     * Adds the given {@link FeatureInspector} which will be invoked for every {@link Feature} instance created by the underlying {@link GMLFeatureReader}.
+     *
+     * @param inspector
+     *                         inspector to be added, must not be <code>null</code>
+     */
+    public void addInspector( FeatureInspector inspector ) {
+        inspectors.add( inspector );
+    }
+
+    public List<FeatureInspector> getInspectors() {
+        return inspectors;
+    }
+
+    public boolean isSkipBrokenGeometries() {
+        return skipBrokenGeometries;
+    }
+
+    public void setSkipBrokenGeometries( boolean skipBrokenGeometries ) {
+        this.skipBrokenGeometries = skipBrokenGeometries;
     }
 
 }

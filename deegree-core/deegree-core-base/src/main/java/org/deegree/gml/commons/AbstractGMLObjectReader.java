@@ -155,7 +155,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     
     private final boolean skipBrokenGeometries;
 
-    private final List<String> skippedBrokenGeometryErrors = new ArrayList<String>();
+    private final List<String> skippedBrokenGeometryErrors = new ArrayList<>();
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
@@ -171,17 +171,6 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
      *            GML stream reader, must not be <code>null</code>
      */
     protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader ) {
-        this( gmlStreamReader, false );
-    }
-
-    /**
-     * Creates a new {@link AbstractGMLObjectReader} instance.
-     *
-     * @param gmlStreamReader
-     *            GML stream reader, must not be <code>null</code>
-     * @param skipBrokenGeometries
-     */
-    protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader, boolean skipBrokenGeometries ) {
         this.gmlStreamReader = gmlStreamReader;
         this.specialResolver = gmlStreamReader.getResolver();
         this.internalResolver = gmlStreamReader.getInternalResolver();
@@ -190,7 +179,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         this.schema = gmlStreamReader.getAppSchema();
         this.gmlNs = gmlStreamReader.getVersion().getNamespace();
         this.version = gmlStreamReader.getVersion();
-        this.skipBrokenGeometries = skipBrokenGeometries;
+        this.skipBrokenGeometries = gmlStreamReader.isSkipBrokenGeometries();
     }
 
     /**
