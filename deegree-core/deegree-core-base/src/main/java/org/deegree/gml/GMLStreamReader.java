@@ -55,6 +55,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.dictionary.Dictionary;
 import org.deegree.gml.dictionary.GMLDictionaryReader;
+import org.deegree.gml.feature.FeatureInspector;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.geometry.GML2GeometryReader;
@@ -62,6 +63,9 @@ import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -149,6 +153,10 @@ public class GMLStreamReader {
     private boolean laxMode;
 
     private GMLReferenceResolver internalResolver;
+
+    private boolean skipBrokenGeometries;
+
+    private final List<FeatureInspector> inspectors = new ArrayList<>();
 
     /**
      * Creates a new {@link GMLStreamReader} instance.
@@ -490,4 +498,31 @@ public class GMLStreamReader {
         }
         return dictReader;
     }
+
+    public List<String> getSkippedBrokenGeometryErrors() {
+        return featureReader.getSkippedBrokenGeometryErrors();
+    }
+
+    /**
+     * Adds the given {@link FeatureInspector} which will be invoked for every {@link Feature} instance created by the underlying {@link GMLFeatureReader}.
+     *
+     * @param inspector
+     *                         inspector to be added, must not be <code>null</code>
+     */
+    public void addInspector( FeatureInspector inspector ) {
+        inspectors.add( inspector );
+    }
+
+    public List<FeatureInspector> getInspectors() {
+        return inspectors;
+    }
+
+    public boolean isSkipBrokenGeometries() {
+        return skipBrokenGeometries;
+    }
+
+    public void setSkipBrokenGeometries( boolean skipBrokenGeometries ) {
+        this.skipBrokenGeometries = skipBrokenGeometries;
+    }
+
 }

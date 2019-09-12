@@ -150,6 +150,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     protected final GmlDocumentIdContext idContext;
 
+    private final boolean skipBrokenGeometries;
+
+    private final List<String> skippedBrokenGeometryErrors = new ArrayList<>();
+
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
     private final GMLReferenceResolver internalResolver;
@@ -172,6 +176,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         this.schema = gmlStreamReader.getAppSchema();
         this.gmlNs = gmlStreamReader.getVersion().getNamespace();
         this.version = gmlStreamReader.getVersion();
+        this.skipBrokenGeometries = gmlStreamReader.isSkipBrokenGeometries();
     }
 
     /**
@@ -262,6 +267,10 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         return null;
     }
 
+    public List<String> getSkippedBrokenGeometryErrors() {
+        return skippedBrokenGeometryErrors;
+    }
+
     private Property parseSimpleProperty( XMLStreamReaderWrapper xmlStream, SimplePropertyType propDecl )
                             throws NoSuchElementException, XMLStreamException, XMLParsingException {
 
@@ -285,7 +294,20 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         case FEATURE:
             return parseFeatureProperty( xmlStream, (FeaturePropertyType) propDecl, crs );
         case GEOMETRY:
-            return parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
+            Property property = null;
+            QName elementName = xmlStream.getName();
+            try {
+                property = parseGeometryProperty( xmlStream, (GeometryPropertyType) propDecl, crs );
+            } catch ( XMLParsingException e ) {
+                if ( skipBrokenGeometries ) {
+                    LOG.warn( "Broken geometry was detected: " + e.getMessage() );
+                    skippedBrokenGeometryErrors.add( e.getMessage() );
+                    property = new GenericProperty( propDecl, elementName, null, true );
+                    XMLStreamUtils.skipToEndElement( xmlStream, elementName );
+                } else
+                    throw e;
+            }
+            return property;
         case TIME_OBJECT:
             return parseTimeObjectProperty( xmlStream, propDecl, crs );
         case TIME_SLICE:

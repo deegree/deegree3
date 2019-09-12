@@ -39,6 +39,8 @@ import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -596,6 +598,19 @@ public class GMLFeatureReaderTest {
 
         final Feature f = getFeature( fc, "EADD" );
         assertNotNull( f.getEnvelope() );
+    }
+
+    @Test
+    public void testParsingWithBrokenGeometry()
+                    throws FactoryConfigurationError, Exception {
+        URL docURL = GMLFeatureReaderTest.class.getResource( "../cite/feature/dataset-broken-geometry.xml" );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GMLVersion.GML_2, docURL );
+        gmlReader.setSkipBrokenGeometries( true );
+        FeatureCollection fc = (FeatureCollection) gmlReader.readFeature();
+        List<String> skippedBrokenGeometryErrors = gmlReader.getSkippedBrokenGeometryErrors();
+
+        assertThat( 106, is( fc.size() ) );
+        assertThat( skippedBrokenGeometryErrors.size(), is( 1 ) );
     }
 
     private Feature getFeature( final FeatureCollection fc, final String gmlId ) {
