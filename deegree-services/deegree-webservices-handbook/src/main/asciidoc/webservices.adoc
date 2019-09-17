@@ -509,7 +509,7 @@ pointing back to the deegree WFS), use the optional attribute
 _baseURL_ that this element provides.
 * _SchemaLocation_: By default, the GML application schema
 returned in DescribeFeatureType reponses (and referenced in the
-_xsi:schemaLocation_ of query responses) will be generated dynamically
+_xsi:schemaLocation_ of GetFeature responses) will be generated dynamically
 from the internal feature type representation or, if DisableDynamicSchema
 is set to _true_, the original schema files used for configuring the feature
 store is used. If your service supports multiple GML version it may be useful
@@ -531,19 +531,24 @@ numberOfFeature information and gml:boundedBy for the collection.
 However, for huge response and heavy server load, this is not
 recommended as it introduces significant overhead and may result in
 out-of-memory errors.
-
 * _PrebindNamespace_: By default, XML namespaces are bound when they
 are needed. This will result in valid output, but may lead to the same
 namespace being bound again and again in different parts of the response
 document. Using this option, namespaces can be bound in the root
 element, so they are defined for the full scope of the response document
 and do not need re-definition at several positions in the document. This
-option has the required attributes _prefix_ and _uri_. .. note::
-PrebindNamespaces must be configured as in used GML application schemas
+option has the required attributes _prefix_ and _uri_.
+
+NOTE: PrebindNamespaces must be configured as in used GML application schemas
 respectively the imported features (at least for the BLOB mode). It is
 essential to ensure that prefixes are bound to the same namespace URIs.
 Otherwise, a GetFeature request may result in a failure ("Duplicate
 declaration for namespace prefix").
+
+TIP: _SchemaLocation_ can be used in addition to the referenced GML application
+schema in the feature store. It is not required to configure a schema twice.
+E.g. if in the feature store the GML application schema for GML 3.2 is referenced,
+_SchemaLocation_ must be configured only for GML 3.1 not for GML 3.2.
 
 ===== Coordinate formatters
 
