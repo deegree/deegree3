@@ -818,17 +818,22 @@ _<FeatureTypeMapping>_ must have a unique feature id prefix.
 
 ===== Customizing the default sort order of features
 
-By default the sort order of the features is specified by the underlying database.
-This can be changed by configuring the default sort order. Only simple properties
-can be used for this option. It is possible to define multiple columns and
-if sorting should be ascending or descending per column.
-The default sort order is overwritten by requests, e.g. SORTBY in WFS request.
+By default the sort order of the features returned is given by the underlying database.
+To configure a defined sort order the _<OrderBy>_ element can be used. The configuration
+applies to simple properties only. It is possible to define multiple properties and
+if sorting should be ascending or descending. If this configuration is applied it is
+mapped to a SQL ORDER BY clause and a collection of features is returned in a defined
+sort order.
+The defined sort order can be overwritten when clients use the WFS GetFeature
+request parameter SORTBY.
 
 [source,xml]
 ----
 ...
 <OrderBy>
+  <!-- ascending sort order by default-->
   <Column name="prop1" />
+  <!-- descending sort order -->
   <Column name="prop2" sortOrder="DESC" />
 </OrderBy>
 ...
@@ -849,7 +854,7 @@ Here are the options for _<Column>_:
 |Option |Cardinality |Value |Description
 |_name_ |1 |String |Name of the database column
 
-|_sortOrder_ |0..1 |String |sort type (ASC, DESC), default: ASC
+|_sortOrder_ |0..1 |String |sort order (ASC, DESC), default: ASC
 |===
 
 ===== Customizing the mapping between columns and properties
