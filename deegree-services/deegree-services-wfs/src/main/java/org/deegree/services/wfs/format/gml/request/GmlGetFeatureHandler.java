@@ -532,7 +532,6 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         int featuresSkipped = 0;
         Map<FeatureStore, List<Query>> analysedQueries = analyzer.getQueries();
         boolean applyMaxFeaturesAndStartIndex = checkIfMaxFeaturesAndStartIndexMustBeApplied( analysedQueries );
-        System.out.println( "#########APPLY??? " + applyMaxFeaturesAndStartIndex );
         for ( Map.Entry<FeatureStore, List<Query>> fsToQueries : analysedQueries.entrySet() ) {
             FeatureStore fs = fsToQueries.getKey();
             Query[] queries = fsToQueries.getValue().toArray( new Query[fsToQueries.getValue().size()] );
