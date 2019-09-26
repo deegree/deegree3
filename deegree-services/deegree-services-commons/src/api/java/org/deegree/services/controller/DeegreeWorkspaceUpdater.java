@@ -183,8 +183,7 @@ public class DeegreeWorkspaceUpdater {
 
         try {
             // 1. destroy deleted / modified resources
-            final Set<File> notDestroyed = destroyResources( workspace, filesRemoved );
-            notDestroyed.addAll( destroyResources( workspace, filesModified ) );
+            final Set<File> notDestroyed = destroyResources( workspace, filesRemoved, filesModified );
 
             // 2. prepare added / modified resources
             PreparedResources preparedResources = new PreparedResources( workspace );
@@ -211,13 +210,13 @@ public class DeegreeWorkspaceUpdater {
         }
     }
 
-    private Set<File> destroyResources( final Workspace workspace, final Collection<File> configFiles ) {
+    private Set<File> destroyResources( final Workspace workspace, final Collection<File> filesRemoved, final Collection<File> filesModified ) {
         Set<File> errorFiles = new HashSet<>();
         LinkedHashMap<File, ResourceIdentifier<Resource>> fileToResourceId = getResourcesInDependencyOrder();
         List<File> managedFilesInOrder = new ArrayList<File>( fileToResourceId.keySet() );
         Collections.reverse( managedFilesInOrder );
         for ( File file : managedFilesInOrder ) {
-            if ( configFiles.contains( file ) ) {
+            if ( filesRemoved.contains( file ) || filesModified.contains( file ) ) {
                 LOG.info( "Destroying managed resource " + file );
                 try {
                     workspace.destroyAndShutdownDependents( fileToResourceId.get( file ) );
