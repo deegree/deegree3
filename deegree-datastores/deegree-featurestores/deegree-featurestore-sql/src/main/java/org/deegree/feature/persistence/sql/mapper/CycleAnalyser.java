@@ -44,6 +44,10 @@ public class CycleAnalyser {
      * @return <code>true</code> if a cycle was found and the allowed cycle depth reached, <code>false</code> otherwise
      */
     public boolean checkStopAtCycle( XSComplexTypeDefinition typeDef ) {
+        if ( typeDef.getAnonymous() ) {
+            LOG.info( "Anonymous type definition found, will be ignored for cycle detection." );
+            return false;
+        }
         log();
         boolean isCycle = isCycle( typeDef );
         if ( isCycle ) {
@@ -83,6 +87,8 @@ public class CycleAnalyser {
      *                         step to add, never <code>null</code>
      */
     public void add( XSComplexTypeDefinition typeDef ) {
+        if ( typeDef.getAnonymous() )
+            return;
         parentCTs.add( typeDef );
         path.add( getQName( typeDef ) );
     }
@@ -105,6 +111,8 @@ public class CycleAnalyser {
      *                         step to remove, never <code>null</code>
      */
     public void remove( XSComplexTypeDefinition typeDef ) {
+        if ( typeDef.getAnonymous() )
+            return;
         if ( isLast( parentCTs, typeDef ) )
             parentCTs.remove( parentCTs.size() - 1 );
         QName qName = getQName( typeDef );
@@ -149,6 +157,8 @@ public class CycleAnalyser {
     }
 
     private QName getQName( XSTypeDefinition xsType ) {
+        if ( xsType.getAnonymous() )
+            return null;
         return new QName( xsType.getNamespace(), xsType.getName() );
     }
 
