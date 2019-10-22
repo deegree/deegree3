@@ -713,12 +713,12 @@
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-jdbc</artifactId>
-        <version>2.2.1</version>
+        <version>2.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.5</version>
+        <version>42.2.8</version>
       </dependency>
       <!-- Oracle -->
       <dependency>
