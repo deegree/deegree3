@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.10-SNAPSHOT</version>
+    <version>3.4.10</version>
   </parent>
 
   <properties>
@@ -101,7 +101,7 @@
               <doctype>book</doctype>
               <backend>html</backend>
               <attributes>
-                <toc/>
+                <toc />
                 <linkcss>false</linkcss>
                 <revdate>${revdate}</revdate>
                 <revnumber>${revnumber}</revnumber>
