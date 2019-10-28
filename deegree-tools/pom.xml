@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.3-xplanbox-1.11-SNAPSHOT</version>
+    <version>3.4.10-xplanbox-1.11-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -90,11 +90,17 @@
   <modules>
     <module>deegree-tools-3d</module>
     <module>deegree-tools-base</module>
-    <!--
-    <module>deegree-tools-config</module>
-    -->
     <module>deegree-tools-alkis</module>
     <module>deegree-tools-migration</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>oracle</id>
+      <modules>
+        <module>deegree-tools-config</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

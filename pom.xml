@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4.3-xplanbox-1.11-SNAPSHOT</version>
+  <version>3.4.10-xplanbox-1.11-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -233,6 +233,11 @@
           <artifactId>maven-scm-plugin</artifactId>
           <version>1.5</version>
         </plugin>
+        <plugin>
+          <groupId>org.asciidoctor</groupId>
+          <artifactId>asciidoctor-maven-plugin</artifactId>
+          <version>1.6.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -414,17 +419,6 @@
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-digester</groupId>
-        <artifactId>commons-digester</artifactId>
-        <version>2.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -858,27 +852,6 @@
         <artifactId>xml-apis-ext</artifactId>
         <version>1.3.04</version>
       </dependency>
-      <!-- reporting -->
-      <dependency>
-        <groupId>net.sf.jasperreports</groupId>
-        <artifactId>jasperreports</artifactId>
-        <version>5.0.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.lowagie</groupId>
-        <artifactId>itext</artifactId>
-        <version>4.2.1</version>
-      </dependency>
       <!-- CITE -->
       <dependency>
         <groupId>cite</groupId>
@@ -1021,9 +994,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>it.geosolutions.imageio-ext</groupId>
-        <artifactId>imageio-ext-gdal-bindings</artifactId>
-        <version>1.10.1</version>
+        <groupId>org.gdal</groupId>
+        <artifactId>gdal</artifactId>
+        <version>2.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.reflections</groupId>
@@ -1094,7 +1067,7 @@
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <java.version>1.8</java.version>
     <site.dir>${user.home}/Sites</site.dir>
-    <deegree-maven-plugin.version>1.20</deegree-maven-plugin.version>
+    <deegree-maven-plugin.version>2.0.2</deegree-maven-plugin.version>
   </properties>
 
   <modules>

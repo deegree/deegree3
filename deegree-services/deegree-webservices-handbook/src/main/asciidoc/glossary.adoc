@@ -1,0 +1,22 @@
+== Glossary
+
+CS-W::
+  Catalogue Service for the Web
+FE::
+  Filter Encoding
+GML::
+  Geography Markup Language
+SE::
+  Symbology Encoding
+SLD::
+  Styled Layer Descriptor
+WCS::
+  Web Coverage Service
+WFS::
+  Web Feature Service
+WMS::
+  Web Map Service
+WMTS::
+  Web Map Tiling Service
+WPS::
+  Web Processing Service

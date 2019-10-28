@@ -1,9 +1,0 @@
-<SQLFeatureStore configVersion="3.4.0"
-  xmlns="http://www.deegree.org/datasource/feature/sql"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
-  <JDBCConnId>postgis</JDBCConnId>
-  <FeatureTypeMapping table="country"/>
-  <FeatureTypeMapping table="city"/>
-</SQLFeatureStore>

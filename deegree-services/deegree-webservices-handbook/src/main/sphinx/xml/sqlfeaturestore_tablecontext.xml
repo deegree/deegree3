@@ -1,9 +1,0 @@
-<FeatureTypeMapping name="ad:Address" table="ad_address">
- [...]
-  <Complex path="gml:identifier">
-    <Primitive path="text()" mapping="gml_identifier"/>
-    <Primitive path="@codeSpace" mapping="gml_identifier_attr_codespace"/>
-  </Complex>
- [...]
-</FeatureTypeMapping>
-

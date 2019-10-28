@@ -8,4 +8,5 @@
   <EnableTransactions>true</EnableTransactions>
   <DisableResponseBuffering>true</DisableResponseBuffering>
   <QueryCRS>EPSG:4326</QueryCRS>
+  <QueryCRS>EPSG:32615</QueryCRS>
 </deegreeWFS>
