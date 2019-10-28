@@ -90,11 +90,17 @@
   <modules>
     <module>deegree-tools-3d</module>
     <module>deegree-tools-base</module>
-    <!--
-    <module>deegree-tools-config</module>
-    -->
     <module>deegree-tools-alkis</module>
     <module>deegree-tools-migration</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>oracle</id>
+      <modules>
+        <module>deegree-tools-config</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

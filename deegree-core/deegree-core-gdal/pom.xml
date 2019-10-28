@@ -44,8 +44,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>it.geosolutions.imageio-ext</groupId>
-      <artifactId>imageio-ext-gdal-bindings</artifactId>
+      <groupId>org.gdal</groupId>
+      <artifactId>gdal</artifactId>
     </dependency>
 	<dependency>
       <groupId>commons-collections</groupId>
