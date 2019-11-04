@@ -981,8 +981,8 @@ BOTH, default is BOTH
 |RenderingQuality |0..1 |String |Whether to render LOW, NORMAL or HIGH
 quality, default is HIGH
 
-|Interpolation |0..1 |String |Whether to use BILINEAR, NEAREST_NEIGHBOUR
-or BICUBIC interpolation, default is NEAREST_NEIGHBOUR
+|Interpolation |0..1 |String |Whether to use BILINEAR, NEARESTNEIGHBOUR
+or BICUBIC interpolation, default is NEARESTNEIGHBOUR
 
 |MaxFeatures |0..1 |Integer |Maximum number of features to render at
 once, default is 10000
