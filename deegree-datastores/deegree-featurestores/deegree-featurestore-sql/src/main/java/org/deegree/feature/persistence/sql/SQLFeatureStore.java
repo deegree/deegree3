@@ -885,7 +885,7 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-        return query( query, false );
+        return query( query, true );
     }
 
     @Override
@@ -1153,7 +1153,8 @@ public class SQLFeatureStore implements FeatureStore {
         return transaction.get() != null;
     }
 
-    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter,
+                                                          boolean isMaxFeaturesAndStartIndexApplicable )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing blob query by operator filter" );
@@ -1244,6 +1245,9 @@ public class SQLFeatureStore implements FeatureStore {
             // sql.append( wb.getOrderBy().getSQL() );
             // }
 
+            if ( isMaxFeaturesAndStartIndexApplicable )
+                appendOffsetAndFetch( sql, query.getMaxFeatures(), query.getStartIndex() );
+
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
@@ -1301,7 +1305,7 @@ public class SQLFeatureStore implements FeatureStore {
         LOG.debug( "Performing query by operator filter" );
 
         if ( getSchema().getBlobMapping() != null ) {
-            return queryByOperatorFilterBlob( query, ftName, filter );
+            return queryByOperatorFilterBlob( query, ftName, filter, isMaxFeaturesAndStartIndexApplicable );
         }
 
         AbstractWhereBuilder wb = null;
