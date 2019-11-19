@@ -127,11 +127,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void commit()
                             throws FeatureStoreException {
-        try {
-            sf.rebuildIndexes();
-        } catch ( UnknownCRSException e ) {
-            throw new FeatureStoreException( e.getMessage() );
-        }
+        sf.rebuildIndexes();
         fs.releaseTransaction( this, sf );
     }
 
