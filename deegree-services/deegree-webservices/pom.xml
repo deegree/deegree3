@@ -126,8 +126,8 @@
       <id>jsf-provided</id>
       <dependencies>
         <dependency>
-          <groupId>com.sun.faces</groupId>
-          <artifactId>jsf-api</artifactId>
+          <groupId>javax.faces</groupId>
+          <artifactId>javax.faces-api</artifactId>
         </dependency>
         <dependency>
           <groupId>com.sun.faces</groupId>
@@ -309,16 +309,16 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>4.0</version>
+      <version>5.3</version>
     </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>

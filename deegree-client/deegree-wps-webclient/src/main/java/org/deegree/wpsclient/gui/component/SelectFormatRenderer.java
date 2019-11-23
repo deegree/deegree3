@@ -47,6 +47,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.model.SelectItem;
 import javax.faces.render.FacesRenderer;
 
+import com.sun.faces.renderkit.SelectItemsIterator;
 import org.deegree.client.core.utils.JavaScriptUtils;
 import org.deegree.protocol.wps.client.param.ComplexFormat;
 import org.deegree.wpsclient.gui.converter.ComplexFormatConverter;
@@ -108,7 +109,7 @@ public class SelectFormatRenderer extends MenuRenderer {
         js = js + getOnChangeBehaviour( clientId );
         writer.writeAttribute( "onChange", js, "js" );
 
-        Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, formatComp );
+        SelectItemsIterator<SelectItem> items = RenderKitUtils.getSelectItems( context, formatComp );
         renderOptions( context, formatComp, items );
         writer.endElement( "select" );
 
