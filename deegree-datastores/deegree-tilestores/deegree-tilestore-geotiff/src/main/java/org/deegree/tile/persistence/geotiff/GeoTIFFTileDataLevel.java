@@ -43,7 +43,7 @@ package org.deegree.tile.persistence.geotiff;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tile.TileDataLevel;
