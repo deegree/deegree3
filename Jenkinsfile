@@ -21,7 +21,7 @@ pipeline {
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -fae clean test'
+               sh 'mvn -B -C -fae clean test -Poracle,mssql'
             }
             post {
                 always {
@@ -32,7 +32,7 @@ pipeline {
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests'
+                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
             }
             post {
                 always {
@@ -76,11 +76,13 @@ pipeline {
             }
             post {
                 success {
+                    // post release on github
                     archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
                 }
             }
         }
         stage ('Deploy PROD') {
+            // install current release version on demo.deegree.org
             agent { label 'demo' }
             steps {
                 echo 'Deploying to PROD...'
