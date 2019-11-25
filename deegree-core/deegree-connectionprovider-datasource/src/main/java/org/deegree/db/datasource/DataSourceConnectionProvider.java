@@ -118,12 +118,16 @@ class DataSourceConnectionProvider implements ConnectionProvider {
     @Override
     public void destroy() {
         if ( destroyMethod != null ) {
+            LOG.info("Closing connection pool " + resourceMetadata.getIdentifier());
             try {
                 destroyMethod.invoke( ds );
             } catch ( Exception e ) {
                 String msg = "Error destroying DataSource instance: " + e.getLocalizedMessage();
                 LOG.error( msg );
             }
+        } else {
+            LOG.warn("Unable to close connection pool " + resourceMetadata.getIdentifier()
+                    + ". Check the DataSource configuration if the attribute 'destroyMethod' is configured." );
         }
     }
 
