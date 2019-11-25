@@ -54,15 +54,15 @@ database:
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
   <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
 
 </DataSourceConnectionProvider>
 ----
@@ -101,8 +101,8 @@ This example defines a connection pool for an Oracle database:
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />
@@ -110,7 +110,7 @@ This example defines a connection pool for an Oracle database:
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="poolPreparedStatements" value="true" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
   <Property name="maxIdle" value="10" />
 
 </DataSourceConnectionProvider>
@@ -146,8 +146,8 @@ This example defines a connection pool for a Microsoft SQL Server:
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
@@ -155,7 +155,7 @@ This example defines a connection pool for a Microsoft SQL Server:
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="poolPreparedStatements" value="true" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
   <Property name="maxIdle" value="10" />
 
 </DataSourceConnectionProvider>
@@ -187,7 +187,7 @@ servlet container that runs deegree webservices (e.g. Apache Tomcat):
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
+  <!-- Lookup of javax.sql.DataSource instance via JNDI -->
   <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
     <Argument value="java:comp/env/jdbc/DatabaseName" javaClass="java.lang.String" />
   </DataSource>
@@ -272,8 +272,8 @@ allows for the following options:
 |factoryMethod |0..1 |String |If present, this static method is used
 (instead of constructor)
 
-|destroyMethod |0..1 |String |Configuration of javax.sql.DataSource
-object
+|destroyMethod |0..1 |String |Method to be invoked on the javax.sql.DataSource
+object to close the underlying connection pool
 
 |Argument |0..1 |Complex |Argument to use for instantiation/method call
 |===
@@ -300,6 +300,7 @@ arguments passed to the constructor.
 [source,xml]
 ----
 ... 
+<!-- Lookup of javax.sql.DataSource instance via JNDI -->
 <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
   <Argument value="java:comp/env/jdbc/DatabaseName" javaClass="java.lang.String" />
 </DataSource>
@@ -337,7 +338,7 @@ _javax.sql.DataSource_ instance:
 <Property name="username" value="kelvin" />
 <Property name="password" value="s3cr3t" />
 <Property name="poolPreparedStatements" value="true" />
-<Property name="maxActive" value="10" />
+<Property name="maxTotal" value="10" />
 <Property name="maxIdle" value="10" />
 ...
 ----
