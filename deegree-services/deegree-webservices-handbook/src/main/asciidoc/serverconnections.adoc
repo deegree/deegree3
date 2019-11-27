@@ -273,7 +273,7 @@ allows for the following options:
 (instead of constructor)
 
 |destroyMethod |0..1 |String |Method to be invoked on the javax.sql.DataSource
-object to close the underlying connection pool
+object to close the underlying connection pool. Which method to be called depends on the implementation of the javax.sql.DataSource. Check the API documentation for more information.
 
 |Argument |0..1 |Complex |Argument to use for instantiation/method call
 |===
