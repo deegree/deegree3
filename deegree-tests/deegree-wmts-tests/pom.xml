@@ -76,7 +76,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
 	      <skip>true</skip>
-          <argLine>-Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
+          <argLine>-Xmx1324m -Xss2048k -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
         </configuration>
         <executions>
           <execution>
