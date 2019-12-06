@@ -21,7 +21,7 @@ pipeline {
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -fae clean test -Poracle,mssql'
+               sh 'mvn -B -C -q clean test -Poracle,mssql'
             }
             post {
                 always {
@@ -32,7 +32,7 @@ pipeline {
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -fae -X -Djavax.net.debug=ssl -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
+                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
             }
             post {
                 always {
