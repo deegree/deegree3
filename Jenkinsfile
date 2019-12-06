@@ -32,7 +32,7 @@ pipeline {
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
+                sh 'mvn -B -C -fae -X -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
             }
             post {
                 always {
