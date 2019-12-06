@@ -77,9 +77,7 @@
         <configuration>
 	      <skip>true</skip>
           <reuseForks>false</reuseForks>
-          <useSystemClassLoader>false</useSystemClassLoader>
-          <argLine>-Djava.awt.headless=true -Xmx1024m -Xss2048k -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
-          <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
         </configuration>
         <executions>
           <execution>
