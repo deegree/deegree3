@@ -21,7 +21,7 @@ pipeline {
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -fae clean test -Poracle,mssql'
+               sh 'mvn -B -C -fae -X clean test -Poracle,mssql'
             }
             post {
                 always {
@@ -43,7 +43,7 @@ pipeline {
         stage ('Quality Checks') {
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae site -Psite-all-reports'
+                sh 'mvn -B -C -fae site -Psite-all-reports,oracle,mssql'
             }
             post {
                 success {
