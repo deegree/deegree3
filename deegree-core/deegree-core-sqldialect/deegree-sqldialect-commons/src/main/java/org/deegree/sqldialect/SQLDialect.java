@@ -175,7 +175,7 @@ public interface SQLDialect {
      *            name of the database to be created, must not be <code>null</code>
      * @throws SQLException
      */
-    void createDB( Connection adminConn, String dbName )
+    public void createDB( Connection adminConn, String dbName )
                             throws SQLException;
 
     /**
@@ -187,13 +187,13 @@ public interface SQLDialect {
      *            name of the database to be created, must not be <code>null</code>
      * @throws SQLException
      */
-    void dropDB( Connection adminConn, String dbName )
+    public void dropDB( Connection adminConn, String dbName )
                             throws SQLException;
 
-    void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
+    public void createAutoColumn( StringBuffer currentStmt, List<StringBuffer> additionalSmts, SQLIdentifier column,
                                   SQLIdentifier table );
 
-    ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName table )
+    public ResultSet getTableColumnMetadata( DatabaseMetaData md, TableName table )
                             throws SQLException;
 
     /**
@@ -201,7 +201,7 @@ public interface SQLDialect {
      * 
      * @return <code>true</code>, if a transaction context is required, <code>false</code> otherwise
      */
-    boolean requiresTransactionForCursorMode();
+    public boolean requiresTransactionForCursorMode();
 
     /**
      * Returns a <code>SELECT</code> statement for retrieving the next value in the specified DB sequence.
@@ -217,13 +217,12 @@ public interface SQLDialect {
      *
      * @return leading escape char
      */
-    char getLeadingEscapeChar();
+    public char getLeadingEscapeChar();
 
     /**
      * Returns the tailing escape char for the SQLDialect
      *
      * @return tailing escape char
      */
-    char getTailingEscapeChar();
-
+    public char getTailingEscapeChar();
 }

@@ -123,11 +123,6 @@ public class MemoryFeatureStore implements FeatureStore {
     }
 
     @Override
-    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
-        return false;
-    }
-
-    @Override
     public FeatureInputStream query( Query query )
                             throws FilterEvaluationException, FeatureStoreException {
         return storedFeatures.query( query );
