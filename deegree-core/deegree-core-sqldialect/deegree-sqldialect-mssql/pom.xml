@@ -40,9 +40,9 @@
       </repositories>
       <dependencies>
         <dependency>
-          <groupId>com.microsoft</groupId>
-          <artifactId>sqljdbc4</artifactId>
-          <version>3.0</version>
+          <groupId>com.microsoft.sqlserver</groupId>
+          <artifactId>mssql-jdbc</artifactId>
+          <version>7.4.1.jre8</version>
         </dependency>
       </dependencies>
     </profile>
@@ -62,4 +62,3 @@
   </dependencies>
 
 </project>
-
