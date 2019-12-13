@@ -147,16 +147,17 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.16</version>
+          <version>2.22.2</version>
           <configuration>
             <!-- Travis build workaround -->
             <argLine>-Xms1024m -Xmx2048m</argLine>
+            <skip>${skip.unit.tests}</skip>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.16</version>
+          <version>2.22.2</version>
         </plugin>
         <!-- reporting and site -->
         <plugin>

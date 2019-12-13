@@ -80,7 +80,7 @@
             <include>**/*IntegrationTest.java</include>
             <include>**/*PerformanceTest.java</include>
           </includes>
-          <argLine>-Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber}</argLine>
+          <argLine>-Xmx1324m -Xss2048k -Dportnumber=${portnumber}</argLine>
         </configuration>
         <executions>
           <execution>

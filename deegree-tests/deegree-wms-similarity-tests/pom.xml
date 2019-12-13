@@ -69,10 +69,11 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
+          <reuseForks>false</reuseForks>
           <includes>
             <include>**/*IntegrationTest.java</include>
           </includes>
-          <argLine>-Djava.awt.headless=true -Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
         </configuration>
         <executions>
           <execution>
