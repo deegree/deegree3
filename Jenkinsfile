@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         maven 'Maven 3.6.3'
-        jdk 'openjdk8'
+        jdk 'oracle-jdk8'
     }
     stages {
         stage ('Initialize') {
