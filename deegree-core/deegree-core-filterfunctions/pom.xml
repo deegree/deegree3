@@ -34,6 +34,10 @@
       <artifactId>deegree-core-base</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.locationtech.jts</groupId>
+      <artifactId>jts-core</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
