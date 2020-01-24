@@ -54,10 +54,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-mdstore-commons</artifactId>
       <version>${project.version}</version>
