@@ -203,6 +203,10 @@ import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_SKIP_RESOLVING_REFERENCES;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
+import static org.deegree.services.wfs.ReferenceResolvingMode.SKIP_ALL;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
@@ -229,7 +233,7 @@ public class WebFeatureService extends AbstractOWS {
     private static final Logger LOG = LoggerFactory.getLogger( WebFeatureService.class );
 
     private static final int DEFAULT_MAX_FEATURES = 15000;
-
+    
     private WfsFeatureStoreManager service;
 
     private LockFeatureHandler lockFeatureHandler;
@@ -260,7 +264,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean enableResponsePaging;
 
-    private boolean allowFeatureReferencesToDatastore = false;
+    private ReferenceResolvingMode referenceResolvingMode = CHECK_ALL;
 
     private OWSMetadataProvider mdProvider;
 
@@ -284,7 +288,10 @@ public class WebFeatureService extends AbstractOWS {
             this.enableTransactions = enableTransactions.isValue();
             IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
             this.idGenMode = parseIdGenMode( configuredIdGenMode );
-            this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
+            if ( USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode ) )
+                this.referenceResolvingMode = CHECK_INTERNALLY;
+            if ( USE_EXISTING_SKIP_RESOLVING_REFERENCES.equals( configuredIdGenMode ) )
+                this.referenceResolvingMode = SKIP_ALL;
         }
         if ( jaxbConfig.isEnableResponseBuffering() != null ) {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
@@ -475,6 +482,9 @@ public class WebFeatureService extends AbstractOWS {
         switch ( idGen ) {
         case GENERATE_NEW: {
             return IDGenMode.GENERATE_NEW;
+        }
+        case USE_EXISTING_SKIP_RESOLVING_REFERENCES: {
+            return IDGenMode.USE_EXISTING.withSkipResolveReferences( true );
         }
         case USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY:
         case USE_EXISTING: {
@@ -820,7 +830,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, referenceResolvingMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -983,7 +993,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, referenceResolvingMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1150,7 +1160,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
                 Transaction transaction = transactionReader.read( bodyXmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, referenceResolvingMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );

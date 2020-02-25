@@ -348,7 +348,7 @@ public class InsertRowManager {
                 Feature feature = (Feature) getPropValue( value );
                 if ( feature instanceof FeatureReference ) {
                     FeatureReference featureReference = (FeatureReference) feature;
-                    if ( ( featureReference.isLocal() || featureReference.isResolved() )
+                    if ( !idGenMode.isSkipResolveReferences() && ( featureReference.isLocal() || featureReference.isResolved() )
                          && !featureReference.isInternalResolved() ) {
                         subFeatureRow = lookupFeatureRow( feature.getId() );
                     }
