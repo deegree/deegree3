@@ -677,14 +677,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
             if ( analyzer.getProjections() != null ) {
-                for ( ProjectionClause clause : analyzer.getProjections() ) {
-                    if ( clause instanceof PropertyName ) {
-                        PropertyName propName = (PropertyName) clause;
-                        ResolveParams resolveParams = propName.getResolveParams();
-                        if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
-                             || resolveParams.getTimeout() != null ) {
-                            throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
-                                                    OPTION_NOT_SUPPORTED );
+                for ( List<ProjectionClause> projections : analyzer.getProjections().values() ) {
+                    for ( ProjectionClause clause : projections ) {
+                        if ( clause instanceof PropertyName ) {
+                            PropertyName propName = (PropertyName) clause;
+                            ResolveParams resolveParams = propName.getResolveParams();
+                            if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
+                                 || resolveParams.getTimeout() != null ) {
+                                throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
+                                                        OPTION_NOT_SUPPORTED );
+                            }
                         }
                     }
                 }

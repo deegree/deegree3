@@ -130,7 +130,7 @@ public class QueryAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private List<ProjectionClause> projections = null;
+    private final Map<QName, List<ProjectionClause>> projections = new HashMap<>();
 
     private ICRS requestedCrs;
 
@@ -185,7 +185,10 @@ public class QueryAnalyzer {
 
             // TODO cope with more queries than one
             if ( wfsQuery.getProjectionClauses() != null ) {
-                this.projections = Arrays.asList( wfsQuery.getProjectionClauses() );
+                for ( TypeName typeName : wfsQuery.getTypeNames() ) {
+                    this.projections.put( typeName.getFeatureTypeName(),
+                                          Arrays.asList( wfsQuery.getProjectionClauses() ) );
+                }
             }
         }
 
@@ -339,7 +342,7 @@ public class QueryAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public List<ProjectionClause> getProjections() {
+    public Map<QName, List<ProjectionClause>> getProjections() {
         return projections;
     }
 
