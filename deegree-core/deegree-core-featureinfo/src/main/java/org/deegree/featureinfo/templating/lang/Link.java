@@ -36,9 +36,18 @@
 package org.deegree.featureinfo.templating.lang;
 
 import static org.deegree.commons.utils.JavaUtils.generateToString;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.gml.reference.FeatureReference;
 import org.slf4j.Logger;
 
 /**
@@ -52,6 +61,8 @@ import org.slf4j.Logger;
 public class Link {
 
     private static final Logger LOG = getLogger( Link.class );
+
+    public static final QName XLINK_HREF = new QName( XLNNS, "href" );
 
     private String prefix;
 
@@ -86,7 +97,7 @@ public class Link {
             LOG.warn( "Trying to get value as link while current object is a feature." );
             return;
         }
-        String val = ( (Property) o ).getValue().toString();
+        String val = getValueAsString( (Property) o );
         if ( val == null || val.isEmpty() ) {
             return;
         }
@@ -105,6 +116,22 @@ public class Link {
     @Override
     public String toString() {
         return generateToString( this );
+    }
+
+    private String getValueAsString( Property o ) {
+        TypedObjectNode value = o.getValue();
+        if ( value != null ) {
+            if ( value instanceof FeatureReference ) {
+                return ( (FeatureReference) value ).getURI();
+            }
+            return value.toString();
+        } else {
+            Map<QName, PrimitiveValue> attributes = o.getAttributes();
+            if ( attributes.containsKey( XLINK_HREF ) ) {
+                return attributes.get( XLINK_HREF ).getAsText();
+            }
+        }
+        return null;
     }
 
 }
