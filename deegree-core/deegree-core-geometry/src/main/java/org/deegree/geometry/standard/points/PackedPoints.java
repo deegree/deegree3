@@ -152,8 +152,11 @@ public class PackedPoints implements Points {
 
     @Override
     public Envelope expandEnvelope( Envelope env ) {
-        for ( int i = 0; i < coordinates.length; i += 2 ) {
-            env.expandToInclude( coordinates[i], coordinates[i + 1] );
+        for ( int i = 0; i < coordinates.length; i += dimension ) {
+            if ( dimension == 3 )
+                env.expandToInclude( new Coordinate( coordinates[i], coordinates[i + 1], coordinates[i + 2] ) );
+            else
+                env.expandToInclude( coordinates[i], coordinates[i + 1] );
         }
         return env;
     }
