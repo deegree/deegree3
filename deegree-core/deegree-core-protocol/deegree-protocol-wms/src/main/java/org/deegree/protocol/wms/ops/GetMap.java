@@ -43,6 +43,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.commons.utils.StringUtils.splitEscaped;
 import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
@@ -75,6 +76,7 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -360,6 +362,37 @@ public class GetMap extends RequestBase {
             } catch ( NumberFormatException e ) {
                 LOG.warn( "The value of PIXELSIZE could not be parsed as a number." );
                 LOG.trace( "Stack trace:", e );
+            }
+        } else {
+            String key = "RES";
+            String pdpi = map.get(key);
+            
+            if ( pdpi == null ) {
+                key = "DPI";
+                pdpi = map.get(key);
+            }
+            if ( pdpi == null ) {
+                key = "MAP_RESOLUTION";
+                pdpi = map.get(key);
+            }
+            if ( pdpi == null ) {
+                for( String word : splitEscaped( map.get( "FORMAT_OPTIONS" ), ';', 0 )) {
+                    List<String> keyValue = StringUtils.splitEscaped( word, ':', 2 );
+                    
+                    if ( "dpi".equalsIgnoreCase( keyValue.get( 0 ) ) ) {
+                        key = "FORMAT_OPTIONS=dpi";
+                        pdpi = keyValue.size() == 1 ? null : StringUtils.unescape( keyValue.get( 1 ) );
+                        break;
+                    }
+                }
+            }
+            if ( pdpi != null ) {
+                try {
+                    pixelSize = 0.0254d / Double.parseDouble( pdpi ) ;
+                } catch ( Exception e ) {
+                    LOG.warn( "The value of {} could not be parsed as a number.", key );
+                    LOG.trace( "Stack trace:", e );
+                }
             }
         }
 
