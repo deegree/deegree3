@@ -167,12 +167,25 @@ Let's have a look at an example configuration:
 
 (You can define multiple tile data sets within one tile store.)
 
-* The identifier is optional, and defaults to the base name of the file
-(in this example test.tif)
-* The tile matrix set id references the tile matrix set
-* obviously you need to point to the GeoTIFF file
-* The image format specifies the _output_ image format, this is relevant
-if you use the tile store for a WMTS. The default is image/png.
+[width="100%",cols="20%,11%,7%,62%",options="header",]
+|=======================================================================
+|Option |Cardinality |Value |Description
+|`<Identifier>` |0..1 |String |Identifier of the TileDataSet, default: name of _File_
+
+|`<TileMatrixSetId>` |1 |String |Id of the tile matrix set
+
+|`<File>` |1 |String |Path to the GeoTIFF file
+
+|`<ImageFormat>` |0..1 |String |Image format specifies the _output_ image format, default: image/png
+
+|`<AccessConfig>` |0..1 |Complex |Configuration of the GeoTIFF access
+|=======================================================================
+
+* `Identifier`: The identifier is optional, and defaults to the base name of the file (in the example test.tif)
+* `TileMatrixSetId`: The tile matrix set id references the tile matrix set
+* `File`: obviously you need to point to the GeoTIFF file
+* `ImageFormat`: The image format specifies the _output_ image format, this is relevant if you use the tile store for a WMTS. The default is image/png.
+* `AccessConfig`: see below
 
 To generate a tile matrix set from the GeoTIFF, put a file into the
 datasources/tile/tilematrixset/ directory. See how it must look like:
@@ -187,6 +200,25 @@ datasources/tile/tilematrixset/ directory. See how it must look like:
 
 The storage crs is optional if the file contains an appropriate GeoTIFF
 tag, but can be used to override it.
+
+==== AccessConfig
+
+Access of the GeoTIFF tiles uses a object pool to improve the performance of reading the tiles. The object pool should be configured considering the data as well as the given hardware resources.
+
+[source,xml]
+----
+<AccessConfig>
+  <MaxActive>10</MaxActive>
+</AccessConfig>
+----
+
+[width="100%",cols="20%,11%,7%,62%",options="header",]
+|=======================================================================
+|Option |Cardinality |Value |Description
+|`<MaxActive>` |0..1 |Integer |Maximum number of objects allocated by the pool, default: 8
+|=======================================================================
+
+* `MaxActive`: Controls the maximum number of objects that can be allocated by the pool. Increase this value if the number of tiles retrieved by one request is more than 8 and your hardware is able to handle more than 8 tiles at the same time.
 
 === File system tile store
 
