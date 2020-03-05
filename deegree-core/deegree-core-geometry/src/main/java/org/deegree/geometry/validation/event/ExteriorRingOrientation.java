@@ -40,9 +40,6 @@ import java.util.List;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.cs.components.Axis;
-
 /**
  * {@link GeometryValidationEvent} that indicates the orientation of an exterior {@link Ring} of a {@link PolygonPatch}.
  * 
@@ -90,42 +87,6 @@ public class ExteriorRingOrientation extends AbstractGeometryValidationEvent {
     public boolean isClockwise() {
         return isClockwise;
     }
-    
-    /**
-     * Returns true if the geometry has a left handed CRS.
-     * 
-     * @return <code>true</code> if geometry has a left handed CRS, <code>false</code> if CRS is right handed
-     */
-    public boolean hasLeftHandedSrs() {
-        ICRS crs = patch.getExteriorRing().getCoordinateSystem();
-    
-        // get number of dimensions (it should be 2)
-        if ( crs.getDimension() == 2 ) {
-            int axis1 = crs.getAxis()[0].getOrientation();
-            int axis2 = crs.getAxis()[1].getOrientation();
-
-            // check if CRS is left handed
-            if ( axis1 == Axis.AO_EAST || axis1 == Axis.AO_WEST ) {
-                if ( axis1 == Axis.AO_EAST && ( axis2 == Axis.AO_SOUTH || axis2 == Axis.AO_DOWN ) ) {
-                    return true;
-                }
-                else if ( axis1 == Axis.AO_WEST && ( axis2 == Axis.AO_NORTH || axis2 == Axis.AO_UP ) ) {
-                    return true;
-                }
-            }
-            else {
-                if ( ( axis1 == Axis.AO_SOUTH || axis1 == Axis.AO_DOWN ) && axis2 == Axis.AO_WEST ) {
-                    return true;
-                }
-                else if ( ( axis1 == Axis.AO_NORTH || axis1 == Axis.AO_UP ) && axis2 == Axis.AO_EAST ) {
-                    return true;
-                }
-            }
-        }
-
-        // return false in any other case
-        return false;
-    }
 
     /**
      * Returns true if the geometry is an exterior boundary.
@@ -135,7 +96,7 @@ public class ExteriorRingOrientation extends AbstractGeometryValidationEvent {
     public boolean isExterior() {
         boolean isExterior = !isClockwise;
 
-        if ( hasLeftHandedSrs() ) {
+        if ( isLeftHanded( patch.getExteriorRing().getCoordinateSystem() ) ) {
             isExterior = !isExterior;
         }
 

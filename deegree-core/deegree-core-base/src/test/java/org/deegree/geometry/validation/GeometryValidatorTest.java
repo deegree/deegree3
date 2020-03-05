@@ -49,7 +49,9 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.validation.event.CurveDiscontinuity;
 import org.deegree.geometry.validation.event.CurveSelfIntersection;
@@ -158,6 +160,38 @@ public class GeometryValidatorTest {
         Assert.assertFalse( ( (ExteriorRingOrientation) eventHandler.getEvents().get( 0 ) ).isClockwise() );
         Assert.assertTrue( ( (InteriorRingOrientation) eventHandler.getEvents().get( 1 ) ).isClockwise() );
         Assert.assertTrue( ( (InteriorRingOrientation) eventHandler.getEvents().get( 2 ) ).isClockwise() );
+    }
+
+    @Test
+    public void validatePolygonExteriorAndInterior()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        DummyValidationEventHandler eventHandler = new DummyValidationEventHandler();
+        GeometryValidator validator = new GeometryValidator( eventHandler );
+        Geometry geom = parseGeometry( "Polygon.gml" );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+        Assert.assertEquals( 3, eventHandler.getEvents().size() );
+
+        // get rings
+        ExteriorRingOrientation exterior = (ExteriorRingOrientation) eventHandler.getEvents().get( 0 );
+        InteriorRingOrientation interior1 = (InteriorRingOrientation) eventHandler.getEvents().get( 1 );
+        InteriorRingOrientation interior2 = (InteriorRingOrientation) eventHandler.getEvents().get( 2 );
+
+        // check for exterior and interior rings with a right handed CRS
+        Assert.assertTrue( exterior.isExterior() );
+        Assert.assertTrue( interior1.isInterior() );
+        Assert.assertTrue( interior2.isInterior() );
+
+        // substitute original right handed CRS for a new left handed one, maintaining polygon orientation
+        ICRS leftHandedCrs = CRSManager.getCRSRef( "urn:ogc:def:crs:epsg::4326" );
+        exterior.getPatch().getExteriorRing().setCoordinateSystem( leftHandedCrs );
+        interior1.getPatch().getInteriorRings().get( 0 ).setCoordinateSystem( leftHandedCrs );
+        interior2.getPatch().getInteriorRings().get( 1 ).setCoordinateSystem( leftHandedCrs );
+
+        // check for exterior and interior rings with a left handed CRS
+        Assert.assertFalse( exterior.isExterior() );
+        Assert.assertFalse( interior1.isInterior() );
+        Assert.assertFalse( interior2.isInterior() );
     }
 
     @Test
