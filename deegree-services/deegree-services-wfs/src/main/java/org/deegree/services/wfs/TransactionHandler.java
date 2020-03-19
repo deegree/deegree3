@@ -61,6 +61,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.transaction.ReleaseAction.ALL;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
 import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
@@ -476,7 +477,7 @@ class TransactionHandler {
             }
         }
 
-        if ( CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
+        if ( CHECK_ALL.equals( referenceResolvingMode ) || CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
             // resolve local xlink references
             gmlStream.getIdContext().resolveLocalRefs();
         }
