@@ -203,7 +203,9 @@
 				<simpleContent>
 					<extension base="string">
 						<attribute name="key" type="string" use="required"/>
+						<attribute name="match" type="string" use="required"/>
 						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
 					</extension>
 				</simpleContent>
 			</complexType>
@@ -241,6 +243,11 @@
 						<attribute name="ignoreCase" type="boolean" default="true" />
 					</extension>
 				</simpleContent>
+			</complexType>
+		</element>
+		<element name="Custom">
+			<complexType>
+				<attribute name="javaClass" type="string" use="required"/>
 			</complexType>
 		</element>
     </choice>

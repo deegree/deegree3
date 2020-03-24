@@ -613,7 +613,7 @@ public class WMSController extends AbstractOWS {
             case GetMap:
                 Map<String, String> kvp = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
                 kvpRewrite.rewrite( requestType, kvp, request );
-                GetMapParser getMapParser = new GetMapParser( kvp );
+                GetMapParser getMapParser = new GetMapParser( kvp, service.getExtensions() );
                 GetMap getMap = getMapParser.parse( xmlStream );
                 Map<String, String> map = new HashMap<String, String>();
                 doGetMap( map, response, VERSION_130, getMap );
@@ -661,7 +661,7 @@ public class WMSController extends AbstractOWS {
             requestVersion = parseAndCheckVersion( xmlStream );
 
             if ( WMSRequestType.GetMap.equals( requestType ) ) {
-                doSoapGetMap( soapDoc.getVersion(), response, xmlStream );
+                doSoapGetMap( soapDoc.getVersion(), request, response, xmlStream );
             } else {
                 beginSoapResponse( soapDoc, response );
                 switch ( requestType ) {
@@ -844,6 +844,7 @@ public class WMSController extends AbstractOWS {
                                                 getMap.getTransparent(), getMap.getBgColor(), getMap.getBoundingBox(),
                                                 getMap.getPixelSize(), map, imageSerializers.get( getMap.getFormat() ) );
 
+        
         RenderContext ctx = ouputFormatProvider.getRenderers( info, stream );
         LinkedList<String> headers = new LinkedList<String>();
         service.getMap( getMap, headers, ctx );
@@ -1081,11 +1082,17 @@ public class WMSController extends AbstractOWS {
         return null;
     }
 
-    private void doSoapGetMap( SOAPVersion soapVersion, HttpResponseBuffer response, XMLStreamReader xmlStream )
-                            throws OWSException, XMLStreamException, IOException, SOAPException {
+    private void doSoapGetMap( SOAPVersion soapVersion, HttpServletRequest request, HttpResponseBuffer response,
+                               XMLStreamReader xmlStream )
+                            throws OWSException,
+                            XMLStreamException,
+                            IOException,
+                            SOAPException {
         response.setContentType( "application/xop+xml" );
 
-        GetMapParser getMapParser = new GetMapParser();
+        Map<String, String> kvp = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
+        kvpRewrite.rewrite( WMSRequestType.GetMap, kvp, request );
+        GetMapParser getMapParser = new GetMapParser( kvp, service.getExtensions() );
         GetMap getMap = getMapParser.parse( xmlStream );
         Map<String, String> map = new HashMap<String, String>();
 
