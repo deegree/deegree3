@@ -11,7 +11,7 @@
   <FeatureLayer>
   	<l:Name>contours_scalelimit</l:Name>
   	<d:Title>contorus with min and max scale</d:Title>
-  	<l:ScaleDenominators max="30000" min="20000"/>
+  	<l:ScaleDenominators max="25500" min="24500"/>
   </FeatureLayer>
   <FeatureLayer>
     <l:Name>getcurrentscale</l:Name>
