@@ -35,21 +35,30 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static org.junit.Assert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.xmlmatchers.XmlMatchers.conformsTo;
+import static org.xmlmatchers.XmlMatchers.hasXPath;
+import static org.xmlmatchers.transform.XmlConverters.the;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import junit.framework.Assert;
 
@@ -58,9 +67,11 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.xml.sax.SAXException;
+import org.xmlmatchers.XmlMatchers;
+import org.xmlmatchers.namespace.SimpleNamespaceContext;
 
 /**
  * TODO add documentation here
@@ -323,8 +334,7 @@ public class GMLAppSchemaWriterTest {
 
     @Test
     public void testReexportCiteSF1()
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException {
+                            throws Exception {
 
         String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf1.xsd" ).toString();
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
@@ -332,11 +342,47 @@ public class GMLAppSchemaWriterTest {
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
-        OutputStream os = new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + File.separatorChar + "out.xml" );
+        ByteArrayOutputStream os = new ByteArrayOutputStream(  );
         XMLStreamWriter writer = new IndentingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
         GMLAppSchemaWriter encoder = new GMLAppSchemaWriter( GMLVersion.GML_31, "http://cite.opengeospatial.org/gmlsf",
                                                              null, schema.getNamespaceBindings() );
         encoder.export( writer, schema );
         writer.close();
+
+        assertThat( the( os.toString() ), hasXPath( "//xsd:element[@name='AggregateGeoFeature' and @substitutionGroup='gml:_Feature']", nsContext() ) );
     }
+
+    @Test
+    public void testReexportCiteSF1AsGml32()
+                            throws Exception {
+
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf1.xsd" ).toString();
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
+        ByteArrayOutputStream os = new ByteArrayOutputStream(  );
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
+        GMLAppSchemaWriter encoder = new GMLAppSchemaWriter( GMLVersion.GML_32, "http://cite.opengeospatial.org/gmlsf",
+                                                             null, schema.getNamespaceBindings() );
+        encoder.export( writer, schema );
+        writer.close();
+
+        //  <element name="AggregateGeoFeature" type="sf:AggregateGeoFeatureType" substitutionGroup="gml:_Feature"/>
+        assertThat( the( os.toString() ), hasXPath( "//xsd:element[@name='AggregateGeoFeature' and @substitutionGroup='gml:AbstractFeature']", nsContext32() ) );
+    }
+
+    private NamespaceContext nsContext() {
+        return new SimpleNamespaceContext()
+                                .withBinding( "xsd", W3C_XML_SCHEMA_NS_URI )
+                                .withBinding( "gml", "http://www.opengis.net/gml" );
+    }
+
+    private NamespaceContext nsContext32() {
+        return new SimpleNamespaceContext()
+                                .withBinding( "xsd", W3C_XML_SCHEMA_NS_URI )
+                                .withBinding( "gml", "http://www.opengis.net/gml/3.2" );
+    }
+
 }

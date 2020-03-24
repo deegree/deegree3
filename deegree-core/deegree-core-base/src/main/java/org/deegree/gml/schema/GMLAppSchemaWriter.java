@@ -403,15 +403,7 @@ public class GMLAppSchemaWriter {
         }
         exportedElements.add( ft.getName().getLocalPart() );
 
-        // export parent feature types
-        AppSchema schema = ft.getSchema();
-        FeatureType parentFt = null;
-        if ( schema != null ) {
-            parentFt = schema.getParent( ft );
-            if ( parentFt != null ) {
-                export( writer, parentFt );
-            }
-        }
+        FeatureType parentFt = exportParentFeatureType( writer, ft );
 
         LOG.debug( "Exporting feature type declaration: " + ft.getName() );
         LOG.debug( "Parent: " + ft.getSchema().getParent( ft ) );
@@ -451,6 +443,19 @@ public class GMLAppSchemaWriter {
             // end 'xs:element'
             writer.writeEndElement();
         }
+    }
+
+    private FeatureType exportParentFeatureType( XMLStreamWriter writer, FeatureType ft )
+                            throws XMLStreamException {
+        AppSchema schema = ft.getSchema();
+        if ( schema != null ) {
+            FeatureType parentFt = schema.getParent( ft );
+            if ( parentFt != null && !isGMLNamespace( parentFt.getName().getNamespaceURI() ) ) {
+                export( writer, parentFt );
+                return parentFt;
+            }
+        }
+        return null;
     }
 
     private void exportFeatureComplexType( XMLStreamWriter writer, FeatureType ft, FeatureType parentFt, String typeName )
