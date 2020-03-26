@@ -36,11 +36,15 @@ pipeline {
             }
             post {
                 always {
-                    junit '**/target/failsafe-reports/*.xml'
+                    junit '**/target/*-reports/*.xml'
                 }
             }
         }
         stage ('Quality Checks') {
+            when {
+                // check if branch is master
+                branch 'master'
+            }
             steps {
                 echo 'Quality checking'
                 sh 'mvn -B -C -fae site -Psite-all-reports,oracle,mssql'
@@ -52,6 +56,10 @@ pipeline {
             }
         }
         stage ('Acceptance Test') {
+            when {
+                // check if branch is master
+                branch 'master'
+            }
             steps {
                 echo 'Preparing test harness: TEAM Engine'
                 echo 'Download and start TEAM Engine'
@@ -69,7 +77,6 @@ pipeline {
                 // check if branch is master
                 branch 'master'
             }
-            agent { label 'docker' }
             steps {
                 echo 'Prepare release version...'
                 echo 'Build docker image...'
@@ -77,13 +84,12 @@ pipeline {
             post {
                 success {
                     // post release on github
-                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
                 }
             }
         }
         stage ('Deploy PROD') {
             // install current release version on demo.deegree.org
-            agent { label 'demo' }
             steps {
                 echo 'Deploying to PROD...'
                 echo 'Running smoke tests...'
