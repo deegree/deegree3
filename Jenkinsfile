@@ -42,22 +42,21 @@ pipeline {
         }
         stage ('Quality Checks') {
             when {
-                // check if branch is master
                 branch 'master'
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae site -Psite-all-reports,oracle,mssql'
+                sh 'mvn -B -C -fae findbugs:findbugs checkstyle:checkstyle javadoc:javadoc -Poracle,mssql'
             }
             post {
                 success {
-                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''
+                    checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
                 }
             }
         }
         stage ('Acceptance Test') {
             when {
-                // check if branch is master
                 branch 'master'
             }
             steps {
@@ -74,7 +73,6 @@ pipeline {
         }
         stage ('Release') {
             when {
-                // check if branch is master
                 branch 'master'
             }
             steps {
@@ -89,9 +87,12 @@ pipeline {
             }
         }
         stage ('Deploy PROD') {
+            when {
+                branch 'master'
+            }
             // install current release version on demo.deegree.org
             steps {
-                echo 'Deploying to PROD...'
+                echo 'Deploying to demo.deegree.org...'
                 echo 'Running smoke tests...'
             }
         }
