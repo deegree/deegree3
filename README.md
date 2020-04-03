@@ -30,3 +30,6 @@ First off all, thank you for taking the time to contribute to deegree! :+1: :tad
 By participating you are expected to uphold the [Contribution guidelines](CONTRIB.md).
 
 You can add yourself when contributing to the project to the [list of contributors](CONTRIBUTORS.md).
+
+## Now event beter
+no travis CI (hopefully)
