@@ -186,7 +186,9 @@ public class QueryAnalyzer {
             // TODO cope with more queries than one
             if ( wfsQuery.getProjectionClauses() != null ) {
                 for ( TypeName typeName : wfsQuery.getTypeNames() ) {
-                    this.projections.put( typeName.getFeatureTypeName(),
+                    List<QName> allFeatureTypeNames = Arrays.asList( service.getFeatureTypeNames() );
+                    QName bestMatch = QNameUtils.findBestMatch( typeName.getFeatureTypeName(), allFeatureTypeNames );
+                    this.projections.put( bestMatch != null ? bestMatch : typeName.getFeatureTypeName(),
                                           Arrays.asList( wfsQuery.getProjectionClauses() ) );
                 }
             }

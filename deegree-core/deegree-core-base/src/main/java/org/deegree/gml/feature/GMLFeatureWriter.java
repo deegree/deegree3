@@ -782,6 +782,9 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     }
 
     private boolean isPropertyRequested( QName ftName, QName propName ) {
+        // ftName is null if the property not on level 0
+        if ( ftName == null )
+            return true;
         return allProjections.isEmpty() || allProjections.containsKey( key( ftName, propName ) );
     }
 
