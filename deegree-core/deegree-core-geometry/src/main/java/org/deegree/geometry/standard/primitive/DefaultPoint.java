@@ -43,7 +43,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.DefaultEnvelope;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Point}.
@@ -158,7 +158,7 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.Point buildJTSGeometry() {
+    protected org.locationtech.jts.geom.Point buildJTSGeometry() {
         Coordinate coords = null;
         if ( coordinates.length == 2 ) {
             coords = new Coordinate( coordinates[0], coordinates[1] );
