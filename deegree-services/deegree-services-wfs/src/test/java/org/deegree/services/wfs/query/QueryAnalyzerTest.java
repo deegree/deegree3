@@ -41,6 +41,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -68,17 +70,17 @@ public class QueryAnalyzerTest {
 
     private static final String NAMESPACE_URI_CP = "http://inspire.ec.europa.eu/schemas/cp/4.0";
 
-    private static final String NAMESPACE_URI_AU = "http://inspire.ec.europa.eu/schemas/cp/4.0";
+    private static final String NAMESPACE_URI_AU = "http://inspire.ec.europa.eu/schemas/au/4.0";
 
-    private QName FEATURETYPE_CP = new QName( "CadastralZoning", NAMESPACE_URI_CP );
+    private QName FEATURETYPE_CP = new QName( NAMESPACE_URI_CP, "CadastralZoning" );
 
-    private QName FEATURETYPE_AU = new QName( "AdministrativeUnit", NAMESPACE_URI_AU );
+    private QName FEATURETYPE_AU = new QName( NAMESPACE_URI_AU, "AdministrativeUnit" );
 
-    private QName PROP_CP_BLV = new QName( "beginLifespanVersion", NAMESPACE_URI_CP );
+    private QName PROP_CP_BLV = new QName( NAMESPACE_URI_CP, "beginLifespanVersion" );
 
-    private QName PROP_CP_EA = new QName( "estimatedAccuracy", NAMESPACE_URI_CP );
+    private QName PROP_CP_EA = new QName( NAMESPACE_URI_CP, "estimatedAccuracy" );
 
-    private QName PROP_AU_BLV = new QName( "beginLifespanVersion", NAMESPACE_URI_AU );
+    private QName PROP_AU_BLV = new QName( NAMESPACE_URI_AU, "beginLifespanVersion" );
 
     @Test
     public void testQueryAnalyzer()
@@ -144,8 +146,9 @@ public class QueryAnalyzerTest {
         when( mock.lookupFeatureType( FEATURETYPE_CP ) ).thenReturn( featureTypeCp );
         FeatureType featureTypeAu = mock( FeatureType.class );
         when( featureTypeAu.getName() ).thenReturn( FEATURETYPE_AU );
-        when( featureTypeCp.getPropertyDeclaration( PROP_AU_BLV ) ).thenReturn( mock( PropertyType.class ) );
+        when( featureTypeAu.getPropertyDeclaration( PROP_AU_BLV ) ).thenReturn( mock( PropertyType.class ) );
         when( mock.lookupFeatureType( FEATURETYPE_AU ) ).thenReturn( featureTypeAu );
+        when( mock.getFeatureTypeNames() ).thenReturn( new QName[] { FEATURETYPE_CP, FEATURETYPE_AU } );
         return mock;
     }
     /*

@@ -186,10 +186,8 @@ public class QueryAnalyzer {
             // TODO cope with more queries than one
             if ( wfsQuery.getProjectionClauses() != null ) {
                 for ( TypeName typeName : wfsQuery.getTypeNames() ) {
-                    List<QName> allFeatureTypeNames = Arrays.asList( service.getFeatureTypeNames() );
-                    QName bestMatch = QNameUtils.findBestMatch( typeName.getFeatureTypeName(), allFeatureTypeNames );
-                    this.projections.put( bestMatch != null ? bestMatch : typeName.getFeatureTypeName(),
-                                          Arrays.asList( wfsQuery.getProjectionClauses() ) );
+                    QName bestMatch = findBestMatchingFeatureTypeName( typeName );
+                    this.projections.put( bestMatch, Arrays.asList( wfsQuery.getProjectionClauses() ) );
                 }
             }
         }
@@ -215,6 +213,18 @@ public class QueryAnalyzer {
                 fsQueries.add( query );
             }
         }
+    }
+
+    private QName findBestMatchingFeatureTypeName( TypeName typeName ) {
+        QName[] featureTypeNames = service.getFeatureTypeNames();
+        if ( featureTypeNames == null )
+            return typeName.getFeatureTypeName();
+        List<QName> allFeatureTypeNames = Arrays.asList( featureTypeNames );
+        QName bestMatch = QNameUtils.findBestMatch( typeName.getFeatureTypeName(), allFeatureTypeNames );
+
+        if ( bestMatch != null )
+            return bestMatch;
+        return typeName.getFeatureTypeName();
     }
 
     private List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> convertTemplateStoredQuery( StoredQuery query )
