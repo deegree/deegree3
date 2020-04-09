@@ -48,7 +48,7 @@ import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Polygon}.
@@ -129,7 +129,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+    protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
         LinearRing shell = (LinearRing) getAsDefaultGeometry( exteriorRing ).getJTSGeometry();
         LinearRing[] holes = null;
         if ( interiorRings != null ) {

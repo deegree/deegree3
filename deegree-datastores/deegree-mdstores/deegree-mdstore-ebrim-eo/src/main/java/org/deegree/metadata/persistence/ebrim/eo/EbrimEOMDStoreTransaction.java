@@ -93,7 +93,7 @@ import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * {@link MetadataStoreTransaction} implementation for the {@link EbrimEOMDStore}.
