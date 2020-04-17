@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.11-SNAPSHOT</version>
+    <version>3.4.13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -76,7 +76,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
 	      <skip>true</skip>
-          <argLine>-Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
+          <reuseForks>false</reuseForks>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
         </configuration>
         <executions>
           <execution>

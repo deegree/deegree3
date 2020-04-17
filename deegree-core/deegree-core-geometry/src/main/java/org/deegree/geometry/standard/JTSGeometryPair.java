@@ -38,7 +38,7 @@ package org.deegree.geometry.standard;
 
 import org.deegree.commons.utils.Pair;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Stores a pair of JTS geometries.

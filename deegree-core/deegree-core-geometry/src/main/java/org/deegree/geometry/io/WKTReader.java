@@ -44,7 +44,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.postgis.binary.BinaryWriter;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).

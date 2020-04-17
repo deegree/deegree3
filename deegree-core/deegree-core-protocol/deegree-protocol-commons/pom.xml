@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-protocol</artifactId>
-    <version>3.4.11-SNAPSHOT</version>
+    <version>3.4.13-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -33,6 +33,11 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-base</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.jts</groupId>
+      <artifactId>jts-core</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

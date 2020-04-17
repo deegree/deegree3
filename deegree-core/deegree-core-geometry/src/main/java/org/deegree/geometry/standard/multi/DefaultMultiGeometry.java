@@ -47,7 +47,7 @@ import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link MultiGeometry}.
@@ -92,7 +92,7 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
 
     @Override
     protected GeometryCollection buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Geometry[] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        org.locationtech.jts.geom.Geometry[] jtsMembers = new org.locationtech.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : members ) {
             jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();

@@ -49,7 +49,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Envelope}.
@@ -202,7 +202,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.Polygon buildJTSGeometry() {
+    protected org.locationtech.jts.geom.Polygon buildJTSGeometry() {
         Points points = new PackedPoints( crs, new double[] { min.get0(), min.get1(), max.get0(), min.get1(),
                                                              max.get0(), max.get1(), min.get0(), max.get1(),
                                                              min.get0(), min.get1() }, 2 );
