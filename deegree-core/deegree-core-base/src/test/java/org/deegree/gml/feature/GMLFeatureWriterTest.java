@@ -38,6 +38,8 @@ package org.deegree.gml.feature;
 
 import com.sun.javafx.collections.MappingChange;
 import org.apache.commons.io.IOUtils;
+import org.deegree.commons.tom.ResolveMode;
+import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -57,6 +59,7 @@ import org.deegree.filter.comparison.PropertyIsEqualTo;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.projection.ProjectionClause;
+import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.projection.TimeSliceProjection;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLOutputFactory;
@@ -74,6 +77,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Map;
 import java.util.Collections;
@@ -107,20 +111,22 @@ import static org.xmlmatchers.xpath.XpathReturnType.returningANumber;
  */
 public class GMLFeatureWriterTest {
 
-    private final String SOURCE_FILE = "../misc/feature/Philosopher_FeatureCollection.xml";
+    private final String SOURCE_FILE_31 = "../misc/feature/Philosopher_FeatureCollection.xml";
 
-    private final String SCHEMA_LOCATION_ATTRIBUTE = "../misc/schema/Philosopher.xsd";
+    private final String SOURCE_FILE_32 = "../misc/feature/Philosopher_FeatureCollection_Gml32.xml";
 
-    private final String SCHEMA_LOCATION = "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/feature.xsd http://www.deegree.org/app testdata/schema/Philosopher.xsd";
+    private final String SCHEMA_LOCATION_ATTRIBUTE_31 = "../misc/schema/Philosopher.xsd";
+
+    private final String SCHEMA_LOCATION_31 = "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/feature.xsd http://www.deegree.org/app testdata/schema/Philosopher.xsd";
 
     @Test
     public void testWriteGML2()
                     throws Exception {
-        String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
+        String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE_31 ).toString();
         GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractAppSchema();
 
-        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE );
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE_31 );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         Feature feature = gmlReader.readFeature();
@@ -130,7 +136,7 @@ public class GMLFeatureWriterTest {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                                  SCHEMA_LOCATION );
+                                                                                  SCHEMA_LOCATION_31 );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -150,11 +156,11 @@ public class GMLFeatureWriterTest {
     @Test
     public void testWriteGML31()
                     throws Exception {
-        String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
+        String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE_31 ).toString();
         GMLAppSchemaReader xsdAdapter = new GMLAppSchemaReader( GML_31, null, schemaURL );
         AppSchema schema = xsdAdapter.extractAppSchema();
 
-        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE );
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE_31 );
         GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_31, docURL );
         gmlReader.setApplicationSchema( schema );
         Feature feature = gmlReader.readFeature();
@@ -164,7 +170,7 @@ public class GMLFeatureWriterTest {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
         SchemaLocationXMLStreamWriter writer = new SchemaLocationXMLStreamWriter( memoryWriter.getXMLStreamWriter(),
-                                                                                  SCHEMA_LOCATION );
+                                                                                  SCHEMA_LOCATION_31 );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -179,6 +185,35 @@ public class GMLFeatureWriterTest {
 
         String xml = memoryWriter.toString();
         assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-gml31.xml" ) ) ) );
+    }
+
+    @Test
+    public void testWriteGML32()
+                    throws Exception {
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE_32 );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        Feature feature = gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
+
+        writer.setDefaultNamespace( "http://www.opengis.net/gml" );
+        writer.setPrefix( "app", "http://www.deegree.org/app" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
+        exporter.write( feature );
+        writer.flush();
+        writer.close();
+
+        String xml = memoryWriter.toString();
+        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-gml32.xml" ) ) ) );
     }
 
     // @Test
@@ -409,6 +444,52 @@ public class GMLFeatureWriterTest {
         String expectedXml = "<property>0.00000009</property>";
 
         assertThat( the( xml ), isEquivalentTo( the( expectedXml ) ) );
+    }
+
+    @Test
+    public void testProjections_QName()
+                    throws Exception {
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE_32 );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        Feature feature = gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
+
+        writer.setDefaultNamespace( "http://www.opengis.net/gml" );
+        writer.setPrefix( "app", "http://www.deegree.org/app" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
+
+        List<ProjectionClause> projections = new ArrayList<>();
+        projections.add( createPropertyName( "id" ) );
+        projections.add( createPropertyName( "name" ) );
+        projections.add( createPropertyName( "isAuthorOf" ) );
+        exporter.setProjections( projections );
+
+        exporter.write( feature );
+        writer.flush();
+        writer.close();
+
+        String xml = memoryWriter.toString();
+        System.out.println( xml );
+
+        assertThat( the( xml ), isEquivalentTo( the(
+                        expectedXml( "expectedExport-projectionQName.xml" ) ) ) );
+    }
+
+    private ProjectionClause createPropertyName( String propertyName ) {
+        QName isAuthorOf = new QName( "http://www.deegree.org/app", propertyName, "app" );
+        ValueReference valueRef = new ValueReference( isAuthorOf );
+        ResolveParams resolveParams = new ResolveParams( ResolveMode.ALL, "*", BigInteger.valueOf( 1000 ) );
+        return new PropertyName( valueRef, resolveParams, null );
     }
 
     private NamespaceContext nsContext() {
