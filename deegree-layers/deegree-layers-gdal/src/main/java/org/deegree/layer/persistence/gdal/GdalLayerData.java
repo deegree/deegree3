@@ -119,7 +119,7 @@ class GdalLayerData implements LayerData {
             return null;
         }
         byte[][] bytes = compose( regions );
-        return toImage( bytes, width, height, true );
+        return toImage( bytes, width, height );
     }
 
     private BufferedImage extractAndReprojectRegion( ICRS nativeCrs ) {
@@ -137,7 +137,7 @@ class GdalLayerData implements LayerData {
         byte[][] rawImage = readBands( reprojectedRegion );
         nativeRegion.delete();
         reprojectedRegion.delete();
-        return toImage( rawImage, width, height, true );
+        return toImage( rawImage, width, height );
     }
 
     private Dataset reproject( Dataset src, String dstCrsWkt ) {
@@ -318,15 +318,8 @@ class GdalLayerData implements LayerData {
         return axisOrientation == AO_WEST || axisOrientation == AO_EAST;
     }
 
-    private BufferedImage toImage( byte[][] bands, int xSize, int ySize, boolean removeTransparency ) {
+    private BufferedImage toImage( byte[][] bands, int xSize, int ySize ) {
         int numBands = bands.length;
-        if ( removeTransparency && bands.length == 4 ) {
-            byte[][] bands2 = new byte[3][];
-            bands2[0] = bands[0];
-            bands2[1] = bands[1];
-            bands2[2] = bands[2];
-            bands = bands2;
-        }
         int numBytes = xSize * ySize * numBands;
         DataBuffer imgBuffer = new DataBufferByte( bands, numBytes );
         SampleModel sampleModel = new BandedSampleModel( TYPE_BYTE, xSize, ySize, bands.length );
