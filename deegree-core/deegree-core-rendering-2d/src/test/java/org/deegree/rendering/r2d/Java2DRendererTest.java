@@ -505,7 +505,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
             points.add( geomFac.createPoint( null, new double[] { 3500 - ( i + 1 ) * 100 , 4500 - ( i + 1 ) * 250 }, mapcs ) );
         }
 
-        String text = "AbC ÄüÖ";
+        String text = "AbC \u00c4\u00fc\u00d6";
         TextStyling styling = new TextStyling();
         r.render( styling, text, points.poll() );
         styling.fill = new Fill();
@@ -608,9 +608,8 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
         String text = "5th Street";
         TextStyling styling = new TextStyling();
         styling.linePlacement = new LinePlacement();
-        styling.font.fontSize = 15;
-        styling.font.fontFamily.add( "Lucida Sans" );
-        styling.font.fontFamily.add( "Comic Sans" );
+        styling.font.fontSize = 25;
+        styling.font.fontFamily.add( "Courier" );
         r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.repeat = true;
