@@ -25,8 +25,11 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,6 +51,8 @@ import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.ddl.DDLCreator;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
+import org.deegree.feature.persistence.sql.mapper.GmlReferenceData;
+import org.deegree.feature.persistence.sql.mapper.ReferenceData;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.sqldialect.SQLDialect;
@@ -83,6 +88,8 @@ public class SqlFeatureStoreConfigCreator {
     private static List<QName> propertiesWithPrimitiveHref; // primitive href mapping instead of feature mapping is used
                                                             // in deegree configuration for listed properties
 
+    private static ReferenceData referenceData;
+
     public static void main( String[] args )
                     throws Exception {
 
@@ -97,6 +104,7 @@ public class SqlFeatureStoreConfigCreator {
             System.out.println( " --dialect={postgis|oracle}" );
             System.out.println( " --cycledepth=INT (positive integer value to specify the depth of cycles; default: 0)" );
             System.out.println( " --listOfPropertiesWithPrimitiveHref=<path/to/file>" );
+            System.out.println( " --referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection." );
             System.out.println( "" );
             System.out.println( "The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):" );
             System.out.println( "---------- begin file ----------" );
@@ -140,6 +148,11 @@ public class SqlFeatureStoreConfigCreator {
                 String pathToFile = arg.split( "=" )[1];
                 propertiesWithPrimitiveHref = propertyNameParser.parsePropertiesWithPrimitiveHref( pathToFile );
                 System.out.println( "Using listOfPropertiesWithPrimitiveHref=" + propertiesWithPrimitiveHref );
+            } else if ( arg.startsWith( "--referenceData" ) ) {
+                String pathToFile = arg.split( "=" )[1];
+                File referenceDataUrl = new File( pathToFile );
+                referenceData = new GmlReferenceData( referenceDataUrl.toURI().toURL() );
+                System.out.println( "Using referenceData" + referenceDataUrl );
             } else {
                 schemaUrl = arg;
             }
@@ -153,7 +166,7 @@ public class SqlFeatureStoreConfigCreator {
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( srid ), DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, !relationalMapping, relationalMapping, geometryParams,
                                                       sqlDialect.getMaxColumnNameLength(), true, useIntegerFids,
-                                                      depth );
+                                                      depth, referenceData );
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
         SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter( mappedSchema,
                         propertiesWithPrimitiveHref );
