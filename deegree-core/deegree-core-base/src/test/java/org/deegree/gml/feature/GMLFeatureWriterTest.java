@@ -479,15 +479,97 @@ public class GMLFeatureWriterTest {
         writer.close();
 
         String xml = memoryWriter.toString();
-        System.out.println( xml );
 
         assertThat( the( xml ), isEquivalentTo( the(
                         expectedXml( "expectedExport-projectionQName.xml" ) ) ) );
     }
 
+    @Test
+    public void testProjections_XPath()
+                    throws Exception {
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE_32 );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        Feature feature = gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
+
+        writer.setDefaultNamespace( "http://www.opengis.net/gml" );
+        writer.setPrefix( "app", "http://www.deegree.org/app" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
+
+        List<ProjectionClause> projections = new ArrayList<>();
+        projections.add( createPropertyName( "id" ) );
+        projections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:name" ) );
+        projections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) );
+        exporter.setProjections( projections );
+
+        exporter.write( feature );
+        writer.flush();
+        writer.close();
+
+        String xml = memoryWriter.toString();
+System.out.println( xml );
+        assertThat( the( xml ), isEquivalentTo( the(
+                        expectedXml( "expectedExport-projectionXPath.xml" ) ) ) );
+    }
+
+    @Test
+    public void testProjections_XPath_SelectPlace()
+                    throws Exception {
+        URL docURL = GMLFeatureWriterTest.class.getResource( SOURCE_FILE_32 );
+        GMLStreamReader gmlReader = GMLInputFactory.createGMLStreamReader( GML_32, docURL );
+        Feature feature = gmlReader.readFeature();
+        gmlReader.getIdContext().resolveLocalRefs();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriter writer = memoryWriter.getXMLStreamWriter();
+
+        writer.setDefaultNamespace( "http://www.opengis.net/gml" );
+        writer.setPrefix( "app", "http://www.deegree.org/app" );
+        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
+        writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
+        writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
+
+        List<ProjectionClause> projections = new ArrayList<>();
+        projections.add( createPropertyName( "id" ) );
+        projections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place" ) );
+        exporter.setProjections( projections );
+
+        exporter.write( feature );
+        writer.flush();
+        writer.close();
+
+        String xml = memoryWriter.toString();
+        System.out.println( xml );
+        assertThat( the( xml ), isEquivalentTo( the(
+                        expectedXml( "expectedExport-projectionXPath_Place.xml" ) ) ) );
+    }
+
     private ProjectionClause createPropertyName( String propertyName ) {
-        QName isAuthorOf = new QName( "http://www.deegree.org/app", propertyName, "app" );
-        ValueReference valueRef = new ValueReference( isAuthorOf );
+        QName propName = new QName( "http://www.deegree.org/app", propertyName, "app" );
+        ValueReference valueRef = new ValueReference( propName );
+        ResolveParams resolveParams = new ResolveParams( ResolveMode.ALL, "*", BigInteger.valueOf( 1000 ) );
+        return new PropertyName( valueRef, resolveParams, null );
+    }
+
+    private ProjectionClause createPropertyNameWithXPath( String xPath ) {
+        org.jaxen.SimpleNamespaceContext namespaceContext = new org.jaxen.SimpleNamespaceContext();
+        namespaceContext.addNamespace( "app", "http://www.deegree.org/app" );
+        ValueReference valueRef = new ValueReference( xPath, namespaceContext );
         ResolveParams resolveParams = new ResolveParams( ResolveMode.ALL, "*", BigInteger.valueOf( 1000 ) );
         return new PropertyName( valueRef, resolveParams, null );
     }

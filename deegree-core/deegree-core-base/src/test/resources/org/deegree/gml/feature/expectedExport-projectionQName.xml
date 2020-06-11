@@ -4,10 +4,14 @@
       <id>1</id>
       <name>Karl Marx</name>
       <isAuthorOf><!--Inlined feature 'null'-->
-        <Book/>
+        <Book>
+          <title>Einleitung zur Kritik der Hegelschen Rechtsphilosophie</title>
+        </Book>
       </isAuthorOf>
       <isAuthorOf><!--Inlined feature 'null'-->
-        <Book/>
+        <Book>
+          <title>Zur Kritik der politischen Ökonomie</title>
+        </Book>
       </isAuthorOf>
     </Philosopher>
   </gml:featureMember>
