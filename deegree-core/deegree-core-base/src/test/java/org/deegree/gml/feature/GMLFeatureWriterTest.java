@@ -517,7 +517,7 @@ public class GMLFeatureWriterTest {
         writer.close();
 
         String xml = memoryWriter.toString();
-System.out.println( xml );
+
         assertThat( the( xml ), isEquivalentTo( the(
                         expectedXml( "expectedExport-projectionXPath.xml" ) ) ) );
     }
@@ -554,7 +554,7 @@ System.out.println( xml );
         writer.close();
 
         String xml = memoryWriter.toString();
-        System.out.println( xml );
+
         assertThat( the( xml ), isEquivalentTo( the(
                         expectedXml( "expectedExport-projectionXPath_Place.xml" ) ) ) );
     }
