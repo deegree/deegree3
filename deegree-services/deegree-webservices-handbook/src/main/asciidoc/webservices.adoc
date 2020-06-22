@@ -724,11 +724,12 @@ Query-Elements should be used. An exception is thrown as
 DescribeStoredQueries response, if the configured feature type is not
 served by the WFS.
 
+To enable support for the Manage Stored Queries conformance class for WFS 2.0.0 it is required to create a directory storedqueries/managed in your workspace. The stored queries created with _CreateStoredQuery_ requests are stored in this directory. They are loaded during startup of deegree automatically. It is not recommend to put the StoredQueries configured in the WFS configuration with the StoredQuery element into this folder. If the directory is missing the _CreateStoredQuery_ request returns an exception.
+
 TIP: deegree WFS supports the execution of stored queries using
 _GetFeature_ and _GetPropertyValue_ requests. It also implements the
-_ListStoredQueries_ and the _DescribeStoredQueries_ operations.
-However, there is no support for _CreateStoredQuery_ and
-_DropStoredQuery_ at the moment.
+_ListStoredQueries_, _DescribeStoredQueries_, _CreateStoredQuery_ and
+the _DropStoredQuery_ operations.
 
 ==== Extended capabilities
 

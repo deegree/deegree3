@@ -175,6 +175,7 @@ scanned for XML resource configuration files:
 |processes/ |Processes
 |jdbc/ |Server Connections (JDBC)
 |datasources/remoteows/ |Server Connections (Remote OWS)
+|storedqueries/managed/ |Stored queries created via WFS interface
 |===
 
 A workspace directory may contain additional directories to provide
