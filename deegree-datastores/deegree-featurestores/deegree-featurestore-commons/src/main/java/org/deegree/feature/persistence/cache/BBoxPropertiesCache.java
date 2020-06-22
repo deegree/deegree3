@@ -190,7 +190,7 @@ public class BBoxPropertiesCache implements BBoxCache {
     }
 
     private final String encodePropValue( Envelope env ) {
-        if ( env == null ) {
+        if ( env == null || env.getCoordinateSystem() == null ) {
             return "";
         }
         StringBuilder sb = new StringBuilder();

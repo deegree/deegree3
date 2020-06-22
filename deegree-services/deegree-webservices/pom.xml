@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.14-SNAPSHOT</version>
   </parent>
   <repositories>
     <repository>
@@ -32,7 +32,6 @@
         <executions>
           <execution>
             <goals>
-              <goal>assemble-log4j</goal>
               <goal>generate-buildinfo</goal>
             </goals>
           </execution>

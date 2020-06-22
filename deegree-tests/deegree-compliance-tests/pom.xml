@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.14-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -66,10 +66,13 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
+          <reuseForks>false</reuseForks>
+          <useSystemClassLoader>false</useSystemClassLoader>
           <includes>
             <include>**/${testPattern}.java</include>
           </includes>
-          <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -DserviceUrl=${serviceUrl}/services</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -DserviceUrl=${serviceUrl}/services</argLine>
+          <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         </configuration>
         <executions>
           <execution>
