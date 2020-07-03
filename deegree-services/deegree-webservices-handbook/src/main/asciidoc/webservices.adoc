@@ -760,7 +760,7 @@ capabilities must be configured there.
 
 ==== Special Features
 
-The GetFeature operation allows to specify the properties to include in the response by the element PropertyName, e.g. (WFS 2.0.0):
+The GetFeature operation allows to specify the properties to be included in the response by the element PropertyName, e.g. (WFS 2.0.0):
 
 [source,xml]
 ----
@@ -771,7 +771,7 @@ The GetFeature operation allows to specify the properties to include in the resp
 ...
 ----
 
-As extension of the WFS 1.1.0 and 2.0.0 specification deegree supports XPath expressions as value:
+As extension of the WFS 1.1.0 and 2.0.0 specification, deegree supports XPath expressions as value:
 [source,xml]
 ----
 ...
@@ -781,7 +781,7 @@ As extension of the WFS 1.1.0 and 2.0.0 specification deegree supports XPath exp
 ...
 ----
 
-This is limited to simple XPath expression, where each step is a qualified name.
+This is limited to simple XPath expressions where each step is a qualified name.
 
 [[anchor-configuration-wms]]
 === Web Map Service (WMS)
