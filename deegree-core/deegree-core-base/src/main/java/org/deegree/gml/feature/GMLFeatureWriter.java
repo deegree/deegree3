@@ -791,20 +791,23 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         pathTracker.startStep( elName );
         LOG.debug( "Exporting " + elName );
         XSElementDeclaration elDecl = xmlContent.getXSType();
+        int minOccurs = 1;
         if ( elDecl != null && schemaInfoset != null ) {
             ObjectPropertyType gmlPropertyDecl = schemaInfoset.getGMLPropertyDecl( elDecl, elName, 0, 1, null );
-            if ( gmlPropertyDecl instanceof FeaturePropertyType ) {
-                List<TypedObjectNode> children = xmlContent.getChildren();
-                if ( children != null && children.size() == 1 && children.get( 0 ) instanceof Feature ) {
-                    LOG.debug( "Exporting as nested feature property." );
-                    exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ), null,
-                                           resolveState );
-                    return;
+            if( gmlPropertyDecl != null ) {
+                minOccurs = gmlPropertyDecl.getMinOccurs();
+                if ( gmlPropertyDecl instanceof FeaturePropertyType ) {
+                    List<TypedObjectNode> children = xmlContent.getChildren();
+                    if ( children != null && children.size() == 1 && children.get( 0 ) instanceof Feature ) {
+                        LOG.debug( "Exporting as nested feature property." );
+                        exportFeatureProperty( (FeaturePropertyType) gmlPropertyDecl, (Feature) children.get( 0 ), null,
+                                               resolveState );
+                        return;
+                    }
                 }
             }
         }
-
-        if ( !isPropertyRequested() ) {
+        if ( minOccurs == 0 && !isPropertyRequested() ) {
             pathTracker.stopStep( elName );
             LOG.debug( "Skipping it." );
             return;
