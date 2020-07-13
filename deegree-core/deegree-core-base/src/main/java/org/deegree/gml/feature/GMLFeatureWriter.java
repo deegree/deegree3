@@ -590,6 +590,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else {
             QName featureName = feature.getName();
             LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
+            pathTracker.startFeature( featureName );
             String namespaceURI = featureName.getNamespaceURI();
             String localName = featureName.getLocalPart();
             writeStartElementWithNS( namespaceURI, localName );
@@ -870,12 +871,15 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         if ( this.propertyNameFilters.isEmpty() )
             return true;
         QName keyProp = pathTracker.firstStep();
-        if ( !this.propertyNameFilters.containsKey( keyProp ) ) {
-            return false;
-        } else {
+        QName featureName = pathTracker.getFeatureName();
+        if ( this.propertyNameFilters.containsKey( keyProp ) ) {
             PropertyNameFilter propertyNameFilter = propertyNameFilters.get( keyProp );
-            return propertyNameFilter.isRequested( pathTracker.getCurrentPath() );
+            return propertyNameFilter.isRequested( pathTracker );
+        } else if ( this.propertyNameFilters.containsKey( featureName ) ) {
+            PropertyNameFilter propertyNameFilter = propertyNameFilters.get( featureName );
+            return propertyNameFilter.isRequested( pathTracker );
         }
+        return false;
     }
 
     private boolean isSupportedXPath( ValueReference valueReference ) {

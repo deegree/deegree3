@@ -11,6 +11,12 @@ public class PathTracker {
 
     private final List<QName> currentPath = new ArrayList<>();
 
+    private QName featureName;
+
+    public void startFeature( QName featureName ) {
+        this.featureName = featureName;
+    }
+
     public void startFeatureStep( QName featureName ) {
         if ( !currentPath.isEmpty() )
             this.currentPath.add( featureName );
@@ -38,5 +44,9 @@ public class PathTracker {
         if ( currentPath.isEmpty() )
             return null;
         return currentPath.get( 0 );
+    }
+
+    public QName getFeatureName() {
+        return featureName;
     }
 }

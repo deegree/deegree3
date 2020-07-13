@@ -21,25 +21,38 @@ public class PropertyNameFilter {
         propertyNames.add( propName );
     }
 
+    public List<PropertyName> getPropertyNames(){
+        return propertyNames;
+    }
+
     public ResolveParams getResolveParams() {
         if ( !propertyNames.isEmpty() )
             return propertyNames.get( 0 ).getResolveParams();
         return null;
     }
 
-    public boolean isRequested( List<QName> currentPath ) {
+    public boolean isRequested( PathTracker pathTracker ) {
         for ( PropertyName propName : propertyNames ) {
             LocationPath xPath = (LocationPath) propName.getPropertyName().getAsXPath();
             List<QName> path = new ArrayList<>();
+            boolean isFirst = true;
             for ( Object o : xPath.getSteps() ) {
                 QName qName = stepAsQName( propName.getPropertyName(), (DefaultNameStep) o );
-                path.add( qName );
+                if ( !firstMatchesAndFeatureName( pathTracker, isFirst, qName ) ) {
+                    path.add( qName );
+                }
+                isFirst = false;
             }
+            List<QName> currentPath = pathTracker.getCurrentPath();
             if ( matchesCurrentPath( currentPath, path ) ) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean firstMatchesAndFeatureName( PathTracker pathTracker, boolean isFirst, QName qName ) {
+        return isFirst && qName.equals( pathTracker.getFeatureName() );
     }
 
     private QName stepAsQName( ValueReference valueReference, DefaultNameStep nameStep ) {
