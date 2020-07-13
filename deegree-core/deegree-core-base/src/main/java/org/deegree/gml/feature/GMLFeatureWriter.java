@@ -110,6 +110,8 @@ import org.jaxen.expr.DefaultNameStep;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.DefaultNameStep;
 import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.iter.IterableChildAxis;
+import org.jaxen.expr.iter.IterableChildAxis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,8 +197,13 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     } else if ( isSupportedXPath( valueReference ) ) {
                         LocationPath xPath = (LocationPath) valueReference.getAsXPath();
                         List steps = xPath.getSteps();
-                        QName first = stepAsQName( valueReference, (DefaultNameStep) steps.get( 0 ) );
-                        addRequestedPropertyName( first, propName );
+                        if ( isXPathSupported( steps ) ) {
+                            QName first = stepAsQName( valueReference, (DefaultNameStep) steps.get( 0 ) );
+                            addRequestedPropertyName( first, propName );
+                        } else {
+                            LOG.debug( "Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
+                                       + propName.getPropertyName() + "'" );
+                        }
                     } else {
                         LOG.debug( "Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
                                    + propName.getPropertyName() + "'" );
@@ -834,46 +841,17 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void parseProjections( GMLStreamWriter gmlStreamWriter ) {
-        Map<QName, List<ProjectionClause>> projections = gmlStreamWriter.getProjections();
-        if ( projections != null ) {
-            for ( Map.Entry<QName, List<ProjectionClause>> projection : projections.entrySet() ) {
-                QName ftName = projection.getKey();
-                for ( ProjectionClause projectionOfFeatureType : projection.getValue() ) {
-                    if ( projectionOfFeatureType instanceof PropertyName ) {
-                        PropertyName propName = (PropertyName) projectionOfFeatureType;
-                        QName qName = propName.getPropertyName().getAsQName();
-                        if ( qName != null ) {
-                            allProjections.put( key( ftName, qName ), propName );
-                        } else {
-                            LOG.debug( "Only simple qualified element names are allowed for PropertyName projections. Ignoring '"
-                                       + propName.getPropertyName() + "'" );
-                        }
-                    } else if ( projectionOfFeatureType instanceof TimeSliceProjection ) {
-                        timeSliceFilters.add( ( (TimeSliceProjection) projectionOfFeatureType ).getTimeSliceFilter() );
-                    }
-                }
+    private boolean isXPathSupported( List steps ) {
+        for ( Object o : steps ) {
+            if ( o instanceof DefaultNameStep ) {
+                DefaultNameStep step = (DefaultNameStep) o;
+                if ( !( step.getIterableAxis() instanceof IterableChildAxis ) )
+                    return false;
+            } else {
+                return false;
             }
         }
-    }
-
-    private boolean isPropertyRequested( QName ftName, QName propName ) {
-        // ftName is null if the property not on level 0
-        if ( ftName == null )
-            return true;
-        return allProjections.isEmpty() || allProjections.containsKey( key( ftName, propName ) );
-    }
-
-    private MultiKey<QName> key( QName ftName, QName propName ) {
-        return new MultiKey<>( ftName, propName );
-    }
-
-    private GmlXlinkOptions getResolveParams( QName ftName, Property prop, GmlXlinkOptions resolveState ) {
-        PropertyName projection = allProjections.get( key( ftName, prop.getName() ) );
-        if ( projection != null && projection.getResolveParams() != null ) {
-            return new GmlXlinkOptions( projection.getResolveParams() );
-        }
-        return resolveState;
+        return true;
     }
 
     private void addRequestedPropertyName( QName qName, PropertyName propName ) {
