@@ -798,7 +798,7 @@ public class Filter200XMLDecoder {
         } else if ( attrs.isEmpty() && children.isEmpty() ) {
             value = new PrimitiveValue( "" );
         } else {
-            value = new GenericXMLElement( null, null, attrs, children );
+            value = new GenericXMLElement( null, attrs, children );
         }
         return new Literal<TypedObjectNode>( value, type );
     }
@@ -815,7 +815,7 @@ public class Filter200XMLDecoder {
                 children.add( new PrimitiveValue( xmlStream.getText() ) );
             }
         }
-        return new GenericXMLElement( xmlStream.getName(), null, attrs, children );
+        return new GenericXMLElement( xmlStream.getName(), attrs, children );
     }
 
     private static Map<QName, PrimitiveValue> parseAttrs( XMLStreamReader xmlStream ) {

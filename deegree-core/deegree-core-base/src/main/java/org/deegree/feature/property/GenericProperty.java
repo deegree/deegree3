@@ -192,7 +192,7 @@ public class GenericProperty implements Property {
 
         // // TODO
         if ( declaration instanceof CustomPropertyType ) {
-            return new GenericXMLElement( name, xsType, attrs, children );
+            return new GenericXMLElement( name, declaration, attrs, children );
         }
 
         for ( TypedObjectNode child : children ) {

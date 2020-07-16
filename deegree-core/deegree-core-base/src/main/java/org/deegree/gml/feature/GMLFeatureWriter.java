@@ -58,6 +58,7 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.array.TypedObjectNodeArray;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -814,6 +815,10 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     }
                 }
             }
+        }
+        if ( xmlContent instanceof GenericXMLElement && ( (GenericXMLElement) xmlContent ).getPropertyType() != null ) {
+            PropertyType propertyType = ( (GenericXMLElement) xmlContent ).getPropertyType();
+            minOccurs = propertyType.getMinOccurs();
         }
         if ( minOccurs == 0 && !isPropertyRequested() ) {
             pathTracker.stopStep( elName );
