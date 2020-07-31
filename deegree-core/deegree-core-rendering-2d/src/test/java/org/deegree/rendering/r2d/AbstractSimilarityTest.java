@@ -105,7 +105,7 @@ public abstract class AbstractSimilarityTest {
                 IOUtils.write( actualData, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/rendering_"
                                                                  + name + "_actual.png" ) );
 
-                System.out.println( "Result returned for " + name + " (base64 -d encoded.dat > failed-test.zip)" );
+                System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
                 System.out.println( IntegrationTestUtils.toBase64Zip( actualData, name + ".png" ) );
             } catch ( Throwable t ) {
             }
