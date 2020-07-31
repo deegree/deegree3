@@ -90,6 +90,7 @@ import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -582,6 +583,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
      * @throws Exception
      */
     @Test
+    @Ignore
     public void testTextStyling2()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
