@@ -153,7 +153,7 @@ public class WMSSimilarityIntegrationTest {
                 IOUtils.write( bs, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/response"
                                                          + numFailed + ".tif" ) );
 
-                System.out.println( "Result returned for " + name + " (base64 -d encoded.dat > failed-test.zip)" );
+                System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
                 System.out.println( IntegrationTestUtils.toBase64Zip( bs, name + ".tif" ) );
             } catch ( Throwable t ) {
             }
