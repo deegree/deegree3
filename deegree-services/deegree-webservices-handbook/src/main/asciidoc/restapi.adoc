@@ -30,6 +30,8 @@ GET /config/download/wsname[/path]                           - download workspac
 GET /config/restart                                          - restart currently running workspace
 GET /config/restart[/path]                                   - restarts all resources connected to the specified one
 GET /config/restart/wsname                                   - restart with workspace <wsname>
+GET /config/update                                           - update currently running workspace, rescan config files and update resources
+GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources
 GET /config/listworkspaces                                   - list available workspace names
 GET /config/list[/path]                                      - list currently running workspace or directory in workspace
 GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace
@@ -78,6 +80,13 @@ another workspace using
 _http://localhost:8080/deegree-webservices/config/restart/anotherworkspace_.
 To restart all resources connected a specific one use eg.
 _http://localhost:8080/deegree-webservices/config/restart/datasources/feature/inspire_.
+
+==== Updating
+
+You can update the currently running workspace using
+`http://localhost:8080/deegree-webservices/config/update`,
+or by name `http://localhost:8080/deegree-webservices/config/update/thisworkspace`.
+Updating a workspace means that all resource changed since the last update or restart are restarted.
 
 ==== Listing
 
