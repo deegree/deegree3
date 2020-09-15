@@ -211,20 +211,23 @@ public class MapService {
         ScaleFunction.getCurrentScaleValue().set( scale );
         EnvFunction.getCurrentEnvValue().set( EnvFunction.parse( gm.getParameterMap(), gm.getBoundingBox(), gm.getCoordinateSystem(), gm.getWidth(), gm.getHeight(), scale ) );
 
-        List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );
-        Iterator<MapOptions> optIter = mapOptions.iterator();
-        for ( LayerData d : layerDataList ) {
-            ctx.applyOptions( optIter.next() );
-            try {
-                d.render( ctx );
-            } catch ( InterruptedException e ) {
-                String msg = "Request time-out.";
-                throw new OWSException( msg, NO_APPLICABLE_CODE );
+        try {
+            List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );
+            Iterator<MapOptions> optIter = mapOptions.iterator();
+            for ( LayerData d : layerDataList ) {
+                ctx.applyOptions( optIter.next() );
+                try {
+                    d.render( ctx );
+                } catch ( InterruptedException e ) {
+                    String msg = "Request time-out.";
+                    throw new OWSException( msg, NO_APPLICABLE_CODE );
+                }
             }
+            ctx.optimizeAndDrawLabels();
+        } finally {
+            ScaleFunction.getCurrentScaleValue().remove();
+            EnvFunction.getCurrentEnvValue().remove();
         }
-        ctx.optimizeAndDrawLabels();
-
-        ScaleFunction.getCurrentScaleValue().remove();
     }
 
     private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,

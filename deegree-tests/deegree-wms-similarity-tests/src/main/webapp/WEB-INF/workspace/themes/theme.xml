@@ -24,6 +24,11 @@
       <Layer>contours</Layer>
     </Theme>
     <Theme>
+      <Identifier>SGID500_Contours500F_scalelimitt</Identifier>
+      <d:Title>SGID500_Contours500Ft with scale limit</d:Title>
+      <Layer>contours_scalelimit</Layer>
+    </Theme>
+    <Theme>
       <Identifier>getcurrentscale</Identifier>
       <d:Title>getcurrentscale</d:Title>
       <Layer>getcurrentscale</Layer>
