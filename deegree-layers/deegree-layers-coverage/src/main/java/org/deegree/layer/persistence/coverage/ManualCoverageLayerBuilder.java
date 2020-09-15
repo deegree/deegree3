@@ -58,6 +58,7 @@ import org.deegree.layer.persistence.LayerStore;
 import org.deegree.layer.persistence.MultipleLayerStore;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayerType;
 import org.deegree.layer.persistence.coverage.jaxb.CoverageLayers;
+import org.deegree.layer.persistence.coverage.jaxb.FeatureInfoModeType;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
@@ -88,12 +89,19 @@ class ManualCoverageLayerBuilder {
 
         for ( CoverageLayerType lay : cfg.getCoverageLayer() ) {
             LayerMetadata md = buildLayerMetadata( lay, cov );
+            CoverageFeatureInfoMode infoMode = null;
+            if ( FeatureInfoModeType.POINT == lay.getFeatureInfoMode() ) {
+                infoMode = CoverageFeatureInfoMode.POINT;
+            } else if ( FeatureInfoModeType.INTERPOLATION == lay.getFeatureInfoMode() ) {
+                infoMode = CoverageFeatureInfoMode.INTERPOLATION;
+            }
 
             Pair<Map<String, Style>, Map<String, Style>> p = parseStyles( workspace, lay.getName(), lay.getStyleRef() );
             md.setStyles( p.first );
             md.setLegendStyles( p.second );
             Layer l = new CoverageLayer( md, cov instanceof AbstractRaster ? (AbstractRaster) cov : null,
-                                         cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null );
+                                         cov instanceof MultiResolutionRaster ? (MultiResolutionRaster) cov : null,
+                                         infoMode );
             map.put( lay.getName(), l );
         }
 

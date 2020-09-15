@@ -72,11 +72,18 @@ public class CoverageLayer extends AbstractLayer {
 
     private final CoverageDimensionHandler dimensionHandler;
 
-    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
+    private final CoverageFeatureInfoMode featureInfoMode;
+
+    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster, CoverageFeatureInfoMode featureInfoMode ) {
         super( md );
         this.raster = raster;
         this.multiraster = multiraster;
+        this.featureInfoMode = featureInfoMode != null ? featureInfoMode : CoverageFeatureInfoMode.INTERPOLATION;
         dimensionHandler = new CoverageDimensionHandler( md.getDimensions() );
+    }
+
+    public CoverageLayer( LayerMetadata md, AbstractRaster raster, MultiResolutionRaster multiraster ) {
+        this(md, raster, multiraster, null);
     }
 
     @Override
@@ -98,7 +105,7 @@ public class CoverageLayer extends AbstractLayer {
             }
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(), interpol, filter, style,
-                                          getMetadata().getFeatureTypes().get( 0 ) );
+                                          getMetadata().getFeatureTypes().get( 0 ), featureInfoMode );
         } catch ( OWSException e ) {
             throw e;
         } catch ( Throwable e ) {
@@ -153,7 +160,9 @@ public class CoverageLayer extends AbstractLayer {
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
                                           InterpolationType.NEAREST_NEIGHBOR, filter, style,
-                                          getMetadata().getFeatureTypes().get( 0 ) , dimensionHandler );
+                                          getMetadata().getFeatureTypes().get( 0 ), dimensionHandler, featureInfoMode,
+                                          query.getX(), query.getY() );
+
         } catch ( OWSException e ) {
             throw e;
         } catch ( Throwable e ) {
