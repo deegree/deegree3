@@ -424,3 +424,45 @@ In this case, the stroke width will be one pixel for scales around
 500000, and will get bigger as you zoom in (and the scale denominator
 gets smaller). Scale denominators above 500000 will yield invisible
 strokes with a width of zero.
+
+==== env
+
+The `env` function takes two parameters and makes it possible to 
+provide name/value pairs to styles, so that more dynamic styles 
+are possible.
+
+
+[source,xml]
+----
+<Function xmlns="http://www.opengis.net/ogc" name="env">
+  <Literal>size</Literal>
+  <Literal>42</Literal>
+</Function>
+----
+
+These paris can be passed as `env` parameter alongside the usual
+GetMap request parameters. Multiple  `name:value` pairs have to be 
+separated by semicolons (`...&env=size:33;color:FF0000&...`).
+
+The second parameter must be the default value that is returned if 
+no pair with the specified name was found.
+
+The following parameters are predefined and cannot be passed:
+
+[width="100%",cols="28%,28%,44%",options="header",]
+|=======================================================================
+|Name |Type |Description
+
+|wms_bbox |Envelope |envelope (GetMap request)
+
+|wms_crs |ICRS |coordinate system  (GetMap request)
+
+|wms_srs |String |coordinate system name  (GetMap request)
+
+|wms_width |Integer |width in pixel  (GetMap request)
+
+|wms_height |Integer |height in pixle  (GetMap request)
+
+|wms_scale_denominator |Double |scale  (GetMap request)
+
+|=======================================================================
