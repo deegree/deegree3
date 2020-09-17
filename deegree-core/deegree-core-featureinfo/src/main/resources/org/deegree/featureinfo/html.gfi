@@ -77,19 +77,18 @@ if(! this.<?name>_switchfunction){
     th(row, "Field").style.cssText = headerStyle
     th(row, "Value").style.cssText = headerStyle
     for(var i in <?name>){
-      row = tr(table)
-      td(row, 'GML ID').style.cssText = headerStyle
-      td(row, '<?gmlid>').style.cssText = headerStyle
       <?name>[i](table)
     }
   }
-
   <?name> = []
 }
 
 <?name>[<?name>.length] = function (table) {
   var odd = true
   var row
+  row = tr(table)
+  td(row, 'GML ID').style.cssText = headerStyle
+  td(row, '<?gmlid>').style.cssText = headerStyle
   <?property *:properties>
 }
 
