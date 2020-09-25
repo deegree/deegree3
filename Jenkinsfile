@@ -21,18 +21,18 @@ pipeline {
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -q clean test -Poracle,mssql'
+               sh 'mvn -B -C -q clean test-compile -Poracle,mssql'
             }
-            post {
+/*          post {
                 always {
                     junit '**/target/surefire-reports/*.xml'
                 }
             }
-        }
+        } */
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
+                sh 'mvn -B -C -Djava.awt.headless=true -Xmx1536m -Pintegration-tests,oracle,mssql deploy'
             }
             post {
                 always {
@@ -77,6 +77,8 @@ pipeline {
             }
             steps {
                 echo 'Prepare release version...'
+                echo 'Build and publish documentation'
+                sh 'mvn -pl :deegree-webservices-handbook -Phandbook install'
                 echo 'Build docker image...'
             }
             post {
