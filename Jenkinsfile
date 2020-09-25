@@ -23,11 +23,11 @@ pipeline {
                echo 'Unit testing'
                sh 'mvn -B -C -q clean test-compile -Poracle,mssql'
             }
-/*          post {
+            post {
                 always {
-                    junit '**/target/surefire-reports/*.xml'
+
                 }
-            } */
+            }
         }
         stage ('Integration Test') {
             steps {
