@@ -23,11 +23,6 @@ pipeline {
                echo 'Unit testing'
                sh 'mvn -B -C -q clean test-compile -Poracle,mssql'
             }
-            post {
-                always {
-
-                }
-            }
         }
         stage ('Integration Test') {
             steps {
