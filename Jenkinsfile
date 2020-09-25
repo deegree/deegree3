@@ -5,6 +5,9 @@ pipeline {
         maven 'maven-3.6'
         jdk 'adoptopenjdk-jdk8'
     }
+    environment {
+        MAVEN_OPTS='-Djava.awt.headless=true -Xmx1536m'
+    }
     stages {
         stage ('Initialize') {
             steps {
@@ -21,13 +24,13 @@ pipeline {
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -q clean test-compile -Poracle,mssql'
+               sh 'mvn -B -C -q -Poracle,mssql clean test-compile'
             }
         }
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -Djava.awt.headless=true -Xmx1536m -Pintegration-tests,oracle,mssql deploy'
+                sh 'mvn -B -C -Pintegration-tests,oracle,mssql deploy'
             }
             post {
                 always {
@@ -41,7 +44,7 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae findbugs:findbugs checkstyle:checkstyle javadoc:javadoc -Poracle,mssql'
+                sh 'mvn -B -C -fae -Poracle,mssql findbugs:findbugs checkstyle:checkstyle javadoc:javadoc'
             }
             post {
                 success {
