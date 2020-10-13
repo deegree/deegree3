@@ -374,8 +374,13 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     private String createPreviousUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature ) {
         int previousStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( startIndex, count.intValue() );
-        if ( previousStartIndex >= 0 )
+        if ( previousStartIndex >= 0 ) {
+            // adapt count to actual previous start index
+            int realCount = startIndex - previousStartIndex;
+            kvpGetFeature.put( "COUNT", String.valueOf( realCount ) );
+            
             return createUrlWithStartindex( kvpGetFeature, previousStartIndex );
+        }
         return null;
     }
 
