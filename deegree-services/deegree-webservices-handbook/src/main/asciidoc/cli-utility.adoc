@@ -25,80 +25,35 @@ Results in:
 Usage: ./d3config SqlFeatureStoreConfigCreator [options] schema_url
 
 options:
- --format={deegree|ddl|all}, default=deegree
- --srid=<epsg_code>, default=4258
- --idtype={int|uuid}, default=int
- --mapping={relational|blob}, default=relational
- --dialect={postgis|oracle}, default=postgis
- --listOfPropertiesWithPrimitiveHref=<path/to/file>
+ --format={deegree|ddl|all} (default=deegree)
+ --srid=<epsg_code> (default=4258)
+ --idtype={int|uuid} (default=int)
+ --mapping={relational|blob} (default=relational)
+ --dialect={postgis|oracle} (default=postgis)
+ --cycledepth=INT (positive integer value to specify the depth of cycles; default: 0)
+ --listOfPropertiesWithPrimitiveHref=<path/to/file> (see below)
+ --referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection.
+
+The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):
+---------- begin file ----------
+# lines beginning with an # are ignored
+# property with namespace binding
+{http://inspire.ec.europa.eu/schemas/ps/4.0}designation
+# property without namespace binding
+designation
+# empty lines are ignored
+
+# leading and trailing white spaces are ignored
+---------- end file ----------
 ----
 
 The SQL DDL and XML output is written into files in the current directory. The filename of each file is derived from the
 schema file name in the given `schema_url`.
 
-**Example: Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
+==== Usage of option cycledepth
 
-----
-./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=uuid http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated file is './CadastralParcels.sql'.
-
-**Example: Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
-
-----
-./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=uuid http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated file is './CadastralParcels.xml'.
-
-**Example: Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
-
-----
-./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=int http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated file is './CadastralParcels.sql'.
-
-**Example: Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
-
-----
-./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=int http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated file is './CadastralParcels.xml'.
-
-**Example: Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
-
-----
-./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=all --idtype=int http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated files are './CadastralParcels.sql' and './CadastralParcels.xml'.
-
-**Example: Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with Blob-Mapping**
-
-----
-./d3config SqlFeatureStoreConfigCreator --format=all --mapping=blob http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with Blob-Mapping for PostGIS.
-
-**Example: Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 for Oracle DBMS with Oracle Locator**
-
-----
-./d3config SqlFeatureStoreConfigCreator --format=all --dialect=oracle http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with relational mapping for Oracle Locator.
-
-**Example: Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with list of properties with primitive href**
-
-----
-./d3config SqlFeatureStoreConfigCreator --format=deegree --listOfPropertiesWithPrimitiveHref=<path/to/file> http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
-----
-
-The generated file is './CadastralParcels.xml'. All properties listed in the referenced file are written with primitive instead of feature mappings.
+Some GML application schemas defines cycles, e.g. http://schemas.opengis.net/sweCommon/2.0/simple_components.xsd[Sensor Web Enablement (SWE) Common Data Model]: Quantity may have a complex property "quality", which may have a Quantity.
+In deegree it is not possible to configure infinite dependencies and it is not recommended to configure deep structures. With the option _cycledepth_ the max depth can be specified. The default is 0 which means, that writing of the configuration and DDL stops as soon as a cycle is detected. This is the recommended behaviour.
 
 ==== Usage of option listOfPropertiesWithPrimitiveHref
 
@@ -122,6 +77,78 @@ Example:
 {http://inspire.ec.europa.eu/schemas/gn/4.0}nativeness
 {http://inspire.ec.europa.eu/schemas/ps/4.0}designation
 ----
+
+==== Usage of option referenceData
+
+The data which should be imported in a SQLFeatureStore may be much less complex than the GML application schema. This option allows to reference sample data which must be the highest complexity level as the data to import in the SQLFeatureStore configured with the generated configuration.
+The deegree-cli-utility tool considers this data and tries creates a configuration with less complexity than the GML application schema allows.
+This concerns the cardinality of properties, e.g. if a property may occur multiple times but occurs only one time in the data, the configuration is limited to exact one occurrence of this property.
+
+=== Examples
+
+**Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
+
+----
+./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=uuid http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.sql'.
+
+**Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
+
+----
+./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=uuid http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.xml'.
+
+**Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
+
+----
+./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=int http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.sql'.
+
+**Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
+
+----
+./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=int http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.xml'.
+
+**Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
+
+----
+./d3config SqlFeatureStoreConfigCreator --srid=25832 --format=all --idtype=int http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated files are './CadastralParcels.sql' and './CadastralParcels.xml'.
+
+**Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with Blob-Mapping**
+
+----
+./d3config SqlFeatureStoreConfigCreator --format=all --mapping=blob http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with Blob-Mapping for PostGIS.
+
+**Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 for Oracle DBMS with Oracle Locator**
+
+----
+./d3config SqlFeatureStoreConfigCreator --format=all --dialect=oracle http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with relational mapping for Oracle Locator.
+
+**Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with list of properties with primitive href**
+
+----
+./d3config SqlFeatureStoreConfigCreator --format=deegree --listOfPropertiesWithPrimitiveHref=<path/to/file> http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.xml'. All properties listed in the referenced file are written with primitive instead of feature mappings.
 
 === Behind http proxy
 

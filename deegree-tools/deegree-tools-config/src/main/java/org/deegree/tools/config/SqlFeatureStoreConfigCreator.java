@@ -94,16 +94,16 @@ public class SqlFeatureStoreConfigCreator {
                     throws Exception {
 
         if ( args.length == 0 ) {
-            System.out.println( "Usage: java -jar deegree-cli-utility.jar [options] schema_url" );
+            System.out.println( "Usage: ./d3config SqlFeatureStoreConfigCreator [options] schema_url" );
             System.out.println( "" );
             System.out.println( "options:" );
-            System.out.println( " --format={deegree|ddl|all}" );
-            System.out.println( " --srid=<epsg_code>" );
-            System.out.println( " --idtype={int|uuid}" );
-            System.out.println( " --mapping={relational|blob}" );
-            System.out.println( " --dialect={postgis|oracle}" );
+            System.out.println( " --format={deegree|ddl|all} (default=deegree)" );
+            System.out.println( " --srid=<epsg_code> (default=4258)" );
+            System.out.println( " --idtype={int|uuid} (default=int)" );
+            System.out.println( " --mapping={relational|blob} (default=relational)" );
+            System.out.println( " --dialect={postgis|oracle} (default=postgis)" );
             System.out.println( " --cycledepth=INT (positive integer value to specify the depth of cycles; default: 0)" );
-            System.out.println( " --listOfPropertiesWithPrimitiveHref=<path/to/file>" );
+            System.out.println( " --listOfPropertiesWithPrimitiveHref=<path/to/file> (see below)" );
             System.out.println( " --referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection." );
             System.out.println( "" );
             System.out.println( "The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):" );
