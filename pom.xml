@@ -1040,7 +1040,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20190425</version>
+        <version>20191108</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
