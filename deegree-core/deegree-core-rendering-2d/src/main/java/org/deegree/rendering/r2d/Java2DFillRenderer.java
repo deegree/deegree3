@@ -45,16 +45,20 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.TexturePaint;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.ShapeHelper;
 import org.deegree.style.utils.UomCalculator;
+
+import javax.imageio.ImageIO;
 
 /**
  * Responsible for applying fill stylings to a graphics 2d.
@@ -76,6 +80,7 @@ class Java2DFillRenderer {
     }
 
     void applyGraphicFill( Graphic graphic, UOM uom ) {
+        Rectangle2D.Double graphicBounds = getGraphicBounds( graphic, 0, 0, uom );
         BufferedImage img;
 
         if ( graphic.image == null ) {
@@ -83,14 +88,17 @@ class Java2DFillRenderer {
             img = new BufferedImage( size, size, TYPE_INT_ARGB );
             Graphics2D g = img.createGraphics();
             Java2DRenderer renderer = new Java2DRenderer( g );
-            renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer.rendererContext, 0, 0,
-                        graphic.rotation );
+            if ( graphic.imageURL == null ) {
+                renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer.rendererContext, 0, 0,
+                            graphic.rotation );
+            } else {
+                img = renderer.rendererContext.svgRenderer.prepareSvg( graphicBounds, graphic );
+            }
             g.dispose();
         } else {
             img = graphic.image;
         }
-
-        graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0, uom ) ) );
+        graphics.setPaint( new TexturePaint( img, graphicBounds ) );
     }
 
     void applyFill( Fill fill, UOM uom ) {
