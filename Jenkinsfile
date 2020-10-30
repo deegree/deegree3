@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'openjdk8bot'
+    }
 
     tools {
         maven 'maven-3.6'
