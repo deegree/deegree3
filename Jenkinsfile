@@ -20,7 +20,6 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
-                sh 'docker --version'
             }
         }
         stage ('Build') {
