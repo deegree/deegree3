@@ -154,7 +154,7 @@
             <forkCount>1</forkCount>
             <reuseForks>true</reuseForks>
             <skip>${skip.unit.tests}</skip>
-            <trimStackTrace>false</trimStackTrace>
+            <trimStackTrace>true</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>

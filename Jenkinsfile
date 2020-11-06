@@ -25,13 +25,13 @@ pipeline {
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -X -B -C -Poracle,mssql clean test-compile'
+               sh 'mvn -B -C -Poracle,mssql clean test-compile'
             }
         }
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -X -B -C -Pintegration-tests,oracle,mssql deploy'
+                sh 'mvn -B -C -Pintegration-tests,oracle,mssql deploy'
             }
             post {
                 always {
