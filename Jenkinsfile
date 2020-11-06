@@ -8,7 +8,7 @@ pipeline {
         jdk 'adoptopenjdk-jdk8'
     }
     environment {
-        MAVEN_OPTS='-Djava.awt.headless=true -Xmx2048m'
+        MAVEN_OPTS='-X -Djava.awt.headless=true -Xmx2048m'
     }
     stages {
         stage ('Initialize') {
