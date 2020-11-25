@@ -37,9 +37,9 @@ package org.deegree.services.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -49,6 +49,7 @@ import java.net.URL;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -57,6 +58,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(OGCFrontController.class)
+@PowerMockIgnore({"jdk.internal.reflect.*", "jdk.internal.misc.*", "javax.management.*", "javax.xml.*",
+        "javax.activation.*", "com.sun.org.apache.xerces.*", "com.sun.org.apache.xalan.*", "org.xml.*", "org.w3c.dom.*"
+        })
 public class OGCFrontControllerTest {
 
     @Test
