@@ -312,6 +312,10 @@
       <artifactId>primefaces</artifactId>
       <version>4.0</version>
     </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
