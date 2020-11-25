@@ -114,7 +114,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.7</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -147,10 +147,10 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M5</version>
           <configuration>
             <!-- Travis build workaround -->
-            <argLine>-Djava.awt.headless=true -Xms1024m -Xmx2048m</argLine>
+            <argLine>-Djava.awt.headless=true -Xms1024m -Xmx2048m --illegal-access=permit</argLine>
             <forkCount>1</forkCount>
             <reuseForks>true</reuseForks>
             <skip>${skip.unit.tests}</skip>
@@ -160,7 +160,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M5</version>
         </plugin>
         <!-- reporting and site -->
         <plugin>
@@ -263,8 +263,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <release>${java.version}</release>
           <encoding>${project.build.sourceEncoding}</encoding>
           <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
         </configuration>
@@ -317,7 +316,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
+        <version>3.0.0-M3</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -327,10 +326,10 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.0.5</version>
+                  <version>3.6.0</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>1.8</version>
+                  <version>${java.version}</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -1104,7 +1103,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <site.dir>${user.home}/Sites</site.dir>
     <deegree-maven-plugin.version>2.0.2</deegree-maven-plugin.version>
   </properties>
@@ -1166,7 +1165,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>3.10.0</version>
+            <version>3.14.0</version>
             <configuration>
               <linkXref>true</linkXref>
               <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
@@ -1183,7 +1182,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.1</version>
             <configuration>
               <configLocation>checkstyle.xml</configLocation>
             </configuration>
