@@ -41,6 +41,7 @@
 
 package org.deegree.commons.utils.test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -48,7 +49,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -62,7 +67,7 @@ import org.apache.commons.io.IOUtils;
 
 public class IntegrationTestUtils {
 
-    private static void collect( List<Object[]> list, File dir ) {
+    private static void collect( List<Object[]> list, File dir, String prefix ) {
         File[] fs = dir.listFiles();
         if ( fs == null ) {
             return;
@@ -81,7 +86,7 @@ public class IntegrationTestUtils {
                                                                 + ++idx );
                     }
 
-                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses, name };
+                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses, prefix + name };
                     list.add( o );
                 } catch ( FileNotFoundException e ) {
                     // TODO Auto-generated catch block
@@ -92,7 +97,7 @@ public class IntegrationTestUtils {
                 }
             }
             if ( f.isDirectory() ) {
-                collect( list, f );
+                collect( list, f, prefix  + f.getName() + "/" );
             }
         }
     }
@@ -106,8 +111,26 @@ public class IntegrationTestUtils {
     public static Collection<Object[]> getTestRequests() {
         File dir = new File( System.getProperty( "requestdir" ) );
         List<Object[]> list = new ArrayList<Object[]>();
-        collect( list, dir );
+        collect( list, dir, "" );
         return list;
     }
 
+    /**
+     * Create Base64 encoded text of a ZIP-Archive containing the passed binary data/file
+     */
+    public static String toBase64Zip( byte[] data, String filename ) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                ZipOutputStream zip = new ZipOutputStream( baos )) {
+            zip.putNextEntry( new ZipEntry( filename ) );
+            IOUtils.write( data, zip );
+            zip.closeEntry();
+            zip.flush();
+            baos.flush();
+            byte[] gzipped = baos.toByteArray();
+            return StringUtils.newStringUtf8( Base64.encodeBase64Chunked( gzipped ) );
+        } catch ( IOException ex ) {
+            ex.printStackTrace();
+            return "Encoding failed with: " + ex.getMessage();
+        }
+    }
 }

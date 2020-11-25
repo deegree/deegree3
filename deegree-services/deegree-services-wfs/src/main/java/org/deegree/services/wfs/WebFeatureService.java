@@ -159,6 +159,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -316,7 +317,8 @@ public class WebFeatureService extends AbstractOWS {
                 list.add( url );
             }
         }
-        storedQueryHandler = new StoredQueryHandler( this, list );
+        File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
+        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );

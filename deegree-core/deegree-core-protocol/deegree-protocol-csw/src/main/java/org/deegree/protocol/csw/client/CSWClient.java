@@ -185,6 +185,21 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
         return this.getRecords( getRecords );
     }
 
+    public GetRecordsResponse getIsoRecords( int startPosition, int maxRecords, Filter constraint )
+            throws XMLProcessingException, IOException, OWSExceptionReport, XMLStreamException {
+        GetRecords getRecords = new GetRecords(
+                new Version( 2, 0, 2 ),
+                startPosition,
+                maxRecords,
+                "application/xml",
+                "http://www.isotc211.org/2005/gmd",
+                Collections.singletonList( new QName(CommonNamespaces.ISOAP10GMDNS, "MD_Metadata", CommonNamespaces.ISOAP10GMD_PREFIX ) ),
+                ResultType.results,
+                ReturnableElement.full,
+                constraint );
+        return this.getRecords( getRecords );
+    }
+
     public GetRecordsResponse getRecords( int startPosition, int maxRecords, String outputFormat, String outputSchema,
                                           List<QName> typeNames, ResultType resultType,
                                           ReturnableElement elementSetName, Filter constraint )
@@ -206,7 +221,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             xmlWriter.close();
             request.close();
         } catch ( Throwable t ) {
-            throw new RuntimeException( "Error creating XML request: " + getRecords );
+            throw new RuntimeException( "Error creating XML request: " + getRecords, t );
         }
         OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
         return new GetRecordsResponse( response );
@@ -274,7 +289,7 @@ public class CSWClient extends AbstractOWSClient<CSWCapabilitiesAdapter> {
             xmlWriter.close();
             request.close();
         } catch ( Throwable t ) {
-            throw new RuntimeException( "Error insering " + records.size() + " records" );
+            throw new RuntimeException( "Error insering " + records.size() + " records", t );
         }
         OwsHttpResponse response = httpClient.doPost( endPoint, "text/xml", request, null );
         return new TransactionResponse( response );

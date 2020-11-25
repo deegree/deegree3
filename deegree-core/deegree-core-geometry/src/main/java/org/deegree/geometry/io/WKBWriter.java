@@ -43,8 +43,8 @@ import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 
-import com.vividsolutions.jts.io.OutputStreamOutStream;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.OutputStreamOutStream;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * Writes {@link Geometry} objects encoded as Well-Known Binary (WKB).
@@ -66,16 +66,16 @@ public class WKBWriter {
         if ( geom instanceof GeometryReference ) {
             geom = ( (GeometryReference<Geometry>) geom ).getReferencedObject();
         }
-        // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        // org.locationtech.jts.io.WKBWriter is not thread safe
         int dim = geom.getCoordinateDimension();
-        return new com.vividsolutions.jts.io.WKBWriter(dim).write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
+        return new org.locationtech.jts.io.WKBWriter(dim).write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
     }
 
     public static void write( Geometry geom, OutputStream os )
                             throws IOException, ParseException {
-        // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        // org.locationtech.jts.io.WKBWriter is not thread safe
         //TODO: test for dimentionality here aswell?
-        new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
+        new org.locationtech.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
                                                          new OutputStreamOutStream( os ) );
     }
 }

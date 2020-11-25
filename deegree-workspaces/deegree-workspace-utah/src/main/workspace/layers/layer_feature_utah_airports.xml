@@ -23,7 +23,7 @@
       <l:AntiAliasing>BOTH</l:AntiAliasing>
       <!-- RenderingQuality: LOW, NORMAL or HIGH -->
       <l:RenderingQuality>HIGH</l:RenderingQuality>
-      <!-- Interpolation:  BILINEAR, NEAREST_NEIGHBOUR or BICUBIC -->
+      <!-- Interpolation:  BILINEAR, NEARESTNEIGHBOUR or BICUBIC -->
       <l:Interpolation>BICUBIC</l:Interpolation>
       <l:MaxFeatures>10000</l:MaxFeatures>
       <l:FeatureInfoRadius>10</l:FeatureInfoRadius>

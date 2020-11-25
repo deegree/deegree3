@@ -84,7 +84,8 @@ public class SqlFeatureStoreBuilder implements ResourceBuilder<FeatureStore> {
         ConnectionProvider conn = workspace.getResource( ConnectionProviderProvider.class,
                                                          config.getJDBCConnId().getValue() );
         checkConnection( conn );
-        File file = metadata.getLocation().resolveToFile( metadata.getIdentifier().getId() + ".xml" );
+
+        File file = metadata.getLocation().getAsFile();
         SQLFeatureStore fs = null;
         try {
             // TODO rewrite needed to properly resolve files using resource location

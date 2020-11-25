@@ -19,20 +19,20 @@
 
   <!-- [1] query statement -->
   <SQLStatement>
-    SELECT name, title, asbinary(the_geom) FROM some_table
+    SELECT name, title, st_asbinary(the_geom) FROM some_table
     WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
   </SQLStatement>
 
   <!-- [1] bounding box statement -->
-  <BBoxStatement>SELECT astext(ST_Estimated_Extent('some_table', 'the_geom')) as bbox</BBoxStatement>
+  <BBoxStatement>SELECT st_astext(ST_Estimated_Extent('some_table', 'the_geom')) as bbox</BBoxStatement>
 
   <!-- [0..n] different statements for specific WMS scale ranges -->
   <LODStatement aboveScale="3000">
-    SELECT name, title, asbinary(st_simplifypreservetopology(the_geom, 1)) FROM some_table
+    SELECT name, title, st_asbinary(st_simplifypreservetopology(the_geom, 1)) FROM some_table
     WHERE the_geom &amp;&amp; st_geomfromtext(?, -1)
   </LODStatement>
   <LODStatement aboveScale="6000">
-    SELECT name, title, asbinary(st_simplify(the_geom, 30)) FROM some_table
+    SELECT name, title, st_asbinary(st_simplify(the_geom, 30)) FROM some_table
     WHERE the_geom &amp;&amp; st_geomfromtext(?, -1) and not st_isempty(st_simplify(the_geom, 30))
   </LODStatement>
 
