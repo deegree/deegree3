@@ -157,7 +157,7 @@ public class OGCFrontControllerTest {
     }
 
     private RequestContext mockContext( String serviceUrl, String xForwardedHost, String xForwardedPort ) {
-        return mockContext( serviceUrl, xForwardedHost, xForwardedPort, null );
+        return mockContext( serviceUrl, xForwardedHost, xForwardedPort, "http" );
     }
 
     private RequestContext mockContext( String serviceUrl, String xForwardedHost, String xForwardedPort,
