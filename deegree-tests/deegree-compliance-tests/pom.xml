@@ -54,10 +54,10 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>src/main/webapp</directory>
+              <directory>${project.basedir}/src/main/webapp</directory>
             </fileset>
             <fileset>
-              <directory>src/main/workspace</directory>
+              <directory>${project.basedir}/src/main/workspace</directory>
             </fileset>
           </filesets>
         </configuration>
