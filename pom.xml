@@ -142,7 +142,7 @@
         <plugin>
           <groupId>org.antlr</groupId>
           <artifactId>antlr3-maven-plugin</artifactId>
-          <version>3.5.2</version>
+          <version>${antlr.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1104,7 +1104,7 @@
       <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
-        <version>3.5.2</version>
+        <version>${antlr.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -1117,8 +1117,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-    <java.version>11</java.version>
     <site.dir>${user.home}/Sites</site.dir>
+    <java.version>11</java.version>
+    <antlr.version>3.5.2</antlr.version>
     <deegree-maven-plugin.version>2.0.2</deegree-maven-plugin.version>
   </properties>
 
