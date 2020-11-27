@@ -108,7 +108,7 @@ even returns [OddEven even]:
   EvenStart Colon n = ID TagClose { $even = new OddEven($n.text, false); };
 
 link returns [Link link]:
-  LinkStart Colon pref = url TagClose
+  LinkStart Colon pref = $url TagClose
   {
     if(pref.text == null) $link = new Link(pref.url);
     else $link = new Link(pref.url, pref.text);
