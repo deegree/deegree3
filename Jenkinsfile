@@ -8,7 +8,7 @@ pipeline {
         jdk 'adoptopenjdk-jdk8'
     }
     environment {
-        MAVEN_OPTS='-Djava.awt.headless=true -Xmx2048m'
+        MAVEN_OPTS='-Djava.awt.headless=true -Xmx3096m'
     }
     stages {
         stage ('Initialize') {
@@ -31,7 +31,7 @@ pipeline {
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -Pintegration-tests,oracle,mssql deploy'
+                sh 'mvn -B -C -Pintegration-tests,oracle,mssql install'
             }
             post {
                 always {
