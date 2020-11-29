@@ -55,13 +55,11 @@ pipeline {
             }
         }
         stage ('Acceptance Test') {
-            when {
-                branch 'master'
-            }
             steps {
-                echo 'Preparing test harness: TEAM Engine'
-                echo 'Download and start TEAM Engine'
+                echo 'Preparing test environment'
+                echo 'Download SUT deegree workspace'
                 echo 'Start SUT deegree webapp with test configuration'
+                sh 'mvn -pl :deegree-acceptance-tests -Pacceptance-tests verify'
                 echo 'Run FAT'
             }
             post {
@@ -71,30 +69,28 @@ pipeline {
             }
         }
         stage ('Release') {
-            when {
-                branch 'master'
-            }
             steps {
-                echo 'Prepare release version...'
+                echo 'Prepare release version'
                 echo 'Build and publish documentation'
-                sh 'mvn -pl :deegree-webservices-handbook -Phandbook install'
-                echo 'Build docker image...'
+                sh 'mvn -pl :deegree-webservices-handbook -Phandbook package'
+                sh 'mvn site -Psite-all-reports'
             }
             post {
                 success {
-                    // post release on github
-                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war,**/target/deegree-webservices-handbook-*.zip', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
                 }
             }
         }
-        stage ('Deploy PROD') {
-            when {
-                branch 'master'
-            }
-            // install current release version on demo.deegree.org
+        stage ('Deploy') {
             steps {
-                echo 'Deploying to demo.deegree.org...'
-                echo 'Running smoke tests...'
+                echo 'Deploying to maven repo'
+                nexusArtifactUploader artifacts: [[artifactId: 'deegree-webservices', classifier: 'jdk11',
+                    file: '**/deegree-webservices/target/deegree-webservices-3.4.14-SNAPSHOT-jdk11.war', type: 'war']],
+                    credentialsId: '26707569-2c7c-4517-9a60-350b6c5041ca',
+                    groupId: 'de.latlon.vfwcts',
+                    nexusUrl: 'repo.lat-lon.de/repository/', nexusVersion: 'nexus3',
+                    protocol: 'https', repository: 'vodafone-snapshots',
+                    version: '4.0-SNAPSHOT'
             }
         }
     }

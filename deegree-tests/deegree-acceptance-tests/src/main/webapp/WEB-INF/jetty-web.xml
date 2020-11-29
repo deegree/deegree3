@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <Get name="securityHandler">
+        <Set name="loginService">
+            <New class="org.eclipse.jetty.security.HashLoginService">
+                <Set name="name">deegree web configuration API</Set>
+                <Set name="config"><SystemProperty name="jetty.home" default="."/>/realm.properties</Set>
+            </New>
+        </Set>
+    </Get>
+</Configure>

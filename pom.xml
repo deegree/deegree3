@@ -163,6 +163,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>3.0.0-M5</version>
+          <configuration>
+            <argLine>
+              --illegal-access=permit
+            </argLine>
+          </configuration>
         </plugin>
         <!-- reporting and site -->
         <plugin>
@@ -351,10 +356,10 @@
           <doclint>none</doclint>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
-          <aggregate>false</aggregate>
           <minmemory>512m</minmemory>
-          <maxmemory>4g</maxmemory>
-        </configuration>
+          <maxmemory>2g</maxmemory>
+          <inherited>false</inherited>
+      </configuration>
       </plugin>
     </plugins>
   </reporting>
@@ -1209,9 +1214,11 @@
               <doclint>none</doclint>
               <detectLinks>false</detectLinks>
               <detectOfflineLinks>false</detectOfflineLinks>
+              <minmemory>512m</minmemory>
+              <maxmemory>2g</maxmemory>
               <aggregate>false</aggregate>
-              <minmemory>128m</minmemory>
-              <maxmemory>1g</maxmemory>
+              <failOnError>false</failOnError>
+              <inherited>false</inherited>
             </configuration>
           </plugin>
           <plugin>
