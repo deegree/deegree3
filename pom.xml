@@ -341,7 +341,42 @@
               </rules>
             </configuration>
           </execution>
+          <execution>
+            <id>enforce-ban-duplicate-classes</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <banDuplicateClasses>
+                  <ignoreClasses>
+                    <ignoreClass>javax.activation.*</ignoreClass>
+                    <ignoreClass>javax.xml.*</ignoreClass>
+                    <ignoreClass>com.ctc.wstx.*</ignoreClass>
+                    <ignoreClass>com.sun.istack.*</ignoreClass>
+                    <ignoreClass>com.sun.media.jai.*</ignoreClass>
+                    <ignoreClass>com.sun.xml.*</ignoreClass>
+                    <ignoreClass>org.w3c.dom.*</ignoreClass>
+                  </ignoreClasses>
+                  <scopes>
+                    <scope>compile</scope>
+                    <scope>runtime</scope>
+                  </scopes>
+                  <findAllDuplicates>true</findAllDuplicates>
+                  <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                </banDuplicateClasses>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.3</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
