@@ -59,7 +59,7 @@ pipeline {
                 echo 'Preparing test environment'
                 echo 'Download SUT deegree workspace'
                 echo 'Start SUT deegree webapp with test configuration'
-                sh 'mvn -pl :deegree-acceptance-tests -Pacceptance-tests verify'
+                sh 'mvn -pl :deegree-acceptance-tests -Pacceptance-tests,integration-tests verify'
                 echo 'Run FAT'
             }
             post {
