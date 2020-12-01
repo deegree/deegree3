@@ -196,7 +196,7 @@ streamed to the client. This is very much recommended and even a
 requirement for transferring large responses efficiently. The only
 drawback happens if exceptions occur, after a partial response has
 already been transferred. In this case, the client will receive part
-payload and part exception report. By specifying _false_ here, you can
+payload and part exception report. By specifying _true_ here, you can
 explicitly force buffering of the full response, before it is written to
 the client. Only if the full response could be generated successfully,
 it will be transferred. If an exception happens at any time the buffer
@@ -228,7 +228,7 @@ parameter is present in a request).
 * _QueryMaxFeatures_: By default, a maximum number of 15000 features
 will be returned for a single _GetFeature_ request. Use this option to
 override this setting. A value of _-1_ means unlimited.
-* ''ResolveTimeOutInSeconds'': Use this option to specify a default
+* _ResolveTimeOutInSeconds_: Use this option to specify a default
 value for ResolveTimeOut, used in _GetFeature_ request if the
 ResolveTimeOut option is not set.
 * _QueryCheckAreaOfUse_: By default, spatial query constraints are not
