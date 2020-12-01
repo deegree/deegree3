@@ -1326,7 +1326,7 @@ _selector2_
 Any mime type of the following output formats can be configured to be
 available as response format for GetMap requests.
 
-----
+
 * _image/png_
 * _image/png; subtype=8bit_
 * _image/png; mode=8bit_
@@ -1334,7 +1334,7 @@ available as response format for GetMap requests.
 * _image/jpeg_
 * _image/tiff_
 * _image/x-ms-bmp_
-----
+
 
 If no format has been configured, all formats are supported.
 
