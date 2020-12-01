@@ -101,7 +101,7 @@
               <doctype>book</doctype>
               <backend>html</backend>
               <attributes>
-                <toc />
+                <toc>left</toc>
                 <linkcss>false</linkcss>
                 <revdate>${revdate}</revdate>
                 <revnumber>${revnumber}</revnumber>
