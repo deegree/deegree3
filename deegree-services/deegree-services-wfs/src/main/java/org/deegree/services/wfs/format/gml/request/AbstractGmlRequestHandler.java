@@ -42,6 +42,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_NS;
 import static org.deegree.protocol.wfs.WFSConstants.GML32_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.QUERY_ID_GET_FEATURE_BY_ID;
@@ -356,7 +357,7 @@ abstract class AbstractGmlRequestHandler {
             memberElementName = new QName( options.getResponseFeatureMemberEl().getNamespaceURI(),
                                            options.getResponseFeatureMemberEl().getLocalPart(),
                                            options.getResponseFeatureMemberEl().getPrefix() );
-        } else if ( gmlVersion == GML_32 ) {
+        } else if ( gmlVersion == GML_32 || gmlVersion == GML_322 ) {
             // WFS 1.0.0 / 1.1.0 without custom configured member element, GML 3.2 -> wfs:featureMember
             memberElementName = new QName( WFS_NS, "member", "wfs" );
         } else {
@@ -454,7 +455,7 @@ abstract class AbstractGmlRequestHandler {
         try {
             if ( VERSION_100.equals( version ) && gmlVersion == GML_2 ) {
                 baseUrl.append( "XMLSCHEMA" );
-            } else if ( VERSION_200.equals( version ) && gmlVersion == GML_32 ) {
+            } else if ( VERSION_200.equals( version ) && ( gmlVersion == GML_32 || gmlVersion == GML_322 ) ) {
                 baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
             } else {
                 baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );

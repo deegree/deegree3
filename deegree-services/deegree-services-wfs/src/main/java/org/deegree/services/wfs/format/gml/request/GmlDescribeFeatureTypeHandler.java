@@ -42,6 +42,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_2_DEFAULT_INCLUDE;
 import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_30_DEFAULT_INCLUDE;
 import static org.deegree.gml.schema.GMLAppSchemaWriter.GML_31_DEFAULT_INCLUDE;
@@ -396,6 +397,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
             writer.writeAttribute( "schemaLocation", GML_31_DEFAULT_INCLUDE );
             break;
         case GML_32:
+        case GML_322:
             // there is no abstract FeatureCollection element in GML 3.2 anymore
             parentElement = GML_PREFIX + ":AbstractFeature";
             parentType = GML_PREFIX + ":AbstractFeatureType";
@@ -417,7 +419,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         writer.writeStartElement( XSNS, "extension" );
         writer.writeAttribute( "base", parentType );
 
-        if ( GML_32 == gmlVersion ) {
+        if ( GML_32 == gmlVersion || GML_322 == gmlVersion ) {
             // in GML 3.2, FeatureCollections are Features with properties that derive
             // gml:AbstractFeatureMemberType
             writer.writeStartElement( XSNS, "sequence" );
@@ -450,7 +452,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
         writer.writeEndElement();
         writer.writeEndElement();
 
-        if ( GML_32 == gmlVersion ) {
+        if ( GML_32 == gmlVersion || GML_322 == gmlVersion ) {
             // write wfs:FeaturePropertyType declaration
             writer.writeStartElement( XSNS, "complexType" );
             writer.writeAttribute( "name", "FeaturePropertyType" );

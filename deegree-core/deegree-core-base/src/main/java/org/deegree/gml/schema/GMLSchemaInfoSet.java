@@ -256,7 +256,8 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             abstractFeatureElementTypeDecl = getTypeDef( "AbstractFeatureType", GML_PRE_32_NS );
             break;
         }
-        case GML_32: {
+        case GML_32:
+        case GML_322: {
             abstractObjectElementDecl = getElementDecl( "AbstractObject", GML_32_NS );
             abstractGmlElementDecl = getElementDecl( "AbstractGML", GML_32_NS );
             abstractFeatureElementDecl = getElementDecl( "AbstractFeature", GML_32_NS );
@@ -295,6 +296,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
             break;
         }
         case GML_32:
+        case GML_322: {
             List<XSElementDeclaration> featureDecls = getFeatureElementDeclarations( null, false );
             fcDecls = new ArrayList<XSElementDeclaration>();
             for ( XSElementDeclaration featureDecl : featureDecls ) {
@@ -303,6 +305,7 @@ public class GMLSchemaInfoSet extends XMLSchemaInfoSet {
                 }
             }
             break;
+        }
         }
 
         for ( XSElementDeclaration elemDecl : ftDecls ) {

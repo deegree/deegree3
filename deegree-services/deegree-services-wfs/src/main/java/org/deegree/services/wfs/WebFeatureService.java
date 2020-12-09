@@ -187,6 +187,7 @@ import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -216,13 +217,13 @@ import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_E
  * <li>2.0.0</li>
  * </ul>
  * </p>
- * 
+ *
  * @see AbstractOWS
  * @see OGCFrontController
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
+ *
  * @version $Revision: 15339 $, $Date: 2008-12-11 18:40:09 +0100 (Do, 11 Dez 2008) $
  */
 public class WebFeatureService extends AbstractOWS {
@@ -549,8 +550,10 @@ public class WebFeatureService extends AbstractOWS {
                                                                                                                      GML_31 );
             org.deegree.services.wfs.format.gml.GmlFormat gml32 = new org.deegree.services.wfs.format.gml.GmlFormat(
                                                                                                                      this,
-
                                                                                                                      GML_32 );
+            org.deegree.services.wfs.format.gml.GmlFormat gml322 = new org.deegree.services.wfs.format.gml.GmlFormat(
+                                                                                                                     this,
+                                                                                                                     GML_322 );
             mimeTypeToFormat.put( "application/gml+xml; version=2.1", gml21 );
             mimeTypeToFormat.put( "application/gml+xml; version=3.0", gml30 );
             mimeTypeToFormat.put( "application/gml+xml; version=3.1", gml31 );
@@ -559,10 +562,12 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.2", gml322 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml322 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -701,7 +706,7 @@ public class WebFeatureService extends AbstractOWS {
 
     /**
      * Returns the underlying {@link WfsFeatureStoreManager} instance.
-     * 
+     *
      * @return the underlying {@link WfsFeatureStoreManager}
      */
     public WfsFeatureStoreManager getStoreManager() {
@@ -1298,7 +1303,7 @@ public class WebFeatureService extends AbstractOWS {
 
     /**
      * Returns an <code>XMLStreamWriter</code> for writing an XML response document.
-     * 
+     *
      * @param writer
      *            writer to write the XML to, must not be <code>null</code>
      * @param mimeType
@@ -1363,7 +1368,7 @@ public class WebFeatureService extends AbstractOWS {
 
     /**
      * Determines the requested output/input format.
-     * 
+     *
      * @param requestVersion
      *            version of the WFS request, must not be <code>null</code>
      * @param format
@@ -1459,7 +1464,7 @@ public class WebFeatureService extends AbstractOWS {
      * {@link OWSException#VERSION_NEGOTIATION_FAILED} -- the latter should only be used for failed GetCapabilities
      * requests.
      * </p>
-     * 
+     *
      * @param requestedVersion
      *            version to be checked, may be null (causes exception)
      * @return <code>requestedVersion</code> (if it is not null), or highest version supported

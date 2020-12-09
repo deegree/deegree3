@@ -231,6 +231,7 @@ public class GMLAppSchemaWriter {
             }
             break;
         case GML_32:
+        case GML_322:
             gmlNsURI = GML3_2_NS;
             abstractGMLFeatureElement = "gml:AbstractFeature";
             featurePropertyType = "gml:FeaturePropertyType";

@@ -58,8 +58,10 @@ public enum GMLVersion {
     GML_30( GMLNS, "3.0", "3.0.1" ),
     /** GML 3.1 versions (either 3.1.0 or 3.1.1) */
     GML_31( GMLNS, "3.1", "3.1.1" ),
-    /** GML 3.2 versions (3.2.1) */
-    GML_32( GML3_2_NS, "3.2", "3.2.1" );
+    /** GML 3.2.1 versions (3.2.1) */
+    GML_32( GML3_2_NS, "3.2", "3.2.1" ),
+    /** GML 3.2.2 versions (3.2.2) */
+    GML_322( GML3_2_NS, "3.2", "3.2.2" );
 
     private final String ns;
 
@@ -141,6 +143,8 @@ public enum GMLVersion {
                                     result = GML_31;
                                 } else if ( v.compareTo( new Version( 3, 2, 1 ) ) <= 0 ) {
                                     result = GML_32;
+                                } else if ( v.compareTo( new Version( 3, 2, 2 ) ) <= 0 ) {
+                                    result = GML_322;
                                 }
                             }
                         }

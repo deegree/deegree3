@@ -95,6 +95,7 @@ public class GMLStdPropsWriter {
             writeGML3( props );
             break;
         case GML_32:
+        case GML_322:
             writeGML32( props );
             break;
         }

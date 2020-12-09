@@ -142,6 +142,7 @@ public class GmlGetGmlObjectHandler extends AbstractGmlRequestHandler {
                 schemaLocation = GMLNS + " http://schemas.opengis.net/gml/3.1.1/base/geometryComplexes.xsd";
                 break;
             case GML_32:
+            case GML_322:
                 schemaLocation = GML3_2_NS + " http://schemas.opengis.net/gml/3.2.1/geometryComplexes.xsd";
                 break;
             }

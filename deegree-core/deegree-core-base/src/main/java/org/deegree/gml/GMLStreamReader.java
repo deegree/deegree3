@@ -470,7 +470,8 @@ public class GMLStreamReader {
             }
             case GML_30:
             case GML_31:
-            case GML_32: {
+            case GML_32:
+            case GML_322: {
                 geometryReader = new GML3GeometryReader( this );
                 break;
             }

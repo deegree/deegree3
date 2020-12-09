@@ -42,6 +42,7 @@ import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,11 +65,13 @@ public class ParameterType {
     public static final ParameterType GEOMETRY = new ParameterType( new QName( GMLNS, "_Geometry", "gml" ),
                                                                     new QName( GMLNS, "_Geometry", "gml" ),
                                                                     new QName( GMLNS, "_Geometry", "gml" ),
+                                                                    new QName( GML3_2_NS, "AbstractGeometry", "gml32" ),
                                                                     new QName( GML3_2_NS, "AbstractGeometry", "gml32" ) );
 
     public static final ParameterType POINT = new ParameterType( new QName( GMLNS, "Point", "gml" ),
                                                                  new QName( GMLNS, "Point", "gml" ),
                                                                  new QName( GMLNS, "Point", "gml" ),
+                                                                 new QName( GML3_2_NS, "Point", "gml32" ),
                                                                  new QName( GML3_2_NS, "Point", "gml32" ) );
 
     public static final ParameterType STRING = new ParameterType( new QName( XSNS, "string", "xsd" ) );
@@ -88,13 +91,15 @@ public class ParameterType {
         versionToName.put( GML_30, name );
         versionToName.put( GML_31, name );
         versionToName.put( GML_32, name );
+        versionToName.put( GML_322, name );
     }
 
-    public ParameterType( QName gml2Name, QName gml30Name, QName gml31Name, QName gml32Name ) {
+    public ParameterType( QName gml2Name, QName gml30Name, QName gml31Name, QName gml32Name, QName gml322Name ) {
         versionToName.put( GML_2, gml2Name );
         versionToName.put( GML_30, gml30Name );
         versionToName.put( GML_31, gml31Name );
         versionToName.put( GML_32, gml32Name );
+        versionToName.put( GML_322, gml322Name );
     }
 
     /**

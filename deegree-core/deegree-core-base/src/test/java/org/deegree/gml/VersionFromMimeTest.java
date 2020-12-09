@@ -40,6 +40,9 @@ package org.deegree.gml;
 
 import static junit.framework.Assert.assertEquals;
 import static org.deegree.gml.GMLVersion.fromMimeType;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -105,8 +108,23 @@ public class VersionFromMimeTest {
     }
 
     @Test
-    public void gml3_2_1() {
+    public void gml3_2() {
         assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2.1", null ) );
+    }
+
+    @Test
+    public void gml3_2_2() {
+        assertEquals( GMLVersion.GML_322, fromMimeType( "text/xml; subtype=gml/3.2.2", null ) );
+    }
+
+    @Test
+    public void subtypeGML3_2_1shouldNotMatchGMLVersion322() {
+        assertThat( GMLVersion.GML_322, is( not( fromMimeType( "text/xml; subtype=gml/3.2.1", null ) ) ) );
+    }
+
+    @Test
+    public void subtypeGML3_2_2shouldNotMatchGMLVersion32() {
+        assertThat( GMLVersion.GML_32, is( not( fromMimeType( "text/xml; subtype=gml/3.2.2", null ) ) ) );
     }
 
     @Test
@@ -115,7 +133,7 @@ public class VersionFromMimeTest {
     }
 
     @Test
-    public void multipleSubtypes() {
+    public void multipleSubtypesGML32() {
         assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2; subtype=gml/3.2.1", null ) );
     }
 

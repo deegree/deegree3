@@ -41,6 +41,7 @@ import static org.deegree.geometry.Geometry.GeometryType.COMPOSITE_GEOMETRY;
 import static org.deegree.geometry.Geometry.GeometryType.ENVELOPE;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 
 import java.util.List;
 import java.util.UUID;
@@ -119,6 +120,7 @@ import org.deegree.geometry.primitive.segments.OffsetCurve;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.gml.GMLStreamWriter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,7 +263,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             break;
         }
         case MULTI_LINE_STRING: {
-            if ( version == GML_32 ) {
+            if ( isGML32version( version ) ) {
                 // GML 3.2 does not define MultiLineString anymore -> export as MultiCurve
                 MultiCurve<Curve> multiCurve = (MultiCurve<Curve>) geometry;
                 startGeometry( "MultiCurve", geometry );
@@ -308,7 +310,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             writer.writeEndElement(); // MultiPoint
             break;
         case MULTI_POLYGON:
-            if ( version == GML_32 ) {
+            if ( isGML32version( version ) ) {
                 // GML 3.2 does not define MultiPolygon anymore -> export as MultiSurface
                 MultiSurface<Surface> multiSurface = (MultiSurface<Surface>) geometry;
                 startGeometry( "MultiSurface", geometry );
@@ -743,7 +745,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
 
         switch ( ring.getRingType() ) {
         case Ring:
-            if ( GML_32 != version ) {
+            if ( !isGML32version( version ) ) {
                 startGeometry( "Ring", ring );
             } else {
                 // in GML 3.2, a Ring is not a Geometry object
@@ -760,7 +762,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
         case LinearRing:
             LinearRing linearRing = (LinearRing) ring;
 
-            if ( GML_32 != version ) {
+            if ( !isGML32version( version ) ) {
                 startGeometry( "LinearRing", linearRing );
             } else {
                 // in GML 3.2, a LinearRing is not a Geometry object
@@ -772,6 +774,13 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             writer.writeEndElement();
             break;
         }
+    }
+
+    private boolean isGML32version( GMLVersion version ) {
+        if ( version == GML_32 || version == GML_322 ) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -1561,7 +1570,7 @@ public class GML3GeometryWriter extends AbstractGMLObjectWriter implements GMLGe
             referenceExportStrategy.addExportedId( geometry.getId() );
             writeAttributeWithNS( gmlNs, "id", geometry.getId() );
         } else if ( version == GML_32 && geometry.getId() == null ) {
-            // in GML 3.2, a gml:id is required for every geometry
+            // Only in GML 3.2.1, a gml:id is required for every geometry
             writeAttributeWithNS( gmlNs, "id", "GEOMETRY_" + generateNewId() );
         }
 

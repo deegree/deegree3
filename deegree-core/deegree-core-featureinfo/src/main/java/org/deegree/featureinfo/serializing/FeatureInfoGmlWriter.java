@@ -211,6 +211,9 @@ public class FeatureInfoGmlWriter implements FeatureInfoSerializer {
             if ( format.endsWith( "3.2" ) || format.endsWith( "3.2.1" ) ) {
                 gmlVersion = GMLVersion.GML_32;
             }
+            if ( format.endsWith( "3.2.2" ) ) {
+                gmlVersion = GMLVersion.GML_322;
+            }
 
             GMLStreamWriter gmlWriter = GMLOutputFactory.createGMLStreamWriter( gmlVersion, xmlWriter );
             gmlWriter.setOutputCrs( params.getCrs() );

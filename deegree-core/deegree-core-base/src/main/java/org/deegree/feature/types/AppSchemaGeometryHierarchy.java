@@ -36,6 +36,7 @@
 package org.deegree.feature.types;
 
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -119,7 +120,7 @@ public class AppSchemaGeometryHierarchy {
     }
 
     private QName getAbstractElementName( String localPart, GMLVersion version ) {
-        if ( version == GML_32 ) {
+        if ( version == GML_32 || version == GML_322 ) {
             return new QName( version.getNamespace(), "Abstract" + localPart );
         }
         return new QName( version.getNamespace(), "_" + localPart );

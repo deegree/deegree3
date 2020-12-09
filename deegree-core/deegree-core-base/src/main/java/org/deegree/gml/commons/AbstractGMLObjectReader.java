@@ -51,9 +51,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_30;
-import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -204,7 +202,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         if ( gmlStreamReader.getLaxMode() ) {
             return false;
         }
-        return version != GML_2 && version != GML_30 || version != GML_31;
+        return version == GML_32;
     }
 
     private void checkValidNcName( final String gmlId ) {

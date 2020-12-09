@@ -104,6 +104,7 @@ public class GMLStdPropsReader {
             props = readGML31( xmlStream );
             break;
         case GML_32:
+        case GML_322:
             props = readGML32( xmlStream );
             break;
         }

@@ -46,6 +46,7 @@ import static org.deegree.commons.xml.stax.XMLStreamUtils.writeNamespaceIfNotBou
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -248,7 +249,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             // ensure that namespace for gml (e.g. geometry elements) is bound
             writeNamespaceIfNotBound( xmlStream, "gml", gmlVersion.getNamespace() );
 
-            if ( GML_32 == gmlVersion && !request.getVersion().equals( VERSION_200 ) ) {
+            if ( ( GML_32 == gmlVersion || GML_322 == gmlVersion )  && !request.getVersion().equals( VERSION_200 ) ) {
                 xmlStream.writeAttribute( "gml", GML3_2_NS, "id", "WFS_RESPONSE" );
             }
         }
@@ -640,7 +641,8 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             xmlStream.writeEndElement();
             break;
         }
-        case GML_32: {
+        case GML_32:
+        case GML_322: {
             if ( wfsVersion.equals( VERSION_200 ) ) {
                 xmlStream.writeStartElement( "wfs", "boundedBy", GML3_2_NS );
                 if ( env == null ) {

@@ -49,7 +49,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
-import org.deegree.time.gml.reader.GmlTimePositionTypeReader;
 import org.deegree.time.position.TimePosition;
 import org.junit.Test;
 

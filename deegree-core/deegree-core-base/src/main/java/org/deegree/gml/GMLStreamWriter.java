@@ -44,6 +44,7 @@ import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
 import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
 import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_STRING;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.gml.GMLVersion.GML_322;
 
 import java.util.HashMap;
 import java.util.List;
@@ -134,12 +135,27 @@ public class GMLStreamWriter {
         this.xmlStream = xmlStream;
         referenceExportStrategy = new DefaultGmlXlinkStrategy( "#{}", new GmlXlinkOptions() );
         prefixToNs.put( "ogc", OGCNS );
-        prefixToNs.put( "gml", version != GML_32 ? GMLNS : GML3_2_NS );
+        prefixToNs.put( "gml", !isVersionOfGML32( version ) ? GMLNS : GML3_2_NS );
         prefixToNs.put( "xlink", XLNNS );
         prefixToNs.put( "xsi", XSINS );
         prefixToNs.put( "dxtra", EXTRA_PROP_NS );
         prefixToNs.put( "dxtra-string", EXTRA_PROP_NS_STRING );
         prefixToNs.put( "dxtra-geometry", EXTRA_PROP_NS_GEOMETRY );
+    }
+
+    /**
+     * Returns if a version is of GML 3.2.
+     *
+     * @param version
+     *             GML version of the output, must not be <code>null</code>
+     *
+     * @return <code>true</code>, if version is 3.2.1 or 3.2.2, <code>false</code> otherwise
+     */
+    private boolean isVersionOfGML32( GMLVersion version ) {
+        if ( version == GML_32 || version == GML_322 ){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -413,7 +429,8 @@ public class GMLStreamWriter {
             }
             case GML_30:
             case GML_31:
-            case GML_32: {
+            case GML_32:
+            case GML_322: {
                 geometryWriter = new GML3GeometryWriter( this );
                 break;
             }

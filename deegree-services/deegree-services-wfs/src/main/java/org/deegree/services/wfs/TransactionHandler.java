@@ -48,7 +48,6 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.feature.Features.findFeaturesAndGeometries;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
@@ -68,11 +67,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -114,8 +111,6 @@ import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.geometry.validation.CoordinateValidityInspector;
@@ -124,7 +119,6 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
-import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -911,6 +905,8 @@ class TransactionHandler {
                 gmlVersion = GMLVersion.GML_31;
             } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
                 gmlVersion = GMLVersion.GML_32;
+            } else if ( "text/xml; subtype=gml/3.2.2".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_322;
             }
         }
         return gmlVersion;
