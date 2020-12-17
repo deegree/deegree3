@@ -1090,7 +1090,6 @@
     <module>deegree-core</module>
     <module>deegree-datastores</module>
     <module>deegree-layers</module>
-    <module>deegree-misc</module>
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-themes</module>
