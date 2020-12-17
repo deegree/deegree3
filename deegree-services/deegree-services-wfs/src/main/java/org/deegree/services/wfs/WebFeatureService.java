@@ -559,10 +559,12 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.2", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml32 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
