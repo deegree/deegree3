@@ -486,7 +486,7 @@ public class RasterCache {
                 boolean createCache = reader.shouldCreateCacheFile();
                 File cacheFile = null;
                 if ( createCache ) {
-                    LOG.trace( "create cachefule for location {}", reader.getDataLocationId() );
+                    LOG.trace( "create cachefile for location {}", reader.getDataLocationId() );
                     cacheFile = createCacheFile( reader.getDataLocationId() );
                 }
                 result = new CacheRasterReader( reader, cacheFile, this );
