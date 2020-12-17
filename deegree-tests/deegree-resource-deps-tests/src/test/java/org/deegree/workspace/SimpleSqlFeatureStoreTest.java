@@ -56,7 +56,6 @@ import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -138,7 +137,7 @@ public class SimpleSqlFeatureStoreTest {
         Assert.assertFalse( "Expected broken dependencies.", node.areDependenciesAvailable() );
     }
 
-    @Test @Ignore
+    @Test
     public void testDestroySingle() {
         FeatureStore fs = workspace.getResource( FeatureStoreProvider.class, "simplesql-ok" );
         Assert.assertNotNull( "Feature store is expected to be created.", fs );
@@ -150,7 +149,7 @@ public class SimpleSqlFeatureStoreTest {
         Assert.assertNull( "Connection provider is expected to be destroyed.", prov );
     }
 
-    @Test @Ignore
+    @Test
     public void testDestroyInitializeSingle() {
         FeatureStore fs = workspace.getResource( FeatureStoreProvider.class, "simplesql-ok" );
         Assert.assertNotNull( "Feature store is expected to be created.", fs );
@@ -164,7 +163,7 @@ public class SimpleSqlFeatureStoreTest {
         Assert.assertNotNull( "Connection provider is expected to be re-initialized.", prov );
     }
 
-    @Test @Ignore
+    @Test
     public void testReinitializeChain() {
         FeatureStore fs = workspace.getResource( FeatureStoreProvider.class, "simplesql-ok" );
         Assert.assertNotNull( "Feature store is expected to be created.", fs );
