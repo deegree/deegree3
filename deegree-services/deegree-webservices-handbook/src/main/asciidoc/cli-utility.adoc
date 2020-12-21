@@ -3,7 +3,7 @@
 
 Command line utility to generate `DDL` and `deegree SQLFeatureStore` from GML application schemas.
 
-You can download the latest release from TODO. The distribution bundle must be unpacked in an arbitrary directory.
+You can download the latest release from http://repo.deegree.org/content/repositories/public/org/deegree/deegree-tools-config. The distribution bundle must be unpacked in an arbitrary directory.
 
 === Prerequisite
 
