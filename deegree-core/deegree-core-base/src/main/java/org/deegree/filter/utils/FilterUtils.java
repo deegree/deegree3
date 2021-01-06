@@ -63,7 +63,7 @@ public class FilterUtils {
             geom = (Geometry) ( (Property) node ).getValue();
         } else if ( node instanceof GenericXMLElement ) {
             GenericXMLElement xml = (GenericXMLElement) node;
-            if ( xml.getChildren() != null && !xml.getChildren().isEmpty() ) {
+            if ( xml.getChildren() != null && xml.getChildren().size() == 1 ) {
                 TypedObjectNode maybeGeom = xml.getChildren().get( 0 );
                 if ( maybeGeom instanceof Geometry ) {
                     geom = (Geometry) maybeGeom;
