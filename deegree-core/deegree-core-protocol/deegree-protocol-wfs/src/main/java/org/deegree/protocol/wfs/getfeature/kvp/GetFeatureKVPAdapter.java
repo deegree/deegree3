@@ -427,7 +427,7 @@ public class GetFeatureKVPAdapter extends QueryKVPAdapter {
                             throws Exception {
         StandardPresentationParams presentationParams = parseStandardPresentationParameters200( kvpParams );
         ResolveParams resolveParams = parseStandardResolveParameters200( kvpParams );
-        List<Query> queries = parseQueries200( kvpParams );
+        List<Query> queries = parseQueries200( kvpParams, resolveParams );
         return new GetFeature( VERSION_200, null, presentationParams, resolveParams, queries );
     }
 }

@@ -187,19 +187,27 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
         return new ResolveParams( resolve, resolveDepth, resolveTimeout );
     }
 
-    protected static List<Query> parseQueries200( Map<String, String> kvpUC )
+    /**
+     * @param kvpUC
+     *                         never <code>null</code>
+     * @param resolveParams
+     *                         resolve params from the query, may be <code>null</code>
+     * @return the parsed queries, never <code>null</code>
+     * @throws Exception
+     */
+    protected static List<Query> parseQueries200( Map<String, String> kvpUC, ResolveParams resolveParams )
                             throws Exception {
 
         List<Query> queries = null;
         if ( kvpUC.containsKey( "STOREDQUERY_ID" ) ) {
             queries = parseStoredQuery200( kvpUC );
         } else {
-            queries = parseAdhocQueries200( kvpUC );
+            queries = parseAdhocQueries200( kvpUC, resolveParams );
         }
         return queries;
     }
 
-    private static List<Query> parseAdhocQueries200( Map<String, String> kvpUC )
+    private static List<Query> parseAdhocQueries200( Map<String, String> kvpUC, ResolveParams resolveParams )
                             throws Exception {
 
         // optional: 'NAMESPACE'
@@ -309,7 +317,7 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 for ( int i = 0; i < subParams.length; i++ ) {
                     String subParam = subParams[i];
                     ValueReference propName = new ValueReference( subParam, nsContext );
-                    projectionClauses[i] = new PropertyName( propName, null, null );
+                    projectionClauses[i] = new PropertyName( propName, resolveParams, null );
                 }
                 projectionClausesList.add( projectionClauses );
             }
@@ -553,9 +561,14 @@ public class QueryKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 result[i] = new PropertyName[propertyNames[i].length];
                 for ( int j = 0; j < propertyNames[i].length; j++ ) {
                     if ( ptxDepthAr != null || ptxExpAr != null ) {
-                        String resolveDepth = ptxDepthAr[i][j];
-                        BigInteger resolveTimeout = ptxExpAr[i][j] == null ? null
-                                                                          : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
+                        String resolveDepth = null;
+                        if ( ptxDepthAr != null ) {
+                            resolveDepth = ptxDepthAr[i][j];
+                        }
+                        BigInteger resolveTimeout = null;
+                        if ( ptxExpAr != null ) {
+                            resolveTimeout = ptxExpAr[i][j] == null ? null : BigInteger.valueOf( ptxExpAr[i][j] * 60 );
+                        }
                         ResolveParams propResolveParams = new ResolveParams( null, resolveDepth, resolveTimeout );
                         result[i][j] = new PropertyName( propertyNames[i][j].getPropertyName(), propResolveParams,
                                                              null );
