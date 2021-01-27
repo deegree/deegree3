@@ -37,12 +37,11 @@ package org.deegree.feature;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.Reference;
@@ -108,7 +107,11 @@ public class Features {
 
         FeatureCollection sortedFc = fc;
         if ( sortCrits != null && sortCrits.length > 0 ) {
-            SortedSet<Feature> sortedFeatures = new TreeSet<Feature>( new Comparator<Feature>() {
+            List<Feature> sortedFeatures = new ArrayList<Feature>();
+            for ( Feature feature : fc ) {
+                sortedFeatures.add( feature );
+            }
+            Collections.sort( sortedFeatures, new Comparator<Feature>() {
                 @SuppressWarnings({ "unchecked", "synthetic-access" })
                 @Override
                 public int compare( Feature f1, Feature f2 ) {
@@ -139,9 +142,6 @@ public class Features {
                     return order;
                 }
             } );
-            for ( Feature feature : fc ) {
-                sortedFeatures.add( feature );
-            }
             sortedFc = new GenericFeatureCollection( fc.getId(), sortedFeatures );
         }
         return sortedFc;
@@ -193,7 +193,7 @@ public class Features {
 
     /**
      * Determines all {@link Feature} and {@link Geometry} objects contained in the given {@link TypedObjectNode} and
-     * their ids.
+     * their ids. Does <code>not</code> include internal referenced {@link Feature}s.
      * 
      * @param node
      *            typed object node to be scanned, can be <code>null</code>
@@ -206,8 +206,8 @@ public class Features {
      * @param gids
      *            found geometry ids, must not be <code>null</code>
      */
-    public static void findFeaturesAndGeometries( TypedObjectNode node, Set<Geometry> geometries,
-                                                  Set<Feature> features, Set<String> fids, Set<String> gids ) {
+    public static void findFeaturesAndGeometries( TypedObjectNode node, Set<Geometry> geometries, Set<Feature> features,
+                                                  Set<String> fids, Set<String> gids ) {
 
         if ( node instanceof ElementNode ) {
             ElementNode elNode = (ElementNode) node;
@@ -217,11 +217,15 @@ public class Features {
         } else if ( node instanceof org.deegree.commons.tom.Object ) {
             if ( node instanceof Reference<?> ) {
                 Reference<?> ref = (Reference<?>) node;
-                if ( ref.isResolved() ) {
-                    node = ( (Reference<?>) node ).getReferencedObject();
-                } else if ( node instanceof Reference<?> ) {
+                if ( ref.isResolved() && !ref.isInternalResolved() ) {
+                    node = ref.getReferencedObject();
+                } else {
                     try {
-                        node = ( (Reference<?>) node ).getReferencedObject();
+                        TypedObjectNode referencedObject = ref.getReferencedObject();
+                        if ( !ref.isInternalResolved() )
+                            node = referencedObject;
+                        else
+                            return;
                     } catch ( ReferenceResolvingException e ) {
                         LOG.warn( "Unable to resolve external reference '" + ref.getURI() + ". Ignoring." );
                         return;

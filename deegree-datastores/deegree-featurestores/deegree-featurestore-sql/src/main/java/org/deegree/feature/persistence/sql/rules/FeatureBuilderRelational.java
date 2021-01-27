@@ -36,6 +36,8 @@
 package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
@@ -108,7 +110,6 @@ import org.deegree.gml.schema.GMLSchemaInfoSet;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.sqldialect.filter.TableAliasManager;
-import org.deegree.time.TimeObject;
 import org.jaxen.expr.Expr;
 import org.jaxen.expr.LocationPath;
 import org.jaxen.expr.NameStep;
@@ -174,7 +175,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
 
     /**
      * Creates a new {@link FeatureBuilderRelational} instance.
-     * 
+     *
      * @param fs
      *            feature store, must not be <code>null</code>
      * @param featureTypeAndMappings
@@ -372,7 +373,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         for ( final TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
-                if ( pt instanceof ObjectPropertyType && particle instanceof TimeObject ) {
+                if ( pt instanceof ObjectPropertyType && TIME_OBJECT.equals( ( (ObjectPropertyType) pt ).getCategory() ) ) {
                     props.add( recreatePropertyFromGml( ft, pt, (GenericXMLElement) particle ) );
                 } else {
                     GenericXMLElement xmlEl = (GenericXMLElement) particle;

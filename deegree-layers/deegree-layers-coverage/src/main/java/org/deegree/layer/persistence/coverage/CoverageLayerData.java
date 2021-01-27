@@ -89,8 +89,17 @@ public class CoverageLayerData implements LayerData {
 
     private final FeatureType featureType;
 
+    private CoverageDimensionHandler dimensionHandler;
+
     public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
                               RangeSet filter, Style style, FeatureType featureType ) {
+        this( raster, bbox, width, height, interpol, filter, style, featureType, null );
+
+    }
+
+    public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
+                              RangeSet filter, Style style, FeatureType featureType,
+                              CoverageDimensionHandler dimensionHandler ) {
         this.raster = raster;
         this.bbox = bbox;
         this.width = width;
@@ -99,6 +108,7 @@ public class CoverageLayerData implements LayerData {
         this.filter = filter;
         this.style = style;
         this.featureType = featureType;
+        this.dimensionHandler = dimensionHandler;
     }
 
     @Override
@@ -136,9 +146,10 @@ public class CoverageLayerData implements LayerData {
                 result = new RasterFilter( result ).apply( cbr, filter );
             }
 
-            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null || style.isDefault() ? null
-                                                                                                               : style.evaluate( null,
-                                                                                                                                 null );
+            LinkedList<Triple<Styling, LinkedList<Geometry>, String>> list = style == null
+                                                                             || style.isDefault() ? null
+                                                                                                  : style.evaluate( null,
+                                                                                                                    null );
             if ( list != null && list.size() > 0 ) {
                 for ( Triple<Styling, LinkedList<Geometry>, String> t : list ) {
                     renderer.render( (RasterStyling) t.first, result );
@@ -154,7 +165,8 @@ public class CoverageLayerData implements LayerData {
 
     @Override
     public FeatureCollection info() {
-        CoverageFeatureInfoHandler handler = new CoverageFeatureInfoHandler( raster, bbox, featureType, interpol );
+        CoverageFeatureInfoHandler handler = new CoverageFeatureInfoHandler( raster, bbox, featureType, interpol,
+                                                                             dimensionHandler );
         return handler.handleFeatureInfo();
     }
 

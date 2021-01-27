@@ -103,4 +103,19 @@ public class InteriorRingOrientation extends AbstractGeometryValidationEvent {
         return isClockwise;
     }
 
+    /**
+     * Returns true if the geometry is an interior boundary.
+     * 
+     * @return <code>true</code> if geometry is an interior boundary, <code>false</code> if it's exterior
+     */
+    public boolean isInterior() {
+        boolean isInterior = isClockwise;
+
+        if ( isLeftHanded( patch.getInteriorRings().get( ringIdx ).getCoordinateSystem() ) ) {
+            isInterior = !isInterior;
+        }
+
+        return isInterior;
+    }
+
 }

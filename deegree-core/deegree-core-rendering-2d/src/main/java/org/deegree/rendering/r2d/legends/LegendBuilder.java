@@ -107,7 +107,11 @@ class LegendBuilder {
         if ( url != null ) {
             try {
                 BufferedImage legend = ImageIO.read( url );
-                return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
+                if ( legend != null ) {
+                    return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
+                } else {
+                    LOG.warn( "Legend file {} could not be read, using dynamic legend.", url );
+                }
             } catch ( IOException e ) {
                 LOG.warn( "Legend file {} could not be read, using dynamic legend: {}", url, e.getLocalizedMessage() );
                 LOG.trace( "Stack trace:", e );
@@ -118,6 +122,11 @@ class LegendBuilder {
         for ( LegendItem item : LegendItemBuilder.prepareLegend( style, null, null, null ) ) {
             res.second += item.getHeight() * ( 2 * opts.spacing + opts.baseHeight );
             res.first = max( res.first, item.getMaxWidth( opts ) );
+        }
+
+        if ( res.second == 0 ) {
+            // prevent >0 * 0 sized images
+            res.second = 2 * opts.spacing + opts.baseWidth;
         }
 
         return res;

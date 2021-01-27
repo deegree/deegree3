@@ -1191,11 +1191,10 @@ public class WKTWriter {
         for ( int i = 0; i < geometry.size(); i++ ) {
             writer.append( '(' );
             writeLineStringWithoutPrefix( geometry.get( i ), writer );
-            if ( i < geometry.size() - 1 ) {
-                writer.append( ',' );
-
-            }
             writer.append( ')' );
+            if ( i < geometry.size() - 1 ) {
+            	writer.append( ',' );
+            }
         }
 
         writer.append( ')' );
@@ -1353,7 +1352,15 @@ public class WKTWriter {
         if ( writer == null ) {
             throw new NullPointerException( "The writer may not be null." );
         }
-        WKTWriter wktW = new WKTWriter( null, null );
+        Set<WKTFlag> flags = new HashSet<WKTFlag>();
+        int dim =geom.getCoordinateDimension();
+        if (dim == 3){
+            flags.add( WKTWriter.WKTFlag.USE_3D );
+        }
+        else{
+            flags = null;
+        }
+        WKTWriter wktW = new WKTWriter( flags, null );
         wktW.writeGeometry( geom, writer );
     }
 

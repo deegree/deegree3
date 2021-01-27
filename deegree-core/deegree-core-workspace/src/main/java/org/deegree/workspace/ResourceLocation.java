@@ -76,6 +76,13 @@ public interface ResourceLocation<T extends Resource> {
     InputStream getAsStream();
 
     /**
+     * Returns the configuration content as file. May not be available in all implementations!
+     *
+     * @return the file, or <code>null</code>, if resolving is not supported
+     */
+    File getAsFile();
+
+    /**
      * Resolves a path relative to this location to an input stream. May not be available in all implementations!
      * 
      * @param path
