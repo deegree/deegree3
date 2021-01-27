@@ -52,10 +52,9 @@ import org.slf4j.Logger;
 
 /**
  * Simple implementation of a JDBC connection pool based on the Apache Commons Pool and DBCP projects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 @LoggingNotes(debug = "logs information about pool usage")
@@ -71,7 +70,7 @@ public class ConnectionPool {
 
     /**
      * Creates a new {@link ConnectionPool} instance.
-     * 
+     *
      * @param id
      * @param connectURI
      * @param user
@@ -86,12 +85,12 @@ public class ConnectionPool {
         this.id = id;
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory( connectionFactory, null );
-        pool = new GenericObjectPool<>(poolableConnectionFactory);
+        pool = new GenericObjectPool<>( poolableConnectionFactory );
         pool.setMinIdle( minIdle );
         pool.setMaxTotal( maxActive );
-        pool.setTestOnBorrow(true);
+        pool.setTestOnBorrow( true );
 
-        poolableConnectionFactory.setPool(pool);
+        poolableConnectionFactory.setPool( pool );
         ds = new PoolingDataSource( pool );
 
         // needed, so users can retrieve the underlying connection from pooled
@@ -102,7 +101,7 @@ public class ConnectionPool {
 
     /**
      * Returns a {@link Connection} from the pool.
-     * 
+     *
      * @return a connection from the pool
      * @throws SQLException
      */
