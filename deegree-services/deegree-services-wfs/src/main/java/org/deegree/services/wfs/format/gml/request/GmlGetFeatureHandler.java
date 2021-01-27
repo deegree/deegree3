@@ -54,6 +54,7 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_110_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
 import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
 
 import java.io.IOException;
@@ -100,6 +101,7 @@ import org.deegree.gml.reference.GmlXlinkOptions;
 import org.deegree.protocol.wfs.getfeature.GetFeature;
 import org.deegree.protocol.wfs.getfeature.kvp.GetFeature200KVPEncoder;
 import org.deegree.protocol.wfs.getfeaturewithlock.GetFeatureWithLock;
+import org.deegree.protocol.wfs.query.StandardPresentationParams;
 import org.deegree.protocol.wfs.query.StoredQuery;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
@@ -129,7 +131,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
     /**
      * Creates a new {@link GmlGetFeatureHandler} instance.
      * 
-     * @param gmlFormat
+     * @param format
      *            never <code>null</code>
      */
     public GmlGetFeatureHandler( GmlFormat format ) {
@@ -304,6 +306,31 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             ( (BufferableXMLStreamWriter) xmlStream ).appendBufferedXML( gmlStream );
         }
     }
+    private ResponsePagingUris createResponsePagingUrisHits( GetFeature request )
+                            throws UnknownCRSException, XMLStreamException, TransformationException,
+                            UnsupportedEncodingException, FilterEvaluationException, FeatureStoreException,
+                            OWSException {
+        StandardPresentationParams requestPresentationParams = request.getPresentationParams();
+        BigInteger count = requestPresentationParams.getCount();
+        int startIndex = 0;
+        if ( requestPresentationParams.getStartIndex() != null ) {
+            startIndex = requestPresentationParams.getStartIndex().intValue();
+        }
+
+        StandardPresentationParams presentationParams = new StandardPresentationParams( requestPresentationParams.getStartIndex(),
+                                                                                        count,
+                                                                                        RESULTS,
+                                                                                        requestPresentationParams.getOutputFormat() );
+        GetFeature nextGetFeature = new GetFeature( request.getVersion(), request.getHandle(),
+                                                    presentationParams,
+                                                    request.getResolveParams(), request.getQueries() );
+        if ( count != null ) {
+            Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( nextGetFeature );
+            String nextUri = createUrlWithStartindex( kvpGetFeature, startIndex );
+            return new ResponsePagingUris( nextUri, null );
+        }
+        return createResponsePagingUris( nextGetFeature, count, startIndex );
+    }
 
     private ResponsePagingUris createResponsePagingUris( GetFeature request, BigInteger count, int startIndex )
                             throws UnknownCRSException, XMLStreamException, TransformationException,
@@ -339,7 +366,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     public void doGetFeatureHits( GetFeature request, HttpResponseBuffer response )
                             throws OWSException, XMLStreamException, IOException, FeatureStoreException,
-                            FilterEvaluationException {
+                            FilterEvaluationException, TransformationException, UnknownCRSException {
 
         LOG.debug( "Performing GetFeature (hits) request." );
 
@@ -385,6 +412,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
             xmlStream.writeAttribute( "timeStamp", getTimestamp() );
             xmlStream.writeAttribute( "numberMatched", "" + hits.hitsTotal );
             xmlStream.writeAttribute( "numberReturned", "0" );
+            if ( options.isEnableResponsePaging() ) {
+                ResponsePagingUris responsePagingUris = createResponsePagingUrisHits( request );
+                writeResponsePagingUris( xmlStream, responsePagingUris );
+            }
             if ( hits.queryHits.length > 1 ) {
                 for ( int j = 0; j < hits.queryHits.length; j++ ) {
                     xmlStream.writeStartElement( "wfs", "member", WFS_200_NS );
@@ -553,10 +584,7 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( wfsVersion.equals( VERSION_200 ) ) {
             xmlStream.writeAttribute( "numberMatched", "" + allFeatures.size() );
             xmlStream.writeAttribute( "numberReturned", "" + allFeatures.size() );
-            if ( responsePagingUris != null && responsePagingUris.nextUri != null )
-                xmlStream.writeAttribute( "next", "" + responsePagingUris.nextUri );
-            if ( responsePagingUris != null && responsePagingUris.previousUri != null )
-                xmlStream.writeAttribute( "previous", "" + responsePagingUris.previousUri );
+            writeResponsePagingUris( xmlStream, responsePagingUris );
         } else if ( !wfsVersion.equals( VERSION_100 ) && options.getResponseContainerEl() == null ) {
             xmlStream.writeAttribute( "numberOfFeatures", "" + allFeatures.size() );
         }
@@ -570,6 +598,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         for ( Feature member : allFeatures ) {
             writeMemberFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
         }
+    }
+
+    private void writeResponsePagingUris( XMLStreamWriter xmlStream, ResponsePagingUris responsePagingUris )
+                            throws XMLStreamException {
+        if ( responsePagingUris == null )
+            return;
+        if ( responsePagingUris.nextUri != null )
+            xmlStream.writeAttribute( "next", "" + responsePagingUris.nextUri );
+        if ( responsePagingUris.previousUri != null )
+            xmlStream.writeAttribute( "previous", "" + responsePagingUris.previousUri );
     }
 
     private void writeBoundedBy( Version wfsVersion, GMLStreamWriter gmlStream, GMLVersion outputFormat, Envelope env )
@@ -639,14 +677,16 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
             // CITE 1.1.0 compliance (wfs:GetFeatureWithLock-Xlink)
             if ( analyzer.getProjections() != null ) {
-                for ( ProjectionClause clause : analyzer.getProjections() ) {
-                    if ( clause instanceof PropertyName ) {
-                        PropertyName propName = (PropertyName) clause;
-                        ResolveParams resolveParams = propName.getResolveParams();
-                        if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
-                             || resolveParams.getTimeout() != null ) {
-                            throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
-                                                    OPTION_NOT_SUPPORTED );
+                for ( List<ProjectionClause> projections : analyzer.getProjections().values() ) {
+                    for ( ProjectionClause clause : projections ) {
+                        if ( clause instanceof PropertyName ) {
+                            PropertyName propName = (PropertyName) clause;
+                            ResolveParams resolveParams = propName.getResolveParams();
+                            if ( resolveParams.getDepth() != null || resolveParams.getMode() != null
+                                 || resolveParams.getTimeout() != null ) {
+                                throw new OWSException( "GetFeatureWithLock does not support XlinkPropertyName",
+                                                        OPTION_NOT_SUPPORTED );
+                            }
                         }
                     }
                 }

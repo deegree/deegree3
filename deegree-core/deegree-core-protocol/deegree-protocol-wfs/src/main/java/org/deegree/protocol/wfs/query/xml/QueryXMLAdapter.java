@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
 import org.deegree.commons.utils.StringUtils;
@@ -63,6 +64,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.projection.ProjectionClause;
@@ -251,8 +253,10 @@ public class QueryXMLAdapter extends AbstractWFSRequestXMLAdapter {
         String srsName = getNodeAsString( queryEl, new XPath( "@srsName", nsContext ), null );
         if ( srsName != null ) {
             try {
-                crs = CRSManager.lookup( srsName );
-            } catch ( UnknownCRSException e ) {
+                CRSRef ref = CRSManager.getCRSRef( srsName );
+                ref.getReferencedObject(); // test if referenced object exists
+                crs = ref; // use reference as that prefers the requested name/code/alias
+            } catch ( ReferenceResolvingException e ) {
                 throw new InvalidParameterValueException( e.getMessage(), "srsName" );
             }
         }

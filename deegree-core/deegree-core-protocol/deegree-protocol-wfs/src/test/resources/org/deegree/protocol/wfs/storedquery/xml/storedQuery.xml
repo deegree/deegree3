@@ -1,0 +1,21 @@
+<StoredQueryDefinition xmlns="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cp="http://inspire.ec.europa.eu/schemas/cp/4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd" id="urn:x-inspire:query:GetCadastralParcelsByLabel">
+  <Title>GetCadastralParcelsByLabel</Title>
+  <Abstract>Returns the cp:CadastralParcel features by the label.</Abstract>
+  <ows:Metadata about="http://deegree.org" />
+  <Parameter name="label" type="xs:string">
+    <Abstract>Label (mandatory)</Abstract>
+  </Parameter>
+  <QueryExpressionText returnFeatureTypes="cp:CadastralParcel cp:CadastralBounding" language="urn:ogc:def:queryLanguage:OGC-:WFSQueryExpression"
+    isPrivate="true">
+    <Query typeNames="cp:CadastralParcel">
+      <Filter xmlns="http://www.opengis.net/fes/2.0">
+        <PropertyIsEqualTo>
+          <ValueReference>cp:label</ValueReference>
+          <Literal>${label}</Literal>
+        </PropertyIsEqualTo>
+      </Filter>
+    </Query>
+  </QueryExpressionText>
+</StoredQueryDefinition>

@@ -1,6 +1,0 @@
-[...]
-<FIDMapping prefix="AD_ADDRESS_">
-  <Column name="attr_gml_id" />
-  <SequenceIDGenerator sequence="SEQ_FID">
-</FIDMapping>
-[...]

@@ -35,8 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
-import static org.slf4j.LoggerFactory.getLogger;
+import junit.framework.Assert;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.gml.GMLVersion;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.xmlmatchers.namespace.SimpleNamespaceContext;
 
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,29 +60,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import junit.framework.Assert;
-
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSTypeDefinition;
-import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.feature.types.AppSchema;
-import org.deegree.gml.GMLVersion;
-import org.deegree.gml.schema.GMLSchemaInfoSet;
-import org.junit.Test;
-import org.slf4j.Logger;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.xmlmatchers.XmlMatchers.hasXPath;
+import static org.xmlmatchers.transform.XmlConverters.the;
+import static org.xmlmatchers.xpath.XpathReturnType.returningANumber;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLAppSchemaWriterTest {
@@ -339,4 +344,53 @@ public class GMLAppSchemaWriterTest {
         encoder.export( writer, schema );
         writer.close();
     }
+
+    @Test
+    public void testExportSchemaWrappped()
+                    throws Exception {
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf1.xsd" ).toURI().toString();
+        GMLSchemaInfoSet gmlSchemaInfoSet = new GMLSchemaInfoSet( null, schemaURL );
+
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
+        GMLAppSchemaWriter encoder = new GMLAppSchemaWriter( GMLVersion.GML_31, "http://cite.opengeospatial.org/gmlsf",
+                                                             null, schema.getNamespaceBindings() );
+        encoder.export( writer, gmlSchemaInfoSet, "http://cite.opengeospatial.org/gmlsf", uri -> uri );
+        writer.close();
+
+        assertThat( the( os.toString() ),
+                    hasXPath( "count(/xs:schema/xs:include)", nsContext(), returningANumber(), is( 2.0 ) ) );
+    }
+
+    @Test
+    public void testExportSchema()
+                    throws Exception {
+        String schemaURL = this.getClass().getResource( "../cite/schema/cite-gmlsf0.xsd" ).toURI().toString();
+
+        GMLSchemaInfoSet gmlSchemaInfoSet = new GMLSchemaInfoSet( null, schemaURL );
+
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( GMLVersion.GML_31, null, schemaURL );
+        AppSchema schema = adapter.extractAppSchema();
+
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+        outputFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, true );
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        XMLStreamWriter writer = new IndentingXMLStreamWriter( outputFactory.createXMLStreamWriter( os ) );
+        GMLAppSchemaWriter encoder = new GMLAppSchemaWriter( GMLVersion.GML_31, "http://cite.opengeospatial.org/gmlsf",
+                                                             null, schema.getNamespaceBindings() );
+        encoder.export( writer, gmlSchemaInfoSet, "http://cite.opengeospatial.org/gmlsf", uri -> uri );
+        writer.close();
+
+        System.out.println( os.toString() );
+    }
+
+    private NamespaceContext nsContext() {
+        return new SimpleNamespaceContext().withBinding( "xs", "http://www.w3.org/2001/XMLSchema" );
+    }
+
 }

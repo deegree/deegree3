@@ -39,7 +39,7 @@ package org.deegree.geometry.points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequence;
 
 /**
  * Encapsulates a sequence of {@link Point}s that each may be uniquely identifiable or not.

@@ -153,7 +153,7 @@ public class CoverageLayer extends AbstractLayer {
 
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
                                           InterpolationType.NEAREST_NEIGHBOR, filter, style,
-                                          getMetadata().getFeatureTypes().get( 0 ) );
+                                          getMetadata().getFeatureTypes().get( 0 ) , dimensionHandler );
         } catch ( OWSException e ) {
             throw e;
         } catch ( Throwable e ) {
