@@ -36,23 +36,6 @@
 
 package org.deegree.gml.feature;
 
-import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.stax.StAXExportingHelper.writeAttribute;
-import static org.deegree.feature.types.property.ValueRepresentation.REMOTE;
-import static org.deegree.gml.GMLVersion.GML_2;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
@@ -91,7 +74,6 @@ import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.projection.ProjectionClause;
 import org.deegree.filter.projection.PropertyName;
 import org.deegree.filter.projection.TimeSliceProjection;
@@ -99,7 +81,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.gml.GMLStreamWriter;
 import org.deegree.gml.commons.AbstractGMLObjectWriter;
-import org.deegree.gml.feature.filter.PropertyNameFilter;
 import org.deegree.gml.feature.filter.PathTracker;
 import org.deegree.gml.feature.filter.PropertyNameFilter;
 import org.deegree.gml.reference.FeatureReference;
@@ -109,9 +90,6 @@ import org.deegree.time.gml.writer.GmlTimeGeometricPrimitiveWriter;
 import org.deegree.time.primitive.TimeGeometricPrimitive;
 import org.jaxen.expr.DefaultNameStep;
 import org.jaxen.expr.LocationPath;
-import org.jaxen.expr.DefaultNameStep;
-import org.jaxen.expr.LocationPath;
-import org.jaxen.expr.iter.IterableChildAxis;
 import org.jaxen.expr.iter.IterableChildAxis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +116,6 @@ import static org.deegree.gml.GMLVersion.GML_2;
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author:$
- *
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureWriter extends AbstractGMLObjectWriter {
@@ -149,11 +126,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private final String gmlNull;
 
-    private final Map<MultiKey<QName>, PropertyName> allProjections = new HashMap();
-
-    private final Map<QName, List<PropertyName>> requestedPropertyNames = new HashMap<>();
-
-    private final Map<QName, PropertyNameFilter> propertyNameFilters = new HashMap<>();
+    private final Map<MultiKey<QName>, PropertyNameFilter> propertyNameFilters = new HashMap<>();
 
     private final List<Filter> timeSliceFilters = new ArrayList<Filter>();
 
@@ -177,43 +150,16 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private static final QName NIL_REASON = new QName( "nilReason" );
 
-
     /**
      * Creates a new {@link GMLFeatureWriter} instance.
      *
      * @param gmlStreamWriter
-     *            GML stream writer, must not be <code>null</code>
+     *                         GML stream writer, must not be <code>null</code>
      */
     public GMLFeatureWriter( GMLStreamWriter gmlStreamWriter ) {
         super( gmlStreamWriter );
 
-        if ( gmlStreamWriter.getProjections() != null ) {
-            for ( ProjectionClause projection : gmlStreamWriter.getProjections() ) {
-                if ( projection instanceof PropertyName ) {
-                    PropertyName propName = (PropertyName) projection;
-                    ValueReference valueReference = propName.getPropertyName();
-                    QName qName = valueReference.getAsQName();
-                    if ( qName != null ) {
-                        addRequestedPropertyName( qName, propName );
-                    } else if ( isSupportedXPath( valueReference ) ) {
-                        LocationPath xPath = (LocationPath) valueReference.getAsXPath();
-                        List steps = xPath.getSteps();
-                        if ( isXPathSupported( steps ) ) {
-                            QName first = stepAsQName( valueReference, (DefaultNameStep) steps.get( 0 ) );
-                            addRequestedPropertyName( first, propName );
-                        } else {
-                            LOG.debug( "Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
-                                       + propName.getPropertyName() + "'" );
-                        }
-                    } else {
-                        LOG.debug( "Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
-                                   + propName.getPropertyName() + "'" );
-                    }
-                } else if ( projection instanceof TimeSliceProjection ) {
-                    timeSliceFilters.add( ( (TimeSliceProjection) projection ).getTimeSliceFilter() );
-                }
-            }
-        }
+        parseProjections( gmlStreamWriter );
 
         if ( !version.equals( GML_2 ) ) {
             fidAttr = new QName( gmlNs, "id" );
@@ -381,7 +327,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 endEmptyElement();
             } else {
                 Geometry gValue = (Geometry) value;
-                if ( !exportSf && gValue.getId() != null && referenceExportStrategy.isObjectExported( gValue.getId() ) ) {
+                if ( !exportSf && gValue.getId() != null && referenceExportStrategy.isObjectExported(
+                                        gValue.getId() ) ) {
                     writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     writeAttributeWithNS( XLNNS, "href", "#" + gValue.getId() );
                     endEmptyElement();
@@ -478,7 +425,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                     QName attrKey = attr.getKey();
                     PrimitiveValue attrValue = attr.getValue();
                     if ( XSI_NIL.equals( attrKey ) )
-                        writeAttributeWithNS( attrKey.getNamespaceURI(), attrKey.getLocalPart(), attrValue.getAsText() );
+                        writeAttributeWithNS( attrKey.getNamespaceURI(), attrKey.getLocalPart(),
+                                              attrValue.getAsText() );
                     else
                         writeAttribute( writer, attrKey, attrValue.getAsText() );
                 }
@@ -525,7 +473,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         if ( value != null )
             writeAttribute( writer, NIL_REASON, value.getAsText() );
     }
-
 
     private boolean excludeByTimeSliceFilter( Property property ) {
         final TimeSlice timeSlice = (TimeSlice) property.getValue();
@@ -595,7 +542,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             String namespaceURI = featureName.getNamespaceURI();
             String localName = featureName.getLocalPart();
             writeStartElementWithNS( namespaceURI, localName );
-            pathTracker.startFeatureStep( featureName );
 
             if ( feature.getId() != null ) {
                 if ( fidAttr.getNamespaceURI() == "" ) {
@@ -611,7 +557,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
 
             for ( Property prop : props ) {
-                export( feature.getName(), prop, resolveState );
+                export( featureName, prop, resolveState );
             }
 
             if ( exportExtraProps ) {
@@ -624,6 +570,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
             writer.writeEndElement();
             pathTracker.stopStep( featureName );
+            pathTracker.stopFeature( featureName );
         }
     }
 
@@ -666,17 +613,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return new GenericProperty( boundedByPt, env );
     }
 
-    private GmlXlinkOptions getResolveParams( Property prop, GmlXlinkOptions resolveState ) {
-        PropertyNameFilter projection = propertyNameFilters.get( prop.getName() );
-        if ( projection != null && projection.getResolveParams() != null ) {
-            return new GmlXlinkOptions( projection.getResolveParams() );
-        }
-        return resolveState;
-    }
-
     private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature,
-                                        Map<QName, PrimitiveValue> attributes,
-                                        GmlXlinkOptions resolveState )
+                                        Map<QName, PrimitiveValue> attributes, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = pt.getName();
@@ -729,7 +667,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private void exportEmptyProperty( final QName propName, final Map<QName,PrimitiveValue> attrs)
+    private void exportEmptyProperty( final QName propName, final Map<QName, PrimitiveValue> attrs )
                             throws XMLStreamException {
         writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
         writeAttributes( attrs );
@@ -803,7 +741,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         int minOccurs = 1;
         if ( elDecl != null && schemaInfoset != null ) {
             ObjectPropertyType gmlPropertyDecl = schemaInfoset.getGMLPropertyDecl( elDecl, elName, 0, 1, null );
-            if( gmlPropertyDecl != null ) {
+            if ( gmlPropertyDecl != null ) {
                 minOccurs = gmlPropertyDecl.getMinOccurs();
                 if ( gmlPropertyDecl instanceof FeaturePropertyType ) {
                     List<TypedObjectNode> children = xmlContent.getChildren();
@@ -827,7 +765,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
 
         writeStartElementWithNS( elName.getNamespaceURI(), elName.getLocalPart() );
-        writeAttributes (xmlContent.getAttributes());
+        writeAttributes( xmlContent.getAttributes() );
         if ( xmlContent.getChildren() != null ) {
             for ( TypedObjectNode childNode : xmlContent.getChildren() ) {
                 export( childNode, resolveState );
@@ -847,6 +785,68 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
+    private void parseProjections( GMLStreamWriter gmlStreamWriter ) {
+        Map<QName, List<ProjectionClause>> projections = gmlStreamWriter.getProjections();
+        if ( projections != null ) {
+            for ( Map.Entry<QName, List<ProjectionClause>> projection : projections.entrySet() ) {
+                QName ftName = projection.getKey();
+                for ( ProjectionClause projectionOfFeatureType : projection.getValue() ) {
+                    if ( projectionOfFeatureType instanceof PropertyName ) {
+                        PropertyName propName = (PropertyName) projectionOfFeatureType;
+                        QName qName = propName.getPropertyName().getAsQName();
+                        ValueReference valueReference = propName.getPropertyName();
+                        if ( qName != null ) {
+                            addRequestedPropertyName( ftName, qName, propName );
+                        } else if ( isSupportedXPath( valueReference ) ) {
+                            LocationPath xPath = (LocationPath) valueReference.getAsXPath();
+                            List steps = xPath.getSteps();
+                            if ( isXPathSupported( steps ) ) {
+                                QName first = stepAsQName( valueReference, (DefaultNameStep) steps.get( 0 ) );
+                                addRequestedPropertyName( ftName, first, propName );
+                            } else {
+                                LOG.debug( "Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
+                                           + propName.getPropertyName() + "'" );
+                            }
+                        } else {
+                            LOG.debug( "Only simple qualified element names and XPath expression are allowed for PropertyName projections. Ignoring '"
+                                       + propName.getPropertyName() + "'" );
+                        }
+                    } else if ( projectionOfFeatureType instanceof TimeSliceProjection ) {
+                        timeSliceFilters.add( ( (TimeSliceProjection) projectionOfFeatureType ).getTimeSliceFilter() );
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isPropertyRequested() {
+        if ( this.propertyNameFilters.isEmpty() )
+            return true;
+        QName keyProp = pathTracker.firstStep();
+        QName featureName = pathTracker.getFeatureName();
+        QName baseFeatureTypeName = pathTracker.getBaseFeatureTypeName();
+        if ( this.propertyNameFilters.containsKey( key( baseFeatureTypeName, keyProp ) ) ) {
+            PropertyNameFilter propertyNameFilter = propertyNameFilters.get( key( baseFeatureTypeName, keyProp ) );
+            return propertyNameFilter.isRequested( pathTracker );
+        } else if ( this.propertyNameFilters.containsKey( key( baseFeatureTypeName, featureName ) ) ) {
+            PropertyNameFilter propertyNameFilter = propertyNameFilters.get( key( baseFeatureTypeName, featureName ) );
+            return propertyNameFilter.isRequested( pathTracker );
+        }
+        return false;
+    }
+
+    private MultiKey<QName> key( QName ftName, QName propName ) {
+        return new MultiKey<>( ftName, propName );
+    }
+
+    private GmlXlinkOptions getResolveParams( QName ftName, Property prop, GmlXlinkOptions resolveState ) {
+        PropertyNameFilter projection = propertyNameFilters.get( key( ftName, prop.getName() ) );
+        if ( projection != null && projection.getResolveParams() != null ) {
+            return new GmlXlinkOptions( projection.getResolveParams() );
+        }
+        return resolveState;
+    }
+
     private boolean isXPathSupported( List steps ) {
         for ( Object o : steps ) {
             if ( o instanceof DefaultNameStep ) {
@@ -860,10 +860,12 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return true;
     }
 
-    private void addRequestedPropertyName( QName qName, PropertyName propName ) {
-        if ( !propertyNameFilters.containsKey( qName ) )
-            propertyNameFilters.put( qName, new PropertyNameFilter() );
-        propertyNameFilters.get( qName ).add( propName );
+    private void addRequestedPropertyName( QName ftName, QName qName, PropertyName propName ) {
+        MultiKey<QName> key = key( ftName, qName );
+        if ( !propertyNameFilters.containsKey( key ) ) {
+            propertyNameFilters.put( key, new PropertyNameFilter() );
+        }
+        propertyNameFilters.get( key ).add( propName );
     }
 
     private QName stepAsQName( ValueReference valueReference, DefaultNameStep nameStep ) {
@@ -872,24 +874,8 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         return new QName( namespaceURI, nameStep.getLocalName(), prefix );
     }
 
-    private boolean isPropertyRequested() {
-        if ( this.propertyNameFilters.isEmpty() )
-            return true;
-        QName keyProp = pathTracker.firstStep();
-        QName featureName = pathTracker.getFeatureName();
-        if ( this.propertyNameFilters.containsKey( keyProp ) ) {
-            PropertyNameFilter propertyNameFilter = propertyNameFilters.get( keyProp );
-            return propertyNameFilter.isRequested( pathTracker );
-        } else if ( this.propertyNameFilters.containsKey( featureName ) ) {
-            PropertyNameFilter propertyNameFilter = propertyNameFilters.get( featureName );
-            return propertyNameFilter.isRequested( pathTracker );
-        }
-        return false;
-    }
-
     private boolean isSupportedXPath( ValueReference valueReference ) {
-        if ( valueReference.getAsXPath() != null
-             && valueReference.getAsXPath() instanceof LocationPath ) {
+        if ( valueReference.getAsXPath() != null && valueReference.getAsXPath() instanceof LocationPath ) {
             LocationPath locationPath = (LocationPath) valueReference.getAsXPath();
             List steps = locationPath.getSteps();
             for ( Object step : steps ) {

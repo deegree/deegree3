@@ -36,7 +36,6 @@
 
 package org.deegree.gml.feature;
 
-import com.sun.javafx.collections.MappingChange;
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.tom.ResolveMode;
 import org.deegree.commons.tom.ResolveParams;
@@ -79,6 +78,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
@@ -468,10 +468,13 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
         GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
 
-        List<ProjectionClause> projections = new ArrayList<>();
-        projections.add( createPropertyName( "id" ) );
-        projections.add( createPropertyName( "name" ) );
-        projections.add( createPropertyName( "isAuthorOf" ) );
+        Map<QName, List<ProjectionClause>> projections = new HashMap<>();
+        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher", "app" );
+        List<ProjectionClause> ftProjections = new ArrayList<>();
+        ftProjections.add( createPropertyName( "id" ) );
+        ftProjections.add( createPropertyName( "name" ) );
+        ftProjections.add( createPropertyName( "isAuthorOf" ) );
+        projections.put( ftName, ftProjections );
         exporter.setProjections( projections );
 
         exporter.write( feature );
@@ -506,10 +509,13 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
         GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
 
-        List<ProjectionClause> projections = new ArrayList<>();
-        projections.add( createPropertyName( "id" ) );
-        projections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:name" ) );
-        projections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) );
+        Map<QName, List<ProjectionClause>> projections = new HashMap<>();
+        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher", "app" );
+        List<ProjectionClause> ftProjections = new ArrayList<>();
+        ftProjections.add( createPropertyName( "id" ) );
+        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:name" )  );
+        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) );
+        projections.put( ftName, ftProjections );
         exporter.setProjections( projections );
 
         exporter.write( feature );
@@ -544,9 +550,12 @@ public class GMLFeatureWriterTest {
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
         GMLStreamWriter exporter = createGMLStreamWriter( GML_32, writer );
 
-        List<ProjectionClause> projections = new ArrayList<>();
-        projections.add( createPropertyName( "id" ) );
-        projections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place" ) );
+        Map<QName, List<ProjectionClause>> projections = new HashMap<>();
+        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher", "app" );
+        List<ProjectionClause> ftProjections = new ArrayList<>();
+        ftProjections.add( createPropertyName( "id" ) );
+        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place" )  );
+        projections.put( ftName, ftProjections );
         exporter.setProjections( projections );
 
         exporter.write( feature );
@@ -559,14 +568,14 @@ public class GMLFeatureWriterTest {
                         expectedXml( "expectedExport-projectionXPath_Place.xml" ) ) ) );
     }
 
-    private ProjectionClause createPropertyName( String propertyName ) {
+    private PropertyName createPropertyName( String propertyName ) {
         QName propName = new QName( "http://www.deegree.org/app", propertyName, "app" );
         ValueReference valueRef = new ValueReference( propName );
         ResolveParams resolveParams = new ResolveParams( ResolveMode.ALL, "*", BigInteger.valueOf( 1000 ) );
         return new PropertyName( valueRef, resolveParams, null );
     }
 
-    private ProjectionClause createPropertyNameWithXPath( String xPath ) {
+    private PropertyName createPropertyNameWithXPath( String xPath ) {
         org.jaxen.SimpleNamespaceContext namespaceContext = new org.jaxen.SimpleNamespaceContext();
         namespaceContext.addNamespace( "app", "http://www.deegree.org/app" );
         ValueReference valueRef = new ValueReference( xPath, namespaceContext );

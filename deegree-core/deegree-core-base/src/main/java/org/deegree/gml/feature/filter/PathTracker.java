@@ -11,13 +11,15 @@ public class PathTracker {
 
     private final List<QName> currentPath = new ArrayList<>();
 
+    private QName baseFeatureTypeName;
+
     private QName featureName;
 
     public void startFeature( QName featureName ) {
         this.featureName = featureName;
-    }
-
-    public void startFeatureStep( QName featureName ) {
+        if ( this.baseFeatureTypeName == null ) {
+            this.baseFeatureTypeName = featureName;
+        }
         if ( !currentPath.isEmpty() )
             this.currentPath.add( featureName );
     }
@@ -32,8 +34,10 @@ public class PathTracker {
         }
     }
 
-    public void reset() {
-        this.currentPath.clear();
+    public void stopFeature( QName featureName ) {
+        if ( featureName.equals( baseFeatureTypeName ) ) {
+            this.baseFeatureTypeName = null;
+        }
     }
 
     public List<QName> getCurrentPath() {
@@ -48,5 +52,9 @@ public class PathTracker {
 
     public QName getFeatureName() {
         return featureName;
+    }
+
+    public QName getBaseFeatureTypeName() {
+        return baseFeatureTypeName;
     }
 }
