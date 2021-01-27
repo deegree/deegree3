@@ -43,6 +43,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.commons.utils.StringUtils.splitEscaped;
 import static org.deegree.layer.LayerRef.FROM_NAMES;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
@@ -59,6 +60,7 @@ import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,6 +77,7 @@ import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -84,6 +87,7 @@ import org.deegree.layer.LayerRef;
 import org.deegree.layer.dims.DimensionsLexer;
 import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.protocol.wms.Utils;
+import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
@@ -223,6 +227,13 @@ public class GetMap extends RequestBase {
         this.parameterMap.putAll( parameterMap );
         this.dimensions.putAll( dimensions );
     }
+    
+    public GetMap( List<LayerRef> layers, List<StyleRef> styles, int width, int height, Envelope envelope, ICRS crs,
+                   String format, boolean transparent, Color bgcolor, Map<String, String> parameterMap,
+                   Map<String, List<?>> dimensions, Map<String, String> kvp ) {
+        this( layers, styles, width, height, envelope, crs, format, transparent, bgcolor, parameterMap, dimensions );
+        handlePixelSize( parameterMap );
+    }
 
     public GetMap( List<String> layers, List<String> styles, int width, int height, Envelope envelope, ICRS crs,
                    String format, boolean transparent, Map<String, String> overriddenParameters ) {
@@ -333,6 +344,53 @@ public class GetMap extends RequestBase {
         return styles;
     }
 
+    private void handlePixelSize( Map<String, String> map ) {
+        String psize = map.get( "PIXELSIZE" );
+        if ( psize != null ) {
+            try {
+                pixelSize = Double.parseDouble( psize ) / 1000;
+            } catch ( NumberFormatException e ) {
+                LOG.warn( "The value of PIXELSIZE could not be parsed as a number." );
+                LOG.trace( "Stack trace:", e );
+            }
+        } else {
+            String key = "RES";
+            String pdpi = map.get( key );
+
+            if ( pdpi == null ) {
+                key = "DPI";
+                pdpi = map.get( key );
+            }
+            if ( pdpi == null ) {
+                key = "MAP_RESOLUTION";
+                pdpi = map.get( key );
+            }
+            if ( pdpi == null ) {
+                for ( String word : splitEscaped( map.get( "FORMAT_OPTIONS" ), ';', 0 ) ) {
+                    List<String> keyValue = StringUtils.splitEscaped( word, ':', 2 );
+
+                    if ( "dpi".equalsIgnoreCase( keyValue.get( 0 ) ) ) {
+                        key = "FORMAT_OPTIONS=dpi";
+                        pdpi = keyValue.size() == 1 ? null : StringUtils.unescape( keyValue.get( 1 ) );
+                        break;
+                    }
+                }
+            }
+            if ( pdpi == null ) {
+                key = "X-DPI";
+                pdpi = map.get( key );
+            }
+            if ( pdpi != null ) {
+                try {
+                    pixelSize = 0.0254d / Double.parseDouble( pdpi );
+                } catch ( Exception e ) {
+                    LOG.warn( "The value of {} could not be parsed as a number.", key );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
+    
     private void handleCommon( Map<String, String> map, MapOptionsMaps exts )
                             throws OWSException {
         String ls = map.get( "LAYERS" );
@@ -360,15 +418,7 @@ public class GetMap extends RequestBase {
             handleSLD( sld, sldBody );
         }
 
-        String psize = map.get( "PIXELSIZE" );
-        if ( psize != null ) {
-            try {
-                pixelSize = Double.parseDouble( psize ) / 1000;
-            } catch ( NumberFormatException e ) {
-                LOG.warn( "The value of PIXELSIZE could not be parsed as a number." );
-                LOG.trace( "Stack trace:", e );
-            }
-        }
+        handlePixelSize( map );
 
         format = map.get( "FORMAT" );
         if ( format == null ) {

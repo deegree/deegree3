@@ -53,6 +53,7 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
@@ -120,7 +121,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private final String gmlNull;
 
-    private final Map<QName, PropertyName> requestedPropertyNames = new HashMap<QName, PropertyName>();
+    private final Map<MultiKey<QName>, PropertyName> allProjections = new HashMap();
 
     private final List<Filter> timeSliceFilters = new ArrayList<Filter>();
 
@@ -151,22 +152,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
     public GMLFeatureWriter( GMLStreamWriter gmlStreamWriter ) {
         super( gmlStreamWriter );
 
-        if ( gmlStreamWriter.getProjections() != null ) {
-            for ( ProjectionClause projection : gmlStreamWriter.getProjections() ) {
-                if ( projection instanceof PropertyName ) {
-                    PropertyName propName = (PropertyName) projection;
-                    QName qName = propName.getPropertyName().getAsQName();
-                    if ( qName != null ) {
-                        requestedPropertyNames.put( qName, propName );
-                    } else {
-                        LOG.debug( "Only simple qualified element names are allowed for PropertyName projections. Ignoring '"
-                                   + propName.getPropertyName() + "'" );
-                    }
-                } else if ( projection instanceof TimeSliceProjection ) {
-                    timeSliceFilters.add( ( (TimeSliceProjection) projection ).getTimeSliceFilter() );
-                }
-            }
-        }
+        parseProjections(gmlStreamWriter);
 
         if ( !version.equals( GML_2 ) ) {
             fidAttr = new QName( gmlNs, "id" );
@@ -213,7 +199,11 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     public void export( TypedObjectNode node, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
+        export( null, node, resolveState );
+    }
 
+    private void export( QName ftName, TypedObjectNode node, GmlXlinkOptions resolveState )
+                            throws XMLStreamException, UnknownCRSException, TransformationException {
         if ( node instanceof GMLObject ) {
             if ( node instanceof Feature ) {
                 export( (Feature) node, resolveState );
@@ -225,7 +215,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         } else if ( node instanceof PrimitiveValue ) {
             writer.writeCharacters( ( (PrimitiveValue) node ).getAsText() );
         } else if ( node instanceof Property ) {
-            export( (Property) node, resolveState );
+            export( ftName, (Property) node, resolveState );
         } else if ( node instanceof ElementNode ) {
             ElementNode xmlContent = (ElementNode) node;
             exportGenericXmlElement( xmlContent, resolveState );
@@ -263,14 +253,14 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         writer.writeEndElement();
     }
 
-    private void export( Property property, GmlXlinkOptions resolveState )
+    private void export( QName ftName, Property property, GmlXlinkOptions resolveState )
                             throws XMLStreamException, UnknownCRSException, TransformationException {
 
         QName propName = property.getName();
         PropertyType pt = property.getType();
         if ( pt.getMinOccurs() == 0 ) {
             LOG.debug( "Optional property '" + propName + "', checking if it is requested." );
-            if ( !isPropertyRequested( propName ) ) {
+            if ( !isPropertyRequested( ftName, propName ) ) {
                 LOG.debug( "Skipping it." );
                 return;
             }
@@ -282,7 +272,7 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
 
         if ( resolveState.getCurrentLevel() == 0 ) {
-            resolveState = getResolveParams( property, resolveState );
+            resolveState = getResolveParams( ftName, property, resolveState );
         }
 
         TypedObjectNode value = property.getValue();
@@ -555,14 +545,14 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             }
 
             for ( Property prop : props ) {
-                export( prop, resolveState );
+                export( feature.getName(), prop, resolveState );
             }
 
             if ( exportExtraProps ) {
                 ExtraProps extraProps = feature.getExtraProperties();
                 if ( extraProps != null ) {
                     for ( Property prop : extraProps.getProperties() ) {
-                        export( prop, resolveState );
+                        export( feature.getName(), prop, resolveState );
                     }
                 }
             }
@@ -607,14 +597,6 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
             return null;
         }
         return new GenericProperty( boundedByPt, env );
-    }
-
-    private GmlXlinkOptions getResolveParams( Property prop, GmlXlinkOptions resolveState ) {
-        PropertyName projection = requestedPropertyNames.get( prop.getName() );
-        if ( projection != null && projection.getResolveParams() != null ) {
-            return new GmlXlinkOptions( projection.getResolveParams() );
-        }
-        return resolveState;
     }
 
     private void exportFeatureProperty( FeaturePropertyType pt, Feature subFeature,
@@ -776,7 +758,46 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
         }
     }
 
-    private boolean isPropertyRequested( QName propName ) {
-        return requestedPropertyNames.isEmpty() || requestedPropertyNames.containsKey( propName );
+    private void parseProjections( GMLStreamWriter gmlStreamWriter ) {
+        Map<QName, List<ProjectionClause>> projections = gmlStreamWriter.getProjections();
+        if ( projections != null ) {
+            for ( Map.Entry<QName, List<ProjectionClause>> projection : projections.entrySet() ) {
+                QName ftName = projection.getKey();
+                for ( ProjectionClause projectionOfFeatureType : projection.getValue() ) {
+                    if ( projectionOfFeatureType instanceof PropertyName ) {
+                        PropertyName propName = (PropertyName) projectionOfFeatureType;
+                        QName qName = propName.getPropertyName().getAsQName();
+                        if ( qName != null ) {
+                            allProjections.put( key( ftName, qName ), propName );
+                        } else {
+                            LOG.debug( "Only simple qualified element names are allowed for PropertyName projections. Ignoring '"
+                                       + propName.getPropertyName() + "'" );
+                        }
+                    } else if ( projectionOfFeatureType instanceof TimeSliceProjection ) {
+                        timeSliceFilters.add( ( (TimeSliceProjection) projectionOfFeatureType ).getTimeSliceFilter() );
+                    }
+                }
+            }
+        }
     }
+
+    private boolean isPropertyRequested( QName ftName, QName propName ) {
+        // ftName is null if the property not on level 0
+        if ( ftName == null )
+            return true;
+        return allProjections.isEmpty() || allProjections.containsKey( key( ftName, propName ) );
+    }
+
+    private MultiKey<QName> key( QName ftName, QName propName ) {
+        return new MultiKey<>( ftName, propName );
+    }
+
+    private GmlXlinkOptions getResolveParams( QName ftName, Property prop, GmlXlinkOptions resolveState ) {
+        PropertyName projection = allProjections.get( key( ftName, prop.getName() ) );
+        if ( projection != null && projection.getResolveParams() != null ) {
+            return new GmlXlinkOptions( projection.getResolveParams() );
+        }
+        return resolveState;
+    }
+
 }

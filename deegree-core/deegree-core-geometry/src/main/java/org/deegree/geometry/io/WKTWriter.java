@@ -1191,11 +1191,10 @@ public class WKTWriter {
         for ( int i = 0; i < geometry.size(); i++ ) {
             writer.append( '(' );
             writeLineStringWithoutPrefix( geometry.get( i ), writer );
-            if ( i < geometry.size() - 1 ) {
-                writer.append( ',' );
-
-            }
             writer.append( ')' );
+            if ( i < geometry.size() - 1 ) {
+            	writer.append( ',' );
+            }
         }
 
         writer.append( ')' );

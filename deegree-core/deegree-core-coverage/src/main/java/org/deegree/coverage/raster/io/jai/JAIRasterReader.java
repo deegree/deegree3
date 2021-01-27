@@ -43,6 +43,7 @@ import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
@@ -132,7 +133,7 @@ public class JAIRasterReader implements RasterReader {
         this.dataLocationId = options != null ? options.get( RasterIOOptions.ORIGIN_OF_RASTER ) : null;
         if ( dataLocationId == null ) {
             if ( this.file != null ) {
-                this.dataLocationId = FileUtils.getFilename( this.file );
+                this.dataLocationId = RasterCache.getUniqueCacheIdentifier( this.file );
             }
         }
     }

@@ -53,7 +53,7 @@ import org.deegree.geometry.primitive.Surface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPoint;
 
 /**
  * Provides methods for creating linearized versions of {@link Geometry} objects.

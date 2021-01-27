@@ -140,8 +140,8 @@ class GeometryClipper {
                 if ( clippedGeometry == null ) {
                     return null;
                 }
-                com.vividsolutions.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
-                com.vividsolutions.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
+                org.locationtech.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
+                org.locationtech.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
                 if ( jtsOrig == jtsClipped ) {
                     return geom;
                 }
@@ -168,24 +168,24 @@ class GeometryClipper {
      * @param   jtsGeom   JTS Geometry to be evaluated
      * @return  boolean   true if (first) Geometry is Polygon with CW external ring, false otherwise
      */
-    private boolean isInvertedOrientation( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
-        com.vividsolutions.jts.geom.Polygon poly = null;
+    private boolean isInvertedOrientation( org.locationtech.jts.geom.Geometry jtsGeom ) {
+        org.locationtech.jts.geom.Polygon poly = null;
         try {
-            if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection && //
-                 ( (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom ).getNumGeometries() > 0 ) {
-                com.vividsolutions.jts.geom.Geometry firstGeom;
-                firstGeom = ( (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom ).getGeometryN( 0 );
-                if ( firstGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
-                    poly = (com.vividsolutions.jts.geom.Polygon) firstGeom;
+            if ( jtsGeom instanceof org.locationtech.jts.geom.GeometryCollection && //
+                 ( (org.locationtech.jts.geom.GeometryCollection) jtsGeom ).getNumGeometries() > 0 ) {
+                org.locationtech.jts.geom.Geometry firstGeom;
+                firstGeom = ( (org.locationtech.jts.geom.GeometryCollection) jtsGeom ).getGeometryN( 0 );
+                if ( firstGeom instanceof org.locationtech.jts.geom.Polygon ) {
+                    poly = (org.locationtech.jts.geom.Polygon) firstGeom;
                 }
-            } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
-                poly = (com.vividsolutions.jts.geom.Polygon) jtsGeom;
+            } else if ( jtsGeom instanceof org.locationtech.jts.geom.Polygon ) {
+                poly = (org.locationtech.jts.geom.Polygon) jtsGeom;
             }
         
             //TRICKY check if polygon exterior is CW
             if ( poly != null ) {
-                com.vividsolutions.jts.geom.Coordinate[] coords = poly.getExteriorRing().getCoordinates();
-                if ( !com.vividsolutions.jts.algorithm.CGAlgorithms.isCCW( coords ) ) {
+                org.locationtech.jts.geom.Coordinate[] coords = poly.getExteriorRing().getCoordinates();
+                if ( !org.locationtech.jts.algorithm.CGAlgorithms.isCCW( coords ) ) {
                     return true;
                 }
             }

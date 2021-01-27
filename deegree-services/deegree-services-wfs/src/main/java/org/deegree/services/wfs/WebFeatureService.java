@@ -159,6 +159,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -316,7 +317,8 @@ public class WebFeatureService extends AbstractOWS {
                 list.add( url );
             }
         }
-        storedQueryHandler = new StoredQueryHandler( this, list );
+        File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
+        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
@@ -557,10 +559,12 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.2", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml32 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -820,7 +824,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response, queryCRS );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -983,7 +987,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response, queryCRS );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1150,7 +1154,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
                 Transaction transaction = transactionReader.read( bodyXmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response, queryCRS );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );

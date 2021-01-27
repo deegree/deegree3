@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<deegreeCSW configVersion="3.4.0"
-  xmlns="http://www.deegree.org/services/csw" 
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/csw 
-  http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd">
-</deegreeCSW>

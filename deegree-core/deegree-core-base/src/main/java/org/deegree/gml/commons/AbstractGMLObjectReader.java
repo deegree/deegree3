@@ -51,9 +51,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_30;
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,30 +178,15 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
      * Parses the gml:id attribute of a GML object element.
      *
      * @param xmlStream
-     *            must not be <code>null</code> and point to the start element of a GML object
+     *                      must not be <code>null</code> and point to the start element of a GML object
      * @return value of the GML id, can be <code>null</code>
-     * @throws XMLStreamException
-     *             if the GML version requires a gml:id attribute and none is present (or invalid)
      */
-    public String parseGmlId( final XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+    public String parseGmlId( final XMLStreamReader xmlStream ) {
         final String gmlId = xmlStream.getAttributeValue( gmlNs, "id" );
-        if ( gmlId == null && isGmlIdRequired() ) {
-            final String msg = "Required attribute gml:id is missing.";
-            throw new XMLStreamException( msg, xmlStream.getLocation() );
-        }
         if ( gmlId != null ) {
             checkValidNcName( gmlId );
         }
         return gmlId;
-    }
-
-    // required since GML 3.2
-    private boolean isGmlIdRequired() {
-        if ( gmlStreamReader.getLaxMode() ) {
-            return false;
-        }
-        return version != GML_2 && version != GML_30 || version != GML_31;
     }
 
     private void checkValidNcName( final String gmlId ) {
