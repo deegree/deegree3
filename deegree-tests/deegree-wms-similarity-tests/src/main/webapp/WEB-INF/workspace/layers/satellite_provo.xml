@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/coverage http://schemas.deegree.org/layers/coverage/3.4.0/coverage.xsd" configVersion="3.4.0">
+  <CoverageStoreId>utah_satellite_provo</CoverageStoreId>
+  <CoverageLayer>
+    <l:Name>satellite_provo</l:Name>
+    <d:Title>satellite_provo</d:Title>
+    <s:CRS>EPSG:26912 EPSG:4326 EPSG:4258 CRS:84</s:CRS>
+  </CoverageLayer>
+  <CoverageLayer>
+    <l:Name>satellite_provo_scalelimit</l:Name>
+    <d:Title>satellite_provo</d:Title>
+    <s:CRS>EPSG:26912 EPSG:4326 EPSG:4258 CRS:84</s:CRS>
+	<l:ScaleDenominators max="7100" min="6900"/>
+  </CoverageLayer>
+</CoverageLayers>

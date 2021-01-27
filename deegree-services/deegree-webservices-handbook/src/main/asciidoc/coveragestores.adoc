@@ -55,6 +55,13 @@ coverage sources. The RasterDirectory paramter can additionally have the
 recursive attribute with true and false as value to declare
 subdirectories to be included.
 
+WARNING: When using raster files, deegree creates on demand cache files. 
+Depending on the raster data used, the size of the cache files may vary.
+In individual cases, the use of cache files can be prevented by creating a 
+file _<filename>.no-cache_ or _<filename>.no-cache-<level>_ for whole files 
+or individual levels. Disabling the cache files can have a negative effect 
+on memory consumption. It is recommend to leave the cache enabled if possible.
+
 === MultiResolutionRaster
 
 A <MultiResolutionRaster> wraps single raster elements and adds a
