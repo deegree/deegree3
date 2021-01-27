@@ -105,6 +105,7 @@
         </element>
         <element name="FeatureInfoRadius" type="int" />
       </choice>
+      <element name="Opaque" type="boolean" default="false" minOccurs="0" />
     </sequence>
   </complexType>
 

@@ -88,4 +88,19 @@ public class ExteriorRingOrientation extends AbstractGeometryValidationEvent {
         return isClockwise;
     }
 
+    /**
+     * Returns true if the geometry is an exterior boundary.
+     * 
+     * @return <code>true</code> if geometry is an exterior boundary, <code>false</code> if it's interior
+     */
+    public boolean isExterior() {
+        boolean isExterior = !isClockwise;
+
+        if ( isLeftHanded( patch.getExteriorRing().getCoordinateSystem() ) ) {
+            isExterior = !isExterior;
+        }
+
+        return isExterior;
+    }
+
 }

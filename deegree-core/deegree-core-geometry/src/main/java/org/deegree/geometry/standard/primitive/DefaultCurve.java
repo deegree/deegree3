@@ -60,7 +60,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 import org.deegree.geometry.standard.points.PointsSubsequence;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Curve}.
@@ -109,7 +109,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     @Override
     public Measure getLength( Unit requestedUnit ) {
         // TODO respect requested unit
-        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength();
+        double length = ( (org.locationtech.jts.geom.LineString) getJTSGeometry() ).getLength();
         return new Measure( Double.toString( length ), null );
     }
 
@@ -178,7 +178,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.LineString buildJTSGeometry() {
+    protected org.locationtech.jts.geom.LineString buildJTSGeometry() {
         CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
         // TODO how to provide a linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );

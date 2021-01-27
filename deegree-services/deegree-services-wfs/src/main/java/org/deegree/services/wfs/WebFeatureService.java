@@ -35,61 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs;
 
-import static org.apache.commons.lang.StringUtils.trim;
-import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
-import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
-import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
-import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_30;
-import static org.deegree.gml.GMLVersion.GML_31;
-import static org.deegree.gml.GMLVersion.GML_32;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
-import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
-import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
-import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
-import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
-import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
-import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
-import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
-import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
-import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
-import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAP11Version;
@@ -121,6 +66,9 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.lock.LockHasExpiredException;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLVersion;
+import org.deegree.gml.reference.matcher.BaseUrlReferencePatternMatcher;
+import org.deegree.gml.reference.matcher.MultipleReferencePatternMatcher;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilities;
 import org.deegree.protocol.ows.getcapabilities.GetCapabilitiesKVPParser;
 import org.deegree.protocol.wfs.WFSRequestType;
@@ -166,6 +114,9 @@ import org.deegree.services.controller.ImplementationMetadata;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.encoding.LimitedSupportedEncodings;
+import org.deegree.services.encoding.SupportedEncodings;
+import org.deegree.services.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.i18n.Messages;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
@@ -176,6 +127,7 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.EnableTransactions;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.ExtendedCapabilities;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
+import org.deegree.services.jaxb.wfs.DisabledResources;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
@@ -187,9 +139,6 @@ import org.deegree.services.metadata.provider.OWSMetadataProviderProvider;
 import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
-import org.deegree.services.wfs.encoding.LimitedSupportedEncodings;
-import org.deegree.services.wfs.encoding.SupportedEncodings;
-import org.deegree.services.wfs.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.wfs.format.Format;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
@@ -199,6 +148,62 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.apache.commons.lang.StringUtils.trim;
+import static org.deegree.commons.ows.exception.OWSException.INVALID_PARAMETER_VALUE;
+import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
+import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
+import static org.deegree.gml.GMLVersion.GML_2;
+import static org.deegree.gml.GMLVersion.GML_30;
+import static org.deegree.gml.GMLVersion.GML_31;
+import static org.deegree.gml.GMLVersion.GML_32;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSRequestType.CreateStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeFeatureType;
+import static org.deegree.protocol.wfs.WFSRequestType.DescribeStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.DropStoredQuery;
+import static org.deegree.protocol.wfs.WFSRequestType.GetCapabilities;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.GetFeatureWithLock;
+import static org.deegree.protocol.wfs.WFSRequestType.GetGmlObject;
+import static org.deegree.protocol.wfs.WFSRequestType.GetPropertyValue;
+import static org.deegree.protocol.wfs.WFSRequestType.ListStoredQueries;
+import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
+import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
+import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
@@ -256,7 +261,11 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean enableResponsePaging;
 
+    private boolean allowFeatureReferencesToDatastore = false;
+
     private OWSMetadataProvider mdProvider;
+
+    private ReferencePatternMatcher referencePatternMatcher;
 
     public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -274,7 +283,9 @@ public class WebFeatureService extends AbstractOWS {
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
         if ( enableTransactions != null ) {
             this.enableTransactions = enableTransactions.isValue();
-            this.idGenMode = parseIdGenMode( enableTransactions.getIdGen() );
+            IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
+            this.idGenMode = parseIdGenMode( configuredIdGenMode );
+            this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
         }
         if ( jaxbConfig.isEnableResponseBuffering() != null ) {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
@@ -306,13 +317,16 @@ public class WebFeatureService extends AbstractOWS {
                 list.add( url );
             }
         }
-        storedQueryHandler = new StoredQueryHandler( this, list );
+        File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
+        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
         mdProvider = initMetadataProvider( serviceMetadata, jaxbConfig );
 
         supportedEncodings = parseEncodings( jaxbConfig );
+
+        referencePatternMatcher = parseDisabledResources( jaxbConfig );
     }
 
     SupportedEncodings parseEncodings( DeegreeWFS jaxbConfig ) {
@@ -325,6 +339,20 @@ public class WebFeatureService extends AbstractOWS {
         return new UnlimitedSupportedEncodings();
     }
 
+    private ReferencePatternMatcher parseDisabledResources( DeegreeWFS jaxbConfig ) {
+        DisabledResources disabledResources = jaxbConfig.getDisabledResources();
+        if ( disabledResources != null && !disabledResources.getPattern().isEmpty() ) {
+            MultipleReferencePatternMatcher matcher = new MultipleReferencePatternMatcher();
+            List<String> patterns = disabledResources.getPattern();
+            for ( String pattern : patterns ) {
+                BaseUrlReferencePatternMatcher baseUrlMatcher = new BaseUrlReferencePatternMatcher( pattern );
+                matcher.addMatcherToApply( baseUrlMatcher );
+            }
+            return matcher;
+        }
+        return null;
+    }
+
     private LimitedSupportedEncodings parseEncodings( SupportedRequests supportedRequests ) {
         List<String> supportedEncodingsForAllRequestTypes = supportedRequests.getSupportedEncodings();
         if ( isAtLeastOneRequestTypeConfigured( supportedRequests ) )
@@ -334,7 +362,7 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     private LimitedSupportedEncodings parseEncodingWithSupportedEncodings( List<String> supportedEncodingsForAllRequestTypes ) {
-        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+        LimitedSupportedEncodings<WFSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
         limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
                                                        collectEnabledEncodings( supportedEncodingsForAllRequestTypes ) );
         limitedSupportedEncodings.addEnabledEncodings( DescribeFeatureType,
@@ -364,7 +392,7 @@ public class WebFeatureService extends AbstractOWS {
 
     private LimitedSupportedEncodings parseEncodingsWithSpecifiedRequestTypes( SupportedRequests supportedRequests,
                                                                                List<String> supportedEncodingsForAllRequestTypes ) {
-        LimitedSupportedEncodings limitedSupportedEncodings = new LimitedSupportedEncodings();
+        LimitedSupportedEncodings<WFSRequestType> limitedSupportedEncodings = new LimitedSupportedEncodings();
         limitedSupportedEncodings.addEnabledEncodings( CreateStoredQuery,
                                                        collectEnabledEncodings( supportedRequests.getCreateStoredQuery(),
                                                                                 supportedEncodingsForAllRequestTypes ) );
@@ -450,6 +478,7 @@ public class WebFeatureService extends AbstractOWS {
         case GENERATE_NEW: {
             return IDGenMode.GENERATE_NEW;
         }
+        case USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY:
         case USE_EXISTING: {
             return IDGenMode.USE_EXISTING;
         }
@@ -530,10 +559,12 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.2", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml32 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -793,7 +824,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -956,7 +987,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1123,7 +1154,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
                 Transaction transaction = transactionReader.read( bodyXmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1413,6 +1444,13 @@ public class WebFeatureService extends AbstractOWS {
      */
     public boolean isSoapSupported() {
         return !disableBuffering;
+    }
+
+    /**
+     * @return the matcher to match disabled urls, may be <code>null</code>
+     */
+    public ReferencePatternMatcher getReferencePatternMatcher() {
+        return referencePatternMatcher;
     }
 
     /**

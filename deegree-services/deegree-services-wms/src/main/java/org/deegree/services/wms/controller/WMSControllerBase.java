@@ -143,7 +143,7 @@ public abstract class WMSControllerBase implements Controller {
                             throws ServletException {
         try {
             writeExceptionCatchExceptions( map, e, response, exceptionsFormat, controller );
-        } catch ( ServletException _ ) {
+        } catch ( ServletException ignored ) {
             sendException( e, response, controller );
         }
     }

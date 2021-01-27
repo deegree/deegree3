@@ -1,0 +1,12 @@
+<gml:FeatureCollection xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.deegree.org/app ../schema/CustomPropertiesGml32.xsd"
+                       gml:id="FC_1">
+  <gml:featureMember>
+    <app:ComplexFeature gml:id="CF_1">
+      <app:simple>abc</app:simple>
+      <app:type xlink:href="http://pathtoregistry/abc/code" />
+    </app:ComplexFeature>
+  </gml:featureMember>
+</gml:FeatureCollection>

@@ -51,9 +51,6 @@ import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.require;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.deegree.gml.GMLVersion.GML_30;
-import static org.deegree.gml.GMLVersion.GML_31;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -155,6 +152,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
+    private final GMLReferenceResolver internalResolver;
+
     // TODO should be final, but is currently modified by GMLFeatureReader
     protected AppSchema schema;
 
@@ -167,6 +166,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     protected AbstractGMLObjectReader( GMLStreamReader gmlStreamReader ) {
         this.gmlStreamReader = gmlStreamReader;
         this.specialResolver = gmlStreamReader.getResolver();
+        this.internalResolver = gmlStreamReader.getInternalResolver();
         this.idContext = gmlStreamReader.getIdContext();
         // TODO
         this.schema = gmlStreamReader.getAppSchema();
@@ -178,30 +178,15 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
      * Parses the gml:id attribute of a GML object element.
      *
      * @param xmlStream
-     *            must not be <code>null</code> and point to the start element of a GML object
+     *                      must not be <code>null</code> and point to the start element of a GML object
      * @return value of the GML id, can be <code>null</code>
-     * @throws XMLStreamException
-     *             if the GML version requires a gml:id attribute and none is present (or invalid)
      */
-    public String parseGmlId( final XMLStreamReader xmlStream )
-                            throws XMLStreamException {
+    public String parseGmlId( final XMLStreamReader xmlStream ) {
         final String gmlId = xmlStream.getAttributeValue( gmlNs, "id" );
-        if ( gmlId == null && isGmlIdRequired() ) {
-            final String msg = "Required attribute gml:id is missing.";
-            throw new XMLStreamException( msg, xmlStream.getLocation() );
-        }
         if ( gmlId != null ) {
             checkValidNcName( gmlId );
         }
         return gmlId;
-    }
-
-    // required since GML 3.2
-    private boolean isGmlIdRequired() {
-        if ( gmlStreamReader.getLaxMode() ) {
-            return false;
-        }
-        return version != GML_2 && version != GML_30 || version != GML_31;
     }
 
     private void checkValidNcName( final String gmlId ) {
@@ -322,9 +307,17 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
         if ( href != null ) {
             FeatureReference refFeature = null;
             if ( specialResolver != null ) {
-                refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
+                if( internalResolver == null ) {
+                    refFeature = new FeatureReference( specialResolver, href, xmlStream.getSystemId() );
+                } else {
+                    refFeature = new FeatureReference( specialResolver, internalResolver, href, xmlStream.getSystemId() );
+                }
             } else {
+                if( internalResolver == null ) {
                 refFeature = new FeatureReference( idContext, href, xmlStream.getSystemId() );
+                } else {
+                    refFeature = new FeatureReference( idContext, internalResolver, href, xmlStream.getSystemId() );
+                }
             }
             idContext.addReference( refFeature );
             List<TypedObjectNode> values = new ArrayList<TypedObjectNode>();

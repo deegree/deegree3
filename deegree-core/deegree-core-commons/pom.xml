@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4-RC4-SNAPSHOT</version>
+    <version>3.4.15-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -72,6 +72,10 @@
       <artifactId>xercesImpl</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
     </dependency>
@@ -104,12 +108,8 @@
       <artifactId>deegree-ogcschemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>serializer</artifactId>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -117,4 +117,3 @@
     </dependency>
   </dependencies>
 </project>
-

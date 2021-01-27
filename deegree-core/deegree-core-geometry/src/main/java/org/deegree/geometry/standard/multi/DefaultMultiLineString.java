@@ -84,11 +84,11 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.MultiLineString buildJTSGeometry() {
-        com.vividsolutions.jts.geom.LineString[] jtsMembers = new com.vividsolutions.jts.geom.LineString[size()];
+    protected org.locationtech.jts.geom.MultiLineString buildJTSGeometry() {
+        org.locationtech.jts.geom.LineString[] jtsMembers = new org.locationtech.jts.geom.LineString[size()];
         int i = 0;
         for ( Curve geometry : members ) {
-            jtsMembers[i++] = (com.vividsolutions.jts.geom.LineString) getAsDefaultGeometry( geometry ).getJTSGeometry();
+            jtsMembers[i++] = (org.locationtech.jts.geom.LineString) getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiLineString( jtsMembers );
     }

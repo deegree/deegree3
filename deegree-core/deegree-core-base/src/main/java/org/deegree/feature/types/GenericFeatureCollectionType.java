@@ -76,6 +76,11 @@ public class GenericFeatureCollectionType extends GenericFeatureType implements 
     }
 
     @Override
+    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps ) {
+        return super.newFeature( fid, props, extraProps );
+    }
+
+    @Override
     public Feature newFeature( String fid, List<Property> props, ExtraProps extraProps ) {
         return new GenericFeatureCollection( this, fid, props, extraProps );
     }

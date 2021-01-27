@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4-RC4-SNAPSHOT</version>
+    <version>3.4.15-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -80,7 +80,7 @@
             <include>**/*IntegrationTest.java</include>
             <include>**/*PerformanceTest.java</include>
           </includes>
-          <argLine>-Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber}</argLine>
+          <argLine>-Xmx1324m -Xss2048k -Dportnumber=${portnumber}</argLine>
         </configuration>
         <executions>
           <execution>

@@ -227,7 +227,7 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( FES_20_NS, "Spatial_Capabilities" );
         writer.writeStartElement( FES_20_NS, "GeometryOperands" );
         writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GML3_2_NS );
         exportGeometryOperand( writer, "gml:Box" );
         exportGeometryOperand( writer, "gml:Envelope" );
         exportGeometryOperand( writer, "gml:Point" );
@@ -244,10 +244,14 @@ public class FilterCapabilitiesExporter {
         exportGeometryOperand( writer, "gml:CompositeSurface" );
         exportGeometryOperand( writer, "gml32:Envelope" );
         exportGeometryOperand( writer, "gml32:Point" );
+        exportGeometryOperand( writer, "gml32:LineString" );
         exportGeometryOperand( writer, "gml32:Curve" );
+        exportGeometryOperand( writer, "gml32:Polygon" );
         exportGeometryOperand( writer, "gml32:Surface" );
         exportGeometryOperand( writer, "gml32:MultiPoint" );
+        exportGeometryOperand( writer, "gml32:MultiLineString" );
         exportGeometryOperand( writer, "gml32:MultiCurve" );
+        exportGeometryOperand( writer, "gml32:MultiPolygon" );
         exportGeometryOperand( writer, "gml32:MultiSurface" );
         exportGeometryOperand( writer, "gml32:CompositeCurve" );
         exportGeometryOperand( writer, "gml32:CompositeSurface" );
@@ -286,7 +290,7 @@ public class FilterCapabilitiesExporter {
         writer.writeStartElement( FES_20_NS, "Temporal_Capabilities" );
         writer.writeStartElement( FES_20_NS, "TemporalOperands" );
         writer.writeNamespace( "gml", CommonNamespaces.GMLNS );
-        writer.writeNamespace( "gml32", CommonNamespaces.GMLNS );
+        writer.writeNamespace( "gml32", CommonNamespaces.GML3_2_NS );
         exportTemporalOperand( writer, "gml:TimeInstant" );
         exportTemporalOperand( writer, "gml:TimePeriod" );
         exportTemporalOperand( writer, "gml32:TimeInstant" );

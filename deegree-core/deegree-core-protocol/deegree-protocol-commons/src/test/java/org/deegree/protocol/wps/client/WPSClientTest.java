@@ -35,14 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client;
 
-import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_NAMESPACE;
-import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_PREFIX;
+import static org.locationtech.jts.io.gml2.GMLConstants.GML_NAMESPACE;
+import static org.locationtech.jts.io.gml2.GMLConstants.GML_PREFIX;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -318,7 +321,7 @@ public class WPSClientTest {
         WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
         org.deegree.protocol.wps.client.process.Process proc = wpsClient.getProcess( "Centroid", null );
         ProcessExecution execution = proc.prepareExecution();
-        execution.addXMLInput( "GMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
+        execution.addXMLInput( "GMLInput", null, CURVE_FILE.toURI(), false, "text/xml", null, null );
         execution.addOutput( "Centroid", null, null, true, null, null, null );
         ExecutionOutputs response = execution.execute();
         assertEquals( ExecutionState.SUCCEEDED, execution.getState() );
@@ -348,7 +351,7 @@ public class WPSClientTest {
 
         ProcessExecution execution = proc.prepareExecution();
         execution.addLiteralInput( "BufferDistance", null, "0.1", "double", "unity" );
-        execution.addXMLInput( "GMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
+        execution.addXMLInput( "GMLInput", null, CURVE_FILE.toURI(), false, "text/xml", null, null );
         execution.addOutput( "BufferedGeometry", null, null, false, null, null, null );
         ExecutionOutputs outputs = execution.execute();
 
@@ -373,8 +376,8 @@ public class WPSClientTest {
         ProcessExecution execution = proc.prepareExecution();
         execution.addLiteralInput( "LiteralInput", null, "0", "integer", "seconds" );
         execution.addBBoxInput( "BBOXInput", null, new double[] { 0, 0 }, new double[] { 90, 180 }, "EPSG:4326" );
-        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
-        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI().toURL(), false, "image/png", null );
+        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI(), false, "text/xml", null, null );
+        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI(), false, "image/png", null );
         ExecutionOutputs outputs = execution.execute();
 
         LiteralOutput out1 = (LiteralOutput) outputs.get( 0 );
@@ -400,8 +403,8 @@ public class WPSClientTest {
         ProcessExecution execution = proc.prepareExecution();
         execution.addLiteralInput( "LiteralInput", null, "0", "integer", "seconds" );
         execution.addBBoxInput( "BBOXInput", null, new double[] { 0, 0 }, new double[] { 90, 180 }, "EPSG:4326" );
-        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
-        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI().toURL(), false, "image/png", null );
+        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI(), false, "text/xml", null, null );
+        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI(), false, "image/png", null );
         execution.addOutput( "BBOXOutput", null, null, false, null, null, null );
         ExecutionOutputs outputs = execution.execute();
 
@@ -427,8 +430,8 @@ public class WPSClientTest {
         RawProcessExecution execution = proc.prepareRawExecution();
         execution.addLiteralInput( "LiteralInput", null, "0", "integer", "seconds" );
         execution.addBBoxInput( "BBOXInput", null, new double[] { 0, 0 }, new double[] { 90, 180 }, "EPSG:4326" );
-        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
-        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI().toURL(), false, "image/png", null );
+        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI(), false, "text/xml", null, null );
+        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI(), false, "image/png", null );
         ComplexOutput out = execution.executeComplexOutput( "BinaryOutput", null, "image/png", null, null );
 
         InputStream stream = out.getAsBinaryStream();
@@ -444,7 +447,7 @@ public class WPSClientTest {
 
     @Test
     public void testExecuteInputsByRef()
-                            throws OWSExceptionReport, IOException, XMLStreamException {
+                            throws OWSExceptionReport, IOException, XMLStreamException, URISyntaxException {
         String demoWPSURL = TestProperties.getProperty( "demo_wps_url" );
         Assume.assumeNotNull( demoWPSURL );
         WPSClient wpsClient = new WPSClient( new URL( demoWPSURL ) );
@@ -454,8 +457,8 @@ public class WPSClientTest {
         execution.addLiteralInput( "LiteralInput", null, "0", "integer", "seconds" );
         execution.addBBoxInput( "BBOXInput", null, new double[] { 0, 0 }, new double[] { 90, 180 }, "EPSG:4326" );
         // use the process's GetCapabilities document as XML input because we can be sure it's available
-        execution.addXMLInput( "XMLInput", null, new URL( demoWPSURL ), true, "text/xml", null, null );
-        execution.addBinaryInput( "BinaryInput", null, new URL( REMOTE_BINARY_INPUT ), true, "image/png", null );
+        execution.addXMLInput( "XMLInput", null, new URI( demoWPSURL ), true, "text/xml", null, null );
+        execution.addBinaryInput( "BinaryInput", null, new URI( REMOTE_BINARY_INPUT ), true, "image/png", null );
         ExecutionOutputs outputs = execution.execute();
 
         LiteralOutput out1 = (LiteralOutput) outputs.get( 0 );
@@ -529,8 +532,8 @@ public class WPSClientTest {
         ProcessExecution execution = proc.prepareExecution();
         execution.addLiteralInput( "LiteralInput", null, "5", "integer", "seconds" );
         execution.addBBoxInput( "BBOXInput", null, new double[] { 0, 0 }, new double[] { 90, 180 }, "EPSG:4326" );
-        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI().toURL(), false, "text/xml", null, null );
-        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI().toURL(), false, "image/png", null );
+        execution.addXMLInput( "XMLInput", null, CURVE_FILE.toURI(), false, "text/xml", null, null );
+        execution.addBinaryInput( "BinaryInput", null, BINARY_INPUT.toURI(), false, "image/png", null );
 
         execution.executeAsync();
         Assert.assertNotSame( ExecutionState.SUCCEEDED, execution.getState() );
@@ -621,5 +624,40 @@ public class WPSClientTest {
         execution.addLiteralInput( "ThisDoesNotExist", null, "5", "sortOfInteger", "reallyBigUnit" );
         execution.executeAsync();
         Assert.assertTrue(execution.getState() != ExecutionState.SUCCEEDED); // we shouldn't arrive here
+    }
+
+    @Test
+    public void testURIInput()
+                            throws MalformedURLException, OWSExceptionReport, IOException, XMLStreamException,
+                            InterruptedException, URISyntaxException {
+
+        String demoWPSURL = TestProperties.getProperty( "demo_wps_authentication_url" );
+        String demoWPSProcessName = TestProperties.getProperty( "demo_wps_authentication_process_name" );
+        String demoWPSInputParam = TestProperties.getProperty( "demo_wps_input_uri" );
+
+        Assume.assumeNotNull( demoWPSURL );
+        Assume.assumeNotNull( demoWPSProcessName );
+        Assume.assumeNotNull( demoWPSInputParam );
+
+        URL serviceUrl = new URL( demoWPSURL );
+        URI inputUri = new URI( demoWPSInputParam );
+
+        WPSClient wpsClient = new WPSClient( serviceUrl );
+
+        Process proc = wpsClient.getProcess( demoWPSProcessName, null );
+        ProcessExecution execution = proc.prepareExecution();
+
+        execution.addBinaryInput( "infile", null, inputUri, true, null, null );
+
+        execution.execute();
+
+        while ( execution.getState() != ExecutionState.SUCCEEDED && execution.getState() != ExecutionState.FAILED ) {
+            System.out.println( String.format( "%s, %d, %s", execution.getState(), execution.getPercentCompleted(),
+                                               execution.getStatusLocation() ) );
+            Thread.sleep( 500 );
+        }
+
+        ExecutionOutputs outputs = execution.getOutputs();
+        Assert.assertTrue( outputs.getAll().length > 0 );
     }
 }

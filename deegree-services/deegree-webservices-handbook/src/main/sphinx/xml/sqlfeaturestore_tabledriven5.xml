@@ -1,9 +1,0 @@
-...
-  <FeatureTypeMapping table="country">
-    <Primitive path="property1" mapping="prop1" type="string"/>
-    <Geometry path="property2" mapping="the_geom" type="Point">
-      <StorageCRS srid="-1">EPSG:4326</StorageCRS>
-    </Geometry>
-    <Primitive path="property3" mapping="prop2" type="integer"/>
-  </FeatureTypeMapping>
-...
