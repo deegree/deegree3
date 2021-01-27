@@ -196,7 +196,7 @@ streamed to the client. This is very much recommended and even a
 requirement for transferring large responses efficiently. The only
 drawback happens if exceptions occur, after a partial response has
 already been transferred. In this case, the client will receive part
-payload and part exception report. By specifying _false_ here, you can
+payload and part exception report. By specifying _true_ here, you can
 explicitly force buffering of the full response, before it is written to
 the client. Only if the full response could be generated successfully,
 it will be transferred. If an exception happens at any time the buffer
@@ -228,7 +228,7 @@ parameter is present in a request).
 * _QueryMaxFeatures_: By default, a maximum number of 15000 features
 will be returned for a single _GetFeature_ request. Use this option to
 override this setting. A value of _-1_ means unlimited.
-* ''ResolveTimeOutInSeconds'': Use this option to specify a default
+* _ResolveTimeOutInSeconds_: Use this option to specify a default
 value for ResolveTimeOut, used in _GetFeature_ request if the
 ResolveTimeOut option is not set.
 * _QueryCheckAreaOfUse_: By default, spatial query constraints are not
@@ -724,11 +724,12 @@ Query-Elements should be used. An exception is thrown as
 DescribeStoredQueries response, if the configured feature type is not
 served by the WFS.
 
+To enable support for the Manage Stored Queries conformance class for WFS 2.0.0 it is required to create a directory storedqueries/managed in your workspace. The stored queries created with _CreateStoredQuery_ requests are stored in this directory. They are loaded during startup of deegree automatically. It is not recommend to put the StoredQueries configured in the WFS configuration with the StoredQuery element into this folder. If the directory is missing the _CreateStoredQuery_ request returns an exception.
+
 TIP: deegree WFS supports the execution of stored queries using
 _GetFeature_ and _GetPropertyValue_ requests. It also implements the
-_ListStoredQueries_ and the _DescribeStoredQueries_ operations.
-However, there is no support for _CreateStoredQuery_ and
-_DropStoredQuery_ at the moment.
+_ListStoredQueries_, _DescribeStoredQueries_, _CreateStoredQuery_ and
+the _DropStoredQuery_ operations.
 
 ==== Extended capabilities
 
@@ -1325,7 +1326,7 @@ _selector2_
 Any mime type of the following output formats can be configured to be
 available as response format for GetMap requests.
 
-----
+
 * _image/png_
 * _image/png; subtype=8bit_
 * _image/png; mode=8bit_
@@ -1333,7 +1334,7 @@ available as response format for GetMap requests.
 * _image/jpeg_
 * _image/tiff_
 * _image/x-ms-bmp_
-----
+
 
 If no format has been configured, all formats are supported.
 

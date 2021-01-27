@@ -239,7 +239,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
     }
 
     private void doDescribeFeatureType( DescribeFeatureType request, GMLVersion version, XMLStreamWriter writer )
-                            throws XMLStreamException, OWSException {
+                    throws XMLStreamException, OWSException, IOException {
         // check for deegree-specific DescribeFeatureType request that asks for the WFS schema in a GML
         // version that does not match the WFS schema (e.g. WFS 1.1.0, GML 2)
         if ( request.getTypeNames() != null && request.getTypeNames().length == 1
@@ -308,7 +308,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
      * @throws XMLStreamException
      */
     private void exportOriginalInfoSet( XMLStreamWriter writer, GMLSchemaInfoSet infoSet, String targetNs )
-                            throws XMLStreamException {
+                    throws XMLStreamException, IOException {
         LOG.debug( "Exporting wrapper schema for original infoset." );
         GMLAppSchemaWriter.export( writer, infoSet, targetNs, new URITranslator() {
             @SuppressWarnings("synthetic-access")

@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4.12-SNAPSHOT</version>
+    <version>3.4.15-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -48,8 +48,8 @@
       <artifactId>commons-math</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.vividsolutions</groupId>
-      <artifactId>jts</artifactId>
+      <groupId>org.locationtech.jts</groupId>
+      <artifactId>jts-core</artifactId>
     </dependency>
     <dependency>
       <groupId>net.postgis</groupId>

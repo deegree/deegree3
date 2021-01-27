@@ -45,6 +45,7 @@ import static org.deegree.services.config.actions.List.list;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
+import static org.deegree.services.config.actions.Update.update;
 import static org.deegree.services.config.actions.Upload.upload;
 import static org.deegree.services.config.actions.Validate.validate;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -89,6 +90,8 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/restart                                          - restart currently running workspace\n" );
             data.append( "GET /config/restart[/path]                                   - restarts all resources connected to the specified one\n" );
             data.append( "GET /config/restart/wsname                                   - restart with workspace <wsname>\n" );
+            data.append( "GET /config/update                                           - rescan config files and update resources\n" );
+            data.append( "GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n" );
             data.append( "GET /config/listworkspaces                                   - list available workspace names\n" );
             data.append( "GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n" );
             data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
@@ -133,6 +136,10 @@ public class ConfigServlet extends HttpServlet {
 
         if ( path.toLowerCase().startsWith( "/restart" ) ) {
             restart( path.substring( 8 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/update" ) ) {
+            update( path.substring( 7 ), resp );
         }
 
         if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {

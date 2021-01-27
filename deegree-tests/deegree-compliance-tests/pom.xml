@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.12-SNAPSHOT</version>
+    <version>3.4.15-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -48,6 +48,20 @@
     </resources>
 
     <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}/src/main/webapp</directory>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/src/main/workspace</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-maven-plugin</artifactId>

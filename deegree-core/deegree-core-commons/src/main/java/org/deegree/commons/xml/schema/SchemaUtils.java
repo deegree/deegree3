@@ -35,28 +35,29 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
-import static org.deegree.commons.xml.CommonNamespaces.XSNS;
-
-import java.util.List;
+import org.deegree.commons.utils.Pair;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.events.XMLEvent;
+import java.util.List;
 
-import org.deegree.commons.utils.Pair;
+import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class SchemaUtils {
 
     /**
      * Writes a wrapper schema document for the given namespace imports.
-     * 
+     *
      * @param writer
      *            xml stream to write to, must not be <code>null</code>
      * @param targetNamespace
@@ -88,5 +89,91 @@ public class SchemaUtils {
 
         // end 'xs:schema'
         writer.writeEndElement();
+    }
+
+    public static void copy( XMLStreamReader reader, XMLStreamWriter writer )
+                    throws XMLStreamException {
+        while ( reader.hasNext() ) {
+            write( reader, writer );
+            reader.next();
+        }
+        write( reader, writer ); // write the last element
+        writer.flush();
+    }
+
+    public static void write( XMLStreamReader reader, XMLStreamWriter writer )
+                    throws XMLStreamException {
+        switch ( reader.getEventType() ) {
+        case XMLEvent.START_ELEMENT:
+            writeStartElement( reader, writer );
+            break;
+        case XMLEvent.END_ELEMENT:
+            writer.writeEndElement();
+            break;
+        case XMLEvent.SPACE:
+        case XMLEvent.CHARACTERS:
+            writer.writeCharacters( reader.getTextCharacters(), reader.getTextStart(), reader.getTextLength() );
+            break;
+        case XMLEvent.PROCESSING_INSTRUCTION:
+            writer.writeProcessingInstruction( reader.getPITarget(), reader.getPIData() );
+            break;
+        case XMLEvent.CDATA:
+            writer.writeCData( reader.getText() );
+            break;
+
+        case XMLEvent.COMMENT:
+            writer.writeComment( reader.getText() );
+            break;
+        case XMLEvent.ENTITY_REFERENCE:
+            writer.writeEntityRef( reader.getLocalName() );
+            break;
+        case XMLEvent.START_DOCUMENT:
+            writeStartDocument( reader, writer );
+            break;
+        case XMLEvent.END_DOCUMENT:
+            writer.writeEndDocument();
+            break;
+        case XMLEvent.DTD:
+            writer.writeDTD( reader.getText() );
+            break;
+        }
+    }
+
+    private static void writeStartDocument( XMLStreamReader reader, XMLStreamWriter writer )
+                    throws XMLStreamException {
+        String encoding = reader.getCharacterEncodingScheme();
+        String version = reader.getVersion();
+
+        if ( encoding != null && version != null )
+            writer.writeStartDocument( encoding, version );
+        else if ( version != null )
+            writer.writeStartDocument( reader.getVersion() );
+    }
+
+    private static void writeStartElement( XMLStreamReader reader, XMLStreamWriter writer )
+                    throws XMLStreamException {
+        String localName = reader.getLocalName();
+        String namespaceURI = reader.getNamespaceURI();
+        if ( namespaceURI != null && namespaceURI.length() > 0 ) {
+            String prefix = reader.getPrefix();
+            if ( prefix != null )
+                writer.writeStartElement( prefix, localName, namespaceURI );
+            else
+                writer.writeStartElement( namespaceURI, localName );
+        } else {
+            writer.writeStartElement( localName );
+        }
+
+        for ( int i = 0, len = reader.getNamespaceCount(); i < len; i++ ) {
+            writer.writeNamespace( reader.getNamespacePrefix( i ), reader.getNamespaceURI( i ) );
+        }
+
+        for ( int i = 0, len = reader.getAttributeCount(); i < len; i++ ) {
+            String attUri = reader.getAttributeNamespace( i );
+            if ( attUri != null && !attUri.isEmpty() )
+                writer.writeAttribute( attUri, reader.getAttributeLocalName( i ), reader.getAttributeValue( i ) );
+            else
+                writer.writeAttribute( reader.getAttributeLocalName( i ), reader.getAttributeValue( i ) );
+        }
     }
 }

@@ -12,23 +12,24 @@
         <ul>
           <li>workspaces: Download and activate example configurations</li>
           <li>proxy: Configure proxy settings</li>
+          <li>password: Set a password to restrict access to the deegree service console <b style="color:Red;">(IMPORTANT!)</b></li>
           <li>module info: Display loaded deegree modules</li>
           <li>send requests: Send raw XML requests</li>
           <li>see layers: Display WMS layers</li>
         </ul>
         <h:outputText value="The lower menu on the left configures the active workspace:" />
         <ul>
-          <li>web services: Configure offered OGC web services</li>
+          <li>web services: Configure OGC web services</li>
           <li>data stores: Configure access to data sources</li>
           <li>map layers: Configure map layers and styles</li>
-          <li>server connections: Configure connections to external servers</li>
+          <li>connections: Configure connections to databases and external servers</li>
           <li>processes: Configure geospatial WPS processes</li>
         </ul>
       </h:panelGroup>
       <br />
       <h:panelGroup styleClass="welcomeText">
         <h:outputText value="For more information, please refer to the " />
-        <h:outputLink styleClass="welcomeLink" value="http://www.deegree.org/Documentation">
+        <h:outputLink styleClass="welcomeLink" value="https://www.deegree.org/documentation">
           <h:outputText value="official documentation" />
         </h:outputLink>
         <h:outputText value="." />
