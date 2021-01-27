@@ -1,0 +1,31 @@
+[[anchor-configuration-crs]]
+== Coordinate reference systems
+
+Coordinate reference system identifiers are used in many places in
+deegree webservices:
+
+* In incoming service requests (e.g. _GetFeature_-requests to the WFS)
+* In a lot of resource configuration files (e.g. in
+<<anchor-configuration-featurestore>>)
+
+deegree has an internal CRS database that contains many commonly used
+coordinate reference systems. Some examples for valid CRS identifiers:
+
+* _EPSG:4258_
+* _http://www.opengis.net/gml/srs/epsg.xml#4258_
+* _urn:ogc:def:crs:epsg::4258_
+* _urn:opengis:def:crs:epsg::4258_
+
+TIP: As a rule of thumb, deegree's CRS database uses the _EPSG:12345_
+identifier variant to indicate XY axis order, while the URN variants
+(such as _urn:ogc:def:crs:epsg::12345_) always use the official axis
+order defined by the EPSG. For example _EPSG:4258_ and
+_urn:ogc:def:crs:epsg::4258_ both refer to ETRS89, but _EPSG:4258_
+means ETRS89 in XY-order, while _urn:ogc:def:crs:epsg::4258_ is YX
+(the official order defined by the EPSG for this CRS).
+
+NOTE: The CRS subsystem is not fully integrated with the deegree workspace
+yet. Rework and proper documentation are on the roadmap for one of the
+next releases. If you have trouble finding a specific CRS, please
+http://www.deegree.org/Community[contact the deegree mailing lists for
+support].

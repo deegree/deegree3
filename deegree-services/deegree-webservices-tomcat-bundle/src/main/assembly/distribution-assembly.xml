@@ -4,18 +4,6 @@
   <formats>
     <format>zip</format>
   </formats>
-  <fileSets>
-    <fileSet>
-      <directory>${project.basedir}/src/main/resources</directory>
-      <outputDirectory>apache-tomcat-${tomcat-version}/bin</outputDirectory>
-      <includes>
-        <include>*.bat</include>
-        <include>*.cmd</include>
-        <include>*.sh</include>
-      </includes>
-      <fileMode>0775</fileMode>
-    </fileSet>
-  </fileSets>
   <dependencySets>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
@@ -32,13 +20,6 @@
         </excludes>
       </unpackOptions>
       <unpack>true</unpack>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>apache-tomcat-${tomcat-version}/bin/</outputDirectory>
-      <includes>
-        <include>org.deegree:deegree-javacheck:*</include>
-      </includes>
-      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
     </dependencySet>
     <dependencySet>
       <outputDirectory>apache-tomcat-${tomcat-version}/webapps/ROOT</outputDirectory>

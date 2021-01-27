@@ -93,7 +93,7 @@ import org.deegree.sqldialect.postgis.PostGISWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * {@link MetadataStoreTransaction} implementation for the {@link EbrimEOMDStore}.
@@ -286,21 +286,15 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
         if ( SlotType._geom.equals( slot.getType() ) ) {
             Geometry geom = (Geometry) extrinsicObject.getGeometrySlotValue( SLOTURN + slot.getName() );
             if ( geom != null ) {
-                try {
-                    byte[] wkt = WKBWriter.write( geom );
-                    StringBuilder sb = new StringBuilder();
-                    if ( useLegacyPredicates ) {
-                        sb.append( "SetSRID(GeomFromWKB(?)," );
-                    } else {
-                        sb.append( "SetSRID(ST_GeomFromWKB(?)," );
-                    }
-                    sb.append( "-1)" );
-                    ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), wkt, sb.toString() );
-                } catch ( ParseException e ) {
-                    String msg = "Could not write as WKB " + geom + ": " + e.getMessage();
-                    LOG.debug( msg, e );
-                    throw new IllegalArgumentException();
+                byte[] wkt = WKBWriter.write( geom );
+                StringBuilder sb = new StringBuilder();
+                if ( useLegacyPredicates ) {
+                    sb.append( "SetSRID(GeomFromWKB(?)," );
+                } else {
+                    sb.append( "SetSRID(ST_GeomFromWKB(?)," );
                 }
+                sb.append( "-1)" );
+                ir.addPreparedArgument( new SQLIdentifier( slot.getColumn() ), wkt, sb.toString() );
             }
             return;
         }

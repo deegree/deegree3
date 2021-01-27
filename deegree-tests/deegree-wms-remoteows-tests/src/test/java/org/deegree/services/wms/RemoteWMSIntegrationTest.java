@@ -91,7 +91,7 @@ public class RemoteWMSIntegrationTest {
         this.name = name;
     }
 
-    @Parameters
+    @Parameters(name = "{index}: {3}")
     public static Collection<Object[]> getParameters() {
         return IntegrationTestUtils.getTestRequests();
     }
@@ -99,8 +99,9 @@ public class RemoteWMSIntegrationTest {
     @Test
     public void testSimilarity()
                             throws IOException {
-        String base = "http://localhost:" + System.getProperty( "portnumber" );
-        base += "/deegree-wms-remoteows-tests/services/wms" + request;
+        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" ) + "/";
+        base += System.getProperty( "deegree-wms-remoteows-webapp", "deegree-wms-remoteows-tests" );
+        base += "/services" + request;
         LOG.info( "Requesting {}", base );
         InputStream in = retrieve( STREAM, base );
         byte[] bsin = IOUtils.toByteArray( in );
@@ -113,8 +114,8 @@ public class RemoteWMSIntegrationTest {
         }
 
         if ( Math.abs( 1.0 - sim ) > 0.01 ) {
-            System.out.println( "Trying to store request/response in tempdir: remoteows_expected/response"
-                                + ++numFailed + ".png" );
+            System.out.println( "Trying to store request/response for " + name
+                                + " in tempdir: remoteows_expected/response" + ++numFailed + ".png" );
             try {
                 int idx = 0;
                 for ( byte[] response : this.response ) {
@@ -124,11 +125,13 @@ public class RemoteWMSIntegrationTest {
                 }
                 IOUtils.write( bsin, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
                                                            + "/remoteows_response" + numFailed + ".png" ) );
+
+                System.out.println( "Result returned for " + name + " (base64 -d encoded.dat > failed-test.zip)" );
+                System.out.println( IntegrationTestUtils.toBase64Zip( bsin, name + ".png" ) );
             } catch ( Throwable t ) {
             }
         }
 
         Assert.assertEquals( "Images are not similar enough for " + name + " (" + base + ").", 1.0, sim, 0.01 );
     }
-
 }
