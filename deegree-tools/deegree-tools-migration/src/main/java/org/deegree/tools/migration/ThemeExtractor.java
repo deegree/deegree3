@@ -37,18 +37,16 @@ package org.deegree.tools.migration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
+import org.deegree.commons.xml.XsltUtils;
 import org.deegree.services.OWS;
 import org.deegree.services.OwsManager;
 import org.deegree.services.wms.controller.WMSController;
@@ -68,19 +66,11 @@ import org.deegree.workspace.WorkspaceUtils;
  */
 public class ThemeExtractor {
 
-    private final Workspace workspace;
-
-    private Transformer transformer;
-
-    public ThemeExtractor( Workspace workspace ) throws TransformerConfigurationException {
-        this.workspace = workspace;
-        TransformerFactory fac = TransformerFactory.newInstance();
-        InputStream xsl = ThemeExtractor.class.getResourceAsStream( "extracttheme.xsl" );
-        this.transformer = fac.newTransformer( new StreamSource( xsl ) );
+    private ThemeExtractor() {
     }
 
-    public void transform()
-                            throws TransformerException, XMLStreamException {
+    public static void transform( Workspace workspace )
+                            throws TransformerException, XMLStreamException, URISyntaxException, IOException {
         OwsManager mgr = workspace.getResourceManager( OwsManager.class );
         List<OWS> wmss = mgr.getByOWSClass( WMSController.class );
         for ( OWS ows : wmss ) {
@@ -88,7 +78,10 @@ public class ThemeExtractor {
             ResourceIdentifier<? extends Resource> id = md.getIdentifier();
             File loc = md.getLocation().resolveToFile( id.getId() + ".xml" );
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            transformer.transform( new StreamSource( loc ), new StreamResult( bos ) );
+
+            FileInputStream doc = new FileInputStream( loc );
+            XsltUtils.transform( doc, ThemeExtractor.class.getResource( "extracttheme.xsl" ), bos );
+            doc.close();
 
             ThemeXmlStreamEncoder.writeOut( bos );
 

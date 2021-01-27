@@ -450,25 +450,19 @@ public class TextStroke implements Stroke {
         double textWidth = glyphVector.getLogicalBounds().getWidth();
         double shapeLength = getShapeLength( shape );
 
-        if ( !linePlacement.center ) {
-            textWidth += linePlacement.initialGap;
+        double initialGap = linePlacement.initialGap;
+        if ( linePlacement.center && !linePlacement.repeat ) {
+            double intialGapCenter = shapeLength / 2 - textWidth / 2;
+            if ( intialGapCenter >= linePlacement.initialGap ) {
+                initialGap = intialGapCenter;
+            }
         }
 
-        if ( textWidth > shapeLength ) {
+        if ( textWidth + initialGap > shapeLength ) {
             return new GeneralPath();
         }
 
         shape = handleUpsideDown( shape );
-
-        double initialGap;
-        if ( linePlacement.center && !linePlacement.repeat ) {
-            initialGap = shapeLength / 2 - textWidth / 2;
-            if ( initialGap < linePlacement.initialGap ) {
-                initialGap = linePlacement.initialGap;
-            }
-        } else {
-            initialGap = linePlacement.initialGap;
-        }
 
         if ( linePlacement.wordWise ) {
             GeneralPath path = tryWordWise( shape, initialGap );

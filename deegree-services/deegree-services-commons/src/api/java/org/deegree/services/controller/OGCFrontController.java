@@ -37,6 +37,7 @@ package org.deegree.services.controller;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.emptyList;
+import static org.deegree.commons.ows.exception.OWSException.NOT_FOUND;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.ows.Version.parseVersion;
 import static org.reflections.util.ClasspathHelper.forClassLoader;
@@ -577,8 +578,7 @@ public class OGCFrontController extends HttpServlet {
             }
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
-                OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-                throw e;
+                throw new OWSException( msg, NOT_FOUND );
             }
         }
         return ows;
@@ -608,9 +608,7 @@ public class OGCFrontController extends HttpServlet {
             }
             if ( ows == null ) {
                 String msg = "No service with identifier '" + serviceId + "' available.";
-                OWSException e = new OWSException( msg, OWSException.NO_APPLICABLE_CODE );
-                // sendException( null, e, response, null );
-                throw e;
+                throw new OWSException( msg, NOT_FOUND );
             }
         }
         return ows;
@@ -907,7 +905,7 @@ public class OGCFrontController extends HttpServlet {
             } else {
                 LOG.debug( "A security exception was thrown ( " + e.getLocalizedMessage()
                            + " but no credentials provider was configured, sending generic ogc exception." );
-                sendException( ows, new OWSException( e.getLocalizedMessage(), OWSException.NO_APPLICABLE_CODE ),
+                sendException( ows, new OWSException( e.getLocalizedMessage(), NO_APPLICABLE_CODE ),
                                response, null );
             }
         }
@@ -1086,6 +1084,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "" );
 
             initWorkspace();
+            DeegreeWorkspaceUpdater.INSTANCE.init( workspace );
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -1198,8 +1197,34 @@ public class OGCFrontController extends HttpServlet {
         destroyWorkspace();
         try {
             initWorkspace();
+            DeegreeWorkspaceUpdater.INSTANCE.notifyWorkspaceChange( workspace );
         } catch ( ResourceInitException e ) {
             throw new ServletException( e.getLocalizedMessage(), e.getCause() );
+        }
+    }
+
+    /**
+     * Checks for deleted, modified or added resource configs and updates the workspace resources
+     * accordingly.
+     *
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws ServletException
+     */
+    public void update()
+                            throws IOException, URISyntaxException, ServletException {
+        if ( DeegreeWorkspaceUpdater.INSTANCE.isWorkspaceChange(getActiveWorkspace()) ) {
+            // do complete reload
+            destroyWorkspace();
+            try {
+                initWorkspace();
+            } catch ( ResourceInitException e ) {
+                throw new ServletException( e.getLocalizedMessage(), e.getCause() );
+            }
+            DeegreeWorkspaceUpdater.INSTANCE.notifyWorkspaceChange( workspace );
+        } else {
+            // no complete reload - update only
+            DeegreeWorkspaceUpdater.INSTANCE.updateWorkspace( workspace );
         }
     }
 

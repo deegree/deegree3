@@ -118,6 +118,16 @@ public class OWSException extends Exception {
      */
     public static final String CURRENT_UPDATE_SEQUENCE = "CurrentUpdateSequence";
 
+    /**
+     * what the text says
+     */
+    public static final String LOCK_HAS_EXPIRED = "LockHasExpired";
+
+    /**
+     * the layer is not queryable by get feature info
+     */
+    public static final String LAYER_NOT_QUERYABLE = "LayerNotQueryable";
+
     // OSW standard exceptions (+GetCapabilities exceptions)
     /**
      * the requested operation is not supported
@@ -138,6 +148,16 @@ public class OWSException extends Exception {
      * exception code for all not known exceptions
      */
     public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
+
+    /**
+     * exception code indicating an HTTP 404 error
+     */
+    public static final String NOT_FOUND = "NotFound";
+
+    /**
+     * the identifier specified for a stored query expression is a duplicate.
+     */
+    public static final String DUPLICATE_STORED_QUERY_ID_VALUE =  "DuplicateStoredQueryIdValue";
 
     private final String exceptionCode;
 

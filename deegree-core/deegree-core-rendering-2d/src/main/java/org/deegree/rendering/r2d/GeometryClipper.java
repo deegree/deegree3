@@ -44,17 +44,25 @@ package org.deegree.rendering.r2d;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.rendering.r2d.OrientationFixer.fixOrientation;
 
+import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometries;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.standard.primitive.DefaultSurface;
 import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.PolygonStyling;
 import org.deegree.style.styling.components.Stroke;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Responsible for clipping geometries to the area of the viewport.
@@ -66,9 +74,12 @@ import org.deegree.style.styling.components.Stroke;
  */
 class GeometryClipper {
 
+    private final Envelope viewPort;
+
     private final Polygon clippingArea;
 
     GeometryClipper( final Envelope viewPort, final int width ) {
+        this.viewPort = viewPort;
         this.clippingArea = calculateClippingArea( viewPort, width );
     }
 
@@ -92,21 +103,52 @@ class GeometryClipper {
      * @return the clipped geometry or the original geometry if the geometry lays completely in the drawing area.
      */
     Geometry clipGeometry( final Geometry geom ) {
+        return clipGeometry( geom, clippingArea );
+    }
+
+    /**
+     * Calculates the points inside the geometry and inside the view port. First the passed geometry is clipped
+     * by the view port. A multipolygon may result. For each of the polygon in this multipolygon one interior point
+     * is created
+     *
+     * @param geom to create labels for, must not be <code>null</code> and in the same CRS as the viewPort
+     * @return a MultiPoint with all calculated labels
+     */
+    MultiPoint calculateInteriorPoints( final Geometry geom ) {
+        if ( geom == null )
+            return null;
+        Geometry clippedGeometry = clipGeometry( geom, viewPort );
+        List<Point> points = new ArrayList<Point>();
+        if ( clippedGeometry != null && clippedGeometry instanceof DefaultSurface ) {
+            points.add( ( (DefaultSurface) clippedGeometry ).getInteriorPoint() );
+        }
+        if ( clippedGeometry != null && clippedGeometry instanceof MultiPolygon ) {
+            for ( Polygon p : ( (MultiPolygon) clippedGeometry ) ) {
+                if ( p instanceof DefaultSurface ) {
+                    points.add( ( (DefaultSurface) p ).getInteriorPoint() );
+                }
+            }
+        }
+        return new GeometryFactory().createMultiPoint( null, geom.getCoordinateSystem(), points );
+    }
+
+
+    Geometry clipGeometry( final Geometry geom, Geometry clippingArea ) {
         if ( clippingArea != null && !clippingArea.contains( geom ) ) {
             try {
                 Geometry clippedGeometry = clippingArea.getIntersection( geom );
                 if ( clippedGeometry == null ) {
                     return null;
                 }
-                com.vividsolutions.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
-                com.vividsolutions.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
+                org.locationtech.jts.geom.Geometry jtsOrig = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
+                org.locationtech.jts.geom.Geometry jtsClipped = ( (AbstractDefaultGeometry) clippedGeometry ).getJTSGeometry();
                 if ( jtsOrig == jtsClipped ) {
                     return geom;
                 }
                 if ( isInvertedOrientation( jtsOrig ) ) {
                     return clippedGeometry;
                 }
-                
+
                 return fixOrientation( clippedGeometry, clippedGeometry.getCoordinateSystem() );
             } catch ( UnsupportedOperationException e ) {
                 // use original geometry if intersection not supported by JTS
@@ -115,7 +157,7 @@ class GeometryClipper {
         }
         return geom;
     }
-    
+
     /**
      * Check if the passed Geometry is a Polygon (or the first Geometry of a Collection) and the exterior Ring has CW orientation  
      * 
@@ -126,24 +168,24 @@ class GeometryClipper {
      * @param   jtsGeom   JTS Geometry to be evaluated
      * @return  boolean   true if (first) Geometry is Polygon with CW external ring, false otherwise
      */
-    private boolean isInvertedOrientation( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
-        com.vividsolutions.jts.geom.Polygon poly = null;
+    private boolean isInvertedOrientation( org.locationtech.jts.geom.Geometry jtsGeom ) {
+        org.locationtech.jts.geom.Polygon poly = null;
         try {
-            if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection && //
-                 ( (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom ).getNumGeometries() > 0 ) {
-                com.vividsolutions.jts.geom.Geometry firstGeom;
-                firstGeom = ( (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom ).getGeometryN( 0 );
-                if ( firstGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
-                    poly = (com.vividsolutions.jts.geom.Polygon) firstGeom;
+            if ( jtsGeom instanceof org.locationtech.jts.geom.GeometryCollection && //
+                 ( (org.locationtech.jts.geom.GeometryCollection) jtsGeom ).getNumGeometries() > 0 ) {
+                org.locationtech.jts.geom.Geometry firstGeom;
+                firstGeom = ( (org.locationtech.jts.geom.GeometryCollection) jtsGeom ).getGeometryN( 0 );
+                if ( firstGeom instanceof org.locationtech.jts.geom.Polygon ) {
+                    poly = (org.locationtech.jts.geom.Polygon) firstGeom;
                 }
-            } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
-                poly = (com.vividsolutions.jts.geom.Polygon) jtsGeom;
+            } else if ( jtsGeom instanceof org.locationtech.jts.geom.Polygon ) {
+                poly = (org.locationtech.jts.geom.Polygon) jtsGeom;
             }
         
             //TRICKY check if polygon exterior is CW
             if ( poly != null ) {
-                com.vividsolutions.jts.geom.Coordinate[] coords = poly.getExteriorRing().getCoordinates();
-                if ( !com.vividsolutions.jts.algorithm.CGAlgorithms.isCCW( coords ) ) {
+                org.locationtech.jts.geom.Coordinate[] coords = poly.getExteriorRing().getCoordinates();
+                if ( !org.locationtech.jts.algorithm.CGAlgorithms.isCCW( coords ) ) {
                     return true;
                 }
             }

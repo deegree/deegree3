@@ -44,6 +44,7 @@ import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.sql.FeatureBuilder;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
+import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,8 @@ public class FeatureBuilderBlob implements FeatureBuilder {
 
     private final ICRS crs;
 
+    private TypeName[] typeNames;
+
     /**
      * Creates a new {@link FeatureBuilderBlob} instance.
      * 
@@ -76,12 +79,28 @@ public class FeatureBuilderBlob implements FeatureBuilder {
      *            blob mapping parameters, must not be <code>null</code>
      */
     public FeatureBuilderBlob( SQLFeatureStore fs, BlobMapping blobMapping ) {
+        this( fs, blobMapping, null );
+    }
+
+    /**
+     * Creates a new {@link FeatureBuilderBlob} instance.
+     *
+     * @param fs
+     *            feature store, must not be <code>null</code>
+     * @param blobMapping
+     *            blob mapping parameters, must not be <code>null</code>
+     * @param typeNames
+     *            list of requested type names, if {@link #buildFeature(ResultSet)} is invoked and a feature is not in
+     *            this list an exception is thrown
+     */
+    public FeatureBuilderBlob( SQLFeatureStore fs, BlobMapping blobMapping, TypeName[] typeNames ) {
         this.fs = fs;
         this.blobMapping = blobMapping;
         this.codec = blobMapping.getCodec();
         this.crs = blobMapping.getCRS();
+        this.typeNames = typeNames;
     }
-
+    
     @Override
     public List<String> getInitialSelectList() {
         List<String> columns = new ArrayList<String>();
@@ -109,10 +128,13 @@ public class FeatureBuilderBlob implements FeatureBuilder {
             } else {
                 LOG.debug( "Cache hit." );
             }
+            fs.checkIfFeatureTypIsRequested( typeNames, feature.getType() );
         } catch ( Exception e ) {
             String msg = "Cannot recreate feature from result set: " + e.getMessage();
             throw new SQLException( msg, e );
         }
         return feature;
     }
+    
+    
 }

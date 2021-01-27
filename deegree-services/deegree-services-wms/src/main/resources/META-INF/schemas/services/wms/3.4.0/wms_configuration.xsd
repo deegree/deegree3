@@ -21,6 +21,20 @@
             </sequence>
           </complexType>
         </element>
+        <element name="SupportedRequests" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element name="SupportedEncodings" type="wms:Encodings" minOccurs="0" />
+              <element name="GetCapabilities" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetMap" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetFeatureInfo" minOccurs="0" type="wms:RequestType"/>
+              <element name="DescribeLayer" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetLegendGraphic" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetFeatureInfoSchema" minOccurs="0" type="wms:RequestType"/>
+              <element name="DTD" minOccurs="0" type="wms:RequestType"/>
+            </sequence>
+          </complexType>
+        </element>
         <element name="UpdateSequence" type="integer" minOccurs="0" />
         <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
         <element name="MetadataStoreId" type="string" minOccurs="0" />
@@ -95,6 +109,13 @@
                 <complexType>
                   <sequence>
                     <element name="JavaClass" type="string" />
+                    <element name="File" type="string" />
+                    <element name="Property" minOccurs="0" maxOccurs="unbounded">
+                      <complexType>
+                        <attribute name="name" use="required" />
+                        <attribute name="value" use="required" />
+                      </complexType>
+                    </element>
                   </sequence>
                 </complexType>
               </element>
@@ -137,6 +158,20 @@
           </restriction>
         </simpleType>
       </element>
+      <element name="CustomGetMapFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="Format" type="string" />
+            <element name="JavaClass" type="string" />
+            <element name="Property" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <attribute name="name" use="required" />
+                <attribute name="value" use="required" />
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
     </sequence>
   </complexType>
 
@@ -150,12 +185,30 @@
     </sequence>
   </complexType>
 
+  <complexType name="RequestType">
+    <sequence>
+      <element name="SupportedEncodings" minOccurs="0" type="wms:Encodings" />
+    </sequence>
+  </complexType>
+
+  <simpleType name="Encodings">
+    <list>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="kvp" />
+          <enumeration value="xml" />
+          <enumeration value="soap" />
+        </restriction>
+      </simpleType>
+    </list>
+  </simpleType>
+
   <complexType name="CopyrightType">
     <annotation>
-      <documentation>Configure a copyright displayed in GetMap responses. A text or image 
-      (via relative or absolute file reference or http url) can be configured. 
-      Furthermore the position of the copyright can be specified with OffsetX/OffsetY (default is 8/13). 
-      Anchor point in the GetMap response as well as the text or image is the lower-left corner.</documentation>
+      <documentation>Configure a copyright displayed in GetMap responses. A text or image
+        (via relative or absolute file reference or http url) can be configured.
+        Furthermore the position of the copyright can be specified with OffsetX/OffsetY (default is 8/13).
+        Anchor point in the GetMap response as well as the text or image is the lower-left corner.</documentation>
     </annotation>
     <sequence>
       <choice minOccurs="1">
@@ -168,7 +221,7 @@
       </sequence>
     </sequence>
   </complexType>
-  
+
   <simpleType name="WMSVersionType">
     <restriction base="string">
       <enumeration value="1.1.1" />

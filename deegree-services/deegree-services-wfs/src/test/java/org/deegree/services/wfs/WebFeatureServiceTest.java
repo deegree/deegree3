@@ -50,12 +50,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.deegree.protocol.wfs.WFSRequestType;
+import org.deegree.services.encoding.LimitedSupportedEncodings;
+import org.deegree.services.encoding.SupportedEncodings;
+import org.deegree.services.encoding.UnlimitedSupportedEncodings;
 import org.deegree.services.jaxb.wfs.DeegreeWFS;
 import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedRequests;
 import org.deegree.services.jaxb.wfs.RequestType;
-import org.deegree.services.wfs.encoding.LimitedSupportedEncodings;
-import org.deegree.services.wfs.encoding.SupportedEncodings;
-import org.deegree.services.wfs.encoding.UnlimitedSupportedEncodings;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
