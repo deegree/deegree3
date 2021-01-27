@@ -1,9 +1,0 @@
-[...]
-<FeatureTypeMapping name="ad:Address" table="ad_address">
-  <FIDMapping prefix="AD_ADDRESS_">
-    <Column name="attr_gml_id" />
-    <SequenceIDGenerator sequence="SEQ_FID">
-  </FIDMapping>
-  [...]
-</FeatureTypeMapping>
-[...]

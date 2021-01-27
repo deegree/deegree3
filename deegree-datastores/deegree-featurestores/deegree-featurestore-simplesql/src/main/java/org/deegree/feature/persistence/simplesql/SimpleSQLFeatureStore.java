@@ -94,7 +94,7 @@ import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * {@link FeatureStore} implementation that is backed by an SQL database and configured by providing an SQL statement /

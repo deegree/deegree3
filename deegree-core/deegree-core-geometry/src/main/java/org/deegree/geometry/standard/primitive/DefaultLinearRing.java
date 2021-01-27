@@ -97,7 +97,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.LinearRing buildJTSGeometry() {
+    protected org.locationtech.jts.geom.LinearRing buildJTSGeometry() {
         return jtsFactory.createLinearRing( controlPoints );
     }
 }

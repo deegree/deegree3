@@ -61,6 +61,19 @@ public interface FeatureType extends GMLObjectType {
     public GeometryPropertyType getDefaultGeometryPropertyDeclaration();
 
     /**
+     * Creates a new {@link Feature} instance (that is an insatnce of a {@link FeatureType}).
+     *
+     * @param fid
+     *            feature id, or null if the feature doesn't have an id
+     * @param props
+     *            properties
+     * @param extraProps
+     *            properties that are not defined by the {@link FeatureType} (e.g. rendering hints)
+     * @return a new <code>Feature</code> instance
+     */
+    public Feature newFeatureInstance( String fid, List<Property> props, ExtraProps extraProps );
+
+    /**
      * Creates a new {@link Feature} instance (that is of this type).
      * 
      * @param fid

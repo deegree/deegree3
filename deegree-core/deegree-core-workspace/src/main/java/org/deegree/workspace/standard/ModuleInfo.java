@@ -116,7 +116,7 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
      *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
      *             <code>META-INF/maven/[..]/pom.properties</code> fails
      */
-    public static Collection<ModuleInfo> extractModulesInfo( Set<URL> classpathURLs )
+    public static Collection<ModuleInfo> extractModulesInfo( Collection<URL> classpathURLs )
                             throws IOException {
         SortedSet<ModuleInfo> modules = new TreeSet<ModuleInfo>();
         for ( URL classpathURL : classpathURLs ) {

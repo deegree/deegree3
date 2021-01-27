@@ -48,6 +48,7 @@ import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.feature.Features.findFeaturesAndGeometries;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
@@ -67,9 +68,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -98,6 +101,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreGMLIdResolver;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.lock.Lock;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -110,13 +114,17 @@ import org.deegree.filter.Filters;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.filter.expression.ValueReference;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.SimpleGeometryFactory;
 import org.deegree.geometry.validation.CoordinateValidityInspector;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
+import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -153,6 +161,8 @@ class TransactionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger( TransactionHandler.class );
 
+    private static final SimpleGeometryFactory GEOM_FACTORY = new SimpleGeometryFactory();
+
     private final WebFeatureService master;
 
     private final WfsFeatureStoreManager service;
@@ -171,24 +181,27 @@ class TransactionHandler {
 
     private final IDGenMode idGenMode;
 
+    private final boolean allowFeatureReferencesToDatastore;
+
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
      * {@link FeatureType}s.
-     * 
-     * @param master
-     * 
+     *  @param master
+     *
      * @param service
      *            WFS instance used to lookup the feature types
      * @param request
-     *            request to be handled
+ *            request to be handled
      * @param idGenMode
+     * @param allowFeatureReferencesToDatastore
      */
     TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
-                        IDGenMode idGenMode ) {
+                        IDGenMode idGenMode, boolean allowFeatureReferencesToDatastore ) {
         this.master = master;
         this.service = service;
         this.request = request;
         this.idGenMode = idGenMode;
+        this.allowFeatureReferencesToDatastore = allowFeatureReferencesToDatastore;
     }
 
     /**
@@ -377,26 +390,15 @@ class TransactionHandler {
             throw new OWSException( msg, NO_APPLICABLE_CODE );
         }
 
-        ICRS defaultCRS = null;
-        if ( insert.getSrsName() != null ) {
-            try {
-                defaultCRS = CRSManager.lookup( insert.getSrsName() );
-            } catch ( UnknownCRSException e ) {
-                String msg = "Cannot perform insert. Specified srsName '" + insert.getSrsName()
-                             + "' is not supported by this WFS.";
-                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "srsName" );
-            }
-        }
-
+        ICRS defaultCRS = determineDefaultCrs( insert );
         GMLVersion inputFormat = determineFormat( request.getVersion(), insert.getInputFormat() );
 
         // TODO streaming
-        FeatureStoreTransaction ta = null;
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
             FeatureStore fs = service.getStores()[0];
-            ta = acquireTransaction( fs );
+            FeatureStoreTransaction ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
             if ( mode == null ) {
                 if ( VERSION_110.equals( request.getVersion() ) ) {
@@ -409,6 +411,8 @@ class TransactionHandler {
             for ( String newFid : newFids ) {
                 inserted.add( newFid, insert.getHandle() );
             }
+        } catch ( OWSException e ) {
+            throw e;
         } catch ( XMLParsingException e ) {
             String exceptionCode = INVALID_PARAMETER_VALUE;
             if ( VERSION_200.equals( request.getVersion() ) ) {
@@ -434,10 +438,14 @@ class TransactionHandler {
         FeatureCollection fc = null;
 
         // TODO determine correct schema
-        AppSchema schema = service.getStores()[0].getSchema();
+        FeatureStore featureStore = service.getStores()[0];
+        AppSchema schema = featureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
+        if ( allowFeatureReferencesToDatastore )
+            gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( featureStore ) );
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
+        gmlStream.setReferencePatternMatcher( master.getReferencePatternMatcher() );
 
         if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
             LOG.debug( "Features embedded in wfs:FeatureCollection" );
@@ -531,7 +539,6 @@ class TransactionHandler {
 
     private void doUpdate( Update update, Lock lock )
                             throws OWSException {
-
         LOG.debug( "doUpdate: " + update );
         QName ftName = update.getTypeName();
         FeatureType ft = service.lookupFeatureType( ftName );
@@ -765,7 +772,6 @@ class TransactionHandler {
         xmlWriter.writeEndElement(); // wfs:Status
         xmlWriter.writeEndElement(); // wfs:TransactionResult
         xmlWriter.writeEndElement(); // wfs:WFS_TransactionResult
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -822,7 +828,6 @@ class TransactionHandler {
         }
 
         xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -851,7 +856,6 @@ class TransactionHandler {
         writeActionResults200( xmlWriter, "ReplaceResults", replaced );
 
         xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
         xmlWriter.flush();
     }
 
@@ -907,6 +911,8 @@ class TransactionHandler {
                 gmlVersion = GMLVersion.GML_31;
             } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
                 gmlVersion = GMLVersion.GML_32;
+            } else if ( "text/xml; subtype=gml/3.2.2".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_32;
             }
         }
         return gmlVersion;
@@ -920,6 +926,20 @@ class TransactionHandler {
                 return namespaceUriByPrefix;
         }
         return ft.getName().getNamespaceURI();
+    }
+
+    private ICRS determineDefaultCrs( Insert insert )
+                    throws OWSException {
+        String srsName = insert.getSrsName();
+        if ( srsName != null ) {
+            try {
+                return CRSManager.lookup( insert.getSrsName() );
+            } catch ( UnknownCRSException e ) {
+                String msg = "Cannot perform insert. Specified srsName '" + srsName + "' is not supported by this WFS.";
+                throw new OWSException( msg, INVALID_PARAMETER_VALUE, "srsName" );
+            }
+        }
+        return null;
     }
 
 }

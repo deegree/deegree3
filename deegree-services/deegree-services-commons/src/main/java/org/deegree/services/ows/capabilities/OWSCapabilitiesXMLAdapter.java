@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -290,7 +291,9 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportServiceProvider100( XMLStreamWriter writer, ServiceProvider serviceProvider )
                             throws XMLStreamException {
-        exportServiceProvider( writer, serviceProvider, OWS_NS );
+        if ( serviceProvider != null ) {
+            exportServiceProvider( writer, serviceProvider, OWS_NS );
+        }
     }
 
     /**
@@ -304,7 +307,9 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      */
     public static void exportServiceProvider110New( XMLStreamWriter writer, ServiceProvider serviceProvider )
                             throws XMLStreamException {
-        exportServiceProvider( writer, serviceProvider, OWS110_NS );
+        if ( serviceProvider != null ) {
+            exportServiceProvider( writer, serviceProvider, OWS110_NS );
+        }
     }
 
     /**
@@ -495,14 +500,12 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
     }
 
     /**
-     * Exports a list of {@link OWSOperation}s as an OWS 1.0.0 <code>OperationsMetadata</code> element.
+     * Exports the {@link OperationsMetadata} as an OWS 1.0.0 <code>OperationsMetadata</code> element.
      * 
      * @param writer
      *            writer to append the xml, must not be <code>null</code>
      * @param operationsMd
      *            operations metadata, must not be <code>null</code>
-     * @param extendedCapabilities
-     *            extended capabilities, can be <code>null</code>
      * @throws XMLStreamException
      */
     public static void exportOperationsMetadata100( XMLStreamWriter writer, OperationsMetadata operationsMd )
@@ -558,9 +561,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         // <element ref="ows:ExtendedCapabilities" minOccurs="0"/>
-        if ( !operationsMd.getExtendedCapabilities().isEmpty() ) {
-            copy( writer, operationsMd.getExtendedCapabilities().get( 0 ).getXMLStreamReader() );
-        }
+        exportExtendedCapabilities( writer, new QName( OWS_NS, "ExtendedCapabilities" ), operationsMd );
 
         writer.writeEndElement();
     }
@@ -627,9 +628,7 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
         }
 
         // <element ref="ows:ExtendedCapabilities" minOccurs="0"/>
-        if ( !operationsMd.getExtendedCapabilities().isEmpty() ) {
-            copy( writer, operationsMd.getExtendedCapabilities().get( 0 ).getXMLStreamReader() );
-        }
+        exportExtendedCapabilities( writer, new QName( OWS110_NS, "ExtendedCapabilities" ), operationsMd );
 
         writer.writeEndElement();
     }
@@ -783,8 +782,8 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
      * 
      * @param writer
      *            writer to append the xml
-     * @param serviceContact
-     *            <code>ServiceContactType</code> to export
+     * @param party
+     *            <code>ResponsibleParty</code> to export
      * @param owsNS
      *            namespace for the generated elements
      * @throws XMLStreamException
@@ -1149,4 +1148,21 @@ public class OWSCapabilitiesXMLAdapter extends OWSCommonXMLAdapter {
             }
         }
     }
+
+    private static void exportExtendedCapabilities( XMLStreamWriter writer, QName extendedCapabilities,
+                                                    OperationsMetadata operationsMd )
+                            throws XMLStreamException {
+        if ( !operationsMd.getExtendedCapabilities().isEmpty() ) {
+            OMElement extendedCapabilitiesToExport = operationsMd.getExtendedCapabilities().get( 0 );
+            boolean isOwsExtCapabilities = extendedCapabilities.equals( extendedCapabilitiesToExport.getQName() );
+            if ( !isOwsExtCapabilities ) {
+                writer.writeStartElement( extendedCapabilities.getNamespaceURI(), extendedCapabilities.getLocalPart() );
+            }
+            copy( writer, extendedCapabilitiesToExport.getXMLStreamReader() );
+            if ( !isOwsExtCapabilities ) {
+                writer.writeEndElement();
+            }
+        }
+    }
+
 }

@@ -36,6 +36,7 @@
 package org.deegree.feature.persistence.sql.rules;
 
 import static java.lang.Boolean.TRUE;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
@@ -284,7 +285,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                   + " are currently supported." );
                     }
                 }
-                feature = ft.newFeature( gmlId, props, null );
+                feature = ft.newFeatureInstance( gmlId, props, null );
                 if ( fs.getCache() != null ) {
                     fs.getCache().add( feature );
                 }
@@ -325,7 +326,7 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         for ( final TypedObjectNode particle : particles ) {
             if ( particle instanceof GenericXMLElement ) {
-                if ( pt instanceof ObjectPropertyType && particle instanceof TimeObject ) {
+                if ( pt instanceof ObjectPropertyType && TIME_OBJECT.equals( ( (ObjectPropertyType) pt ).getCategory() ) ) {
                     props.add( recreatePropertyFromGml( pt, (GenericXMLElement) particle ) );
                 } else {
                     GenericXMLElement xmlEl = (GenericXMLElement) particle;

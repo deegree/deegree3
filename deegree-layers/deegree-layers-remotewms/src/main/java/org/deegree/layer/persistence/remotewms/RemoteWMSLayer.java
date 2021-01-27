@@ -28,6 +28,8 @@ import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType.Parameter
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
 import org.deegree.protocol.wms.ops.GetMap;
+import org.deegree.style.StyleRef;
+import org.deegree.style.se.unevaluated.Style;
 import org.slf4j.Logger;
 
 /**
@@ -182,6 +184,14 @@ class RemoteWMSLayer extends AbstractLayer {
         if ( xsltFile != null )
             return new XsltFeatureInfoParser( xsltFile.getXsltFile(), xsltFile.getTargetGmlVersion() );
         return new DefaultFeatureInfoParser();
+    }
+
+    @Override
+    public boolean isStyleApplicable( StyleRef style ) {
+        if ( "default".equals( style.getName() ) ) {
+            return true;
+        }
+        return resolveStyleRef( style ) != null;
     }
 
 }

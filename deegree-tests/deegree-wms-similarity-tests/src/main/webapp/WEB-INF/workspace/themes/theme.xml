@@ -9,6 +9,7 @@
   <LayerStoreId>vegetationfilter</LayerStoreId>
   <LayerStoreId>vegetationsort</LayerStoreId>
   <LayerStoreId>vegetationfiltersort</LayerStoreId>
+  <LayerStoreId>satellite_provo</LayerStoreId>
 
   <Theme>
     <d:Title>CITE layers</d:Title>
@@ -22,6 +23,11 @@
       <Identifier>SGID500_Contours500Ft</Identifier>
       <d:Title>SGID500_Contours500Ft</d:Title>
       <Layer>contours</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>SGID500_Contours500F_scalelimit</Identifier>
+      <d:Title>SGID500_Contours500Ft with scale limit</d:Title>
+      <Layer>contours_scalelimit</Layer>
     </Theme>
     <Theme>
       <Identifier>getcurrentscale</Identifier>
@@ -53,6 +59,15 @@
       <d:Title>vegetationfiltersort</d:Title>
       <Layer layerStore='vegetationfiltersort'>dominant</Layer>
     </Theme>
+    <Theme>
+      <Identifier>satellite_provo</Identifier>
+      <d:Title>satellite_provo</d:Title>
+      <Layer>satellite_provo</Layer>
+    </Theme>
+    <Theme>
+      <Identifier>satellite_provo_scalelimit</Identifier>
+      <d:Title>satellite_provo with scale limit</d:Title>
+      <Layer>satellite_provo_scalelimit</Layer>
+    </Theme>
   </Theme>
-
 </Themes>

@@ -132,6 +132,15 @@ class GMLObjectNavigator extends DefaultNavigator {
                                                                            (GenericXMLElement) value );
                 return getAttributeAxisIterator( n );
             }
+            Map<QName, PrimitiveValue> attributes = ( (PropertyNode) node ).getValue().getAttributes();
+            if ( attributes != null ) {
+                List<AttributeNode<?>> attrNodes = new ArrayList<AttributeNode<?>>( attributes.size() );
+                for ( Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
+                    attrNodes.add( new AttributeNode<Property>( (PropertyNode) node, attribute.getKey(),
+                                                                attribute.getValue() ) );
+                }
+                return attrNodes.iterator();
+            }
         } else if ( node instanceof XMLElementNode<?> ) {
             org.deegree.commons.tom.ElementNode value = ( (XMLElementNode<?>) node ).getValue();
             Map<QName, PrimitiveValue> attributes = value.getAttributes();

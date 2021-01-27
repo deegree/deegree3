@@ -302,6 +302,11 @@ public class WorkspaceBean implements Serializable {
             File wsRoot = new File( getWorkspaceRoot() );
             in = new FileInputStream( new File( upload.getAbsolutePath() ) );
             File target = new File( wsRoot, workspaceImportName );
+            
+            if ( !FileUtils.directoryContains( wsRoot, target ) ) {
+                throw new Exception( "Invalid workspace name: '" + workspaceImportName + "'." );
+            }
+            
             if ( target.exists() ) {
                 throw new Exception( "Workspace '" + workspaceImportName + "' already exists." );
             } else {

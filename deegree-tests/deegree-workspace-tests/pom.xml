@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4-RC3-SNAPSHOT</version>
+    <version>3.4.15-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -88,7 +88,7 @@
           <includes>
             <include>**/*IT.java</include>
           </includes>
-          <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Djava.awt.headless=true</argLine>
+          <argLine>-Xmx1024m -Xss2048k -Djava.awt.headless=true</argLine>
         </configuration>
         <executions>
           <execution>

@@ -113,7 +113,11 @@ public class CRSCodeType {
                 codeversion = codeAsString.charAt( i ) + codeversion;
             } else if ( codeAsString.charAt( i ) == ':' && !numberFinished ) {
                 numberFinished = true;
+            } else if ( codeAsString.charAt( i ) == '/' && !numberFinished ) {
+                numberFinished = true;
             } else if ( codeAsString.charAt( i ) == ':' && !versionFinished ) {
+                versionFinished = true;
+            } else if ( codeAsString.charAt( i ) == '/' && !versionFinished ) {
                 versionFinished = true;
             } else if ( codeAsString.charAt( i ) == '#' ) {
                 numberFinished = true;
