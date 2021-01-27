@@ -57,9 +57,9 @@ import org.slf4j.Logger;
 
 /**
  * {@link ConnectionProvider} based on <code>javax.sql.DataSource</code>.
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.4
  */
 class DataSourceConnectionProvider implements ConnectionProvider {
@@ -76,7 +76,7 @@ class DataSourceConnectionProvider implements ConnectionProvider {
 
     /**
      * Creates a new {@link DataSourceConnectionProvider} instance.
-     * 
+     *
      * @param resourceMetadata
      *            metadata, must not be <code>null</code>
      * @param ds
@@ -118,16 +118,15 @@ class DataSourceConnectionProvider implements ConnectionProvider {
     @Override
     public void destroy() {
         if ( destroyMethod != null ) {
-            LOG.info("Closing connection pool " + resourceMetadata.getIdentifier());
+            LOG.info("Closing connection pool {}", resourceMetadata.getIdentifier());
             try {
                 destroyMethod.invoke( ds );
             } catch ( Exception e ) {
-                String msg = "Error destroying DataSource instance: " + e.getLocalizedMessage();
-                LOG.error( msg );
+                LOG.error( "Error destroying DataSource instance: {}", e.getLocalizedMessage() );
             }
         } else {
-            LOG.warn("Unable to close connection pool " + resourceMetadata.getIdentifier()
-                    + ". Check the DataSource configuration if the attribute 'destroyMethod' is configured." );
+            LOG.warn( "Unable to close connection pool {}. Check the DataSource configuration if the attribute "
+                      + "'destroyMethod' is configured.", resourceMetadata.getIdentifier() );
         }
     }
 
