@@ -454,8 +454,8 @@ abstract class AbstractGmlRequestHandler {
         try {
             if ( VERSION_100.equals( version ) && gmlVersion == GML_2 ) {
                 baseUrl.append( "XMLSCHEMA" );
-            } else if ( VERSION_200.equals( version ) && gmlVersion == GML_32 ) {
-                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
+            } else if ( gmlVersion == GML_32 ) {
+                baseUrl.append( URLEncoder.encode( options.getMimeType(), "UTF-8" ) );
             } else {
                 baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );
             }
