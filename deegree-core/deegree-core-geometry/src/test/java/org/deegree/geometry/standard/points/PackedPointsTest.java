@@ -7,8 +7,7 @@ import org.deegree.cs.persistence.CRSManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import com.vividsolutions.jts.geom.Envelope;
-
+import org.locationtech.jts.geom.Envelope;
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
