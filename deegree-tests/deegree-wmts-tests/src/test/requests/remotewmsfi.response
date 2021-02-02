@@ -64,20 +64,19 @@ if(! this.DominantVegetation_switchfunction){
     th(row, "Field").style.cssText = headerStyle
     th(row, "Value").style.cssText = headerStyle
     for(var i in DominantVegetation){
-      row = tr(table)
-      td(row, 'GML ID').style.cssText = headerStyle
-      td(row, 'DOMINANTVEGETATION_329').style.cssText = headerStyle
       DominantVegetation[i](table)
     }
   }
-
   DominantVegetation = []
 }
 
 DominantVegetation[DominantVegetation.length] = function (table) {
   var odd = true
   var row
-  
+  row = tr(table)
+  td(row, 'GML ID').style.cssText = headerStyle
+  td(row, 'DOMINANTVEGETATION_329').style.cssText = headerStyle
+
 row = tr(table)
 td(row, 'objectid').style.cssText = odd ? oddStyle : evenStyle
 td(row, '330').style.cssText = odd ? oddStyle : evenStyle
@@ -171,4 +170,3 @@ if(!first) first = DominantVegetation_switchfunction
 </html>
 
 
-<?xml version='1.0' encoding='UTF-8'?>
