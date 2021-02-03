@@ -76,7 +76,7 @@ DominantVegetation[DominantVegetation.length] = function (table) {
   row = tr(table)
   td(row, 'GML ID').style.cssText = headerStyle
   td(row, 'DOMINANTVEGETATION_329').style.cssText = headerStyle
-
+  
 row = tr(table)
 td(row, 'objectid').style.cssText = odd ? oddStyle : evenStyle
 td(row, '330').style.cssText = odd ? oddStyle : evenStyle
@@ -168,5 +168,6 @@ if(!first) first = DominantVegetation_switchfunction
     <div id="table"></div>
   </body>
 </html>
+
 
 
