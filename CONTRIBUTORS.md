@@ -21,6 +21,7 @@ The following list shows in alphabetical order individuals who have contributed 
 - Anne Loos
 - Matteo Matassoni
 - Diego Migliavacca
+- Edward Nash
 - Ulrich Neumeister
 - Mike Nidel
 - Sebastian Niklasch
