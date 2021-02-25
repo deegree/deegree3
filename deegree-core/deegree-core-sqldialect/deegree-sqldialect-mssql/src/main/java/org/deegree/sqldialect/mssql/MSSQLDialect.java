@@ -57,7 +57,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -116,9 +115,9 @@ public class MSSQLDialect extends AbstractSQLDialect implements SQLDialect {
 
     @Override
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
+                                                 SortProperty[] sortCrit, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new MSSQLWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings );
+        return new MSSQLWhereBuilder( this, mapper, filter, sortCrit, allowPartialMappings );
     }
 
     @Override
