@@ -28,15 +28,24 @@
 package org.deegree.uncoupled.jaxb;
 
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+
+import org.xml.sax.InputSource;
 
 /**
  * JAXB Catalog Resolver
  * 
- * The Resolver is build to allow JAXB to find deegree bundled schemas inside the build classpath instead of resolving
- * schema files online.
+ * The Resolver is build to allow JAXB to find deegree bundled schemas inside
+ * the build classpath instead of resolving schema files online.
  * 
- * <blockquote> <b>Note:</b> Eclipse only builds this class if the following setting is changed, because of internal
- * API:
+ * <blockquote> <b>Note:</b> Eclipse only builds this class if the following
+ * setting is changed, because of internal API:
  * 
  * <pre>
  * Window > Preferences > Java > Compiler > Errors/Warnings
@@ -48,49 +57,110 @@ import java.net.URL;
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
+@SuppressWarnings("restriction")
 public class CatalogResolver extends com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver {
 
-    private static final String REWRITE_FROM = "http://schemas.deegree.org/";
+	private Map<String, String> cacheRelatives = new HashMap<String, String>();
+	
+	private static final String PUBLIC_FROM_HTTP = "http://www.deegree.org/";
 
-    private static final String REWRITE_TO = "META-INF/schemas/";
+	private static final String REWRITE_FROM_HTTP = "http://schemas.deegree.org/";
 
-    private boolean debug = false;
+	private static final String REWRITE_FROM_HTTPS = "https://schemas.deegree.org/";
 
-    public CatalogResolver() {
-        String dbg = System.getProperty( "deeegree.jaxb.debug" );
-        if ( dbg != null && !dbg.isEmpty() ) {
-            debug = true;
-        }
-    }
+	private static final Pattern PAT_VERSION = Pattern.compile("^[0-9]+\\.[0-9]+");
 
-    @Override
-    public String getResolvedEntity( String publicId, String systemId ) {
+	private static final String REWRITE_TO = "META-INF/schemas/";
 
-        if ( systemId != null && systemId.toLowerCase().startsWith( REWRITE_FROM ) ) {
-            if ( debug ) {
-                System.err.println( "*** deegree JAXB CatalogResolver: publicId: " + publicId + " systemId: "
-                                    + systemId );
-            }
+	private boolean debug = true;
 
-            String newid = REWRITE_TO + systemId.substring( REWRITE_FROM.length() );
+	public CatalogResolver() {
+		String dbg = System.getProperty("deeegree.jaxb.debug");
+		if (dbg != null && !dbg.isEmpty()) {
+			debug = true;
+		}
+	}
 
-            try {
-                URL resource = Thread.currentThread().getContextClassLoader().getResource( newid );
-                if ( resource == null ) {
-                    resource = getClass().getResource( "/" + newid );
-                }
-                if ( resource != null ) {
-                    if ( debug ) {
-                        System.err.println( "Resolved localy to: " + resource );
-                    }
-                    return resource.toString();
-                }
-            } catch ( Exception ex ) {
-                System.err.println( "Error: " + ex.getMessage() );
-            }
-        }
+	@Override
+	public String getResolvedEntity(String publicId, String systemId) {
 
-        // Use default lookup
-        return super.getResolvedEntity( publicId, systemId );
-    }
+		if (systemId == null) {
+		} else if (systemId.toLowerCase().startsWith(REWRITE_FROM_HTTP)) {
+			// TODO seems to be not required anymore
+			debug("*** deegree JAXB CatalogResolver: publicId: " + publicId + " systemId: " + systemId);
+
+			String path = systemId.substring(REWRITE_FROM_HTTP.length());
+			String res = lookup(path);
+			if (res != null) {
+				return res;
+			}
+		} else if (systemId.toLowerCase().startsWith(REWRITE_FROM_HTTPS)) {
+			// TODO seems to be not required anymore
+			debug("*** deegree JAXB CatalogResolver: publicId: " + publicId + " systemId: " + systemId);
+			
+			String path = systemId.substring(REWRITE_FROM_HTTPS.length());
+			String res = lookup(path);
+			if (res != null) {
+				return res;
+			}
+		} else if (systemId.startsWith("../") && publicId.toLowerCase().startsWith(PUBLIC_FROM_HTTP)) {
+			debug("*** deegree JAXB CatalogResolver: publicId: " + publicId + " systemId: " + systemId);
+			
+			String path = systemId;
+			while (path.startsWith("../")) {
+				path = path.substring(3);
+			}
+			String res = lookup(path);
+			if (res != null) {
+				debug("--> " + res);
+				cacheRelatives.put(publicId, res);
+				return res;
+			}
+		} else {
+			debug("*** deegree JAXB CatalogResolver: publicId: " + publicId + " systemId: " + systemId);
+			if (publicId != null) {
+				String res = cacheRelatives.get(publicId);
+				if ( res != null ) {
+					debug("==>: " + res + " [cache]");
+					return res;
+				}
+			}
+		}
+
+		// Use default lookup
+		return super.getResolvedEntity(publicId, systemId);
+	}
+
+	private void debug(String msg) {
+		if (!debug) {
+			return;
+		}
+		System.err.println(msg);
+	}
+
+	private String lookup(String path) {
+
+		try {
+			int posSlash = path.indexOf('/');
+			if (posSlash > 0 && PAT_VERSION.matcher(path).find()) {
+				// Ignore version for internal lookup
+				path = path.substring(posSlash + 1);
+			}
+			String newid = REWRITE_TO + path;
+
+			URL resource = Thread.currentThread().getContextClassLoader().getResource(newid);
+			if (resource == null) {
+				resource = getClass().getResource("/" + newid);
+			}
+			if (resource != null) {
+				if (debug) {
+					System.err.println("Resolved localy to: " + resource);
+				}
+				return resource.toString();
+			}
+		} catch (Exception ex) {
+			System.err.println("Error: " + ex.getMessage());
+		}
+		return null;
+	}
 }
