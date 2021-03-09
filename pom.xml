@@ -10,16 +10,16 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
     <tag>HEAD</tag>
   </scm>
 
   <repositories>
     <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <id>latlon-repo</id>
+      <url>https://repo.lat-lon.de/repository/maven-public/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -31,20 +31,13 @@
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <id>latlon-releases</id>
+      <url>https://repo.lat-lon.de/repository/deegree-releases/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>latlon-snapshots</id>
+      <url>https://repo.lat-lon.de/repository/deegree-snapshots/</url>
     </snapshotRepository>
-    <site>
-      <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
-      <url>file:///${site.dir}/${project.version}/</url>
-    </site>
   </distributionManagement>
 
   <pluginRepositories>
