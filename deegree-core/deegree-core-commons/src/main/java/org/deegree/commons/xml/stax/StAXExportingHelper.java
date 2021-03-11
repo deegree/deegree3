@@ -59,6 +59,8 @@ public class StAXExportingHelper {
 
     public static void writeAttribute( XMLStreamWriter xmlStream, QName name, String value )
                             throws XMLStreamException {
+        // Note: These methods will not automatically define namespaces if they are not yet defined
+        // This can result in unbound prefixes being used
         if ( name.getNamespaceURI() == null ) {
             xmlStream.writeAttribute( name.getLocalPart(), value );
         } else if ( name.getPrefix() == null ) {

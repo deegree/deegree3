@@ -414,10 +414,11 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 for ( Entry<QName, PrimitiveValue> attr : attributes.entrySet() ) {
                     QName attrKey = attr.getKey();
                     PrimitiveValue attrValue = attr.getValue();
-                    if ( XSI_NIL.equals( attrKey ) )
+                    if ( attrKey.getNamespaceURI() != null ) {
                         writeAttributeWithNS( attrKey.getNamespaceURI(), attrKey.getLocalPart(), attrValue.getAsText() );
-                    else
+                    } else {
                         writeAttribute( writer, attrKey, attrValue.getAsText() );
+                    }
                 }
             }
             if ( property.getChildren() != null ) {
