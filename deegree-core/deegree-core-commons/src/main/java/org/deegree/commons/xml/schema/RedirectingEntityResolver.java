@@ -60,6 +60,8 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
     private static final String SCHEMAS_OPENGIS_NET_URL = "http://schemas.opengis.net/";
 
+    public static final String INSPIRE_SCHEMAS_URL = "http://inspire.ec.europa.eu/schemas";
+
     private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
 
     private static final URL baseURL;
@@ -88,6 +90,8 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
                 LOG.debug( "Local hit: " + systemId );
                 return u.toString();
             }
+        } else if ( systemId.startsWith( INSPIRE_SCHEMAS_URL ) ) {
+            return systemId.replaceFirst( "http://", "https://" );
         } else if ( systemId.equals( "http://www.w3.org/2001/xml.xsd" ) ) {
             // workaround for schemas that include the xml base schema...
             return RedirectingEntityResolver.class.getResource( "/w3c/xml.xsd" ).toString();
