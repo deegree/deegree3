@@ -31,11 +31,11 @@
 
   <distributionManagement>
     <repository>
-      <id>latlon-releases</id>
+      <id>latlon-deploy</id>
       <url>https://repo.lat-lon.de/repository/deegree-releases/</url>
     </repository>
     <snapshotRepository>
-      <id>latlon-snapshots</id>
+      <id>latlon-deploy</id>
       <url>https://repo.lat-lon.de/repository/deegree-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
