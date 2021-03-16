@@ -41,24 +41,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
+import org.deegree.style.styling.components.Fill;
+import org.deegree.style.styling.components.Graphic;
+import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.UomCalculator;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.TexturePaint;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
 
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.UOM;
-import org.deegree.style.utils.ShapeHelper;
-import org.deegree.style.utils.UomCalculator;
-
-import javax.imageio.ImageIO;
 
 /**
  * Responsible for applying fill stylings to a graphics 2d.
