@@ -166,14 +166,16 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
 
     @Override
     public void deactivate() {
-        File f = new File( file.getParentFile(), identifier.getId() + ".ignore" );
+        String fileNameWithoutSuffix = parseFileNameWithoutSuffix();
+        File f = new File( file.getParentFile(), fileNameWithoutSuffix + ".ignore" );
         file.renameTo( f );
         file = f;
     }
 
     @Override
     public void activate() {
-        File f = new File( file.getParentFile(), identifier.getId() + ".xml" );
+        String fileNameWithoutSuffix = parseFileNameWithoutSuffix();
+        File f = new File( file.getParentFile(), fileNameWithoutSuffix + ".xml" );
         file.renameTo( f );
         file = f;
     }
@@ -186,6 +188,14 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         } catch ( IOException e ) {
             throw new ResourceException( e.getLocalizedMessage(), e );
         }
+    }
+
+    private String parseFileNameWithoutSuffix() {
+        String fileName = file.getName();
+        if (fileName.contains(".")) {
+            return fileName.substring(0, fileName.lastIndexOf("."));
+        }
+        return fileName;
     }
 
 }
