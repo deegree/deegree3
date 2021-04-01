@@ -80,14 +80,6 @@ A more complex configuration example looks like this:
     <Version>1.1.0</Version>
   </SupportedVersions>
 
-  <FeatureStoreId>inspire-ad</FeatureStoreId>
-
-  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
-  <EnableResponseBuffering>false</EnableResponseBuffering>
-  <DisabledResources>
-    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
-  </DisabledResources>
-
   <SupportedRequests>
     <SupportedEncodings>kvp</SupportedEncodings>
      <GetCapabilities>
@@ -98,6 +90,14 @@ A more complex configuration example looks like this:
       <SupportedEncodings>xml</SupportedEncodings>
     </GetFeature>
   </SupportedRequests>
+
+  <FeatureStoreId>inspire-ad</FeatureStoreId>
+
+  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
+  <EnableResponseBuffering>false</EnableResponseBuffering>
+  <DisabledResources>
+    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
+  </DisabledResources>
 
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
