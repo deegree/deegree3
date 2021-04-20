@@ -36,56 +36,6 @@
 
 package org.deegree.services.wms.controller;
 
-import static javax.imageio.ImageIO.write;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.CollectionUtils.reduce;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
-
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAP11Version;
@@ -170,6 +120,55 @@ import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
+
+import static javax.imageio.ImageIO.write;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.utils.ArrayUtils.join;
+import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
+import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.commons.utils.CollectionUtils.reduce;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
+import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * <code>WMSController</code> handles the protocol and map service globally.
@@ -315,9 +314,10 @@ public class WMSController extends AbstractOWS {
                 highestVersion = iter.next();
             }
 
+            String getLegendGraphicBackgroundColor = conf.getGetLegendGraphicBackgroundColor();
             ServiceConfigurationType sc = conf.getServiceConfiguration();
             int capabilitiesVersion = conf.getUpdateSequence() != null ? conf.getUpdateSequence().intValue() : 0;
-            service = new MapService( sc, workspace, capabilitiesVersion );
+            service = new MapService( sc, workspace, capabilitiesVersion, getLegendGraphicBackgroundColor );
 
             // after the service knows what layers are available:
             handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
