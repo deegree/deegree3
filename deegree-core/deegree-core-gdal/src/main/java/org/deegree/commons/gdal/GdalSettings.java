@@ -164,4 +164,13 @@ public class GdalSettings implements Initializable, Destroyable {
         return sr;
     }
 
+    public SpatialReference getCrs84() {
+        SpatialReference sr = new SpatialReference();
+        int importFromEPSG = sr.ImportFromWkt(
+                        "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Longitude\",EAST],AXIS[\"Latitude\",NORTH]]" );
+        if ( importFromEPSG != 0 ) {
+            throw new RuntimeException( "Cannot import CRS:84 from GDAL." );
+        }
+        return sr;
+    }
 }
