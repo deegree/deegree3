@@ -133,7 +133,6 @@
             <artifactId>deegree-webservices</artifactId>
             <version>${project.version}</version>
             <type>war</type>
-            <classifier>jdk11</classifier>
         </dependency>
     </dependencies>
     <pluginRepositories>

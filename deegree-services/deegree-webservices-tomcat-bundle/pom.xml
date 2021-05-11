@@ -40,7 +40,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-webservices</artifactId>
       <version>${project.version}</version>
-      <classifier>jdk11</classifier>
       <type>war</type>
     </dependency>
   </dependencies>
