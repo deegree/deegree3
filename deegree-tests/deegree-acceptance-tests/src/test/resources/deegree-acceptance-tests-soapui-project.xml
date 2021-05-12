@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <con:soapui-project activeEnvironment="Default" name="deegree-acceptance-tests" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" id="55cd9e63-a1b4-4a8e-a5ef-17d6ffc1196e" xmlns:con="http://eviware.com/soapui/config">
   <con:settings/>
-  <con:testSuite id="afb2e25b-e63f-4293-bac2-ae828a7fc16d" name="REST-Activate Workspace">
+  <con:testSuite id="a430548e-09bd-4b08-82dc-dfa9e93ba51f" name="REST API">
     <con:settings/>
     <con:runType>SEQUENTIAL</con:runType>
-    <con:testCase id="f0371c92-93b3-47da-bc89-3a044ab7b752" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="REST" searchProperties="true">
+    <con:testCase id="441f6532-bd61-47ed-abef-ec4c91a139eb" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="listworkspaces" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
       <con:settings/>
-      <con:testStep type="httprequest" name="list workspaces" id="c041ae14-b11e-47aa-ba79-fd9f205de8a4">
+      <con:testStep type="httprequest" name="list available workspace names" id="0ed96d04-9f07-48f1-b265-c80b08483a6a">
         <con:settings/>
-        <con:config method="GET" xsi:type="con:HttpRequest" id="2be63680-5c2a-4bcf-8343-4680915aa606" name="list workspaces" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list available workspace names" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:encoding xsi:nil="true"/>
-          <con:endpoint>http://localhost:${#Project#port}/config/listworkspaces</con:endpoint>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/listworkspaces</con:endpoint>
           <con:request/>
-          <con:assertion type="Valid HTTP Status Codes" id="c9339bbd-7ef0-4827-8dcc-085fbcd1bf42" name="Valid HTTP Status Codes">
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
             <con:configuration>
               <codes>200</codes>
             </con:configuration>
           </con:assertion>
-          <con:assertion type="Simple Contains" id="eaeb88b1-0c30-4311-bd92-54da715b4054" name="Contains">
+          <con:assertion type="Simple Contains" id="a5e6b312-0639-40d4-9aaf-74100e62672f" name="Contains - workspace">
             <con:configuration>
               <token>workspace</token>
               <ignoreCase>false</ignoreCase>
@@ -39,25 +39,609 @@
           <con:parameters/>
         </con:config>
       </con:testStep>
-      <con:testStep type="httprequest" name="Restart Workspace" id="840b6e98-8707-400e-b782-898e884f72e6">
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="ac7eb616-d24e-4b44-9bbe-c006a0c74ca0" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="PUT and DELETE" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="list before" id="3d00b0b0-ac1f-4924-96b3-bf96a5a0b707">
         <con:settings/>
-        <con:config method="GET" xsi:type="con:HttpRequest" id="2be63680-5c2a-4bcf-8343-4680915aa606" name="Restart Workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list before" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:encoding xsi:nil="true"/>
-          <con:endpoint>http://localhost:${#Project#port}/config/restart/workspace</con:endpoint>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
           <con:request/>
-          <con:assertion type="Valid HTTP Status Codes" id="c9339bbd-7ef0-4827-8dcc-085fbcd1bf42" name="Valid HTTP Status Codes">
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
             <con:configuration>
               <codes>200</codes>
             </con:configuration>
           </con:assertion>
-          <con:assertion type="Simple Contains" id="eaeb88b1-0c30-4311-bd92-54da715b4054" name="Contains">
+          <con:assertion type="Simple NotContains" id="def094a7-e2b4-4a2e-a1bb-2248ba229128" name="Not Contains - test.xml">
             <con:configuration>
-              <token>Restart complete</token>
+              <token>test.xml</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="PUT invalid resource" id="c9552c5b-1af9-49c1-b617-d1c88af3dc67">
+        <con:settings/>
+        <con:config method="PUT" xsi:type="con:HttpRequest" id="3aea833b-50d4-419b-9395-e07adfb803f6" name="PUT invalid resource" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/config/upload/services/test.xml</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWFS xmlns="http://www.deegree.org/services/wfs"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd"
+            configVersion="3.4.0">
+
+  <SupportedVersions>
+    <Version>2.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+
+  <FeatureStoreId>UNKNOWN</FeatureStoreId>
+  <QueryCRS>EPSG:25832</QueryCRS>
+
+</deegreeWFS>]]></con:request>
+          <con:assertion type="Valid HTTP Status Codes" id="875a311e-accb-4646-9d96-16088fb28053" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="d60ff763-879e-45ca-8a7c-717ec7b40142" name="Contains - test.xml uploaded">
+            <con:configuration>
+              <token>test.xml uploaded.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list after PUT" id="1d14117b-ea52-4202-8d45-e91573e43449">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list after PUT" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - test.xml">
+            <con:configuration>
+              <token>test.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="DELETE invalid resource" id="c32e6c82-bb60-4997-9dfa-3c6665f57191">
+        <con:settings/>
+        <con:config method="DELETE" xsi:type="con:HttpRequest" id="3aea833b-50d4-419b-9395-e07adfb803f6" name="DELETE invalid resource" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/config/delete/services/test.xml</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="875a311e-accb-4646-9d96-16088fb28053" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="d60ff763-879e-45ca-8a7c-717ec7b40142" name="test.xml deleted">
+            <con:configuration>
+              <token>test.xml deleted.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list after DELETE" id="e3b4a766-42cc-49e6-b7e5-1b895761cf8e">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list after DELETE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple NotContains" id="def094a7-e2b4-4a2e-a1bb-2248ba229128" name="Not Contains - test.xml">
+            <con:configuration>
+              <token>test.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="a35e5a32-bc4b-4f3e-a1ce-97df1a3d3876" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="list" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="list themes" id="0daf2745-a9a6-4a4e-b9f4-dc6a0b453634">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list themes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/themes</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wmts.xml">
+            <con:configuration>
+              <token>theme_wmts.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wms.xml">
+            <con:configuration>
+              <token>theme_wms.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list themes with workspace" id="34edf805-f2a7-49bb-9840-94bf91c69456">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list themes with workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/workspace/themes</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wmts.xml">
+            <con:configuration>
+              <token>theme_wmts.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wms.xml">
+            <con:configuration>
+              <token>theme_wms.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list services" id="5a5f10f3-0795-4b91-8446-2951b8bf354c">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - metadata.xml">
+            <con:configuration>
+              <token>metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - main.xml">
+            <con:configuration>
+              <token>main.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - html.gfi">
+            <con:configuration>
+              <token>html.gfi</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - wfs110.xml">
+            <con:configuration>
+              <token>wfs110.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="bedf7580-ccb8-4a25-b8f7-808604425f77" name="Contains - wfs110_metadata.xml">
+            <con:configuration>
+              <token>wfs110_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="112ba74b-083d-40a2-975e-4f09e32e3c00" name="Contains - wmts.xml">
+            <con:configuration>
+              <token>wmts.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9774e1ab-a815-4783-af10-3f567d67505a" name="Contains - wmts_metadata.xml">
+            <con:configuration>
+              <token>wmts_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9148ccc8-2504-438c-96c5-6ee30b890129" name="Contains - wms.xml">
+            <con:configuration>
+              <token>wms.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="8bfdf400-a886-466b-8324-30deaf5d9116" name="Contains - wms_metadata.xml">
+            <con:configuration>
+              <token>wms_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9148ccc8-2504-438c-96c5-6ee30b890129" name="Contains - wfs.xml">
+            <con:configuration>
+              <token>wfs.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9774e1ab-a815-4783-af10-3f567d67505a" name="Contains - wfts_metadata.xml">
+            <con:configuration>
+              <token>wfs_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="8cc2d48a-5afe-4ece-9dde-681cfae47419" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="restart" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="restart" id="67b71898-9902-4f88-997a-f711a17ac1ec">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
+            <con:configuration>
+              <token>Restart complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with workspace" id="71c63a7c-a5a5-4b34-b49a-6d7a25ed2378">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/workspace</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
+            <con:configuration>
+              <token>Restart complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with resource" id="18495e36-a721-41e8-9a61-2c8c0e2e72a1">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/services/dlkm_au_wms</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with workspace and resource" id="7e44a2a8-20c6-4794-ac17-6450850abb16">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with workspace and resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/workspace/services/dlkm_au_wms</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with unkown resource" id="25ff1f25-3acd-43fd-a24c-c8845485e485">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with unkown resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/services/unknown</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="20187c0e-c9b4-4f19-b1a0-bbd3f4b5d7b2" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="update" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="update with workspace" id="9c46d557-8e49-4578-80bb-d44159e46f59">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="update with workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/update/workspace</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart of workspace deegree-core-testing completed">
+            <con:configuration>
+              <token>Update complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="update without workspace" id="784362b9-dc67-4c39-8072-3a7cdf7cfbff">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="update without workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/update</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Update complete.">
+            <con:configuration>
+              <token>Update complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="update with unknown workspace" id="9ce8e807-9eb2-4d08-b03b-c339e5ab5c06">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="update with unknown workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/update/notknown</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="110faf9c-0fb2-4a38-8710-0d79d1a007ac" name="Empty Response">
+            <con:configuration>
+              <scriptText>assert messageExchange.hasResponse() == false</scriptText>
             </con:configuration>
           </con:assertion>
           <con:credentials>
@@ -672,6 +1256,10 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
     <con:property>
       <con:name>port</con:name>
       <con:value>9090</con:value>
+    </con:property>
+    <con:property>
+      <con:name>BaseUrl</con:name>
+      <con:value>http://localhost:${#Project#port}</con:value>
     </con:property>
   </con:properties>
   <con:wssContainer/>
