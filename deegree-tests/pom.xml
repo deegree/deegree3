@@ -14,7 +14,7 @@
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
+      <url>https://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -127,12 +127,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>csw-cite</id>
-  <modules>
-          <module>deegree-csw-bkg</module>
-  </modules>
     </profile>
   </profiles>
 
