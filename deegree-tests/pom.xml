@@ -128,12 +128,6 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>csw-cite</id>
-  <modules>
-          <module>deegree-csw-bkg</module>
-  </modules>
-    </profile>
   </profiles>
 
 </project>
