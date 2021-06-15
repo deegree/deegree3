@@ -47,8 +47,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import jj2000.j2k.NotImplementedError;
-
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.datetime.Date;
 import org.deegree.filter.Filter;
@@ -224,8 +222,7 @@ public class DCRecord implements MetadataRecord {
     @Override
     public void serialize( XMLStreamWriter writer, String[] elementNames )
                             throws XMLStreamException {
-
-        throw new NotImplementedError(
+        throw new UnsupportedOperationException(
                                        "The serialize(writer, elementNames) method for Dublin Core is not implemented yet. " );
 
     }

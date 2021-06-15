@@ -46,8 +46,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import jj2000.j2k.NotImplementedError;
-
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
@@ -273,7 +271,7 @@ public class Query {
             } else if ( ( filterEl == null ) && ( cqlTextEl != null ) ) {
                 String msg = Messages.get( "CSW_UNSUPPORTED_CQL_FILTER" );
                 LOG.info( msg );
-                throw new NotImplementedError( msg );
+                throw new InvalidParameterValueException( msg );
             } else {
                 String msg = Messages.get( "CSW_MISSING_FILTER_OR_CQL" );
                 LOG.debug( msg );
