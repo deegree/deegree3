@@ -1,5 +1,0 @@
-<JDBCConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0" xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.4.0/jdbc.xsd">
-  <Url>${jdbc.url}</Url>
-  <User>${jdbc.user}</User>
-  <Password>${jdbc.password}</Password>
-</JDBCConnection>

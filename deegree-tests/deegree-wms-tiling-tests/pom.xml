@@ -8,13 +8,13 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.9-SNAPSHOT</version>
+    <version>3.4.17-SNAPSHOT</version>
   </parent>
 
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
+      <url>https://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -80,7 +80,7 @@
             <include>**/*IntegrationTest.java</include>
             <include>**/*PerformanceTest.java</include>
           </includes>
-          <argLine>-Xmx1324m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -Dportnumber=${portnumber}</argLine>
+          <argLine>-Xmx1324m -Xss2048k -Dportnumber=${portnumber}</argLine>
         </configuration>
         <executions>
           <execution>

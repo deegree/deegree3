@@ -47,7 +47,7 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link CompositeGeometry}.
@@ -182,7 +182,7 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
 
     @Override
     protected GeometryCollection buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Geometry[] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        org.locationtech.jts.geom.Geometry[] jtsMembers = new org.locationtech.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : memberPrimitives ) {
             jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();

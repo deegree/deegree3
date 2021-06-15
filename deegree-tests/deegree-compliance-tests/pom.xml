@@ -13,13 +13,13 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.9-SNAPSHOT</version>
+    <version>3.4.17-SNAPSHOT</version>
   </parent>
 
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
+      <url>https://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -49,6 +49,20 @@
 
     <plugins>
       <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.basedir}/src/main/webapp</directory>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/src/main/workspace</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-maven-plugin</artifactId>
         <executions>
@@ -66,10 +80,13 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
+          <reuseForks>false</reuseForks>
+          <useSystemClassLoader>false</useSystemClassLoader>
           <includes>
             <include>**/${testPattern}.java</include>
           </includes>
-          <argLine>-Xmx1024m -Xss128m -XX:-UseGCOverheadLimit -Xincgc -DserviceUrl=${serviceUrl}/services</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -DserviceUrl=${serviceUrl}/services</argLine>
+          <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         </configuration>
         <executions>
           <execution>

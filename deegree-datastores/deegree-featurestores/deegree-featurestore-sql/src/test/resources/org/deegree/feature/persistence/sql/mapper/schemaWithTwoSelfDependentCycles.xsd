@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:te="http://test.de/schema"
+        xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified"
+        targetNamespace="http://test.de/schema" version="4.0">
+
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+
+    <element name="FeatureA" substitutionGroup="gml:AbstractFeature" type="te:FeatureAType"/>
+    <complexType name="FeatureAType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType">
+                <sequence>
+                    <element name="prop_A1" type="string"/>
+                    <element name="prop_A2" type="int"/>
+                    <!--
+                    <element name="geometry" type="gml:AbstractGeometryType"/>
+                    -->
+                    <element ref="te:FeatureB"/>
+                    <element ref="te:FeatureC"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="FeatureB" substitutionGroup="gml:AbstractObject" type="te:FeatureBType"/>
+    <complexType name="FeatureBType">
+        <sequence>
+            <element name="prop_B1" type="string"/>
+            <element name="prop_B2" type="int"/>
+        </sequence>
+    </complexType>
+
+    <element name="FeatureC" substitutionGroup="gml:AbstractObject" type="te:FeatureCType"/>
+    <complexType name="FeatureCType">
+        <sequence>
+            <element name="prop_C1" type="string"/>
+            <element name="prop_C2" type="int"/>
+            <element ref="te:FeatureD"/>
+            <element ref="te:FeatureE"/>
+        </sequence>
+    </complexType>
+
+    <element name="FeatureD" substitutionGroup="gml:AbstractObject" type="te:FeatureDType"/>
+    <complexType name="FeatureDType">
+        <sequence>
+            <element name="prop_D1" type="string"/>
+            <element name="prop_D2" type="int"/>
+            <element ref="te:FeatureC"/>
+        </sequence>
+    </complexType>
+
+    <element name="FeatureE" substitutionGroup="gml:AbstractObject" type="te:FeatureEType"/>
+    <complexType name="FeatureEType">
+        <sequence>
+            <element name="prop_E1" type="string"/>
+            <element name="prop_E2" type="int"/>
+            <element ref="te:FeatureC"/>
+        </sequence>
+    </complexType>
+
+</schema>
