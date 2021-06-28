@@ -30,14 +30,12 @@
         <groupId>org.deegree</groupId>
         <artifactId>deegree-maven-plugin</artifactId>
         <executions>
-          <!-- disabled due to unresolveable test failures, plugin is missing config options
           <execution>
             <id>test-workspaces</id>
             <goals>
               <goal>test-workspaces</goal>
             </goals>
           </execution>
-          -->
           <execution>
             <id>generate-portnumber</id>
             <phase>initialize</phase>

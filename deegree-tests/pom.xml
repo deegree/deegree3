@@ -99,7 +99,6 @@
   <modules>
     <module>deegree-testservice</module>
     <!-- workspace tests must run first! -->
-    <!-- failing under Java 11 and deegree-maven-plugin is executing tests -->
     <module>deegree-workspace-tests</module>
     <module>deegree-compliance-tests</module>
     <module>deegree-wms-similarity-tests</module>
