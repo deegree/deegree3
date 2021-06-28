@@ -128,6 +128,12 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>acceptance-tests</id>
+      <modules>
+        <module>deegree-acceptance-tests</module>
+      </modules>
+    </profile>
   </profiles>
 
 </project>
