@@ -55,12 +55,9 @@ pipeline {
             }
         }
         stage ('Acceptance Test') {
-            when {
-                branch 'master'
-            }
             steps {
-                echo 'Preparing test harness: TEAM Engine'
-                echo 'Download and start TEAM Engine'
+                echo 'Preparing test environment'
+                echo 'Download SUT deegree workspace'
                 echo 'Start SUT deegree webapp with test configuration'
                 echo 'Run FAT'
             }
@@ -71,23 +68,19 @@ pipeline {
             }
         }
         stage ('Release') {
-            when {
-                branch 'master'
-            }
             steps {
-                echo 'Prepare release version...'
+                echo 'Prepare release version'
                 echo 'Build and publish documentation'
-                sh 'mvn -pl :deegree-webservices-handbook -Phandbook install'
-                echo 'Build docker image...'
+                sh 'mvn -pl :deegree-webservices-handbook -Phandbook package'
+                sh 'mvn site -Psite-all-reports'
             }
             post {
                 success {
-                    // post release on github
-                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war,**/target/deegree-webservices-handbook-*.zip', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
                 }
             }
         }
-        stage ('Deploy PROD') {
+        stage ('Deploy') {
             when {
                 branch 'master'
             }
