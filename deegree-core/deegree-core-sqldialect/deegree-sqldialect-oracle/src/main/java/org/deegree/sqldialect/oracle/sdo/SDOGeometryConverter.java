@@ -832,7 +832,7 @@ public class SDOGeometryConverter {
         return elem_info;
     }
 
-    private void addCoordinate( List<Point> pnts, ICRS crs, com.vividsolutions.jts.geom.Coordinate coord ) {
+    private void addCoordinate( List<Point> pnts, ICRS crs, org.locationtech.jts.geom.Coordinate coord ) {
         if ( Double.isNaN( coord.z ) ) {
             pnts.add( _gf.createPoint( null, coord.x, coord.y, crs ) );
         } else {
@@ -841,59 +841,59 @@ public class SDOGeometryConverter {
     }
 
     private int buildJTSGeometry( List<Triplet> info, List<Point> pnts, ICRS crs,
-                                  com.vividsolutions.jts.geom.Geometry geom ) {
+                                  org.locationtech.jts.geom.Geometry geom ) {
         int gtyp = SDOGTypeTT.UNKNOWN;
 
-        if ( geom instanceof com.vividsolutions.jts.geom.Point ) {
-            buildJTSPoint( info, pnts, crs, (com.vividsolutions.jts.geom.Point) geom );
+        if ( geom instanceof org.locationtech.jts.geom.Point ) {
+            buildJTSPoint( info, pnts, crs, (org.locationtech.jts.geom.Point) geom );
             gtyp = SDOGTypeTT.POINT;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.LinearRing ) {
-            buildJTSLineString( info, pnts, crs, (com.vividsolutions.jts.geom.LineString) geom,
+        } else if ( geom instanceof org.locationtech.jts.geom.LinearRing ) {
+            buildJTSLineString( info, pnts, crs, (org.locationtech.jts.geom.LineString) geom,
                                 SDOEType.POLYGON_RING_EXTERIOR );
             gtyp = SDOGTypeTT.POLYGON;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.LineString ) {
-            buildJTSLineString( info, pnts, crs, (com.vividsolutions.jts.geom.LineString) geom, SDOEType.LINESTRING );
+        } else if ( geom instanceof org.locationtech.jts.geom.LineString ) {
+            buildJTSLineString( info, pnts, crs, (org.locationtech.jts.geom.LineString) geom, SDOEType.LINESTRING );
             gtyp = SDOGTypeTT.LINE;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.Polygon ) {
-            com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geom;
+        } else if ( geom instanceof org.locationtech.jts.geom.Polygon ) {
+            org.locationtech.jts.geom.Polygon polygon = (org.locationtech.jts.geom.Polygon) geom;
             buildJTSLineString( info, pnts, crs, polygon.getExteriorRing(), SDOEType.POLYGON_RING_EXTERIOR );
             for ( int i = 0, j = polygon.getNumInteriorRing(); i < j; i++ ) {
                 buildJTSLineString( info, pnts, crs, polygon.getInteriorRingN( i ), SDOEType.POLYGON_RING_INTERIOR );
             }
             gtyp = SDOGTypeTT.POLYGON;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.MultiPoint ) {
+        } else if ( geom instanceof org.locationtech.jts.geom.MultiPoint ) {
             for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                buildJTSPoint( info, pnts, crs, (com.vividsolutions.jts.geom.Point) geom.getGeometryN( m ) );
+                buildJTSPoint( info, pnts, crs, (org.locationtech.jts.geom.Point) geom.getGeometryN( m ) );
             }
             gtyp = SDOGTypeTT.MULTIPOINT;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.MultiLineString ) {
+        } else if ( geom instanceof org.locationtech.jts.geom.MultiLineString ) {
             for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                buildJTSLineString( info, pnts, crs, (com.vividsolutions.jts.geom.LineString) geom.getGeometryN( m ),
+                buildJTSLineString( info, pnts, crs, (org.locationtech.jts.geom.LineString) geom.getGeometryN( m ),
                                     SDOEType.LINESTRING );
             }
             gtyp = SDOGTypeTT.MULTILINE;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.MultiPolygon ) {
-            com.vividsolutions.jts.geom.Polygon polygon = null;
+        } else if ( geom instanceof org.locationtech.jts.geom.MultiPolygon ) {
+            org.locationtech.jts.geom.Polygon polygon = null;
             for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
-                polygon = (com.vividsolutions.jts.geom.Polygon) geom.getGeometryN( m );
+                polygon = (org.locationtech.jts.geom.Polygon) geom.getGeometryN( m );
                 buildJTSLineString( info, pnts, crs, polygon.getExteriorRing(), SDOEType.POLYGON_RING_EXTERIOR );
                 for ( int i = 0, j = polygon.getNumInteriorRing(); i < j; i++ ) {
                     buildJTSLineString( info, pnts, crs, polygon.getInteriorRingN( i ), SDOEType.POLYGON_RING_INTERIOR );
                 }
             }
             gtyp = SDOGTypeTT.MULTIPOLYGON;
-        } else if ( geom instanceof com.vividsolutions.jts.geom.GeometryCollection ) {
-            com.vividsolutions.jts.geom.Geometry subgeom = null;
+        } else if ( geom instanceof org.locationtech.jts.geom.GeometryCollection ) {
+            org.locationtech.jts.geom.Geometry subgeom = null;
             for ( int m = 0, n = geom.getNumGeometries(); m < n; m++ ) {
                 subgeom = geom.getGeometryN( m );
 
-                if ( subgeom instanceof com.vividsolutions.jts.geom.Point
-                     || subgeom instanceof com.vividsolutions.jts.geom.LinearRing
-                     || subgeom instanceof com.vividsolutions.jts.geom.LineString
-                     || subgeom instanceof com.vividsolutions.jts.geom.Polygon
-                     || subgeom instanceof com.vividsolutions.jts.geom.MultiPoint
-                     || subgeom instanceof com.vividsolutions.jts.geom.MultiLineString
-                     || subgeom instanceof com.vividsolutions.jts.geom.MultiPolygon ) {
+                if ( subgeom instanceof org.locationtech.jts.geom.Point
+                     || subgeom instanceof org.locationtech.jts.geom.LinearRing
+                     || subgeom instanceof org.locationtech.jts.geom.LineString
+                     || subgeom instanceof org.locationtech.jts.geom.Polygon
+                     || subgeom instanceof org.locationtech.jts.geom.MultiPoint
+                     || subgeom instanceof org.locationtech.jts.geom.MultiLineString
+                     || subgeom instanceof org.locationtech.jts.geom.MultiPolygon ) {
                     // only non cascading types
                     buildJTSGeometry( info, pnts, crs, subgeom );
                 } else {
@@ -909,15 +909,15 @@ public class SDOGeometryConverter {
         return gtyp;
     }
 
-    private void buildJTSPoint( List<Triplet> info, List<Point> pnts, ICRS crs, com.vividsolutions.jts.geom.Point geom ) {
+    private void buildJTSPoint( List<Triplet> info, List<Point> pnts, ICRS crs, org.locationtech.jts.geom.Point geom ) {
         info.add( new Triplet( pnts.size(), 1, 1 ) );
-        addCoordinate( pnts, crs, ( (com.vividsolutions.jts.geom.Point) geom ).getCoordinate() );
+        addCoordinate( pnts, crs, ( (org.locationtech.jts.geom.Point) geom ).getCoordinate() );
     }
 
     private void buildJTSLineString( List<Triplet> info, List<Point> pnts, ICRS crs,
-                                     com.vividsolutions.jts.geom.LineString geom, int etype ) {
+                                     org.locationtech.jts.geom.LineString geom, int etype ) {
         info.add( new Triplet( pnts.size(), etype, 1 ) );
-        for ( com.vividsolutions.jts.geom.Coordinate coord : geom.getCoordinates() ) {
+        for ( org.locationtech.jts.geom.Coordinate coord : geom.getCoordinates() ) {
             addCoordinate( pnts, crs, coord );
         }
     }

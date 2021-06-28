@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -109,7 +110,7 @@ public class GMLStreamWriter {
 
     private GMLDictionaryWriter dictionaryWriter;
 
-    private List<ProjectionClause> projections;
+    private Map<QName, List<ProjectionClause>> projections;
 
     private final Map<String, String> prefixToNs = new HashMap<String, String>();
 
@@ -214,17 +215,17 @@ public class GMLStreamWriter {
      * 
      * @return projections, or <code>null</code> (include all feature properties)
      */
-    public List<ProjectionClause> getProjections() {
+    public Map<QName, List<ProjectionClause>> getProjections() {
         return projections;
     }
 
     /**
      * Sets the projections to be applied to exported {@link Feature} instances.
-     * 
+     *
      * @param projections
      *            projections, or <code>null</code> (include all feature properties)
      */
-    public void setProjections( List<ProjectionClause> projections ) {
+    public void setProjections(Map<QName, List<ProjectionClause>> projections ) {
         this.projections = projections;
     }
 

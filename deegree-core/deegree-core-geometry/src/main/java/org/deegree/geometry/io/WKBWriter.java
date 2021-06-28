@@ -35,25 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.locationtech.jts.io.OutputStreamOutStream;
+import org.locationtech.jts.io.ParseException;
 
-import com.vividsolutions.jts.io.OutputStreamOutStream;
-import com.vividsolutions.jts.io.ParseException;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Writes {@link Geometry} objects encoded as Well-Known Binary (WKB).
- * 
+ *
  * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class WKBWriter {
@@ -61,21 +61,36 @@ public class WKBWriter {
     // TODO remove the need for this object
     private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
 
-    public static byte[] write( Geometry geom )
-                            throws ParseException {
+    /**
+     * Exports the passed geom to WKB.
+     *
+     * @param geom
+     *                         never <code>null</code>
+     * @return the WKB as byte array, may be <code>null</code> if the passed geom is an empty multi geometry
+     */
+    public static byte[] write( Geometry geom ) {
         if ( geom instanceof GeometryReference ) {
             geom = ( (GeometryReference<Geometry>) geom ).getReferencedObject();
         }
-        // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        if ( isEmptyMultiGeometry( geom ) ) {
+            return null;
+        }
+        // org.locationtech.jts.io.WKBWriter is not thread safe
         int dim = geom.getCoordinateDimension();
-        return new com.vividsolutions.jts.io.WKBWriter(dim).write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
+        return new org.locationtech.jts.io.WKBWriter(dim).write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry() );
     }
 
     public static void write( Geometry geom, OutputStream os )
                             throws IOException, ParseException {
-        // com.vividsolutions.jts.io.WKBWriter is not thread safe
+        // org.locationtech.jts.io.WKBWriter is not thread safe
         //TODO: test for dimentionality here aswell?
-        new com.vividsolutions.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
+        new org.locationtech.jts.io.WKBWriter().write( ( (AbstractDefaultGeometry) geom ).getJTSGeometry(),
                                                          new OutputStreamOutStream( os ) );
     }
+
+    private static boolean isEmptyMultiGeometry( Geometry geom ) {
+        return Geometry.GeometryType.MULTI_GEOMETRY.equals( geom.getGeometryType() )
+               && ( (MultiGeometry) geom ).isEmpty();
+    }
+
 }

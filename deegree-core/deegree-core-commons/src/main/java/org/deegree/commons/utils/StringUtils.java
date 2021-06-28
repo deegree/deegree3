@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -327,5 +328,89 @@ public class StringUtils {
         }
         return sb.toString();
     }
+    
+    /**
+     * Split string into multiple elements and alow the delimiter to be escaped with a backslash
+     * 
+     * @see OGC WFS 1.1.0 14.2.2
+     * 
+     * @param input
+     * @param separator any character expect backslash
+     * @param limit maximum number of elements to return, zero is unlimited
+     * @return a list with all parts
+     */
+    public static List<String> splitEscaped( String input, char delimiter, int limit ) {
+        List<String> res = new ArrayList<>();
+        if ( input == null ) {
+            return res;
+        }
+        if ( delimiter == '\\' ) {
+            throw new IllegalArgumentException( "The delimiter cannot be the escape character" );
+        }
+        if ( limit < 1 ) {
+            limit = Integer.MAX_VALUE;
+        }
 
+        StringBuilder sb = new StringBuilder();
+        boolean escaped = false;
+
+        for ( int i = 0; i < input.length(); i++ ) {
+            char c = input.charAt( i );
+            if ( c == delimiter && !escaped && res.size() < limit ) {
+                res.add( sb.toString() );
+                sb.setLength( 0 );
+            } else {
+                if ( escaped ) {
+                    escaped = false;
+                    sb.append( '\\' );
+                    sb.append( c );
+                } else if ( c == '\\' ) {
+                    escaped = true;
+                } else {
+                    sb.append( c );
+                }
+            }
+        }
+        
+        if ( escaped ) {
+            throw new IllegalArgumentException( "The specified String contains a incomplete escape sequence." );
+        }
+
+        res.add( sb.toString() );
+        return res;
+    }
+    
+    /**
+     * Resolve escape sequences in a String.
+     *
+     * @see OGC WFS 1.1.0 14.2.2
+     *
+     * @param input the String to unescape
+     * @return resolved String
+     */
+    public static String unescape(String input) {
+        Objects.requireNonNull( input, "The specified String cannot be null" );
+
+        StringBuilder sb = new StringBuilder();
+        boolean escaped = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (escaped) {
+                escaped = false;
+                sb.append(c);
+            } else if (c == '\\') {
+                escaped = true;
+            } else {
+                sb.append(c);
+            }
+        }
+        
+        if (escaped) {
+            throw new IllegalArgumentException(
+                    "The specified String contains a incomplete escape sequence.");
+        }
+        
+        return sb.toString();
+    }
 }

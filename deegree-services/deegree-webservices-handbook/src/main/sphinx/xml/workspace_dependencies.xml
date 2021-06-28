@@ -1,8 +1,0 @@
-<ISOMetadataStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/metadata/iso19115">
-
-  <!-- [1] Identifier of JDBC connection -->
-  <JDBCConnId>conn1</JDBCConnId>
-
-  [...]
-
-</ISOMetadataStore>

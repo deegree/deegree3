@@ -78,11 +78,11 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
     }
     
     @Override
-    protected com.vividsolutions.jts.geom.MultiPoint buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Point [] jtsMembers = new com.vividsolutions.jts.geom.Point[size()];
+    protected org.locationtech.jts.geom.MultiPoint buildJTSGeometry() {
+        org.locationtech.jts.geom.Point [] jtsMembers = new org.locationtech.jts.geom.Point[size()];
         int i = 0;
         for ( Point geometry : members ) {
-            jtsMembers[i++] = (com.vividsolutions.jts.geom.Point) getAsDefaultGeometry( geometry ).getJTSGeometry();
+            jtsMembers[i++] = (org.locationtech.jts.geom.Point) getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiPoint( jtsMembers );
     }

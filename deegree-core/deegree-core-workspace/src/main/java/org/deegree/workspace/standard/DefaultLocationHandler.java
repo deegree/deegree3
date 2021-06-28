@@ -145,7 +145,7 @@ public class DefaultLocationHandler implements LocationHandler {
     public <T extends Resource> void delete( ResourceLocation<T> location ) {
         if ( location instanceof DefaultResourceLocation ) {
             DefaultResourceLocation<T> loc = (DefaultResourceLocation<T>) location;
-            loc.getFile().delete();
+            loc.getAsFile().delete();
         }
     }
 

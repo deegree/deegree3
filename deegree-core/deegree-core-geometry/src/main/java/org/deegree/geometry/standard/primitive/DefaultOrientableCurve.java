@@ -270,7 +270,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+    public org.locationtech.jts.geom.Geometry getJTSGeometry() {
         // TODO Auto-generated method stub
         return null;
     }

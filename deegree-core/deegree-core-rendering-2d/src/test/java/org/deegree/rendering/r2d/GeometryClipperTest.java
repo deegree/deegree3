@@ -49,7 +49,7 @@ import org.deegree.geometry.io.WKTReader;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * Test cases for {@link GeometryClipper}.

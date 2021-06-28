@@ -74,10 +74,8 @@ public class ResourceGraph {
      */
     public ResourceGraph( List<ResourceMetadata<? extends Resource>> metadata ) {
         this();
-        List<ResourceNode<? extends Resource>> nodes = new ArrayList<ResourceNode<? extends Resource>>();
         for ( ResourceMetadata<? extends Resource> md : metadata ) {
             ResourceNode<? extends Resource> node = new ResourceNode( this, md );
-            nodes.add( node );
             nodeMap.put( md.getIdentifier(), node );
         }
         updateDependencies();
@@ -104,6 +102,11 @@ public class ResourceGraph {
         updateDependencies();
 
         return node;
+    }
+
+    public <T extends Resource> void removeNode (ResourceIdentifier<T> id) {
+        nodeMap.remove( id );
+        updateDependencies();
     }
 
     private void updateDependencies() {

@@ -129,11 +129,11 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
 
     
     @Override
-    protected com.vividsolutions.jts.geom.MultiPolygon buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Polygon [] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
+    protected org.locationtech.jts.geom.MultiPolygon buildJTSGeometry() {
+        org.locationtech.jts.geom.Polygon [] jtsMembers = new org.locationtech.jts.geom.Polygon[size()];
         int i = 0;
         for ( Surface geometry : memberSurfaces ) {
-            jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) getAsDefaultGeometry( geometry ).getJTSGeometry();
+            jtsMembers[i++] = (org.locationtech.jts.geom.Polygon) getAsDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiPolygon( jtsMembers );
     }    
