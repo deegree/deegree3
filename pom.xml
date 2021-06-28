@@ -386,7 +386,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.0.1</version>
         <configuration>
           <doclint>none</doclint>
           <detectLinks>false</detectLinks>
@@ -1208,12 +1208,13 @@
       <reporting>
         <plugins>
           <plugin>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-maven-plugin</artifactId>
-            <version>4.1.3</version>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <version>3.0.5</version>
             <configuration>
               <xmlOutput>true</xmlOutput>
-              <spotbugsXmlOutput>true</spotbugsXmlOutput>
+              <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+              <findbugsXmlOutput>true</findbugsXmlOutput>
             </configuration>
           </plugin>
           <plugin>
@@ -1244,7 +1245,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.2.0</version>
+            <version>3.0.1</version>
             <configuration>
               <doclint>none</doclint>
               <detectLinks>false</detectLinks>

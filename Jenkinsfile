@@ -24,7 +24,7 @@ pipeline {
         }
         stage ('Build') {
             steps {
-               echo 'Building'
+               echo 'Unit testing'
                sh 'mvn -B -C -Poracle,mssql clean test-compile'
             }
         }
@@ -45,11 +45,11 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae -Poracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
+                sh 'mvn -B -C -fae -Poracle,mssql findbugs:findbugs checkstyle:checkstyle javadoc:javadoc'
             }
             post {
                 success {
-                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
+                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''
                     checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
                 }
             }
