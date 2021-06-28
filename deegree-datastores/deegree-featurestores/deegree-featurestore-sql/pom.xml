@@ -75,7 +75,7 @@
         <repository>
           <id>deegree-restricted</id>
           <name>deegree-restricted</name>
-          <url>http://repo.deegree.org/content/repositories/private3rdparty</url>
+          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
         </repository>
       </repositories>
       <dependencies>
@@ -93,7 +93,7 @@
         <repository>
           <id>deegree-restricted</id>
           <name>deegree-restricted</name>
-          <url>http://repo.deegree.org/content/repositories/private3rdparty</url>
+          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
         </repository>
       </repositories>
       <dependencies>
