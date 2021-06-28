@@ -19,7 +19,7 @@
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <url>https://repo.deegree.org/content/groups/public/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -32,11 +32,11 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <url>https://repo.deegree.org/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <url>https://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
@@ -50,7 +50,7 @@
   <pluginRepositories>
     <pluginRepository>
       <id>deegree-plugin-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <url>https://repo.deegree.org/content/groups/public/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
