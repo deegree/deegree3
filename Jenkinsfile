@@ -68,6 +68,9 @@ pipeline {
             }
         }
         stage ('Release') {
+            when {
+                branch 'master'
+            }
             steps {
                 echo 'Prepare release version'
                 echo 'Build and publish documentation'
