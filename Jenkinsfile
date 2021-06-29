@@ -24,7 +24,7 @@ pipeline {
         }
         stage ('Build') {
             steps {
-               echo 'Building'
+               echo 'Unit testing'
                sh 'mvn -B -C -Poracle,mssql clean test-compile'
             }
         }
