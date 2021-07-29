@@ -522,7 +522,6 @@ public class DefaultWorkspace implements Workspace {
         states.remove( id );
         removeMetadataFromResourceManager( id );
         resources.remove( id );
-        graph.removeNode( id );
         errors.clear( id );
     }
 

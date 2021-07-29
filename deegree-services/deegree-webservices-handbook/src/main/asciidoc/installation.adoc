@@ -37,7 +37,7 @@ Tomcat 8] release.]
 * _ZIP_: Distribution bundle with Apache Tomcat footnote:[As of deegree
 3.4.0 the ZIP distribution bundle is deprecated and the download links
 are removed from the website. Download the ZIP from the
-http://repo.deegree.org/content/groups/public/org/deegree/deegree-webservices-tomcat-bundle/[Nexus repository]
+https://repo.deegree.org/content/groups/public/org/deegree/deegree-webservices-tomcat-bundle/[Nexus repository]
 instead.]
 
 TIP: If you are confused by the options and unsure which version to pick,
