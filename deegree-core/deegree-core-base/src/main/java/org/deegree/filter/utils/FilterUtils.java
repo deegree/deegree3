@@ -36,7 +36,10 @@
 package org.deegree.filter.utils;
 
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -58,6 +61,14 @@ public class FilterUtils {
             geom = (Geometry) node;
         } else if ( node instanceof Property && ( (Property) node ).getValue() instanceof Geometry ) {
             geom = (Geometry) ( (Property) node ).getValue();
+        } else if ( node instanceof GenericXMLElement ) {
+            GenericXMLElement xml = (GenericXMLElement) node;
+            if ( xml.getChildren() != null && xml.getChildren().size() == 1 ) {
+                TypedObjectNode maybeGeom = xml.getChildren().get( 0 );
+                if ( maybeGeom instanceof Geometry ) {
+                    geom = (Geometry) maybeGeom;
+                }
+            }
         }
         return geom;
     }
