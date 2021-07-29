@@ -2637,6 +2637,8 @@
       <base:versionId nilReason="unpopulated" xsi:nil="true"></base:versionId>
     </base:Identifier>
   </cp:inspireId>
+  <!-- This is not schema conform -->
+  <cp:label>01</cp:label>
   <cp:label>02</cp:label>
   <cp:level xlink:href="http://inspire.ec.europa.eu/codelist/CadastralZoningLevelValue/1stOrder"></cp:level>
   <cp:levelName>
@@ -2668,4 +2670,5 @@
   -->
   <cp:validFrom nilReason="unpopulated" xsi:nil="true"></cp:validFrom>
   <cp:validTo nilReason="unpopulated" xsi:nil="true"></cp:validTo>
+  <cp:upperLevelUnit xlink:href="#GML_ID_42" />
 </cp:CadastralZoning>
