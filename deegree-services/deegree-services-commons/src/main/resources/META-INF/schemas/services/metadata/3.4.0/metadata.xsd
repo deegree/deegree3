@@ -19,7 +19,15 @@
       <element name="DatasetMetadata" minOccurs="0">
         <complexType>
           <sequence>
-            <element name="MetadataUrlTemplate" minOccurs="0" type="string" />
+            <element name="MetadataUrlTemplate" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="format" type="string" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
             <element name="ExternalMetadataAuthority" type="md:ExternalMetadataAuthorityType" minOccurs="0"
               maxOccurs="unbounded" />
             <element name="Dataset" type="md:DatasetMetadataType" maxOccurs="unbounded" />

@@ -1,4 +1,4 @@
-package org.deegree.services.wfs.format.geojson;
+package org.deegree.geojson;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -102,6 +102,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         }
         beginObject();
         name( "type" ).value( "Feature" );
+        name( "id" ).value( feature.getId() );
         writeGeometry( feature );
         writeProperties( feature );
         writeCrs();

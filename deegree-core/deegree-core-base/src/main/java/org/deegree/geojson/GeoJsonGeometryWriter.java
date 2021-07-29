@@ -1,4 +1,4 @@
-package org.deegree.services.wfs.format.geojson;
+package org.deegree.geojson;
 
 import java.io.IOException;
 import java.util.List;
