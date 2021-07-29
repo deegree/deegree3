@@ -160,6 +160,11 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     }
 
     @Override
+    public ICRS getStorageCrs() {
+        return null;
+    }
+
+    @Override
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
 

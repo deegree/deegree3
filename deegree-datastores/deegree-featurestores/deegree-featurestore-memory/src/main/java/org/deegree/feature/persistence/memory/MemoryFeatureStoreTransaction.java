@@ -223,8 +223,8 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws FeatureStoreException {
 
         long begin = System.currentTimeMillis();
-        if ( fs.getStorageCRS() != null ) {
-            LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageCRS() + "'" );
+        if ( fs.getStorageCrs() != null ) {
+            LOG.debug( "Transforming incoming feature collection to '" + fs.getStorageCrs() + "'" );
             try {
                 fc = transformGeometries( fc );
             } catch ( Exception e ) {
@@ -436,7 +436,7 @@ class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
                             throws IllegalArgumentException, UnknownCRSException, TransformationException {
 
         FeatureCollection transformedFc = new GenericFeatureCollection();
-        GeometryTransformer transformer = new GeometryTransformer( fs.getStorageCRS() );
+        GeometryTransformer transformer = new GeometryTransformer( fs.getStorageCrs() );
         for ( Feature feature : fc ) {
             transformedFc.add( transformGeometries( feature, transformer ) );
         }

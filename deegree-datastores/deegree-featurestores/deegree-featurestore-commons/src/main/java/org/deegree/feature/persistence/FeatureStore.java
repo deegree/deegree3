@@ -39,6 +39,7 @@ package org.deegree.feature.persistence;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.persistence.query.Query;
@@ -211,5 +212,12 @@ public interface FeatureStore extends Resource {
      */
     LockManager getLockManager()
                             throws FeatureStoreException;
+
+    /**
+     * Returns the CRS of all stored features, if all features and geometries are in the same CRS.
+     *
+     * @return the CRS of all stored features, <code>null</code> if not known or the features of geometries are stored in different CRS.
+     */
+    ICRS getStorageCrs();
 
 }
