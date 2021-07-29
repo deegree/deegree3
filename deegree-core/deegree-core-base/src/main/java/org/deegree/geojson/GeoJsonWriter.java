@@ -1,15 +1,6 @@
 package org.deegree.geojson;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
+import com.google.gson.stream.JsonWriter;
 import org.deegree.commons.tom.ElementNode;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -30,7 +21,16 @@ import org.deegree.gml.reference.FeatureReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.stream.JsonWriter;
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Stream-based writer for GeoJSON documents.
@@ -132,7 +132,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         if ( properties.isEmpty() ) {
             nullValue();
         } else {
-            exportProperties( properties );
+            exportProperties( feature );
         }
     }
 
@@ -144,21 +144,46 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         }
     }
 
-    private void exportProperties( List<Property> properties )
+    private void exportProperties( Feature feature )
                             throws IOException, UnknownCRSException, TransformationException {
         beginObject();
-        for ( Property property : properties ) {
-            export( property );
+
+        Set<QName> propertyNames = feature.getProperties().stream().map( property -> property.getName() ).collect(
+                        Collectors.toSet() );
+        for ( QName propertyName : propertyNames ) {
+            List<Property> properties = feature.getProperties( propertyName );
+            exportPropertyByName( propertyName, properties );
         }
         endObject();
+    }
+
+    private void exportPropertyByName( QName propertyName, List<Property> properties )
+                            throws IOException, TransformationException, UnknownCRSException {
+        if ( properties.isEmpty() ) {
+            return;
+        }
+        Property firstProperty = properties.get( 0 );
+        if ( firstProperty.getType() instanceof GeometryPropertyType ) {
+            return;
+        }
+        if ( properties.size() == 1 ) {
+            name( propertyName.getLocalPart() );
+            export( firstProperty );
+        } else if ( properties.size() > 1 ) {
+            name( propertyName.getLocalPart() );
+            beginArray();
+            for ( Property property : properties ) {
+                export( property );
+            }
+            endArray();
+        }
     }
 
     private void export( Property property )
                             throws IOException, TransformationException, UnknownCRSException {
         PropertyType propertyType = property.getType();
-        QName propertyName = property.getName();
         if ( property instanceof SimpleProperty ) {
-            export( propertyName, ( (SimpleProperty) property ).getValue() );
+            exportValue( ( (SimpleProperty) property ).getValue() );
         } else if ( propertyType instanceof CustomPropertyType ) {
             exportAttributesAndChildren( property );
         } else if ( propertyType instanceof FeaturePropertyType ) {
@@ -169,7 +194,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
             exportGenericProperty( (GenericProperty) property );
         } else {
             throw new IOException( "Unhandled property type '" + property.getClass() + "' (property name "
-                                   + propertyName + " )" );
+                                   + property.getName() + " )" );
         }
     }
 
@@ -177,7 +202,7 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
                             throws IOException, TransformationException, UnknownCRSException {
         TypedObjectNode value = property.getValue();
         if ( value instanceof PrimitiveValue ) {
-            export( property.getName(), (PrimitiveValue) value );
+            exportValue( (PrimitiveValue) value );
         } else {
             export( value );
         }
@@ -188,7 +213,6 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         QName propertyName = property.getName();
         LOG.debug( "Exporting feature property '" + propertyName + "'" );
         if ( property instanceof Feature ) {
-            name( propertyName.getLocalPart() );
             if ( property == null ) {
                 nullValue();
             } else {
@@ -202,40 +226,79 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         } else {
             Map<QName, PrimitiveValue> attributes = property.getAttributes();
             if ( attributes.size() > 0 ) {
-                name( property.getName().getLocalPart() ).beginObject();
+                beginObject();
                 for ( Map.Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
-                    export( attribute.getKey(), attribute.getValue() );
+                    name( attribute.getKey().getLocalPart() );
+                    exportValue( attribute.getValue() );
                 }
                 endObject();
+            } else {
+                nullValue();
             }
         }
     }
 
     private void exportAttributesAndChildren( ElementNode elementNode )
                             throws IOException, TransformationException, UnknownCRSException {
-        String propertyName = elementNode.getName().getLocalPart();
-        name( propertyName );
-
         Map<QName, PrimitiveValue> attributes = retrieveAttributes( elementNode );
         List<TypedObjectNode> children = retrieveChildren( elementNode );
-        if ( attributes.isEmpty() && children.isEmpty() ) {
+        Map<QName, List<TypedObjectNode>> attributesAndChildren = children.stream().collect(
+                                Collectors.groupingBy( childNode -> {
+                                    if ( childNode instanceof Property ) {
+                                        return ( (Property) childNode ).getName();
+                                    } else if ( childNode instanceof GenericXMLElement ) {
+                                        return ( (GenericXMLElement) childNode ).getName();
+                                    } else if ( childNode instanceof FeatureReference ) {
+                                        return new QName( "href" );
+                                    }
+                                    return new QName( "value" );
+                                } ) );
+        attributes.forEach( ( qName, primitiveValue ) -> attributesAndChildren.put( qName, Collections.singletonList(
+                                primitiveValue ) ) );
+
+        if ( attributesAndChildren.isEmpty() ) {
             nullValue();
-        } else if ( attributes.isEmpty() && children.size() == 1 && children.get( 0 ) instanceof PrimitiveValue ) {
-            for ( TypedObjectNode childNode : children ) {
-                export( childNode );
+        } else if ( attributesAndChildren.size() == 1 ) {
+            QName key = attributesAndChildren.keySet().iterator().next();
+            List<TypedObjectNode> values = attributesAndChildren.get( key );
+            if ( values.size() == 1 && values.get( 0 ) instanceof PrimitiveValue ) {
+                exportValue( (PrimitiveValue) values.get( 0 ) );
+            } else if ( values.size() == 1 ) {
+                beginObject();
+                export( values.get( 0 ) );
+                endObject();
+            } else if ( values.size() > 1 ) {
+                beginObject();
+                name( key.getLocalPart() );
+                beginArray();
+                for ( TypedObjectNode value : values ) {
+                    exportValue( value );
+                }
+                endArray();
+                endObject();
             }
         } else {
             beginObject();
-            if ( children.size() == 1 && children.get( 0 ) instanceof PrimitiveValue ) {
-                name( "value" );
-                export( (PrimitiveValue) children.get( 0 ) );
-            } else {
-                for ( TypedObjectNode childNode : children ) {
-                    export( childNode );
+            for ( Map.Entry<QName, List<TypedObjectNode>> childNode : attributesAndChildren.entrySet() ) {
+                List<TypedObjectNode> values = childNode.getValue();
+                if ( values.size() == 0 ) {
+                    nullValue();
+                } else if ( values.size() == 1 ) {
+                    TypedObjectNode value = values.get( 0 );
+                    if ( value instanceof PrimitiveValue ) {
+                        name( childNode.getKey().getLocalPart() );
+                        exportValue( (PrimitiveValue) value );
+                    } else {
+                        export( value );
+                    }
+                } else {
+                    name( childNode.getKey().getLocalPart() );
+                    beginArray();
+                    for ( TypedObjectNode value : values ) {
+                        exportValue( value );
+                    }
+                    endArray();
                 }
-            }
-            for ( Map.Entry<QName, PrimitiveValue> attribute : attributes.entrySet() ) {
-                export( attribute.getKey(), attribute.getValue() );
             }
             endObject();
         }
@@ -249,10 +312,12 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         }
         if ( node instanceof PrimitiveValue ) {
             PrimitiveValue primitiveValue = (PrimitiveValue) node;
-            export( primitiveValue );
+            exportValue( primitiveValue );
         } else if ( node instanceof Property ) {
+            name( ( (Property) node ).getName().getLocalPart() );
             export( (Property) node );
         } else if ( node instanceof GenericXMLElement ) {
+            name( ( (GenericXMLElement) node ).getName().getLocalPart() );
             exportAttributesAndChildren( (GenericXMLElement) node );
         } else if ( node instanceof FeatureReference ) {
             name( "href" );
@@ -262,13 +327,46 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
         }
     }
 
-    private void export( QName name, PrimitiveValue value )
-                            throws IOException {
-        name( name.getLocalPart() );
-        export( value );
+    private void exportValue( TypedObjectNode node )
+                            throws IOException, UnknownCRSException, TransformationException {
+        if ( node == null ) {
+            LOG.warn( "Null node found." );
+            return;
+        }
+        if ( node instanceof PrimitiveValue ) {
+            PrimitiveValue primitiveValue = (PrimitiveValue) node;
+            exportValue( primitiveValue );
+        } else if ( node instanceof Property ) {
+            export( (Property) node );
+        } else if ( node instanceof GenericXMLElement ) {
+            exportAttributesAndChildren( (GenericXMLElement) node );
+        } else if ( node instanceof FeatureReference ) {
+            value( ( (FeatureReference) node ).getURI() );
+        } else {
+            throw new IOException( "Unhandled node type '" + node.getClass() );
+        }
     }
 
-    private void export( PrimitiveValue value )
+    private void exportName( TypedObjectNode node )
+                            throws IOException {
+        if ( node == null ) {
+            LOG.warn( "Null node found." );
+            return;
+        }
+        if ( node instanceof PrimitiveValue ) {
+            name( "value" );
+        } else if ( node instanceof Property ) {
+            name( ( (Property) node ).getName().getLocalPart() );
+        } else if ( node instanceof GenericXMLElement ) {
+            name( ( (GenericXMLElement) node ).getName().getLocalPart() );
+        } else if ( node instanceof FeatureReference ) {
+            name( "href" );
+        } else {
+            throw new IOException( "Unhandled node type '" + node.getClass() );
+        }
+    }
+
+    private void exportValue( PrimitiveValue value )
                             throws IOException {
         if ( value == null ) {
             nullValue();

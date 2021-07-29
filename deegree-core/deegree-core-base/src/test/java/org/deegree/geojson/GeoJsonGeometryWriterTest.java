@@ -1,20 +1,10 @@
-package org.deegree.services.wfs.format.geojson;
+package org.deegree.geojson;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.stream.JsonWriter;
+import com.jayway.jsonpath.matchers.JsonPathMatchers;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.geojson.GeoJsonGeometryWriter;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.multi.MultiLineString;
@@ -30,7 +20,14 @@ import org.deegree.geometry.primitive.segments.Arc;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -62,11 +59,11 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( point );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "Point" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0]", is( point.get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1]", is( point.get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "Point" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0]", is( point.get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1]", is( point.get1() ) ) );
     }
 
     @Test
@@ -83,11 +80,11 @@ public class GeoJsonGeometryWriterTest {
 
         String geometry = json.toString();
         System.out.println( geometry );
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "Point" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0]", is( 7.140000045737569 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1]", is( 50.67999998634426 ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "Point" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0]", is( 7.140000045737569 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1]", is( 50.67999998634426 ) ) );
     }
 
     @Test
@@ -102,14 +99,14 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( lineString );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "LineString" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 3 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0]", is( lineString.getStartPoint().get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1]", is( lineString.getStartPoint().get1() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[2].[0]", is( lineString.getEndPoint().get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[2].[1]", is( lineString.getEndPoint().get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "LineString" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 3 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0]", is( lineString.getStartPoint().get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1]", is( lineString.getStartPoint().get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[2].[0]", is( lineString.getEndPoint().get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[2].[1]", is( lineString.getEndPoint().get1() ) ) );
     }
 
     @Test
@@ -124,14 +121,14 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( polygon );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "Polygon" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 1 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 4 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "Polygon" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 1 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 4 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].length()", is( 2 ) ) );
         Points exteriorRing = polygon.getExteriorRingCoordinates();
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[0]", is( exteriorRing.get( 0 ).get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[1]", is( exteriorRing.get( 0 ).get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[0]", is( exteriorRing.get( 0 ).get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[1]", is( exteriorRing.get( 0 ).get1() ) ) );
     }
 
     @Test
@@ -146,21 +143,21 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( polygon );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "Polygon" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 4 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "Polygon" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 4 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].length()", is( 2 ) ) );
 
         Points exteriorRing = polygon.getExteriorRingCoordinates();
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[0]", is( exteriorRing.get( 0 ).get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[1]", is( exteriorRing.get( 0 ).get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[0]", is( exteriorRing.get( 0 ).get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[1]", is( exteriorRing.get( 0 ).get1() ) ) );
 
         Points interiorRing = polygon.getInteriorRingsCoordinates().get( 0 );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].length()", is( 4 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[0]", is( interiorRing.get( 0 ).get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[1]", is( interiorRing.get( 0 ).get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].length()", is( 4 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[0]", is( interiorRing.get( 0 ).get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[1]", is( interiorRing.get( 0 ).get1() ) ) );
 
     }
 
@@ -178,12 +175,12 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( multiPoint );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "MultiPoint" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0]", is( point1.get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1]", is( point1.get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "MultiPoint" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0]", is( point1.get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1]", is( point1.get1() ) ) );
     }
 
     @Test
@@ -201,18 +198,18 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( multiLineString );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "MultiLineString" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 3 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[0]", is( lineString1.getStartPoint().get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[1]", is( lineString1.getStartPoint().get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "MultiLineString" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 3 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[0]", is( lineString1.getStartPoint().get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[1]", is( lineString1.getStartPoint().get1() ) ) );
 
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].length()", is( 4 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0]length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[0]", is( lineString2.getStartPoint().get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[1]", is( lineString2.getStartPoint().get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].length()", is( 4 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0]length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[0]", is( lineString2.getStartPoint().get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[1]", is( lineString2.getStartPoint().get1() ) ) );
     }
 
     @Test
@@ -230,30 +227,30 @@ public class GeoJsonGeometryWriterTest {
         geoJsonGeometryWriter.writeGeometry( multiPolygon );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "MultiPolygon" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].length()", is( 4 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "MultiPolygon" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].length()", is( 4 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[0].length()", is( 2 ) ) );
 
         Points exteriorRing1 = polygon1.getExteriorRingCoordinates();
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[0].[0]", is( exteriorRing1.get( 0 ).get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0].[0].[1]", is( exteriorRing1.get( 0 ).get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[0].[0]", is( exteriorRing1.get( 0 ).get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0].[0].[1]", is( exteriorRing1.get( 0 ).get1() ) ) );
 
         Points interiorRing = polygon1.getInteriorRingsCoordinates().get( 0 );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1].length()", is( 4 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1].[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1].[0].[0]", is( interiorRing.get( 0 ).get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1].[0].[1]", is( interiorRing.get( 0 ).get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1].length()", is( 4 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1].[0].[0]", is( interiorRing.get( 0 ).get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1].[0].[1]", is( interiorRing.get( 0 ).get1() ) ) );
 
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].length()", is( 5 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].length()", is( 5 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[0].length()", is( 2 ) ) );
 
         Points exteriorRing2 = polygon2.getExteriorRingCoordinates();
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[0].[0]", is( exteriorRing2.get( 0 ).get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[1].[0].[0].[1]", is( exteriorRing2.get( 0 ).get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[0].[0]", is( exteriorRing2.get( 0 ).get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[1].[0].[0].[1]", is( exteriorRing2.get( 0 ).get1() ) ) );
     }
 
     @Test(expected = IOException.class)
@@ -288,14 +285,14 @@ public class GeoJsonGeometryWriterTest {
         LineString lineStringIn25832 = geometryTransformer.transform( lineString );
 
         String geometry = json.toString();
-        assertThat( geometry, isJson() );
-        assertThat( geometry, hasJsonPath( "$.type", is( "LineString" ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates.length()", is( 3 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[0]", is( lineStringIn25832.getStartPoint().get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[0].[1]", is( lineStringIn25832.getStartPoint().get1() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[2].[0]", is( lineStringIn25832.getEndPoint().get0() ) ) );
-        assertThat( geometry, hasJsonPath( "$.coordinates[2].[1]", is( lineStringIn25832.getEndPoint().get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.isJson() );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.type", is( "LineString" ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates.length()", is( 3 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].length()", is( 2 ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[0]", is( lineStringIn25832.getStartPoint().get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[0].[1]", is( lineStringIn25832.getStartPoint().get1() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[2].[0]", is( lineStringIn25832.getEndPoint().get0() ) ) );
+        assertThat( geometry, JsonPathMatchers.hasJsonPath( "$.coordinates[2].[1]", is( lineStringIn25832.getEndPoint().get1() ) ) );
     }
 
     private Polygon createPolygonWithInteriorRing() {
