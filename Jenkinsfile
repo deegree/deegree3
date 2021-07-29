@@ -8,7 +8,7 @@ pipeline {
         jdk 'adoptopenjdk-jdk8'
     }
     environment {
-        MAVEN_OPTS='-Djava.awt.headless=true -Xmx3096m'
+        MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
     }
     stages {
         stage ('Initialize') {
@@ -96,6 +96,11 @@ pipeline {
                 echo 'Deploying to demo.deegree.org...'
                 echo 'Running smoke tests...'
             }
+        }
+    }
+    post {
+        always {
+            cleanWs notFailBuild: true
         }
     }
 }

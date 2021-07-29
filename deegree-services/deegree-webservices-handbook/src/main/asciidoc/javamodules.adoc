@@ -114,7 +114,7 @@ add two JAR files (see <<anchor-adding-jars>>):
 _ojdbc8.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 (registration required)]
 * Module
-deegree-sqldialect-oraclefootnote:[http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar]
+deegree-sqldialect-oraclefootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar]
 
 ==== Adding Oracle GeoRaster support
 
@@ -135,7 +135,7 @@ add the following JAR files (see <<anchor-adding-jars>>):
 ** xdb6.jar
 ** xmlparserv2_sans_jaxp_services.jar
 * Module
-deegree-coveragestore-oracle-georasterfootnote:[http://repo.deegree.org/content/repositories/public/org/deegree/deegree-coveragestore-oracle-georaster/${project.version}/deegree-coveragestore-oracle-georaster-${project.version}.jar]
+deegree-coveragestore-oracle-georasterfootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-coveragestore-oracle-georaster/${project.version}/deegree-coveragestore-oracle-georaster-${project.version}.jar]
 
 NOTE: The Oracle Spatial and GeoRaster libraries can be found, without version
 number in filename, inside the Oracle Database installation directory.
@@ -163,4 +163,4 @@ resources, you need to add two JAR files (see <<anchor-adding-jars>>):
 * A compatible Microsoft JDBC driver (e.g.
 _sqljdbc4.jar_)footnote:[http://msdn.microsoft.com/en-us/sqlserver/aa937724.aspx]
 * Module
-deegree-sqldialect-mssqlfootnote:[http://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/${project.version}/deegree-sqldialect-mssql-${project.version}.jar]
+deegree-sqldialect-mssqlfootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-mssql/${project.version}/deegree-sqldialect-mssql-${project.version}.jar]
