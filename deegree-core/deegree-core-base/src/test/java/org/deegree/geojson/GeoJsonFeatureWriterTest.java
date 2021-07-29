@@ -60,6 +60,41 @@ public class GeoJsonFeatureWriterTest {
     }
 
     @Test
+    public void testWrite_SingleFeature()
+                    throws Exception {
+        StringWriter featureAsJson = new StringWriter();
+        GeoJsonWriter geoJsonFeatureWriter = new GeoJsonWriter( featureAsJson, null );
+        Feature cadastralZoning = parseFeature( "CadastralZoningWithPrimitiveArray.gml" );
+
+        geoJsonFeatureWriter.startSingleFeature();
+        geoJsonFeatureWriter.writeSingleFeature( cadastralZoning );
+        geoJsonFeatureWriter.endSingleFeature();
+
+        String featureCollection = featureAsJson.toString();
+
+        assertThat( featureCollection, JsonPathMatchers.isJson() );
+        assertThat( featureCollection, hasJsonPath( "$.type", is( "Feature" ) ) );
+        assertThat( featureCollection, hasNoJsonPath( "$.srsName" ) );
+        assertThat( featureCollection, hasJsonPath( "$.id", is( "CP_CADASTRALZONING_Bundesland_02" ) ) );
+        assertThat( featureCollection, hasJsonPath( "$.geometry" ) );
+        assertThat( featureCollection, hasJsonPath( "$.properties.label", hasItem( "01" ) ) );
+        assertThat( featureCollection, hasJsonPath( "$.properties.label", hasItem( "02" ) ) );
+        assertThat( featureCollection,
+                    hasJsonPath( "$.properties.originalMapScaleDenominator", is( 10 ) ) );
+        assertThat( featureCollection,
+                    hasJsonPath( "$.properties.beginLifespanVersion", is( "2009-12-15T08:04:54Z" ) ) );
+        assertThat( featureCollection, hasJsonPath( "$.properties.estimatedAccuracy.uom", is( "m" ) ) );
+        assertThat( featureCollection, hasJsonPath( "$.properties.inspireId.Identifier.localId",
+                                                    is( "urn:adv:oid:DEHHALKA10000005" ) ) );
+        assertThat( featureCollection,
+                    hasJsonPath( "$.properties.name.GeographicalName.spelling.SpellingOfName.text",
+                                 is( "Hamburg" ) ) );
+        assertThat( featureCollection, hasJsonPath( "$.properties.levelName.LocalisedCharacterString.value",
+                                                    is( "Bundesland" ) ) );
+    }
+
+
+    @Test
     public void testWriteWithCrs()
                             throws Exception {
         StringWriter featureAsJson = new StringWriter();

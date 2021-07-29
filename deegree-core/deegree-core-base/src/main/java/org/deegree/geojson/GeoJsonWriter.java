@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
-public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
+public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, GeoJsonSingleFeatureWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GeoJsonWriter.class );
 
@@ -91,6 +91,20 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
     }
 
     @Override
+    public void startSingleFeature()
+                    throws IOException {
+        isStarted = true;
+        beginObject();
+        name( "type" ).value( "Feature" );
+    }
+
+    @Override
+    public void endSingleFeature()
+                    throws IOException {
+        endObject();
+    }
+
+    @Override
     public void write( Feature feature )
                             throws IOException, TransformationException, UnknownCRSException {
         QName featureName = feature.getName();
@@ -100,13 +114,18 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter {
             name( "features" ).beginArray();
             isStarted = true;
         }
-        beginObject();
-        name( "type" ).value( "Feature" );
+        startSingleFeature();
+        writeSingleFeature( feature );
+        endSingleFeature();
+    }
+
+    @Override
+    public void writeSingleFeature( Feature feature )
+                    throws IOException, UnknownCRSException, TransformationException {
         name( "id" ).value( feature.getId() );
         writeGeometry( feature );
         writeProperties( feature );
         writeCrs();
-        endObject();
     }
 
     private void writeGeometry( Feature feature )
