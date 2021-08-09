@@ -11,7 +11,7 @@
 	<!-- ============================================================= -->
 	<!-- === includes and imports                                  === -->
 	<!-- ============================================================= -->
-	<include schemaLocation="./gmlsf-deps.xsd"/>
+	<include schemaLocation="gmlsf-deps.xsd"/>
 	<!--<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>-->
 	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd" />
 	<!-- =========================================================== -->
