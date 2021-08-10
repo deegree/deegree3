@@ -66,4 +66,8 @@ public class TestEnvironment {
         String basedir = properties.getProperty( "basedir" );
         return basedir;
     }
+
+    public String getWorkspaceDir() {
+        return properties.getProperty( "workspaceDir" );
+    }
 }

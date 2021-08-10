@@ -28,13 +28,68 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compliance-tests</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-wps</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-wps</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-utah</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-utah</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-aixm</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-aixm</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-geosciml</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-geosciml</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-wcts</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-wcts</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-xplan40</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-xplan40</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
           <includes>
             <include>**/*IT.java</include>
           </includes>
-          <argLine>-Xmx1024m -Xss2048k -Djava.awt.headless=true</argLine>
+          <argLine>-Xmx1024m -Xss2048k -Djava.awt.headless=true -Dportnumber=${jetty.http.port} -Dcontext=deegree-workspace-tests -DworkspaceDir=${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</argLine>
         </configuration>
         <executions>
           <execution>
@@ -56,6 +111,12 @@
           <webApp>
             <contextPath>/deegree-workspace-tests</contextPath>
           </webApp>
+          <systemProperties>
+            <systemProperty>
+              <name>DEEGREE_WORKSPACE_ROOT</name>
+              <value>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</value>
+            </systemProperty>
+          </systemProperties>
         </configuration>
       </plugin>
     </plugins>

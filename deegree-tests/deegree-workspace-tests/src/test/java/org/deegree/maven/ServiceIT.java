@@ -40,25 +40,40 @@
 
 package org.deegree.maven;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.deegree.maven.ithelper.ServiceIntegrationTestHelper;
 import org.deegree.maven.ithelper.TestEnvironment;
+import org.deegree.maven.utils.HttpUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
  * @version $Revision$, $Date$
  */
+@RunWith(Parameterized.class)
 public class ServiceIT {
 
-    private static final Logger LOG = getLogger(ServiceIT.class);
+    private static final Logger LOG = getLogger( ServiceIT.class );
+
+    private final Path workspaceUnderTest;
 
     private boolean testCapabilities = true;
 
@@ -66,49 +81,82 @@ public class ServiceIT {
 
     private boolean testRequests = true;
 
-    private File workspace = new File("./src/main/webapp/WEB-INF/workspace");
+    private static final TestEnvironment env = new TestEnvironment( System.getProperties() );
 
-    private TestEnvironment env = new TestEnvironment(System.getProperties());
+    public ServiceIT( Path workspaceUnderTest ) {
+        this.workspaceUnderTest = workspaceUnderTest;
+    }
+
+    @Parameters
+    public static List<Path> getParameters()
+                    throws IOException {
+        String workspaceDir = env.getWorkspaceDir();
+        Path workspaces = Paths.get( workspaceDir );
+        return Files.list( workspaces ).filter( p -> Files.isDirectory( p ) && Files.exists( p ) ).collect(
+                        Collectors.toList() );
+    }
+
+    @Before
+    public void restartWorkspace()
+                    throws Exception {
+        ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( env );
+        String workspaceName = workspaceUnderTest.getFileName().toString();
+        LOG.info( "Restart Workspace {}", workspaceName );
+        try {
+            HttpClient client = HttpUtils.getAuthenticatedHttpClient( env );
+            String restartUrl = helper.createBaseURL() + "config/restart/" + workspaceName;
+            LOG.info( "Sending against: " + restartUrl );
+            HttpGet get = new HttpGet( restartUrl );
+            HttpResponse resp = client.execute( get );
+            String response = EntityUtils.toString( resp.getEntity(), "UTF-8" ).trim();
+            LOG.info( "Response after initial restart was: " + response );
+        } catch ( IOException e ) {
+            throw new Exception( "Could not test workspace " + workspaceName + ": "
+                                 + e.getLocalizedMessage(), e );
+        }
+    }
 
     @Test
-    public void execute() throws Exception {
+    public void execute()
+                    throws Exception {
         try {
-            if (!workspace.exists()) {
-                workspace = new File(env.getBasedir(), "src/main/webapp/WEB-INF/conf");
-                if (!workspace.exists()) {
-                    LOG.error("Could not find a workspace to operate on.");
-                    throw new RuntimeException("Could not find a workspace to operate on.");
+            String workspaceName = workspaceUnderTest.getFileName().toString();
+            LOG.info( "Workspace under test {}", workspaceName );
+            ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper( env );
+            Path services = workspaceUnderTest.resolve( "services" );
+            if ( Files.exists( services ) ) {
+                List<Path> serviceList = Files.list( services ).filter(
+                                f -> isService( f ) ).collect( Collectors.toList() );
+                for ( Path service : serviceList ) {
+                    testService( helper, service );
                 }
-                LOG.warn("Default/configured workspace did not exist, using existing " + workspace
-                        + " instead.");
-            }
-
-            ServiceIntegrationTestHelper helper = new ServiceIntegrationTestHelper(env);
-
-            File[] listed = new File(workspace, "services").listFiles();
-            if (listed != null) {
-                for (File f : listed) {
-                    String nm = f.getName().toLowerCase();
-                    if (nm.length() != 7) {
-                        continue;
-                    }
-                    String service = nm.substring(0, 3).toUpperCase();
-                    if (testCapabilities) {
-                        helper.testCapabilities(service);
-                    }
-                    if (testLayers) {
-                        helper.testLayers(service);
-                        LOG.info("All maps can be requested.");
-                    }
+                if ( testRequests ) {
+                    helper.testRequests();
                 }
             }
-
-            if (testRequests) {
-                helper.testRequests();
-            }
-        } catch (NoClassDefFoundError e) {
-            LOG.warn("Class not found, not performing any tests.");
+        } catch ( NoClassDefFoundError e ) {
+            LOG.warn( "Class not found, not performing any tests." );
         }
+    }
+
+    private void testService( ServiceIntegrationTestHelper helper, Path service )
+                    throws Exception {
+        String serviceName = service.getFileName().toString().toLowerCase();
+        String serviceType = serviceName.substring( 0, 3 ).toUpperCase();
+        LOG.info( "Service name: {}, service type: {}", serviceName, serviceType );
+        if ( testCapabilities ) {
+            helper.testCapabilities( serviceType );
+        }
+        if ( testLayers ) {
+            helper.testLayers( serviceType );
+            LOG.info( "All maps can be requested." );
+        }
+    }
+
+    private boolean isService( Path f ) {
+        String fileName = f.getFileName().toString();
+        return fileName.endsWith( ".xml" ) && !"wmts.xml".equals( fileName ) && !"main.xml".equals( fileName )
+               && !fileName.endsWith( "metadata.xml" );
     }
 
 }
