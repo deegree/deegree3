@@ -70,9 +70,9 @@ public class CiteWrapper {
         this.paramName = paramName;
         this.getCapsPath = getCapsPath;
 
-        LOG.debug("Retrieving port from context: '" + System.getProperty("port") + "'");
-        if (System.getProperty("port") == null || System.getProperty("port").isEmpty() ) {
+        if (System.getProperty("serviceUrl") == null || System.getProperty("serviceUrl").isEmpty() ) {
             this.baseUrl = "http://localhost:8080/deegree-compliance-tests/services";
+            LOG.debug("Using default URL: '" + this.baseUrl + "'");
         } else {
             LOG.debug("Retrieving serviceUrl from context '" + System.getProperty("serviceUrl") + "'");
             this.baseUrl = System.getProperty("serviceUrl");

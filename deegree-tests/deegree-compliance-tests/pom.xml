@@ -87,8 +87,7 @@
           <includes>
             <include>**/${testPattern}.java</include>
           </includes>
-          <argLine>-Djava.awt.headless=true -Xmx2048m -Dport=${jetty.http.port} -DserviceUrl=${baseUrl}:${jetty.http.port}/deegree-compliance-tests/services</argLine>
-          <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -DserviceUrl=${baseUrl}:${jetty.http.port}/deegree-compliance-tests/services -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         </configuration>
         <executions>
           <execution>
