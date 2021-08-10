@@ -47,7 +47,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;

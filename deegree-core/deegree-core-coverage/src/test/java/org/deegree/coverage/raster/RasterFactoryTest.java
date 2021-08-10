@@ -60,7 +60,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RenderedOp;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.info.BandType;
@@ -121,7 +121,7 @@ public class RasterFactoryTest {
                 converter.putInt( 0, val );
                 float realVal = converter.getFloat( 0 );
                 float compareVal = pird.getFloatSample( bx, by, 0 );
-                Assert.assertEquals( compareVal, realVal );
+                Assert.assertEquals( compareVal, realVal, 0.01d );
             }
         }
     }

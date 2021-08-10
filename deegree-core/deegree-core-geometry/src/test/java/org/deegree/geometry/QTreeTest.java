@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.deegree.commons.index.QTree;
 import org.deegree.commons.utils.GraphvizDot;

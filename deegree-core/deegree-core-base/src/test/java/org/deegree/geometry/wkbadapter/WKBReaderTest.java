@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.wkbadapter;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.io.StringWriter;

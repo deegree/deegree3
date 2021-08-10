@@ -38,7 +38,7 @@
 
 package org.deegree.coverage.raster.geom;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 
