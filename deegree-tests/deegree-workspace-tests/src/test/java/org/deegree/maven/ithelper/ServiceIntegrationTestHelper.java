@@ -35,7 +35,6 @@
 package org.deegree.maven.ithelper;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.deegree.cs.CRSUtils;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
@@ -48,30 +47,21 @@ import org.slf4j.Logger;
 import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.toByteArray;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.post;
 import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class ServiceIntegrationTestHelper {
@@ -153,99 +143,6 @@ public class ServiceIntegrationTestHelper {
         } catch ( Throwable e ) {
             LOG.error(e.getLocalizedMessage(), e );
             throw new Exception( "Layer " + currentLayer + " had no bounding box.", e );
-        }
-    }
-
-    public static double determineSimilarity( String name, InputStream in1, InputStream in2 )
-                            throws IOException, Exception {
-        try {
-            byte[] buf1 = toByteArray( in1 );
-            byte[] buf2 = toByteArray( in2 );
-            long equal = 0;
-            for ( int i = 0; i < buf1.length; ++i ) {
-                if ( i < buf2.length && buf1[i] == buf2[i] ) {
-                    ++equal;
-                }
-            }
-            double sim = (double) equal / (double) buf1.length;
-            if ( sim < 0.99 ) {
-                throw new Exception( "Request test " + name + " resulted in a similarity of only " + sim
-                                                + "!" );
-            }
-            return sim;
-        } finally {
-            closeQuietly( in1 );
-            closeQuietly( in2 );
-        }
-    }
-
-    public void testRequests()
-                            throws Exception {
-        String address = createBaseURL() + "services";
-
-        File reqDir = new File( environment.getBasedir(), "src/test/requests" );
-        LOG.info( "---- Searching main requests directory for requests." );
-        testRequestDirectories( address, reqDir );
-    }
-
-    public void testRequestDirectories( String address, File dir )
-                            throws Exception {
-        testRequestDirectory( address, dir );
-        File[] listed = dir.listFiles();
-        if ( listed != null ) {
-            for ( File f : listed ) {
-                if ( f.isDirectory() && !f.getName().equalsIgnoreCase( ".svn" ) ) {
-                    LOG.info( "---- Searching request class " + f.getName() + " for requests." );
-                    testRequestDirectories( address, f );
-                }
-            }
-        }
-    }
-
-    public void testRequestDirectory( String address, File dir )
-                            throws Exception {
-        File[] listed = dir.listFiles( (FileFilter) new SuffixFileFilter( "kvp" ) );
-        if ( listed != null ) {
-            for ( File f : listed ) {
-                String name = f.getName();
-                name = name.substring( 0, name.length() - 4 );
-                LOG.info( "KVP request testing " + name );
-                try {
-                    String req = readFileToString( f ).trim();
-                    InputStream in1 = new URL( address + ( req.startsWith( "?" ) ? "" : "?" ) + req ).openStream();
-                    File response = new File( f.getParentFile(), name + ".response" );
-                    InputStream in2 = new FileInputStream( response );
-                    double sim = determineSimilarity( name, in1, in2 );
-                    if ( sim != 1 ) {
-                        LOG.info( "Request test " + name + " resulted in similarity of " + sim );
-                    }
-                } catch ( IOException e ) {
-                    throw new Exception( "KVP request checking of " + name + " failed: "
-                                                    + e.getLocalizedMessage(), e );
-                }
-            }
-        }
-        listed = dir.listFiles( (FileFilter) new SuffixFileFilter( "xml" ) );
-        if ( listed != null ) {
-            for ( File f : listed ) {
-                String name = f.getName();
-                name = name.substring( 0, name.length() - 4 );
-                LOG.info( "XML request testing " + name );
-                FileInputStream reqIn = null;
-                try {
-                    reqIn = new FileInputStream( f );
-                    InputStream in1 = post( STREAM, address, reqIn, null );
-                    File response = new File( f.getParentFile(), name + ".response" );
-                    InputStream in2 = new FileInputStream( response );
-                    double sim = determineSimilarity( name, in1, in2 );
-                    LOG.info( "Request test " + name + " resulted in similarity of " + sim );
-                } catch ( IOException e ) {
-                    throw new Exception( "KVP request checking of " + name + " failed: "
-                                                    + e.getLocalizedMessage(), e );
-                } finally {
-                    closeQuietly( reqIn );
-                }
-            }
         }
     }
 

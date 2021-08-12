@@ -69,21 +69,15 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
-public class ServiceIT {
+public class WorkpacesIT {
 
-    private static final Logger LOG = getLogger( ServiceIT.class );
+    private static final Logger LOG = getLogger( WorkpacesIT.class );
 
     private final Path workspaceUnderTest;
 
-    private boolean testCapabilities = true;
-
-    private boolean testLayers = true;
-
-    private boolean testRequests = true;
-
     private static final TestEnvironment env = new TestEnvironment( System.getProperties() );
 
-    public ServiceIT( Path workspaceUnderTest ) {
+    public WorkpacesIT( Path workspaceUnderTest ) {
         this.workspaceUnderTest = workspaceUnderTest;
     }
 
@@ -130,9 +124,6 @@ public class ServiceIT {
                 for ( Path service : serviceList ) {
                     testService( helper, service );
                 }
-                if ( testRequests ) {
-                    helper.testRequests();
-                }
             }
         } catch ( NoClassDefFoundError e ) {
             LOG.warn( "Class not found, not performing any tests." );
@@ -144,13 +135,9 @@ public class ServiceIT {
         String serviceName = service.getFileName().toString().toLowerCase();
         String serviceType = serviceName.substring( 0, 3 ).toUpperCase();
         LOG.info( "Service name: {}, service type: {}", serviceName, serviceType );
-        if ( testCapabilities ) {
-            helper.testCapabilities( serviceType );
-        }
-        if ( testLayers ) {
-            helper.testLayers( serviceType );
-            LOG.info( "All maps can be requested." );
-        }
+        helper.testCapabilities( serviceType );
+        helper.testLayers( serviceType );
+        LOG.info( "All maps can be requested." );
     }
 
     private boolean isService( Path f ) {

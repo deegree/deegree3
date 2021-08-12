@@ -40,31 +40,24 @@
 
 package org.deegree.maven.ithelper;
 
-import org.deegree.cs.persistence.CRSManager;
-
 import java.util.Properties;
 
 public class TestEnvironment {
 
     private Properties properties;
 
-    public TestEnvironment(Properties properties) {
+    public TestEnvironment( Properties properties ) {
         this.properties = properties;
     }
 
     public String getPort() {
-        String port = properties.getProperty( "portnumber" , "8080");
+        String port = properties.getProperty( "portnumber", "8080" );
         return port;
     }
 
     public String getContext() {
         String context = properties.getProperty( "context", "deegree-webservices" );
         return context;
-    }
-
-    public String getBasedir() {
-        String basedir = properties.getProperty( "basedir" );
-        return basedir;
     }
 
     public String getWorkspaceDir() {
