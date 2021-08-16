@@ -99,4 +99,9 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            cleanWs notFailBuild: true
+        }
+    }
 }

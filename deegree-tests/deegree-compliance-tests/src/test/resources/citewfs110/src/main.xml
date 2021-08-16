@@ -38,7 +38,7 @@
 
       <!-- ***** Hard-wired the URL, tested conformance classes and GMLSF level (everything) ***** -->
       <xsl:variable name="wfs.GetCapabilities.get.url"
-        select="'${serviceUrl}/services/wfs110?request=GetCapabilities&amp;service=WFS'" />
+        select="$capabilities-url" />
       <xsl:variable name="wfs-transaction" select="'Transaction'" />
       <xsl:variable name="wfs-xlink" select="'XLink'" />
       <xsl:variable name="gmlsf.profile.level" select="'sf-1'" />

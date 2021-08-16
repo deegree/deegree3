@@ -22,7 +22,7 @@
     </xsd:documentation>
   </xsd:annotation>
 
-  <xsd:include schemaLocation="./cite-gmlsf0.xsd" />
+  <xsd:include schemaLocation="cite-gmlsf0.xsd" />
   <xsd:import namespace="http://www.opengis.net/gml" />
 
   <xsd:element name="ComplexGeoFeature" type="sf:ComplexGeoFeatureType"
