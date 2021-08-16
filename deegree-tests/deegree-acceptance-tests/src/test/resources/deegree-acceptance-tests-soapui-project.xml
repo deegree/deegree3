@@ -271,7 +271,7 @@
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
           <con:encoding/>
-          <con:endpoint>${#Project#BaseUrl}/config/list/workspace/themes</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/config/list/deegree-workspace-utah/themes</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
             <con:configuration>
@@ -451,7 +451,7 @@
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
           <con:encoding/>
-          <con:endpoint>${#Project#BaseUrl}/config/restart/workspace</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/deegree-workspace-utah</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
             <con:configuration>
@@ -566,7 +566,7 @@
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
           <con:encoding/>
-          <con:endpoint>${#Project#BaseUrl}/config/update/workspace</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/config/update/deegree-workspace-utah</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
             <con:configuration>
@@ -671,7 +671,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wfs</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
           <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <wfs:GetCapabilities service="WFS" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0
@@ -736,7 +736,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wfs</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
           <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <wfs:GetFeature handle="GeoTools 9.2 WFS DataStore"
  outputFormat="text/xml; subtype=gml/3.1.1" resultType="results"
@@ -798,7 +798,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wfs</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
           <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <wfs:GetCapabilities service="WFS" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0
@@ -892,7 +892,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wfs</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="14fa8f6c-3f04-4ab2-952b-bbce5ebb7803" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -938,7 +938,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wms</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
           <con:request/>
           <con:credentials>
             <con:authType>No Authorization</con:authType>
@@ -1060,7 +1060,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wms</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
           <con:request/>
           <con:credentials>
             <con:authType>No Authorization</con:authType>
@@ -1098,7 +1098,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wms</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
           <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
   <soapenv:Body>
@@ -1125,7 +1125,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:${#Project#port}/services/wms</con:endpoint>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
           <con:request/>
           <con:credentials>
             <con:authType>No Authorization</con:authType>
@@ -1255,11 +1255,11 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
   <con:properties>
     <con:property>
       <con:name>port</con:name>
-      <con:value>9090</con:value>
+      <con:value>36701</con:value>
     </con:property>
     <con:property>
       <con:name>BaseUrl</con:name>
-      <con:value>http://localhost:${#Project#port}</con:value>
+      <con:value>http://localhost:${#Project#port}/deegree-acceptance-tests</con:value>
     </con:property>
   </con:properties>
   <con:wssContainer/>
