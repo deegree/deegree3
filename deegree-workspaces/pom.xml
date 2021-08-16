@@ -8,13 +8,13 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.16-SNAPSHOT</version>
+    <version>3.4.18-SNAPSHOT</version>
   </parent>
 
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
+      <url>https://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -26,11 +26,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <extensions>true</extensions>
-      </plugin>
     </plugins>
   </build>
 
