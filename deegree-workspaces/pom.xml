@@ -31,18 +31,13 @@
 
   <modules>
     <module>deegree-workspace-aixm</module>
-    <module>deegree-workspace-alkis</module>
-    <module>deegree-workspace-compliance-tests</module>    
+    <module>deegree-workspace-compliance-tests</module>
     <module>deegree-workspace-csw</module>
     <module>deegree-workspace-csw-memory-tests</module>    
-    <module>deegree-workspace-csw-tests</module>    
     <module>deegree-workspace-geosciml</module>
-    <module>deegree-workspace-inspire</module>
-    <module>deegree-workspace-osm</module>
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
-    <module>deegree-workspace-wpvs</module>
     <module>deegree-workspace-xplan40</module>
   </modules>
 
