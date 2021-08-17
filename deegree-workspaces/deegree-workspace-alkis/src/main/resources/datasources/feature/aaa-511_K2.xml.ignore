@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<MemoryFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/memory"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/0.5.0/feature/memory.xsd">
-  <NamespaceHint prefix="adv" namespaceURI="http://www.adv-online.de/namespaces/adv/gid/5.1.1" />
-  <GMLSchemaFileURL gmlVersion="GML_30">../../appschemas/NAS5.1.1_K2/NAS-Operationen.xsd</GMLSchemaFileURL>
-  <!-- <GMLFeatureCollectionFileURL gmlVersion="GML_32">gml/091119-ALKIS_NAS_Beispieldaten_BB.xml</GMLFeatureCollectionFileURL>-->
-  <!-- GMLFeatureCollectionFileURL gmlVersion="GML_32">gml/Bestandsdatenauszug-Mustermonzel-06.05.2010.xml</GMLFeatureCollectionFileURL-->
-</MemoryFeatureStore>
