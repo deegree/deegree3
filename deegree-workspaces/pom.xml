@@ -38,7 +38,6 @@
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
-    <module>deegree-workspace-xplan40</module>
   </modules>
 
 </project>
