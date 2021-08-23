@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-workspace-geosciml</artifactId>
   <name>deegree-workspace-geosciml</name>
+  <packaging>pom</packaging>
   <description>Example configuration for deploying GeoSciML via deegree WFS and WMS</description>
 
   <properties>
@@ -26,6 +27,14 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
 

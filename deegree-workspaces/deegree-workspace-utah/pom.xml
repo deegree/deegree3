@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-workspace-utah</artifactId>
   <name>deegree-workspace-utah</name>
+  <packaging>pom</packaging>
   <description>Example configuration for a web mapping setup using deegree WMS, WMTS and WFS</description>
 
   <properties>
@@ -27,14 +28,13 @@
     </repository>
   </repositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>utah-demodata</artifactId>
-      <version>3.2</version>
-      <type>zip</type>
-    </dependency>
-  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
 
