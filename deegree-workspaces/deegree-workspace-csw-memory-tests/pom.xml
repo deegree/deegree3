@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-workspace-csw-memory-tests</artifactId>
   <name>deegree-workspace-csw-memory-tests</name>
+  <packaging>pom</packaging>
   <description>Configuration for running the BKG CSW test suite with memory metadata store.</description>
 
   <properties>
@@ -26,6 +27,14 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
 
