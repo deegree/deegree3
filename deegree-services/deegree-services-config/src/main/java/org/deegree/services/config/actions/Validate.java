@@ -7,6 +7,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.Collection;
@@ -49,7 +50,9 @@ public class Validate {
         Pair<DeegreeWorkspace, String> p = getWorkspaceAndPath( path );
 
         try {
-            p.getFirst().initAll();
+            DeegreeWorkspace workspace = p.getFirst();
+            workspace.destroyAll();
+            workspace.initAll();
         } catch ( ResourceInitException e ) {
             setStatusCodeAndContentType( 500, resp );
             write( "Error while validating: " + e.getLocalizedMessage() + "\n", resp.getOutputStream() );
@@ -167,9 +170,11 @@ public class Validate {
 
     private static PathMatcher createPatternMatcher( File requestedPath ) {
         String pattern = requestedPath.toString();
+        FileSystem fileSystem = FileSystems.getDefault();
         if ( requestedPath.isDirectory() )
-            pattern = pattern + "/*";
-        return FileSystems.getDefault().getPathMatcher( "glob:" + pattern );
+            pattern = pattern + fileSystem.getSeparator() + "*";
+        pattern = pattern.replace( "\\", "\\\\" );
+        return fileSystem.getPathMatcher( "glob:" + pattern );
     }
 
     private static String retrieveIdentifierWithPath( DeegreeWorkspace ws, ResourceMetadata<? extends Resource> rm,
