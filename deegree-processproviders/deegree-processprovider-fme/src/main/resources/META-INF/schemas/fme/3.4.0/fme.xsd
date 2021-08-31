@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:st="http://www.deegree.org/processes/fme"
+        targetNamespace="http://www.deegree.org/processes/fme"
+        elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="de.latlon.fme.processprovider.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="FMEServer">
+    <complexType>
+      <sequence>
+        <element name="Address" type="string" />
+        <element name="Username" type="string" />
+        <element name="Password" type="string" />
+        <element name="Repository" type="string" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" use="required" type="st:ConfigVersionType" />
+    </complexType>
+  </element>
+
+
+  <simpleType name="ConfigVersionType">
+    <restriction base="string">
+      <enumeration value="0.1.0" />
+      <enumeration value="3.4.0" />
+    </restriction>
+  </simpleType>
+
+</schema>
