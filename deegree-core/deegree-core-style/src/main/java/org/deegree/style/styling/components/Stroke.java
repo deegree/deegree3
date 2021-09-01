@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/styling/components/Stroke.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -46,9 +45,7 @@ import org.deegree.style.styling.Copyable;
  * <code>Stroke</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 21366 $, $Date: 2009-12-10 14:03:38 +0100 (Thu, 10 Dec 2009) $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class Stroke implements Copyable<Stroke> {
 
@@ -99,6 +96,9 @@ public class Stroke implements Copyable<Stroke> {
 
     /** Default is -1 == not to use it. */
     public double positionPercentage = -1;
+    
+    /** Default is -1 == not to use it. */
+    public int anchoredSymbol = -1;
 
     /**
      * Default is null.
@@ -149,6 +149,7 @@ public class Stroke implements Copyable<Stroke> {
         copy.strokeInitialGap = strokeInitialGap;
         copy.fill = fill == null ? null : fill.copy();
         copy.positionPercentage = positionPercentage;
+        copy.anchoredSymbol = anchoredSymbol;
         return copy;
     }
 

@@ -36,6 +36,7 @@
 
 package org.deegree.rendering.r2d;
 
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.acos;
@@ -49,8 +50,13 @@ import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.DoublePair;
@@ -63,15 +69,14 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
 /**
  * <code>RenderHelper</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class RenderHelper {
 
@@ -106,6 +111,50 @@ public class RenderHelper {
         if ( mark.stroke != null ) {
             context.strokeRenderer.applyStroke( mark.stroke, uom, shape, 0, null );
         }
+    }
+
+    public static BufferedImage renderMarkForFill( Mark mark, int size, UOM uom, double rotation, RenderingHints hints ) {
+        if ( size == 0 ) {
+            LOG.debug( "Not rendering a symbol because the size is zero." );
+            return new BufferedImage( size, size, TYPE_INT_ARGB );
+        }
+        if ( mark.fill == null && mark.stroke == null ) {
+            LOG.debug( "Not rendering a symbol because no fill/stroke is available/configured." );
+            return new BufferedImage( size, size, TYPE_INT_ARGB );
+        }
+
+        Shape shape = ShapeHelper.getShapeFromMarkForFill( mark, size - 1, rotation );
+        Rectangle2D box = shape.getBounds2D();
+
+        // TRICKY fall back to size if width or height is less than 1 (ex. a line) 
+        double w = box.getWidth() < 1 ? size : box.getWidth();
+        double h = box.getHeight() < 1 ? size : box.getHeight();
+
+        BufferedImage img = new BufferedImage( (int) w, (int) h, TYPE_INT_ARGB );
+        Graphics2D g = img.createGraphics();
+        if ( hints != null ) {
+            // reuse current rendering hints (ex. anti-aliasing)
+            g.setRenderingHints( hints );
+        }
+        Java2DRenderer renderer = new Java2DRenderer( g );
+
+        GeneralPath union = new GeneralPath( shape );
+        double[] pos = { -w, -h, 0, -h, +w, -h, -w, 0, w, 0, -w, h, 0, h, w, h };
+        for ( int i = 0, j = pos.length - 2; i < j; i += 2 ) {
+            AffineTransform at =  AffineTransform.getTranslateInstance( pos[i], pos[i + 1] );
+            union.append( shape.getPathIterator( at ), false );
+        }
+
+        if ( mark.fill != null ) {
+            renderer.rendererContext.fillRenderer.applyFill( mark.fill, uom );
+            g.fill( union );
+        }
+        if ( mark.stroke != null ) {
+            renderer.rendererContext.strokeRenderer.applyStroke( mark.stroke, uom, union, 0, null );
+        }
+        
+        g.dispose();
+        return img;
     }
 
     /**
