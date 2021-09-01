@@ -148,7 +148,7 @@ public class DbFeatureUtils {
                     pt = new GeometryPropertyType( ptName, 0, 1, null, null, GEOMETRY, DIM_2_OR_3, null );
                     break;
                 default:
-                    LOG.error( "Unsupported data type '{}'.", colType );
+                    LOG.error( "Unsupported data type of column '{}': '{}'", name, colType );
                     continue;
                 }
 

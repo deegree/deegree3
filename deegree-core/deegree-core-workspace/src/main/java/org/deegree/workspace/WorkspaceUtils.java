@@ -87,6 +87,7 @@ public class WorkspaceUtils {
             for ( ResourceMetadata<? extends Resource> md : list ) {
                 ResourceIdentifier<? extends Resource> identifier = md.getIdentifier();
                 workspace.add( md.getLocation() );
+                workspace.prepare( identifier );
                 workspace.init( identifier, null );
                 initialisedIdentifiers.add( identifier.getId() );
             }
