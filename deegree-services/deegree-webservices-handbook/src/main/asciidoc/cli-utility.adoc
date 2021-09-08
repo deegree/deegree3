@@ -32,7 +32,7 @@ options:
  --dialect={postgis|oracle} (default=postgis)
  --cycledepth=INT (positive integer value to specify the depth of cycles; default: 0)
  --listOfPropertiesWithPrimitiveHref=<path/to/file> (see below)
- --referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection.
+ --referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection).
 
 The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):
 ---------- begin file ----------
@@ -81,8 +81,62 @@ Example:
 ==== Usage of option referenceData
 
 The data which should be imported in a SQLFeatureStore may be much less complex than the GML application schema. This option allows to reference sample data which must be the highest complexity level as the data to import in the SQLFeatureStore configured with the generated configuration.
-The deegree-cli-utility tool considers this data and tries creates a configuration with less complexity than the GML application schema allows.
-This concerns the cardinality of properties, e.g. if a property may occur multiple times but occurs only one time in the data, the configuration is limited to exact one occurrence of this property.
+The referenced file must contain a GML 3.2 FeatureCollection containing at least one featureMember. The deegree-cli-utility tool considers this data and tries to create a configuration with less complexity than the GML application schema allows.
+This concerns the cardinality of properties, e.g. if a property may occur multiple times but occurs only one time in the data, the configuration is limited to exact one occurrence of this property. The number of joins is reduced, which speeds up the creation of the java representation of the features.
+
+Reducing the complexity of the mapping can result in a much faster processing of requests, especially of GetMap requests. The features requested via WFS (GetFeature requests) are still schema conform.
+
+Example content of the referenced file:
+
+[source,xml]
+----
+<?xml version='1.0' encoding='UTF-8'?>
+<gml:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml/3.2">
+  <gml:featureMember>
+    <au:AdministrativeUnit xmlns:au="http://inspire.ec.europa.eu/schemas/au/4.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="AdministrativeUnit_DERPKP0100000npz">
+      <gml:identifier codeSpace="http://inspire.ec.europa.eu/ids">https://deegree.org/id/AdministrativeUnit_1</gml:identifier>
+      <au:geometry>
+        ...
+      </au:geometry>
+      <au:nationalCode>987789</au:nationalCode>
+      <au:inspireId>
+        <base:Identifier>
+          <base:localId>AdministrativeUnit_1</base:localId>
+          <base:namespace>https://deegree.org/id</base:namespace>
+        </base:Identifier>
+      </au:inspireId>
+      <au:nationalLevel xlink:href="http://inspire.ec.europa.eu/codelist/AdministrativeHierarchyLevel/5thOrder"/>
+      <au:nationalLevelName>
+        <gmd:LocalisedCharacterString>Gemeinde</gmd:LocalisedCharacterString>
+      </au:nationalLevelName>
+      <au:country>
+        <gmd:Country codeList="http://inspire.ec.europa.eu/codelist/CountryCode" codeListValue="DE">DE</gmd:Country>
+      </au:country>
+      <au:name>
+        <gn:GeographicalName>
+          <gn:language>deu</gn:language>
+          <gn:nativeness xlink:href="http://inspire.ec.europa.eu/codelist/NativenessValue/endonym"/>
+          <gn:nameStatus xlink:href="http://inspire.ec.europa.eu/codelist/NameStatusValue/official"/>
+          <gn:sourceOfName nilReason="unknown" xsi:nil="true"/>
+          <gn:pronunciation nilReason="other:unpopulated" xsi:nil="true"/>
+          <gn:spelling>
+            <gn:SpellingOfName>
+              <gn:text>Test</gn:text>
+              <gn:script>Latn</gn:script>
+            </gn:SpellingOfName>
+          </gn:spelling>
+        </gn:GeographicalName>
+      </au:name>
+      <au:residenceOfAuthority nilReason="other:unpopulated" xsi:nil="true"/>
+      <au:beginLifespanVersion>2021-09-08T13:49:44Z</au:beginLifespanVersion>
+      <au:lowerLevelUnit xlink:href="#AdministrativeUnit_2"/>
+      <au:lowerLevelUnit xlink:href="#AdministrativeUnit_3"/>
+      <au:upperLevelUnit xlink:href="#AdministrativeUnit_4"/>
+      <au:boundary nilReason="other:unpopulated" xsi:nil="true"/>
+    </au:AdministrativeUnit>
+  </gml:featureMember>
+</gml:FeatureCollection>
+----
 
 === Examples
 
