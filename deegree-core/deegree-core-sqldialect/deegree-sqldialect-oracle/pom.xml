@@ -40,7 +40,7 @@
       </repositories>
       <dependencies>
         <dependency>
-          <groupId>com.oracle</groupId>
+          <groupId>com.oracle.database.jdbc</groupId>
           <artifactId>ojdbc8</artifactId>
         </dependency>
       </dependencies>
@@ -69,4 +69,3 @@
   </dependencies>
 
 </project>
-
