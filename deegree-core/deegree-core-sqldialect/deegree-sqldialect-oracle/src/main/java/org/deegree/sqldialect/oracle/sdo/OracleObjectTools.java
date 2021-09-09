@@ -40,6 +40,8 @@ package org.deegree.sqldialect.oracle.sdo;
 
 import java.sql.SQLException;
 
+import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter.GeomHolder;
+
 import oracle.jdbc.OracleConnection;
 import oracle.sql.ARRAY;
 import oracle.sql.ArrayDescriptor;
@@ -114,6 +116,11 @@ public class OracleObjectTools {
         return fromDoubleArray( struct.getOracleAttributes(), defaultValue );
     }
 
+    protected static STRUCT toSDOGeometry( GeomHolder h, OracleConnection conn ) 
+                            throws SQLException {
+        return toSDOGeometry( h.gtype, h.srid, h.elem_info, h.ordinates, conn);
+    }
+    
     /**
      * Convert SDO_Geometry informations into Oracle JDBC STRUCT element
      */
