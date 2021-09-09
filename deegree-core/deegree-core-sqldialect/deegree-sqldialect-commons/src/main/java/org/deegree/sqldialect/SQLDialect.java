@@ -226,4 +226,8 @@ public interface SQLDialect {
      */
     char getTailingEscapeChar();
 
+    /**
+     * Returns whether a query can use row limiting syntax 
+     */
+    boolean isRowLimitingCapable();
 }
