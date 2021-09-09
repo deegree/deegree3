@@ -45,6 +45,7 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
@@ -78,30 +79,40 @@ public final class ProxySettings implements Initializable {
     private static final String PROXY_HOST = "proxyHost";
 
     private static final String HTTP_PROXY_HOST = "http.proxyHost";
+    
+    private static final String HTTPS_PROXY_HOST = "https.proxyHost";
 
     private static final String FTP_PROXY_HOST = "ftp.proxyHost";
 
     private static final String PROXY_PORT = "proxyPort";
 
     private static final String HTTP_PROXY_PORT = "http.proxyPort";
+    
+    private static final String HTTPS_PROXY_PORT = "https.proxyPort";
 
     private static final String FTP_PROXY_PORT = "ftp.proxyPort";
 
     private static final String PROXY_USER = "proxyUser";
 
     private static final String HTTP_PROXY_USER = "http.proxyUser";
+    
+    private static final String HTTPS_PROXY_USER = "https.proxyUser";
 
     private static final String FTP_PROXY_USER = "ftp.proxyUser";
 
     private static final String PROXY_PASSWORD = "proxyPassword";
 
     private static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
+    
+    private static final String HTTPS_PROXY_PASSWORD = "https.proxyPassword";
 
     private static final String FTP_PROXY_PASSWORD = "ftp.proxyPassword";
 
     private static final String NON_PROXY_HOSTS = "nonProxyHosts";
 
     private static final String HTTP_NON_PROXY_HOSTS = "http.nonProxyHosts";
+    
+    private static final String HTTPS_NON_PROXY_HOSTS = "https.nonProxyHosts";
 
     private static final String FTP_NON_PROXY_HOSTS = "ftp.nonProxyHosts";
 
@@ -138,6 +149,8 @@ public final class ProxySettings implements Initializable {
                                                                               workspace );
             if ( proxyConfig != null ) {
                 setupProxyParameters( proxyConfig );
+                LOG.info( "Current proxy settings (if present) will be overwritten: {}",
+                          proxyConfig.isOverrideSystemSettings() ? "yes" : "no" );
             }
         } catch ( Exception e ) {
             String msg = "Could not unmarshall proxy configuration: " + e.getMessage();
@@ -157,24 +170,50 @@ public final class ProxySettings implements Initializable {
 
         String proxyHost = config.getProxyHost();
         String httpProxyHost = config.getHttpProxyHost();
+        String httpsProxyHost = config.getHttpsProxyHost();
         String ftpProxyHost = config.getFtpProxyHost();
         int proxyPort = config.getProxyPort() != null ? config.getProxyPort().intValue() : -1;
         int httpProxyPort = config.getHttpProxyPort() != null ? config.getHttpProxyPort().intValue() : -1;
+        int httpsProxyPort = config.getHttpsProxyPort() != null ? config.getHttpsProxyPort().intValue() : -1;
         int ftpProxyPort = config.getFtpProxyPort() != null ? config.getFtpProxyPort().intValue() : -1;
         String proxyUser = config.getProxyUser();
         String httpProxyUser = config.getHttpProxyUser();
+        String httpsProxyUser = config.getHttpsProxyUser();
         String ftpProxyUser = config.getFtpProxyUser();
         String proxyPassword = config.getProxyPassword();
         String httpProxyPassword = config.getHttpProxyPassword();
+        String httpsProxyPassword = config.getHttpsProxyPassword();
         String ftpProxyPassword = config.getFtpProxyPassword();
         String nonProxyHosts = config.getNonProxyHosts();
         String httpNonProxyHosts = config.getHttpNonProxyHosts();
+        String httpsNonProxyHosts = config.getHttpsNonProxyHosts();
         String ftpNonProxyHosts = config.getFtpNonProxyHosts();
 
-        setupProxyParameters( proxyHost, httpProxyHost, ftpProxyHost, proxyPort, httpProxyPort, ftpProxyPort,
-                              proxyUser, httpProxyUser, ftpProxyUser, proxyPassword, httpProxyPassword,
-                              ftpProxyPassword, nonProxyHosts, httpNonProxyHosts, ftpNonProxyHosts,
+        setupProxyParameters( proxyHost, httpProxyHost, httpsProxyHost, ftpProxyHost, proxyPort, httpProxyPort,
+                              httpsProxyPort, ftpProxyPort, proxyUser, httpProxyUser, httpsProxyUser, ftpProxyUser,
+                              proxyPassword, httpProxyPassword, httpsProxyPassword, ftpProxyPassword, nonProxyHosts,
+                              httpNonProxyHosts, httpsNonProxyHosts, ftpNonProxyHosts,
                               config.isOverrideSystemSettings() );
+    }
+    
+    /**
+     * Sets/augments the VM's proxy configuration.
+     * 
+     * @see ProxySettings#setupProxyParameters(String, String, String, String, int, int, int, int, String, String, String, String, String, String, String, String, String, String, String, String, boolean) 
+     */
+    @Deprecated
+    public synchronized static void setupProxyParameters( String proxyHost, String httpProxyHost, String ftpProxyHost,
+                                                          int proxyPort, int httpProxyPort, int ftpProxyPort,
+                                                          String proxyUser, String httpProxyUser, String ftpProxyUser,
+                                                          String proxyPassword, String httpProxyPassword,
+                                                          String ftpProxyPassword, String nonProxyHosts,
+                                                          String httpNonProxyHosts, String ftpNonProxyHosts,
+                                                          boolean override ) {
+        LOG.warn( "Using HTTP proxy settings for HTTPS proxy" );
+        setupProxyParameters( proxyHost, httpProxyHost, httpProxyHost, ftpProxyHost, proxyPort, httpProxyPort,
+                              httpProxyPort, ftpProxyPort, proxyUser, httpProxyUser, httpProxyUser, ftpProxyUser,
+                              proxyPassword, httpProxyPassword, httpProxyPassword, ftpProxyPassword, nonProxyHosts,
+                              httpNonProxyHosts, httpNonProxyHosts, ftpNonProxyHosts, override );
     }
 
     /**
@@ -182,27 +221,32 @@ public final class ProxySettings implements Initializable {
      * 
      * @param proxyHost
      * @param httpProxyHost
+     * @param httpsProxyHost
      * @param ftpProxyHost
      * @param proxyPort
      * @param httpProxyPort
+     * @param httpsProxyHost
      * @param ftpProxyPort
      * @param proxyUser
      * @param httpProxyUser
+     * @param httpsProxyUser
      * @param ftpProxyUser
      * @param proxyPassword
      * @param httpProxyPassword
+     * @param httpsProxyPassword
      * @param ftpProxyPassword
      * @param nonProxyHosts
      * @param httpNonProxyHosts
+     * @param httpsNonProxyHosts
      * @param ftpNonProxyHosts
      * @param override
      */
-    public synchronized static void setupProxyParameters( String proxyHost, String httpProxyHost, String ftpProxyHost,
-                                                          int proxyPort, int httpProxyPort, int ftpProxyPort,
-                                                          String proxyUser, String httpProxyUser, String ftpProxyUser,
-                                                          String proxyPassword, String httpProxyPassword,
+    public synchronized static void setupProxyParameters( String proxyHost, String httpProxyHost, String httpsProxyHost, String ftpProxyHost,
+                                                          int proxyPort, int httpProxyPort, int httpsProxyPort, int ftpProxyPort,
+                                                          String proxyUser, String httpProxyUser, String httpsProxyUser, String ftpProxyUser,
+                                                          String proxyPassword, String httpProxyPassword, String httpsProxyPassword,
                                                           String ftpProxyPassword, String nonProxyHosts,
-                                                          String httpNonProxyHosts, String ftpNonProxyHosts,
+                                                          String httpNonProxyHosts, String httpsNonProxyHosts, String ftpNonProxyHosts,
                                                           boolean override ) {
 
         Properties props = System.getProperties();
@@ -211,6 +255,9 @@ public final class ProxySettings implements Initializable {
         }
         if ( override || props.get( HTTP_PROXY_HOST ) == null ) {
             setProperty( HTTP_PROXY_HOST, httpProxyHost );
+        }
+        if ( override || props.get( HTTPS_PROXY_HOST ) == null ) {
+            setProperty( HTTPS_PROXY_HOST, httpsProxyHost );
         }
         if ( override || props.get( FTP_PROXY_HOST ) == null ) {
             setProperty( FTP_PROXY_HOST, ftpProxyHost );
@@ -229,6 +276,13 @@ public final class ProxySettings implements Initializable {
                 setProperty( HTTP_PROXY_PORT, null );
             }
         }
+        if ( override || props.get( HTTPS_PROXY_PORT ) == null ) {
+            if ( httpProxyPort != -1 ) {
+                setProperty( HTTPS_PROXY_PORT, "" + httpsProxyPort );
+            } else {
+                setProperty( HTTPS_PROXY_PORT, null );
+            }
+        }
         if ( override || props.get( FTP_PROXY_PORT ) == null ) {
             if ( ftpProxyPort != -1 ) {
                 setProperty( FTP_PROXY_PORT, "" + ftpProxyPort );
@@ -243,6 +297,9 @@ public final class ProxySettings implements Initializable {
         if ( override || props.get( HTTP_PROXY_USER ) == null ) {
             setProperty( HTTP_PROXY_USER, httpProxyUser );
         }
+        if ( override || props.get( HTTPS_PROXY_USER ) == null ) {
+            setProperty( HTTPS_PROXY_USER, httpsProxyUser );
+        }
         if ( override || props.get( FTP_PROXY_USER ) == null ) {
             setProperty( FTP_PROXY_USER, ftpProxyUser );
         }
@@ -252,6 +309,9 @@ public final class ProxySettings implements Initializable {
         }
         if ( override || props.get( HTTP_PROXY_PASSWORD ) == null ) {
             setProperty( HTTP_PROXY_PASSWORD, httpProxyPassword );
+        }
+        if ( override || props.get( HTTPS_PROXY_PASSWORD ) == null ) {
+            setProperty( HTTPS_PROXY_PASSWORD, httpsProxyPassword );
         }
         if ( override || props.get( FTP_PROXY_PASSWORD ) == null ) {
             setProperty( FTP_PROXY_PASSWORD, ftpProxyPassword );
@@ -263,9 +323,13 @@ public final class ProxySettings implements Initializable {
         if ( override || props.get( HTTP_NON_PROXY_HOSTS ) == null ) {
             setProperty( HTTP_NON_PROXY_HOSTS, httpNonProxyHosts );
         }
+        if ( override || props.get( HTTPS_NON_PROXY_HOSTS ) == null ) {
+            setProperty( HTTPS_NON_PROXY_HOSTS, httpsNonProxyHosts );
+        }
         if ( override || props.get( FTP_NON_PROXY_HOSTS ) == null ) {
             setProperty( FTP_NON_PROXY_HOSTS, ftpNonProxyHosts );
         }
+        
         if ( override || props.get( PROXY_SET ) == null ) {
             setProperty( PROXY_SET, "true" );
         }
@@ -353,6 +417,14 @@ public final class ProxySettings implements Initializable {
         }
         return result;
     }
+    
+    public static String getHttpsProxyHost( boolean considerBaseConfig ) {
+        String result = System.getProperty( HTTPS_PROXY_HOST );
+        if ( considerBaseConfig && result == null ) {
+            result = getProxyHost();
+        }
+        return result;
+    }
 
     public static String getFtpProxyHost( boolean considerBaseConfig ) {
         String result = System.getProperty( FTP_PROXY_HOST );
@@ -368,6 +440,14 @@ public final class ProxySettings implements Initializable {
 
     public static String getHttpProxyPort( boolean considerBaseConfig ) {
         String result = System.getProperty( HTTP_PROXY_PORT );
+        if ( considerBaseConfig && result == null ) {
+            result = getProxyPort();
+        }
+        return result;
+    }
+    
+    public static String getHttpsProxyPort( boolean considerBaseConfig ) {
+        String result = System.getProperty( HTTPS_PROXY_PORT );
         if ( considerBaseConfig && result == null ) {
             result = getProxyPort();
         }
@@ -393,6 +473,14 @@ public final class ProxySettings implements Initializable {
         }
         return result;
     }
+    
+    public static String getHttpsProxyUser( boolean considerBaseConfig ) {
+        String result = System.getProperty( HTTPS_PROXY_USER );
+        if ( considerBaseConfig && result == null ) {
+            result = getProxyUser();
+        }
+        return result;
+    }
 
     public static String getFtpProxyUser( boolean considerBaseConfig ) {
         String result = System.getProperty( FTP_PROXY_USER );
@@ -408,6 +496,14 @@ public final class ProxySettings implements Initializable {
 
     public static String getHttpProxyPassword( boolean considerBaseConfig ) {
         String result = System.getProperty( HTTP_PROXY_PASSWORD );
+        if ( considerBaseConfig && result == null ) {
+            result = getProxyPassword();
+        }
+        return result;
+    }
+    
+    public static String getHttpsProxyPassword( boolean considerBaseConfig ) {
+        String result = System.getProperty( HTTPS_PROXY_PASSWORD );
         if ( considerBaseConfig && result == null ) {
             result = getProxyPassword();
         }
@@ -433,6 +529,14 @@ public final class ProxySettings implements Initializable {
         }
         return result;
     }
+    
+    public static String getHttpsNonProxyHosts( boolean considerBaseConfig ) {
+        String result = System.getProperty( HTTPS_NON_PROXY_HOSTS );
+        if ( considerBaseConfig && result == null ) {
+            result = getNonProxyHosts();
+        }
+        return result;
+    }
 
     public static String getFtpNonProxyHosts( boolean considerBaseConfig ) {
         String result = System.getProperty( FTP_NON_PROXY_HOSTS );
@@ -443,16 +547,19 @@ public final class ProxySettings implements Initializable {
     }
 
     public static void logProxyConfiguration( Logger log ) {
-        log.info( "- proxyHost=" + getProxyHost() + ", http.proxyHost=" + getHttpProxyHost( false )
-                  + ", ftp.proxyHost=" + getFtpProxyHost( false ) );
-        log.info( "- proxyPort=" + getProxyPort() + ", http.proxyPort=" + getHttpProxyPort( false )
-                  + ", ftp.proxyPort=" + getFtpProxyPort( false ) );
-        log.info( "- proxyUser=" + getProxyUser() + ", http.proxyUser=" + getHttpProxyUser( false )
-                  + ", ftp.proxyUser=" + getFtpProxyUser( false ) );
-        log.info( "- proxyPassword=" + getProxyPassword() + ", http.proxyPassword=" + getHttpProxyPassword( false )
-                  + ", ftp.proxyPassword=" + getFtpProxyPassword( false ) );
-        log.info( "- nonProxyHosts=" + getNonProxyHosts() + ", http.nonProxyHosts=" + getHttpNonProxyHosts( false )
-                  + ", ftp.nonProxyHosts=" + getFtpNonProxyHosts( false ) );
+        
+        log.info( "- proxyHost={}, http.proxyHost={}, https.proxyHost={}, ftp.proxyHost={}", getProxyHost(),
+                  getHttpProxyHost( false ), getHttpsProxyHost( false ), getFtpProxyHost( false ) );
+        log.info( "- proxyPort={}, http.proxyPort={}, https.proxyPort={}, ftp.proxyPort={}", getProxyPort(),
+                  getHttpProxyPort( false ), getHttpsProxyPort( false ), getFtpProxyPort( false ) );
+        log.info( "- proxyUser={}, http.proxyUser={}, https.proxyUser={}, ftp.proxyUser={}", getProxyUser(),
+                  getHttpProxyUser( false ), getHttpsProxyUser( false ), getFtpProxyUser( false ) );
+        log.info( "- proxyPassword={}, http.proxyPassword={}, https.proxyPassword={}, ftp.proxyPassword={}",
+                  getProxyPassword(), getHttpProxyPassword( false ), getHttpsProxyPassword( false ),
+                  getFtpProxyPassword( false ) );
+        log.info( "- nonProxyHosts={}, http.nonProxyHosts={},  https.nonProxyHosts={},ftp.nonProxyHosts={}",
+                  getNonProxyHosts(), getHttpNonProxyHosts( false ), getHttpsNonProxyHosts( false ),
+                  getFtpNonProxyHosts( false ) );
     }
 
     private void setupAuthenticator() {

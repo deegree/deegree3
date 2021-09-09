@@ -54,6 +54,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.conn.ClientConnectionManager;
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.xml.stax.XMLInputFactoryUtils;
 import org.deegree.protocol.ows.exception.OWSExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class OwsHttpResponseImpl implements OwsHttpResponse {
 
     private static Logger LOG = LoggerFactory.getLogger( OwsHttpResponseImpl.class );
 
-    private static final XMLInputFactory xmlFac = XMLInputFactory.newInstance();
+    private static final XMLInputFactory xmlFac = XMLInputFactoryUtils.newSafeInstance();
 
     private final HttpResponse httpResponse;
 
