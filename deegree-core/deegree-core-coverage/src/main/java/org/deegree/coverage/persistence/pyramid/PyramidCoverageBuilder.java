@@ -130,6 +130,10 @@ public class PyramidCoverageBuilder implements ResourceBuilder<Coverage> {
                 opts.add( IMAGE_INDEX, "" + i );
                 opts.add( OPT_FORMAT, "tiff" );
                 opts.add( CRS, crs.getAlias() );
+                if ( config.getOriginLocation() != null ) {
+                    opts.add( RasterIOOptions.GEO_ORIGIN_LOCATION,
+                              config.getOriginLocation().toString().toUpperCase() );
+                }
 
                 AbstractRaster raster = RasterFactory.loadRasterFromFile( metadata.getLocation().resolveToFile( file ),
                                                                           opts, metadata );
