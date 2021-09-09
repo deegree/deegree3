@@ -118,8 +118,9 @@ public class GetFeatureInfo extends RequestBase {
         if ( version.equals( VERSION_130 ) ) {
             parse130( map );
         }
+        handlePixelSize( map );
         parameterMap.putAll( map );
-        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
     }
 
     public GetFeatureInfo( List<String> layers, int width, int height, int x, int y, Envelope envelope, ICRS crs,
@@ -132,7 +133,7 @@ public class GetFeatureInfo extends RequestBase {
         this.bbox = envelope;
         this.crs = crs;
         this.featureCount = featureCount;
-        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
     }
 
     public GetFeatureInfo( List<LayerRef> layers, List<StyleRef> styles, List<String> queryLayers, int width,
@@ -151,7 +152,8 @@ public class GetFeatureInfo extends RequestBase {
         this.infoFormat = infoFormat;
         this.dimensions.putAll( dimensions );
         this.parameterMap.putAll( parameterMap );
-        this.scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+        handlePixelSize( parameterMap );
+        this.scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
     }
 
     private void parse111( Map<String, String> map )
@@ -469,4 +471,10 @@ public class GetFeatureInfo extends RequestBase {
         return false;
     }
 
+    /**
+     * @return the value of the pixel size parameter (default is 0.00028 m).
+     */
+    public double getPixelSize() {
+        return pixelSize;
+    }
 }
