@@ -1,8 +1,0 @@
-<deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0" xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/wfs/3.4.0/wfs_configuration.xsd">
-  <SupportedVersions>
-    <Version>1.0.0</Version>
-    <Version>1.1.0</Version>
-  </SupportedVersions>
-  <EnableTransactions>false</EnableTransactions>
-  <QueryCRS>EPSG:25833</QueryCRS>
-</deegreeWFS>
