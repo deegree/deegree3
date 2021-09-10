@@ -25,8 +25,29 @@
   </repositories>
 
   <build>
-    <plugins>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <descriptors>
+              <descriptor>src/assembly/assembly.xml</descriptor>
+            </descriptors>
+            <appendAssemblyId>false</appendAssemblyId>
+          </configuration>
+          <executions>
+            <execution>
+              <id>create-zip</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <modules>
