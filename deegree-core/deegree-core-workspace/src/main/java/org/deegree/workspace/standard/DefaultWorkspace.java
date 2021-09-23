@@ -519,10 +519,50 @@ public class DefaultWorkspace implements Workspace {
             LOG.info( "Shutting down {}.", id );
             res.destroy();
         }
-        states.setState( id, null );
+        states.remove( id );
         removeMetadataFromResourceManager( id );
         resources.remove( id );
         errors.clear( id );
+    }
+
+    @Override
+    public <T extends Resource> void destroyAndShutdownDependents( ResourceIdentifier<T> id ) {
+        ResourceNode<T> node = graph.getNode( id );
+        if ( node == null ) {
+            return;
+        }
+        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
+            shutdownResourceAndDependents( n.getMetadata().getIdentifier() );
+        }
+        T res = (T) resources.get( id );
+        if ( res != null ) {
+            LOG.info( "Shutting down {}.", id );
+            res.destroy();
+        }
+        states.remove( id );
+        removeMetadataFromResourceManager( id );
+        resources.remove( id );
+        graph.removeNode( id );
+        errors.clear( id );
+    }
+
+    private <T extends Resource> void shutdownResourceAndDependents( ResourceIdentifier<T> id ) {
+        ResourceNode<T> node = graph.getNode( id );
+        if ( node == null ) {
+            return;
+        }
+        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
+            shutdownResourceAndDependents( n.getMetadata().getIdentifier() );
+        }
+        T res = (T) resources.get( id );
+        if ( res != null ) {
+            LOG.info( "Shutting down {}.", id );
+            res.destroy();
+        }
+        resources.remove( id );
+        states.setState( id, ResourceState.Error );
+        errors.clear( id );
+        errors.registerError( id, "Required dependency unavailable." );
     }
 
     private void removeMetadataFromResourceManager( ResourceIdentifier<?> id ) {

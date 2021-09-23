@@ -1,9 +1,0 @@
-1000	NivP(1) - Haupthöhenpunkt, Zwischenlinienpunkt 1.Ordnung
-1001	NivP(1) - Netzverdichtung GPS (Niedersachsen)
-2000	NivP(2) - Nivellementpunkt 2. Ordnung
-3000	NivP(3) - Nivellementpunkt 3. Ordnung
-3001	NivP(3) - nivellitisch bestimmter Bodenpunkt für Referenzstation
-4000	NivP(4) - Nivellementpunkt 4. Ordnung
-6000	ÜH - Übergeordneter Höhenfestpunkt (Berlin)
-9000	Höhenfestpunkt, der nur eine interne Bedeutung hat
-9998	Nach Quellenlage nicht zu spezifizieren

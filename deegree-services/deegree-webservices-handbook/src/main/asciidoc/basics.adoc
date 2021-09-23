@@ -67,12 +67,12 @@ The following diagram shows the different types of resources and their
 dependencies. The deegree configuration can be divided into several
 sections:
 
-----
-* web sevrices
+
+* web services
 * data stores
 * map layers
 * server connections
-----
+
 
 For example, to offer a Web Feature Service, a feature store (based on a
 shapefile, database, etc) must be configured. With a rasterfile, like a
@@ -175,6 +175,7 @@ scanned for XML resource configuration files:
 |processes/ |Processes
 |jdbc/ |Server Connections (JDBC)
 |datasources/remoteows/ |Server Connections (Remote OWS)
+|storedqueries/managed/ |Stored queries created via WFS interface
 |===
 
 A workspace directory may contain additional directories to provide

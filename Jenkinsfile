@@ -1,9 +1,14 @@
 pipeline {
-    agent any
+    agent {
+        label 'openjdk8bot'
+    }
 
     tools {
         maven 'maven-3.6'
         jdk 'adoptopenjdk-jdk8'
+    }
+    environment {
+        MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
     }
     stages {
         stage ('Initialize') {
@@ -15,24 +20,18 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
-                sh 'docker --version'
             }
         }
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -q clean test -Poracle,mssql'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+               sh 'mvn -B -C -Poracle,mssql clean test-compile'
             }
         }
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
+                sh 'mvn -B -C -Pintegration-tests,oracle,mssql install'
             }
             post {
                 always {
@@ -46,11 +45,11 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae findbugs:findbugs checkstyle:checkstyle javadoc:javadoc -Poracle,mssql'
+                sh 'mvn -B -C -fae -Poracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
             }
             post {
                 success {
-                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''
+                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
                     checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
                 }
             }
@@ -77,6 +76,8 @@ pipeline {
             }
             steps {
                 echo 'Prepare release version...'
+                echo 'Build and publish documentation'
+                sh 'mvn -pl :deegree-webservices-handbook -Phandbook install'
                 echo 'Build docker image...'
             }
             post {
@@ -95,6 +96,11 @@ pipeline {
                 echo 'Deploying to demo.deegree.org...'
                 echo 'Running smoke tests...'
             }
+        }
+    }
+    post {
+        always {
+            cleanWs notFailBuild: true
         }
     }
 }
