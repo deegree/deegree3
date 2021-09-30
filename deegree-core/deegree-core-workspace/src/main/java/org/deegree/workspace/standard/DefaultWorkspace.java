@@ -537,7 +537,6 @@ public class DefaultWorkspace implements Workspace {
         return resourcesToRemove;
     }
 
-
     @Override
     public <T extends Resource> void destroyAndShutdownDependents( ResourceIdentifier<T> id ) {
         ResourceNode<T> node = graph.getNode( id );

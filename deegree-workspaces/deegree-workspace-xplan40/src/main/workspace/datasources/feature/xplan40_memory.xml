@@ -1,7 +1,0 @@
-<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  configVersion="3.4.0"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/feature/memory/3.4.0/memory.xsd">
-  <StorageCRS>EPSG:31467</StorageCRS>
-  <GMLSchema version="GML_32">../../appschemas/xplan4.0/XPlanung-Operationen.xsd</GMLSchema>
-  <GMLFeatureCollection version="GML_32">../../data/LA22_angereichert_baugebiet.gml</GMLFeatureCollection>
-</MemoryFeatureStore>

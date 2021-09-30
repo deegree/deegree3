@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  targetNamespace="http://cite.opengeospatial.org/gmlsf"
+  xmlns:gml="http://www.opengis.net/gml"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+  elementFormDefault="qualified"
+  version="2007.12">
+
+  <xsd:annotation>
+    <xsd:appinfo xmlns:gmlsf="http://www.opengis.net/gmlsf"
+      source="../gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsfLevels.xsd">
+      <gmlsf:ComplianceLevel>1</gmlsf:ComplianceLevel>
+      <gmlsf:GMLProfileSchema>
+      ../gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf.xsd
+      </gmlsf:GMLProfileSchema>
+    </xsd:appinfo>
+    <xsd:documentation xml:lang="en">
+    GML application schema used to assess compliance with the WFS 1.1 specification.
+    This schema conforms to level SF-1 of the Simple Features Profile (OGC 06-049):
+    allows complex non-spatial property types, plus Curve and Surface geometries.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:include schemaLocation="cite-gmlsf0.xsd" />
+  <xsd:import namespace="http://www.opengis.net/gml" />
+
+  <xsd:element name="ComplexGeoFeature" type="sf:ComplexGeoFeatureType"
+    substitutionGroup="gml:_Feature">
+    <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+    Feature having complex property values for assessing compliance at level
+    SF-1.
+    </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="ComplexGeoFeatureType">
+    <xsd:complexContent>
+      <xsd:extension base="gml:AbstractFeatureType">
+        <xsd:sequence>
+          <xsd:element name="geometryProperty" type="gml:GeometryPropertyType" />
+          <xsd:element name="observation" type="gml:MeasureType" />
+          <xsd:element ref="sf:hexBinaryProperty" minOccurs="0"/>
+          <xsd:element name="typeCode" type="gml:CodeType" />
+          <xsd:element ref="sf:b64BinaryProperty" minOccurs="0"/>
+          <xsd:element name="reference" type="gml:ReferenceType" minOccurs="0">
+            <xsd:annotation>
+              <xsd:appinfo>sf:ComplexGeoFeature</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="auditTrail" type="sf:AuditTrailPropertyType" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="hexBinaryProperty">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:hexBinary">
+          <xsd:attribute name="url" type="xsd:anyURI" use="optional"/>
+          <xsd:attribute name="mimeType" type="xsd:string" use="required"/>
+          <xsd:attribute name="role" type="xsd:string" use="optional"/>
+          <xsd:attribute name="length" type="xsd:positiveInteger" use="optional"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="b64BinaryProperty">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:base64Binary">
+          <xsd:attribute name="url" type="xsd:anyURI" use="optional"/>
+          <xsd:attribute name="mimeType" type="xsd:string" use="required"/>
+          <xsd:attribute name="role" type="xsd:string" use="optional"/>
+          <xsd:attribute name="length" type="xsd:positiveInteger" use="optional"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="AuditTrailPropertyType">
+    <xsd:sequence>
+      <xsd:element name="Event" type="sf:EventType" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="EventType">
+    <xsd:sequence>
+      <xsd:element name="action" type="sf:ActionType" />
+      <xsd:element name="timestamp" type="xsd:dateTime" />
+      <xsd:element name="userid" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ActionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Insert"/>
+      <xsd:enumeration value="Update"/>
+      <xsd:enumeration value="Delete"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>
