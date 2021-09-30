@@ -783,13 +783,13 @@
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>xdb6</artifactId>
-        <version>12.2.0.1</version>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.oracle</groupId>
-        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
-        <version>12.2.0.1</version>
+        <groupId>com.oracle.database.xml</groupId>
+        <artifactId>xdb</artifactId>
+        <version>${oracle.version}</version>
       </dependency>
       <!-- Batik -->
       <dependency>
