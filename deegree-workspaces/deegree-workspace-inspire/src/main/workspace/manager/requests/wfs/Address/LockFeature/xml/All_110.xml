@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<LockFeature expiry="1" version="1.1.0" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns="http://www.opengis.net/wfs"
-  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wfs
-http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
-  <Lock typeName="ad:Address" />
-</LockFeature>
