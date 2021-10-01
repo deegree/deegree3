@@ -376,7 +376,7 @@ public class WorkspaceBean implements Serializable {
                 + "repository=releases"
                 + "&maven.groupId=org.deegree"
                 + "&maven.artifactId=" + wsArtifactName
-                + "&version=LATEST"
+                + "&sort=version"
                 + "&maven.extension=zip";
         workspaceLocations.put( wsArtifactName, url );
         list.add( wsArtifactName );
