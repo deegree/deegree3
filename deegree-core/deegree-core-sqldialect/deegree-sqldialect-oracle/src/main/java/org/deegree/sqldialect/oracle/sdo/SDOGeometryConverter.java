@@ -38,6 +38,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle.sdo;
 
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 
 import java.sql.SQLException;
@@ -50,13 +51,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import oracle.jdbc.OracleConnection;
-import oracle.sql.ARRAY;
-import oracle.sql.Datum;
-import oracle.sql.STRUCT;
+import javax.xml.namespace.QName;
 
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.property.ExtraProps;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.Geometry.GeometryType;
@@ -85,6 +90,11 @@ import org.deegree.geometry.standard.points.PointsArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oracle.jdbc.OracleConnection;
+import oracle.sql.ARRAY;
+import oracle.sql.Datum;
+import oracle.sql.STRUCT;
+
 /**
  * Convert between Oracle JDBC STRUCT and deegree Geometry
  * 
@@ -96,6 +106,12 @@ import org.slf4j.LoggerFactory;
 public class SDOGeometryConverter {
     static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
 
+    private static final boolean DEFAULT_EXPORT_ORIENTED_POINT;
+
+    static {
+        DEFAULT_EXPORT_ORIENTED_POINT = "true".equalsIgnoreCase( System.getProperty( "deegree.oracle.export.oriented_point", "false" ));
+    }
+    
     private final SDOInspector inspector;
 
     public SDOGeometryConverter() {
@@ -106,7 +122,12 @@ public class SDOGeometryConverter {
     {
         this.inspector = inspector;
     }
+    private boolean exportOrientedPointAsExtra;
 
+    public SDOGeometryConverter() {
+        exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
+    }
+    
     private GeometryFactory _gf = new GeometryFactory();
 
     enum GeomHolderTyp {
@@ -193,6 +214,16 @@ public class SDOGeometryConverter {
                     i++;
                 }
             }
+            return out;
+        }
+        
+        double[] getOrdinates() {
+            int off = elem_info[elemoff];
+            int nxt = (elemoff + 4 < cnt_e) ? elem_info[elemoff + 3] : cnt_o + 1;
+            double[] out = new double[nxt - off];
+
+            System.arraycopy( ordinates, off - 1, out, 0, nxt - off );
+
             return out;
         }
 
@@ -575,7 +606,7 @@ public class SDOGeometryConverter {
      * Interpretation are handled as follow:
      * <ol>
      * <li>1) normal point (one set of coordinates)</li>
-     * <li>0) oriented point (second set of coordinates is ignored)</li>
+     * <li>0) oriented point (only read as extra props on request)</li>
      * <li>N > 1) point cluster is treated as multiple points (N sets of coordinates)</li>
      * </ol>
      */
@@ -589,26 +620,33 @@ public class SDOGeometryConverter {
                 sdo.add( GeomHolderTyp.POINT,
                          _gf.createPoint( null, sdo.getOrdinatesEntry( off + ( i * sdo.gtype_d ) ), sdo.crs ) );
             }
-        } else if ( intpr == 0 || intpr == 1 ) {
+        } else if ( intpr == 1 ) {
             sdo.add( GeomHolderTyp.POINT, _gf.createPoint( null, sdo.getOrdinatesEntry( off ), sdo.crs ) );
+        } else if ( intpr == 0 ) {
+            if ( !exportOrientedPointAsExtra ) {
+                // Ignore the orientation defined as separate ordinates
+                return;
+            }
+
+            double[] orients = sdo.getOrdinates();
+            if ( sdo.geoms.size() > 0 ) {
+                Geometry lastGeom = sdo.geoms.get( sdo.geoms.size() - 1 );
+                final org.deegree.commons.tom.primitive.PrimitiveType pt;
+                pt = new org.deegree.commons.tom.primitive.PrimitiveType( DECIMAL );
+                final List<Property> props = new ArrayList<>();
+                for ( int i = 0, j = orients.length; i < j; i++ ) {
+                    final PropertyType decimalPt = new SimplePropertyType( new QName( ExtraProps.EXTRA_PROP_NS,
+                                                                                      "orientation" + i ),
+                                                                           1, 1, DECIMAL, null, null );
+                    final TypedObjectNode value = new PrimitiveValue( Double.valueOf( orients[i] ), pt );
+                    props.add( new GenericProperty( decimalPt, value ) );
+                }
+                lastGeom.setProperties( props );
+            }
         } else {
             createGeometryException( sdo );
         }
     }
-
-    // private List<Point> getPoints( GeomHolder sdo, int offset, int cnt ) {
-    // // double[] buf = new double[sdo.dims];
-    // List<Point> members = new LinkedList<Point>();
-    //
-    // // from 1 based to 0 based array
-    // int off = offset - 1;
-    // for ( int i = 0; i < cnt; i++ ) {
-    // members.add( _gf.createPoint( null, sdo.getOrdinatesEntry( off ), sdo.crs ) );
-    // off += sdo.gtype_d;
-    // }
-    //
-    // return members;
-    // }
 
     private PackedPoints getPackedPoints( GeomHolder sdo, int offset, int cnt ) {
         double[] pnts = new double[sdo.gtype_d * cnt];
@@ -1165,5 +1203,9 @@ public class SDOGeometryConverter {
             // unmappable
             throw new InvalidParameterValueException();
         }
+    }
+    
+    public void setExportOrientedPointAsExtra( boolean exportOrientedPointAsExtra ) {
+        this.exportOrientedPointAsExtra = exportOrientedPointAsExtra;
     }
 }
