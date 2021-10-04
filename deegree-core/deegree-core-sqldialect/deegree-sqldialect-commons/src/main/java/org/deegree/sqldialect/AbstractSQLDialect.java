@@ -42,9 +42,9 @@ package org.deegree.sqldialect;
  * @author last edited by: $Author: wanhoff $
  *
  */
-public abstract class AbstractSQLDialect implements SQLDialect{
+public abstract class AbstractSQLDialect implements SQLDialect {
 
-    private char defaultEscapeChar =  Character.UNASSIGNED;
+    private char defaultEscapeChar = Character.UNASSIGNED;
 
     @Override
     public char getLeadingEscapeChar() {
@@ -54,6 +54,11 @@ public abstract class AbstractSQLDialect implements SQLDialect{
     @Override
     public char getTailingEscapeChar() {
         return defaultEscapeChar;
+    }
+
+    @Override
+    public boolean isRowLimitingCapable() {
+        return true;
     }
 
 }

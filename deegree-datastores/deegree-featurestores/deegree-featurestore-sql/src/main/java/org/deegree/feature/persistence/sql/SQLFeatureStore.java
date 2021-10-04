@@ -327,7 +327,7 @@ public class SQLFeatureStore implements FeatureStore {
 
     @Override
     public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
-        return queries.length == 1;
+        return queries.length == 1 && dialect.isRowLimitingCapable();
     }
 
     public String getConnId() {

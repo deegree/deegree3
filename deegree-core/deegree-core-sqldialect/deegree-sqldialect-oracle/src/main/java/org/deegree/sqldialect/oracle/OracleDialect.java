@@ -268,4 +268,8 @@ public class OracleDialect extends AbstractSQLDialect implements SQLDialect {
         return "SELECT " + sequence + ".NEXTVAL from DUAL";
     }
 
+    @Override
+    public boolean isRowLimitingCapable() {
+        return versionMajor < 12 ? false: true;
+    }
 }
