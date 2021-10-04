@@ -91,6 +91,7 @@
         <xsd:extension base="GraphicStrokeType">
           <xsd:sequence>
             <xsd:element name="PositionPercentage" type="xsd:string" />
+            <xsd:element name="AnchoredSymbol" type="xsd:string" />
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>

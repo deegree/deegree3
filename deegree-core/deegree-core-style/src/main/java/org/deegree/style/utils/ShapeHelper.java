@@ -40,6 +40,7 @@ import static java.awt.geom.AffineTransform.getScaleInstance;
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.toRadians;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
@@ -66,6 +67,7 @@ import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
 import org.deegree.style.styling.components.Mark;
+import org.deegree.style.styling.mark.BoundedShape;
 import org.slf4j.Logger;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -73,9 +75,7 @@ import org.w3c.dom.svg.SVGDocument;
  * <code>RenderHelper</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 29875 $, $Date: 2011-03-04 14:27:10 +0100 (Fri, 04 Mar 2011) $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class ShapeHelper {
 
@@ -147,61 +147,64 @@ public class ShapeHelper {
     }
 
     /**
-     * @param mark
-     * @param size
-     * @param rotation
-     * @return a shape representing the mark
+     * @deprecated {@link #getShapeFromMark(Mark, double, double, boolean, double, double)} or {@link #getShapeFromMarkForFill(Mark, double, double)}
      */
     public static Shape getShapeFromMark( Mark mark, double size, double rotation ) {
         return getShapeFromMark( mark, size, rotation, false, -1, -1 );
     }
 
+    private static Shape getFontOrDefault(Mark mark, double size) {
+        Shape shape;
+        if ( mark.font != null ) {
+            FontRenderContext frc = new FontRenderContext( null, false, true );
+            GlyphVector vec = mark.font.deriveFont( (float) size ).createGlyphVector( frc,
+                                                                                      new int[] { mark.markIndex } );
+            shape = vec.getOutline();
+        } else {
+            GeneralPath path = new GeneralPath();
+            shape = path;
+
+            switch ( mark.wellKnown ) {
+            case CIRCLE:
+                path.append( new Ellipse2D.Double( 0, 0, size, size ), false );
+                break;
+            case CROSS: {
+                double half = size / 2;
+                path.append( new Line2D.Double( half, 0, half, size ), false );
+                path.append( new Line2D.Double( 0, half, size, half ), false );
+                break;
+            }
+            case SQUARE:
+                path.append( new Rectangle2D.Double( 0, 0, size, size ), false );
+                break;
+            case STAR: {
+                path.append( calculateStarPolygon( 5, 2, size ), false );
+                break;
+            }
+            case TRIANGLE:
+                Path2D.Double path2 = new Path2D.Double();
+                path2.moveTo( size / 2, 0 );
+                path2.lineTo( 0, size );
+                path2.lineTo( size, size );
+                path2.closePath();
+                path.append( path2, false );
+                break;
+            case X:
+                path.append( new Line2D.Double( 0, 0, size, size ), false );
+                path.append( new Line2D.Double( size, 0, 0, size ), false );
+                break;
+            }
+        }
+        return shape;
+    }
+    
     public static Shape getShapeFromMark( Mark mark, double size, double rotation, boolean translate, double x, double y ) {
         Shape shape;
 
         if ( mark.shape != null ) {
             shape = mark.shape;
         } else {
-            if ( mark.font != null ) {
-                FontRenderContext frc = new FontRenderContext( null, false, true );
-                GlyphVector vec = mark.font.deriveFont( (float) size ).createGlyphVector( frc,
-                                                                                          new int[] { mark.markIndex } );
-                shape = vec.getOutline();
-            } else {
-                GeneralPath path = new GeneralPath();
-                shape = path;
-
-                switch ( mark.wellKnown ) {
-                case CIRCLE:
-                    path.append( new Ellipse2D.Double( 0, 0, size, size ), false );
-                    break;
-                case CROSS: {
-                    double half = size / 2;
-                    path.append( new Line2D.Double( half, 0, half, size ), false );
-                    path.append( new Line2D.Double( 0, half, size, half ), false );
-                    break;
-                }
-                case SQUARE:
-                    path.append( new Rectangle2D.Double( 0, 0, size, size ), false );
-                    break;
-                case STAR: {
-                    path.append( calculateStarPolygon( 5, 2, size ), false );
-                    break;
-                }
-                case TRIANGLE:
-                    Path2D.Double path2 = new Path2D.Double();
-                    path2.moveTo( size / 2, 0 );
-                    path2.lineTo( 0, size );
-                    path2.lineTo( size, size );
-                    path2.closePath();
-                    path.append( path2, false );
-                    break;
-                case X:
-                    path.append( new Line2D.Double( 0, 0, size, size ), false );
-                    path.append( new Line2D.Double( size, 0, 0, size ), false );
-                    break;
-                }
-            }
+            shape = getFontOrDefault( mark, size );
         }
 
         Rectangle2D box = shape.getBounds2D();
@@ -232,6 +235,47 @@ public class ShapeHelper {
         t.rotate( toRadians( rotation ), box.getCenterX(), box.getCenterY() );
 
         return t.createTransformedShape( shape );
+    }
+    
+    public static Shape getShapeFromMarkForFill( Mark mark, double size, double rotation ) {
+        Shape shape;
+
+        if ( mark.shape != null ) {
+            shape = mark.shape;
+        } else {
+            shape = getFontOrDefault( mark, size );
+        }
+
+        Rectangle2D box = shape.getBounds2D();
+        double cur = max( box.getWidth(), box.getHeight() );
+        double fac = size / cur;
+        AffineTransform t = AffineTransform.getScaleInstance( fac, fac );
+        t.translate( -box.getMinX(), -box.getMinY() );
+
+        if ( !isZero( rotation ) ) {
+            if ( shape instanceof BoundedShape )
+                shape = ( (BoundedShape) shape ).transform( t );
+            else
+                shape = t.createTransformedShape( shape );
+            
+            t = new AffineTransform();
+            box = shape.getBounds2D();
+            t.rotate( toRadians( rotation ), box.getCenterX(), box.getCenterY() );
+            
+            if ( shape instanceof BoundedShape )
+                shape = ( (BoundedShape) shape ).transform( t );
+            else
+                shape = t.createTransformedShape( shape );
+            
+            // align at 0/0
+            box = shape.getBounds2D();
+            t = AffineTransform.getTranslateInstance(  -box.getMinX(), -box.getMinY() );
+        }
+        
+        if ( shape instanceof BoundedShape )
+            return ( (BoundedShape) shape ).transform( t );
+        else
+            return t.createTransformedShape( shape );
     }
 
     /**
