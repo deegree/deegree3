@@ -142,7 +142,7 @@ public class SDOGeometryConverterExampleTests {
         }
     }
 
-    private String replaceGmlIDs( String text ) {
+    static String replaceGmlIDs( String text ) {
         StringBuffer result = new StringBuffer();
         Pattern pattern = Pattern.compile( "gml:id=\"[^\"]+\"" );
         Matcher matcher = pattern.matcher( text );
@@ -154,7 +154,7 @@ public class SDOGeometryConverterExampleTests {
         return result.toString();
     }
 
-    private Geometry readGMLGeometry( File file )
+    static Geometry readGMLGeometry( File file )
                             throws Exception {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( file.toURI().toURL() );
         xmlReader.next();
@@ -163,7 +163,7 @@ public class SDOGeometryConverterExampleTests {
         return rdr.parse( xmlReader );
     }
 
-    private String writeGMLGeometry( Geometry geom )
+    static String writeGMLGeometry( Geometry geom )
                             throws Exception {
         XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
         XMLStreamWriter xmlWriter = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
@@ -173,7 +173,7 @@ public class SDOGeometryConverterExampleTests {
         return replaceGmlIDs( memoryWriter.toString() );
     }
 
-    private GeomHolder loadFromFile( File f )
+    static GeomHolder loadFromFile( File f )
                             throws IOException {
         @SuppressWarnings("resource")
         String output = new Scanner( f ).useDelimiter( "\\Z" ).next().replaceAll( "[\r\n]+", " " );
@@ -230,7 +230,7 @@ public class SDOGeometryConverterExampleTests {
         return null;
     }
 
-    private String toString( GeomHolder h ) {
+    static String toString( GeomHolder h ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "MDSYS.SDO_GEOMETRY( " );
         sb.append( h.gtype ).append( ", " );
