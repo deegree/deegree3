@@ -116,6 +116,8 @@ you can set the system environment variable _DEEGREE_WORKSPACE_ROOT_.
 Note that the user running the web application container must have
 read/write access to this directory.
 
+
+[[anchor-global-configuration]]
 ==== Global configuration files and the active workspace
 
 If you downloaded all four example workspaces (as described in <<anchor-lightly>>), set a console password and the proxy parameters,
@@ -219,6 +221,11 @@ considered as web service resource files. These two filenames are
 reserved and treated specifically. See <<anchor-configuration-service>>
 for details.
 
+WARNING: It is recommended to configure the proxy 'proxy.xml' globally and not
+inside the workspace directory. If multiple deegree instances are operated within
+a container, it is impossible to configure different proxies.
+See <<anchor-global-configuration>>
+
 TIP: The configuration format has to match the workspace subdirectory, e.g.
 metadata store configuration files are only considered when they are
 located in _datasources/metadata_.
@@ -260,6 +267,84 @@ connect the CSW to this store.
 
 TIP: The required dependencies are specific to every type of resource and are
 documented for each resource configuration format.
+
+==== Proxy configuration
+
+The configuration format for the deegree proxy configuration is defined
+by schema file http://schemas.deegree.org/proxy/3.4.0/proxy.xsd. The
+following table lists all available configuration options. When
+specifiying them, their order must be respected.
+
+[width="100%",cols="24%,10%,7%,59%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|@overrideSystemSettings |0..1 |Boolean | Specifies if already set proxy settings should be overwritten
+
+|ProxyHost |0..1 | String | The hostname, or address, of the proxy server
+
+|HttpProxyHost |0..1 | String | The hostname, or address, of the proxy server for protocol `HTTP`
+
+|HttpsProxyHost |0..1 | String | The hostname, or address, of the proxy server for protocol `HTTPS`
+
+|FtpProxyHost |0..1 | String | The hostname, or address, of the proxy server for protocol `FTP`
+
+|ProxyPort | 0..1 | Integer | The port number of the proxy server
+
+|HttpProxyPort | 0..1 | Integer | The port number of the proxy server for protocol `HTTP`
+
+|HttpsProxyPort | 0..1 | Integer | The port number of the proxy server for protocol `HTTPS`
+
+|FtpProxyPort | 0..1 | Integer | The port number of the proxy server for protocol `FTP`
+
+|ProxyUser |0..1 | String | Username for proxy server authtentication
+
+|HttpProxyUser |0..1 | String | Username for proxy server authtentication for protocol `HTTP`
+
+|HttpsProxyUser |0..1 | String | Username for proxy server authtentication for protocol `HTTPS`
+
+|FtpProxyUser |0..1 | String | Username for proxy server authtentication for protocol `FTP`
+
+|ProxyPassword |0..1 | String | Password for proxy server authtentication
+
+|HttpProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `HTTP`
+
+|HttpsProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `HTTPS`
+
+|FtpProxyPassword |0..1 | String | Password for proxy server authtentication for protocol `FTP`
+
+|NonProxyHosts |0..1 | String | Indicates the hosts that should be accessed without going through the proxy. Multiple values can be separated by the `{vbar}` character.
+
+|HttpNonProxyHosts |0..1 | String | Indicates the hosts that should be accessed without going through the proxy for protocol `HTTP`. Multiple values can be separated by the `{vbar}` character.
+
+|HttpsNonProxyHosts |0..1 | String | Indicates the hosts that should be accessed without going through the proxy for protocol `HTTPS`. Multiple values can be separated by the `{vbar}` character.
+
+|FtpNonProxyHosts |0..1 | String | Indicates the hosts that should be accessed without going through the proxy for protocol `FTP`. Multiple values can be separated by the `{vbar}` character.
+|===
+
+*Example for a proxy setup with proxy server for HTTP and HTTPS*
+[source,xml]
+----
+<ProxyConfiguration configVersion="3.4.0"
+                    xmlns="http://www.deegree.org/proxy"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.deegree.org/proxy http://schemas.deegree.org/proxy/3.4.0/proxy.xsd"
+                    overrideSystemSettings="true">
+
+    <HttpProxyHost>proxy.example.com</HttpProxyHost>
+    <HttpsProxyHost>proxy.example.com</HttpsProxyHost>
+    <HttpProxyPort>3128</HttpProxyPort>
+    <HttpsProxyPort>3128</HttpsProxyPort>
+    <HttpNonProxyHosts>127.0.0.1|localhost|acme.example.com</HttpNonProxyHosts>
+    <HttpsNonProxyHosts>127.0.0.1|localhost|acme.example.com</HttpsNonProxyHosts>
+</ProxyConfiguration>
+----
+
+____
+NOTE: When specifying the proxy server, this can be defined individually
+per protocol or in general. It is recommend to specify the proxy servers with
+protocol if possible and to define the settings for
+`HttpProxy...` and `HttpsProxy...` identically.
+____
 
 === Using the service console for managing resources
 
