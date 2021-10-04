@@ -51,6 +51,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
+import static java.lang.Math.toRadians;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMarkForFill;
@@ -179,8 +180,8 @@ class Java2DStrokeRenderer {
      * xxx3 => Endpoint
      * xxx4 => Fallback on percentage in calculation if gap is a problem
      * xxxN => on line with positionPercentage
-     * xx1x => Symbols are oriented to the line
-     * xx0x => Symbol rotated like a normal symbol n
+     * xx1x => Symbols are rotated regularly
+     * xx0x => Symbol are oriented to the line (rotation can be used relative to line)
      * x1xx => apply offsets via anchorX/Y and displacementX/Y
      * x0xx => ignore anchorX/Y and displacementX/Y
      * 0xxx => fill symbol only
@@ -239,11 +240,16 @@ class Java2DStrokeRenderer {
         AffineTransform t = graphics.getTransform();
 
         // TRICKY rotation of shape is made on load (rotated around center of shape)
+        // TRICKY this rotation is used to get back regular rotation
         if ( !isZero( rotate ) ) {
             graphics.rotate( rotate, x, y );
         }
 
         if ( stroke.image != null ) {
+            // rotate, because an image was not rotated previously
+            if ( !isZero( stroke.rotation ) ) {
+                graphics.rotate( toRadians(stroke.rotation), x, y );
+            }
             // render image
             Rectangle2D.Double rect = fillRenderer.getGraphicBounds( stroke, x, y, uom );
             graphics.drawImage( stroke.image, round( rect.x ), round( rect.y ), round( rect.width ),
@@ -343,6 +349,7 @@ class Java2DStrokeRenderer {
                     startp[1] = lLastY;
                     double dx = lastX - lLastX;
                     double dy = lastY - lLastY;
+                    // rotate 90 deegree to the left
                     startp[2] = atan2( dy, dx ) - PI / 2;
                     startp[3] = 1;
 
@@ -358,6 +365,7 @@ class Java2DStrokeRenderer {
                 endp[1] = lastY;
                 double dx = lLastX - lastX;
                 double dy = lLastY - lastY;
+                // rotate 90 deegree to the left
                 endp[2] = atan2( dy, dx ) - PI / 2;
                 endp[3] = 1;
             }
@@ -374,7 +382,12 @@ class Java2DStrokeRenderer {
             float next = 0;
             float minLength = (float) abs( initialGap );
             boolean repeat = true;
-            if ( positionPercentage >= 0 ) {
+            if ( positionPercentage > 100 || isZero( positionPercentage - 100.0d )) {
+                // every value above 100 is treated as 100
+                minLength = (float) totalLength;
+                next = minLength;
+                repeat = false;
+            } else if ( positionPercentage >= 0 ) {
                 minLength = (float) ( totalLength * ( ( positionPercentage % 100 ) / 100 ) );
                 next = minLength;
                 repeat = false;
@@ -388,7 +401,14 @@ class Java2DStrokeRenderer {
             }
 
             if ( fallbackPercentage && minLength > totalLength ) {
-                minLength = (float) ( totalLength * ( ( positionPercentage % 100 ) / 100 ) );
+                if ( positionPercentage > 100 || isZero( positionPercentage - 100.0d )) {
+                    minLength = (float)totalLength;
+                } else if ( positionPercentage >= 0 ) {
+                    minLength = (float) ( totalLength * ( ( positionPercentage % 100 ) / 100 ) );
+                } else {
+                    // positionPercentage is not set (<0) so fall back to 50%
+                    minLength = (float) ( totalLength * 0.5d );
+                }
                 next = minLength;
                 repeat = false;
             }
