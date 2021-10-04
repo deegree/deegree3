@@ -101,6 +101,7 @@ import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.CollectionUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
 import org.deegree.commons.xml.XMLAdapter;
@@ -163,6 +164,7 @@ import org.deegree.services.wms.controller.exceptions.ExceptionsManager;
 import org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider;
 import org.deegree.services.wms.controller.plugins.OutputFormatProvider;
 import org.deegree.services.wms.utils.GetMapLimitChecker;
+import org.deegree.services.wms.utils.KeyValueRewriter;
 import org.deegree.services.wms.utils.SupportedEncodingsParser;
 import org.deegree.style.StyleRef;
 import org.deegree.style.utils.ColorQuantizer;
@@ -217,7 +219,9 @@ public class WMSController extends AbstractOWS {
 
     private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
 
-    private SupportedEncodings supportedEncodings;    
+    private SupportedEncodings supportedEncodings;
+    
+    private final KeyValueRewriter kvpRewrite;
 
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -226,6 +230,7 @@ public class WMSController extends AbstractOWS {
         exceptionsManager = new ExceptionsManager( isAddExceptionsDefaultFormatsEnabled( jaxbConfig ), this );
         ouputFormatProvider = new DefaultOutputFormatProvider();
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
+        kvpRewrite = KeyValueRewriter.parse( jaxbConfig.getKeyValueRewrite() );
     }
 
     public Collection<String> getSupportedImageFormats() {
@@ -362,6 +367,7 @@ public class WMSController extends AbstractOWS {
                 throw new OWSException( "GET/KVP is not supported for " + requestName + " requests.",
                                         OWSException.OPERATION_NOT_SUPPORTED );
             }
+            kvpRewrite.rewrite( req, map, request );
             handleRequest( req, response, map, version );
         } catch ( OWSException e ) {
             if ( controllers.get( version ) == null ) {
@@ -605,7 +611,9 @@ public class WMSController extends AbstractOWS {
                 doGetCapabilities( new HashMap<String, String>(), response, updateSequence, getCapabilities );
                 break;
             case GetMap:
-                GetMapParser getMapParser = new GetMapParser();
+                Map<String, String> kvp = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
+                kvpRewrite.rewrite( requestType, kvp, request );
+                GetMapParser getMapParser = new GetMapParser( kvp, service.getExtensions() );
                 GetMap getMap = getMapParser.parse( xmlStream );
                 Map<String, String> map = new HashMap<String, String>();
                 doGetMap( map, response, VERSION_130, getMap );
@@ -653,7 +661,7 @@ public class WMSController extends AbstractOWS {
             requestVersion = parseAndCheckVersion( xmlStream );
 
             if ( WMSRequestType.GetMap.equals( requestType ) ) {
-                doSoapGetMap( soapDoc.getVersion(), response, xmlStream );
+                doSoapGetMap( soapDoc.getVersion(), request, response, xmlStream );
             } else {
                 beginSoapResponse( soapDoc, response );
                 switch ( requestType ) {
@@ -836,6 +844,7 @@ public class WMSController extends AbstractOWS {
                                                 getMap.getTransparent(), getMap.getBgColor(), getMap.getBoundingBox(),
                                                 getMap.getPixelSize(), map, imageSerializers.get( getMap.getFormat() ) );
 
+        
         RenderContext ctx = ouputFormatProvider.getRenderers( info, stream );
         LinkedList<String> headers = new LinkedList<String>();
         service.getMap( getMap, headers, ctx );
@@ -1073,11 +1082,17 @@ public class WMSController extends AbstractOWS {
         return null;
     }
 
-    private void doSoapGetMap( SOAPVersion soapVersion, HttpResponseBuffer response, XMLStreamReader xmlStream )
-                            throws OWSException, XMLStreamException, IOException, SOAPException {
+    private void doSoapGetMap( SOAPVersion soapVersion, HttpServletRequest request, HttpResponseBuffer response,
+                               XMLStreamReader xmlStream )
+                            throws OWSException,
+                            XMLStreamException,
+                            IOException,
+                            SOAPException {
         response.setContentType( "application/xop+xml" );
 
-        GetMapParser getMapParser = new GetMapParser();
+        Map<String, String> kvp = KVPUtils.getNormalizedKVPMap( request.getQueryString(), null );
+        kvpRewrite.rewrite( WMSRequestType.GetMap, kvp, request );
+        GetMapParser getMapParser = new GetMapParser( kvp, service.getExtensions() );
         GetMap getMap = getMapParser.parse( xmlStream );
         Map<String, String> map = new HashMap<String, String>();
 

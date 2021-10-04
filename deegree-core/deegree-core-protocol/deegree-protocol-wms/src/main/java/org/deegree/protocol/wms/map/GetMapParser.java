@@ -80,6 +80,7 @@ import org.deegree.protocol.wms.ops.GetMap;
 import org.deegree.protocol.wms.ops.SLDParser;
 import org.deegree.protocol.wms.sld.StyleContainer;
 import org.deegree.protocol.wms.sld.StylesContainer;
+import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.style.StyleRef;
 
 /**
@@ -99,12 +100,16 @@ public class GetMapParser extends AbstractWmsParser {
 
     private final Map<String, String> requestParameters;
     
+    private final MapOptionsMaps mapOptions;
+    
     public GetMapParser() {
         requestParameters = emptyMap();
+        mapOptions = new MapOptionsMaps();
     }
     
-    public GetMapParser( Map<String, String> requestParameters) {
+    public GetMapParser( Map<String, String> requestParameters, MapOptionsMaps mapOptions) {
         this.requestParameters = requestParameters;
+        this.mapOptions = mapOptions;
     }
     
     /**
@@ -175,7 +180,7 @@ public class GetMapParser extends AbstractWmsParser {
         boolean transparent = output.transparent;
         Color color = output.bgcolor;
         return new GetMap( layers, styles, width, height, envelope, crs, format, transparent, color, parameterMap,
-                           dimensions, requestParameters );
+                           dimensions, requestParameters, mapOptions );
     }
 
     private Output parseOutput( XMLStreamReader in )

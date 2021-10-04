@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWMS configVersion="3.4.0"
+	xmlns="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
+	xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/wms/3.4.0/wms_configuration.xsd">
+  <ServiceConfiguration>
+    <DefaultLayerOptions>
+      <AntiAliasing>NONE</AntiAliasing>
+    </DefaultLayerOptions>
+    <ThemeId>theme</ThemeId>
+  </ServiceConfiguration>
+  <KeyValueRewrite type="GetMap">
+  	<!-- set resolution to fixed 150 dpi -->
+  	<Remove key="PIXELSIZE"/>
+  	<Remove key="RES"/>
+  	<Default key="RES">150</Default>
+  </KeyValueRewrite>
+</deegreeWMS>
