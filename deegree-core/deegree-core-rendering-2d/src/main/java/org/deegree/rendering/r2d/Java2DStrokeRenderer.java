@@ -134,7 +134,7 @@ class Java2DStrokeRenderer {
                                                  stroke.stroke.anchorPointX, stroke.stroke.anchorPointY,
                                                  uomCalculator.considerUOM( stroke.stroke.displacementX, uom ),
                                                  uomCalculator.considerUOM( stroke.stroke.displacementY, uom ) ) );
-            // TODO is a drawing command missing here ?
+            // NOTE: rendering is done in calling method 
         } else if ( stroke.stroke.mark != null ) {
             double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
             Shape transed = object;
@@ -251,7 +251,7 @@ class Java2DStrokeRenderer {
                 graphics.rotate( toRadians(stroke.rotation), x, y );
             }
             // render image
-            Rectangle2D.Double rect = fillRenderer.getGraphicBounds( stroke, x, y, uom );
+            Rectangle2D.Double rect = fillRenderer.getImageBounds( stroke.image, stroke, x, y, uom );
             graphics.drawImage( stroke.image, round( rect.x ), round( rect.y ), round( rect.width ),
                                 round( rect.height ), null );
         } else {

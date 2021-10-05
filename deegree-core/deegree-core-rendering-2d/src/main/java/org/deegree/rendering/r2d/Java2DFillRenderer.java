@@ -50,6 +50,7 @@ import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import org.deegree.commons.utils.Tunable;
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.UOM;
@@ -69,22 +70,44 @@ class Java2DFillRenderer {
 
     private Graphics2D graphics;
 
-    Java2DFillRenderer( UomCalculator uomCalculator, Graphics2D graphics ) {
+    private SvgRenderer svgRenderer;
+
+    /**
+     * Derive undefined image size Strictly according to OGC
+     * 
+     * SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
+     */
+    private boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+
+    private int undefinedImageHeight = Tunable.get( "deegree.redering.graphics.height.undefined", 6 );
+    
+    Java2DFillRenderer( UomCalculator uomCalculator, Graphics2D graphics, SvgRenderer svgRenderer ) {
         this.uomCalculator = uomCalculator;
         this.graphics = graphics;
+        this.svgRenderer = svgRenderer;
     }
 
     void applyGraphicFill( Graphic graphic, UOM uom ) {
-        BufferedImage img;
+        BufferedImage img = graphic.image;
+        Rectangle2D.Double rect = getGraphicBounds( graphic, 0.0d, 0.0d, uom );
 
-        if ( graphic.image == null ) {
+        if ( img == null && graphic.imageURL != null ) {
+            // create unscaled raster
+            Rectangle2D.Double r = new Rectangle2D.Double( 0.0d, 0.0d, 0.0d, 0.0 );
+            BufferedImage svgImg = svgRenderer.prepareSvg( r, graphic );
+            if ( svgImg != null ) {
+                img = svgImg;
+                rect = getImageBoundsScaled( svgImg, graphic, 0.0d, 0.0d, uom );
+            }
+        }
+
+        if ( img == null ) {
             int size = round( uomCalculator.considerUOM( graphic.size, uom ) );
             img = renderMarkForFill( graphic.mark, graphic.size < 0 ? 6 : size, uom, graphic.rotation,
                                      graphics != null ? graphics.getRenderingHints() : null );
             graphics.setPaint( new TexturePaint( img, getImageBounds( img, graphic, 0, 0, uom ) ) );
         } else {
-            img = graphic.image;
-            graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0, uom ) ) );
+            graphics.setPaint( new TexturePaint( img, rect ) );
         }
     }
 
@@ -101,6 +124,13 @@ class Java2DFillRenderer {
         }
     }
 
+    /**
+     * Returns the graphic bounds for an raster image without scaling.
+     * 
+     * <p>
+     * Anchor point, displacement and uom are taken into account when determining the graphic boundaries.
+     * </p>
+     */
     Rectangle2D.Double getImageBounds( BufferedImage image, Graphic graphic, double x, double y, UOM uom ) {
         double width, height;
         width = image.getWidth();
@@ -110,25 +140,63 @@ class Java2DFillRenderer {
 
         return new Rectangle2D.Double( x0, y0, width, height );
     }
+    
+    /**
+     * Returns the graphic bounds for an raster image with scaling.
+     * 
+     * <p>
+     * Anchor point, displacement and uom are taken into account when determining the graphic boundaries.
+     * </p>
+     */
+    Rectangle2D.Double getImageBoundsScaled( BufferedImage image, Graphic graphic, double x, double y, UOM uom ) {
+        double width, height;
+        double fac;
+        if ( strictSize ) {
+            fac = graphic.size / image.getHeight();
+        } else {
+            fac = graphic.size / Math.max( image.getWidth(), image.getHeight() );
+        }
+        width = fac * image.getWidth();
+        height = fac * image.getHeight();
+        double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
+        double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
 
+        return new Rectangle2D.Double( x0, y0, width, height );
+    }
+
+    /**
+     * Returns the graphic bounds.
+     * 
+     * <p>
+     * Anchor point, displacement and uom are taken into account when determining the graphic boundaries.
+     * </p>
+     * 
+     * <p>
+     * <b>Note:</b> For graphics without raster image a width of zero can be returned
+     * </p>
+     */
     Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
         double width, height;
         if ( graphic.image != null ) {
-            double max = Math.max( graphic.image.getWidth(), graphic.image.getHeight() );
-            double fac = graphic.size / max;
+            double fac;
+            if ( strictSize ) {
+                fac = graphic.size / graphic.image.getHeight();
+            } else {
+                fac = graphic.size / Math.max( graphic.image.getWidth(), graphic.image.getHeight() );
+            }
             width = fac * graphic.image.getWidth();
             height = fac * graphic.image.getHeight();
         } else {
-            width = graphic.size;
+            width = strictSize ? 0 : graphic.size;
             height = graphic.size;
         }
         width = uomCalculator.considerUOM( width, uom );
         height = uomCalculator.considerUOM( height, uom );
 
-        if ( width < 0 ) {
+        if ( height < 0 ) {
             if ( graphic.image == null ) {
-                width = 6;
-                height = 6;
+                height = undefinedImageHeight;
+                width = strictSize ? 0 : height;
             } else {
                 width = graphic.image.getWidth();
                 height = graphic.image.getHeight();

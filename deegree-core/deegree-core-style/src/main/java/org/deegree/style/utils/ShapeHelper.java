@@ -66,6 +66,7 @@ import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
+import org.deegree.commons.utils.Tunable;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.mark.BoundedShape;
 import org.slf4j.Logger;
@@ -199,6 +200,10 @@ public class ShapeHelper {
     }
     
     public static Shape getShapeFromMark( Mark mark, double size, double rotation, boolean translate, double x, double y ) {
+        // Derive undefined image size Strictly according to OGC
+        // SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
+        boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+
         Shape shape;
 
         if ( mark.shape != null ) {
@@ -208,7 +213,7 @@ public class ShapeHelper {
         }
 
         Rectangle2D box = shape.getBounds2D();
-        double cur = max( box.getWidth(), box.getHeight() );
+        double cur = strictSize ? box.getHeight() : max( box.getWidth(), box.getHeight() );
         double fac = size / cur;
         AffineTransform t = AffineTransform.getScaleInstance( fac, fac );
         t.translate( -box.getMinX(), -box.getMinY() );
@@ -238,6 +243,10 @@ public class ShapeHelper {
     }
     
     public static Shape getShapeFromMarkForFill( Mark mark, double size, double rotation ) {
+        // Derive undefined image size Strictly according to OGC
+        // SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
+        boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+
         Shape shape;
 
         if ( mark.shape != null ) {
@@ -247,7 +256,7 @@ public class ShapeHelper {
         }
 
         Rectangle2D box = shape.getBounds2D();
-        double cur = max( box.getWidth(), box.getHeight() );
+        double cur = strictSize ? box.getHeight() : max( box.getWidth(), box.getHeight() );
         double fac = size / cur;
         AffineTransform t = AffineTransform.getScaleInstance( fac, fac );
         t.translate( -box.getMinX(), -box.getMinY() );
@@ -285,10 +294,17 @@ public class ShapeHelper {
      * @return a shape object from the given svg
      */
     public static Shape getShapeFromSvg( String url, double size, double rotation ) {
+        // Derive undefined image size Strictly according to OGC
+        // SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
+        boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+
         try {
             Shape shape = getShapeFromSvg( new URL( url ).openStream(), url );
             if ( shape != null ) {
-                AffineTransform at = getScaleInstance( size, size );
+                Rectangle2D box = shape.getBounds2D();
+                double cur = strictSize ? box.getHeight() : max( box.getWidth(), box.getHeight() );
+                double fac = size / cur;
+                AffineTransform at = getScaleInstance( fac, fac );
                 at.rotate( toRadians( rotation ) );
                 return at.createTransformedShape( shape );
             }

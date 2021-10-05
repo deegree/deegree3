@@ -93,6 +93,9 @@ class PointRenderer {
         // try if it's an svg
         if ( img == null && g.imageURL != null ) {
             img = rendererContext.svgRenderer.prepareSvg( rect, g );
+            if ( !( rect.width > 0.0d ) ) {
+                rect = rendererContext.fillRenderer.getImageBounds( img, g, x, y, styling.uom );
+            }
         }
 
         if ( img != null ) {

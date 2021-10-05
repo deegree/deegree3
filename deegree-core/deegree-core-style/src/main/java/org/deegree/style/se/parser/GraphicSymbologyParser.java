@@ -71,9 +71,7 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.batik.transcoder.TranscoderException;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.xerces.parsers.SAXParser;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
@@ -87,8 +85,6 @@ import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.mark.WellKnownNameManager;
 import org.deegree.style.utils.ShapeHelper;
-import org.deegree.style.utils.SvgImageTranscoder;
-import org.deegree.style.utils.SvgImageTranscoder.SvgImageOutput;
 import org.slf4j.Logger;
 
 /**
@@ -297,7 +293,7 @@ class GraphicSymbologyParser {
                                 font = createFont( TYPE1_FONT, is );
                             }
 
-                            if ( format.equalsIgnoreCase( "svg" ) ) {
+                            if ( format.toLowerCase().contains( "svg" ) ) {
                                 base.shape = ShapeHelper.getShapeFromSvg( is, pair.second );
                             }
 
@@ -390,17 +386,6 @@ class GraphicSymbologyParser {
             if ( pair != null ) {
                 if ( pair.first != null && format != null && ( format.toLowerCase().indexOf( "svg" ) == -1 ) ) {
                     img = ImageIO.read( pair.first );
-                } else if ( pair.first != null && format != null && ( format.toLowerCase().indexOf( "svg" ) != -1 ) ) {
-                    try {
-                        SvgImageTranscoder trans = new SvgImageTranscoder();
-                        SvgImageOutput tcOutput = trans.createOutput();
-                        trans.setXmlParserClass(SAXParser.class.getName() );
-                        trans.transcode( pair.first, pair.second, tcOutput );
-                        img = tcOutput.getBufferedImage();
-                    } catch ( TranscoderException te ) {
-                        LOG.warn( "Failed reading external SVG-Graphic: {}", te.getMessage() );
-                        LOG.trace("TranscoderException", te);
-                    }
                 }
                 url = pair.second;
 

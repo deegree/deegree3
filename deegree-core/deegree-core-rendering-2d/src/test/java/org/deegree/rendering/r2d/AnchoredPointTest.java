@@ -54,14 +54,12 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.xerces.parsers.SAXParser;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
@@ -70,8 +68,6 @@ import org.deegree.style.styling.LineStyling;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Stroke.LineJoin;
 import org.deegree.style.styling.mark.BoundedShape;
-import org.deegree.style.utils.SvgImageTranscoder;
-import org.deegree.style.utils.SvgImageTranscoder.SvgImageOutput;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -99,15 +95,10 @@ public class AnchoredPointTest extends AbstractSimilarityTest {
             
             symbol = read( AnchoredPointTest.class.getResource( "arrow.png" ) );
             
-            try (InputStream is = AnchoredPointTest.class.getResourceAsStream( "arrow.svg" )) {
-                SvgImageTranscoder trans = new SvgImageTranscoder();
-                SvgImageOutput tcOutput = trans.createOutput();
-                trans.setXmlParserClass( SAXParser.class.getName() );
-                trans.transcode( is, "arrow.svg", tcOutput );
-                svg = tcOutput.getBufferedImage();
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
+            SvgRenderer sr = new SvgRenderer();
+            Graphic g = new Graphic();
+            g.imageURL = AnchoredPointTest.class.getResource( "arrow.svg" ).toExternalForm();
+            svg = sr.prepareSvg( new Rectangle2D.Double( 0, 0, 50, 50 ), g );
         } catch ( MalformedURLException e ) {
             LOG.error( "Unknown error", e );
         } catch ( IOException e ) {
