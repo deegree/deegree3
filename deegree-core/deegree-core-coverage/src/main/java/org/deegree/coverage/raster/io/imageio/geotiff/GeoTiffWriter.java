@@ -64,11 +64,11 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageOutputStream;
 
-import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriter;
-import com.github.jaiimageio.plugins.tiff.GeoTIFFTagSet;
-import com.github.jaiimageio.plugins.tiff.TIFFDirectory;
-import com.github.jaiimageio.plugins.tiff.TIFFField;
-import com.github.jaiimageio.plugins.tiff.TIFFTag;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageWriter;
+import it.geosolutions.imageio.plugins.tiff.GeoTIFFTagSet;
+import it.geosolutions.imageio.plugins.tiff.TIFFDirectory;
+import it.geosolutions.imageio.plugins.tiff.TIFFField;
+import it.geosolutions.imageio.plugins.tiff.TIFFTag;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;

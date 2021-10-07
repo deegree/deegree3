@@ -695,9 +695,9 @@
         <version>1.1.3</version>
       </dependency>
       <dependency>
-        <groupId>com.github.jai-imageio</groupId>
-        <artifactId>jai-imageio-core</artifactId>
-        <version>1.4.0</version>
+        <groupId>com.sun.media</groupId>
+        <artifactId>jai_imageio</artifactId>
+        <version>1.1</version>
       </dependency>
       <!-- PostgreSQL -->
       <dependency>
@@ -961,7 +961,7 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.1.9</version>
+        <version>1.1.29</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -980,7 +980,7 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.1.9</version>
+        <version>1.1.29</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>

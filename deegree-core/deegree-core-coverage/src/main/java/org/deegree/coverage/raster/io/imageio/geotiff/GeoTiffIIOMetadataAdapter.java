@@ -58,7 +58,7 @@ import java.util.StringTokenizer;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 
-import com.github.jaiimageio.plugins.tiff.GeoTIFFTagSet;
+import it.geosolutions.imageio.plugins.tiff.GeoTIFFTagSet;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 

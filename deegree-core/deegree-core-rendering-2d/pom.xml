@@ -31,6 +31,11 @@
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-core-geometry</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-core-tile</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -40,12 +45,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.media</groupId>
-      <artifactId>jai-codec</artifactId>
+      <groupId>javax.media</groupId>
+      <artifactId>jai-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.jai-imageio</groupId>
-      <artifactId>jai-imageio-core</artifactId>
+      <groupId>com.sun.media</groupId>
+      <artifactId>jai-codec</artifactId>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>
@@ -54,10 +59,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.xmlgraphics</groupId>
-      <artifactId>batik-codec</artifactId>
     </dependency>
   </dependencies>
 
