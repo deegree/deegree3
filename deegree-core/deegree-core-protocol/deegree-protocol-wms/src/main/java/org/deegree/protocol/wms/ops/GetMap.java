@@ -140,7 +140,7 @@ public class GetMap extends RequestBase {
     /**
      * @param map
      * @param version
-     * @param service
+     * @param exts
      * @throws OWSException
      */
     public GetMap( Map<String, String> map, Version version, MapOptionsMaps exts ) throws OWSException {
@@ -440,6 +440,11 @@ public class GetMap extends RequestBase {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         String t = map.get( "TRANSPARENT" );
+        if ( t != null && !t.equalsIgnoreCase( "true" ) && !t.equalsIgnoreCase( "false" ) ) {
+            throw new OWSException(
+                            "The TRANSPARENT parameter value is not valid (was " + t + "), expected is TRUE or FALSE.",
+                            OWSException.INVALID_PARAMETER_VALUE );
+        }
         transparent = t != null && t.equalsIgnoreCase( "true" );
         if ( transparent && ( format.indexOf( "gif" ) != -1 || format.indexOf( "png" ) != -1 ) ) {
             bgcolor = new Color( 255, 255, 255, 0 );
