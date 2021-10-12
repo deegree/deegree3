@@ -12,14 +12,11 @@ installation, including:
 
 Supported Java SE 8 versions are
 http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle JDK 8]
-footnote:[Oracle JDK 7 and earlier versions are not supported
-anymore, be aware that those versions are out of maintenance and reached
-End-of-life.] and http://openjdk.java.net[OpenJDK 8]
+footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and http://openjdk.java.net[OpenJDK 8]
 footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/zulu/[Azul Systems]
 or https://adoptopenjdk.net[AdoptOpenJDK].].
 
-NOTE: Newer Java SE versions may work, but are not officially supported by the deegree
-development team.
+NOTE: Newer Java SE versions such as the LTS versions 11 and 16 are currently not supported by deegree 3.4. Please check out our wiki page https://github.com/deegree/deegree3/wiki/Java-SE-11-Support[Java 11 support] for further information.
 
 === Downloading
 
@@ -36,12 +33,12 @@ required. We recommend using the latest http://tomcat.apache.org/[Apache
 Tomcat 8] release.]
 * _ZIP_: Distribution bundle with Apache Tomcat footnote:[As of deegree
 3.4.0 the ZIP distribution bundle is deprecated and the download links
-are removed from the website. Download the ZIP from the
-https://repo.deegree.org/content/groups/public/org/deegree/deegree-webservices-tomcat-bundle/[Nexus repository]
+have been removed from the website. Download the ZIP from the
+https://repo.deegree.org/#browse/search=attributes.maven2.artifactId%3Ddeegree-webservices-tomcat-bundle[Nexus repository]
 instead.]
 
 TIP: If you are confused by the options and unsure which version to pick,
-use the ZIP All variants contain exactly the same deegree webservices webapp,
+use the ZIP. All variants contain exactly the same deegree webservices webapp,
 they only differ in packaging.
 
 === Starting and stopping
