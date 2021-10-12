@@ -127,6 +127,15 @@ public class StoredQueryHandler {
         loadConfiguredStoredQueries( storedQueryTemplates );
         loadManagedStoredQueries( managedStoredQueryDirectory );
     }
+    
+    /**
+     * Determines if managing stored queries is supported.
+     * 
+     * @return <code>true</code> if managing stored queries is supported, <code>false</code> otherwise
+     */
+    public boolean isManageStoredQueriesSupported() {
+    	return managedStoredQueryDirectory != null && managedStoredQueryDirectory.exists();
+    }
 
     /**
      * Performs the given {@link CreateStoredQuery} request.

@@ -856,15 +856,20 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             // GetPropertyValue
             addOperation( GetPropertyValue, getAndPost, post, get, operations );
 
-            // CreateStoredQuery
-
-            List<Domain> createStoredQueryParams = new ArrayList<Domain>();
-            createStoredQueryParams.add( new Domain( "language", Collections.singletonList(
-                                    "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression" ) ) );
-            addOperation( CreateStoredQuery, createStoredQueryParams, getAndPost, post, get, operations );
-
-            // DropStoredQuery
-            addOperation( DropStoredQuery, getAndPost, post, get, operations );
+            // determine if managing stored queries is supported/enabled
+            boolean enableManageStoredQueries = master.getStoredQueryHandler().isManageStoredQueriesSupported();
+            
+            if (enableManageStoredQueries) {
+	            // CreateStoredQuery
+	
+	            List<Domain> createStoredQueryParams = new ArrayList<Domain>();
+	            createStoredQueryParams.add( new Domain( "language", Collections.singletonList(
+	                                    "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression" ) ) );
+	            addOperation( CreateStoredQuery, createStoredQueryParams, getAndPost, post, get, operations );
+	
+	            // DropStoredQuery
+	            addOperation( DropStoredQuery, getAndPost, post, get, operations );
+            }
             
             if ( enableTransactions ) {
                 // Transaction
@@ -935,7 +940,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
-            constraints.add( new Domain( "ManageStoredQueries", "TRUE" ) );
+            constraints.add( new Domain( "ManageStoredQueries", String.valueOf(enableManageStoredQueries).toUpperCase() ) );
 
             // capacity constraints
             if ( master.getQueryMaxFeatures() != -1 ) {
