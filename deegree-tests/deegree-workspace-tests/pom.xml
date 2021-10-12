@@ -29,37 +29,36 @@
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-wps</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-wps</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-utah</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-utah</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-aixm</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-aixm</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-geosciml</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-geosciml</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-wcts</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-wcts</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.deegree</groupId>
-                  <artifactId>deegree-workspace-xplan40</artifactId>
-                  <version>${project.version}</version>
-                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-xplan40</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <excludes>
@@ -118,36 +117,6 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-protocol-wms</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-wps</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-utah</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-aixm</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-geosciml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-wcts</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-xplan40</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

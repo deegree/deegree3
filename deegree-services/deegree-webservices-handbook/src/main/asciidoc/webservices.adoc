@@ -881,7 +881,7 @@ Here is a snippet for quick copy & paste:
 [source,xml]
 ----
 <SupportedVersions>
-  <SupportedVersion>1.1.1</SupportedVersion>
+  <Version>1.1.1</Version>
 </SupportedVersions>
 <MetadataStoreId>mdstore</MetadataStoreId>
 <MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
@@ -1062,7 +1062,7 @@ deegree templating based format:
   <GetFeatureInfoFormat>
     <File>../customformat.gfi</File>
     <Format>text/html</Format>
-    <Property name="customname" value="customvalue" \>
+    <Property name="customname" value="customvalue" />
   </GetFeatureInfoFormat>
 </FeatureInfoFormats>
 ----
@@ -1075,7 +1075,7 @@ The configuration for the XSLT approach looks like this:
   <GetFeatureInfoFormat>
     <XSLTFile gmlVersion="GML_32">../customformat.xsl</XSLTFile>
     <Format>text/html</Format>
-    <Property name="customname" value="customvalue" \>
+    <Property name="customname" value="customvalue" />
   </GetFeatureInfoFormat>
 </FeatureInfoFormats>
 ----
@@ -1816,8 +1816,8 @@ like this:
 ==== Configuration overview
 
 The deegree WMTS config file format is defined by schema file
-http://schemas.deegree.org/services/wmts/3.2.0/wmts.xsd. The root
-element is _deegreeWMTS_ and the config attribute must be _3.2.0_.
+http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd. The root
+element is _deegreeWMTS_ and the config attribute must be _3.4.0_.
 
 The following table lists all available configuration options. When
 specifying them, their order must be respected.
@@ -1828,7 +1828,7 @@ specifying them, their order must be respected.
 |MetadataURLTemplate |0..1 |String |Template for generating URLs to
 layer metadata
 
-|ThemeId |0..n |String |Limits themes to use
+|ThemeId |0..n |String |Limit the themes to use
 |===
 
 Below the _ServiceConfiguration_ section you can specify custom
@@ -1837,10 +1837,12 @@ featureinfo format handlers:
 [source,xml]
 ----
 ...
+<ServiceConfiguration>
+...
 </ServiceConfiguration>
 <FeatureInfoFormats>
 ...
-</FeatureInfoFormats>]
+</FeatureInfoFormats>
 ----
 
 Have a look at section <<anchor-featureinfo-configuration>> (in the WMS
@@ -1886,9 +1888,9 @@ example looks like this:
 ==== Configuration overview
 
 The deegree CSW config file format is defined by schema file
-http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The
+http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd. The
 root element is _deegreeCSW_ and the config attribute must be
-_3.2.0_.
+_3.4.0_.
 
 The following table lists all available configuration options. When
 specifiying them, their order must be respected.
@@ -2148,9 +2150,9 @@ configuration works for all types of service alike.
 ----
 
 The metadata config file format is defined by schema file
-http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The
+http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd. The
 root element is _deegreeServicesMetadata_ and the config attribute
-must be _3.2.0_. The following table lists all available configuration
+must be _3.4.0_. The following table lists all available configuration
 options (complex ones contain nested options themselves). When
 specifiying them, their order must be respected.
 
