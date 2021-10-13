@@ -37,6 +37,7 @@
 package org.deegree.services.wms.controller;
 
 import static javax.imageio.ImageIO.write;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
 import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
@@ -345,7 +346,7 @@ public class WMSController extends AbstractOWS {
         WMSRequestType req;
         String requestName = map.get( "REQUEST" );
         try {
-            req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( requestName );
+            req = parseRequest( requestName );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN", requestName ),
                                                                         OWSException.OPERATION_NOT_SUPPORTED ),
@@ -373,7 +374,20 @@ public class WMSController extends AbstractOWS {
             LOG.trace( "Stack trace of OWSException being sent", e );
 
             controllers.get( version ).handleException( map, req, e, response, this );
+        } catch ( Exception e ) {
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            controllers.get( version ).handleException( map, req, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response, this );
         }
+    }
+
+    private WMSRequestType parseRequest( String requestName ) {
+        WMSRequestType requestType = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName(
+                        requestName );
+        if ( requestType == null ) {
+            throw new IllegalArgumentException( "Request type " + requestName + "is not known." );
+        }
+        return requestType;
     }
 
     private void handleRequest( WMSRequestType req, HttpResponseBuffer response, Map<String, String> map,
@@ -1152,10 +1166,10 @@ public class WMSController extends AbstractOWS {
 
     /**
      * <code>Controller</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
      */
     public interface Controller {
