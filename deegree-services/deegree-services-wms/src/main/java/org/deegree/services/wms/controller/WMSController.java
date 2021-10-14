@@ -217,7 +217,9 @@ public class WMSController extends AbstractOWS {
 
     private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
 
-    private SupportedEncodings supportedEncodings;    
+    private SupportedEncodings supportedEncodings;
+
+    private boolean isStrict;
 
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -326,6 +328,7 @@ public class WMSController extends AbstractOWS {
             metadataProvider = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
             
             supportedEncodings = new SupportedEncodingsParser().parseEncodings( conf );
+            isStrict = conf.isStrict() != null ? conf.isStrict() : false;
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getMessage(), e );
         }
@@ -336,10 +339,7 @@ public class WMSController extends AbstractOWS {
     public void doKVP( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
-        String v = map.get( "VERSION" );
-        if ( v == null ) {
-            v = map.get( "WMTVER" );
-        }
+        String v = getVersionValueFromRequest( map );
         Version version = v == null ? highestVersion : Version.parseVersion( v );
 
         WMSRequestType req;
@@ -385,6 +385,10 @@ public class WMSController extends AbstractOWS {
             case capabilities:
                 break;
             default:
+                if ( isStrict && getVersionValueFromRequest( map ) == null ) {
+                    throw new OWSException( get( "WMS.PARAM_MISSING", "VERSION" ),
+                                            OWSException.INVALID_PARAMETER_VALUE );
+                }
                 if ( controllers.get( version ) == null ) {
                     throw new OWSException( get( "WMS.VERSION_UNSUPPORTED", version ),
                                             OWSException.INVALID_PARAMETER_VALUE );
@@ -1148,6 +1152,14 @@ public class WMSController extends AbstractOWS {
         xmlWriter.writeAttribute( xsiNS, "schemaLocation",
                                   "http://schemas.xmlsoap.org/soap/envelope/ http://schemas.xmlsoap.org/soap/envelope/" );
         xmlWriter.writeStartElement( soapEnvNS, "Body" );
+    }
+
+    private String getVersionValueFromRequest( Map<String, String> map ) {
+        String v = map.get( "VERSION" );
+        if ( v == null ) {
+            v = map.get( "WMTVER" );
+        }
+        return v;
     }
 
     /**
