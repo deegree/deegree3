@@ -161,6 +161,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private ResourceMetadata<FeatureStore> metadata;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -737,5 +739,10 @@ public class ShapeFeatureStore implements FeatureStore {
             ft = new GenericFeatureType( ftName, Collections.<PropertyType> singletonList( geomProp ), false );
         }
         schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
+    }
+
+    @Override
+    public void setStrict( boolean strict ) {
+        this.strict = strict;
     }
 }

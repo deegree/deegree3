@@ -44,6 +44,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
@@ -184,6 +185,11 @@ public class MappedXPath {
         }
 
         if ( !matchFound && isSpatial ) {
+            if ( fs.isStrict() ) {
+                String msg = "Cannot evaluate spatial operator. Targeted property name '" + propName.getAsText()
+                             + "' is not mapped.";
+                throw new InvalidParameterValueException( msg );
+            }
             // determine path to nearest geometry mapping
             List<Mapping> additionalSteps = new ArrayList<Mapping>();
             if ( determineNearestGeometryMapping( mappedParticles, additionalSteps ) ) {

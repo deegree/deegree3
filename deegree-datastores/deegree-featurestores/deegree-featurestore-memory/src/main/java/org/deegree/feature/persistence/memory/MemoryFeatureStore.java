@@ -87,6 +87,8 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private MemoryFeatureStoreMetadata metadata;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link MemoryFeatureStore} instance for the given {@link AppSchema}.
      * 
@@ -290,5 +292,10 @@ public class MemoryFeatureStore implements FeatureStore {
     @Override
     public void init() {
         // nothing to do
+    }
+    
+    @Override
+    public void setStrict( boolean strict ) {
+        this.strict = strict;
     }
 }

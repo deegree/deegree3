@@ -98,6 +98,8 @@ public class RemoteWFSFeatureStore implements FeatureStore {
 
     private AppSchema appSchema;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link RemoteWFSFeatureStore} for the given capabilities URL.
      * 
@@ -334,5 +336,10 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     public void init() {
         // TODO Auto-generated method stub
 
+    }
+    
+    @Override
+    public void setStrict( boolean strict ) {
+        this.strict = strict;
     }
 }

@@ -138,6 +138,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private ConnectionProvider connProvider;
 
+    private boolean strict;
+
     /**
      * @param connId
      * @param crs
@@ -428,6 +430,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     @Override
     public void destroy() {
         // unused
+    }
+    
+    @Override
+    public void setStrict( boolean strict ) {
+        this.strict = strict;
     }
 
 }

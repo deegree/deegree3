@@ -204,6 +204,8 @@ public class SQLFeatureStore implements FeatureStore {
 
     private final ThreadLocal<SQLFeatureStoreTransaction> transaction = new ThreadLocal<SQLFeatureStoreTransaction>();
 
+    private boolean strict;
+
     /**
      * Creates a new {@link SQLFeatureStore} for the given configuration.
      *
@@ -562,6 +564,18 @@ public class SQLFeatureStore implements FeatureStore {
     public LockManager getLockManager()
                             throws FeatureStoreException {
         return lockManager;
+    }
+
+    @Override
+    public void setStrict( boolean strict ) {
+        this.strict = strict;
+    }
+
+    /**
+     * @return <code>true</code> if the service should behave strict, <code>false</code> otherwise
+     */
+    public boolean isStrict() {
+        return this.strict;
     }
 
     @Override
