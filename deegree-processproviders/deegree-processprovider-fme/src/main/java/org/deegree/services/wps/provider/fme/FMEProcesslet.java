@@ -12,8 +12,6 @@ import static org.deegree.commons.utils.net.HttpUtils.UTF8STRING;
 import static org.deegree.commons.utils.net.HttpUtils.post;
 import static org.deegree.commons.utils.net.HttpUtils.postFullResponse;
 import static org.deegree.commons.xml.XMLAdapter.writeElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.copy;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipStartDocument;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -22,8 +20,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -66,8 +62,6 @@ public class FMEProcesslet implements Processlet {
 
     private final Map<String, String> tokenMap;
 
-    private final FMEInvocationStrategy invocationStrategy;
-
     public FMEProcesslet(String baseUrl, String tokenUrl, Map<String, String> tokenMap, String repo, String workspace,
             FMEInvocationStrategy invocationStrategy) {
         this.fmeBaseUrl = baseUrl;
@@ -75,7 +69,6 @@ public class FMEProcesslet implements Processlet {
         this.tokenMap = tokenMap;
         this.fmeRepo = repo;
         this.fmeWorkspace = workspace;
-        this.invocationStrategy = invocationStrategy;
     }
 
     public void destroy() {
@@ -90,38 +83,47 @@ public class FMEProcesslet implements Processlet {
             throws ProcessletException {
         try {
             Map<String, String> kvpMap = buildInputMap(in);
-            String token = getSecurityToken();
-            kvpMap.put("token", token);
 
-            if (invocationStrategy instanceof FMEStreamingServiceInvocationStrategy) {
-                processViaStreamingService(out, kvpMap, (FMEStreamingServiceInvocationStrategy) invocationStrategy);
-            } else {
-                processViaJobSubmitter(out, kvpMap);
-            }
+            processViaDatastreaming( out, kvpMap, ( in != null ? in.getQueryMap() : null ) );
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error( "Exception", e );
             throw new ProcessletException(e.getMessage());
         }
     }
 
-    private void processViaJobSubmitter(ProcessletOutputs out, Map<String, String> kvpMap)
-            throws MalformedURLException, IOException, XMLStreamException {
-        String url = this.fmeBaseUrl + "/fmerest/repositories/" + fmeRepo + "/"
-                + encodeReportedFmeUrisHack(fmeWorkspace) + "/run.xml";
+    private void processViaDatastreaming( ProcessletOutputs out, Map<String, String> kvpMap,
+                                          Map<String, String> kvpQueryMap )
+                            throws MalformedURLException,
+                            IOException,
+                            XMLStreamException {
+        String url = this.fmeBaseUrl + "/fmeserver/streaming/fmedatastreaming/" + fmeRepo + "/"
+                     + encodeReportedFmeUrisHack( fmeWorkspace );
+        if ( kvpQueryMap != null && kvpQueryMap.size() > 0 ) {
+            url = url + "?" + kvpQueryMap.entrySet().stream() //
+                                         .map( e -> e.getKey() + "=" + e.getValue() ) //
+                                         .collect( Collectors.joining( "&" ) );
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put( "Authorization", "fmetoken token=" + getSecurityToken() );
+
         LOG.debug("Sending {}", url);
-        Pair<InputStream, HttpResponse> p = postFullResponse(STREAM, url, kvpMap, null, 0);
+        Pair<InputStream, HttpResponse> p = postFullResponse( STREAM, url, kvpMap, headers, 0 );
+
         InputStream is = p.first;
         ComplexOutput output = (ComplexOutput) out.getParameter("FMEResponse");
         Header contentType = p.second.getEntity().getContentType();
         LOG.debug("Content type: {}", contentType);
-        if (contentType.getValue() != null && contentType.getValue().contains("xml")) {
+        if ( contentType.getValue() != null
+             && ( contentType.getValue().contains( "xml" ) || contentType.getValue().contains( "html" ) ) ) {
             copyXmlResponse(is, output);
         } else {
             copyBinaryResponse(is, output);
         }
     }
 
-    private void copyXmlResponse(InputStream is, ComplexOutput output) throws XMLStreamException {
+    private void copyXmlResponse( InputStream is, ComplexOutput output )
+                            throws XMLStreamException {
         try {
             XMLStreamWriter writer = output.getXMLStreamWriter();
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
@@ -134,7 +136,8 @@ public class FMEProcesslet implements Processlet {
         }
     }
 
-    private void copyBinaryResponse(InputStream is, ComplexOutput output) throws IOException {
+    private void copyBinaryResponse( InputStream is, ComplexOutput output )
+                            throws IOException {
         try {
             OutputStream os = output.getBinaryOutputStream();
             copyLarge(is, os);
@@ -143,7 +146,8 @@ public class FMEProcesslet implements Processlet {
         }
     }
 
-    private String getSecurityToken() throws IOException {
+    private String getSecurityToken()
+                            throws IOException {
         LOG.debug("Sending {}", tokenUrl);
         return post(UTF8STRING, tokenUrl, tokenMap, null, 60000).trim();
     }
@@ -158,99 +162,6 @@ public class FMEProcesslet implements Processlet {
             }
         }
         return map;
-    }
-
-    private void processViaStreamingService(ProcessletOutputs out, Map<String, String> map,
-            FMEStreamingServiceInvocationStrategy invocationStrategy) {
-
-        map.put("opt_responseformat", "xml");
-        String url = this.fmeBaseUrl + "/fmedatastreaming/" + fmeRepo + "/" + encodeReportedFmeUrisHack(fmeWorkspace);
-        LOG.debug("Sending {}", url);
-        String format = invocationStrategy.getOutputFormat();
-        try {
-            ComplexOutput singleOutput = (ComplexOutput) out.getParameter("FMEResponse");
-            if (singleOutput != null) {
-                InputStream is = null;
-                try {
-                    is = HttpUtils.post(HttpUtils.STREAM, url, map, null, 0);
-                    String mimeType = singleOutput.getRequestedMimeType();
-                    if (mimeType != null && mimeType.contains("xml")) {
-                        XMLStreamWriter xmlWriter = null;
-                        XMLStreamReader xmlReader = null;
-                        try {
-                            xmlWriter = singleOutput.getXMLStreamWriter();
-                            xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(is);
-                            skipStartDocument(xmlReader);
-                            copy(xmlWriter, xmlReader);
-                        } finally {
-                            if (xmlWriter != null) {
-                                xmlWriter.close();
-                            }
-                            if (xmlReader != null) {
-                                xmlReader.close();
-                            }
-                        }
-                    } else {
-                        OutputStream os = null;
-                        try {
-                            IOUtils.copy(is, os = singleOutput.getBinaryOutputStream());
-                        } finally {
-                            closeQuietly(os);
-                        }
-                    }
-                } finally {
-                    closeQuietly(is);
-                }
-            } else if (format.equals("GML") || format.equals("GML2")) {
-                copyGmlResponse(out, map, url);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void copyGmlResponse(ProcessletOutputs out, Map<String, String> map, String url) throws IOException {
-        ComplexOutput gmlOutput = (ComplexOutput) out.getParameter("GML");
-        ComplexOutput schemaOutput = (ComplexOutput) out.getParameter("APPSCHEMA");
-        InputStream is = null;
-        OutputStream osGml = gmlOutput.getBinaryOutputStream();
-        OutputStream osXsd = schemaOutput.getBinaryOutputStream();
-        try {
-            Pair<InputStream, HttpResponse> p = HttpUtils.postFullResponse(HttpUtils.STREAM, url, map, null, 0);
-            is = p.first;
-            Header contentType = p.second.getEntity().getContentType();
-            LOG.debug("Content type: {}", contentType);
-            if (contentType != null && !contentType.getValue().toLowerCase().startsWith("application/zip")) {
-                IOUtils.copy(is, osGml);
-            } else {
-                ZipInputStream zin = new ZipInputStream(is);
-                ZipEntry entry = zin.getNextEntry();
-                if (entry == null) {
-                    IOUtils.copy(is, osGml);
-                } else {
-                    while (entry.isDirectory()) {
-                        zin.closeEntry();
-                        entry = zin.getNextEntry();
-                    }
-                    if (entry.getName().toLowerCase().endsWith(".gml")) {
-                        IOUtils.copy(zin, osGml);
-                    } else {
-                        IOUtils.copy(zin, osXsd);
-                    }
-                    zin.closeEntry();
-                    entry = zin.getNextEntry();
-                    if (entry.getName().toLowerCase().endsWith(".gml")) {
-                        IOUtils.copy(zin, osGml);
-                    } else {
-                        IOUtils.copy(zin, osXsd);
-                    }
-                }
-            }
-        } finally {
-            closeQuietly(is);
-            closeQuietly(osGml);
-            closeQuietly(osXsd);
-        }
     }
 
     private String encodeReportedFmeUrisHack(String uri) {
