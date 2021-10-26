@@ -935,7 +935,7 @@
       <dependency>
         <groupId>org.locationtech.jts</groupId>
         <artifactId>jts-core</artifactId>
-        <version>1.15.0</version>
+        <version>1.18.2</version>
       </dependency>
       <dependency>
         <groupId>jgridshift</groupId>
