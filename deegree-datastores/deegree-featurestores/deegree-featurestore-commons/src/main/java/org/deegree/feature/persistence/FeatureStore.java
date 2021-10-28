@@ -212,9 +212,4 @@ public interface FeatureStore extends Resource {
     LockManager getLockManager()
                             throws FeatureStoreException;
 
-    /**
-     * @param strict
-     *                 <code>true</code> if the service should behave strict, <code>false</code> otherwise
-     */
-    void setStrict( boolean strict );
 }

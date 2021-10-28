@@ -740,9 +740,4 @@ public class ShapeFeatureStore implements FeatureStore {
         }
         schema = new GenericAppSchema( new FeatureType[] { ft }, null, null, null, null, null );
     }
-
-    @Override
-    public void setStrict( boolean strict ) {
-        this.strict = strict;
-    }
 }

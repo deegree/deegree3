@@ -126,9 +126,6 @@ abstract class AbstractGmlRequestHandler {
     AbstractGmlRequestHandler( GmlFormat format ) {
         this.options = format.getGmlFormatOptions();
         this.format = format;
-        for ( FeatureStore fs : format.getMaster().getStoreManager().getStores() ) {
-            fs.setStrict( format.getMaster().isStrict() );
-        }
     }
 
     protected GMLObject retrieveObject( String id )

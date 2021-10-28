@@ -337,9 +337,4 @@ public class RemoteWFSFeatureStore implements FeatureStore {
         // TODO Auto-generated method stub
 
     }
-    
-    @Override
-    public void setStrict( boolean strict ) {
-        this.strict = strict;
-    }
 }

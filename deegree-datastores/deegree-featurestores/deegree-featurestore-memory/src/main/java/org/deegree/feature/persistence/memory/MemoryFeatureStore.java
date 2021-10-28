@@ -293,9 +293,4 @@ public class MemoryFeatureStore implements FeatureStore {
     public void init() {
         // nothing to do
     }
-    
-    @Override
-    public void setStrict( boolean strict ) {
-        this.strict = strict;
-    }
 }

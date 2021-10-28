@@ -431,10 +431,5 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     public void destroy() {
         // unused
     }
-    
-    @Override
-    public void setStrict( boolean strict ) {
-        this.strict = strict;
-    }
 
 }
