@@ -1761,7 +1761,7 @@ image::workspace-wmts.png[A WMTS resource is connected to any number of theme re
 
 TIP: In order to fully understand deegree WMTS configuration, you will have
 to learn configuration of other workspace aspects as well. Chapter
-<<anchor-configuration-tilestoreache>> describes the configuration of tile
+<<anchor-configuration-tilestore>> describes the configuration of tile
 data access. Chapter <<anchor-configuration-layers>> describes the
 configuration of layers (only tile layers are usable for the WMTS).
 Chapter <<anchor-configuration-themes>> describes how to create a theme
