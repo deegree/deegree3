@@ -383,6 +383,10 @@ public class WMSController extends AbstractOWS {
             switch ( req ) {
             case GetCapabilities:
             case capabilities:
+                if ( isStrict && map.get( "SERVICE" ) == null ) {
+                    throw new OWSException( get( "WMS.PARAM_MISSING", "SERVICE" ),
+                                            OWSException.INVALID_PARAMETER_VALUE );
+                }
                 break;
             default:
                 if ( isStrict && getVersionValueFromRequest( map ) == null ) {
