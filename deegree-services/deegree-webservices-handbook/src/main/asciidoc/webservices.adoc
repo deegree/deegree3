@@ -851,6 +851,8 @@ unlimited
 
 |MaxHeight |0..1 |Integer |Maximum height in a GetMap request, default:
 unlimited
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
 |===
 
 ==== Basic options
