@@ -858,13 +858,14 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
 
             // CreateStoredQuery
 
-            List<Domain> createStoredQueryParams = new ArrayList<Domain>();
-            createStoredQueryParams.add( new Domain( "language", Collections.singletonList(
-                                    "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression" ) ) );
-            addOperation( CreateStoredQuery, createStoredQueryParams, getAndPost, post, get, operations );
-
-            // DropStoredQuery
-            addOperation( DropStoredQuery, getAndPost, post, get, operations );
+            if ( master.getStoredQueryHandler().isManagedStoredQuerySupported() ) {
+                List<Domain> createStoredQueryParams = new ArrayList<Domain>();
+                createStoredQueryParams.add( new Domain( "language", Collections.singletonList(
+                                "urn:ogc:def:queryLanguage:OGC-WFS::WFSQueryExpression" ) ) );
+                addOperation( CreateStoredQuery, createStoredQueryParams, getAndPost, post, get, operations );
+                // DropStoredQuery
+                addOperation( DropStoredQuery, getAndPost, post, get, operations );
+            }
             
             if ( enableTransactions ) {
                 // Transaction
@@ -935,7 +936,11 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
-            constraints.add( new Domain( "ManageStoredQueries", "TRUE" ) );
+            if ( master.getStoredQueryHandler().isManagedStoredQuerySupported() ) {
+                constraints.add( new Domain( "ManageStoredQueries", "TRUE" ) );
+            } else {
+                constraints.add( new Domain( "ManageStoredQueries", "FALSE" ) );
+            }
 
             // capacity constraints
             if ( master.getQueryMaxFeatures() != -1 ) {
