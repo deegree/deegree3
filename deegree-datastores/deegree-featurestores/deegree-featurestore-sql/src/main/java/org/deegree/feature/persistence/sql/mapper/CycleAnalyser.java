@@ -28,12 +28,16 @@ public class CycleAnalyser {
 
     private final int allowedCycleDepth;
 
+    private final QName featureTypeName;
+
     /**
      * @param allowedCycleDepth
      *                         the allowed depth of cycles
+     * @param featureTypeName name of the feature type, never <code>null</code>
      */
-    CycleAnalyser( int allowedCycleDepth ) {
+    CycleAnalyser( int allowedCycleDepth, QName featureTypeName ) {
         this.allowedCycleDepth = allowedCycleDepth;
+        this.featureTypeName = featureTypeName;
     }
 
     /**
@@ -139,6 +143,20 @@ public class CycleAnalyser {
      */
     public List<XSElementDeclaration> getElementDeclarations() {
         return parentEls;
+    }
+
+    /**
+     * @return the name of the feature type, never <code>null</code>
+     */
+    public QName getFeatureTypeName() {
+        return featureTypeName;
+    }
+
+    /**
+     * @return the current path. May be empty but never <code>null</code>
+     */
+    public List<QName> getPath() {
+        return path;
     }
 
     private void log() {
