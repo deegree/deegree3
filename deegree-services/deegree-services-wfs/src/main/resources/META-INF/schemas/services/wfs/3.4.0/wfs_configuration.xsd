@@ -80,6 +80,7 @@
             </attribute>
           </complexType>
         </element>
+        <element name="Strict" minOccurs="0" type="boolean" default="false"/>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>

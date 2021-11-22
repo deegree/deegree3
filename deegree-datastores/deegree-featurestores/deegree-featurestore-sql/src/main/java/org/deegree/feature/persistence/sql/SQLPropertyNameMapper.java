@@ -57,20 +57,23 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
 
     private final FeatureTypeMapping ftMapping;
 
-    public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping ) {
+    private final boolean handleStrict;
+
+    public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping, boolean handleStrict ) {
         this.fs = fs;
         this.ftMapping = ftMapping;
+        this.handleStrict = handleStrict;
     }
 
     @Override
     public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
-        return new MappedXPath( fs, ftMapping, propName, aliasManager, false ).getPropertyNameMapping();
+        return new MappedXPath( fs, ftMapping, propName, aliasManager, false, handleStrict ).getPropertyNameMapping();
     }
 
     @Override
     public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
-        return new MappedXPath( fs, ftMapping, propName, aliasManager, true ).getPropertyNameMapping();
+        return new MappedXPath( fs, ftMapping, propName, aliasManager, true, handleStrict ).getPropertyNameMapping();
     }
 }
