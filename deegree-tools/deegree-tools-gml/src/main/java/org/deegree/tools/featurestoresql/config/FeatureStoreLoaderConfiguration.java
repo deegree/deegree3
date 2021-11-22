@@ -37,9 +37,12 @@ public class FeatureStoreLoaderConfiguration {
                                             @Value("#{jobParameters[mapping]}") String mapping,
                                             @Value("#{jobParameters[dialect]}") String dialect,
                                             @Value("#{jobParameters[cycledepth]}") String depth,
-                                            @Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref ) {
-        return new LoadParameterBuilder().setSchemaUrl( schemaUrl ).setFormat( format ).setSrid( srid ).setIdType( idtype ).setMappingType( mapping ).setDialect( dialect ).setDepth( depth ).setListOfPropertiesWithPrimitiveHref( listOfPropertiesWithPrimitiveHref ).build();
-
+                                            @Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref,
+                                            @Value("#{jobParameters[referenceData]}") String referenceData ) {
+        return new LoadParameterBuilder().setSchemaUrl( schemaUrl ).setFormat( format ).setSrid( srid ).setIdType(
+                        idtype ).setMappingType( mapping ).setDialect( dialect ).setDepth(
+                        depth ).setListOfPropertiesWithPrimitiveHref(
+                        listOfPropertiesWithPrimitiveHref ).setReferenceData( referenceData ).build();
     }
 
     @StepScope

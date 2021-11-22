@@ -1,5 +1,7 @@
 package org.deegree.tools.featurestoresql.config;
 
+import org.deegree.feature.persistence.sql.mapper.ReferenceData;
+
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -22,6 +24,8 @@ public class LoadParameter {
     private boolean relationalMapping;
 
     private List<QName> propertiesWithPrimitiveHref;
+
+    private ReferenceData referenceData;
 
     private int depth;
 
@@ -68,6 +72,14 @@ public class LoadParameter {
         this.propertiesWithPrimitiveHref = propertiesWithPrimitiveHref;
     }
 
+    public ReferenceData getReferenceData() {
+        return this.referenceData;
+    }
+
+    public void setReferenceData( ReferenceData referenceData ) {
+        this.referenceData = referenceData;
+    }
+
     public String getFormat() {
         return format;
     }
@@ -91,36 +103,5 @@ public class LoadParameter {
     public int getDepth() {
         return depth;
     }
-
-    /**
-    public static void parseParameter( String[] args ) {
-        for ( String arg : args ) {
-            if ( arg.startsWith( "--format" ) ) {
-                format = arg.split( "=" )[1];
-                System.out.println( "Using format=" + format );
-            } else if ( arg.startsWith( "--srid" ) ) {
-                srid = Integer.valueOf( arg.split( "=" )[1] );
-                System.out.println( "Using srid=" + srid );
-            } else if ( arg.startsWith( "--idtype" ) ) {
-                String idMappingArg = arg.split( "=" )[1];
-                useIntegerFids = idMappingArg.equals( "uuid" ) ? false : true;
-                System.out.println( "Using idtype=" + idMappingArg );
-            } else if ( arg.startsWith( "--mapping" ) ) {
-                String mapping = arg.split( "=" )[1];
-                relationalMapping = mapping.equalsIgnoreCase( "blob" ) ? false : true;
-                System.out.println( "Using mapping=" + mapping );
-            } else if ( arg.startsWith( "--dialect" ) ) {
-                dialect = arg.split( "=" )[1];
-                System.out.println( "Using dialect=" + dialect );
-            } else if ( arg.startsWith( "--listOfPropertiesWithPrimitiveHref" ) ) {
-                String pathToFile = arg.split( "=" )[1];
-                propertiesWithPrimitiveHref = propertyNameParser.parsePropertiesWithPrimitiveHref( pathToFile );
-                System.out.println( "Using listOfPropertiesWithPrimitiveHref=" + propertiesWithPrimitiveHref );
-            } else {
-                schemaUrl = arg;
-            }
-        }
-    }
-    **/
 
 }
