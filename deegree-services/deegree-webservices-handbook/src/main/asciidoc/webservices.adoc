@@ -250,6 +250,7 @@ This may lead to errors if the provided ids are already in use.
 * *UseExistingResolvingReferencesInternally*: Same as UseExisting, but
 it is allowed to insert features with references to already inserted
 features.
+* **UseExistingSkipResolvingReferences**: Same as UseExisting, but references to features are not checked. The user is fully responsible of the data integrity!
 * *GenerateNew* (default): New and unique ids are generated. References
 in the input GML (xlink:href) that point to a feature with an reassigned
 id are fixed as well, so reference consistency is maintained.
