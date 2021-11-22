@@ -92,6 +92,7 @@
     <module>deegree-tools-base</module>
     <module>deegree-tools-alkis</module>
     <module>deegree-tools-migration</module>
+    <module>deegree-tools-gml</module>
   </modules>
 
   <profiles>
