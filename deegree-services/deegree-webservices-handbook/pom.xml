@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.15-SNAPSHOT</version>
+    <version>3.4.20-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -20,7 +20,7 @@
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
+      <url>https://repo.deegree.org/content/groups/public</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -70,7 +70,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj-pdf</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.4</version>
           </dependency>
         </dependencies>
         <executions>

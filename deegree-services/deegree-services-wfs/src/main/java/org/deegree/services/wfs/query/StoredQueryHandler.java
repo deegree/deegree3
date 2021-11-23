@@ -110,6 +110,8 @@ public class StoredQueryHandler {
 
     private final File managedStoredQueryDirectory;
 
+    private boolean supportsManagedStoredQuery;
+
     /**
      * @param wfs
      *            never <code>null</code>
@@ -123,9 +125,17 @@ public class StoredQueryHandler {
                                File managedStoredQueryDirectory ) {
         this.wfs = wfs;
         this.managedStoredQueryDirectory = managedStoredQueryDirectory;
+        this.supportsManagedStoredQuery = supportsManagedStoredQuery( managedStoredQueryDirectory );
         loadFixStoredQueries();
         loadConfiguredStoredQueries( storedQueryTemplates );
         loadManagedStoredQueries( managedStoredQueryDirectory );
+    }
+
+    /**
+     * @return <code>true</code> if supported, <code>false</code> otherwise
+     */
+    public boolean isManagedStoredQuerySupported() {
+        return supportsManagedStoredQuery;
     }
 
     /**
@@ -398,7 +408,7 @@ public class StoredQueryHandler {
     }
 
     private void loadManagedStoredQueries( File managedStoredQueryDirectory ) {
-        if ( managedStoredQueryDirectory == null || !managedStoredQueryDirectory.exists() ) {
+        if ( !supportsManagedStoredQuery ) {
             LOG.warn( "Managed stored query directory does not exist. "
                       + "CreateStoredQuery/DropStoredQuery requests cannot be processed." );
             return;
@@ -414,9 +424,12 @@ public class StoredQueryHandler {
         }
     }
 
+    private boolean supportsManagedStoredQuery( File managedStoredQueryDirectory ) {
+        return managedStoredQueryDirectory != null && managedStoredQueryDirectory.exists();
+    }
+
     private void handleCreateStoredQuery( CreateStoredQuery request )
-                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MalformedURLException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         List<StoredQueryDefinition> queryDefinitionsToAdd = request.getQueryDefinitions();
         for ( StoredQueryDefinition storedQueryDefinitionToAdd : queryDefinitionsToAdd ) {
             addManagedStoredQueryDefinition( storedQueryDefinitionToAdd );
@@ -445,8 +458,7 @@ public class StoredQueryHandler {
     }
 
     private void addManagedStoredQueryDefinition( StoredQueryDefinition storedQueryDefinitionToAdd )
-                            throws FileNotFoundException, XMLStreamException, FactoryConfigurationError, IOException,
-                            MalformedURLException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         File file = new File( managedStoredQueryDirectory, UUID.randomUUID().toString() + ".xml" );
         FileOutputStream fileOutputStream = new FileOutputStream( file );
         XMLStreamWriter writer = new IndentingXMLStreamWriter( XMLOutputFactory.newInstance().createXMLStreamWriter( fileOutputStream ) );

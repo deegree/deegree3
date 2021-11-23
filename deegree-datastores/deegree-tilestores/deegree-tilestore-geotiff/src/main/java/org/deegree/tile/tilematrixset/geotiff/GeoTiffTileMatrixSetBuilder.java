@@ -46,8 +46,10 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.tile.TileMatrix;
@@ -86,7 +88,13 @@ public class GeoTiffTileMatrixSetBuilder implements ResourceBuilder<TileMatrixSe
         try {
             ICRS crs = null;
             if ( cfg.getStorageCRS() != null ) {
-                crs = CRSManager.lookup( cfg.getStorageCRS() );
+                try {
+                    CRSRef ref = CRSManager.getCRSRef( cfg.getStorageCRS() );
+                    ref.getReferencedObject();
+                    crs = ref;
+                } catch ( ReferenceResolvingException e ) {
+                    throw new ResourceInitException( "Invalid CRS: " + cfg.getStorageCRS() );
+                }
             }
 
             ImageIO.scanForPlugins();

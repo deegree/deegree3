@@ -67,6 +67,8 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  */
 public class Query {
 
+    private boolean strict;
+
     /**
      * Names for hints and additional parameters that a {@link FeatureStore} implementation may take into account to
      * increase efficient query processing.
@@ -188,6 +190,14 @@ public class Query {
             hints.put( HINT_RESOLUTION, resolution );
         }
         this.projections = emptyList();
+    }
+
+    public void setHandleStrict( boolean strict ) {
+        this.strict = strict;
+    }
+
+    public boolean isHandleStrict() {
+        return this.strict;
     }
 
     public Object getHint( QueryHint code ) {
