@@ -36,6 +36,57 @@
 
 package org.deegree.services.wms.controller;
 
+import static javax.imageio.ImageIO.write;
+import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
+import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
+import static org.deegree.commons.utils.ArrayUtils.join;
+import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
+import static org.deegree.commons.utils.CollectionUtils.map;
+import static org.deegree.commons.utils.CollectionUtils.reduce;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
+import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
+import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
+import static org.deegree.services.i18n.Messages.get;
+import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.Name;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.dom.DOMSource;
+
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAP11Version;
@@ -121,55 +172,6 @@ import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMSource;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
-
-import static javax.imageio.ImageIO.write;
-import static org.deegree.commons.ows.exception.OWSException.OPERATION_NOT_SUPPORTED;
-import static org.deegree.commons.utils.ArrayUtils.join;
-import static org.deegree.commons.utils.CollectionUtils.getStringJoiner;
-import static org.deegree.commons.utils.CollectionUtils.map;
-import static org.deegree.commons.utils.CollectionUtils.reduce;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_111;
-import static org.deegree.protocol.wms.WMSConstants.VERSION_130;
-import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
-import static org.deegree.services.i18n.Messages.get;
-import static org.deegree.services.metadata.MetadataUtils.convertFromJAXB;
-import static org.slf4j.LoggerFactory.getLogger;
-
 /**
  * <code>WMSController</code> handles the protocol and map service globally.
  * 
@@ -216,7 +218,9 @@ public class WMSController extends AbstractOWS {
 
     private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
 
-    private SupportedEncodings supportedEncodings;    
+    private SupportedEncodings supportedEncodings;
+
+    private boolean isStrict;
 
     public WMSController( ResourceMetadata<OWS> metadata, Workspace workspace, DeegreeWMS jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -326,6 +330,7 @@ public class WMSController extends AbstractOWS {
             metadataProvider = workspace.getResource( OWSMetadataProviderProvider.class, configId + "_metadata" );
             
             supportedEncodings = new SupportedEncodingsParser().parseEncodings( conf );
+            isStrict = conf.isStrict() != null ? conf.isStrict() : false;
         } catch ( Exception e ) {
             throw new ResourceInitException( e.getMessage(), e );
         }
@@ -336,16 +341,13 @@ public class WMSController extends AbstractOWS {
     public void doKVP( Map<String, String> map, HttpServletRequest request, HttpResponseBuffer response,
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
-        String v = map.get( "VERSION" );
-        if ( v == null ) {
-            v = map.get( "WMTVER" );
-        }
+        String v = getVersionValueFromRequest( map );
         Version version = v == null ? highestVersion : Version.parseVersion( v );
 
         WMSRequestType req;
         String requestName = map.get( "REQUEST" );
         try {
-            req = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName( requestName );
+            req = parseRequest( requestName );
         } catch ( IllegalArgumentException e ) {
             controllers.get( version ).sendException( new OWSException( get( "WMS.OPERATION_NOT_KNOWN", requestName ),
                                                                         OWSException.OPERATION_NOT_SUPPORTED ),
@@ -373,7 +375,20 @@ public class WMSController extends AbstractOWS {
             LOG.trace( "Stack trace of OWSException being sent", e );
 
             controllers.get( version ).handleException( map, req, e, response, this );
+        } catch ( Exception e ) {
+            LOG.debug( "OWS-Exception: {}", e.getMessage() );
+            LOG.trace( e.getMessage(), e );
+            controllers.get( version ).handleException( map, req, new OWSException( e.getMessage(), NO_APPLICABLE_CODE ), response, this );
         }
+    }
+
+    private WMSRequestType parseRequest( String requestName ) {
+        WMSRequestType requestType = (WMSRequestType) ( (ImplementationMetadata<?>) ( (OWSProvider) getMetadata().getProvider() ).getImplementationMetadata() ).getRequestTypeByName(
+                        requestName );
+        if ( requestType == null ) {
+            throw new IllegalArgumentException( "Request type " + requestName + "is not known." );
+        }
+        return requestType;
     }
 
     private void handleRequest( WMSRequestType req, HttpResponseBuffer response, Map<String, String> map,
@@ -383,8 +398,16 @@ public class WMSController extends AbstractOWS {
             switch ( req ) {
             case GetCapabilities:
             case capabilities:
+                if ( isStrict && map.get( "SERVICE" ) == null ) {
+                    throw new OWSException( get( "WMS.PARAM_MISSING", "SERVICE" ),
+                                            OWSException.INVALID_PARAMETER_VALUE );
+                }
                 break;
             default:
+                if ( isStrict && getVersionValueFromRequest( map ) == null ) {
+                    throw new OWSException( get( "WMS.PARAM_MISSING", "VERSION" ),
+                                            OWSException.INVALID_PARAMETER_VALUE );
+                }
                 if ( controllers.get( version ) == null ) {
                     throw new OWSException( get( "WMS.VERSION_UNSUPPORTED", version ),
                                             OWSException.INVALID_PARAMETER_VALUE );
@@ -1150,12 +1173,20 @@ public class WMSController extends AbstractOWS {
         xmlWriter.writeStartElement( soapEnvNS, "Body" );
     }
 
+    private String getVersionValueFromRequest( Map<String, String> map ) {
+        String v = map.get( "VERSION" );
+        if ( v == null ) {
+            v = map.get( "WMTVER" );
+        }
+        return v;
+    }
+
     /**
      * <code>Controller</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
      */
     public interface Controller {

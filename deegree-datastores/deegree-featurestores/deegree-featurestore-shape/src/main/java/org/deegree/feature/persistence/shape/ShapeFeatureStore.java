@@ -161,6 +161,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private ResourceMetadata<FeatureStore> metadata;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 

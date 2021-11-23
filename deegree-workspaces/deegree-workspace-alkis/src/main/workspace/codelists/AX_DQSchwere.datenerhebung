@@ -1,7 +1,0 @@
-1000	Schwerewert direkt gemessen oder mittels Freiluftreduktion über geringe Entfernung abgeleitet (Höhenunterschied bis 1 m, Horizontalabstand bis 5 m)
-2000	Schwerewert mittels Freiluftreduktion über größere Entfernung abgeleitet
-3000	Schwerewert mittels Interpolation unter Verwendung einfacher Bougueranomalien ermittelt
-3100	Schwerewert im System DHSN 96 durch Abschlag ( -19 10-8 m s-2 ) aus Schwerewert im System DHSN 82 ermittelt (alte Bundesländer)
-3200	Schwerewert DHSN 96 durch Transformation aus System 71 ermittelt (neue Bundesländer)
-4000	Schwerewert durch andere Methode ermittelt
-9998	Methode der 'Datenerhebung Schwere' unbekannt

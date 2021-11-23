@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<wfs:DescribeFeatureType version="1.1.0"
-	service="WFS" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
-	xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
-	outputFormat="text/xml; subtype=gml/3.2.1">
-	<wfs:TypeName>ad:Address</wfs:TypeName>
-</wfs:DescribeFeatureType>
