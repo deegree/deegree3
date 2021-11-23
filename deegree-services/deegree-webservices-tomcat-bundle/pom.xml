@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.18-SNAPSHOT</version>
+    <version>3.4.20-SNAPSHOT</version>
   </parent>
 
   <repositories>

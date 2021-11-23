@@ -372,10 +372,12 @@ public class WorkspaceBean implements Serializable {
     }
 
     private void addWorkspaceLocation( String wsArtifactName, List<String> list ) {
-        String repo = getVersion().endsWith( "SNAPSHOT" ) ? "snapshots" : "releases";
-        String version = getVersion().endsWith( "SNAPSHOT" ) ? "LATEST" : getVersion();
-        String url = "https://repo.deegree.org/service/local/artifact/maven/redirect?r=" + repo + "&g=org.deegree&a="
-                     + wsArtifactName + "&v=" + version + "&e=deegree-workspace";
+        String url = "https://repo.deegree.org/service/rest/v1/search/assets/download?"
+                + "repository=releases"
+                + "&maven.groupId=org.deegree"
+                + "&maven.artifactId=" + wsArtifactName
+                + "&sort=version"
+                + "&maven.extension=zip";
         workspaceLocations.put( wsArtifactName, url );
         list.add( wsArtifactName );
     }
