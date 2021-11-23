@@ -171,6 +171,7 @@ public class QueryAnalyzer {
         for ( int i = 0; i < adHocQueries.size(); i++ ) {
             AdHocQuery wfsQuery = adHocQueries.get( i ).first;
             Query query = validateQuery( wfsQuery );
+            query.setHandleStrict( controller.isStrict() );
             queries[i] = query;
 
             // yes, use the original WFS query (not necessarily adHoc)

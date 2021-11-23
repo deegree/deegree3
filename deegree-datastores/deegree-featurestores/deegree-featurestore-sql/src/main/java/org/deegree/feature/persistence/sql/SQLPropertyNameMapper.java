@@ -68,14 +68,10 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
 
     private final Collection<FeatureTypeMapping> ftMappings;
 
-    /**
-     * @param fs
-     *            the associated feature {@link SQLFeatureStore}, never <code>null</code>
-     * @param ftMapping
-     *            the {@link FeatureTypeMapping}, never <code>null</code>
-     */
-    public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping ) {
-        this( fs, ftMapping, null );
+    private final boolean handleStrict;
+
+    public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping, boolean handleStrict ) {
+        this( fs, ftMapping, null, handleStrict );
     }
 
     /**
@@ -84,13 +80,14 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
      * @param ftMappings
      *            a list of the {@link FeatureTypeMapping}s, never <code>null</code> or empty
      */
-    public SQLPropertyNameMapper( SQLFeatureStore fs, Collection<FeatureTypeMapping> ftMappings ) {
-        this( fs, null, ftMappings );
+    public SQLPropertyNameMapper( SQLFeatureStore fs, Collection<FeatureTypeMapping> ftMappings, boolean handleStrict ) {
+        this( fs, null, ftMappings, handleStrict );
     }
 
     private SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping,
-                                   Collection<FeatureTypeMapping> ftMappings ) {
+                                   Collection<FeatureTypeMapping> ftMappings, boolean handleStrict ) {
         this.fs = fs;
+        this.handleStrict = handleStrict;
         if ( ftMapping != null && ( ftMappings == null || ftMappings.isEmpty() ) ) {
             this.ftMapping = ftMapping;
             this.ftMappings = null;
@@ -109,19 +106,20 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
     public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
         if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
-            return new MappedXPath( fs, ftMapping, propName, aliasManager, false ).getPropertyNameMapping();
+            return new MappedXPath( fs, ftMapping, propName, aliasManager, false, handleStrict ).getPropertyNameMapping();
         FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
-        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, false ).getPropertyNameMapping();
+        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, false, handleStrict ).getPropertyNameMapping();
 
     }
 
     @Override
     public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
+
         if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
-            return new MappedXPath( fs, ftMapping, propName, aliasManager, true ).getPropertyNameMapping();
+            return new MappedXPath( fs, ftMapping, propName, aliasManager, true, handleStrict ).getPropertyNameMapping();
         FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
-        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, true ).getPropertyNameMapping();
+        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, true, handleStrict ).getPropertyNameMapping();
     }
 
     private FeatureTypeMapping findCorrespondingMapping( ValueReference propName )

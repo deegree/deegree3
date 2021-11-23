@@ -70,12 +70,11 @@ Our issue tracking system is:
 - TMC `tmc AT SPAMFREE deegree DOT org` (Who is the [TechnicalManagementCommittee](#technical-management-committee) and what do they do?)
 
 ### IRC Channel
-Channel #deegree on freenode.net (irc://freenode.net). Choose an IRC client for your platform or use the webclient for connecting:
+Channel #deegree on libera.chat (irc://irc.libera.chat/deegree). Choose an IRC client for your platform or use the webclient for connecting:
 
-Open the freenode web client or enter `/network freenode` in your chat client:
+Open the web client at https://web.libera.chat/#deegree
 - Choose a nickname
 - Enter channel #deegree or type `/join #deegree` in your chat client
-- Solve captcha
 - Connect
 
 ### Social Media

@@ -67,21 +67,21 @@ public class SQLPropertyNameMapperTest {
     public void testConstructorFtMapping_Null()
                             throws Exception {
         FeatureTypeMapping ftMapping = null;
-        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorFtMappingList_Null()
                             throws Exception {
         List<FeatureTypeMapping> ftMapping = null;
-        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorFtMappingList_Empty()
                             throws Exception {
         List<FeatureTypeMapping> ftMapping = new ArrayList<FeatureTypeMapping>();
-        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
     }
 
     @Test
@@ -89,7 +89,7 @@ public class SQLPropertyNameMapperTest {
                             throws Exception {
         ValueReference propName = new ValueReference( "app:ftType2/app:geometry", nsContext() );
         List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
-        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
         PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
 
         assertThat( spatialMapping, notNullValue() );
@@ -101,7 +101,7 @@ public class SQLPropertyNameMapperTest {
         ValueReference propName = new ValueReference( "app:ftType2/app:geometry",
                                                       CommonNamespaces.getNamespaceContext() );
         List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
-        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
         PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
 
         assertThat( spatialMapping, notNullValue() );
@@ -112,7 +112,7 @@ public class SQLPropertyNameMapperTest {
                             throws Exception {
         ValueReference propName = new ValueReference( "ftType2/geometry", CommonNamespaces.getNamespaceContext() );
         List<FeatureTypeMapping> ftMapping = createFeatureTypeMappings( propName );
-        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping );
+        SQLPropertyNameMapper mapper = new SQLPropertyNameMapper( mockFeatureStore(), ftMapping, false );
         PropertyNameMapping spatialMapping = mapper.getSpatialMapping( propName, mockAliasManager() );
 
         assertThat( spatialMapping, notNullValue() );

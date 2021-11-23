@@ -615,7 +615,13 @@ public class GetMap extends RequestBase {
             throw new OWSException( "The BBOX parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
 
-        double[] vals = splitAsDoubles( box, "," );
+        double[] vals;
+        try {
+            vals = splitAsDoubles( box, "," );
+        } catch ( NumberFormatException e ) {
+            throw new OWSException( "The value of the BBOX parameter is invalid: " + box,
+                                    OWSException.INVALID_PARAMETER_VALUE );
+        }
         if ( vals.length != 4 ) {
             throw new OWSException( "The value of the BBOX parameter had too many values: " + box,
                                     OWSException.INVALID_PARAMETER_VALUE );
