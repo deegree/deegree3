@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.17-SNAPSHOT</version>
+    <version>3.4.20-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -26,50 +26,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-workspace</id>
-            <goals>
-              <goal>attach-workspace</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>generate-portnumber</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>generate-portnumber</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>start-tomcat</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run-war</goal>
-            </goals>
-            <configuration>
-              <port>${portnumber}</port>
-              <fork>true</fork>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-tomcat</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -80,7 +36,7 @@
             <include>**/*IntegrationTest.java</include>
             <include>**/*PerformanceTest.java</include>
           </includes>
-          <argLine>-Xmx1324m -Xss2048k -Dportnumber=${portnumber}</argLine>
+          <argLine>-Xmx1324m -Xss2048k -Dportnumber=${jetty.http.port}</argLine>
         </configuration>
         <executions>
           <execution>
@@ -94,6 +50,15 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <webApp>
+            <contextPath>/deegree-wms-tiling-tests</contextPath>
+          </webApp>
+        </configuration>
       </plugin>
     </plugins>
   </build>

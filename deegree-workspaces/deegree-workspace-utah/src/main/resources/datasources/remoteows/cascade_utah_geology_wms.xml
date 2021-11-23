@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteWMS configVersion="3.4.0" xmlns="http://www.deegree.org/remoteows/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/remoteows/wms http://schemas.deegree.org/remoteows/wms/3.4.0/remotewms.xsd">
+  <CapabilitiesDocumentLocation location="https://mrdata.usgs.gov/services/sgmc2?service=WMS&amp;version=1.3.0&amp;request=GetCapabilities"/>
+</RemoteWMS>

@@ -75,11 +75,10 @@ import org.junit.Test;
  */
 public class WmtsIT {
 
-    private static final String ENDPOINT_BASE_URL = "http://localhost:" + System.getProperty( "portnumber" )
+    private static final String ENDPOINT_BASE_URL = "http://localhost:" + System.getProperty( "portnumber", "8080" )
                                                     + "/deegree-wmts-tests/services?";
 
-    private static final String ENDPOINT_URL = "http://localhost:" + System.getProperty( "portnumber" )
-                                               + "/deegree-wmts-tests/services?"
+    private static final String ENDPOINT_URL = ENDPOINT_BASE_URL
                                                + "service=WMTS&request=GetCapabilities&version=1.0.0";
 
     @Test

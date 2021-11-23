@@ -59,7 +59,8 @@
    </ctl:suite>
 
    <ctl:test name="wcs1-0-0:main">
-      <!--ctl:param name="VAR_WCS_CAPABILITIES_URL"/>
+      <ctl:param name="VAR_WCS_CAPABILITIES_URL"/>
+      <!--
       <ctl:param name="VAR_WCS_FORMAT_1_HEADER"/>
       <ctl:param name="VAR_HIGH_UPDATESEQUENCE"/>
       <ctl:param name="VAR_LOW_UPDATESEQUENCE"/>
@@ -68,11 +69,12 @@
       <ctl:param name="xml"/>
       <ctl:param name="haveparameter"/>
       <ctl:param name="schemas"/>
-      <ctl:param name="VAR_MULTIFILE_FORMATS"/-->
+      <ctl:param name="VAR_MULTIFILE_FORMATS"/>
+      -->
       <ctl:assertion>The WCS 1.0.0 implementation being tested behaves properly</ctl:assertion>
       <ctl:code>
       <!-- wcs test url -->
-      <xsl:variable name="VAR_WCS_CAPABILITIES_URL">${serviceUrl}/services/wcs?request=GetCapabilities&amp;service=WCS</xsl:variable>
+      <xsl:variable name="VAR_WCS_CAPABILITIES_URL" select="$VAR_WCS_CAPABILITIES_URL"/>
       <!-- MIME header -->
       <xsl:variable name="VAR_WCS_FORMAT_1_HEADER">image/tiff</xsl:variable>
       <!-- A value that is lexically higher than the current updateSequence value-->

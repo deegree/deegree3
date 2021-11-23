@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.4.17-SNAPSHOT</version>
+    <version>3.4.20-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -31,16 +31,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>attach-workspace</goal>
-            </goals>
-          </execution>
-        </executions>
+        <artifactId>maven-assembly-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

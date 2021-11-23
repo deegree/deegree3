@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools</artifactId>
-    <version>3.4.17-SNAPSHOT</version>
+    <version>3.4.20-SNAPSHOT</version>
   </parent>
 
   <repositories>
