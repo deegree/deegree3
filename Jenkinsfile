@@ -4,7 +4,7 @@ pipeline {
     }
 
     tools {
-        maven 'maven-3.6'
+        maven 'maven-3.8'
         jdk 'adoptopenjdk-jdk11'
     }
     environment {
