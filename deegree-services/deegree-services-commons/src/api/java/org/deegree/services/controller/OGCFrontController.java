@@ -316,7 +316,7 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-        request = createHttpRequest( request, response );
+        request = createHttpRequest( request );
         HttpResponseBuffer responseBuffer = new HttpResponseBuffer( response, request );
 
         try {
@@ -429,7 +429,7 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-        request = createHttpRequest( request, response );
+        request = createHttpRequest( request );
         HttpResponseBuffer responseBuffer = new HttpResponseBuffer( response, request );
 
         try {
@@ -526,17 +526,15 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private HttpServletRequest createHttpRequest( HttpServletRequest request, HttpServletResponse response )
-                    throws IOException {
+    private HttpServletRequest createHttpRequest( HttpServletRequest request ) {
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         if ( loader.getRequestLogger() != null ) {
-            return createLoggingResponseWrapper( request, response );
+            return createLoggingResponseWrapper( request );
         }
         return request;
     }
 
-    private HttpServletRequest createLoggingResponseWrapper( HttpServletRequest request, HttpServletResponse response )
-                    throws IOException {
+    private HttpServletRequest createLoggingResponseWrapper( HttpServletRequest request ) {
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
 
         Boolean onlySuccessfulConfig = mainConfig.getRequestLogging().isOnlySuccessful();
