@@ -44,6 +44,7 @@
         <artifactId>appassembler-maven-plugin</artifactId>
         <executions>
           <execution>
+            <!-- skip plugin from parent -->
             <phase>none</phase>
           </execution>
         </executions>
@@ -52,60 +53,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <!-- skip plugin from parent -->
             <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.asciidoctor</groupId>
-        <artifactId>asciidoctor-maven-plugin</artifactId>
-        <version>2.2.1</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctorj-pdf</artifactId>
-            <version>1.6.0</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>output-pdf</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>process-asciidoc</goal>
-            </goals>
-            <configuration>
-              <backend>pdf</backend>
-              <attributes>
-                <revdate>${revdate}</revdate>
-                <revnumber>${revnumber}</revnumber>
-                <tool-version>${project.version}</tool-version>
-              </attributes>
-              <sourceDirectory>${project.basedir}/src/main/asciidoc</sourceDirectory>
-              <sourceDocumentName>README.adoc</sourceDocumentName>
-              <outputDirectory>${project.build.directory}/pdf</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>output-html</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>process-asciidoc</goal>
-            </goals>
-            <configuration>
-              <doctype>book</doctype>
-              <backend>html</backend>
-              <attributes>
-                <toc />
-                <linkcss>false</linkcss>
-                <revdate>${revdate}</revdate>
-                <revnumber>${revnumber}</revnumber>
-                <tool-version>${project.version}</tool-version>
-              </attributes>
-              <sourceDirectory>${project.basedir}/src/main/asciidoc</sourceDirectory>
-              <sourceDocumentName>README.adoc</sourceDocumentName>
-              <outputDirectory>${project.build.directory}/html</outputDirectory>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -125,26 +74,6 @@
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>false</overWriteSnapshots>
               <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>documentation-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <descriptors>
-                <descriptor>src/assembly/assembly-html.xml</descriptor>
-                <descriptor>src/assembly/assembly-pdf.xml</descriptor>
-              </descriptors>
             </configuration>
           </execution>
         </executions>
@@ -253,9 +182,15 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.2.3</version>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>2.3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.3.5</version>
+      <scope>runtime</scope>
     </dependency>
     <!--  test -->
     <dependency>
