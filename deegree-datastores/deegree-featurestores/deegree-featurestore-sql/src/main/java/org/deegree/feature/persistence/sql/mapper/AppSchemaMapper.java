@@ -88,11 +88,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
@@ -236,7 +238,6 @@ public class AppSchemaMapper {
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getGMLSchema();
 
-        FeatureTypeMapping[] ftMappings = null;
 
         nsToPrefix = new HashMap<String, String>();
         Iterator<String> nsIter = CommonNamespaces.getNamespaceContext().getNamespaceURIs();
@@ -247,6 +248,7 @@ public class AppSchemaMapper {
         nsToPrefix.putAll( xsModel.getNamespacePrefixes() );
 
         mcManager = new MappingContextManager( nsToPrefix, maxLength, usePrefixedSQLIdentifiers );
+        FeatureTypeMapping[] ftMappings = null;
         if ( createRelationalMapping ) {
             ftMappings = generateFtMappings( fts );
         }
@@ -283,11 +285,11 @@ public class AppSchemaMapper {
     }
 
     private FeatureTypeMapping[] generateFtMappings( FeatureType[] fts ) {
-        FeatureTypeMapping[] ftMappings = new FeatureTypeMapping[fts.length];
-        for ( int i = 0; i < fts.length; i++ ) {
-            ftMappings[i] = generateFtMapping( fts[i] );
-        }
-        return ftMappings;
+        return Arrays.stream( fts ).filter(
+                        ft -> referenceData != null ?
+                              referenceData.shouldFeatureTypeMapped( ft.getName() ) :
+                              true ).map(
+                        ft -> generateFtMapping( ft ) ).toArray( FeatureTypeMapping[]::new );
     }
 
     private FeatureTypeMapping generateFtMapping( FeatureType ft ) {

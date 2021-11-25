@@ -17,4 +17,11 @@ public interface ReferenceData {
      */
     boolean hasZeroOrOneProperty( QName featureTypeName, List<QName> xpath );
 
+    /**
+     * @param featureTypeName
+     *                 the name of the feature type, never <code>null</code>
+     * @return <code>true</code> if the feature type with this name should be mapped, <code>false</code> otherwise
+     */
+    boolean shouldFeatureTypeMapped( QName featureTypeName );
+
 }
