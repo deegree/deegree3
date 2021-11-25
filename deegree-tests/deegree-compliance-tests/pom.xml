@@ -30,19 +30,6 @@
   </repositories>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources-static</directory>
-        <filtering>false</filtering>
-      </testResource>
-    </testResources>
-    <resources>
-      <resource>
-        <directory>src/main/webapp/WEB-INF/workspace/modules/</directory>
-        <filtering>false</filtering>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
