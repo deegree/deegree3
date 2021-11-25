@@ -1,18 +1,14 @@
 package org.deegree.tools.featurestoresql.config;
 
 import org.deegree.cs.exceptions.UnknownCRSException;
-import org.deegree.feature.persistence.sql.config.AbstractMappedSchemaBuilder;
 import org.deegree.feature.persistence.sql.mapper.GmlReferenceData;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class LoadParameterBuilder {
 
@@ -112,10 +108,9 @@ public class LoadParameterBuilder {
 
     public LoadParameterBuilder setReferenceData( String referenceData ) {
         if ( referenceData != null && !referenceData.isEmpty() ) {
-            GmlReferenceData gmlReferenceData = null;
             try {
-                URL referenceDataUrl = new URL( referenceData );
-                gmlReferenceData = new GmlReferenceData( referenceDataUrl );
+                URL referenceDataUrl = Paths.get( referenceData ).toUri().toURL();
+                GmlReferenceData gmlReferenceData = new GmlReferenceData( referenceDataUrl );
                 loadParameter.setReferenceData( gmlReferenceData );
             } catch ( IOException e ) {
                 throw new IllegalArgumentException( "Invalid value of parameter referenceData: " + referenceData
