@@ -494,6 +494,7 @@ public class AppSchemaMapperTest {
 
         QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
         ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
         QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
         QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
@@ -506,7 +507,7 @@ public class AppSchemaMapperTest {
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
         Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
-        assertThat( ftMappings.size(), is( 2 ) );
+        assertThat( ftMappings.size(), is( 1 ) );
 
         FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
         List<Mapping> mappings = featureA.getMappings();
@@ -524,6 +525,7 @@ public class AppSchemaMapperTest {
 
         QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
         ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
         QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
         QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
@@ -546,7 +548,7 @@ public class AppSchemaMapperTest {
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
         Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
-        assertThat( ftMappings.size(), is( 2 ) );
+        assertThat( ftMappings.size(), is( 1 ) );
 
         FeatureTypeMapping feature = mappedSchema.getFtMapping( FEATURE_A );
         List<Mapping> mappings = feature.getMappings();
@@ -570,6 +572,7 @@ public class AppSchemaMapperTest {
 
         QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
         ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
         QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
         QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
@@ -592,7 +595,7 @@ public class AppSchemaMapperTest {
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
         Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
-        assertThat( ftMappings.size(), is( 2 ) );
+        assertThat( ftMappings.size(), is( 1 ) );
 
         FeatureTypeMapping feature = mappedSchema.getFtMapping( FEATURE_A );
         List<Mapping> mappings = feature.getMappings();
@@ -616,6 +619,7 @@ public class AppSchemaMapperTest {
 
         QName featureTypeNameB = new QName( "http://test.de/schema", "FeatureB", "te" );
         ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameB ) ).thenReturn( true );
         QName propB1 = new QName( "http://test.de/schema", "prop_B1", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propB1 ) ) ).thenReturn( false );
         QName propB3 = new QName( "http://test.de/schema", "prop_B3", "te" );
@@ -625,6 +629,7 @@ public class AppSchemaMapperTest {
 
         QName featureTypeNameA = new QName( "http://test.de/schema", "FeatureA", "te" );
         QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameA ) ).thenReturn( true );
         when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA1 ) ) ).thenReturn( false );
         QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA3 ) ) ).thenReturn( true );
@@ -662,6 +667,7 @@ public class AppSchemaMapperTest {
 
         QName featureTypeNameB = new QName( "http://test.de/schema", "FeatureB", "te" );
         ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameB ) ).thenReturn( true );
         QName propB1 = new QName( "http://test.de/schema", "prop_B1", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propB1 ) ) ).thenReturn( false );
         QName propB3 = new QName( "http://test.de/schema", "prop_B3", "te" );
@@ -670,6 +676,7 @@ public class AppSchemaMapperTest {
         when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propFfeatureA ) ) ).thenReturn( true );
 
         QName featureTypeNameA = new QName( "http://test.de/schema", "FeatureA", "te" );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameA ) ).thenReturn( true );
         QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
         when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA1 ) ) ).thenReturn( false );
         QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );

@@ -6,6 +6,7 @@ import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -45,6 +46,11 @@ public class GmlReferenceData implements ReferenceData {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean shouldFeatureTypeMapped( QName featureTypeName ) {
+        return features.containsKey( featureTypeName );
     }
 
     private boolean hasMoreThanOne( Feature feature, List<QName> xpath ) {
