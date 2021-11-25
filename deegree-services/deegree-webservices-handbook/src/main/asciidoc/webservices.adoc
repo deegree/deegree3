@@ -172,6 +172,8 @@ GetCapabilities response
 |GMLFormat |0..n |Complex |GML format configuration
 
 |CustomFormat |0..n |Complex |Custom format configuration
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
 |===
 
 The remainining sections describe these options and their sub-options in
@@ -851,6 +853,8 @@ unlimited
 
 |MaxHeight |0..1 |Integer |Maximum height in a GetMap request, default:
 unlimited
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
 |===
 
 ==== Basic options
