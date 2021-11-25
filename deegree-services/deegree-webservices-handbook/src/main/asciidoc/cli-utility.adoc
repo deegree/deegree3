@@ -83,6 +83,7 @@ Example:
 The data which should be imported in a SQLFeatureStore may be much less complex than the GML application schema. This option allows to reference sample data which must be the highest complexity level as the data to import in the SQLFeatureStore configured with the generated configuration.
 The referenced file must contain a GML 3.2 FeatureCollection containing at least one featureMember. The deegree-cli-utility tool considers this data and tries to create a configuration with less complexity than the GML application schema allows.
 This concerns the cardinality of properties, e.g. if a property may occur multiple times but occurs only one time in the data, the configuration is limited to exact one occurrence of this property. The number of joins is reduced, which speeds up the creation of the java representation of the features.
+This option effects also the generated mappings of feature types. If the option is missing the mapping is generated for each feature type defined in the application schema. If reference data are passed only mappings for feature types with features in the reference data are generated.
 
 Reducing the complexity of the mapping can result in a much faster processing of requests, especially of GetMap requests. The features requested via WFS (GetFeature requests) are still schema conform.
 
