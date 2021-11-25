@@ -539,7 +539,7 @@ public class OGCFrontController extends HttpServlet {
 
         Boolean onlySuccessfulConfig = mainConfig.getRequestLogging().isOnlySuccessful();
         if ( onlySuccessfulConfig != null ) {
-            LOG.warn( "The option OnlySuccessful of the RequestLogging is ignored. It will bew removed with the next major release." );
+            LOG.warn( "The option OnlySuccessful of RequestLogging is ignored. All requests are logged." );
         }
         return new LoggingHttpRequestWrapper(  request, mainConfig.getRequestLogging().getOutputDirectory(), loader.getRequestLogger() );
     }
