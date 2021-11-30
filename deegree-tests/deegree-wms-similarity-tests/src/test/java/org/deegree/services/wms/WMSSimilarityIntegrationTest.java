@@ -41,24 +41,7 @@
 
 package org.deegree.services.wms;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.utils.math.MathUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -66,12 +49,26 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.deegree.commons.utils.io.Utils.determineSimilarity;
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.retrieve;
+
 /**
  * <code>WMSSimilarityIntegrationTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
@@ -80,84 +77,120 @@ public class WMSSimilarityIntegrationTest {
 
     private static int numFailed = 0;
 
-    private String request;
+    private final String request;
 
-    private List<byte[]> response;
+    private final String resourceName;
 
-    private String name;
+    private final BufferedImage expected;
 
-    public WMSSimilarityIntegrationTest( Object wasXml, String request, List<byte[]> response, String name ) {
-        // we only use .kvp for WMS
-        this.request = request;
-        this.name = name;
-        if ( !this.request.contains( "?" ) ) {
-            this.request = "?" + this.request;
-        }
-        this.response = response;
+    public WMSSimilarityIntegrationTest( String resourceName )
+                    throws IOException {
+        this.resourceName = resourceName;
+        this.request = IOUtils.toString(
+                        WMSSimilarityIntegrationTest.class.getResourceAsStream( "/requests/" + resourceName + ".kvp" ) );
+        this.expected = ImageIO.read(
+                        WMSSimilarityIntegrationTest.class.getResourceAsStream(
+                                        "/requests/" + resourceName + ".response" ) );
     }
 
-    @Parameters(name = "{index}: {3}")
+    @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getParameters() {
-        return IntegrationTestUtils.getTestRequests();
+        List<Object[]> requests = new ArrayList<>();
+        requests.add( new Object[] { "lines/lines_capbutt" } );
+        requests.add( new Object[] { "lines/lines_capround" } );
+        requests.add( new Object[] { "lines/lines_capsquare" } );
+        requests.add( new Object[] { "lines/lines_centroid" } );
+        requests.add( new Object[] { "lines/lines_dasharray" } );
+        requests.add( new Object[] { "lines/lines_dasharrayandoffset" } );
+        requests.add( new Object[] { "lines/lines_divmod" } );
+        requests.add( new Object[] { "lines/lines_filtersamelayer" } );
+        requests.add( new Object[] { "lines/lines_getcurrentscale" } );
+        requests.add( new Object[] { "lines/lines_graphicfill" } );
+        requests.add( new Object[] { "lines/lines_graphicstroke" } );
+        requests.add( new Object[] { "lines/lines_joinbevel" } );
+        requests.add( new Object[] { "lines/lines_joinmitre" } );
+        requests.add( new Object[] { "lines/lines_joinround" } );
+        requests.add( new Object[] { "lines/lines_offset" } );
+        requests.add( new Object[] { "lines/lines_opacity" } );
+        requests.add( new Object[] { "lines/lines_pixelsize" } );
+        requests.add( new Object[] { "lines/lines_width5" } );
+        requests.add( new Object[] { "points/points_anchor0" } );
+        requests.add( new Object[] { "points/points_anchor1" } );
+        requests.add( new Object[] { "points/points_circle16" } );
+        requests.add( new Object[] { "points/points_circle32" } );
+        requests.add( new Object[] { "points/points_cross32" } );
+        requests.add( new Object[] { "points/points_defaultsquare" } );
+        requests.add( new Object[] { "points/points_displacementandanchorpoint" } );
+        requests.add( new Object[] { "points/points_displacementx" } );
+        requests.add( new Object[] { "points/points_displacementxnegative" } );
+        requests.add( new Object[] { "points/points_displacementy" } );
+        requests.add( new Object[] { "points/points_displacementynegative" } );
+        requests.add( new Object[] { "points/points_rotation" } );
+        requests.add( new Object[] { "points/points_star32" } );
+        requests.add( new Object[] { "points/points_triangle32" } );
+        requests.add( new Object[] { "points/points_x32" } );
+        requests.add( new Object[] { "polygons/polygons_edgedandsubstraction" } );
+        requests.add( new Object[] { "polygons/polygons_offset" } );
+        requests.add( new Object[] { "polygons/polygons_typepredicatetest" } );
+        requests.add( new Object[] { "resolution/contours_parameter_dpi" } );
+        requests.add( new Object[] { "resolution/contours_parameter_format_options" } );
+        requests.add( new Object[] { "resolution/contours_parameter_map_resolution" } );
+        requests.add( new Object[] { "resolution/contours_parameter_pixelsize" } );
+        requests.add( new Object[] { "resolution/contours_parameter_res" } );
+        requests.add( new Object[] { "resolution/contours_parameter_x-dpi" } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_96" } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_100_empty" } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_192" } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_default_empty" } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_96" } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_100_empty" } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_192" } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_default_empty" } );
+        return requests;
     }
 
     @Test
     public void testSimilarity()
-                            throws IOException {
-        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" ) + "/";
-        base += System.getProperty( "deegree-wms-similarity-webapp", "deegree-wms-similarity-tests" );
-        base += "/services" + request;
+                    throws IOException {
+        String base = createRequest();
         InputStream in = retrieve( STREAM, base );
-
-        byte[] bs = null;
-
-        ListIterator<byte[]> iter = response.listIterator();
-        while ( iter.hasNext() ) {
-            byte[] resp = iter.next();
-            try {
-                BufferedImage img2 = ImageIO.read( new ByteArrayInputStream( resp ) );
-                bs = IOUtils.toByteArray( in );
-                BufferedImage img1 = ImageIO.read( new ByteArrayInputStream( bs ) );
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ImageIO.write( img1, "tif", bos );
-                bos.close();
-                in = new ByteArrayInputStream( bs = bos.toByteArray() );
-                bos = new ByteArrayOutputStream();
-                bos.close();
-                ImageIO.write( img2, "tif", bos );
-                iter.set( bos.toByteArray() );
-            } catch ( Throwable t ) {
-                t.printStackTrace();
-                // just compare initial byte arrays
-            }
-        }
-
-        double sim = 0;
-        for ( byte[] response : this.response ) {
-            in = new ByteArrayInputStream( bs );
-            if ( MathUtils.isZero( sim ) || Math.abs( 1.0 - sim ) > 0.01 || Double.isNaN( sim ) ) {
-                sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
-            }
-        }
-
+        BufferedImage resp = ImageIO.read( in );
+        double sim = determineSimilarity( resp, expected );
         if ( Math.abs( 1.0 - sim ) > 0.01 ) {
-            System.out.println( "Trying to store request/response for " + name + " in tempdir: expected/response"
+            System.out.println( "Trying to store request/response for " + resourceName + " in tempdir: expected/response"
                                 + ++numFailed + ".tif" );
-            
             try {
-                int idx = 0;
-                for ( byte[] response : this.response ) {
-                    IOUtils.write( response, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/expected"
-                                                                   + ++idx + "_" + numFailed + ".tif" ) );
-                }
-                IOUtils.write( bs, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/response"
-                                                         + numFailed + ".tif" ) );
+                ImageIO.write( expected, "tif",
+                               new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/expected_" + numFailed + ".tif" ) );
+                ImageIO.write( resp, "tif",
+                               new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/response" + numFailed + ".tif" ) );
 
-                System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
-                System.out.println( IntegrationTestUtils.toBase64Zip( bs, name + ".tif" ) );
+                System.out.println( "Result returned for " + resourceName + " (base64 -di encoded.dat > failed-test.zip)" );
+                System.out.println( IntegrationTestUtils.toBase64Zip( parseAsBytes( resp ), resourceName + ".tif" ) );
             } catch ( Throwable t ) {
             }
         }
-        Assert.assertEquals( "Images are not similar enough for " + name + ". Request: " + request, 1.0, sim, 0.01 );
+        Assert.assertEquals( "Images are not similar enough for " + resourceName + ". Request: " + request, 1.0, sim, 0.01 );
+    }
+
+    private String createRequest() {
+        StringBuffer sb = new StringBuffer();
+        sb.append( "http://localhost:" );
+        sb.append( System.getProperty( "portnumber", "8080" ) ).append( "/" );
+        sb.append( System.getProperty( "deegree-wms-similarity-webapp", "deegree-wms-similarity-tests" ) );
+        sb.append( "/services" );
+        if ( !request.startsWith( "?" ) )
+            sb.append( "?" );
+        sb.append( request );
+        return sb.toString();
+    }
+
+    private byte[] parseAsBytes( RenderedImage actual )
+                    throws IOException {
+        ByteArrayOutputStream bosActual = new ByteArrayOutputStream();
+        ImageIO.write( actual, "tif", bosActual );
+        bosActual.flush();
+        bosActual.close();
+        return bosActual.toByteArray();
     }
 }
