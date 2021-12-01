@@ -1087,7 +1087,6 @@
     <module>deegree-themes</module>
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
-    <module>deegree-spring</module>
   </modules>
 
   <profiles>
