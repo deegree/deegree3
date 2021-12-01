@@ -54,13 +54,12 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static org.deegree.commons.utils.io.Utils.determineSimilarity;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 import static org.junit.Assert.assertEquals;
 
@@ -157,8 +156,7 @@ public class WMSSimilarityIntegrationTest {
     public void testSimilarity()
                     throws IOException {
         String base = createRequest();
-        InputStream in = retrieve( STREAM, base );
-        BufferedImage actual = ImageIO.read( in );
+        BufferedImage actual = retrieve( IMAGE, base );
         double sim = determineSimilarity( actual, expected );
         if ( Math.abs( 1.0 - sim ) > 0.01 ) {
             String tmpdir = System.getProperty( "java.io.tmpdir" );

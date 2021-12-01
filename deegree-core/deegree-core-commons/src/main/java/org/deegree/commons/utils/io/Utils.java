@@ -81,7 +81,7 @@ public class Utils {
                 }
             }
         }
-        int comparedPixels = data1.getNumBands() * data1.getHeight() * data2.getHeight();
+        int comparedPixels = data1.getNumBands() * data1.getWidth() * data1.getHeight();
         return equal / (double) comparedPixels;
     }
 
