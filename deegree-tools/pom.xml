@@ -79,15 +79,7 @@
     <module>deegree-tools-base</module>
     <module>deegree-tools-alkis</module>
     <module>deegree-tools-migration</module>
+    <module>deegree-tools-gml</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>oracle</id>
-      <modules>
-        <module>deegree-tools-config</module>
-      </modules>
-    </profile>
-  </profiles>
 
 </project>
