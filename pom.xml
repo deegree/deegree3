@@ -345,6 +345,7 @@
                   <ignoreClasses>
                     <ignoreClass>javax.activation.*</ignoreClass>
                     <ignoreClass>javax.xml.*</ignoreClass>
+                    <ignoreClass>javax.annotation.*</ignoreClass>
                     <ignoreClass>com.ctc.wstx.*</ignoreClass>
                     <ignoreClass>com.sun.istack.*</ignoreClass>
                     <ignoreClass>com.sun.media.jai.*</ignoreClass>
