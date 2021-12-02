@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class UtilsTest {
 
     @Test
-    public void testDDetermineSimilarity_SameImage()
+    public void testDetermineSimilarity_SameImage()
                     throws IOException {
         RenderedImage image = ImageIO.read( UtilsTest.class.getResourceAsStream( "image.png" ) );
         double similarity = Utils.determineSimilarity( image, image );
