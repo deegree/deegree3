@@ -82,14 +82,17 @@ public class WMSSimilarityIntegrationTest {
 
     private final String request;
 
+    private final double tolerance;
+
     private final BufferedImage expected;
 
-    public WMSSimilarityIntegrationTest( String resourceName, String format )
+    public WMSSimilarityIntegrationTest( String resourceName, String format, double tolerance )
                     throws IOException {
         this.resourceName = resourceName;
         this.request = IOUtils.toString(
                         WMSSimilarityIntegrationTest.class.getResourceAsStream(
                                         "/requests/" + resourceName + ".kvp" ) );
+        this.tolerance = tolerance;
         this.expected = ImageIO.read(
                         WMSSimilarityIntegrationTest.class.getResourceAsStream(
                                         "/requests/" + resourceName + "." + format ) );
@@ -99,56 +102,56 @@ public class WMSSimilarityIntegrationTest {
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getParameters() {
         List<Object[]> requests = new ArrayList<>();
-        requests.add( new Object[] { "lines/lines_capbutt", "png" } );
-        requests.add( new Object[] { "lines/lines_capround", "png" } );
-        requests.add( new Object[] { "lines/lines_capsquare", "png" } );
-        requests.add( new Object[] { "lines/lines_centroid", "png" } );
-        requests.add( new Object[] { "lines/lines_dasharray", "png" } );
-        requests.add( new Object[] { "lines/lines_dasharrayandoffset", "tif" } );
-        requests.add( new Object[] { "lines/lines_divmod", "png" } );
-        requests.add( new Object[] { "lines/lines_filtersamelayer", "png" } );
-        requests.add( new Object[] { "lines/lines_getcurrentscale", "tif" } );
-        requests.add( new Object[] { "lines/lines_graphicfill", "png" } );
-        requests.add( new Object[] { "lines/lines_graphicstroke", "tif" } );
-        requests.add( new Object[] { "lines/lines_joinbevel", "png" } );
-        requests.add( new Object[] { "lines/lines_joinmitre", "png" } );
-        requests.add( new Object[] { "lines/lines_joinround", "png" } );
-        requests.add( new Object[] { "lines/lines_offset", "png" } );
-        requests.add( new Object[] { "lines/lines_opacity", "png" } );
-        requests.add( new Object[] { "lines/lines_pixelsize", "png" } );
-        requests.add( new Object[] { "lines/lines_width5", "png" } );
-        requests.add( new Object[] { "points/points_anchor0", "png" } );
-        requests.add( new Object[] { "points/points_anchor1", "png" } );
-        requests.add( new Object[] { "points/points_circle16", "png" } );
-        requests.add( new Object[] { "points/points_circle32", "png" } );
-        requests.add( new Object[] { "points/points_cross32", "png" } );
-        requests.add( new Object[] { "points/points_defaultsquare", "png" } );
-        requests.add( new Object[] { "points/points_displacementandanchorpoint", "png" } );
-        requests.add( new Object[] { "points/points_displacementx", "png" } );
-        requests.add( new Object[] { "points/points_displacementxnegative", "png" } );
-        requests.add( new Object[] { "points/points_displacementy", "png" } );
-        requests.add( new Object[] { "points/points_displacementynegative", "png" } );
-        requests.add( new Object[] { "points/points_rotation", "png" } );
-        requests.add( new Object[] { "points/points_star32", "png" } );
-        requests.add( new Object[] { "points/points_triangle32", "png" } );
-        requests.add( new Object[] { "points/points_x32", "png" } );
-        requests.add( new Object[] { "polygons/polygons_edgedandsubstraction", "tif" } );
-        requests.add( new Object[] { "polygons/polygons_offset", "tif" } );
-        requests.add( new Object[] { "polygons/polygons_typepredicatetest", "tif" } );
-        requests.add( new Object[] { "resolution/contours_parameter_dpi", "png" } );
-        requests.add( new Object[] { "resolution/contours_parameter_format_options", "png" } );
-        requests.add( new Object[] { "resolution/contours_parameter_map_resolution", "png" } );
-        requests.add( new Object[] { "resolution/contours_parameter_pixelsize", "png" } );
-        requests.add( new Object[] { "resolution/contours_parameter_res", "png" } );
-        requests.add( new Object[] { "resolution/contours_parameter_x-dpi", "png" } );
-        requests.add( new Object[] { "resolution/contours_vector_dpi_96", "png" } );
-        requests.add( new Object[] { "resolution/contours_vector_dpi_100_empty", "png" } );
-        requests.add( new Object[] { "resolution/contours_vector_dpi_192", "png" } );
-        requests.add( new Object[] { "resolution/contours_vector_dpi_default_empty", "png" } );
-        requests.add( new Object[] { "resolution/satellite_provo_dpi_96", "png" } );
-        requests.add( new Object[] { "resolution/satellite_provo_dpi_100_empty", "png" } );
-        requests.add( new Object[] { "resolution/satellite_provo_dpi_192", "png" } );
-        requests.add( new Object[] { "resolution/satellite_provo_dpi_default_empty", "png" } );
+        requests.add( new Object[] { "lines/lines_capbutt", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_capround", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_capsquare", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_centroid", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_dasharray", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_dasharrayandoffset", "tif", 0.01 } );
+        requests.add( new Object[] { "lines/lines_divmod", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_filtersamelayer", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_getcurrentscale", "tif", 0.24 } );
+        requests.add( new Object[] { "lines/lines_graphicfill", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_graphicstroke", "tif", 0.01 } );
+        requests.add( new Object[] { "lines/lines_joinbevel", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_joinmitre", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_joinround", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_offset", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_opacity", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_pixelsize", "png", 0.01 } );
+        requests.add( new Object[] { "lines/lines_width5", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_anchor0", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_anchor1", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_circle16", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_circle32", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_cross32", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_defaultsquare", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_displacementandanchorpoint", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_displacementx", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_displacementxnegative", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_displacementy", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_displacementynegative", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_rotation", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_star32", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_triangle32", "png", 0.01 } );
+        requests.add( new Object[] { "points/points_x32", "png", 0.01 } );
+        requests.add( new Object[] { "polygons/polygons_edgedandsubstraction", "tif", 0.01 } );
+        requests.add( new Object[] { "polygons/polygons_offset", "tif", 0.01 } );
+        requests.add( new Object[] { "polygons/polygons_typepredicatetest", "tif", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_parameter_dpi", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_parameter_format_options", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_parameter_map_resolution", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_parameter_pixelsize", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_parameter_res", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_parameter_x-dpi", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_96", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_100_empty", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_192", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/contours_vector_dpi_default_empty", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_96", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_100_empty", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_192", "png", 0.01 } );
+        requests.add( new Object[] { "resolution/satellite_provo_dpi_default_empty", "png", 0.01 } );
         return requests;
     }
 
@@ -158,7 +161,7 @@ public class WMSSimilarityIntegrationTest {
         String base = createRequest();
         BufferedImage actual = retrieve( IMAGE, base );
         double sim = determineSimilarity( actual, expected );
-        if ( Math.abs( 1.0 - sim ) > 0.01 ) {
+        if ( Math.abs( 1.0 - sim ) > tolerance ) {
             String tmpdir = System.getProperty( "java.io.tmpdir" );
             System.out.println( "Trying to store expected and actual response for " + resourceName + " in " + tmpdir
                                 + ": expected_" + ++numFailed + "." + format + "/actual_" + numFailed + "." + format );
@@ -174,7 +177,7 @@ public class WMSSimilarityIntegrationTest {
             } catch ( Throwable t ) {
             }
         }
-        assertEquals( "Images are not similar enough for " + resourceName + ". Request: " + request, 1.0, sim, 0.01 );
+        assertEquals( "Images are not similar enough for " + resourceName + ". Request: " + request, 1.0, sim, tolerance );
     }
 
     private String createRequest() {

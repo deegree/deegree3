@@ -66,17 +66,17 @@ public class Utils {
      * @return the percentage (0..1)
      * @throws IOException
      */
-    public static double determineSimilarity( RenderedImage in1, RenderedImage in2 )
-                    throws IOException {
+    public static double determineSimilarity( RenderedImage in1, RenderedImage in2 ) {
         Raster data1 = in1.getData();
         Raster data2 = in2.getData();
         long equal = 0;
         for ( int b = 0; b < data1.getNumBands(); b++ ) {
-            for ( int y = 0; y < data1.getHeight(); y++ ) {
-                for ( int x = 0; x < data1.getWidth(); x++ ) {
-                    if ( b < data2.getNumBands() && x < data2.getHeight() && y < data2.getWidth()
-                         && data1.getSample( x, y, b ) == data2.getSample( x, y, b ) ) {
-                        ++equal;
+            for ( int x = 0; x < data1.getWidth(); x++ ) {
+                for ( int y = 0; y < data1.getHeight(); y++ ) {
+                    if ( b < data2.getNumBands() && x < data2.getWidth() && y < data2.getHeight() ) {
+                        if ( data1.getSample( x, y, b ) == data2.getSample( x, y, b ) ) {
+                            ++equal;
+                        }
                     }
                 }
             }
