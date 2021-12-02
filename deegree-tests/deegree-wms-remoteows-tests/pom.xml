@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.17-SNAPSHOT</version>
+    <version>3.4.20-SNAPSHOT</version>
   </parent>
 
   <repositories>
@@ -34,7 +34,7 @@
           <includes>
             <include>**/*IntegrationTest.java</include>
           </includes>
-          <argLine>-Xmx512m -Dportnumber=${jetty.http.port} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
+          <argLine>-Xmx512m -Dportnumber=${jetty.http.port}</argLine>
         </configuration>
         <executions>
           <execution>
@@ -48,6 +48,21 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <webApp>
+            <contextPath>/deegree-wms-remoteows-tests</contextPath>
+          </webApp>
+          <systemProperties>
+            <systemProperty>
+              <name>DEEGREE_WORKSPACE_ROOT</name>
+              <value>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</value>
+            </systemProperty>
+          </systemProperties>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
