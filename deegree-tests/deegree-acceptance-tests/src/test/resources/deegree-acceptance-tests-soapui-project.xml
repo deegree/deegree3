@@ -4,6 +4,43 @@
   <con:testSuite id="a430548e-09bd-4b08-82dc-dfa9e93ba51f" name="REST API">
     <con:settings/>
     <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="ba31adb7-7548-4dba-a2fc-694ec35681bf" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="initWorkspace" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="restart utah workspace" id="1bf2354c-96c9-4fe7-b754-307b493b6cc0">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart utah workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/deegree-workspace-utah</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
+            <con:configuration>
+              <token>Restart complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
     <con:testCase id="441f6532-bd61-47ed-abef-ec4c91a139eb" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="listworkspaces" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
       <con:settings/>
       <con:testStep type="httprequest" name="list available workspace names" id="0ed96d04-9f07-48f1-b265-c80b08483a6a">
@@ -1255,7 +1292,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
   <con:properties>
     <con:property>
       <con:name>port</con:name>
-      <con:value>36701</con:value>
+      <con:value>8080</con:value>
     </con:property>
     <con:property>
       <con:name>BaseUrl</con:name>
