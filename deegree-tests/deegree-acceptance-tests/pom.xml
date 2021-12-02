@@ -30,6 +30,7 @@
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-utah</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces/deegree-workspace-utah</outputDirectory>
                 </artifactItem>
               </artifactItems>
@@ -108,7 +109,7 @@
   <pluginRepositories>
     <pluginRepository>
       <id>smartbear-sweden-plugin-repository</id>
-      <url>http://www.soapui.org/repository/maven2/</url>
+      <url>https://www.soapui.org/repository/maven2/</url>
     </pluginRepository>
   </pluginRepositories>
 </project>
