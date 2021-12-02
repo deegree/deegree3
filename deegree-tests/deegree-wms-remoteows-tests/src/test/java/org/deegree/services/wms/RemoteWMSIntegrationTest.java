@@ -43,6 +43,7 @@ package org.deegree.services.wms;
 
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.utils.test.IntegrationTestUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -74,6 +75,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 
 @RunWith(Parameterized.class)
+@Ignore
 public class RemoteWMSIntegrationTest {
 
     private static final Logger LOG = getLogger( RemoteWMSIntegrationTest.class );
@@ -100,15 +102,15 @@ public class RemoteWMSIntegrationTest {
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getParameters() {
         List<Object[]> requests = new ArrayList<>();
-        //requests.add( new Object[] { "featureinfofromdeegree" } );
+        requests.add( new Object[] { "featureinfofromdeegree" } );
         requests.add( new Object[] { "multiple" } );
         requests.add( new Object[] { "optionsmultiple" } );
         requests.add( new Object[] { "optionssingle" } );
         requests.add( new Object[] { "parameters" } );
         requests.add( new Object[] { "parametersext" } );
         requests.add( new Object[] { "single" } );
-        //requests.add( new Object[] { "timeout" } );
-        //requests.add( new Object[] { "transformedgif" } );
+        requests.add( new Object[] { "timeout" } );
+        requests.add( new Object[] { "transformedgif" } );
         return requests;
     }
 
