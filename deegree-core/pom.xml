@@ -6,7 +6,7 @@
   <description>Geospatial core API and models for geospatial data</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree</artifactId>
     <version>3.4.28-SNAPSHOT</version>
   </parent>
