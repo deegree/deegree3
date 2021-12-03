@@ -7,7 +7,7 @@
   <description>Abstraction layer for metadata record persistence and backend implementations</description>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-datastores</artifactId>
     <version>3.5.0-SNAPSHOT</version>
   </parent>
