@@ -521,7 +521,8 @@ public class WMSController extends AbstractOWS {
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
         org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
-                                                                                           service.getExtensions() );
+                                                                                           service.getExtensions(),
+                                                                                           isStrict );
 
         doGetMap( map, response, version, gm2 );
     }
