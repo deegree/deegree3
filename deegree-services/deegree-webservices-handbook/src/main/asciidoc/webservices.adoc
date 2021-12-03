@@ -1017,6 +1017,40 @@ Here is an example snippet of the content section:
 </ServiceConfiguration>
 ----
 
+==== Visibility Inspector
+
+You can configure the visibility of layers using the _VisibilityInspector_ element.
+
+Have a look at the options of the _VisibilityInspector_:
+
+[width="100%",cols="12%,8%,5%,75%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+| JavaClass               | 1           | String | Implementation of interface org.deegree.services.wms.visibility.LayerVisibilityInspector to check if a requested layer and corresponding sublayers should be rendered in a GetMap response.
+| CategoryLayerIdentifier | 0..n        | String | Identifier of (category) layers (that are requestable in GetMap requests) which should be checked. If no CategoryLayerIdentifier is specified all layers are checked.
+|===
+
+The implementation of the visibility inspector checks whether a requested layer and its corresponding sublayers are rendered in a GetMap response. These (category) layers are defined in the _CategoryLayerIdentifier_ element.
+Of course, also non category layers can be configured here, but for most use cases category layers will be more useful.
+If no _CategoryLayerIdentifier_ are configured, the VisibilityInspector is applied to all layers.
+
+Note: If a _CategoryLayerIdentifier_ is configured, the visibility inspector will just be executed if exactly this layer is requested. Still, as already stated above, the visiblity inspector is applied to the requested layer plus all of its sublayers.
+If just one or more sublayers of the configured _CategoryLayerIdentifier_ are requested, the visibility inspector is NOT applied.
+This behaviour prevents that complex analyses and/or functions are executed during each GetMap request.
+
+Example:
+[source,xml]
+----
+<wms:VisibilityInspector>
+  <wms:JavaClass>org.deegree.VisibilityChecker</wms:JavaClass>
+  <wms:LayerIdentifier>category_layer</wms:LayerIdentifier>
+</wms:VisibilityInspector>
+----
+
+The layer category_layer has two sublayers layer1 and layer2.
+If category_layer is requested by a GetMap request, the visibility inspector org.deegree.VisibilityChecker is applied to category_layer, layer1 and layer2.
+If layer1 and/or layer2 are requested by a GetMap request, the visibility inspector is not applied to any layer.
+
 ==== Custom capabilities formats
 
 Any mime type can be configured to be available as response format for
