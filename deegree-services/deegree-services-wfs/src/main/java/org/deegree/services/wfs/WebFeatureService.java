@@ -267,6 +267,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean enableResponsePaging;
 
+    private boolean allowFeatureReferencesToDatastore = false;
+
     private ReferenceResolvingMode referenceResolvingMode = CHECK_ALL;
 
     private OWSMetadataProvider mdProvider;
