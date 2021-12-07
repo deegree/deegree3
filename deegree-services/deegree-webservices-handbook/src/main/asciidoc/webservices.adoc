@@ -2446,7 +2446,27 @@ above
 |ExternalMetadataSetId |0..n |String |is used to generate
 _AuthorityURL_ s and _Identifier_ s for WMS, see above. Refer to an
 authority using the _authority_ attribute.
+
+|ExtendedDescription |0..n | complex |configures extended descriptions (applies only to WFS 2.0)
 |===
+
+===== Extended description
+
+The complex element ExtendedDescription can be configured as follows:
+
+[width="100%",cols="19%,9%,10%,62%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|Name |1 |String |the name of the extended descriptive element
+
+|Type |1 |QName |used to designate a type for the values in the value list of the extended descriptive element (e.g. xs:int)
+
+|Metadata |1 |URL |URL to reference metadata describing the wfs:Element
+
+|Value |1..n |String | values for the named extended descriptive element
+|===
+
+NOTE: The ExtendedDescription is written to the WFS 2.0.0 capabilities. It does not apply to other services/versions.
 
 ==== Extended capabilities
 
