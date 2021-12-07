@@ -61,6 +61,8 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.transaction.ReleaseAction.ALL;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -180,7 +182,7 @@ class TransactionHandler {
 
     private final IDGenMode idGenMode;
 
-    private final boolean allowFeatureReferencesToDatastore;
+    private final ReferenceResolvingMode referenceResolvingMode;
 
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
@@ -192,15 +194,15 @@ class TransactionHandler {
      * @param request
  *            request to be handled
      * @param idGenMode
-     * @param allowFeatureReferencesToDatastore
+     * @param referenceResolvingMode
      */
     TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
-                        IDGenMode idGenMode, boolean allowFeatureReferencesToDatastore ) {
+                        IDGenMode idGenMode, ReferenceResolvingMode referenceResolvingMode ) {
         this.master = master;
         this.service = service;
         this.request = request;
         this.idGenMode = idGenMode;
-        this.allowFeatureReferencesToDatastore = allowFeatureReferencesToDatastore;
+        this.referenceResolvingMode = referenceResolvingMode;
     }
 
     /**
@@ -441,8 +443,10 @@ class TransactionHandler {
         FeatureStore featureStore = service.getStores()[0];
         AppSchema schema = featureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
-        if ( allowFeatureReferencesToDatastore )
+
+        if ( CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
             gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( featureStore ) );
+        }
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
         gmlStream.setReferencePatternMatcher( master.getReferencePatternMatcher() );
@@ -473,8 +477,10 @@ class TransactionHandler {
             }
         }
 
-        // resolve local xlink references
-        gmlStream.getIdContext().resolveLocalRefs();
+        if ( CHECK_ALL.equals( referenceResolvingMode ) || CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
+            // resolve local xlink references
+            gmlStream.getIdContext().resolveLocalRefs();
+        }
 
         return fc;
     }

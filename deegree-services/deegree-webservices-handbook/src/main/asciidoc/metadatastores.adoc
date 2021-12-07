@@ -22,7 +22,7 @@ The memory ISO metadata store implementation is transactional and works
 file based.
 
 The memory metadata store configuration is defined by schema file
-http://schemas.deegree.org/datasource/metadata/iso19139/3.2.0/memory.xsd
+http://schemas.deegree.org/datasource/metadata/iso19139/3.4.0/memory.xsd
 
 *Memory ISO Metadatastore config (skeleton)*
 
@@ -42,7 +42,7 @@ http://schemas.deegree.org/datasource/metadata/iso19139/3.2.0/memory.xsd
 ----
 
 The root element has to be _ISOMemoryMetadataStore_ and the config
-attribute must be _3.2.0_. The only mandatory element is:
+attribute must be _3.4.0_. The only mandatory element is:
 
 * _ISORecordDirectory_: A list of directories containing records
 loaded in the store during start of the store.
@@ -55,7 +55,7 @@ of the directories declared in the element _ISORecordDirectory_.
 === SQL ISO Metadata store
 
 The SQL metadata store configuration is defined by schema file
-http://schemas.deegree.org/datasource/metadata/iso19115/3.2.0/iso19115.xsd
+http://schemas.deegree.org/datasource/metadata/iso19115/3.4.0/iso19115.xsd
 
 *SQL ISO Metadatastore config (skeleton)*
 
@@ -99,7 +99,7 @@ http://schemas.deegree.org/datasource/metadata/iso19115/3.2.0/iso19115.xsd
 ----
 
 The root element has to be _ISOMetadataStore_ and the config attribute
-must be _3.2.0_. The only mandatory element is:
+must be _3.4.0_. The only mandatory element is:
 
 * _JDBCConnId_: Id of the JDBC connection to use (see ...)
 

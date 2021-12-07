@@ -45,6 +45,8 @@ include::crs.adoc[]
 
 include::restapi.adoc[]
 
+include::cli-utility.adoc[]
+
 include::javamodules.adoc[]
 
 include::gdal.adoc[]

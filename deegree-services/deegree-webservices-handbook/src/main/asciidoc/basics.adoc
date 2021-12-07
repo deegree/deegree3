@@ -68,7 +68,7 @@ dependencies. The deegree configuration can be divided into several
 sections:
 
 
-* web sevrices
+* web services
 * data stores
 * map layers
 * server connections

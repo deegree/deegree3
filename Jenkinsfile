@@ -8,7 +8,7 @@ pipeline {
         jdk 'adoptopenjdk-jdk8'
     }
     environment {
-        MAVEN_OPTS='-Djava.awt.headless=true -Xmx3096m'
+        MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
     }
     stages {
         stage ('Initialize') {
@@ -45,11 +45,11 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae -Poracle,mssql findbugs:findbugs checkstyle:checkstyle javadoc:javadoc'
+                sh 'mvn -B -C -fae -Poracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
             }
             post {
                 success {
-                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''
+                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
                     checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
                 }
             }
@@ -96,6 +96,11 @@ pipeline {
                 echo 'Deploying to demo.deegree.org...'
                 echo 'Running smoke tests...'
             }
+        }
+    }
+    post {
+        always {
+            cleanWs notFailBuild: true
         }
     }
 }
