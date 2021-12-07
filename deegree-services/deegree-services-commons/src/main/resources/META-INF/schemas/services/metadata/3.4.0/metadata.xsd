@@ -200,6 +200,7 @@
           </sequence>
         </complexType>
       </element>
+      <element name="ExtendedDescription" type="md:ExtendedDescriptionType" minOccurs="0" maxOccurs="unbounded" />
     </sequence>
   </complexType>
 
@@ -222,6 +223,16 @@
       </any>
     </sequence>
     <attribute name="protocolVersions" type="string" use="optional" />
+  </complexType>
+
+
+  <complexType name="ExtendedDescriptionType">
+    <sequence>
+      <element name="Name" type="string" />
+      <element name="Type" type="QName" />
+      <element name="Metadata" type="anyURI"/>
+      <element name="Value" type="string" maxOccurs="unbounded" />
+    </sequence>
   </complexType>
 
 </schema>
