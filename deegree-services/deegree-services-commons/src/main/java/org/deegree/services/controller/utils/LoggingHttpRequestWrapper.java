@@ -114,7 +114,7 @@ public class LoggingHttpRequestWrapper extends HttpServletRequestWrapper {
         if ( kvp != null ) {
             logger.logKVP( getRequestURL().toString(), kvp, entryTime, currentTimeMillis(), null );
         }
-        if ( requestBody != null ) {
+        if ( requestBody != null && requestBody.length > 0 ) {
             File tmpLogFile = createTmpLogFile();
             IOUtils.copy( new ByteArrayInputStream( requestBody ), new FileOutputStream( tmpLogFile ) );
             logger.logXML( getRequestURL().toString(), tmpLogFile, entryTime, currentTimeMillis(), null );
