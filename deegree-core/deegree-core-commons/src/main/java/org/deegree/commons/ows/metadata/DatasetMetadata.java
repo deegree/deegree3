@@ -67,6 +67,8 @@ public class DatasetMetadata extends Description {
 
     private final Attribution attribution;
 
+    private final List<ExtendedDescription> extendedDescriptions;
+
     /**
      * Creates a new {@link DatasetMetadata} instance.
      * 
@@ -79,7 +81,7 @@ public class DatasetMetadata extends Description {
      * @param keywords
      *            keywords, may be <code>null</code> (no keywords)
      * @param metadataUrls
-     *            urls of metadata records, may be <code>null</code> (no metadata records))
+     *            urls of metadata records, may be <code>null</code> (no metadata records)
      * @param externalIds
      *            external identifiers, may be <code>null</code> (no external identifiers)
      * @param dataUrls
@@ -88,12 +90,14 @@ public class DatasetMetadata extends Description {
      *            links to the list of the features (used in a layer), may be <code>null</code> (no links)
      * @param attribution
      *            indicates the provider of a layer, may be <code>null</code> (no attribution)
+     * @param extendedDescriptions
+     *            extended descriptions of a layer, may be <code>null</code> (no extendedDescriptions)
      */
     public DatasetMetadata( final QName name, final List<LanguageString> titles, final List<LanguageString> abstracts,
                             final List<Pair<List<LanguageString>, CodeType>> keywords,
                             final List<MetadataUrl> metadataUrls, final List<ExternalIdentifier> externalIds,
                             final List<UrlWithFormat> dataUrls, final List<UrlWithFormat> featureListUrls,
-                            final Attribution attribution ) {
+                            final Attribution attribution, final List<ExtendedDescription> extendedDescriptions  ) {
         super( name.getLocalPart(), titles, abstracts, keywords );
         this.name = name;
         this.metadataUrls = metadataUrls;
@@ -101,6 +105,7 @@ public class DatasetMetadata extends Description {
         this.dataUrls = dataUrls;
         this.featureListUrls = featureListUrls;
         this.attribution = attribution;
+        this.extendedDescriptions = extendedDescriptions;
     }
 
     /**
@@ -155,6 +160,15 @@ public class DatasetMetadata extends Description {
      */
     public Attribution getAttribution() {
         return attribution;
+    }
+
+    /**
+     * Returns the extended descriptions.
+     *
+     * @return extended descriptions, may be <code>null</code> (no extended descriptions)
+     */
+    public List<ExtendedDescription> getExtendedDescriptions() {
+        return extendedDescriptions;
     }
 
 }

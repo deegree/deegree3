@@ -673,7 +673,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 try {
                     DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,
-                                                                metadataUrls, null, null, null, null );
+                                                                metadataUrls, null, null, null, null, null );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
