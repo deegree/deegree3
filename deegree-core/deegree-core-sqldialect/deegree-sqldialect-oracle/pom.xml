@@ -15,25 +15,6 @@
     <version>3.4.21-SNAPSHOT</version>
   </parent>
 
-  <profiles>
-    <profile>
-      <id>oracle</id>
-      <repositories>
-        <repository>
-          <id>deegree-restricted</id>
-          <name>deegree-restricted</name>
-          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
-        </repository>
-      </repositories>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc8</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
