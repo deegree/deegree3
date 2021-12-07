@@ -12,21 +12,28 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.4.18-SNAPSHOT</version>
+    <version>3.4.21-SNAPSHOT</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+
+  <profiles>
+    <profile>
+      <id>oracle</id>
+      <repositories>
+        <repository>
+          <id>deegree-restricted</id>
+          <name>deegree-restricted</name>
+          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
+        </repository>
+      </repositories>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc8</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>

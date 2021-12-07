@@ -87,6 +87,8 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private MemoryFeatureStoreMetadata metadata;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link MemoryFeatureStore} instance for the given {@link AppSchema}.
      * 

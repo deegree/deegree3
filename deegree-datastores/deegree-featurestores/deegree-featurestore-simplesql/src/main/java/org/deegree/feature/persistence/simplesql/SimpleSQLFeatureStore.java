@@ -138,6 +138,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private ConnectionProvider connProvider;
 
+    private boolean strict;
+
     /**
      * @param connId
      * @param crs
