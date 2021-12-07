@@ -53,5 +53,25 @@ public enum IDGenMode {
     REPLACE_DUPLICATE,
 
     /** Always generate new ids. */
-    GENERATE_NEW
+    GENERATE_NEW;
+
+    private boolean skipResolveReferences = false;
+
+    /**
+     * @return <code>true</code> if references should be skipped, <code>false</code> otherwise
+     */
+    public boolean isSkipResolveReferences() {
+        return skipResolveReferences;
+    }
+
+    /**
+     * @param skipResolveReferences
+     *            <code>true</code> if references should be skipped, <code>false</code> otherwise
+     *
+     * @return the IDGenMode instance
+     */
+    public IDGenMode withSkipResolveReferences( boolean skipResolveReferences ) {
+        this.skipResolveReferences = skipResolveReferences;
+        return this;
+    }
 }

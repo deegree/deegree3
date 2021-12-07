@@ -95,7 +95,7 @@ public class WmtsSimilarityIT {
     @Test
     public void testSimilarity()
                             throws IOException {
-        String base = "http://localhost:" + System.getProperty( "portnumber" );
+        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" );
         base += "/deegree-wmts-tests/services" + request;
         InputStream in = retrieve( STREAM, base );
         LOG.info( "Requesting {}", base );

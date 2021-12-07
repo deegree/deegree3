@@ -8,62 +8,11 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.17-SNAPSHOT</version>
+    <version>3.4.21-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>init</id>
-            <goals>
-              <goal>generate-portnumber</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>start-tomcat</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run-war</goal>
-            </goals>
-            <configuration>
-              <port>${portnumber}</port>
-              <fork>true</fork>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-tomcat</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -73,7 +22,7 @@
           <includes>
             <include>**/*IntegrationTest.java</include>
           </includes>
-          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -Dportnumber=${jetty.http.port} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
         </configuration>
         <executions>
           <execution>
@@ -87,6 +36,15 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <webApp>
+            <contextPath>/deegree-wms-similarity-tests</contextPath>
+          </webApp>
+        </configuration>
       </plugin>
     </plugins>
   </build>
