@@ -1,9 +1,0 @@
-<MemoryFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/memory"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
-  http://schemas.deegree.org/datasource/feature/memory/3.4.0/memory.xsd">
-  <StorageCRS>urn:ogc:def:crs:EPSG::4258</StorageCRS>
-  <GMLSchema version="GML_32">../../appschemas/inspire/annex1/</GMLSchema>
-  <GMLFeatureCollection version="GML_32">../../data/gml/address.gml</GMLFeatureCollection>
-  <GMLFeatureCollection version="GML_32">../../data/gml/parcels.gml</GMLFeatureCollection>
-</MemoryFeatureStore>

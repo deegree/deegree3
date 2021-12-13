@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<GetFeature version="2.0.0" service="WFS" xmlns="http://www.opengis.net/wfs/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wfs/2.0
-http://schemas.opengis.net/wfs/2.0/wfs.xsd">
-  <StoredQuery id="urn:ogc:def:query:OGC-WFS::GetFeatureById">
-    <Parameter name="ID">NL.KAD.BAG.0532200000000026</Parameter>
-  </StoredQuery>
-</GetFeature>

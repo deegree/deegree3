@@ -57,7 +57,10 @@ import java.util.Map;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.cs.CRSUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.layer.LayerRef;
@@ -106,7 +109,6 @@ public class GetFeatureInfo extends RequestBase {
     /**
      * @param map
      * @param version
-     * @param service
      * @throws OWSException
      */
     public GetFeatureInfo( Map<String, String> map, Version version ) throws OWSException {
@@ -189,32 +191,42 @@ public class GetFeatureInfo extends RequestBase {
                             throws OWSException {
         double[] vals = handleCommon( map );
 
-        String c = map.get( "CRS" );
-        if ( c == null || c.trim().isEmpty() ) {
+        String requestedCrs = map.get( "CRS" );
+        if ( requestedCrs == null || requestedCrs.trim().isEmpty() ) {
             throw new OWSException( "The CRS parameter is missing.", MISSING_PARAMETER_VALUE );
         }
 
-        bbox = GetMap.getCRSAndEnvelope130( c, vals );
+        bbox = GetMap.getCRSAndEnvelope130( requestedCrs, vals );
         crs = bbox.getCoordinateSystem();
 
-        String xs = map.get( "I" );
-        if ( xs == null ) {
+        String i = map.get( "I" );
+        if ( i == null ) {
             throw new OWSException( "The I parameter is missing.", MISSING_PARAMETER_VALUE );
         }
         try {
-            x = parseInt( xs );
+            x = parseInt( i );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( "The value " + xs + " is not valid for I.", INVALID_PARAMETER_VALUE );
+            throw new OWSException( "The value " + i + " is not valid for I.", INVALID_PARAMETER_VALUE );
         }
 
-        String ys = map.get( "J" );
-        if ( ys == null ) {
+        String j = map.get( "J" );
+        if ( j == null ) {
             throw new OWSException( "The J parameter is missing.", MISSING_PARAMETER_VALUE );
         }
         try {
-            y = parseInt( ys );
+            y = parseInt( j );
         } catch ( NumberFormatException e ) {
-            throw new OWSException( "The value " + ys + " is not valid for J.", INVALID_PARAMETER_VALUE );
+            throw new OWSException( "The value " + j + " is not valid for J.", INVALID_PARAMETER_VALUE );
+        }
+
+        if ( hasAxisOrderChanged( requestedCrs ) ) {
+            int tmpX = x;
+            this.x = this.height - this.y;
+            this.y = this.width - tmpX;
+
+            int tmpWidth = width;
+            this.width = height;
+            this.height = tmpWidth;
         }
 
         if ( x >= width || y >= height || x < 0 || y < 0 ) {
@@ -443,6 +455,18 @@ public class GetFeatureInfo extends RequestBase {
             throw new OWSException( "An invalid combination of LAYERS and QUERY_LAYERS was specified.",
                                     "LayerNotDefined" );
         }
+    }
+
+    private boolean hasAxisOrderChanged( String requestedCrs ) {
+        if ( !requestedCrs.startsWith( "AUTO2:" ) ) {
+            ICRS crsRef = CRSManager.getCRSRef( requestedCrs );
+            try {
+                return !CRSUtils.isAxisAware( crsRef );
+            } catch ( UnknownCRSException e ) {
+                // already checked
+            }
+        }
+        return false;
     }
 
 }

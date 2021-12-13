@@ -1,0 +1,453 @@
+[[anchor-configuration-filter]]
+== Filter Encoding
+
+deegree makes extensive use of the OGC Filter Encoding standard. Within
+deegree there are implementations of the versions 1.1.0 and 2.0.0 of
+this standards and several extensions and additional functions. This
+chapter is meant to explain the filter capabilities of deegree which can
+be used within <<anchor-configuration-renderstyles>> and <<anchor-configuration-wfs>> requests.
+
+=== Filter Operators
+
+The purpose of FE is to have a standardized way for defining selection
+criteria on data. This requires the definition of operators for the
+creation of filter expressions. Within this section, the supported
+operators are explained. Additionally there is information about deegree
+specific behaviour. Depending on the version of FE, syntax may differ.
+In the following, FE 1.1.0 syntax is used.
+
+==== Arithmetic operators
+
+FE enables the use of the following arithmetic operators:
+
+* `Add`: used for addition
+* `Sub`: used for substraction
+* `Mul`: used for multiplication
+* `Div`: used for division
+
+
+*Example:*
+
+[source,xml]
+----
+<Add>
+  <PropertyName>app:ID</PropertyName>
+  <Literal>15</Literal>
+</Add>
+----
+
+==== Logical operators
+
+FE enables the use of the following logical operators:
+
+* `And`: Links two conditions with AND
+* `Or`: links two conditions with OR
+* `Not`: negates a condition
+
+
+*Example:*
+
+[source,xml]
+----
+<Not>
+  <PropertyName>app:ID</PropertyName>
+  <Literal>15</Literal>
+</Not>
+----
+
+==== Comparison operators
+
+deegree has implementations for the following list of comparison
+operators:
+
+* `PropertyIsEqualTo`: Evaluates if a property value equals to another value.
+* `PropertyIsNotEqualTo`: Evaluates if a property value differs from another value.
+* `PropertyIsLessThan`: Evaluates if a property value is smaller than another value.
+* `PropertyIsGreaterThan`: Evaluates if a property value is greater than another value.
+* `PropertyIsLessThanOrEqualTo`: Evaluates if a property value is smaller than or equal to another value.
+* `PropertyIsGreaterThanOrEqualTo`: Evaluates if a property value is greater than or euqal to another value.
+* `PropertyIsLike`: Evaluates if a property value is like another value. It compares string values which each other.
+* `PropertyIsNull`: Evaluates if a property value is NULL.
+* `PropertyIsBetween`: Evaluates if a property value is between 2 defined values.
+
+
+*Example:*
+
+[source,xml]
+----
+<PropertyIsEqualTo>
+  <PropertyName>SomeProperty</PropertyName>
+  <Literal>100</Literal>
+</PropertyIsEqualTo>
+----
+
+==== Spatial operators
+
+With deegree you can make use of the following spatial operators:
+
+
+* `Equals`: Evaluates if geometries are identical
+* `Disjoin`: Evaluates if geometries are spatially disjoined
+* `Touches`: Evaluates if geometries are spatially touching
+* `Within`: Evaluates if a geometry is spatially within another
+* `Overlaps`: Evaluates if geometries are spatially overlapping
+* `Crosses`: Evaluates if geometries are spatially crossing
+* `Intersects`: Evaluates if geometries are spatially intersecting. This is meant as the opposite of disjoin.
+* `Contains`: Evaluates if a geometry spatially contains another.
+* `DWithin`: Evaluates if a geometry is within a specific distance to another.
+* `Beyond`: Evaluates if a geometry is beyond a specific distance to another.
+* `BBOX`: Evaluates if a geometry spatially intersects with a given bounding box.
+
+
+*Example:*
+
+[source,xml]
+----
+<Overlaps>
+  <PropertyName>Geometry</PropertyName>
+  <gml:Polygon srsName="EPSG:4258">
+    <gml:outerBoundaryIs>
+      <gml:LinearRing>
+        <gml:posList> ... </gml:posList>
+      </gml:LinearRing>
+    </gml:outerBoundaryIs>
+  </gml:Polygon>
+</Overlaps>
+----
+
+TIP: For further reading on spatial operators, please refer to the
+https://www.ogc.org/standards/sfs[OGC Simple Features Specification For SQL].
+
+=== Filter expressions
+
+For the use within map styles or WFS requests, filter expressions can be
+constructed from the above operators to select specific data. This
+section gives some examples for the use of such filter expressions.
+
+==== Simple filter expressions
+
+===== Comparative filter expression
+
+[source,xml]
+----
+<Filter>
+  <PropertyIsEqualTo>
+    <PropertyName>SomeProperty</PropertyName>
+    <Literal>100</Literal>
+  </PropertyIsEqualTo>
+</Filter>
+----
+
+This filter expressions shows, how filter expressions with a comparative
+filter are constructed. In the example above, the property
+SomeProperty is evaluated, if it equals to the value of "100".
+
+===== Spatial filter expression
+
+[source,xml]
+----
+<Filter>
+  <Overlaps>
+    <PropertyName>Geometry</PropertyName>
+    <gml:Polygon srsName="EPSG:4258">
+      <gml:outerBoundaryIs>
+        <gml:LinearRing>
+          <gml:posList> ... </gml:posList>
+        </gml:LinearRing>
+      </gml:outerBoundaryIs>
+    </gml:Polygon>
+  </Overlaps>
+</Filter>
+----
+
+This filter expressions shows, how filter expressions with a spatial
+filter are constructed. In this example, the defined filter looks
+up, if the property geometry overlaps with the defined polygon of "..." (geometry values removed for better readability).
+
+==== Advanced filter expressions
+
+===== Multiple filter operators
+
+[source,xml]
+----
+<Filter>
+  <And>
+    <PropertyIsLessThan>
+      <PropertyName>DEPTH</PropertyName>
+      <Literal>30</Literal>
+    </PropertyIsLessThan>
+    <Not>
+      <Disjoint>
+        <PropertyName>Geometry</PropertyName>
+        <gml:Envelope srsName="EPSG:4258">
+          <gml:lowerCorner>13.0983 31.5899</gml:lowerCorner>
+          <gml:upperCorner>35.5472 42.8143</gml:upperCorner>
+        </gml:Envelope>
+      </Disjoint>
+    </Not>
+  </And>
+</Filter>
+----
+
+This more complex filter expressions shows, how to make use of
+combinations of filter operators. THe given filter expression evaluates
+if the value of the property DEPTH is smaller than "30" *and* if the
+geometry property named Geometry is spatially disjoint with the given
+envelope.
+
+===== PropertyIsLike with a function
+
+[source,xml]
+----
+<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0">
+  <fes:PropertyIsLike wildCard="*" singleChar="#" escapeChar="!">
+    <fes:ValueReference>name</fes:ValueReference>
+    <fes:Function name="normalize">
+      <fes:Literal>FALkenstrasse</fes:Literal>
+    </fes:Function>
+  </fes:PropertyIsLike>
+</fes:Filter>
+----
+
+This example shows, how functions can be used within filter expressions.
+Within the given example, the "name" property is evaluated, if it is
+like the Literal FAlkenstrasse. Using a function for the evaluation of
+the Literal means, that the value is processed with the function before
+the filter operator handles it. In the concrete case this means a
+normalization of the value (Which is not usable by default with
+deegree).
+
+TIP: Please note, the use of functions within PropertyIsLike filter operators
+is only possible with FE 2.0. This is the reason for the FE 2.0
+notation.
+
+==== Filter expressions on xlink:href attributes
+
+Example for filtering on xlink:href attributes:
+
+[source,xml]
+----
+<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <fes:PropertyIsEqualTo>
+    <fes:PropertyName>property/@xlink:href</fes:PropertyName>
+    <fes:Literal>100</fes:Literal>
+  </fes:PropertyIsEqualTo>
+</fes:Filter>
+----
+
+deegree applies the filter to the static value of the attribute. This
+just works if the feature store is configured a certain way. For
+example, this can be useful if a user wants to filter on INSPIRE
+codelists.
+
+Chapter <<anchor-mapping-strategies-href-attributes>> describes how the
+configuration of the feature store is done and provides further details
+regarding usage.
+
+=== Custom FE functions
+
+Besides the filter capabilities described above, FE defines Functions to
+be used within filter expressions. deegree offers the capability to use
+a nice set of custom FE functions for different purposes. These are
+explained within the following chapter.
+
+==== Area
+
+The area function is the first in a row of custom geometry functions
+which can be used within deegree. With the area function it is possible
+to get the area of a geometry property. If multiple geometry nodes are
+selected, multiple area values are calculated.
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="Area">
+  <PropertyName>app:geometry</PropertyName>
+</Function>
+----
+
+==== Length
+
+This function calculates the length of a linestring/perimeter of a
+polygon. If multiple geometry nodes are selected, multiple length values
+are calculated.
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="Length">
+  <PropertyName>app:geometry</PropertyName>
+</Function>
+----
+
+==== Centroid
+
+This function calculates the centroid of a polygon. If multiple geometry
+nodes are selected, multiple centroids are calculated.
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="Centroid">
+  <PropertyName>app:geometry</PropertyName>
+</Function>
+----
+
+==== InteriorPoint
+
+This function calculates an interior point within a polygon. If multiple
+geometry nodes are selected, multiple centroids are calculated. Useful
+to place text on a point within a polygon (centroids may not actually be
+a point on the polygon).
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="InteriorPoint">
+  <PropertyName>app:geometry</PropertyName>
+</Function>
+----
+
+==== IsPoint, IsCurve, IsSurface
+
+Takes one parameter, which must evaluate to exactly one geometry node.
+
+This function returns true, if the geometry is a point/multipoint,
+curve/multicurve or surface/multisurface, respectively.
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="IsCurve">
+  <PropertyName>app:geometry</PropertyName>
+</Function>
+----
+
+==== GeometryFromWKT
+
+Useful to create a constant geometry valued expression.
+
+[source,xml]
+----
+<Function xmlns="http://www.opengis.net/ogc" name="GeometryFromWKT">
+  <Literal>EPSG:4326</Literal>
+  <Literal>POINT(0.6 0.7)</Literal>
+</Function>
+----
+
+==== MoveGeometry
+
+Useful to displace geometries by a certain value in x and/or y
+direction.
+
+To shift 20 geometry units in y direction:
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="MoveGeometry">
+  <PropertyName>app:geometry</PropertyName>
+  <Literal>0</Literal>
+  <Literal>20</Literal>
+</Function>
+----
+
+==== iDiv
+
+Integer division discarding the remainder.
+
+[source,xml]
+----
+<Function xmlns:app="http://www.deegree.org/app" xmlns="http://www.opengis.net/ogc" name="idiv">
+  <PropertyName>app:count</PropertyName>
+  <Literal>20</Literal>
+</Function>
+----
+
+==== iMod
+
+Integer division resulting in the remainder only.
+
+[source,xml]
+----
+<Function xmlns="http://www.opengis.net/ogc" name="ExtraProp">
+  <Literal>planArt</Literal>
+</Function>
+----
+
+==== ExtraProp
+
+Access extra (hidden) properties attached to feature objects. The
+availability of such properties depends on the loading/storage mechanism
+used.
+
+[source,xml]
+----
+<Function xmlns="http://www.opengis.net/ogc" name="ExtraProp">
+  <Literal>planArt</Literal>
+</Function>
+----
+
+==== GetCurrentScale
+
+The GetCurrentScale function takes no arguments, and dynamically
+provides you with the value of the current map scale denominator (only
+to be used in GetMap requests!). The scale denominator will be adapted
+to any custom pixel size you may be using in your request, and is the
+same scale denominator the WMS uses internally for filtering out
+layers/style rules.
+
+Let's have a look at an example:
+
+[source,xml]
+----
+...
+<sld:SvgParameter name="stroke-width">
+  <ogc:Function name="idiv">
+    <ogc:Literal>500000</ogc:Literal>
+    <ogc:Function name="GetCurrentScale" />
+  </ogc:Function>
+</sld:SvgParameter>
+...
+----
+
+In this case, the stroke width will be one pixel for scales around
+500000, and will get bigger as you zoom in (and the scale denominator
+gets smaller). Scale denominators above 500000 will yield invisible
+strokes with a width of zero.
+
+==== env
+
+The `env` function takes two parameters and makes it possible to 
+provide name/value pairs to styles, so that more dynamic styles 
+are possible.
+
+
+[source,xml]
+----
+<Function xmlns="http://www.opengis.net/ogc" name="env">
+  <Literal>size</Literal>
+  <Literal>42</Literal>
+</Function>
+----
+
+These paris can be passed as `env` parameter alongside the usual
+GetMap request parameters. Multiple  `name:value` pairs have to be 
+separated by semicolons (`...&env=size:33;color:FF0000&...`).
+
+The second parameter must be the default value that is returned if 
+no pair with the specified name was found.
+
+The following parameters are predefined and cannot be passed:
+
+[width="100%",cols="28%,28%,44%",options="header",]
+|=======================================================================
+|Name |Type |Description
+
+|wms_bbox |Envelope |envelope (GetMap request)
+
+|wms_crs |ICRS |coordinate system  (GetMap request)
+
+|wms_srs |String |coordinate system name  (GetMap request)
+
+|wms_width |Integer |width in pixel  (GetMap request)
+
+|wms_height |Integer |height in pixle  (GetMap request)
+
+|wms_scale_denominator |Double |scale  (GetMap request)
+
+|=======================================================================

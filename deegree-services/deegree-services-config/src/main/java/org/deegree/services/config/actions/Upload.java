@@ -49,8 +49,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.FileUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.utils.Pair;
 
@@ -87,7 +87,7 @@ public class Upload {
                 String dirName = p.second.endsWith( ".zip" ) ? wsName : p.second;
                 File workspaceRoot = new File ( getWorkspaceRoot() );
                 File dir = new File( workspaceRoot, dirName );
-                if ( !FileUtils.directoryContains( workspaceRoot, dir ) ) {
+                if ( !FilenameUtils.directoryContains( workspaceRoot.getCanonicalPath(), dir.getCanonicalPath() ) ) {
                     IOUtils.write( "Workspace " + wsName + " invalid.\n", resp.getOutputStream() );
                     return;
                 } else if ( isWorkspace( dirName ) ) {
@@ -99,7 +99,7 @@ public class Upload {
             } else {
                 File workspaceDir = p.first.getLocation();
                 File dest = new File( workspaceDir, p.second );
-                if ( !FileUtils.directoryContains( workspaceDir, dest ) ) {
+                if ( !FilenameUtils.directoryContains( workspaceDir.getCanonicalPath(), dest.getCanonicalPath() ) ) {
                     IOUtils.write( "Unable to upload file: " + p.second + ".\n", resp.getOutputStream() );
                     return;
                 }

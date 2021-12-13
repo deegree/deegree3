@@ -90,13 +90,13 @@ public class WMSSimilarityIntegrationTest {
         // we only use .kvp for WMS
         this.request = request;
         this.name = name;
-        if ( !this.request.startsWith( "?" ) ) {
+        if ( !this.request.contains( "?" ) ) {
             this.request = "?" + this.request;
         }
         this.response = response;
     }
 
-    @Parameters
+    @Parameters(name = "{index}: {3}")
     public static Collection<Object[]> getParameters() {
         return IntegrationTestUtils.getTestRequests();
     }
@@ -104,8 +104,9 @@ public class WMSSimilarityIntegrationTest {
     @Test
     public void testSimilarity()
                             throws IOException {
-        String base = "http://localhost:" + System.getProperty( "portnumber" );
-        base += "/deegree-wms-similarity-tests/services" + request;
+        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" ) + "/";
+        base += System.getProperty( "deegree-wms-similarity-webapp", "deegree-wms-similarity-tests" );
+        base += "/services" + request;
         InputStream in = retrieve( STREAM, base );
 
         byte[] bs = null;
@@ -140,7 +141,9 @@ public class WMSSimilarityIntegrationTest {
         }
 
         if ( Math.abs( 1.0 - sim ) > 0.01 ) {
-            System.out.println( "Trying to store request/response in tempdir: expected/response" + ++numFailed + ".tif" );
+            System.out.println( "Trying to store request/response for " + name + " in tempdir: expected/response"
+                                + ++numFailed + ".tif" );
+            
             try {
                 int idx = 0;
                 for ( byte[] response : this.response ) {
@@ -149,10 +152,12 @@ public class WMSSimilarityIntegrationTest {
                 }
                 IOUtils.write( bs, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/response"
                                                          + numFailed + ".tif" ) );
+
+                System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
+                System.out.println( IntegrationTestUtils.toBase64Zip( bs, name + ".tif" ) );
             } catch ( Throwable t ) {
             }
         }
         Assert.assertEquals( "Images are not similar enough for " + name + ". Request: " + request, 1.0, sim, 0.01 );
     }
-
 }

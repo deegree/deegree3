@@ -76,8 +76,8 @@ import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * <code>SHPReader</code>

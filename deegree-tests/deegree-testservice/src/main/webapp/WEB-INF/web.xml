@@ -74,19 +74,4 @@
     <role-name>deegree</role-name>
   </security-role>
 
-
-  <!-- http basic auth enable -->
-  <!-- Define a security constraint on this application -->
-  <!-- User and role must be added to tomcat-users.xml -->
-  <!-- <security-constraint> <web-resource-collection> <web-resource-name>Entire Application</web-resource-name> <url-pattern>/*</url-pattern> 
-    </web-resource-collection> <auth-constraint> <role-name>demoadmin</role-name> </auth-constraint> </security-constraint> <login-config> 
-    <auth-method>BASIC</auth-method> <realm-name>Tomcat Manager Application</realm-name> </login-config> <security-role> <description>The 
-    role that is required to log in to the Manager Application</description> <role-name>demoadmin</role-name> </security-role> -->
-  <!-- end -->
-
-  <!-- error-page>
-      <exception-type>java.lang.Exception</exception-type>
-      <location>/error.xhtml</location>
-  </error-page-->
-
 </web-app>

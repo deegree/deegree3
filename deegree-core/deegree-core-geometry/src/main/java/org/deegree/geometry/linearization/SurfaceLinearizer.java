@@ -48,7 +48,7 @@ import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Provides methods for the linearization of planar surfaces, i.e. {@link PolygonPatch}es and {@link Polygon}s.

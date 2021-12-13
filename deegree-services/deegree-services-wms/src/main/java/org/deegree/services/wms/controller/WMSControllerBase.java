@@ -161,6 +161,11 @@ public abstract class WMSControllerBase implements Controller {
     }
 
     private boolean isSupportedFormatForRequestType( WMSRequestType req, String exceptions ) {
+        if ( req == null ) {
+            if ( EXCEPTION_BLANK.equals( exceptions ) || EXCEPTION_INIMAGE.equals( exceptions ) )
+                return false;
+            return true;
+        }
         switch ( req ) {
         case map:
         case GetMap:
