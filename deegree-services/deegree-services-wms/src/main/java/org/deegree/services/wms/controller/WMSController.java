@@ -345,7 +345,7 @@ public class WMSController extends AbstractOWS {
 
         if ( isStrict ) {
             String service = map.get( "SERVICE" );
-            if ( !service.equalsIgnoreCase( "WMS" ) ) {
+            if ( service != null && !"WMS".equalsIgnoreCase( service ) ) {
                 controllers.get( version ).sendException(
                                         new OWSException( "The parameter SERVICE must be 'WMS', but is '" + service + "'",
                                                           OWSException.INVALID_PARAMETER_VALUE ), response, this );
