@@ -539,17 +539,17 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.28</version>
+        <version>1.7.32</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.28</version>
+        <version>1.7.32</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jul-to-slf4j</artifactId>
-        <version>1.7.28</version>
+        <version>1.7.32</version>
       </dependency>
       <!-- 3d -->
       <dependency>
@@ -1067,6 +1067,11 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>junidecode</artifactId>
         <version>0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auto.service</groupId>
+        <artifactId>auto-service</artifactId>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <!-- Import dependency management from Spring Boot -->

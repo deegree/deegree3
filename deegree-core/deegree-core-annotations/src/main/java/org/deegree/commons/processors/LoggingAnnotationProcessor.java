@@ -51,6 +51,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
@@ -59,6 +60,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import com.google.auto.service.AutoService;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.annotations.PackageLoggingNotes;
 import org.deegree.commons.utils.io.RollbackPrintWriter;
@@ -79,6 +81,7 @@ import org.slf4j.Logger;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions({ "log4j.outputdir" })
 @Deprecated
+@AutoService(Processor.class)
 public class LoggingAnnotationProcessor extends AbstractProcessor {
 
     private static final Logger LOG = getLogger( LoggingAnnotationProcessor.class );
