@@ -12,7 +12,7 @@ import org.deegree.style.styling.wkn.shape.ShapeConverterLinearize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 public class WKTLinearizeLoader implements WellKnownNameLoader {
 
