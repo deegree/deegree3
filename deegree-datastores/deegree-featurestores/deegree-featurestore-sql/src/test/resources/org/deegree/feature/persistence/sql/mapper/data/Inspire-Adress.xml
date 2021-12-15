@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:ad="http://inspire.ec.europa.eu/schemas/ad/4.0"
+                       xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/ad/4.0 https://inspire.ec.europa.eu/schemas/ad/4.0/Addresses.xsd">
+  <gml:featureMember>
+    <ad:Address gml:id="Address_1">
+      <ad:inspireId>
+        <base:Identifier>
+          <base:localId>Address_1</base:localId>
+          <base:namespace>https://registry.gdi-de.org/id</base:namespace>
+          <base:versionId xsi:nil="true" nilReason="Unpopulated"/>
+        </base:Identifier>
+      </ad:inspireId>
+      <ad:position>
+        <ad:GeographicPosition>
+          <ad:geometry>
+            <gml:Point gml:id="Address_pos_0" srsName="urn:ogc:def:crs:EPSG::4258">
+              <gml:pos>49.119752 7.046397</gml:pos>
+            </gml:Point>
+          </ad:geometry>
+          <ad:specification xlink:href="http://inspire.ec.europa.eu/codelist/GeometrySpecificationValue/building"/>
+          <ad:method xlink:href="http://inspire.ec.europa.eu/codelist/GeometryMethodValue/byOtherParty"/>
+          <ad:default>true</ad:default>
+        </ad:GeographicPosition>
+      </ad:position>
+      <ad:status xsi:nil="true" nilReason="other:unpopulated"/>
+      <ad:locator>
+        <ad:AddressLocator>
+          <ad:designator>
+            <ad:LocatorDesignator>
+              <ad:designator>1</ad:designator>
+              <ad:type xlink:href="buildingIdentifier"/>
+            </ad:LocatorDesignator>
+          </ad:designator>
+          <ad:level xlink:href="http://inspire.ec.europa.eu/codelist/LocatorLevelValue/postalDeliveryPoint"/>
+        </ad:AddressLocator>
+      </ad:locator>
+      <ad:validFrom xsi:nil="true" nilReason="other:unpopulated"/>
+      <ad:beginLifespanVersion xsi:nil="true" nilReason="other:unpopulated"/>
+      <ad:component xlink:href="http://localhost:8088/C_1"/>
+      <ad:component xlink:href="http://localhost:8088/C_2"/>
+    </ad:Address>
+  </gml:featureMember>
+</gml:FeatureCollection>
