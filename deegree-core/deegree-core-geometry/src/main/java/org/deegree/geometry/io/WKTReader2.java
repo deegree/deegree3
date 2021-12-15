@@ -60,9 +60,9 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.segments.ArcString;
 
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jts.util.AssertionFailedException;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.AssertionFailedException;
 
 /**
  * Create a geometry from SQL Multi-Media Extension Well-Known Text which allows curves.

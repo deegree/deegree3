@@ -63,6 +63,7 @@
         <element name="MaxWidth" minOccurs="0" type="positiveInteger" />
         <element name="MaxHeight" minOccurs="0" type="positiveInteger" />
         <element name="KeyValueRewrite" minOccurs="0" maxOccurs="unbounded" type="wms:KeyValueRewriteType" />
+        <element name="Strict" minOccurs="0" type="boolean" default="false"/>
       </sequence>
       <attribute name="configVersion" use="required" type="wms:ConfigVersionType" />
     </complexType>

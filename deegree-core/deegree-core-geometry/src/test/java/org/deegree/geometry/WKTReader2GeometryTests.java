@@ -41,7 +41,7 @@ import org.deegree.geometry.primitive.segments.ArcString;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.junit.Test;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 public class WKTReader2GeometryTests {
 

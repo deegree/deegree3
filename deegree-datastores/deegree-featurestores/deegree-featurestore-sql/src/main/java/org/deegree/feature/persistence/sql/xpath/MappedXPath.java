@@ -44,19 +44,18 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.expression.ValueReference;
-import org.deegree.sqldialect.filter.ConstantPropertyNameMapping;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
 import org.deegree.sqldialect.filter.MappingExpression;
@@ -90,6 +89,8 @@ public class MappedXPath {
 
     private final boolean isSpatial;
 
+    private final boolean handleStrict;
+
     private String currentTable;
 
     private String currentTableAlias;
@@ -104,16 +105,18 @@ public class MappedXPath {
      * @param isSpatial
      *            if <code>true</code>, a spatial property is targeted (in this case, mapped property names are
      *            automatically extended to the nearest geometry child in the mapping configuration)
+     * @param handleStrict
      * @throws UnmappableException
      *             if the propertyName can not be matched to the relational model
      */
     public MappedXPath( SQLFeatureStore fs, FeatureTypeMapping ftMapping, ValueReference propName,
-                        TableAliasManager aliasManager, boolean isSpatial ) throws UnmappableException {
+                        TableAliasManager aliasManager, boolean isSpatial, boolean handleStrict ) throws UnmappableException {
 
         this.fs = fs;
         this.schema = fs.getSchema();
         this.aliasManager = aliasManager;
         this.isSpatial = isSpatial;
+        this.handleStrict = handleStrict;
 
         // check for empty property name
         List<MappableStep> steps = null;
@@ -184,6 +187,11 @@ public class MappedXPath {
         }
 
         if ( !matchFound && isSpatial ) {
+            if ( handleStrict ) {
+                String msg = "Cannot evaluate spatial operator. Targeted property name '" + propName.getAsText()
+                             + "' is not mapped.";
+                throw new InvalidParameterValueException( msg );
+            }
             // determine path to nearest geometry mapping
             List<Mapping> additionalSteps = new ArrayList<Mapping>();
             if ( determineNearestGeometryMapping( mappedParticles, additionalSteps ) ) {
