@@ -13,21 +13,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.18-SNAPSHOT</version>
+    <version>3.4.21-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <testResources>
@@ -64,6 +51,7 @@
                   <groupId>org.deegree</groupId>
                   <artifactId>deegree-workspace-compliance-tests</artifactId>
                   <version>${project.version}</version>
+                  <type>zip</type>
                   <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspace/</outputDirectory>
                 </artifactItem>
               </artifactItems>
@@ -115,17 +103,6 @@
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-compliance-tests</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>Saxon-HE</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine</artifactId>
@@ -185,6 +162,38 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wms</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>xalan</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wcs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-feature</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-coverage</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>

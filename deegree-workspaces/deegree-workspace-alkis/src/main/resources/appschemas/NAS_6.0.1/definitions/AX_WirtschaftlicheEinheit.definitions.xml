@@ -1,8 +1,0 @@
-<?xml-stylesheet type='text/xsl' href='./ShapeChangeDefinitionsType.xsl'?><TypeDefinition xmlns="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5" xmlns:def="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="S.164.1805.46.1687" xsi:schemaLocation="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5 ShapeChangeDefinitions.xsd">
-  <description xmlns="http://www.opengis.net/gml/3.2">[E] 'Wirtschaftliche Einheit' ist eine in der Örtlichkeit vorhandene wirtschaftliche Einheit mehrerer Flurstücke, die nicht mit der rechtlichen Einheit (Grundstück im rechtlichen Sinn) identisch sein muss (Beispiel: Wirtschaftliche Einheit zweier Flurstücke/Grundstücke, wobei nur ein Flurstück ein Erbbaugrundstück ist).
-</description>
-  <identifier xmlns="http://www.opengis.net/gml/3.2" codeSpace="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5">urn:x-shapechange:def:featureType:GeoInfoDok::adv:6.0.1:AX_WirtschaftlicheEinheit</identifier>
-  <name xmlns="http://www.opengis.net/gml/3.2" codeSpace="http://www.interactive-instruments.de/ShapeChange/Definitions/0.5/name">AX_WirtschaftlicheEinheit</name>
-  <classification>featureType</classification>
-  <supertypeRef xlink:href="urn:x-shapechange:def:featureType:GeoInfoDok::adv:6.0.1:AA_ZUSO"/>
-</TypeDefinition>
