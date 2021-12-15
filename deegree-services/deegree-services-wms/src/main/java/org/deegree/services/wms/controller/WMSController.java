@@ -343,6 +343,15 @@ public class WMSController extends AbstractOWS {
         String v = getVersionValueFromRequest( map );
         Version version = v == null ? highestVersion : Version.parseVersion( v );
 
+        if ( isStrict ) {
+            String service = map.get( "SERVICE" );
+            if ( service != null && !"WMS".equalsIgnoreCase( service ) ) {
+                controllers.get( version ).sendException(
+                                        new OWSException( "The parameter SERVICE must be 'WMS', but is '" + service + "'",
+                                                          OWSException.INVALID_PARAMETER_VALUE ), response, this );
+                return;
+            }
+        }
         WMSRequestType req;
         String requestName = map.get( "REQUEST" );
         try {
