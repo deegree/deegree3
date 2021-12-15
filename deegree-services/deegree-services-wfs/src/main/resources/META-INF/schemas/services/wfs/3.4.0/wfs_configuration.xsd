@@ -80,6 +80,7 @@
             </attribute>
           </complexType>
         </element>
+        <element name="Strict" minOccurs="0" type="boolean" default="false"/>
       </sequence>
       <attribute name="configVersion" use="required">
         <simpleType>
@@ -282,6 +283,16 @@
             Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
             raise an exception.
             Furthermore it is allowed to insert features with references to already inserted features as well as features from the GML to insert.
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="UseExistingSkipResolvingReferences">
+        <annotation>
+          <documentation>
+            Indicates that the WFS will not generate new feature identifiers for inserted features.
+            Instead, the WFS will use the identifier encoded in the feature. If a duplicate exists then the WFS will
+            raise an exception.
+            Furthermore during import feature references are not checked.
           </documentation>
         </annotation>
       </enumeration>
