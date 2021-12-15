@@ -534,17 +534,17 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.32</version>
+        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.32</version>
+        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jul-to-slf4j</artifactId>
-        <version>1.7.32</version>
+        <version>${slf4j.version}</version>
       </dependency>
       <!-- 3d -->
       <dependency>
@@ -1088,6 +1088,7 @@
     <spring-batch.version>4.3.3</spring-batch.version>
     <spring-framework.version>5.3.12</spring-framework.version>
     <log4j.version>2.16.0</log4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
   <modules>
