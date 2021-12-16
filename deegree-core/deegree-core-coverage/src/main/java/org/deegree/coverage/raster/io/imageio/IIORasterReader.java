@@ -44,15 +44,14 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
-import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterGeoReference.OriginLocation;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.WorldFileAccess;
@@ -60,8 +59,6 @@ import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -75,8 +72,6 @@ import org.slf4j.LoggerFactory;
 public class IIORasterReader implements RasterReader {
 
     private static final Set<String> SUPPORTED_TYPES;
-
-    private static Logger LOG = LoggerFactory.getLogger( IIORasterReader.class );
 
     static {
         SUPPORTED_TYPES = new HashSet<String>();
@@ -126,7 +121,6 @@ public class IIORasterReader implements RasterReader {
     public AbstractRaster load( File file, RasterIOOptions options )
                             throws IOException {
         String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
-        LOG.debug( "reading " + file + " with ImageIO" );
         reader = new IIORasterDataReader( file, options, imageIndex == null ? 0 : Integer.parseInt( imageIndex ) );
         AbstractRaster r = loadFromReader( reader, options );
         return r;
@@ -193,9 +187,14 @@ public class IIORasterReader implements RasterReader {
         RasterDataInfo rdi = reader.getRasterDataInfo();
 
         RasterCache cache = RasterCache.getInstance( opts );
-        SimpleRaster result = cache.createFromCache( this, this.dataLocationId );
+        SimpleRaster result = null;
+
+        boolean useCache = shouldCreateCacheFile();
+        if ( useCache ) {
+            result = cache.createFromCache( this, this.dataLocationId );
+        }
         if ( result == null ) {
-            result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, true, opts );
+            result = RasterFactory.createEmptyRaster( rdi, envelope, rasterReference, this, useCache, opts );
         }
         this.reader.dispose();
         return result;
@@ -207,8 +206,13 @@ public class IIORasterReader implements RasterReader {
         this.dataLocationId = options != null ? options.get( RasterIOOptions.ORIGIN_OF_RASTER ) : null;
         if ( dataLocationId == null ) {
             if ( reader != null && reader.file() != null ) {
-                this.dataLocationId = FileUtils.getFilename( reader.file() );
+                this.dataLocationId = RasterCache.getUniqueCacheIdentifier( reader.file() );
             }
+        }
+        
+        String imageIndex = options.get( RasterIOOptions.IMAGE_INDEX );
+        if (imageIndex != null) {
+            this.dataLocationId += "__" + imageIndex;
         }
     }
 

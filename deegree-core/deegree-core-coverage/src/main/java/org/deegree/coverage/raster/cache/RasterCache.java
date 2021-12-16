@@ -43,6 +43,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
@@ -50,6 +51,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.StringUtils;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterDataFactory;
@@ -110,6 +112,9 @@ public class RasterCache {
 
     private final static ConcurrentSkipListSet<CacheRasterReader> cache = new ConcurrentSkipListSet<CacheRasterReader>(
                                                                                                                         new CacheComparator() );
+
+    private final static Map<String, String> uniqueRasterCacheIds = new HashMap<String, String>();
+
     static {
         evaluateProperties();
     }
@@ -481,6 +486,7 @@ public class RasterCache {
                 boolean createCache = reader.shouldCreateCacheFile();
                 File cacheFile = null;
                 if ( createCache ) {
+                    LOG.trace( "create cachefile for location {}", reader.getDataLocationId() );
                     cacheFile = createCacheFile( reader.getDataLocationId() );
                 }
                 result = new CacheRasterReader( reader, cacheFile, this );
@@ -594,4 +600,47 @@ public class RasterCache {
         maxCacheDisk = 0;
     }
 
+    /**
+     * Generate unique (in the scope of RasterCache) short filename for raster reader identification
+     * 
+     * @param file
+     *            file reference to start with
+     * @return unique filename (may contains prefix to make it unique)
+     */
+    public static synchronized String getUniqueCacheIdentifier( File file ) {
+        String fname = FileUtils.getFilename( file );
+        String apath = file.getAbsolutePath();
+
+        int idx = 0;
+        String key = fname;
+
+        while ( !apath.equals( uniqueRasterCacheIds.getOrDefault( key, apath ) ) ) {
+            idx++;
+            key = idx + "_" + fname;
+        }
+        uniqueRasterCacheIds.put( key, apath );
+        return key;
+    }
+    
+    /**
+     * Helper function to check if a .no-cache or .no-cache-[level] file exists
+     */
+    public static boolean hasNoCacheFile( File file, int level ) {
+        try {
+            if ( file == null || !file.exists() )
+                return false;
+
+            File all = new File( file.getParentFile(), file.getName() + ".no-cache" );
+            if ( all.exists() ) {
+                return true;
+            }
+
+            File lvl = new File( file.getParentFile(), file.getName() + ".no-cache-" + level );
+            return lvl.exists();
+        } catch ( Exception ex ) {
+            LOG.debug( "Failed to check for .no-cache files for {} level {}", file, level );
+            LOG.debug( "Got exception", ex );
+            return false;
+        }
+    }
 }

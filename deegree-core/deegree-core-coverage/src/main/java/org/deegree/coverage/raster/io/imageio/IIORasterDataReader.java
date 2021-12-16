@@ -56,6 +56,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
 import org.deegree.coverage.raster.cache.ByteBufferPool;
+import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
 import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.coverage.raster.data.info.DataType;
@@ -79,6 +80,15 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class IIORasterDataReader implements RasterDataReader {
+
+    private static final boolean CACHE_DISABLED;
+
+    static {
+        CACHE_DISABLED = "false".equalsIgnoreCase( System.getProperty( "deegree.raster.cache.iioreader", "true" ));
+        if ( !CACHE_DISABLED ) {
+            LoggerFactory.getLogger( IIORasterDataReader.class ).info( "IIORaster cache is disabled for file based resources via system property!" );
+        }
+    }
 
     // io handles
     private File file;
@@ -120,6 +130,8 @@ public class IIORasterDataReader implements RasterDataReader {
     private RasterDataInfo rdi;
 
     private final int imageIndex;
+    
+    private final boolean forceNoCache;
 
     /**
      * Create a IIORasterDataReader for given file
@@ -130,7 +142,7 @@ public class IIORasterDataReader implements RasterDataReader {
      *            with values.
      */
     public IIORasterDataReader( File file, RasterIOOptions options, int imageIndex ) {
-        this( options, false, imageIndex );
+        this( options, false, imageIndex, CACHE_DISABLED || RasterCache.hasNoCacheFile( file, imageIndex ) );
         this.file = file;
     }
 
@@ -143,15 +155,16 @@ public class IIORasterDataReader implements RasterDataReader {
      *            with values
      */
     public IIORasterDataReader( InputStream stream, RasterIOOptions options, int imageIndex ) {
-        this( options, ( stream != null && stream.markSupported() ), imageIndex );
+        this( options, ( stream != null && stream.markSupported() ), imageIndex, false );
         this.inputStream = stream;
     }
 
-    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream, int imageIndex ) {
+    private IIORasterDataReader( RasterIOOptions options, boolean resetableStream, int imageIndex, boolean forceNoCache ) {
         this.imageIndex = imageIndex;
         this.format = options.get( RasterIOOptions.OPT_FORMAT );
         this.options = options;
         this.resetableStream = resetableStream;
+        this.forceNoCache = forceNoCache;
     }
 
     /**
@@ -370,6 +383,11 @@ public class IIORasterDataReader implements RasterDataReader {
      * @return true if the imageio thinks the file can be accessed easily
      */
     boolean shouldCreateCacheFile() {
+        if ( forceNoCache ) {
+            LOG.debug( "cache for reader with file {} and index {} disabbled by no-cache-file/system-property", file, imageIndex );
+            return false;
+        }
+        
         boolean result = true;
         try {
             synchronized ( LOCK ) {
@@ -469,5 +487,4 @@ public class IIORasterDataReader implements RasterDataReader {
             }
         }
     }
-
 }

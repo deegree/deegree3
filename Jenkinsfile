@@ -1,9 +1,14 @@
 pipeline {
-    agent any
+    agent {
+        label 'openjdk8bot'
+    }
 
     tools {
         maven 'maven-3.6'
         jdk 'adoptopenjdk-jdk8'
+    }
+    environment {
+        MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
     }
     stages {
         stage ('Initialize') {
@@ -15,43 +20,44 @@ pipeline {
                 sh 'mvn -version'
                 sh 'java -version'
                 sh 'git --version'
-                sh 'docker --version'
             }
         }
         stage ('Build') {
             steps {
                echo 'Unit testing'
-               sh 'mvn -B -C -q clean test -Poracle,mssql'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+               sh 'mvn -B -C -Poracle,mssql clean test-compile'
             }
         }
         stage ('Integration Test') {
             steps {
                 echo 'Integration testing'
-                sh 'mvn -B -C -fae -Dskip.unit.tests=true verify -Pintegration-tests,oracle,mssql'
+                sh 'mvn -B -C -Pintegration-tests,oracle,mssql install'
             }
             post {
                 always {
-                    junit '**/target/failsafe-reports/*.xml'
+                    junit '**/target/*-reports/*.xml'
                 }
             }
         }
         stage ('Quality Checks') {
+            when {
+                branch 'master'
+            }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae site -Psite-all-reports,oracle,mssql'
+                sh 'mvn -B -C -fae -Poracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
             }
             post {
                 success {
-                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
+                    checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
                 }
             }
         }
         stage ('Acceptance Test') {
+            when {
+                branch 'master'
+            }
             steps {
                 echo 'Preparing test harness: TEAM Engine'
                 echo 'Download and start TEAM Engine'
@@ -66,28 +72,35 @@ pipeline {
         }
         stage ('Release') {
             when {
-                // check if branch is master
                 branch 'master'
             }
-            agent { label 'docker' }
             steps {
                 echo 'Prepare release version...'
+                echo 'Build and publish documentation'
+                sh 'mvn -pl :deegree-webservices-handbook -Phandbook install'
                 echo 'Build docker image...'
             }
             post {
                 success {
                     // post release on github
-                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/deegree-webservices-*.war', fingerprint: true
                 }
             }
         }
         stage ('Deploy PROD') {
+            when {
+                branch 'master'
+            }
             // install current release version on demo.deegree.org
-            agent { label 'demo' }
             steps {
-                echo 'Deploying to PROD...'
+                echo 'Deploying to demo.deegree.org...'
                 echo 'Running smoke tests...'
             }
+        }
+    }
+    post {
+        always {
+            cleanWs notFailBuild: true
         }
     }
 }

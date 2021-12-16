@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.ows;
 
+import static org.deegree.commons.ows.exception.OWSException.DUPLICATE_STORED_QUERY_ID_VALUE;
 import static org.deegree.commons.ows.exception.OWSException.LOCK_HAS_EXPIRED;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -102,6 +103,8 @@ public class OWS110ExceptionReportSerializer extends XMLExceptionSerializer {
             response.setStatus( SC_FORBIDDEN );
         } else if ( LOCK_HAS_EXPIRED.equals( exception.getExceptionCode() ) ) {
             response.setStatus( SC_FORBIDDEN );
+        } else if (DUPLICATE_STORED_QUERY_ID_VALUE.equals( exception.getExceptionCode() )) {
+            response.setStatus( 409 );
         } else {
             response.setStatus( SC_BAD_REQUEST );
         }

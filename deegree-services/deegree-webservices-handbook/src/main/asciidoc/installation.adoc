@@ -1,6 +1,7 @@
 [[anchor-installation]]
 == Installation
 
+[[system-requirements]]
 === System requirements
 
 deegree webservices work on any platform with a compatible Java SE 8
@@ -8,18 +9,15 @@ installation, including:
 
 * Microsoft Windows
 * Linux
-* Mac OS X
-* Solaris
+* MacOS
 
 Supported Java SE 8 versions are
-http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle
-JDK 8]footnote:[Oracle JDK 7 and earlier versions are not supported
-anymore, be aware that those versions are out of maintenance and reached
-End-of-life.], http://openjdk.java.net[OpenJDK 8]footnote:[OpenJDK
-binaries are provided by https://www.azul.com/downloads/zulu/[Azul
-Systems] or https://adoptopenjdk.net[AdoptOpenJDK].]. Newer Java SE
-versions may work, but are not officially supported by the deegree
-development team.
+http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle JDK 8]
+footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and http://openjdk.java.net[OpenJDK 8]
+footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/zulu/[Azul Systems]
+or https://adoptopenjdk.net[AdoptOpenJDK].].
+
+NOTE: Newer Java SE versions such as the LTS versions 11 and 16 are currently not supported by deegree 3.4. Please check out our wiki page https://github.com/deegree/deegree3/wiki/Java-SE-11-Support[Java 11 support] for further information.
 
 === Downloading
 
@@ -27,33 +25,32 @@ deegree webservices downloads are available on the
 http://www.deegree.org[deegree home page]. You have the choice between:
 
 * _Docker_ : Docker Image with deegree webservices on OpenJDK and Apache
-Tomcatfootnote:[Requires an installation of Docker Community or
+Tomcat footnote:[Requires an installation of Docker Community or
 Enterprise Edition, download Docker from
 https://www.docker.com/[www.docker.com].]
 * _WAR_: Generic Java Web Archive for deployment in an existing Java
-Servlet containerfootnote:[A Java Servlet 2.5 compliant container is
+Servlet container footnote:[A Java Servlet 2.5 compliant container is
 required. We recommend using the latest http://tomcat.apache.org/[Apache
 Tomcat 8] release.]
-* _ZIP_: Distribution bundle with Apache Tomcatfootnote:[As of deegree
+* _ZIP_: Distribution bundle with Apache Tomcat footnote:[As of deegree
 3.4.0 the ZIP distribution bundle is deprecated and the download links
-are removed from the website. Download the ZIP from the
-http://repo.deegree.org/content/groups/public/org/deegree/deegree-webservices-tomcat-bundle/[Nexus
-repository] instead.]
+have been removed from the website. Download the ZIP from the
+https://repo.deegree.org/#browse/search=attributes.maven2.artifactId%3Ddeegree-webservices-tomcat-bundle[Nexus repository]
+instead.]
 
-TIP: If you are confused by the two options and unsure which version to pick,
-use the ZIP. Both variants contain exactly the same deegree software,
+TIP: If you are confused by the options and unsure which version to pick,
+use the ZIP. All variants contain exactly the same deegree webservices webapp,
 they only differ in packaging.
 
 === Starting and stopping
 
-In order to run the ZIP version, extract it into a directory of your
-choice. Afterwards, fire up the included start script for your operating
-system:
+In order to run the ZIP version, extract it into a local directory of your
+choice. Afterwards, change to the directory ``deegree-webservices-tomcat-bundle-3.4.x/apache-tomcat-8.x.y/bin`` and
+fire up the included start script for your operating system:
 
-* Microsoft Windows: _start-deegree-windows_
-* Linux/Solaris: _start-deegree-linux.sh_ (when starting via a Desktop
-Environment such as Gnome, choose "Run in terminal")
-* Mac OS X: _start-deegree-osx.cmd_
+* Windows: _startup.bat_
+* Linux/MacOS: _startup.sh_ (when starting via a Desktop Environment, choose "Run in terminal",  and you may need to grant
+permission to execute the scripts with ``chmod a+x *.sh`` before)
 
 You should now see a terminal window on your screen with a lot of log
 messages:
@@ -83,8 +80,8 @@ consider installing http://tomcat.apache.org[Apache Tomcat 8] as a
 system service. Afterwards, download the WAR version of deegree
 webservices and deploy it into your Tomcat installation (e.g. by copying
 the WAR file into the _webapps_ folder). Consult the
-https://tomcat.apache.org/tomcat-8.5-doc/index.html[Tomcat
-documentation] for more information and options.
+https://tomcat.apache.org/tomcat-8.5-doc/index.html[Tomcat documentation]
+for more information and options.
 
 === Securing deegree
 
@@ -138,8 +135,5 @@ you must not operate the Java Servlet container as root user!
 Furthermore you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java
 applications we recommend to follow the
-https://docs.oracle.com/javase/8/docs/technotes/guides/security/index.html[Java
-Security Guidelines] and for
-http://tomcat.apache.org/tomcat-8.5-doc/security-manager-howto.html[Apache
-
-Tomcat the Security Manager HowTo].]
+https://docs.oracle.com/javase/8/docs/technotes/guides/security/index.html[Java Security Guidelines] and for
+http://tomcat.apache.org/tomcat-8.5-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]

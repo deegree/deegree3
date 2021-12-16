@@ -20,12 +20,11 @@ In the following, FE 1.1.0 syntax is used.
 
 FE enables the use of the following arithmetic operators:
 
-----
-* Add: used for addition
-* Sub: used for substraction
-* Mul: used for multiplication
-* Div: used for division
-----
+* `Add`: used for addition
+* `Sub`: used for substraction
+* `Mul`: used for multiplication
+* `Div`: used for division
+
 
 *Example:*
 
@@ -41,11 +40,10 @@ FE enables the use of the following arithmetic operators:
 
 FE enables the use of the following logical operators:
 
-----
-* And: Links two conditions with AND
-* Or: links two conditions with OR
-* Not: negates a condition
-----
+* `And`: Links two conditions with AND
+* `Or`: links two conditions with OR
+* `Not`: negates a condition
+
 
 *Example:*
 
@@ -62,25 +60,16 @@ FE enables the use of the following logical operators:
 deegree has implementations for the following list of comparison
 operators:
 
-----
-* PropertyIsEqualTo: Evaluates if a property value equals to another
-value.
-* PropertyIsNotEqualTo: Evaluates if a property value differs from
-another value.
-* PropertyIsLessThan: Evaluates if a property value is smaller than
-another value.
-* PropertyIsGreaterThan: Evaluates if a property value is greater than
-another value.
-* PropertyIsLessThanOrEqualTo: Evaluates if a property value is smaller
-than or equal to another value.
-* PropertyIsGreaterThanOrEqualTo: Evaluates if a property value is
-greater than or euqal to another value.
-* PropertyIsLike: Evaluates if a property value is like another value.
-It compares string values which each other.
-* PropertyIsNull: Evaluates if a property value is NULL.
-* PropertyIsBetween: Evaluates if a property value is between 2 defined
-values.
-----
+* `PropertyIsEqualTo`: Evaluates if a property value equals to another value.
+* `PropertyIsNotEqualTo`: Evaluates if a property value differs from another value.
+* `PropertyIsLessThan`: Evaluates if a property value is smaller than another value.
+* `PropertyIsGreaterThan`: Evaluates if a property value is greater than another value.
+* `PropertyIsLessThanOrEqualTo`: Evaluates if a property value is smaller than or equal to another value.
+* `PropertyIsGreaterThanOrEqualTo`: Evaluates if a property value is greater than or euqal to another value.
+* `PropertyIsLike`: Evaluates if a property value is like another value. It compares string values which each other.
+* `PropertyIsNull`: Evaluates if a property value is NULL.
+* `PropertyIsBetween`: Evaluates if a property value is between 2 defined values.
+
 
 *Example:*
 
@@ -96,23 +85,19 @@ values.
 
 With deegree you can make use of the following spatial operators:
 
-----
-* Equals: Evaluates if geometries are identical
-* Disjoin: Evaluates if geometries are spatially disjoined
-* Touches: Evaluates if geometries are spatially touching
-* Within: Evaluates if a geometry is spatially within another
-* Overlaps: Evaluates if geometries are spatially overlapping
-* Crosses: Evaluates if geometries are spatially crossing
-* Intersects: Evaluates if geometries are spatially intersecting. This
-is meant as the opposite of disjoin.
-* Contains: Evaluates if a geometry spatially contains another.
-* DWithin: Evaluates if a geometry is within a specific distance to
-another.
-* Beyond: Evaluates if a geometry is beyond a specific distance to
-another.
-* BBOX: Evaluates if a geometry spatially intersects with a given
-bounding box.
-----
+
+* `Equals`: Evaluates if geometries are identical
+* `Disjoin`: Evaluates if geometries are spatially disjoined
+* `Touches`: Evaluates if geometries are spatially touching
+* `Within`: Evaluates if a geometry is spatially within another
+* `Overlaps`: Evaluates if geometries are spatially overlapping
+* `Crosses`: Evaluates if geometries are spatially crossing
+* `Intersects`: Evaluates if geometries are spatially intersecting. This is meant as the opposite of disjoin.
+* `Contains`: Evaluates if a geometry spatially contains another.
+* `DWithin`: Evaluates if a geometry is within a specific distance to another.
+* `Beyond`: Evaluates if a geometry is beyond a specific distance to another.
+* `BBOX`: Evaluates if a geometry spatially intersects with a given bounding box.
+
 
 *Example:*
 
@@ -130,8 +115,8 @@ bounding box.
 </Overlaps>
 ----
 
-TIP: For further reading on spatial operators, please refer to the OGC Simple
-Features Specification For SQL.
+TIP: For further reading on spatial operators, please refer to the
+https://www.ogc.org/standards/sfs[OGC Simple Features Specification For SQL].
 
 === Filter expressions
 
@@ -154,7 +139,7 @@ section gives some examples for the use of such filter expressions.
 ----
 
 This filter expressions shows, how filter expressions with a comparative
-filter are constructed In the concrete example, the property
+filter are constructed. In the example above, the property
 SomeProperty is evaluated, if it equals to the value of "100".
 
 ===== Spatial filter expression
@@ -176,8 +161,8 @@ SomeProperty is evaluated, if it equals to the value of "100".
 ----
 
 This filter expressions shows, how filter expressions with a spatial
-filter are constructed. In the concrete case, the defined filter looks
-up, if the property geometry overlaps with the define polygon of ...
+filter are constructed. In this example, the defined filter looks
+up, if the property geometry overlaps with the defined polygon of "..." (geometry values removed for better readability).
 
 ==== Advanced filter expressions
 
@@ -206,7 +191,7 @@ up, if the property geometry overlaps with the define polygon of ...
 
 This more complex filter expressions shows, how to make use of
 combinations of filter operators. THe given filter expression evaluates
-if the value of the property DEPTH is smaller than "30" AND if the
+if the value of the property DEPTH is smaller than "30" *and* if the
 geometry property named Geometry is spatially disjoint with the given
 envelope.
 
@@ -424,3 +409,45 @@ In this case, the stroke width will be one pixel for scales around
 500000, and will get bigger as you zoom in (and the scale denominator
 gets smaller). Scale denominators above 500000 will yield invisible
 strokes with a width of zero.
+
+==== env
+
+The `env` function takes two parameters and makes it possible to 
+provide name/value pairs to styles, so that more dynamic styles 
+are possible.
+
+
+[source,xml]
+----
+<Function xmlns="http://www.opengis.net/ogc" name="env">
+  <Literal>size</Literal>
+  <Literal>42</Literal>
+</Function>
+----
+
+These paris can be passed as `env` parameter alongside the usual
+GetMap request parameters. Multiple  `name:value` pairs have to be 
+separated by semicolons (`...&env=size:33;color:FF0000&...`).
+
+The second parameter must be the default value that is returned if 
+no pair with the specified name was found.
+
+The following parameters are predefined and cannot be passed:
+
+[width="100%",cols="28%,28%,44%",options="header",]
+|=======================================================================
+|Name |Type |Description
+
+|wms_bbox |Envelope |envelope (GetMap request)
+
+|wms_crs |ICRS |coordinate system  (GetMap request)
+
+|wms_srs |String |coordinate system name  (GetMap request)
+
+|wms_width |Integer |width in pixel  (GetMap request)
+
+|wms_height |Integer |height in pixle  (GetMap request)
+
+|wms_scale_denominator |Double |scale  (GetMap request)
+
+|=======================================================================

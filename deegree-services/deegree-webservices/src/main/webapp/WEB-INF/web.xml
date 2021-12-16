@@ -95,7 +95,6 @@
     <role-name>deegree</role-name>
   </security-role>
 
-
   <!-- http basic auth enable -->
   <!-- Define a security constraint on this application -->
   <!-- User and role must be added to tomcat-users.xml -->
@@ -105,9 +104,9 @@
     role that is required to log in to the Manager Application</description> <role-name>demoadmin</role-name> </security-role> -->
   <!-- end -->
 
-  <!-- error-page>
-      <exception-type>java.lang.Exception</exception-type>
-      <location>/error.xhtml</location>
-  </error-page-->
+  <error-page>
+    <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+    <location>/index.jsf</location>
+  </error-page>
 
 </web-app>
