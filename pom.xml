@@ -1087,7 +1087,7 @@
     <spring-boot.version>2.4.12</spring-boot.version>
     <spring-batch.version>4.3.3</spring-batch.version>
     <spring-framework.version>5.3.12</spring-framework.version>
-    <log4j.version>2.16.0</log4j.version>
+    <log4j.version>2.17.0</log4j.version>
     <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
