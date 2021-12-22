@@ -94,7 +94,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.LogManager;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -1428,7 +1427,6 @@ public class OGCFrontController extends HttpServlet {
         Executor.getInstance().shutdown();
 
         LogFactory.releaseAll();
-        LogManager.shutdown();
 
         // image io
         Iterator<Class<?>> i = IIORegistry.getDefaultInstance().getCategories();
