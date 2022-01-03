@@ -156,7 +156,7 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
 
         if ( lays.isEmpty() && themes.isEmpty() ) {
             LOG.warn( "Skipping theme or subtheme with id {} because it is empty (no subthemes and no layers).",
-                      current.getIdentifier() );
+                      current.getIdentifier() != null ? current.getIdentifier().getValue() : " - (no identifier)" );
             return null;
         }
 
