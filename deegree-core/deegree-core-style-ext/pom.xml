@@ -8,14 +8,14 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4.21-SNAPSHOT</version>
+    <version>3.4.23-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-style</artifactId>
-      <version>3.4.21-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
