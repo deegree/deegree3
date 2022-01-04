@@ -48,13 +48,15 @@ import java.lang.annotation.Target;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @deprecated This annotation is deprecated as of version 3.4 of deegree.
  */
 @Retention(SOURCE)
 @Target(PACKAGE)
+@Deprecated
 public @interface PackageLoggingNotes {
 
     /**
-     * @return the string that can be used as title string delimiting a log4j.properties section
+     * @return the string that can be used as title string delimiting a log4j2.xml section
      */
     String title() default "";
 
