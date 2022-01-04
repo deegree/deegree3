@@ -522,9 +522,9 @@ logged, along with error messages.
 .Log messages in the deegree log
 image::terminal.png[Log messages in the deegree log,scaledwidth=50.0%]
 
-TIP: If you deployed the WAR version, the location of the deegree log depends
+TIP: If you deployed the WAR file, the location of the deegree log depends
 on your web application container. For Tomcat, you will find it in file
-_catalina.out_ in the _log/_ directory.
+_catalina.out_ in the _logs/_ directory.
 
-TIP: More logging can be activated by adjusting file _log4j.properties_ in
-the _/WEB-INF/classes/_ directory of the deegree webapplication.
+TIP: More logging can be activated by adjusting file _log4j2.properties_ in
+the _/WEB-INF/classes/_ directory of the deegree web application. See chapter <<anchor-logging-configuration>> for more information how to configure the logging framework.

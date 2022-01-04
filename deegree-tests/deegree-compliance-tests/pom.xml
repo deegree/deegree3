@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.20-SNAPSHOT</version>
+    <version>3.4.23-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -181,7 +181,11 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-    </dependency>   
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

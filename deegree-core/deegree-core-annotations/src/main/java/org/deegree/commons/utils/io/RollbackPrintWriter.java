@@ -44,7 +44,9 @@ import java.util.LinkedList;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @deprecated This class is deprecated as of version 3.4 of deegree.
  */
+@Deprecated
 public class RollbackPrintWriter {
 
     private PrintWriter out;
