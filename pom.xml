@@ -1084,7 +1084,7 @@
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <java.version>1.8</java.version>
     <site.dir>${user.home}/Sites</site.dir>
-    <spring-boot.version>2.4.12</spring-boot.version>
+    <spring-boot.version>2.4.13</spring-boot.version>
     <spring-batch.version>4.3.3</spring-batch.version>
     <spring-framework.version>5.3.12</spring-framework.version>
     <log4j.version>2.17.1</log4j.version>
