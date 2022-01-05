@@ -148,6 +148,7 @@ import org.deegree.workspace.Workspace;
 import org.jaxen.expr.DefaultAbsoluteLocationPath;
 import org.jaxen.expr.DefaultNameStep;
 import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
 import org.slf4j.Logger;
 
 /**
@@ -1722,6 +1723,10 @@ public class SQLFeatureStore implements FeatureStore {
 				}
 				else {
 					column = blobMapping.getBBoxColumn();
+					LOG.warn(
+							"Property {} is mapped to column {}. This may cause unexpected results. "
+									+ "Currently only filtering of 'internalId', 'nummer' and 'name' is supprted!",
+							propName, column);
 					GeometryStorageParams geometryParams = new GeometryStorageParams(blobMapping.getCRS(), srid,
 							CoordinateDimension.DIM_2);
 					GeometryMapping bboxMapping = new GeometryMapping(null, false, new DBField(column),
@@ -1733,6 +1738,8 @@ public class SQLFeatureStore implements FeatureStore {
 
 			@SuppressWarnings("deprecation")
 			private boolean isProperty(ValueReference propName, String expectedLocalPart) {
+				if (propName == null)
+					return false;
 				Expr xPath = propName.getAsXPath();
 				if (xPath instanceof DefaultAbsoluteLocationPath
 						&& !((DefaultAbsoluteLocationPath) xPath).getSteps().isEmpty()) {
