@@ -819,7 +819,7 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.7</version>
+        <version>1.14</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.xmlgraphics</groupId>
