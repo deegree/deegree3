@@ -80,14 +80,6 @@ A more complex configuration example looks like this:
     <Version>1.1.0</Version>
   </SupportedVersions>
 
-  <FeatureStoreId>inspire-ad</FeatureStoreId>
-
-  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
-  <EnableResponseBuffering>false</EnableResponseBuffering>
-  <DisabledResources>
-    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
-  </DisabledResources>
-
   <SupportedRequests>
     <SupportedEncodings>kvp</SupportedEncodings>
      <GetCapabilities>
@@ -98,6 +90,14 @@ A more complex configuration example looks like this:
       <SupportedEncodings>xml</SupportedEncodings>
     </GetFeature>
   </SupportedRequests>
+
+  <FeatureStoreId>inspire-ad</FeatureStoreId>
+
+  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
+  <EnableResponseBuffering>false</EnableResponseBuffering>
+  <DisabledResources>
+    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
+  </DisabledResources>
 
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
   <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
@@ -172,6 +172,8 @@ GetCapabilities response
 |GMLFormat |0..n |Complex |GML format configuration
 
 |CustomFormat |0..n |Complex |Custom format configuration
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
 |===
 
 The remainining sections describe these options and their sub-options in
@@ -248,6 +250,7 @@ This may lead to errors if the provided ids are already in use.
 * *UseExistingResolvingReferencesInternally*: Same as UseExisting, but
 it is allowed to insert features with references to already inserted
 features.
+* **UseExistingSkipResolvingReferences**: Same as UseExisting, but references to features are not checked. The user is fully responsible of the data integrity!
 * *GenerateNew* (default): New and unique ids are generated. References
 in the input GML (xlink:href) that point to a feature with an reassigned
 id are fixed as well, so reference consistency is maintained.
@@ -851,6 +854,8 @@ unlimited
 
 |MaxHeight |0..1 |Integer |Maximum height in a GetMap request, default:
 unlimited
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
 |===
 
 ==== Basic options
@@ -881,7 +886,7 @@ Here is a snippet for quick copy & paste:
 [source,xml]
 ----
 <SupportedVersions>
-  <SupportedVersion>1.1.1</SupportedVersion>
+  <Version>1.1.1</Version>
 </SupportedVersions>
 <MetadataStoreId>mdstore</MetadataStoreId>
 <MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
@@ -1062,7 +1067,7 @@ deegree templating based format:
   <GetFeatureInfoFormat>
     <File>../customformat.gfi</File>
     <Format>text/html</Format>
-    <Property name="customname" value="customvalue" \>
+    <Property name="customname" value="customvalue" />
   </GetFeatureInfoFormat>
 </FeatureInfoFormats>
 ----
@@ -1075,7 +1080,7 @@ The configuration for the XSLT approach looks like this:
   <GetFeatureInfoFormat>
     <XSLTFile gmlVersion="GML_32">../customformat.xsl</XSLTFile>
     <Format>text/html</Format>
-    <Property name="customname" value="customvalue" \>
+    <Property name="customname" value="customvalue" />
   </GetFeatureInfoFormat>
 </FeatureInfoFormats>
 ----
@@ -1816,8 +1821,8 @@ like this:
 ==== Configuration overview
 
 The deegree WMTS config file format is defined by schema file
-http://schemas.deegree.org/services/wmts/3.2.0/wmts.xsd. The root
-element is _deegreeWMTS_ and the config attribute must be _3.2.0_.
+http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd. The root
+element is _deegreeWMTS_ and the config attribute must be _3.4.0_.
 
 The following table lists all available configuration options. When
 specifying them, their order must be respected.
@@ -1828,7 +1833,7 @@ specifying them, their order must be respected.
 |MetadataURLTemplate |0..1 |String |Template for generating URLs to
 layer metadata
 
-|ThemeId |0..n |String |Limits themes to use
+|ThemeId |0..n |String |Limit the themes to use
 |===
 
 Below the _ServiceConfiguration_ section you can specify custom
@@ -1837,16 +1842,158 @@ featureinfo format handlers:
 [source,xml]
 ----
 ...
+<ServiceConfiguration>
+...
 </ServiceConfiguration>
 <FeatureInfoFormats>
 ...
-</FeatureInfoFormats>]
+</FeatureInfoFormats>
 ----
 
 Have a look at section <<anchor-featureinfo-configuration>> (in the WMS
 chapter) to see how custom featureinfo formats are configured. Take note
 that the GetFeatureInfo operation is currently only supported for remote
 WMS tile store backends.
+
+==== A complete WMTS configuration example, based on a GeoTIFFTileStore
+
+. Storing the GeoTIFF file in the _data/geotiff/.._ directory of the deegree workspace
+
+. Adding the GeoTIFFTileMatrixSet configuration to _datasources/tile/tilematrixset/.._, referencing config file from step (1)
+
+* GeoTIFFTileMatrixSet config example:
+[source,xml]
+<GeoTIFFTileMatrixSet   xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff http://schemas.deegree.org/datasource/tile/tilematrixset/3.4.0/geotiff/geotiff.xsd"
+    configVersion="3.4.0">
+ <StorageCRS>EPSG:25832</StorageCRS>
+ <File>../../../data/geotiff/kulturlandschaft.tif</File>
+</GeoTIFFTileMatrixSet>
+
+. Adding a GeoTIFFTileStore configuration to _datasources/tile/.._ for the GeoTIFF file added in (1) and (2)
+
+* GeoTIFFTileStore config example:
+[source,xml]
+<GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/datasource/tile/geotiff/3.4.0/geotiff.xsd"
+    configVersion="3.4.0">
+    <TileDataSet>
+        <Identifier>wmts_acrit</Identifier>
+        <TileMatrixSetId>tilematrixset_wmts_acrit</TileMatrixSetId>
+        <File>../../data/geotiff/kulturlandschaft_1.tif</File>
+        <ImageFormat>image/png</ImageFormat>
+    </TileDataSet>
+</GeoTIFFTileStore>
+
+NOTE: Use "image/png" as ImageFormat even if the source is GeoTIFF.
+
+[start=4]
+. Adding a TileLayer configuration  in _layers/.._ with reference to the TileDataSet in (3)
+
+* TileLayer config example:
+[source,xml]
+<TileLayers xmlns="http://www.deegree.org/layers/tile"
+           xmlns:l="http://www.deegree.org/layers/base"
+           xmlns:d="http://www.deegree.org/metadata/description"
+           xmlns:s="http://www.deegree.org/metadata/spatial"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/layers/tile/3.4.0/tile.xsd"
+           configVersion="3.4.0">
+ <TileLayer>
+   <l:Name>wmts_acrit</l:Name>
+   <d:Title>Wmts Acrit tiled</d:Title>
+   <!-- Tile layers are not capable of on-the-fly reprojection so only the source CRS can be requested -->
+   <s:CRS>EPSG:25832</s:CRS>
+   <l:ScaleDenominators min="0.0" max="1000000.0" />
+   <TileDataSet tileStoreId="wmts_acrit">wmts_acrit</TileDataSet>
+ </TileLayer>
+</TileLayers>
+
+[start=5]
+. Adding a Themes configuration in _themes/.._ with reference to the TileLayer in (4)
+
+* Themes config example:
+[source,xml]
+<Themes xmlns="http://www.deegree.org/themes/standard"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:d="http://www.deegree.org/metadata/description"
+xmlns:s="http://www.deegree.org/metadata/spatial"
+xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.4.0/themes.xsd"
+configVersion="3.4.0">
+ <LayerStoreId>layer_tile_wmts_acrit</LayerStoreId>
+ <Theme>
+   <d:Title>Root theme</d:Title>
+     <s:CRS>EPSG:25832</s:CRS>
+      <Theme>
+         <Identifier>Karte</Identifier>
+        <d:Title>Karte</d:Title>
+        <Layer>wmts_acrit</Layer>
+      </Theme>
+ </Theme>
+</Themes>
+
+. Adding a WMTS service configuration file to _services/.._ with reference to the theme in (5)
+
+* WMTS service config example:
+[source,xml]
+<deegreeWMTS xmlns="http://www.deegree.org/services/wmts"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.deegree.org/services/wmts http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd"
+            configVersion="3.4.0">
+ <MetadataURLTemplate>http://some.service/services?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=${metadataSetId}</MetadataURLTemplate>
+ <ServiceConfiguration>
+   <ThemeId>wmts_acrit_theme</ThemeId>
+ </ServiceConfiguration>
+</deegreeWMTS>
+
+==== Optimizing deegree WMTS
+
+In order to improve the response time of WMTS GetTile requests, it is possible to add an Ehcache configuration to optimize the throughput of the service.
+The configuration is placed in the root directory of the workspace.
+
+* Ehcache config example:
+[source,xml]
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+        dynamicConfig="true" monitoring="autodetect" name="map_cache">
+    <defaultCache eternal="true" maxElementsInMemory="100" overflowToDisk="false"/>
+    <cache name="map_cache"
+          maxElementsInMemory="10000"
+          eternal="true"
+          timeToIdleSeconds="300"
+          timeToLiveSeconds="600"
+          overflowToDisk="false"
+          diskPersistent="false"
+          diskExpiryThreadIntervalSeconds="1"
+          memoryStoreEvictionPolicy="FIFO"
+          statistics="true"/>
+</ehcache>
+
+* To enable the caching tile store add the following configuration along with the GeoTIFFTileStore configuration to the _datasources/tile/.._ directory:
+[source,xml]
+<CachingTileStore xmlns="http://www.deegree.org/datasource/tile/cache"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache http://schemas.deegree.org/datasource/tile/cache/3.4.0/cache.xsd"
+                 configVersion="3.4.0">
+   <!-- TileStoreId refers to tile store config file wmts_acrit.xml in the same directory -->
+   <TileStoreId>wmts_acrit</TileStoreId>
+   <!-- The related ehcache configuration file in the root directory of the deegree workspace -->
+   <CacheConfiguration>../../ehcache_wmts_acrit.xml</CacheConfiguration>
+   <!-- The name of the cache in the ehcache configuration file /ehcache/cache/@name -->
+   <CacheName>map_cache</CacheName>
+</CachingTileStore>
+
+==== Supported steps by deegree services console
+
+Currently the deegree services console supports the following steps:
+
+* creating TileStore and TileMatrixSet configuration files
+* creating Layer and Themes configuration files
+* creating WMTS configuration file
+
+NOTE: Not supported is the creation of the optional Ehcache configuration.
 
 [[anchor-configuration-csw]]
 === Catalogue Service for the Web (CSW)
@@ -1886,9 +2033,9 @@ example looks like this:
 ==== Configuration overview
 
 The deegree CSW config file format is defined by schema file
-http://schemas.deegree.org/services/csw/3.2.0/csw_configuration.xsd. The
+http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd. The
 root element is _deegreeCSW_ and the config attribute must be
-_3.2.0_.
+_3.4.0_.
 
 The following table lists all available configuration options. When
 specifiying them, their order must be respected.
@@ -2148,9 +2295,9 @@ configuration works for all types of service alike.
 ----
 
 The metadata config file format is defined by schema file
-http://schemas.deegree.org/services/metadata/3.2.0/metadata.xsd. The
+http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd. The
 root element is _deegreeServicesMetadata_ and the config attribute
-must be _3.2.0_. The following table lists all available configuration
+must be _3.4.0_. The following table lists all available configuration
 options (complex ones contain nested options themselves). When
 specifiying them, their order must be respected.
 
