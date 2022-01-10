@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.xml.namespace.QName;
@@ -62,7 +63,6 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.schema.SchemaValidationEvent;
 import org.deegree.commons.xml.schema.SchemaValidator;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
-import org.deegree.services.controller.Credentials;
 import org.slf4j.Logger;
 
 /**
@@ -118,12 +118,16 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
 
     private final HttpServletResponse wrappee;
 
+    private final HttpServletRequest request;
+
     /**
      * @param response
+     * @param request
      */
-    public HttpResponseBuffer( HttpServletResponse response ) {
+    public HttpResponseBuffer( HttpServletResponse response, HttpServletRequest request ) {
         super( response );
         wrappee = response;
+        this.request = request;
         buffer = new StreamBufferStore();
         outputStream = new BufferedServletOutputStream( buffer );
     }
@@ -296,8 +300,8 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
     @Override
     public void flushBuffer()
                             throws IOException {
-        if ( wrappee instanceof LoggingHttpResponseWrapper ) {
-            ( (LoggingHttpResponseWrapper) wrappee ).finalizeLogging();
+        if ( request instanceof LoggingHttpRequestWrapper ) {
+            ( (LoggingHttpRequestWrapper) request ).finalizeLogging();
         }
         if ( xmlWriter != null ) {
             try {
@@ -340,18 +344,6 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
      */
     public OutputStream getBuffer() {
         return buffer;
-    }
-
-    public void setExceptionSent() {
-        if ( wrappee instanceof LoggingHttpResponseWrapper ) {
-            ( (LoggingHttpResponseWrapper) wrappee ).setExceptionSent();
-        }
-    }
-
-    public void setCredentials( Credentials creds ) {
-        if ( wrappee instanceof LoggingHttpResponseWrapper ) {
-            ( (LoggingHttpResponseWrapper) wrappee ).setCredentials( creds );
-        }
     }
 
     /**

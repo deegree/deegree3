@@ -55,9 +55,10 @@ import org.slf4j.Logger;
 import org.springframework.batch.item.ItemWriter;
 
 /**
- * CLI utility
+ * Item writer creating FeatureStore config file.
  * 
  * @author Juergen Weichand
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
 public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
 
