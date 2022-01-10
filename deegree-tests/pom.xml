@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.23-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -133,9 +133,7 @@
     <module>deegree-compliance-tests</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wms-tiling-tests</module>
-    <!-- Failing
     <module>deegree-wms-remoteows-tests</module>
-    -->
     <module>deegree-wmts-tests</module>
     <module>deegree-resource-deps-tests</module>
   </modules>

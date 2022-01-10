@@ -41,69 +41,64 @@
 
 package org.deegree.services.wmts;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
-import static org.deegree.commons.utils.net.HttpUtils.STREAM;
-import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
-import org.deegree.commons.utils.test.IntegrationTestUtils;
-import org.junit.Assert;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.deegree.commons.utils.net.HttpUtils.STREAM;
+import static org.deegree.commons.utils.net.HttpUtils.retrieve;
+import static org.junit.Assert.assertEquals;
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * <code>WMTSIntegrationTest</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 @RunWith(Parameterized.class)
-public class WmtsSimilarityIT {
+public class WmtsGetFeatureInfoSimilarityIT extends AbstractWmtsSimilarityIT {
 
-    private static final Logger LOG = getLogger( WmtsSimilarityIT.class );
+    private static final Logger LOG = getLogger( WmtsGetFeatureInfoSimilarityIT.class );
 
-    private String request;
+    private final String expected;
 
-    private List<byte[]> response;
-
-    private String name;
-
-    public WmtsSimilarityIT( Object wasXml, String request, List<byte[]> response, String name ) {
-        // we only use .kvp for WMTS
-        this.request = request;
-        this.response = response;
-        this.name = name;
+    public WmtsGetFeatureInfoSimilarityIT( String resourceName )
+                    throws IOException {
+        super( resourceName, "/getFeatureInfo" );
+        this.expected = IOUtils.toString(
+                        WmtsGetFeatureInfoSimilarityIT.class.getResourceAsStream(
+                                        "/getFeatureInfo/" + resourceName + ".html" ) );
     }
 
     @Parameters
     public static Collection<Object[]> getParameters() {
-        return IntegrationTestUtils.getTestRequests();
+        List<Object[]> requests = new ArrayList<>();
+        requests.add( new Object[] { "cached_gfi" } );
+        requests.add( new Object[] { "remotewmsfi" } );
+        return requests;
     }
 
     @Test
     public void testSimilarity()
-                            throws IOException {
-        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" );
-        base += "/deegree-wmts-tests/services" + request;
-        InputStream in = retrieve( STREAM, base );
-        LOG.info( "Requesting {}", base );
-        double sim = 0;
-        for ( byte[] response : this.response ) {
-            sim = Math.max( sim, determineSimilarity( in, new ByteArrayInputStream( response ) ) );
-        }
-        Assert.assertEquals( "Images are not similar enough for " + name + ", request: " + base + ".", 1.0, sim, 0.01 );
+                    throws IOException {
+        String request = createRequest();
+        InputStream in = retrieve( STREAM, request );
+        LOG.info( "Requesting {}", request );
+        String actual = IOUtils.toString( in );
+        assertEquals( "GetFeatureResponse does not match expected response " + resourceName + ", request: " + request
+                      + ".", expected, actual );
     }
 
 }
