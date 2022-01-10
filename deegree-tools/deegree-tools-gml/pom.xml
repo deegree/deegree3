@@ -8,23 +8,10 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools</artifactId>
-    <version>3.4.21-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
 
   <inceptionYear>2016</inceptionYear>
-
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License (LGPL), version 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <organization>
-    <name>OSGeo deegree</name>
-    <url>https://www.deegree.org</url>
-  </organization>
 
   <developers>
     <developer>
@@ -128,12 +115,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-sqldialect-oracle</artifactId>
-      <version>${project.version}</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -206,5 +187,19 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>oracle</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.deegree</groupId>
+          <artifactId>deegree-sqldialect-oracle</artifactId>
+          <version>${project.version}</version>
+          <optional>true</optional>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>
