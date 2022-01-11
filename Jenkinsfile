@@ -62,7 +62,6 @@ pipeline {
                 echo 'Preparing test harness: TEAM Engine'
                 echo 'Download and start TEAM Engine'
                 echo 'Start SUT deegree webapp with test configuration'
-                sh 'mvn -pl :deegree-acceptance-tests -Pacceptance-tests,integration-tests verify'
                 echo 'Run FAT'
             }
             post {
