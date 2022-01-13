@@ -262,6 +262,7 @@
           <target>${java.version}</target>
           <encoding>${project.build.sourceEncoding}</encoding>
           <compilerArgument>-Alog4j.outputdir=${project.basedir}/target/classes/META-INF/deegree/log4j/</compilerArgument>
+          <fork>true</fork>
         </configuration>
       </plugin>
       <plugin>
