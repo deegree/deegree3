@@ -1089,6 +1089,7 @@
     <spring-framework.version>5.3.12</spring-framework.version>
     <log4j.version>2.17.1</log4j.version>
     <slf4j.version>1.7.32</slf4j.version>
+  	<closeTestReports>true</closeTestReports>
   </properties>
 
   <modules>
