@@ -145,6 +145,9 @@
             <reuseForks>true</reuseForks>
             <skip>${skip.unit.tests}</skip>
             <trimStackTrace>true</trimStackTrace>
+            <parallel>classes</parallel>
+            <useUnlimitedThreads>true</useUnlimitedThreads>
+            <disableXmlReport>${closeTestReports}</disableXmlReport>
           </configuration>
         </plugin>
         <plugin>
