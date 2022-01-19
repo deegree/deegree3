@@ -258,6 +258,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
         if ( count != null && ( options.getQueryMaxFeatures() < 1 || count.intValue() < options.getQueryMaxFeatures() ) ) {
             returnMaxFeatures = count.intValue();
         }
+        else if ( count != null && returnMaxFeatures > 0 ) {
+            // limit count to max features
+            count = BigInteger.valueOf( returnMaxFeatures );
+        }
 
         int startIndex = 0;
         if ( request.getPresentationParams().getStartIndex() != null ) {
@@ -312,6 +316,11 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                             OWSException {
         StandardPresentationParams requestPresentationParams = request.getPresentationParams();
         BigInteger count = requestPresentationParams.getCount();
+        if (count != null && options.getQueryMaxFeatures() > 0) {
+            // limit count to max features
+            // (only has the effect that the hits request limits the count for the next query)
+            count = BigInteger.valueOf( Math.min( count.longValue(), options.getQueryMaxFeatures() ) );
+        }
         int startIndex = 0;
         if ( requestPresentationParams.getStartIndex() != null ) {
             startIndex = requestPresentationParams.getStartIndex().intValue();
@@ -338,6 +347,12 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                             OWSException {
         if ( count != null ) {
             Map<String, String> kvpGetFeature = GetFeature200KVPEncoder.export( request );
+            
+            // override count with the given value (e.g. if the original exceeds the max features)
+            if ( count != null ) {
+                kvpGetFeature.put( "COUNT", count.toString() );
+            }
+            
             String nextUri = createNextUri( count, startIndex, kvpGetFeature, request );
             String previousUri = createPreviousUri( count, startIndex, kvpGetFeature );
             return new ResponsePagingUris( nextUri, previousUri );
@@ -359,8 +374,13 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
 
     private String createPreviousUri( BigInteger count, int startIndex, Map<String, String> kvpGetFeature ) {
         int previousStartIndex = ResponsePagingUtils.calculatePreviousStartIndex( startIndex, count.intValue() );
-        if ( previousStartIndex >= 0 )
+        if ( previousStartIndex >= 0 ) {
+            // adapt count to actual previous start index
+            int realCount = startIndex - previousStartIndex;
+            kvpGetFeature.put( "COUNT", String.valueOf( realCount ) );
+            
             return createUrlWithStartindex( kvpGetFeature, previousStartIndex );
+        }
         return null;
     }
 
