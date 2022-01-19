@@ -449,7 +449,6 @@ public abstract class AbstractOWS implements OWS {
                 LOG.error( "An error occurred while trying to send an exception: " + e.getLocalizedMessage(), e );
                 throw new ServletException( e );
             }
-            response.setExceptionSent();
         }
 
         if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {
