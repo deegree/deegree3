@@ -36,6 +36,18 @@ public class GmlReferenceData implements ReferenceData {
     }
 
     @Override
+    public boolean hasProperty( QName featureTypeName, List<QName> xpath ) {
+        List<Feature> featuresOfType = this.features.get( featureTypeName );
+        if ( featuresOfType != null && !featuresOfType.isEmpty() ) {
+            for ( Feature feature : featuresOfType ) {
+                if ( hasProperty( feature, xpath ) )
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean hasZeroOrOneProperty( QName featureTypeName, List<QName> xpath ) {
         List<Feature> featuresOfType = this.features.get( featureTypeName );
         if ( featuresOfType != null && !featuresOfType.isEmpty() ) {
@@ -51,6 +63,32 @@ public class GmlReferenceData implements ReferenceData {
     @Override
     public boolean shouldFeatureTypeMapped( QName featureTypeName ) {
         return features.containsKey( featureTypeName );
+    }
+
+    private boolean hasProperty( Feature feature, List<QName> xpath ) {
+        if ( xpath.isEmpty() )
+            return true;
+        Iterator<QName> iterator = xpath.iterator();
+        QName firstProperty = iterator.next();
+        List<Property> properties = feature.getProperties( firstProperty );
+        return hasProperty( iterator, properties );
+    }
+
+    private <T extends ElementNode> boolean hasProperty( Iterator<QName> iterator, List<T> properties ) {
+        if ( !iterator.hasNext() ) {
+            if ( properties.size() >= 1 )
+                return true;
+            else
+                return false;
+        } else {
+            QName next = iterator.next();
+            for ( ElementNode property : properties ) {
+                List<ElementNode> subProperties = getChildsByName( property, next );
+                if ( hasProperty( iterator, subProperties ) )
+                    return true;
+            }
+            return false;
+        }
     }
 
     private boolean hasMoreThanOne( Feature feature, List<QName> xpath ) {

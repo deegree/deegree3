@@ -11,6 +11,7 @@ import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import static org.deegree.feature.types.property.GeometryPropertyType.Coordinate
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -471,7 +472,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, null );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, null, false );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -502,7 +503,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData, false );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -543,7 +544,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData, false );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -590,7 +591,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData, false );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -636,7 +637,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData, false );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -684,7 +685,7 @@ public class AppSchemaMapperTest {
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
         GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
-        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData, false );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
 
@@ -705,6 +706,37 @@ public class AppSchemaMapperTest {
         assertThat( getPrimitive( mappingsA, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
         assertThat( getPrimitive( mappingsA, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
         assertThat( getPrimitive( mappingsA, "prop_A3" ).getJoinedTable(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceDataAndConsiderProperties()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
+        QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.hasProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasProperty( featureTypeName, Collections.singletonList( propA3 ) ) ).thenReturn( false );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData, true );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 1 ) );
+
+        FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappings = featureA.getMappings();
+        assertThat( mappings.size(), is( 3 ) );
+        assertThat( getPrimitive( mappings, "prop_A1" ), is( notNullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A2" ), is( notNullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A3" ), is( nullValue() ) );
     }
 
     private CompoundMapping getFeatureC( List<Mapping> mappings ) {

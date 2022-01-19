@@ -59,11 +59,14 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
                                             @Value("#{jobParameters[dialect]}") String dialect,
                                             @Value("#{jobParameters[cycledepth]}") String depth,
                                             @Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref,
-                                            @Value("#{jobParameters[referenceData]}") String referenceData ) {
+                                            @Value("#{jobParameters[referenceData]}") String referenceData,
+                                            @Value("#{jobParameters[considerPropertiesOfReferenceData]}") String considerPropertiesOfReferenceData ) {
         return new LoadParameterBuilder().setSchemaUrl( schemaUrl ).setFormat( format ).setSrid( srid ).setIdType(
                         idtype ).setMappingType( mapping ).setDialect( dialect ).setDepth(
                         depth ).setListOfPropertiesWithPrimitiveHref(
-                        listOfPropertiesWithPrimitiveHref ).setReferenceData( referenceData ).build();
+                        listOfPropertiesWithPrimitiveHref ).setReferenceData(
+                        referenceData ).setConsiderPropertiesOfReferenceData(
+                        considerPropertiesOfReferenceData ).build();
     }
 
     @StepScope
@@ -80,12 +83,14 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
 
     @Bean
     public Step step( AppSchemaReader appSchemaReader, FeatureStoreConfigWriter featureStoreConfigWriter ) {
-        return stepBuilderFactory.get( "featureStoreConfigLoaderStep" ).<AppSchema, AppSchema> chunk( 1 ).reader( appSchemaReader ).writer( featureStoreConfigWriter ).build();
+        return stepBuilderFactory.get( "featureStoreConfigLoaderStep" ).<AppSchema, AppSchema>chunk( 1 ).reader(
+                        appSchemaReader ).writer( featureStoreConfigWriter ).build();
     }
 
     @Bean
     public Job job( Step step ) {
-        return jobBuilderFactory.get( "featureStoreConfigLoaderJob" ).incrementer( new RunIdIncrementer() ).start( step ).build();
+        return jobBuilderFactory.get( "featureStoreConfigLoaderJob" ).incrementer( new RunIdIncrementer() ).start(
+                        step ).build();
     }
 
 }

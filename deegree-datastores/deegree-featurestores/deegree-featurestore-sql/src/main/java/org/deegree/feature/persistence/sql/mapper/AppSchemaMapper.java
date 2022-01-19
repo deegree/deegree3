@@ -138,6 +138,8 @@ public class AppSchemaMapper {
 
     private final int allowedCycleDepth;
 
+    private final boolean considerPropertiesOfReferenceData;
+
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
      *
@@ -187,7 +189,7 @@ public class AppSchemaMapper {
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
                             boolean useIntegerFids, int allowedCycleDepth ) {
         this(appSchema, createBlobMapping, createRelationalMapping, geometryParams, maxLength,
-             usePrefixedSQLIdentifiers, useIntegerFids, allowedCycleDepth, null );
+             usePrefixedSQLIdentifiers, useIntegerFids, allowedCycleDepth, null, false );
     }
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -210,16 +212,19 @@ public class AppSchemaMapper {
      *                         depth of the allowed cycles
      * @param  referenceData
      *                         describing the data stored in the features store
+     * @param considerPropertiesOfReferenceData
+     *                         <code>true</code> if only properties defined in reference data should be mapped
      */
     public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
-                            boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData ) {
+                            boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData, boolean considerPropertiesOfReferenceData ) {
         this.appSchema = appSchema;
         this.geometryParams = geometryParams;
         this.useIntegerFids = useIntegerFids;
         this.allowedCycleDepth = allowedCycleDepth;
         this.maxComplexityIndex = DEFAULT_COMPLEXITY_INDEX * ( allowedCycleDepth + 1 );
         this.referenceData = referenceData;
+        this.considerPropertiesOfReferenceData = considerPropertiesOfReferenceData;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         List<FeatureType> blackList = new ArrayList<FeatureType>();
@@ -349,6 +354,9 @@ public class AppSchemaMapper {
 
                         MappingContext propMc = null;
                         List<TableJoin> jc = null;
+                        if ( pt.getMinOccurs() < 1 && !referenceDataHasProperty( cycleAnalyser ) ) {
+                            continue;
+                        }
                         if ( pt.getMaxOccurs() == 1 || referenceDataHasOnlyOne( cycleAnalyser ) ) {
                             propMc = mcManager.mapOneToOneElement( mc, eName );
                         } else {
@@ -383,19 +391,22 @@ public class AppSchemaMapper {
                 }
                 return mappings;
             }
-
+            Mapping generatedMapping = null;
             if ( pt instanceof SimplePropertyType ) {
-                mappings.add( generatePropMapping( (SimplePropertyType) pt, mc, cycleAnalyser ) );
+                generatedMapping = generatePropMapping( (SimplePropertyType) pt, mc, cycleAnalyser );
             } else if ( pt instanceof GeometryPropertyType ) {
-                mappings.add( generatePropMapping( (GeometryPropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (GeometryPropertyType) pt, mc );
             } else if ( pt instanceof FeaturePropertyType ) {
-                mappings.add( generatePropMapping( (FeaturePropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (FeaturePropertyType) pt, mc );
             } else if ( pt instanceof CustomPropertyType ) {
-                mappings.add( generatePropMapping( (CustomPropertyType) pt, mc, cycleAnalyser ) );
+                generatedMapping = generatePropMapping( (CustomPropertyType) pt, mc, cycleAnalyser );
             } else if ( pt instanceof CodePropertyType ) {
-                mappings.add( generatePropMapping( (CodePropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (CodePropertyType) pt, mc );
             } else {
                 LOG.warn( "Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName() );
+            }
+            if ( generatedMapping != null ) {
+                mappings.add( generatedMapping );
             }
         } catch ( Throwable t ) {
             LOG.warn( "Unable to create relational mapping for property type '" + pt.getName() + "': "
@@ -418,6 +429,9 @@ public class AppSchemaMapper {
         MappingContext propMc = null;
         List<TableJoin> jc = null;
         MappingExpression mapping = null;
+        if ( pt.getMinOccurs() < 1 && !referenceDataHasProperty( cycleAnalyser ) ) {
+            return null;
+        }
         if ( pt.getMaxOccurs() == 1 || referenceDataHasOnlyOne( cycleAnalyser ) ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
             mapping = new DBField( propMc.getColumn() );
@@ -499,6 +513,9 @@ public class AppSchemaMapper {
 
         MappingContext propMc = null;
         List<TableJoin> jc = null;
+        if ( pt.getMinOccurs() < 1 && !referenceDataHasProperty( cycleAnalyser ) ) {
+            return null;
+        }
         if ( pt.getMaxOccurs() == 1 || referenceDataHasOnlyOne( cycleAnalyser ) ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
@@ -850,6 +867,15 @@ public class AppSchemaMapper {
         LOG.debug( "Skipping wildcard at path: " + sb );
         return new ArrayList<>();
     }
+
+    private boolean referenceDataHasProperty( CycleAnalyser cycleAnalyser ) {
+        if ( referenceData == null || !considerPropertiesOfReferenceData )
+            return true;
+        List<QName> xpath = cycleAnalyser.getPath();
+        QName featureTypeName = cycleAnalyser.getFeatureTypeName();
+        return referenceData.hasProperty( featureTypeName, xpath );
+    }
+
 
     private boolean referenceDataHasOnlyOne( CycleAnalyser cycleAnalyser ) {
         if ( referenceData == null )
