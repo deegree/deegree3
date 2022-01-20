@@ -52,7 +52,7 @@ public class LoadParameter {
 
     private int depth;
 
-    private boolean considerPropertiesOfReferenceData;
+    private boolean useRefDataProps;
 
     LoadParameter() {
     }
@@ -129,11 +129,11 @@ public class LoadParameter {
         return depth;
     }
 
-    public boolean isConsiderPropertiesOfReferenceData() {
-        return considerPropertiesOfReferenceData;
+    public boolean isUseRefDataProps() {
+        return useRefDataProps;
     }
 
-    public void setConsiderPropertiesOfReferenceData( boolean considerPropertiesOfReferenceData ) {
-        this.considerPropertiesOfReferenceData = considerPropertiesOfReferenceData;
+    public void setUseRefDataProps( boolean useRefDataProps ) {
+        this.useRefDataProps = useRefDataProps;
     }
 }

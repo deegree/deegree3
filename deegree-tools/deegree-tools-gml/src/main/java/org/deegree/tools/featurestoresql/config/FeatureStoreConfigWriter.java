@@ -85,7 +85,7 @@ public class FeatureStoreConfigWriter implements ItemWriter<AppSchema> {
                                                       sqlDialect.getMaxColumnNameLength(), true,
                                                       loadParameter.isUseIntegerFids(), loadParameter.getDepth(),
                                                       loadParameter.getReferenceData(),
-                                                      loadParameter.isConsiderPropertiesOfReferenceData() );
+                                                      loadParameter.isUseRefDataProps() );
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
         SQLFeatureStoreConfigWriter configWriter = new SQLFeatureStoreConfigWriter(
                         mappedSchema,

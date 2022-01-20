@@ -94,7 +94,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
@@ -138,7 +137,7 @@ public class AppSchemaMapper {
 
     private final int allowedCycleDepth;
 
-    private final boolean considerPropertiesOfReferenceData;
+    private final boolean useRefDataProps;
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -212,19 +211,19 @@ public class AppSchemaMapper {
      *                         depth of the allowed cycles
      * @param  referenceData
      *                         describing the data stored in the features store
-     * @param considerPropertiesOfReferenceData
+     * @param useRefDataProps
      *                         <code>true</code> if only properties defined in reference data should be mapped
      */
     public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
-                            boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData, boolean considerPropertiesOfReferenceData ) {
+                            boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData, boolean useRefDataProps ) {
         this.appSchema = appSchema;
         this.geometryParams = geometryParams;
         this.useIntegerFids = useIntegerFids;
         this.allowedCycleDepth = allowedCycleDepth;
         this.maxComplexityIndex = DEFAULT_COMPLEXITY_INDEX * ( allowedCycleDepth + 1 );
         this.referenceData = referenceData;
-        this.considerPropertiesOfReferenceData = considerPropertiesOfReferenceData;
+        this.useRefDataProps = useRefDataProps;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         List<FeatureType> blackList = new ArrayList<FeatureType>();
@@ -869,7 +868,7 @@ public class AppSchemaMapper {
     }
 
     private boolean referenceDataHasProperty( CycleAnalyser cycleAnalyser ) {
-        if ( referenceData == null || !considerPropertiesOfReferenceData )
+        if ( referenceData == null || !useRefDataProps )
             return true;
         List<QName> xpath = cycleAnalyser.getPath();
         QName featureTypeName = cycleAnalyser.getFeatureTypeName();

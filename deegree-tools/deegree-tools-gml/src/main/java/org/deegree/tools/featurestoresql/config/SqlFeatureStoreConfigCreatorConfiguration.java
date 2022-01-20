@@ -60,13 +60,13 @@ public class SqlFeatureStoreConfigCreatorConfiguration {
                                             @Value("#{jobParameters[cycledepth]}") String depth,
                                             @Value("#{jobParameters[listOfPropertiesWithPrimitiveHref]}") String listOfPropertiesWithPrimitiveHref,
                                             @Value("#{jobParameters[referenceData]}") String referenceData,
-                                            @Value("#{jobParameters[considerPropertiesOfReferenceData]}") String considerPropertiesOfReferenceData ) {
+                                            @Value("#{jobParameters[useRefDataProps]}") String useRefDataProps ) {
         return new LoadParameterBuilder().setSchemaUrl( schemaUrl ).setFormat( format ).setSrid( srid ).setIdType(
                         idtype ).setMappingType( mapping ).setDialect( dialect ).setDepth(
                         depth ).setListOfPropertiesWithPrimitiveHref(
                         listOfPropertiesWithPrimitiveHref ).setReferenceData(
-                        referenceData ).setConsiderPropertiesOfReferenceData(
-                        considerPropertiesOfReferenceData ).build();
+                        referenceData ).setuseRefDataProps(
+                        useRefDataProps ).build();
     }
 
     @StepScope

@@ -151,16 +151,16 @@ public class LoadParameterBuilder {
         return this;
     }
 
-    public LoadParameterBuilder setConsiderPropertiesOfReferenceData( String considerPropertiesOfReferenceData ) {
-        if ( considerPropertiesOfReferenceData != null && !considerPropertiesOfReferenceData.isEmpty() ) {
-            if ( !"true".equalsIgnoreCase( considerPropertiesOfReferenceData ) && !"false".equalsIgnoreCase(
-                            considerPropertiesOfReferenceData ) ) {
-                throw new IllegalArgumentException( "Invalid value of parameter considerPropertiesOfReferenceData: "
-                                                    + considerPropertiesOfReferenceData
+    public LoadParameterBuilder setuseRefDataProps( String useRefDataProps ) {
+        if ( useRefDataProps != null && !useRefDataProps.isEmpty() ) {
+            if ( !"true".equalsIgnoreCase( useRefDataProps ) && !"false".equalsIgnoreCase(
+                            useRefDataProps ) ) {
+                throw new IllegalArgumentException( "Invalid value of parameter useRefDataProps: "
+                                                    + useRefDataProps
                                                     + ". Must be true or false" );
             }
-            loadParameter.setConsiderPropertiesOfReferenceData(
-                            Boolean.parseBoolean( considerPropertiesOfReferenceData ) );
+            loadParameter.setUseRefDataProps(
+                            Boolean.parseBoolean( useRefDataProps ) );
         }
         return this;
     }
