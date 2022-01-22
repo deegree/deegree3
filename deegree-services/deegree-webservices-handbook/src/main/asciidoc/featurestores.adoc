@@ -673,7 +673,8 @@ _cities_.
 *SQL feature store: Mapping two tables*
 
 [source,xml]
-----<SQLFeatureStore configVersion="3.4.0"
+----
+<SQLFeatureStore configVersion="3.4.0"
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql

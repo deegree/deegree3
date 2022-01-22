@@ -50,12 +50,12 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
 
-import com.vividsolutions.jts.algorithm.ConvexHull;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.algorithm.ConvexHull;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 
 /**
  * This class simplifies a 3D-Object. Two different simplifications will be performed. The first one create a simplified
@@ -213,7 +213,7 @@ public class WorldObjectSimplifier {
         Coordinate[] coordinates = projectToPlane( rqm );
 
         // calculate convex hull using JTS
-        ConvexHull ch = new ConvexHull( coordinates, new com.vividsolutions.jts.geom.GeometryFactory() );
+        ConvexHull ch = new ConvexHull( coordinates, new org.locationtech.jts.geom.GeometryFactory() );
         Geometry dp = DouglasPeuckerSimplifier.simplify( ch.getConvexHull(), 0.1 );
         if ( dp instanceof Polygon ) {
             return ( (Polygon) dp ).getExteriorRing().getCoordinates();

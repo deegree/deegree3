@@ -40,6 +40,7 @@ import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_OBJECT;
 import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -48,7 +49,12 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.impl.xs.XSAttributeDecl;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.utils.test.TestProperties;
@@ -464,6 +470,29 @@ public class GMLAppSchemaReaderTest {
         propDecl = pt.getElementDecl();
         propertySemantics = gmlSchema.getTimeSlicePropertySemantics( propDecl );
         assertNull( propertySemantics );
+    }
+
+    @Test
+    public void testIncludedGml321BaseSchemaIncludesGmlIdCorrigendum()
+                            throws ClassCastException,
+                            ClassNotFoundException,
+                            InstantiationException,
+                            IllegalAccessException {
+        // schemaUrl is internally redirected to copy of the schema in the deegree-ogcschemas.jar
+        String schemaUrl = "http://schemas.opengis.net/gml/3.2.1/gmlBase.xsd";
+        GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
+        AppSchema schema = adapter.extractAppSchema();
+        XSElementDeclaration abstractGmlElementDecl = schema.getGMLSchema().getAbstractGMLElementDeclaration();
+        XSComplexTypeDefinition typeDefinition = (XSComplexTypeDefinition) abstractGmlElementDecl.getTypeDefinition();
+        XSAttributeUse attrUse = null;
+        for ( Object object : typeDefinition.getAttributeUses() ) {
+            XSAttributeDecl attrDecl = (XSAttributeDecl) ( (XSAttributeUse) object ).getAttrDeclaration();
+            if ( attrDecl.getNamespace().equals( "http://www.opengis.net/gml/3.2" )
+                 && attrDecl.getName().equals( "id" ) ) {
+                attrUse = (XSAttributeUse) object;
+            }
+        }
+        assertFalse( attrUse.getRequired() );
     }
 
     private void assertPropertyType( GMLObjectType geometryDecl, int propDeclIdx, QName propName, int minOccurs,

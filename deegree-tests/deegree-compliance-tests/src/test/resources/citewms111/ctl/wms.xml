@@ -57,9 +57,9 @@
   </ctl:suite>
 
    <test name="wms:wms_main">
+      <ctl:param name="VAR_WMS_CAPABILITIES_URL"/>
       <assertion>This WMS is valid</assertion>
       <code>
-        <xsl:variable name="VAR_WMS_CAPABILITIES_URL" select="'${serviceUrl}/services/wms?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1'" />
         <xsl:variable name="updatesequence" select="'auto_updatesequence'"/>
         <xsl:variable name="CERT_PROFILE" select="'queryable_profile'"/>
         <xsl:variable name="recommended" select="'recommended'"/>
@@ -68,7 +68,7 @@
         <xsl:variable name="B_BOX_CONSTRAINT" select="'strictbboxconstraints'"/>
         <xsl:variable name="VAR_HIGH_UPDATESEQUENCE" />
         <xsl:variable name="VAR_LOW_UPDATESEQUENCE" />
-  <xsl:variable name="VAR_WMS_CAPABILITIES">
+        <xsl:variable name="VAR_WMS_CAPABILITIES">
             <request>
                <url>
                   <xsl:value-of select="$VAR_WMS_CAPABILITIES_URL"/>

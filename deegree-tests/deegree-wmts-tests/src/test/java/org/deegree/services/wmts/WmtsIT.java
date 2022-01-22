@@ -42,7 +42,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
@@ -75,16 +74,14 @@ import org.junit.Test;
  */
 public class WmtsIT {
 
-    private static final String ENDPOINT_BASE_URL = "http://localhost:" + System.getProperty( "portnumber" )
+    private static final String ENDPOINT_BASE_URL = "http://localhost:" + System.getProperty( "portnumber", "8080" )
                                                     + "/deegree-wmts-tests/services?";
 
-    private static final String ENDPOINT_URL = "http://localhost:" + System.getProperty( "portnumber" )
-                                               + "/deegree-wmts-tests/services?"
+    private static final String ENDPOINT_URL = ENDPOINT_BASE_URL
                                                + "service=WMTS&request=GetCapabilities&version=1.0.0";
 
     @Test
-    public void testCapabilitiesOperationGetFeatureInfoListed()
-                            throws XMLStreamException {
+    public void testCapabilitiesOperationGetFeatureInfoListed() {
         WMTSClient client = initClient();
         Operation operation = client.getOperations().getOperation( "GetFeatureInfo" );
         assertNotNull( operation );
@@ -110,7 +107,7 @@ public class WmtsIT {
 
     @Test
     public void testGetFeatureInfoNonGfiLayer()
-                            throws MalformedURLException, IOException, XMLStreamException, FactoryConfigurationError {
+                            throws IOException, XMLStreamException, FactoryConfigurationError {
         InputStream response = doGetFeatureInfo( "pyramid", "utah", "57142.857142857145", "text/html" );
         XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( response );
         XMLStreamUtils.skipStartDocument( xmlStream );
@@ -119,7 +116,7 @@ public class WmtsIT {
 
     @Test
     public void testGetFeatureInfoRemoteWmsGmlOutputValid()
-                            throws MalformedURLException, IOException {
+                            throws IOException {
         InputStream response = doGetFeatureInfo( "remotewms_dominant_vegetation", "utah", "57142.857142857145",
                                                  "application/gml+xml; version=3.1" );
         String[] schemaUrls = new String[2];
@@ -131,7 +128,7 @@ public class WmtsIT {
 
     @Test
     public void testGetFeatureInfoRemoteWmsCachedGmlOutputValid()
-                            throws MalformedURLException, IOException {
+                            throws IOException {
         InputStream response = doGetFeatureInfo( "remotewms_dominant_vegetation_cached", "utah", "57142.857142857145",
                                                  "application/gml+xml; version=3.1" );
         String[] schemaUrls = new String[2];
@@ -143,7 +140,7 @@ public class WmtsIT {
 
     @Test
     public void testGetTileFaultyLayer()
-                            throws MalformedURLException, IOException, XMLStreamException {
+                            throws IOException, XMLStreamException {
         String req = "SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=faulty&STYLE=default&TILEMATRIXSET=utah&"
                      + "TILEMATRIX=28571.428571428572&TILEROW=1&TILECOL=1&FORMAT=image%2Fpng";
         checkException( req );
@@ -151,7 +148,7 @@ public class WmtsIT {
 
     @Test
     public void testGetFeatureInfoFaultyLayer()
-                            throws MalformedURLException, IOException, XMLStreamException {
+                            throws IOException, XMLStreamException {
         String req = "SERVICE=WMTS&REQUEST=GetFeatureInfo&VERSION=1.0.0&LAYER=faulty&STYLE=default&TILEMATRIXSET=utah&"
                      + "TILEMATRIX=28571.428571428572&TILEROW=1&TILECOL=1&FORMAT=image%2Fpng&"
                      + "infoformat=text/html&i=10&j=10";
@@ -159,7 +156,7 @@ public class WmtsIT {
     }
 
     private void checkException( String req )
-                            throws MalformedURLException, IOException, XMLStreamException {
+                            throws IOException, XMLStreamException {
         InputStream ins = performGetRequest( req );
         XMLInputFactory fac = XMLInputFactory.newInstance();
         XMLStreamReader in = fac.createXMLStreamReader( ins );
@@ -170,7 +167,7 @@ public class WmtsIT {
     }
 
     private InputStream doGetFeatureInfo( String layer, String tileMatrixSet, String tileMatrixId, String infoFormat )
-                            throws MalformedURLException, IOException {
+                            throws IOException {
         String request = "service=WMTS&version=1.0.0&request=GetFeatureInfo&style=default&tilerow=1&tilecol=1&i=1&j=1";
         request += "&layer=" + URLEncoder.encode( layer, "UTF-8" );
         request += "&tilematrixset=" + URLEncoder.encode( tileMatrixSet, "UTF-8" );
@@ -180,7 +177,7 @@ public class WmtsIT {
     }
 
     private InputStream performGetRequest( String request )
-                            throws MalformedURLException, IOException {
+                            throws IOException {
         return new DURL( ENDPOINT_BASE_URL + request ).openStream();
     }
 

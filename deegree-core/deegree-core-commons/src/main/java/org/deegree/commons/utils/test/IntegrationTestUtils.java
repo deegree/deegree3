@@ -41,15 +41,14 @@
 
 package org.deegree.commons.utils.test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * <code>IntegrationTestUtils</code>
@@ -62,52 +61,22 @@ import org.apache.commons.io.IOUtils;
 
 public class IntegrationTestUtils {
 
-    private static void collect( List<Object[]> list, File dir ) {
-        File[] fs = dir.listFiles();
-        if ( fs == null ) {
-            return;
-        }
-        for ( File f : fs ) {
-            String name = f.getName();
-            if ( name.endsWith( ".kvp" ) || name.endsWith( ".xml" ) ) {
-                File respFile = new File( f.getParentFile(), name.substring( 0, name.length() - 4 ) + ".response" );
-                Object[] o;
-                try {
-                    List<byte[]> responses = new ArrayList<byte[]>();
-                    int idx = 1;
-                    while ( respFile.exists() ) {
-                        responses.add( IOUtils.toByteArray( new FileInputStream( respFile ) ) );
-                        respFile = new File( f.getParentFile(), name.substring( 0, name.length() - 4 ) + ".response"
-                                                                + ++idx );
-                    }
-
-                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses, name };
-                    list.add( o );
-                } catch ( FileNotFoundException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if ( f.isDirectory() ) {
-                collect( list, f );
-            }
-        }
-    }
-
     /**
-     * Scans the System.getProperty("requestdir") directories' contents for .kvp/.xml request files. Responses end in
-     * .response, alternative responses end in .response2 etc.
-     * 
-     * @return the .kvp/.xml and .response contents as triples (boolean wasXml, String and List<byte[]>)
+     * Create Base64 encoded text of a ZIP-Archive containing the passed binary data/file
      */
-    public static Collection<Object[]> getTestRequests() {
-        File dir = new File( System.getProperty( "requestdir" ) );
-        List<Object[]> list = new ArrayList<Object[]>();
-        collect( list, dir );
-        return list;
+    public static String toBase64Zip( byte[] data, String filename ) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                ZipOutputStream zip = new ZipOutputStream( baos )) {
+            zip.putNextEntry( new ZipEntry( filename ) );
+            IOUtils.write( data, zip );
+            zip.closeEntry();
+            zip.flush();
+            baos.flush();
+            byte[] gzipped = baos.toByteArray();
+            return StringUtils.newStringUtf8( Base64.encodeBase64Chunked( gzipped ) );
+        } catch ( IOException ex ) {
+            ex.printStackTrace();
+            return "Encoding failed with: " + ex.getMessage();
+        }
     }
-
 }
