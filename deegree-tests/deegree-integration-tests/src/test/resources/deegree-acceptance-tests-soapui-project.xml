@@ -1,0 +1,1306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="deegree-integration-tests" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" id="55cd9e63-a1b4-4a8e-a5ef-17d6ffc1196e" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings/>
+  <con:testSuite id="a430548e-09bd-4b08-82dc-dfa9e93ba51f" name="REST API">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="ba31adb7-7548-4dba-a2fc-694ec35681bf" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="initWorkspace" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="restart utah workspace" id="1bf2354c-96c9-4fe7-b754-307b493b6cc0">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart utah workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/deegree-workspace-utah</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
+            <con:configuration>
+              <token>Restart complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="441f6532-bd61-47ed-abef-ec4c91a139eb" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="listworkspaces" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="list available workspace names" id="0ed96d04-9f07-48f1-b265-c80b08483a6a">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list available workspace names" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/listworkspaces</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="a5e6b312-0639-40d4-9aaf-74100e62672f" name="Contains - workspace">
+            <con:configuration>
+              <token>workspace</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="ac7eb616-d24e-4b44-9bbe-c006a0c74ca0" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="PUT and DELETE" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="list before" id="3d00b0b0-ac1f-4924-96b3-bf96a5a0b707">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list before" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple NotContains" id="def094a7-e2b4-4a2e-a1bb-2248ba229128" name="Not Contains - test.xml">
+            <con:configuration>
+              <token>test.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="PUT invalid resource" id="c9552c5b-1af9-49c1-b617-d1c88af3dc67">
+        <con:settings/>
+        <con:config method="PUT" xsi:type="con:HttpRequest" id="3aea833b-50d4-419b-9395-e07adfb803f6" name="PUT invalid resource" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/config/upload/services/test.xml</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<deegreeWFS xmlns="http://www.deegree.org/services/wfs"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd"
+            configVersion="3.4.0">
+
+  <SupportedVersions>
+    <Version>2.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+
+  <FeatureStoreId>UNKNOWN</FeatureStoreId>
+  <QueryCRS>EPSG:25832</QueryCRS>
+
+</deegreeWFS>]]></con:request>
+          <con:assertion type="Valid HTTP Status Codes" id="875a311e-accb-4646-9d96-16088fb28053" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="d60ff763-879e-45ca-8a7c-717ec7b40142" name="Contains - test.xml uploaded">
+            <con:configuration>
+              <token>test.xml uploaded.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list after PUT" id="1d14117b-ea52-4202-8d45-e91573e43449">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list after PUT" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - test.xml">
+            <con:configuration>
+              <token>test.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="DELETE invalid resource" id="c32e6c82-bb60-4997-9dfa-3c6665f57191">
+        <con:settings/>
+        <con:config method="DELETE" xsi:type="con:HttpRequest" id="3aea833b-50d4-419b-9395-e07adfb803f6" name="DELETE invalid resource" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/config/delete/services/test.xml</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="875a311e-accb-4646-9d96-16088fb28053" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="d60ff763-879e-45ca-8a7c-717ec7b40142" name="test.xml deleted">
+            <con:configuration>
+              <token>test.xml deleted.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list after DELETE" id="e3b4a766-42cc-49e6-b7e5-1b895761cf8e">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list after DELETE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple NotContains" id="def094a7-e2b4-4a2e-a1bb-2248ba229128" name="Not Contains - test.xml">
+            <con:configuration>
+              <token>test.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="a35e5a32-bc4b-4f3e-a1ce-97df1a3d3876" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="list" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="list themes" id="0daf2745-a9a6-4a4e-b9f4-dc6a0b453634">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list themes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/themes</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wmts.xml">
+            <con:configuration>
+              <token>theme_wmts.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wms.xml">
+            <con:configuration>
+              <token>theme_wms.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list themes with workspace" id="34edf805-f2a7-49bb-9840-94bf91c69456">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list themes with workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/deegree-workspace-utah/themes</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wmts.xml">
+            <con:configuration>
+              <token>theme_wmts.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - theme_wms.xml">
+            <con:configuration>
+              <token>theme_wms.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="list services" id="5a5f10f3-0795-4b91-8446-2951b8bf354c">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="list services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/list/services</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - metadata.xml">
+            <con:configuration>
+              <token>metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - main.xml">
+            <con:configuration>
+              <token>main.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - html.gfi">
+            <con:configuration>
+              <token>html.gfi</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - wfs110.xml">
+            <con:configuration>
+              <token>wfs110.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="bedf7580-ccb8-4a25-b8f7-808604425f77" name="Contains - wfs110_metadata.xml">
+            <con:configuration>
+              <token>wfs110_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="112ba74b-083d-40a2-975e-4f09e32e3c00" name="Contains - wmts.xml">
+            <con:configuration>
+              <token>wmts.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9774e1ab-a815-4783-af10-3f567d67505a" name="Contains - wmts_metadata.xml">
+            <con:configuration>
+              <token>wmts_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9148ccc8-2504-438c-96c5-6ee30b890129" name="Contains - wms.xml">
+            <con:configuration>
+              <token>wms.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="8bfdf400-a886-466b-8324-30deaf5d9116" name="Contains - wms_metadata.xml">
+            <con:configuration>
+              <token>wms_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9148ccc8-2504-438c-96c5-6ee30b890129" name="Contains - wfs.xml">
+            <con:configuration>
+              <token>wfs.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="9774e1ab-a815-4783-af10-3f567d67505a" name="Contains - wfts_metadata.xml">
+            <con:configuration>
+              <token>wfs_metadata.xml</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="8cc2d48a-5afe-4ece-9dde-681cfae47419" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="restart" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="restart" id="67b71898-9902-4f88-997a-f711a17ac1ec">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
+            <con:configuration>
+              <token>Restart complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with workspace" id="71c63a7c-a5a5-4b34-b49a-6d7a25ed2378">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/deegree-workspace-utah</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
+            <con:configuration>
+              <token>Restart complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with resource" id="18495e36-a721-41e8-9a61-2c8c0e2e72a1">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/services/dlkm_au_wms</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with workspace and resource" id="7e44a2a8-20c6-4794-ac17-6450850abb16">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with workspace and resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/workspace/services/dlkm_au_wms</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="restart with unkown resource" id="25ff1f25-3acd-43fd-a24c-c8845485e485">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="restart with unkown resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/restart/services/unknown</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="20187c0e-c9b4-4f19-b1a0-bbd3f4b5d7b2" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="update" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
+      <con:settings/>
+      <con:testStep type="httprequest" name="update with workspace" id="9c46d557-8e49-4578-80bb-d44159e46f59">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="update with workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/update/deegree-workspace-utah</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart of workspace deegree-core-testing completed">
+            <con:configuration>
+              <token>Update complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="update without workspace" id="784362b9-dc67-4c39-8072-3a7cdf7cfbff">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="update without workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/update</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Update complete.">
+            <con:configuration>
+              <token>Update complete.</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="update with unknown workspace" id="9ce8e807-9eb2-4d08-b03b-c339e5ab5c06">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="0e2c4725-a3ef-40f1-aa84-f517f08d7271" name="update with unknown workspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding/>
+          <con:endpoint>${#Project#BaseUrl}/config/update/notknown</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="34607810-ceab-46e2-86f3-2852e5a8abb9" name="Status Code 200">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="110faf9c-0fb2-4a38-8710-0d79d1a007ac" name="Empty Response">
+            <con:configuration>
+              <scriptText>assert messageExchange.hasResponse() == false</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:username>deegree</con:username>
+            <con:password>deegree</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:testSuite name="WFS 1.1.0" id="b748724a-37e7-4e8b-b1d9-bf58c9d68b3c">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="64fe48a6-edc1-432f-a91e-efb35800d291" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetCapabilities" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="POST" id="146188b9-523c-4d0a-b61c-d1d4b2a155e6">
+        <con:settings/>
+        <con:config method="POST" xsi:type="con:HttpRequest" id="3fbedfcf-93bd-45e4-a874-7cf1d8d48e4f" name="POST" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetCapabilities service="WFS" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <ows:AcceptVersions>
+    <ows:Version>1.1.0</ows:Version>
+  </ows:AcceptVersions>
+</wfs:GetCapabilities>]]></con:request>
+          <con:assertion type="Valid HTTP Status Codes" id="464289e5-33a6-4cf9-b59c-8d4193d286a6" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="a1fcf60a-213f-4c01-9051-9e21345c8d87" name="XPath Match">
+            <con:configuration>
+              <path>declare namespace wfs='http://www.opengis.net/wfs';
+exists(//wfs:WFS_Capabilities)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="da015a67-9b47-46f2-bf96-faa90d230dfd" name="FeatureType">
+            <con:configuration>
+              <path>declare namespace ps='http://inspire.ec.europa.eu/schemas/ps/4.0';
+declare namespace wfs='http://www.opengis.net/wfs';
+
+exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:Name['ps:ProtectedSite'] )</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="0b25cbf7-6581-4e48-aed4-0265587c689a" name="CRS in HTTP URI">
+            <con:configuration>
+              <path>declare namespace wfs='http://www.opengis.net/wfs';
+
+exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherSRS[text() = 'EPSG:4326'] )</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetFeatureRequest" searchProperties="true" id="c1a43337-4f4b-4f68-8edb-840aa876f61a">
+      <con:settings/>
+      <con:testStep type="httprequest" name="POST" id="b3f4cb35-2f3d-4b81-9120-73c57e3f1f98">
+        <con:settings/>
+        <con:config method="POST" xsi:type="con:HttpRequest" name="POST" postQueryString="false" mediaType="application/xml" id="44c4f183-9578-4629-a93e-7c845f1b342b" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature handle="GeoTools 9.2 WFS DataStore"
+ outputFormat="text/xml; subtype=gml/3.1.1" resultType="results"
+ service="WFS" version="1.1.0" xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:iso19112="http://www.opengis.net/iso19112"
+ xmlns:dog="http://www.lverma.nrw.de/namespaces/dog"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:ows="http://www.opengis.net/ows" xmlns:wfs="http://www.opengis.net/wfs">
+ <wfs:Query srsName="EPSG:4326" typeName="app:DominantVegetation">
+  <ogc:Filter>
+   <ogc:And>
+    <ogc:Intersects>
+     <ogc:PropertyName>app:code</ogc:PropertyName>
+     <gml:Polygon srsDimension="2">
+      <gml:exterior>
+       <gml:LinearRing srsDimension="2">
+        <gml:posList>377327.57 5700737.46 377327.62 5700737.44 377327.69 5700737.8 377328.77 5700739.43 377330.4 5700740.51 377332.31 5700740.89 377332.32 5700740.89 377334.92 5700740.16 382016.82 5697883.41 382017.76 5697882.68 382017.77 5697882.67 382018.85 5697881.04 382019.23 5697879.13 382019.23 5697879.12 382018.78 5697877.06 382017.53 5697875.36 382015.68 5697874.34 375746.69 5695969.84 375745.24 5695969.62 375745.22 5695969.62 375743.31 5695970.0 375741.68 5695971.08 375740.6 5695972.71 375740.22 5695974.62 375740.22 5695974.63 375740.48 5695976.21 377327.57 5700737.46</gml:posList>
+       </gml:LinearRing>
+      </gml:exterior>
+     </gml:Polygon>
+    </ogc:Intersects>
+    <ogc:Intersects>
+     <ogc:PropertyName>app:code</ogc:PropertyName>
+     <gml:Polygon srsDimension="2">
+      <gml:exterior>
+       <gml:LinearRing srsDimension="2">
+        <gml:posList>233396.0 5649843.0 233396.0 5879026.0 486577.0 5879026.0 486577.0 5649843.0 233396.0 5649843.0</gml:posList>
+       </gml:LinearRing>
+      </gml:exterior>
+     </gml:Polygon>
+    </ogc:Intersects>
+   </ogc:And>
+  </ogc:Filter>
+ </wfs:Query>
+</wfs:GetFeature>]]></con:request>
+          <con:credentials>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:testSuite id="97a9a423-9e42-4224-aba8-db8b5ea4db07" name="WFS 2.0.0">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="96a01eae-d9d0-4802-a80d-2b77fcd0e0d1" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetCapabilities" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="POST" id="da06ad92-08d6-4383-933d-be6ab28d608e">
+        <con:settings/>
+        <con:config method="POST" xsi:type="con:HttpRequest" id="3fbedfcf-93bd-45e4-a874-7cf1d8d48e4f" name="POST" postQueryString="false" mediaType="application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetCapabilities service="WFS" xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0
+http://schemas.opengis.net/wfs/2.0/wfs.xsd">
+  <ows:AcceptVersions>
+    <ows:Version>2.0.0</ows:Version>
+  </ows:AcceptVersions>
+</wfs:GetCapabilities>]]></con:request>
+          <con:assertion type="Valid HTTP Status Codes" id="464289e5-33a6-4cf9-b59c-8d4193d286a6" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="a1fcf60a-213f-4c01-9051-9e21345c8d87" name="XPath Match">
+            <con:configuration>
+              <path>declare namespace gml='http://www.opengis.net/gml';
+declare namespace ogc='http://www.opengis.net/ogc';
+declare namespace gml32='http://www.opengis.net/gml/3.2';
+declare namespace fes='http://www.opengis.net/fes/2.0';
+declare namespace gml321='http://www.opengis.net/gml';
+declare namespace ps='http://inspire.ec.europa.eu/schemas/ps/4.0';
+declare namespace xlink='http://www.w3.org/1999/xlink';
+declare namespace gn='http://inspire.ec.europa.eu/schemas/gn/4.0';
+declare namespace ows='http://www.opengis.net/ows/1.1';
+declare namespace ns1='http://www.opengis.net/wfs/2.0';
+declare namespace wfs='http://www.opengis.net/wfs/2.0';
+exists(//wfs:WFS_Capabilities)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="da015a67-9b47-46f2-bf96-faa90d230dfd" name="FeatureType">
+            <con:configuration>
+              <path>declare namespace gml='http://www.opengis.net/gml';
+declare namespace ogc='http://www.opengis.net/ogc';
+declare namespace gml32='http://www.opengis.net/gml/3.2';
+declare namespace fes='http://www.opengis.net/fes/2.0';
+declare namespace gml321='http://www.opengis.net/gml';
+declare namespace ps='http://inspire.ec.europa.eu/schemas/ps/4.0';
+declare namespace xlink='http://www.w3.org/1999/xlink';
+declare namespace gn='http://inspire.ec.europa.eu/schemas/gn/4.0';
+declare namespace ows='http://www.opengis.net/ows/1.1';
+declare namespace ns1='http://www.opengis.net/wfs/2.0';
+declare namespace wfs='http://www.opengis.net/wfs/2.0';
+
+exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:Name['ps:ProtectedSite'] )</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="0b25cbf7-6581-4e48-aed4-0265587c689a" name="CRS in HTTP URI">
+            <con:configuration>
+              <path>declare namespace gml='http://www.opengis.net/gml';
+declare namespace ogc='http://www.opengis.net/ogc';
+declare namespace gml32='http://www.opengis.net/gml/3.2';
+declare namespace fes='http://www.opengis.net/fes/2.0';
+declare namespace gml321='http://www.opengis.net/gml';
+declare namespace ps='http://inspire.ec.europa.eu/schemas/ps/4.0';
+declare namespace xlink='http://www.w3.org/1999/xlink';
+declare namespace gn='http://inspire.ec.europa.eu/schemas/gn/4.0';
+declare namespace ows='http://www.opengis.net/ows/1.1';
+declare namespace ns1='http://www.opengis.net/wfs/2.0';
+declare namespace wfs='http://www.opengis.net/wfs/2.0';
+
+exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326'] )</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="d77b2ca0-b365-42e7-975d-89416147fe90" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="DescribeFeatureType" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="GET" id="3320225a-2bc3-4b47-8fa8-c609861f4842">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="14fa8f6c-3f04-4ab2-952b-bbce5ebb7803" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>service</con:name>
+              <con:value>WFS</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>request</con:name>
+              <con:value>DescribeFeatureType</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>version</con:name>
+              <con:value>2.0.0</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:testSuite id="a4b79f25-4e21-4198-9dd4-a0fa53414659" name="WMS 1.1.1">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="ed137cd0-767e-4bb0-86c5-b737a97a2220" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetMap" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="GET" id="02a911f5-71d8-429c-8629-becd831aeab6">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="584e1b70-bd60-445c-b6dd-c236b3c2904b" name="GET" timeout="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>SERVICE</con:name>
+              <con:value>WMS</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>WMS</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>VERSION</con:name>
+              <con:value>1.1.1</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>1.1.1</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>REQUEST</con:name>
+              <con:value>GetMap</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>GetMap</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>BBOX</con:name>
+              <con:value>3411512.2854822953,5315848.28048031,3413107.150228389,5317443.145226404</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>3411512.2854822953,5315848.28048031,3413107.150228389,5317443.145226404</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>SRS</con:name>
+              <con:value>EPSG:31467</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>EPSG:31467</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>FORMAT</con:name>
+              <con:value>image/png</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>image/png</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>WIDTH</con:name>
+              <con:value>750</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>750</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>HEIGHT</con:name>
+              <con:value>750</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>750</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>LAYERS</con:name>
+              <con:value>bplanraster_sortiert</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>bplanraster_sortiert</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>STYLES</con:name>
+              <con:value/>
+              <con:style>QUERY</con:style>
+              <con:default/>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>TRANSPARENT</con:name>
+              <con:value>true</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>true</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>EXCEPTIONS</con:name>
+              <con:value>application/vnd.ogc.se_inimage</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>application/vnd.ogc.se_inimage</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:testSuite name="WMS 1.3.0" id="26d7cb32-4d64-4fec-8120-13c36bac7945">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetCapabilities" searchProperties="true" id="37d2c956-b24f-4613-92df-1f5a41d61c02">
+      <con:settings/>
+      <con:testStep type="httprequest" name="GET" id="3ab5a357-91fd-497c-9c38-337a7b71471f">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="fdd67ba6-d554-4054-a572-7a32aa2733fd" name="GET" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>service</con:name>
+              <con:value>WMS</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>WMS</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>request</con:name>
+              <con:value>GetCapabilities</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>GetCapabilities</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>version</con:name>
+              <con:value>1.3.0</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="SOAP" id="8ef001c2-ba20-48c2-a29e-622a278d8c3a">
+        <con:settings/>
+        <con:config method="POST" xsi:type="con:HttpRequest" name="SOAP" postQueryString="false" mediaType="application/xml" id="6fb8284b-f824-4b03-b025-8842f10976d8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+  <soapenv:Body>
+    <GetCapabilities xmlns="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd" />
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+          <con:credentials>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="71ba3352-4505-4ace-b699-e549191b9b9f" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetMap" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="GET" id="d6b53174-440f-43fc-b243-14606a78c735">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="fb6ed94c-5ba5-4d35-b55f-fb06cd8f663a" name="GET" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wms</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>SERVICE</con:name>
+              <con:value>WMS</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>WMS</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>VERSION</con:name>
+              <con:value>1.3.0</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>1.3.0</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>REQUEST</con:name>
+              <con:value>GetMap</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>GetMap</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>BBOX</con:name>
+              <con:value>5429958.57271053455770016,3509615.84791372437030077,5431180.18342481926083565,3511546.6140002841129899</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>5429958.57271053455770016,3509615.84791372437030077,5431180.18342481926083565,3511546.6140002841129899</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>CRS</con:name>
+              <con:value>urn:x-ogc:def:crs:EPSG:4326</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>EPSG:31467</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>FORMAT</con:name>
+              <con:value>image/png</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>image/png</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>WIDTH</con:name>
+              <con:value>1492</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>1492</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>HEIGHT</con:name>
+              <con:value>945</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>945</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>LAYERS</con:name>
+              <con:value>counties</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>bplanraster_sortiert</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>STYLES</con:name>
+              <con:value>default</con:value>
+              <con:style>QUERY</con:style>
+              <con:default/>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter required="false" disableUrlEncoding="false">
+              <con:name>TRANSPARENT</con:name>
+              <con:value>TRUE</con:value>
+              <con:style>QUERY</con:style>
+              <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+              <con:default>TRUE</con:default>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>DPI</con:name>
+              <con:value>96</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>96</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>MAP_RESOLUTION</con:name>
+              <con:value>96</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>96</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+            <con:parameter>
+              <con:name>FORMAT_OPTIONS</con:name>
+              <con:value>dpi:96</con:value>
+              <con:style>QUERY</con:style>
+              <con:default>dpi:96</con:default>
+              <con:path xsi:nil="true"/>
+              <con:description xsi:nil="true"/>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:properties>
+    <con:property>
+      <con:name>port</con:name>
+      <con:value>8080</con:value>
+    </con:property>
+    <con:property>
+      <con:name>BaseUrl</con:name>
+      <con:value>http://localhost:${#Project#port}/deegree-acceptance-tests</con:value>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:sensitiveInformation/>
+</con:soapui-project>
