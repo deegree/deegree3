@@ -35,18 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.io;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.toByteArray;
-
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class Utils {
@@ -57,37 +53,36 @@ public class Utils {
     public static final OutputStream DEV_NULL = new OutputStream() {
         @Override
         public void write( int b )
-                                throws IOException {
+                        throws IOException {
             // lost
         }
     };
 
     /**
-     * Makes byte by byte comparison and determines the percentage of equal bytes. This is a very crude method, but
-     * works well enough for images. Take into account that the encoding of images (such as png) might be different
-     * across Java implementations and even versions.
-     * 
+     * Makes pixel by pixel comparison and determines the percentage of equal pixel.
+     *
      * @param in1
      * @param in2
      * @return the percentage (0..1)
      * @throws IOException
      */
-    public static double determineSimilarity( InputStream in1, InputStream in2 )
-                            throws IOException {
-        try {
-            byte[] buf1 = toByteArray( in1 );
-            byte[] buf2 = toByteArray( in2 );
-            long equal = 0;
-            for ( int i = 0; i < buf1.length; ++i ) {
-                if ( i < buf2.length && buf1[i] == buf2[i] ) {
-                    ++equal;
+    public static double determineSimilarity( RenderedImage in1, RenderedImage in2 ) {
+        Raster data1 = in1.getData();
+        Raster data2 = in2.getData();
+        long equal = 0;
+        for ( int b = 0; b < data1.getNumBands(); b++ ) {
+            for ( int x = 0; x < data1.getWidth(); x++ ) {
+                for ( int y = 0; y < data1.getHeight(); y++ ) {
+                    if ( b < data2.getNumBands() && x < data2.getWidth() && y < data2.getHeight() ) {
+                        if ( data1.getSample( x, y, b ) == data2.getSample( x, y, b ) ) {
+                            ++equal;
+                        }
+                    }
                 }
             }
-            return (double) equal / (double) buf1.length;
-        } finally {
-            closeQuietly( in1 );
-            closeQuietly( in2 );
         }
+        int comparedPixels = data1.getNumBands() * data1.getWidth() * data1.getHeight();
+        return equal / (double) comparedPixels;
     }
 
 }

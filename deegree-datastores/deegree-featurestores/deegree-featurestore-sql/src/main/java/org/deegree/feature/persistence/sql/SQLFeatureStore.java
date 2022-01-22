@@ -235,6 +235,13 @@ public class SQLFeatureStore implements FeatureStore {
         }
     }
 
+    /**
+     * @return the currently active transaction., may be <code>null</code> if no transaction was acquired
+     */
+    public FeatureStoreTransaction getTransaction() {
+        return transaction.get();
+    }
+
     private void initConverters() {
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
