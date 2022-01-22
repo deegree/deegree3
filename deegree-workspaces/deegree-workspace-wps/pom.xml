@@ -12,35 +12,13 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>attach-workspace</goal>
-            </goals>
-          </execution>
-        </executions>
+        <artifactId>maven-assembly-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

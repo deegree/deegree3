@@ -1,0 +1,159 @@
+[[anchor-configuration-metadatastore]]
+== Metadata stores
+
+Metadata stores are data stores that provide access to metadata records.
+The two common use cases for metadata stores are:
+
+* Accessing via CSW
+* Providing of metadata for web service resources (TBD)
+
+The remainder of this chapter describes some relevant terms and the
+metadata store configuration files in detail. You can access this
+configuration level by clicking on the *metadata stores* link in the
+administration console. The configuration files are located in the
+*datasources/metadata/* directory of the deegree workspace.
+
+.Metadata store resources provide access to metadata records
+image::workspace-overview-metadata.png[Metadata store resources provide access to metadata records,scaledwidth=80.0%]
+
+=== Memory ISO Metadata store
+
+The memory ISO metadata store implementation is transactional and works
+file based.
+
+The memory metadata store configuration is defined by schema file
+http://schemas.deegree.org/datasource/metadata/iso19139/3.4.0/memory.xsd
+
+*Memory ISO Metadatastore config (skeleton)*
+
+[source,xml]
+----
+<ISOMemoryMetadataStore
+  xmlns="http://www.deegree.org/datasource/metadata/iso19139/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19139/memory
+  memory.xsd"
+  configVersion="3.4.0">
+  <!-- [1...n] directory to be used -->
+  <ISORecordDirectory>..</ISORecordDirectory>
+  <!-- [0...1] directory to be used to insert records -->
+  <InsertDirectory>..</InsertDirectory>
+</ISOMemoryMetadataStore>
+----
+
+The root element has to be _ISOMemoryMetadataStore_ and the config
+attribute must be _3.4.0_. The only mandatory element is:
+
+* _ISORecordDirectory_: A list of directories containing records
+loaded in the store during start of the store.
+
+To allow insert transactions one optional element must be declared:
+
+* _InsertDirectory_: Directory to store inserted records, can be one
+of the directories declared in the element _ISORecordDirectory_.
+
+=== SQL ISO Metadata store
+
+The SQL metadata store configuration is defined by schema file
+http://schemas.deegree.org/datasource/metadata/iso19115/3.4.0/iso19115.xsd
+
+*SQL ISO Metadatastore config (skeleton)*
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<ISOMetadataStore
+  configVersion="3.4.0"
+  xmlns="http://www.deegree.org/datasource/metadata/iso19115"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19115
+  http://schemas.deegree.org/datasource/metadata/iso19115/3.4.0/iso19115.xsd">
+
+  <!-- [1] Identifier of JDBC connection -->
+  <JDBCConnId>conn1</JDBCConnId>
+
+  <!-- [0..1] Definition of the Inspectors for checking the metadata for insert
+       or update transaction -->
+  <Inspectors>
+
+    <!-- [0..1] Checks the fileIdentifier -->
+  <FileIdentifierInspector rejectEmpty="true"/>
+
+  </Inspectors>
+
+  <!-- [0..1] Specifies the content of the queryable property 'anyText' -->
+  <AnyText>
+
+    <!-- [0..1] Set of XPath-expression (remove line breaks in xpaths!) -->
+    <Custom>
+      <XPath>/gmd:MD_Metadata/gmd:identificationInfo/
+              gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/
+              gmd:keyword/gco:CharacterString</XPath>
+      <XPath>/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/
+              gmd:individualName/gco:CharacterString</XPath>
+    </Custom>
+
+  </AnyText>
+
+</ISOMetadataStore>
+----
+
+The root element has to be _ISOMetadataStore_ and the config attribute
+must be _3.4.0_. The only mandatory element is:
+
+* _JDBCConnId_: Id of the JDBC connection to use (see ...)
+
+The optional elements are:
+
+* _Inspectors_: List of inspectors inspecting a metadataset before
+inserting. Known inspectors are:
+** FileIdentifierInspector
+** InspireInspector
+** CoupledResourceInspector
+** SchemaValidator
+** NamespaceNormalizer
+* _AnyText_: Configuration of the values searchable by the queryable
+property _AnyText_, possible values are:
+** All: all values
+** Core: the core queryable properties (default)
+** Custom: a custom set of properties defined as xpath expressions
+* _QueryableProperties_: Configuration of additional query properties.
+Detailed informations can be found in the following example:
++
+
+[source,xml]
+----
+  ...
+
+  <QueryableProperties>
+    <!-- can contain multiple elements 'QueryableProperty' -->
+    <!-- set attribute isMultiple="true" if the xpath links
+         to a property which can occur multiple times-->
+    <QueryableProperty isMultiple="true">
+      <!-- configures the xpath to the element which shoud be queryable
+           (remove line breaks in xpaths!)-->
+      <xpath>//gmd:MD_Metadata/gmd:identificationInfo/
+             gmd:MD_DataIdentification/gmd:spatialRepresentationType/
+             gmd:MD_SpatialRepresentationTypeCode/@codeListValue</xpath>
+      <!-- namespace and name to use in a filter expression, e.g
+        <ogc:PropertyName xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+               apiso:SpatialRepresentationType</ogc:PropertyName> -->
+      <name namespace="http://www.opengis.net/cat/csw/apiso/1.0">
+           SpatialRepresentationType</name>
+      <!-- Name of the column in the table idxt_main where the valus of a record
+           should be stored, must be added manually -->
+      <column>spatialRepType</column>
+    </QueryableProperty>
+  </QueryableProperties>
+  ...
+----
+
+NOTE: If a new queryable property is added or the AnyText value changed the
+inserted metadata records are not adjusted to this changes! This means
+for the example above that an existing record with
+SpatialRepresentationType 'raster' is not found by searching for all
+records with this type until the record is inserted or updated again!
+
+=== SQL EBRIM/EO Metadata store
+
+TBD

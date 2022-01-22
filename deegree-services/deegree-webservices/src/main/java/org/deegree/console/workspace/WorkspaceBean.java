@@ -302,6 +302,11 @@ public class WorkspaceBean implements Serializable {
             File wsRoot = new File( getWorkspaceRoot() );
             in = new FileInputStream( new File( upload.getAbsolutePath() ) );
             File target = new File( wsRoot, workspaceImportName );
+            
+            if ( !FileUtils.directoryContains( wsRoot, target ) ) {
+                throw new Exception( "Invalid workspace name: '" + workspaceImportName + "'." );
+            }
+            
             if ( target.exists() ) {
                 throw new Exception( "Workspace '" + workspaceImportName + "' already exists." );
             } else {
@@ -367,10 +372,12 @@ public class WorkspaceBean implements Serializable {
     }
 
     private void addWorkspaceLocation( String wsArtifactName, List<String> list ) {
-        String repo = getVersion().endsWith( "SNAPSHOT" ) ? "snapshots" : "releases";
-        String version = getVersion().endsWith( "SNAPSHOT" ) ? "LATEST" : getVersion();
-        String url = "http://repo.deegree.org/service/local/artifact/maven/redirect?r=" + repo + "&g=org.deegree&a="
-                     + wsArtifactName + "&v=" + version + "&e=deegree-workspace";
+        String url = "https://repo.deegree.org/service/rest/v1/search/assets/download?"
+                + "repository=releases"
+                + "&maven.groupId=org.deegree"
+                + "&maven.artifactId=" + wsArtifactName
+                + "&sort=version"
+                + "&maven.extension=zip";
         workspaceLocations.put( wsArtifactName, url );
         list.add( wsArtifactName );
     }

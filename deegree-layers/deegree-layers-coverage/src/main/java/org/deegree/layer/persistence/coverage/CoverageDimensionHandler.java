@@ -73,6 +73,15 @@ class CoverageDimensionHandler {
         this.layerDims = layerDims;
     }
 
+    public Dimension<?> getDimension() {
+        if ( layerDims != null ) {
+            for ( Dimension<?> layerDim : layerDims.values() ) {
+                return layerDim;
+            }
+        }
+        return null;
+    }
+
     RangeSet getDimensionFilter( Map<String, List<?>> dims, List<String> headers )
                             throws OWSException {
 
@@ -123,7 +132,7 @@ class CoverageDimensionHandler {
 
     private void handleDimensionValue( Dimension<?> dim, Object o, List<Interval<?, ?>> intervals,
                                        List<SingleValue<?>> singleValues, List<String> headers, String name )
-                            throws OWSException {
+                                                               throws OWSException {
         if ( !dim.getNearestValue() && !dim.isValid( o ) ) {
             throw new OWSException( "The value for the " + name + " dimension is invalid: " + o.toString(),
                                     "InvalidDimensionValue" );
@@ -168,7 +177,8 @@ class CoverageDimensionHandler {
                 max = iv.max.toString();
             }
             intervals.add( new Interval<String, String>( new SingleValue<String>( Void, min ),
-                                                         new SingleValue<String>( Void, max ), open, null, false, null ) );
+                                                         new SingleValue<String>( Void, max ), open, null, false,
+                                                         null ) );
         } else {
             if ( dim.getNearestValue() ) {
                 Object nearest = dim.getNearestValue( o );

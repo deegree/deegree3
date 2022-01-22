@@ -157,12 +157,9 @@ public class FeatureLayer extends AbstractLayer {
                             throws OWSException {
         OperatorFilter filter = this.filter;
         filter = Filters.and( filter, dimFilterBuilder.getDimensionFilter( query.getDimensions(), headers ) );
-        StyleRef ref = query.getStyle();
-        if ( !ref.isResolved() ) {
-            ref.resolve( getMetadata().getStyles().get( ref.getName() ) );
-        }
-        Style style = ref.getStyle();
+        Style style = resolveStyleRef( query.getStyle() );
         style = style.filter( query.getScale() );
+
         filter = Filters.and( filter, getStyleFilters( style, query.getScale() ) );
         filter = Filters.and( filter, query.getFilter() );
 

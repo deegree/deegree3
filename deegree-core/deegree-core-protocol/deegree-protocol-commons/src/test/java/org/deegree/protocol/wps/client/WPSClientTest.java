@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wps.client;
 
-import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_NAMESPACE;
-import static com.vividsolutions.jts.io.gml2.GMLConstants.GML_PREFIX;
+import static org.locationtech.jts.io.gml2.GMLConstants.GML_NAMESPACE;
+import static org.locationtech.jts.io.gml2.GMLConstants.GML_PREFIX;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;

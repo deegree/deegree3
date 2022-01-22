@@ -43,8 +43,9 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * {@link Points} implementation based on a coordinate array.
@@ -208,6 +209,11 @@ public class PackedPoints implements Points {
 
     @Override
     public Object clone() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CoordinateSequence copy() {
         throw new UnsupportedOperationException();
     }
 }

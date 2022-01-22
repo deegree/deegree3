@@ -1,0 +1,160 @@
+== Introduction
+
+deegree webservices are implementations of the geospatial webservice
+specifications of the http://www.opengeospatial.org[Open Geospatial
+Consortium (OGC)] and the http://inspire.jrc.ec.europa.eu[INSPIRE
+Network Services]. deegree webservices 3.4 includes the following
+services:
+
+* http://www.opengeospatial.org/standards/wfs[Web Feature Service
+(WFS)]: Provides access to raw geospatial data objects
+* http://www.opengeospatial.org/standards/wms[Web Map Service (WMS)]:
+Serves maps rendered from geospatial data
+* http://www.opengeospatial.org/standards/wmts[Web Map Tile Service
+(WMTS)]: Serves pre-rendered map tiles
+* http://www.opengeospatial.org/standards/cat[Catalogue Service for the
+Web (CSW)]: Performs searches for geospatial datasets and services
+* http://www.opengeospatial.org/standards/wps[Web Processing Service
+(WPS)]: Executes geospatial processes
+
+With a single deegree webservices installation, you can set up one of
+the above services, all of them or even multiple services of the same
+type. The remainder of this chapter introduces some notable features of
+the different service implementations and provides learning trails for
+learning the configuration of each service.
+
+=== Characteristics of deegree WFS
+
+deegree WFS is an implementation of the
+http://www.opengeospatial.org/standards/wfs[OGC Web Feature Service
+specification]. Notable features:
+
+* Official OGC reference implementation for WFS 1.1.0 and WFS 2.0.0
+Simple
+* Implements WFS standards 1.0.0, 1.1.0 and 2.0.0footnote:[Passes OGC
+WFS CITE test suites (including all optional tests)]
+* Fully transactional (even for rich data models)
+* Supports KVP, XML and SOAP requests
+* GML 2/3.0/3.1/3.2 output/input
+* Support for GetGmlObject requests and XLinks
+* High performance and excellent scalability
+* On-the-fly coordinate transformation
+* Designed for rich data models from the bottom up
+* Backends support flexible mapping of GML application schemas to
+relational models
+* ISO 19107-compliant geometry model: Complex geometries (e.g.
+non-linear curves)
+* Advanced filter expression support based on XPath 1.0
+* Supports numerous backends, such as PostGIS, Oracle Spatial, MS SQL
+Server, Shapefiles or GML instance documents
+
+TIP: In order to learn the setup and configuration of a deegree-based WFS, we
+recommend to read chapters <<anchor-installation>> and
+<<anchor-lightly>> first. Check out <<anchor-workspace-inspire>> and
+<<anchor-workspace-utah>> for example deegree WFS configurations.
+Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wfs>>.
+
+=== Characteristics of deegree WMS
+
+deegree WMS is an implementation of the
+http://www.opengeospatial.org/standards/wms[OGC Web Map Service
+specification]. Notable features:
+
+* Official OGC reference implementation for WMS 1.1.1
+* Implements WMS standards 1.1.1 and 1.3.0footnote:[Passes OGC WMS CITE
+test suites (including all optional tests)]
+* Extensive support for styling languages SLD/SE versions 1.0.0 and
+1.1.0
+* Supports KVP, XML and SOAP requests (WMS 1.3.0)
+* High performance and excellent scalability
+* High quality rendering
+* Scale dependent styling
+* Support for SE removes the need for a lot of proprietary extensions
+* Easy configuration of HTML and other output formats for GetFeatureInfo
+responses
+* Uses stream-based data access, minimal memory footprint
+* Nearly complete support for raster symbolizing as defined in SE (with
+some extensions)
+* Complete support for TIME/ELEVATION and other dimensions for both
+feature and raster data
+* Supports numerous backends, such as PostGIS, Oracle Spatial,
+Shapefiles or GML instance documents
+* Can render rich data models directly
+
+TIP: In order to learn the setup and configuration of a deegree-based WMS, we
+recommend to read chapters <<anchor-installation>> and
+<<anchor-lightly>> first. Check out <<anchor-workspace-utah>> and
+<<anchor-workspace-inspire>> for example deegree WMS configurations.
+Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wms>>.
+
+=== Characteristics of deegree WMTS
+
+deegree WMTS is an implementation of the
+http://www.opengeospatial.org/standards/wmts[OGC Web Map Tile Service
+specification]. Notable features:
+
+* Implements Basic WMTS standard 1.0.0 (KVP)
+* High performance and excellent scalability
+* Supports different backends, such as GeoTIFF, remote WMS or file
+system tile image hierarchies
+* Supports on-the-fly caching (using EHCache)
+* Supports GetFeatureInfo for remote WMS backends
+
+TIP: In order to learn the setup and configuration of a deegree-based WMTS,
+we recommend to read <<anchor-installation>> and <<anchor-lightly>>
+first. Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wmts>>.
+
+=== Characteristics of deegree CSW
+
+deegree CSW is an implementation of the
+http://www.opengeospatial.org/standards/cat[OGC Catalogue Service
+specification]. Notable features:
+
+* Implements CSW standard 2.0.2
+* Fully transactional
+* Supports KVP, XML and SOAP requests
+* High performance and excellent scalability
+* ISO Metadata Application Profile 1.0.0
+* Pluggable and modular dataaccess layer allows to add support for new
+APs and backends
+* Modular inspector architecture allows to validate records to be
+inserted against various criteria
+* Standard inspectors: schema validity, identifier integrity, INSPIRE
+requirements
+* Handles all defined queryable properties (for Dublin Core as well as
+ISO profile)
+* Complex filter expressions
+
+TIP: In order to learn the setup and configuration of a deegree-based CSW, we
+recommend to read <<anchor-installation>> and <<anchor-lightly>> first.
+Check out <<anchor-workspace-csw>> for an example deegree CSW
+configuration. Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-csw>>.
+
+=== Characteristics of deegree WPS
+
+deegree WPS is an implementation of the
+http://www.opengeospatial.org/standards/wps[OGC Processing Service
+specification]. Notable features:
+
+* Implements WPS standard 1.0.0
+* Supports KVP, XML and SOAP requests
+* Pluggable process provider layer
+* Easy-to-use API for implementing Java processes
+* Supports all variants of input/output parameters: literal, bbox,
+complex (binary and xml)
+* Streaming access for complex input/output parameters
+* Processing of huge amounts of data with minimal memory footprint
+* Supports storing of response documents/output parameters
+* Supports input parameters given inline and by reference
+* Supports RawDataOutput/ResponseDocument responses
+* Supports asynchronous execution (with polling of process status)
+
+TIP: In order to learn the setup and configuration of a deegree-based WPS, we
+recommend to read<<anchor-installation>> and <<anchor-lightly>> first.
+Check out <<anchor-workspace-wps>> for an example deegree WPS
+configuration. Continue with <<anchor-configuration-basics>> and
+<<anchor-configuration-wps>>.

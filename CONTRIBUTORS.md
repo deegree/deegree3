@@ -1,0 +1,52 @@
+# List of contributors
+
+The following list shows in alphabetical order individuals who have contributed to deegree:
+- Andrei Aiordachioaie
+- D. Baum
+- Rutger Bezema
+- Florian Bingel
+- Danilo Bretschneider
+- Reijer Copier
+- Alexander Erben
+- Lyn Goltz
+- Sebastian Goerke
+- Volker Grabsch
+- Torsten Friebe
+- Jerry Huxtable
+- Andrei Ionita
+- Mats Isakson
+- Christian Kiehle
+- Martin W. Kirst
+- Johannes Küpper
+- Anne Loos
+- Matteo Matassoni
+- Diego Migliavacca
+- Edward Nash
+- Ulrich Neumeister
+- Mike Nidel
+- Sebastian Niklasch
+- Jens Pabel
+- Alexander Padberg
+- Jarle Pedersen
+- Andreas Poth
+- Rammi aka Andreas M. Rammelt
+- Stephan Reichhelm
+- Lena Rippolz
+- Hanko Rubach
+- Andreas Schmitz
+- Markus Schneider
+- Paul Sohier
+- Dirk Stenger
+- Jason R. Surratt
+- Ugo Taddei
+- Carmen Tawalika
+- Steffen Thomas
+- Oliver Tonnhofer
+- Sven Tschirner
+- Jeroen van der Vegt
+- Martin Vieweg
+- Jeroen ter Voorde
+- Georg Walenciak
+- Jeronimo Wanhoff
+- Juergen Weichand
+- Johannes Wilden

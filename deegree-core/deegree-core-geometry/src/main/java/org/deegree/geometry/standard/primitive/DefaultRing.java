@@ -63,7 +63,7 @@ import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Ring}.
@@ -184,7 +184,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     @Override
     public Measure getLength( Unit requestedUnit ) {
         // TODO respect requested unit
-        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength();
+        double length = ( (org.locationtech.jts.geom.LineString) getJTSGeometry() ).getLength();
         return new Measure( Double.toString( length ), null );
     }
 
@@ -236,7 +236,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.LinearRing buildJTSGeometry() {
+    protected org.locationtech.jts.geom.LinearRing buildJTSGeometry() {
         CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
         // TODO how to determine a feasible linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );

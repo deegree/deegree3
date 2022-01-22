@@ -8,21 +8,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <resources>
@@ -37,18 +24,84 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- run and perform integration tests but ignore failure
+          <testFailureIgnore>true</testFailureIgnore>
+          -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
+            <id>reserve-network-port</id>
             <goals>
-              <goal>assemble-log4j</goal>
+              <goal>reserve-network-port</goal>
             </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>jetty.http.port</portName>
+                <portName>jetty.stop.port</portName>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.4.43.v20210629</version>
+        <configuration>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <stopPort>${jetty.stop.port}</stopPort>
+          <stopKey>STOP</stopKey>
+          <stopWait>10</stopWait>
+          <httpConnector>
+            <port>${jetty.http.port}</port>
+            <idleTimeout>60000</idleTimeout>
+          </httpConnector>
+          <systemProperties>
+            <systemProperty>
+              <name>jetty.home</name>
+              <value>${project.basedir}/src/main/resources</value>
+            </systemProperty>
+            <systemProperty>
+              <name>javax.xml.transform.TransformerFactory</name>
+              <value>net.sf.saxon.TransformerFactoryImpl</value>
+            </systemProperty>
+          </systemProperties>
+          <loginServices>
+            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+              <name>deegree web configuration API</name>
+              <config>${project.basedir}/src/main/resources/realm.properties</config>
+            </loginService>
+          </loginServices>
+          <webAppSourceDirectory>${project.basedir}/target/${project.artifactId}-${project.version}</webAppSourceDirectory>
+          <webApp>
+            <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+            <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+          </webApp>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-jetty</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <scanIntervalSeconds>0</scanIntervalSeconds>
+            </configuration>
           </execution>
           <execution>
-            <id>assemble-console</id>
+            <id>stop-jetty</id>
+            <phase>post-integration-test</phase>
             <goals>
-              <goal>assemble-console</goal>
+              <goal>stop</goal>
             </goals>
           </execution>
         </executions>
@@ -61,14 +114,7 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-testservice</artifactId>
-      <version>${project.version}</version>
-      <type>zip</type>
-      <classifier>webapp-template</classifier>
-      <scope>compile</scope>
+      <type>war</type>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -87,11 +133,10 @@
     <module>deegree-compliance-tests</module>
     <module>deegree-wms-similarity-tests</module>
     <module>deegree-wms-tiling-tests</module>
-    <!-- Failing
     <module>deegree-wms-remoteows-tests</module>
-    -->
     <module>deegree-wmts-tests</module>
     <module>deegree-resource-deps-tests</module>
+    <module>deegree-integration-tests</module>
   </modules>
 
   <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
@@ -127,12 +172,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>csw-cite</id>
-  <modules>
-          <module>deegree-csw-bkg</module>
-  </modules>
     </profile>
   </profiles>
 

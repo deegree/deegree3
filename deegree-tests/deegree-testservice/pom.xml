@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-testservice</artifactId>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <name>deegree-testservice</name>
   <description>Webservices base webapp for integration tests</description>
   <properties>
@@ -10,61 +10,10 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-client</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
     <relativePath>../../deegree-client</relativePath>
   </parent>
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/webapp-template.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>create-webapp-template-zip</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <configuration>
-          <ignorePackaging>true</ignorePackaging>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <configuration>
-            <additionalProjectFacets>
-              <jst.jsf>2.1</jst.jsf>
-            </additionalProjectFacets>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
@@ -201,7 +150,7 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-connectionprovider-datasource</artifactId>
       <version>${project.version}</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>

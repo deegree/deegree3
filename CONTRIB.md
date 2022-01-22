@@ -24,14 +24,14 @@ If you are interested in making a code contribution and would like to learn more
 Never made an open source contribution before? Wondering how contributions work in the in our project? Here's a quick rundown!
 
 - Find an issue that you are interested in addressing or a feature that you would like to add.
-- Fork the repository associated with the issue to your local GitHub organization. This means that you will have a copy of the repository under your-GitHub-username/repository-name.
-- Clone the repository to your local machine using `git clone https://github.com/github-username/repository-name.git`.
-- Create a new branch for your fix using `git checkout -b branch-name-here`.
+- Fork the repository associated with the issue to your GitHub organization or user account. This means that you will have a copy of the repository under `your-github-username/deegree3`.
+- Clone the repository to your local machine using `git clone https://github.com/your-github-username/deegree3.git`.
+- Create a new branch for your change using `git checkout -b your-branch-name-here`.
 - Make the appropriate changes for the issue you are trying to address or the feature that you want to add.
 - Use `git add insert-paths-of-changed-files-here` to add the file contents of the changed files to the "snapshot" git uses to manage the state of the project, also known as the index.
-- Use `git commit -m "Insert a short message of the changes made here"` to store the contents of the index with a descriptive message.
-- Push the changes to the remote repository using `git push origin branch-name-here`.
-- Submit a pull request to the upstream repository.
+- Use `git commit -m "Insert a short message of the changes made here with reference to github issue"` to store the contents of the index with a descriptive message.
+- Push the changes to the remote repository using `git push origin your-branch-name-here`.
+- Submit a pull request to the upstream repository using the github functionality.
 - Title the pull request with a short description of the changes made and the issue or bug number associated with your change. For example, you can title an issue like so "Fixes #42: WFS returns valid GML for GetFeature with BBOX parameter".
 - In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer. It's OK if your pull request is not perfect (no pull request is), the reviewer will be able to help you fix any problems and improve it!
 - Wait for the pull request to be reviewed by a TMC member.
@@ -70,12 +70,11 @@ Our issue tracking system is:
 - TMC `tmc AT SPAMFREE deegree DOT org` (Who is the [TechnicalManagementCommittee](#technical-management-committee) and what do they do?)
 
 ### IRC Channel
-Channel #deegree on freenode.net (irc://freenode.net). Choose an IRC client for your platform or use the webclient for connecting:
+Channel #deegree on libera.chat (irc://irc.libera.chat/deegree). Choose an IRC client for your platform or use the webclient for connecting:
 
-Open the freenode web client or enter `/network freenode` in your chat client:
+Open the web client at https://web.libera.chat/#deegree
 - Choose a nickname
 - Enter channel #deegree or type `/join #deegree` in your chat client
-- Solve captcha
 - Connect
 
 ### Social Media
@@ -163,7 +162,7 @@ If for any reason a committee member is not able to fully participate then they 
 
 The technical infrastructure of the deegree initiative is described in [Infrastructure](https://github.com/deegree/deegree3/wiki/Infrastructure).
 
-If a member of the initiative needs access to one of the infrastructure components, the TMC decides upon tracker request and provides access to the Infrastructure.
+If a member of the initiative needs access to one of the infrastructure components, the TMC decides upon request and provides access to the infrastructure.
 
 #### Ownership of github organisation and projects 
 
@@ -184,6 +183,31 @@ code. For the committer themselves understanding about the license is hopefully 
 committer should verify the understanding unless the committer is very comfortable that the contributor understands the 
 license (for instance frequent contributors).
 
-All committers are responsible for having read, and understood this document. And please confirm acceptance to these 
+If the contribution was developed on behalf of an employer (on work time, as part of a work project, etc) then it is 
+important that an appropriate representative of the employer understand that the code will be contributed under the 
+LGPL license. The arrangement should be cleared with an authorized supervisor, manager, or director.
+
+The code should be developed by the contributor, or the code should be from a source which can be rightfully contributed
+such as from the public domain, or from an open source project under a compatible license. All unusual situations need 
+to be discussed with the committee members and documented.
+
+Committers should adhere to the following guidelines, and may be personally legally liable for improperly contributing 
+code to the source repository:
+
+- Make sure the contributor (and possibly employer) is aware of the contribution terms.
+- Code coming from a source other than the contributor (such as adapted from another project) should be clearly marked 
+as to the original source, copyright holders, license terms and so forth. This information can be in the file headers, 
+but should also be added to the project licensing file if not exactly matching normal project licensing (LICENSE.txt).
+- Existing copyright headers and license text should never be stripped from a file. If a copyright holder wishes to give
+ up copyright they must do so in writing to the committees before copyright messages are removed. If license terms are 
+ changed it has to be by agreement (written in email is ok) of the copyright holders.
+- Code with licenses requiring credit, or disclosure to users should be added to LICENSE.TXT.
+- When substantial contributions are added to a file (such as substantial patches) the author/contributor should be added
+ to the list of copyright holders for the file.
+- If there is uncertainty about whether a change it proper to contribute to the code base, please seek more information 
+from the project steering committee, or the OSGeo foundation legal counsel.
+
+All committers are responsible for having read, and understood this document. And confirm acceptance to these 
 guidelines by sending an email to the mailing list with subject `Committer guidelines acceptance` and body 
 `I hereby accept the deegree committer guidelines. <Date> <Your Full Name>`.
+

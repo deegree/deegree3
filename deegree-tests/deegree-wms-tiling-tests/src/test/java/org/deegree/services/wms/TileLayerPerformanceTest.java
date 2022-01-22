@@ -76,7 +76,7 @@ public class TileLayerPerformanceTest {
     @Test
     public void testPerformance()
                             throws IOException, InterruptedException, OWSExceptionReport, XMLStreamException {
-        String base = "http://localhost:" + System.getProperty( "portnumber" );
+        String base = "http://localhost:" + System.getProperty( "portnumber", "8080" );
         base += "/deegree-wms-tiling-tests/services";
         WMSClient client = new WMSClient( new URL( base + "?request=GetCapabilities&service=WMS&version=1.1.1" ) );
 

@@ -1,1 +1,2 @@
 org.deegree.protocol.wms.filter.ScaleFunction
+org.deegree.protocol.wms.filter.EnvFunction

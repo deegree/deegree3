@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-workspace-utah</artifactId>
-  <packaging>deegree-workspace</packaging>
   <name>deegree-workspace-utah</name>
+  <packaging>pom</packaging>
   <description>Example configuration for a web mapping setup using deegree WMS, WMTS and WFS</description>
 
   <properties>
@@ -12,64 +12,16 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>utah-demodata</artifactId>
-      <version>3.2</version>
-      <type>zip</type>
-    </dependency>
-  </dependencies>
-
-  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
-  <profiles>
-    <profile>
-      <id>activate-dependency-plugin</id>
-      <activation>
-        <property>
-          <name>!deactivateDependencyPlugin</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>unpack-dependencies</goal>
-                </goals>
-                <configuration>
-                  <type>zip</type>
-                  <includeGroupIds>org.deegree</includeGroupIds>
-                  <includeArtifactIds>utah-demodata</includeArtifactIds>
-                  <outputDirectory>src/main/workspace/</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
 

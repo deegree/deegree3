@@ -1,3 +1,0 @@
-<RemoteWMS xmlns="http://www.deegree.org/remoteows/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/remoteows/wms http://schemas.deegree.org/remoteows/wms/3.4.0/remotewms.xsd" configVersion="3.4.0">
-  <CapabilitiesDocumentLocation location="http://cite.lat-lon.de/deegree-compliance-tests-3.1.2/services/wms?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1"/>
-</RemoteWMS>

@@ -219,7 +219,7 @@ public class Geometries {
      */
     public static Geometry copyDeep( Geometry geom ) {
         // TODO implement this without JTS
-        com.vividsolutions.jts.geom.Geometry jtsGeom = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
+        org.locationtech.jts.geom.Geometry jtsGeom = ( (AbstractDefaultGeometry) geom ).getJTSGeometry();
         return ( (AbstractDefaultGeometry) geom ).createFromJTS( jtsGeom, geom.getCoordinateSystem() );
     }
 

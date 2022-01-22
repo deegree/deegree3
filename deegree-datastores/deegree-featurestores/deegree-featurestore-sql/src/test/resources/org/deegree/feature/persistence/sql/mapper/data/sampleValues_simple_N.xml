@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xmlns:te="http://test.de/schema"
+                       xsi:schemaLocation="http://test.de/schema ../schemaForSampleValues.xsd">
+  <gml:featureMember>
+    <te:FeatureA gml:id="TE_1">
+      <te:prop_A1>OneA</te:prop_A1>
+      <te:prop_A1>OneB</te:prop_A1>
+      <te:prop_A2>2</te:prop_A2>
+      <te:prop_A3>31</te:prop_A3>
+      <te:prop_A3>32</te:prop_A3>
+    </te:FeatureA>
+  </gml:featureMember>
+</gml:FeatureCollection>

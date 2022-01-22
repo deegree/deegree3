@@ -1,5 +1,0 @@
-<GDALSettings configVersion="3.4.0"
-  xmlns="http://www.deegree.org/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/commons/gdal/3.4.0/gdal.xsd">
-  <OpenDatasets>5</OpenDatasets>
-</GDALSettings>

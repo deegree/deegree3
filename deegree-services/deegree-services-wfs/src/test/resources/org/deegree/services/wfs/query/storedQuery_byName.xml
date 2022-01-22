@@ -1,0 +1,21 @@
+<StoredQueryDefinition xmlns="http://www.opengis.net/wfs/2.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:app="app=http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd" id="ByName">
+  <Title>ByName</Title>
+  <Abstract>Returns something by the name.</Abstract>
+  <ows:Metadata about="http://deegree.org" />
+  <Parameter name="name" type="xs:string">
+    <Abstract>Name (mandatory)</Abstract>
+  </Parameter>
+  <QueryExpressionText returnFeatureTypes="app:something" language="urn:ogc:def:queryLanguage:OGC-:WFSQueryExpression"
+    isPrivate="true">
+    <Query typeNames="app:something">
+      <Filter xmlns="http://www.opengis.net/fes/2.0">
+        <PropertyIsEqualTo>
+          <ValueReference>app:name</ValueReference>
+          <Literal>${name}</Literal>
+        </PropertyIsEqualTo>
+      </Filter>
+    </Query>
+  </QueryExpressionText>
+</StoredQueryDefinition>

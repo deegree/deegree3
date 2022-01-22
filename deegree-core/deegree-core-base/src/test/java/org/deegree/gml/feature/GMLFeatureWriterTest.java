@@ -53,7 +53,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -349,8 +352,8 @@ public class GMLFeatureWriterTest {
         XMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
         GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_32, writer );
         gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
-        List<ProjectionClause> projections = new ArrayList<ProjectionClause>();
-        projections.add( new TimeSliceProjection( timeSliceFilter ) );
+        Map<QName, List<ProjectionClause>> projections = new HashMap<>();
+        projections.put( f.getName(), Collections.singletonList( new TimeSliceProjection( timeSliceFilter ) ) );
         gmlwriter.setProjections( projections );
         gmlwriter.write( f );
         gmlwriter.close();
@@ -383,8 +386,8 @@ public class GMLFeatureWriterTest {
         XMLStreamWriter writer = new IndentingXMLStreamWriter( memoryWriter.getXMLStreamWriter() );
         GMLStreamWriter gmlwriter = createGMLStreamWriter( GML_32, writer );
         gmlwriter.setNamespaceBindings( gmlReader.getAppSchema().getNamespaceBindings() );
-        List<ProjectionClause> projections = new ArrayList<ProjectionClause>();
-        projections.add( new TimeSliceProjection( timeSliceFilter ) );
+        Map<QName, List<ProjectionClause>> projections = new HashMap<>();
+        projections.put( f.getName(), Collections.singletonList( new TimeSliceProjection( timeSliceFilter ) ) );
         gmlwriter.setProjections( projections );
         gmlwriter.write( f );
         gmlwriter.close();

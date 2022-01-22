@@ -16,7 +16,7 @@ import org.apache.xerces.xni.parser.XMLErrorHandler;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.schema.RedirectingEntityResolver;
 
-public class GrammarUtil {
+public final class GrammarUtil {
 
     /** Namespaces feature id (http://xml.org/sax/features/namespaces). */
     protected static final String NAMESPACES_FEATURE_ID = "http://xml.org/sax/features/namespaces";

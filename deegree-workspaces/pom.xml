@@ -8,47 +8,44 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <descriptors>
+              <descriptor>src/assembly/assembly.xml</descriptor>
+            </descriptors>
+            <appendAssemblyId>false</appendAssemblyId>
+          </configuration>
+          <executions>
+            <execution>
+              <id>create-zip</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <modules>
     <module>deegree-workspace-aixm</module>
-    <module>deegree-workspace-alkis</module>
-    <module>deegree-workspace-compliance-tests</module>    
+    <module>deegree-workspace-compliance-tests</module>
     <module>deegree-workspace-csw</module>
     <module>deegree-workspace-csw-memory-tests</module>    
-    <module>deegree-workspace-csw-tests</module>    
     <module>deegree-workspace-geosciml</module>
-    <module>deegree-workspace-inspire</module>
-    <module>deegree-workspace-osm</module>
     <module>deegree-workspace-utah</module>
     <module>deegree-workspace-wcts</module>
     <module>deegree-workspace-wps</module>
-    <module>deegree-workspace-wpvs</module>
-    <module>deegree-workspace-xplan40</module>
   </modules>
 
 </project>

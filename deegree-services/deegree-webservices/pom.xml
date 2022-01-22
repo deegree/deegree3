@@ -10,33 +10,28 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>assemble-log4j</goal>
-              <goal>generate-buildinfo</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
+              <deegree-build-by>${user.name}</deegree-build-by>
+              <deegree-build-date>${buildTimestamp}</deegree-build-date>
+              <deegree-build-rev>${buildNumber}</deegree-build-rev>
+            </manifestEntries>
+          </archive>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -58,28 +53,8 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>    
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <configuration>
-          <path>/</path>
-        </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <configuration>
-            <additionalProjectFacets>
-              <jst.jsf>2.1</jst.jsf>
-            </additionalProjectFacets>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
   <profiles>
@@ -312,6 +287,18 @@
       <artifactId>primefaces</artifactId>
       <version>4.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -328,6 +315,10 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -8,31 +8,17 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <tomcat-version>8.0.50</tomcat-version>
+    <tomcat-version>8.5.66</tomcat-version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
-      <!--artifactId: tomcat for 7.x and 8.x, apache-tomcat for 6.x -->
       <artifactId>tomcat</artifactId>
       <version>${tomcat-version}</version>
       <type>zip</type>
@@ -42,11 +28,6 @@
       <artifactId>deegree-webservices</artifactId>
       <version>${project.version}</version>
       <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-javacheck</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <build>

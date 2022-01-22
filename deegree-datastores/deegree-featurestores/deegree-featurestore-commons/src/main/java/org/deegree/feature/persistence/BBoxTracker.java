@@ -45,7 +45,9 @@ import javax.xml.namespace.QName;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryTransformer;
+import org.deegree.geometry.SimpleGeometryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +86,9 @@ public class BBoxTracker {
             }
             if ( bbox != null ) {
                 try {
+                    if ( bbox.getCoordinateSystem() == null ){
+                        bbox.setCoordinateSystem( storageSrs );
+                    }
                     if ( bbox.getCoordinateSystem() != null && !bbox.getCoordinateSystem().equals( storageSrs ) ) {
                         GeometryTransformer transformer = new GeometryTransformer( storageSrs );
                         bbox = transformer.transform( bbox );

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ShapeFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/shape"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape http://schemas.deegree.org/datasource/0.5.0/feature/shape.xsd">
-  <StorageSRS>EPSG:31466</StorageSRS>
-  <File>/home/rutger/workspace/bonn_3doptimierung/resources/data/closeup_layers/alkobjekte_flurstuecke_out.shp</File>
-</ShapeFeatureStore>

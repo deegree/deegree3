@@ -1,0 +1,54 @@
+:doctype: book
+:encoding: utf-8
+:toc: macro
+:toclevels: 5
+:numbered:
+:imagesdir: images
+:source-highlighter: coderay
+:title-logo-image: images/logo_deegree.png
+
+= deegree Webservices
+
+toc::[]
+
+include::intro.adoc[]
+
+include::installation.adoc[]
+
+include::logging.adoc[]
+
+include::lightly.adoc[]
+
+include::basics.adoc[]
+
+include::webservices.adoc[]
+
+include::featurestores.adoc[]
+
+include::tilestores.adoc[]
+
+include::coveragestores.adoc[]
+
+include::metadatastores.adoc[]
+
+include::layers.adoc[]
+
+include::themes.adoc[]
+
+include::renderstyles.adoc[]
+
+include::filterencoding.adoc[]
+
+include::serverconnections.adoc[]
+
+include::processproviders.adoc[]
+
+include::crs.adoc[]
+
+include::restapi.adoc[]
+
+include::cli-utility.adoc[]
+
+include::javamodules.adoc[]
+
+include::gdal.adoc[]

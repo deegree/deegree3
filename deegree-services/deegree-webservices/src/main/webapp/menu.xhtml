@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
   <h:panelGroup layout="block">
+    <h:link styleClass="menutopic" value="Home" outcome="home"/><br/><br/>
     <h:outputText styleClass="menutopic" value="general" />
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.loggedIn}" layout="block">
@@ -17,7 +18,7 @@
   </h:panelGroup>
   <h:panelGroup rendered="#{logBean.loggedIn}">
     <h:panelGroup layout="block">
-      <h:outputText styleClass="menutopic" value="webservices" />
+      <h:outputText styleClass="menutopic" value="web services" />
     </h:panelGroup>
     <h:panelGroup layout="block">
       <dgc:menuitem displayname="services" target="/console/webservices/index" hasErrors="#{servicesBean.hasErrors}" />

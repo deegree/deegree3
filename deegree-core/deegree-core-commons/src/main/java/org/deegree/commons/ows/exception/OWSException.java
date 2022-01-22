@@ -154,6 +154,11 @@ public class OWSException extends Exception {
      */
     public static final String NOT_FOUND = "NotFound";
 
+    /**
+     * the identifier specified for a stored query expression is a duplicate.
+     */
+    public static final String DUPLICATE_STORED_QUERY_ID_VALUE =  "DuplicateStoredQueryIdValue";
+
     private final String exceptionCode;
 
     private final String locator;

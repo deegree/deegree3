@@ -1,0 +1,2605 @@
+[[anchor-configuration-service]]
+== Web services
+
+This chapter describes the configuration of web service resources. You
+can access this configuration level by clicking the *web services* link
+in the administration console. The corresponding configuration files are
+located in the _services/_ subdirectory of the active deegree
+workspace directory.
+
+.Web services are the top-level resources of the deegree workspace
+image::workspace-overview-services.png[Web services are the top-level resources of the deegree workspace,scaledwidth=80.0%]
+
+TIP: The identifier of a web service resource has a special purpose. If your
+deegree instance can be reached at
+_http://localhost:8080/deegree-webservices_, the common endpoint for
+connecting to your services is
+_http://localhost:8080/deegree-webservices/services_. However, if you
+define multiple service resources of the same type in your workspace
+(e.g. two WMS instances with identifiers _wms1_ and _wms2_), you
+cannot use the common URL, as deegree cannot determine the targeted WMS
+instance from the request. In this case, simply append the resource
+identifier to the common endpoint URL (e.g.
+_http://localhost:8080/deegree-webservices/services/wms2_) to choose
+the service resource that you want to connect to explicitly.
+
+[[anchor-configuration-wfs]]
+=== Web Feature Service (WFS)
+
+A deegree WFS setup consists of a WFS configuration file and any number
+of feature store configuration files. Feature stores provide access to
+the actual data (which may be stored in any of the supported backends,
+e.g. in shapefiles or spatial databases such as PostGIS or Oracle
+Spatial). In transactional mode (WFS-T), feature stores are also used
+for modification of stored features:
+
+.A WFS resource is connected to any number of feature store resources
+image::workspace-wfs.png[A WFS resource is connected to any number of feature store resources,scaledwidth=80.0%]
+
+==== Minimal example
+
+The only mandatory option is _QueryCRS_, therefore, a minimal WFS
+configuration example looks like this:
+
+*WFS config example 1: Minimal configuration*
+
+[source,xml]
+----
+<deegreeWFS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wfs"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs
+  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+
+  <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
+
+</deegreeWFS>
+----
+
+This will create a deegree WFS with the feature types from all
+configured feature stores in the workspace and
+_urn:ogc:def:crs:EPSG::4258_ as coordinate system for returned GML
+geometries.
+
+==== More complex example
+
+A more complex configuration example looks like this:
+
+*WFS config example 2: More complex configuration*
+
+[source,xml]
+----
+<deegreeWFS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wfs"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wfs
+  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+
+  <SupportedVersions>
+    <Version>2.0.0</Version>
+    <Version>1.1.0</Version>
+  </SupportedVersions>
+
+  <SupportedRequests>
+    <SupportedEncodings>kvp</SupportedEncodings>
+     <GetCapabilities>
+      <SupportedEncodings>xml soap</SupportedEncodings>
+    </GetCapabilities>
+    <DescribeFeatureType/>
+    <GetFeature>
+      <SupportedEncodings>xml</SupportedEncodings>
+    </GetFeature>
+  </SupportedRequests>
+
+  <FeatureStoreId>inspire-ad</FeatureStoreId>
+
+  <EnableTransactions idGen="UseExisting">true</EnableTransactions>
+  <EnableResponseBuffering>false</EnableResponseBuffering>
+  <DisabledResources>
+    <Pattern>http://inspire.ec.europa.eu/codelist</Pattern>
+  </DisabledResources>
+
+  <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
+  <QueryCRS>urn:ogc:def:crs:EPSG::4326</QueryCRS>
+  <QueryMaxFeatures>-1</QueryMaxFeatures>
+  <QueryCheckAreaOfUse>false</QueryCheckAreaOfUse>
+
+  <GMLFormat gmlVersion="GML_32">
+    <MimeType>application/gml+xml; version=3.2</MimeType>
+    <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+    <GenerateBoundedByForFeatures>false</GenerateBoundedByForFeatures>
+    <GetFeatureResponse xmlns:gml="http://www.opengis.net/gml/3.2">
+      <ContainerElement>gml:FeatureCollection</ContainerElement>
+      <FeatureMemberElement>gml:featureMember</FeatureMemberElement>
+      <AdditionalSchemaLocation>http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
+      </AdditionalSchemaLocation>
+      <DisableStreaming>false</DisableStreaming>
+      <PrebindNamespace prefix="ad" uri="urn:x-inspire:specification:gmlas:Addresses:3.0"/>
+      <PrebindNamespace prefix="base" uri="urn:x-inspire:specification:gmlas:BaseTypes:3.2"/>
+      <PrebindNamespace prefix="xlink" uri="http://www.w3.org/1999/xlink"/>
+    </GetFeatureResponse>
+  </GMLFormat>
+
+</deegreeWFS>
+----
+
+==== Configuration overview
+
+The deegree WFS config file format is defined by schema file
+http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd. The
+root element is <deegreeWFS> and the config attribute must be
+_3.4.0_. The following table lists all available configuration options
+(complex ones contain nested options themselves). When specifiying them,
+their order must be respected.
+
+[width="100%",cols="24%,11%,8%,57%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedVersions |0..1 |Complex |Activated OGC protocol versions,
+default: all
+
+|FeatureStoreId |0..n |String |Feature stores to attach, default: all
+
+|EnableTransactions |0..1 |Complex |Enable transactions (WFS-T
+operations), default: false
+
+|EnableResponseBuffering |0..1 |Boolean |Enable response buffering
+(expensive), default: false
+
+|DisabledResources |0..1 |Complex |Disables resolve of xlink:href
+attribute references
+
+|EnableResponsePaging |0..1 |Boolean |Enable response paging (WFS 2.0.0
+option), default: false
+
+|SupportedRequests |0..1 |Complex |Configuration of WFS requests
+
+|QueryCRS |1..n |String |Announced CRS, first element is the default CRS
+
+|QueryMaxFeatures |0..1 |Integer |Limit of features returned in a
+response, default: 15000
+
+|ResolveTimeOutInSeconds |0..1 |Integer |Expiry time in seconds
+
+|QueryCheckAreaOfUse |0..1 |Boolean |Check spatial query constraints
+against CRS area, default: false
+
+|StoredQuery |0..n |String |File name of StoredQueryDefinition
+
+|ExtendedCapabilities |0..n |String |Extended Metadata reported in
+GetCapabilities response
+
+|GMLFormat |0..n |Complex |GML format configuration
+
+|CustomFormat |0..n |Complex |Custom format configuration
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
+|===
+
+The remainining sections describe these options and their sub-options in
+detail.
+
+==== General options
+
+* _SupportedVersions_: By default, all implemented WFS protocol
+versions (1.0.0, 1.1.0 and 2.0.0) will be activated. You can control
+offered WFS protocol versions using element _SupportedVersions_. This
+element allows any combination of the child elements
+_<Version>1.0.0</Version>_, _<Version>1.1.0</Version>_ and
+_<Version>2.0.0</Version>_.
+* _FeatureStoreId_: By default, all feature stores in your deegree
+workspace will be used for serving feature types. In some cases, this
+may not be what you want, e.g. because you have two different WFS
+instances running, or you don't want all feature types used in your WMS
+for rendering to be available via your WFS. Use the _FeatureStoreId_
+option to explicitly set the feature stores that this WFS should use.
+* _EnableResponseBuffering_: By default, WFS responses are directly
+streamed to the client. This is very much recommended and even a
+requirement for transferring large responses efficiently. The only
+drawback happens if exceptions occur, after a partial response has
+already been transferred. In this case, the client will receive part
+payload and part exception report. By specifying _true_ here, you can
+explicitly force buffering of the full response, before it is written to
+the client. Only if the full response could be generated successfully,
+it will be transferred. If an exception happens at any time the buffer
+will be discarded, and an exception report will be sent to the client.
+Buffering is performed in memory, but switches to a temp file in case
+the buffer grows bigger than 1 MiB.
+* _DisabledResources_: By default all xlink:href attribute references
+are tried to resolved as feature references during insert. This can be
+avoided by configuring one or multiple base url patterns within the
+child element _Pattern_. _Pattern_ can occur multiple times, one for
+each base url. In the complex example above resolving of
+_http://inspire.ec.europa.eu/codelist/DesignationSchemeValue/natura2000_
+and
+_http://inspire.ec.europa.eu/codelist/Natura2000DesignationValue/specialProtectionArea_
+is disabled, but not
+_https://inspire.ec.europa.eu/codelist/DesignationSchemeValue/natura2000_
+and _http://deegree.org/external/feature_.
+* _EnableResponsePaging_: By default, WFS 2.0.0 does not support
+response paging. By specifying _true_ here, you can explicitly enable
+response paging. Response Paging works only when streaming is disabled.
+Currently @next and @previous URLs bases on the original GetFeature
+request in KVP encoding.
+* _QueryCRS_: Coordinate reference systems for returned geometries.
+This element can be specified multiple times, and the WFS will announce
+all CRS in the GetCapabilities response (except for WFS 1.0.0 which does
+not officially support using multiple coordinate reference systems). The
+first element always specifies the default CRS (used when no CRS
+parameter is present in a request).
+* _QueryMaxFeatures_: By default, a maximum number of 15000 features
+will be returned for a single _GetFeature_ request. Use this option to
+override this setting. A value of _-1_ means unlimited.
+* _ResolveTimeOutInSeconds_: Use this option to specify a default
+value for ResolveTimeOut, used in _GetFeature_ request if the
+ResolveTimeOut option is not set.
+* _QueryCheckAreaOfUse_: By default, spatial query constraints are not
+checked with regard to the area of validity of the CRS. Set this option
+to _true_ to enforce this check.
+
+==== Transactions
+
+By default, WFS-T requests will be rejected. Setting the
+_EnableTransactions_ option to _true_ will enable transaction
+support. This option has the optional attribute _idGenMode_ which
+controls how ids of inserted features (the values in the gml:id
+attribute) are treated. There are three id generation modes available:
+
+* *UseExisting*: The original gml:id values from the input are stored.
+This may lead to errors if the provided ids are already in use.
+* *UseExistingResolvingReferencesInternally*: Same as UseExisting, but
+it is allowed to insert features with references to already inserted
+features.
+* **UseExistingSkipResolvingReferences**: Same as UseExisting, but references to features are not checked. The user is fully responsible of the data integrity!
+* *GenerateNew* (default): New and unique ids are generated. References
+in the input GML (xlink:href) that point to a feature with an reassigned
+id are fixed as well, so reference consistency is maintained.
+* *ReplaceDuplicate*: The WFS will try to use the original gml:id values
+that have been provided in the input. In case a certain identifier
+already exists in the backend, a new and unique identifier will be
+generated. References in the input GML (xlink:href) that point to a
+feature with an reassigned id are fixed as well, so reference
+consistency is maintained.
+
+NOTE: Currently, transactions can only be enabled if your WFS is attached to a
+single feature store.
+
+NOTE: Not every feature store implementation supports transactions, so you may
+encounter that transactions are rejected, even though you activated them
+in the WFS configuration.
+
+NOTE: The details of the id generation depend on the feature store
+implementation/configuration.
+
+NOTE: In a WFS 1.1.0 insert, the id generation mode can be overridden by
+attribute _idGenMode_ of the _Insert_ element. WFS 1.0.0 and WFS 2.0.0
+don't support to specify the id generation mode on a request basis.
+
+NOTE: When a feature is replaced the _UseExisting_ option is always
+activated for that transaction. The gml:id of the feature is used for
+the new version of the feature. The filter is used to identify the
+feature to be replaced.
+
+==== SupportedRequests
+
+This option can be used to configure the supported request types.
+Currently the supported encodings can be specified for each request
+type. If the option is missing all encodings are supported for each
+request type. The option has the following sup-options:
+
+[width="100%",cols="14%,7%,5%,74%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedEncodings |0..1 |String |Enable encodings for all configured
+request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values
+must be separated by a white space.
+
+|GetCapabilities |0..1 |Complex |Configuration of GetCapabilities
+requests
+
+|DescribeFeatureType |0..1 |Complex |Configuration of
+DescribeFeatureType requests
+
+|GetFeature |0..1 |Complex |Configuration of GetFeature requests
+
+|Transaction |0..1 |Complex |Configuration of Transaction requests
+
+|GetFeatureWithLock |0..1 |Complex |Configuration of GetFeatureWithLock
+requests
+
+|GetGmlObject |0..1 |Complex |Configuration of GetGmlObject requests
+
+|LockFeature |0..1 |Complex |Configuration of LockFeature requests
+
+|GetPropertyValue |0..1 |Complex |Configuration of GetPropertyValue
+requests
+
+|CreateStoredQuery |0..1 |Complex |Configuration of CreateStoredQuery
+requests
+
+|DropStoredQuery |0..1 |Complex |Configuration of DropStoredQuery
+requests
+
+|ListStoredQueries |0..1 |Complex |Configuration of ListStoredQueries
+requests
+
+|DescribeStoredQueries |0..1 |Complex |Configuration of
+DescribeStoredQueries requests
+|===
+
+Each request type has the following sup-option:
+
+[width="100%",cols="14%,8%,5%,73%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedEncodings |0..1 |String |Enable encodings for this request
+types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be
+separated by a white space.
+|===
+
+By default deegree will provide all supported request types with all
+available encodings (kvp, xml, soap).
+
+If a single supported request or encoding is configured, all non
+configured requests or encodings are disabled.
+
+Example: To limit the provided request types to GetCapabilities and
+GetFeature this request types can be added without SupportedEncodings
+sub-option:
+
+[source,xml]
+----
+<SupportedRequests>
+  <GetCapabilities />
+  <GetFeature />
+</SupportedRequests>
+----
+
+Example: To disable SOAP encoding the other encodings can be added
+without SupportedRequests sub-option:
+
+[source,xml]
+----
+<SupportedRequests>
+  <SupportedEncodings>kvp xml</SupportedEncodings>
+</SupportedRequests>
+----
+
+WARNING: It is not checked if the configuration is valid against the WFS
+specification!
+
+==== Adapting GML output formats
+
+By default, a deegree WFS will offer GML 2, 3.0, 3.1, and 3.2 as output
+formats and announce those formats in the GetCapabilities responses
+(except for WFS 1.0.0, as this version of the standard has no means of
+announcing other formats than GML 2). The element for GetFeature
+responses is _wfs:FeatureCollection_, as mandated by the WFS
+specification.
+
+In some cases, you may want to alter aspects of the offered output
+formats. For example, if you want your WFS to serve a specific
+application schema (e.g. INSPIRE Data Themes), you should restrict the
+announced GML versions to the one used for the application schema. These
+and other output-format related aspects can be controlled by element
+_GMLFormat_.
+
+*Example for WFS config option _GMLFormat_*
+
+[source,xml]
+----
+<GMLFormat gmlVersion="GML_32">
+
+  <MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+
+  <GenerateBoundedByForFeatures>false</GenerateBoundedByForFeatures>
+
+  <GetFeatureResponse>
+    <ContainerElement xmlns:gml="http://www.opengis.net/gml/3.2">gml:FeatureCollection</ContainerElement>
+    <FeatureMemberElement xmlns:gml="http://www.opengis.net/gml/3.2">gml:featureMember</FeatureMemberElement>
+    <AdditionalSchemaLocation>
+      http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/deprecatedTypes.xsd
+    </AdditionalSchemaLocation>
+    <DisableDynamicSchema>true</DisableDynamicSchema>
+    <DisableStreaming>false</DisableStreaming>
+    <GeometryLinearization>
+      <Accuracy>0.1</Accuracy>
+    </GeometryLinearization>
+  </GetFeatureResponse>
+
+  <DecimalCoordinateFormatter places="8"/>
+
+</GMLFormat>
+----
+
+The _GMLFormat_ option has the following sub-options:
+
+[width="100%",cols="24%,11%,7%,58%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|@gmlVersion |1..1 |String |GML version (GML_2, GML_30, GML_31 or
+GML_32)
+
+|MimeType |1..n |String |Mime types associated with this format
+configuration
+
+|GenerateBoundedByForFeatures |0..1 |Boolean |Forces output of
+gml:boundedBy property for every feature
+
+|GetFeatureResponse |0..1 |Complex |Options for controlling GetFeature
+responses
+
+|DecimalCoordinateFormatter/ CustomCoordinateFormatter |0..1 |Complex
+|Controls the formatting of geometry coordinates
+
+|GeometryLinearization |0..1 |Complex |Activates/controls the
+linearization of exported geometries
+|===
+
+===== Basic GML format options
+
+* _@gmlVersion_: This attribute defines the GML version (GML_2,
+GML_30, GML_31 or GML_32)
+* _MimeType_: Mime types associated with this format configuration
+(and announced in GetCapabilities)
+* _GenerateBoundedByForFeatures_: By default, the _gml:boundedBy_
+property will only be exported for the member features if the feature
+store provides it. By setting this option to _true_, the WFS will
+calculate the envelope and include it as a _gml:boundedBy_ property.
+Please note that this setting does not affect the inclusion of the
+_gml:boundedBy_ property for on the feature collection level (see
+DisableStreaming for that).
+
+===== GetFeature response settings
+
+Option _GetFeatureResponse_ has the following sub-options:
+
+[width="100%",cols="21%,11%,9%,59%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|ContainerElement |0..1 |QName |Qualified root element name, default:
+wfs:FeatureCollection
+
+|FeatureMemberElement |0..1 |QName |Qualified feature member element
+name, default: gml:featureMember
+
+|AdditionalSchemaLocation |0..1 |String |Added to xsi:schemaLocation
+attribute of wfs:FeatureCollection
+
+|DisableDynamicSchema |0..1 |Complex |Controls DescribeFeatureType
+strategy, default: regenerate schema
+
+|DisableStreaming |0..1 |Boolean |Disables output streaming, include
+numberOfFeature information/gml:boundedBy
+
+|PrebindNamespace |0..n |Complex |Pre-bind namespaces in the root
+element
+|===
+
+* _ContainerElement_: By default, the container element of a
+GetFeature response is _wfs:FeatureCollection_. Using this option, you
+can specify an alternative element name. In order to bind the namespace
+prefix, use standard XML namespace mechanisms (xmlns attribute). This
+option is ignored for WFS 2.0.0.
+* _FeatureMemberElement_: By default, the member features are included
+in _gml:featureMember_ (WFS 1.0.0/1.1.0) or _wfs:member_ elements
+(WFS 2.0.0). Using this option, you can specify an alternative element
+name. In order to bind the namespace prefix, use standard XML namespace
+mechanisms (xmlns attribute). This option is ignored for WFS 2.0.0.
+* _AdditionalSchemaLocation_: By default, the _xsi:schemaLocation_
+attribute in a GetFeature response is auto-generated and refers to all
+schemas necessary for validation of the response. Using this option, you
+can add additional namespace/URL pairs for adding additional schemas.
+This may be required when you override the returned container or feature
+member elements in order to achieve schema-valid output.
+* _DisableDynamicSchema_: By default, the GML application schema
+returned in DescribeFeatureType reponses (and referenced in the
+_xsi:schemaLocation_ of query responses) will be generated dynamically
+from the internal feature type representation. This allows generation of
+application schemas for different GML versions and is fine for simple
+feature models (e.g. feature types served from shapefiles or flat
+database tables). However, valid re-encoding of complex GML application
+schema (such as INSPIRE Data Themes) is technically not feasible. In
+these cases, you will have to set this option to _false_, so the WFS
+will produce a response that refers to the original schema files used
+for configuring the feature store. If you want the references to point
+to an external copy of your GML application schema files (instead of
+pointing back to the deegree WFS), use the optional attribute
+_baseURL_ that this element provides.
+* _DisableStreaming_: By default, returned features are not collected
+in memory, but directly streamed from the backend (e.g. an SQL database)
+and individually encoded as GML. This enables the querying of huge
+numbers of features with only minimal memory footprint. However, by
+using this strategy, the number of features and their bounding box is
+not known when the WFS starts to write out the response. Therefore, this
+information is omitted from the response (which is perfectly valid
+according to WFS 1.0.0 and 1.1.0, and a change request for WFS 2.0.0 has
+been accepted). If you find that your WFS client has problems with the
+response, you may set this option to _false_. Features will be
+collected in memory first and the generated response will include
+numberOfFeature information and gml:boundedBy for the collection.
+However, for huge response and heavy server load, this is not
+recommended as it introduces significant overhead and may result in
+out-of-memory errors.
+
+* _PrebindNamespace_: By default, XML namespaces are bound when they
+are needed. This will result in valid output, but may lead to the same
+namespace being bound again and again in different parts of the response
+document. Using this option, namespaces can be bound in the root
+element, so they are defined for the full scope of the response document
+and do not need re-definition at several positions in the document. This
+option has the required attributes _prefix_ and _uri_. .. note::
+PrebindNamespaces must be configured as in used GML application schemas
+respectively the imported features (at least for the BLOB mode). It is
+essential to ensure that prefixes are bound to the same namespace URIs.
+Otherwise, a GetFeature request may result in a failure ("Duplicate
+declaration for namespace prefix").
+
+===== Coordinate formatters
+
+By default, GML geometries will be encoded using 6 decimal places for
+CRS with degree axes and 3 places for CRS with metric axes. In order to
+override this, two options are available:
+
+* _DecimalCoordinatesFormatter_: Empty element, attribute _places_
+specifies the number of decimal places.
+* _CustomCoordinateFormatter_: By specifiying this element, an
+implementation of Java interface
+_org.deegree.geometry.io.CoordinateFormatter_ can be instantiated.
+Child element _JavaClass_ contains the qualified name of the Java
+class (which must be on the classpath).
+
+===== Geometry linearization
+
+Some feature stores (e.g. the SQL feature store when connected to an
+Oracle Spatial database) can deliver non-linear geometries (e.g. arcs).
+Here's an example for the GML 3.1.1 encoding of such a geometry as it
+would be returned by the WFS:
+
+*Example for a non-linear GML geometry*
+
+[source,xml]
+----
+...
+<gml:Polygon srsName="urn:ogc:def:crs:EPSG::28992">
+  <gml:exterior>
+    <gml:Ring srsName="urn:ogc:def:crs:EPSG::28992">
+      <gml:curveMember>
+        <gml:Curve srsName="urn:ogc:def:crs:EPSG::28992">
+          <gml:segments>
+            <gml:Arc>
+              <gml:posList>240190.182 488008.760 240160.182 487978.760 240190.182 487948.760</gml:posList>
+            </gml:Arc>
+            <gml:Arc>
+              <gml:posList>240190.182 487948.760 240220.182 487978.760 240190.182 488008.760</gml:posList>
+            </gml:Arc>
+          </gml:segments>
+        </gml:Curve>
+      </gml:curveMember>
+    </gml:Ring>
+  </gml:exterior>
+</gml:Polygon>
+...
+----
+
+This is perfectly valid GML, but there are two reasons why you may not
+want your WFS to return non-linear GML geometries:
+
+* There's no encoding for non-linear GML geometries in GML version 2
+* Currently available WFS clients (e.g. QGIS, uDig, ...) cannot cope
+with them
+
+Option _GeometryLinearization_ will ensure that GML responses will
+only contain linear geometries. Curves with non-linear segments and
+surfaces with non-linear boundary segments will be converted before they
+are encoded to GML. Here's an example usage of this GML format option:
+
+*Example config snippet for activating geometry linearization*
+
+[source,xml]
+----
+...
+<GeometryLinearization>
+  <Accuracy>0.1</Accuracy>
+</GeometryLinearization>
+...
+----
+
+_GeometryLinearization_ has a single mandatory option _Accuracy_. It
+defines the numerical accuracy of the linear approximation in units of
+the coordinate reference system used by the feature store. If the
+coordinate reference system is based on meters, a value of 0.1 will
+ensure that the maximum error between the original and the linearized
+geometry does not exceed 10 centimeters.
+
+Here's an example of a linearized version of the example geometry as it
+would be generated by the WFS:
+
+*Example for linearized GML output*
+
+[source,xml]
+----
+...
+<gml:Polygon srsName="urn:ogc:def:crs:EPSG::28992">
+  <gml:exterior>
+    <gml:Ring srsName="urn:ogc:def:crs:EPSG::28992">
+      <gml:curveMember>
+        <gml:Curve srsName="urn:ogc:def:crs:EPSG::28992">
+          <gml:segments>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>240190.182 488008.760 240177.165 488005.789 240166.727 487997.465 240160.934 487985.436 240160.934 487972.084 240166.727 487960.055 240177.165 487951.731 240190.182 487948.760</gml:posList>
+            </gml:LineStringSegment>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>240190.182 487948.760 240203.199 487951.731 240213.637 487960.055 240219.430 487972.084 240219.430 487985.436 240213.637 487997.465 240203.199 488005.789 240190.182 488008.760</gml:posList>
+            </gml:LineStringSegment>
+          </gml:segments>
+        </gml:Curve>
+      </gml:curveMember>
+    </gml:Ring>
+  </gml:exterior>
+</gml:Polygon>
+...
+----
+
+==== Adding custom output formats
+
+Using option element _CustomFormat_, it is possible to plug-in your
+own Java classes to generate the output for a specific mime type (e.g. a
+binary format)
+
+[width="100%",cols="15%,15%,10%,60%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|MimeType |1..n |String |Mime types associated with this format
+configuration
+
+|JavaClass |1..1 |String |Qualified Java class name
+
+|Config |0..1 |Complex |Value to add to xsi:schemaLocation attribute
+|===
+
+* _MimeType_: Mime types associated with this format configuration
+(and announced in GetCapabilities)
+* _JavaClass_: Therefore, an implementation of interface
+_org.deegree.services.wfs.format.CustomFormat_ must be present on the
+classpath.
+* _Config_:
+
+==== Stored queries
+
+Besides standard ('ad hoc') queries, WFS 2.0.0 introduces so-called
+stored queries. When WFS 2.0.0 support is activated, your WFS will
+automatically support the well-known stored query
+_urn:ogc:def:storedQuery:OGC-WFS::GetFeatureById_ (defined in the WFS
+2.0.0 specification). It can be used to query a feature instance by
+specifying it's gml:id (similar to GetGmlObject requests in WFS 1.1.0).
+In order to define custom stored queries, use the _StoredQuery_
+element to specify the file name of a StoredQueryDefinition file. The
+given file name (can be relative) must point to a valid WFS 2.0.0
+StoredQueryDefinition file. Here's an example:
+
+*Example for a WFS 2.0.0 StoredQueryDefinition file*
+
+[source,xml]
+----
+<StoredQueryDefinition id="urn:x-inspire:query:GetAddressesForStreet"
+  xmlns="http://www.opengis.net/wfs/2.0"
+  xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
+  xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0">
+  <Title>GetAddressesForStreet</Title>
+  <Abstract>Returns the ad:Address features located in the specified street.</Abstract>
+  <Parameter name="streetName" type="xs:string">
+    <Abstract>Name of the street (mandatory)</Abstract>
+  </Parameter>
+  <QueryExpressionText returnFeatureTypes="ad:Address"
+   language="urn:ogc:def:queryLanguage:OGC-:WFSQueryExpression">
+    <Query typeNames="ad:Address">
+      <Filter xmlns="http://www.opengis.net/fes/2.0">
+        <PropertyIsEqualTo>
+          <ValueReference>
+ad:component/ad:ThoroughfareName/ad:name/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text
+          </ValueReference>
+          <Literal>${streetName}</Literal>
+        </PropertyIsEqualTo>
+      </Filter>
+    </Query>
+  </QueryExpressionText>
+</StoredQueryDefinition>
+----
+
+This example is actually usable if your WFS is set up to serve the
+ad:Address feature type from INSPIRE Annex I. It defines the stored
+query _urn:x-inspire:storedQuery:GetAddressesForStreet_ for retrieving
+ad:Address features that are located in the specified street. The street
+name is passed using parameter _streetName_. If your WFS instance can
+be reached at _http://localhost:8080/services_, you could use the
+request
+_http://localhost:8080/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat_
+to fetch the ad:Address features in street Madame Curiestraat.
+
+The attribute returnFeatureTypes of QueryExpressionText can be left
+empty. If this is the case, the element will be filled with all feature
+types served by the WFS when executing a DescribeStoredQueries request.
+The same applies for the value $\{deegreewfs:ServedFeatureTypes}. If a
+value is set for returnFeatureTypes, the user is responsible to
+configure it as expected: Usually values of the typeNames of the
+Query-Elements should be used. An exception is thrown as
+DescribeStoredQueries response, if the configured feature type is not
+served by the WFS.
+
+To enable support for the Manage Stored Queries conformance class for WFS 2.0.0 it is required to create a directory storedqueries/managed in your workspace. The stored queries created with _CreateStoredQuery_ requests are stored in this directory. They are loaded during startup of deegree automatically. It is not recommend to put the StoredQueries configured in the WFS configuration with the StoredQuery element into this folder. If the directory is missing the _CreateStoredQuery_ request returns an exception.
+
+TIP: deegree WFS supports the execution of stored queries using
+_GetFeature_ and _GetPropertyValue_ requests. It also implements the
+_ListStoredQueries_, _DescribeStoredQueries_, _CreateStoredQuery_ and
+the _DropStoredQuery_ operations.
+
+==== Extended capabilities
+
+Important for applications like INSPIRE, it is often desirable to
+include predefined blocks of XML in the extended capabilities section of
+the WFS capabilities output. This can be achieved simply by adding these
+blocks to the extended capabilities element of the configuration:
+
+[source,xml]
+----
+<ExtendedCapabilities>
+  <MyCustomOutput xmlns="http://www.custom.org/output">
+    ...
+  </MyCustomOutput>
+</ExtendedCapabilities>
+----
+
+You must set the attribute _wfsVersions_ to indicate the version that
+you want to define the extended capabilities for. If your service
+supports multiple protocol versions (e.g. a WFS that supports 1.1.0 and
+2.0.0), you may include multiple _ExtendedCapabilities_ elements in
+the metadata configuration.
+
+WARNING: The extended capabilities set in the WFS service configuration are
+ignored, if a metadata configuration file (see chapter
+<<anchor-configuration-service-metadata>>) exists. Instead, the extended
+capabilities must be configured there.
+
+[[anchor-configuration-wms]]
+=== Web Map Service (WMS)
+
+In deegree terminology, a deegree WMS renders maps from data stored in
+feature, coverage and tile stores. The WMS is configured using a layer
+structure, called a _theme_. A theme can be thought of as a collection
+of layers, organized in a tree structure. _What_ the layers show is
+configured in a layer configuration, and _how_ it is shown is configured
+in a style file. Supported style languages are StyledLayerDescriptor
+(SLD) and Symbology Encoding (SE).
+
+.A WMS resource is connected to exactly one theme resource
+image::workspace-wms.png[A WMS resource is connected to exactly one theme resource,scaledwidth=80.0%]
+
+TIP: In order to fully understand deegree WMS configuration, you will have to
+learn configuration of other workspace aspects as well. Chapter
+<<anchor-configuration-renderstyles>> describes the creation of layers
+and styling rules. Chapter <<anchor-configuration-featurestore>>
+describes the configuration of vector data access and chapter
+<<anchor-configuration-coveragestore>> describes the configuration of
+raster data access.
+
+==== A word on layers and themes
+
+Readers familiar with the WMS protocol might be wondering why layers can
+not be configured directly in the WMS configuration file. Inspired by
+WMTS 1.0.0 we found the idea to separate structure and content very
+appealing. Thinking of a layer store that just offers a set of layers is
+an easy concept. Thinking of a theme as a structure that may contain
+layers at certain points also makes sense. But when thinking of WMS the
+terms begin clashing. We suggest to avoid confusion as much as possible
+by using the same name for each corresponding theme, layer and possibly
+even tile/feature/coverage data sources. We believe that once you work a
+little with the concept of themes, and seeing them exported as WMS layer
+trees, the concepts fit well enough so you can appreciate the clean cut.
+
+==== Configuration overview
+
+The configuration can be split up in six sections. Readers familiar with
+other deegree service configurations may recognize some similarities,
+but we'll describe the options anyway, because there may be subtle
+differences. A document template looks like this:
+
+[source,xml]
+----
+<?xml version='1.0'?>
+<deegreeWMS xmlns='http://www.deegree.org/services/wms'>
+  <!-- actual configuration goes here -->
+</deegreeWMS>
+----
+
+The following table shows what top level options are available.
+
+[width="100%",cols="22%,11%,7%,60%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedVersions |0..1 |Complex |Limits active OGC protocol versions
+
+|SupportedRequests |0..1 |Complex |Configuration of WMS requests
+
+|UpdateSequence |0..1 |Integer |Current update sequence, default: 0
+
+|MetadataStoreId |0..1 |String |Configures a metadata store to check if
+metadata ids for layers exist
+
+|MetadataURLTemplate |0..1 |String |Template for generating URLs to
+feature type metadata
+
+|ServiceConfiguration |1 |Complex |Configures service content
+
+|GetCapabilitiesFormats |0..1 |Complex |Configures additional
+capabilities output formats
+
+|FeatureInfoFormats |0..1 |Complex |Configures additional feature info
+output formats
+
+|GetMapFormats |0..1 |Complex |Configures additional image output
+formats
+
+|ExceptionFormats |0..1 |Complex |Configures additional exception output
+formats
+
+|ExtendedCapabilities |0..n |Complex |Extended Metadata reported in
+GetCapabilities response
+
+|LayerLimit |0..1 |Integer |Maximum number of layers in a GetMap
+request, default: unlimited
+
+|MaxWidth |0..1 |Integer |Maximum width in a GetMap request, default:
+unlimited
+
+|MaxHeight |0..1 |Integer |Maximum height in a GetMap request, default:
+unlimited
+
+|Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
+|===
+
+==== Basic options
+
+* _SupportedVersions_: By default, all implemented WMS protocol
+versions (1.1.1 and 1.3.0) are activated. You can control offered WMS
+protocol versions using the element _SupportedVersions_. This element
+allows any of the child elements _<Version>1.1.1</Version>_ and
+_<Version>1.3.0</Version>_.
+* _MetadataStoreId_: If set to a valid metadata store, the store is
+queried upon startup with all configured layer metadata set ids. If a
+metadata set does not exist in the metadata store, it will not be
+exported as metadata URL in the capabilties. This is a useful option if
+you want to automatically check for configuration errors/typos. By
+default, no checking is done.
+* _MetadataURLTemplate_: By default, no metadata URLs are generated
+for layers in the capabilities. You can set this option either to a
+unique URL, which will be exported as is, or to a template with a
+placeholder. In any case, a metadata URL will only be exported if the
+layer has a metadata set id set. A template looks like this:
+http://discovery.eu/csw?service=CSW&request=GetRecordById&version=2.0.2&id=$%7BmetadataSetId%7D&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full.
+Please note that you'll need to escape the & symbols with &amp; as shown
+in the example. The $\{metadataSetId} will be replaced with the metadata
+set id from each layer.
+
+Here is a snippet for quick copy & paste:
+
+[source,xml]
+----
+<SupportedVersions>
+  <Version>1.1.1</Version>
+</SupportedVersions>
+<MetadataStoreId>mdstore</MetadataStoreId>
+<MetadataURLTemplate>http://discovery.eu/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full</MetadataURLTemplate>
+----
+
+[[anchor-wms-supportedrequests]]
+==== SupportedRequests
+
+This option can be used to configure the supported request types.
+Currently, the supported encodings can be specified for each request
+type. If the option is missing, all encodings are supported for each
+request type. The option has the following sup-options:
+
+[width="100%",cols="14%,7%,5%,74%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedEncodings |0..1 |String |Enable encodings for all configured
+request types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values
+must be separated by a white space.
+
+|GetCapabilities |0..1 |Complex |Configuration of GetCapabilities
+requests
+
+|GetMap |0..1 |Complex |Configuration of GetMap requests
+
+|GetFeatureInfo |0..1 |Complex |Configuration of GetFeatureInfo requests
+
+|DescribeLayer |0..1 |Complex |Configuration of DescribeLayer requests
+
+|GetLegendGraphic |0..1 |Complex |Configuration of GetLegendGraphic
+requests
+
+|GetFeatureInfoSchema |0..1 |Complex |Configuration of
+GetFeatureInfoSchema requests
+
+|DTD |0..1 |Complex |Configuration of DTD requests
+|===
+
+Each request type has the following sup-option:
+
+[width="100%",cols="14%,8%,5%,73%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedEncodings |0..1 |String |Enable encodings for this request
+types. Allowed values: 'kvp', 'xml', 'soap'. Multiple values must be
+separated by a white space.
+|===
+
+By default deegree will provide all supported request types with all
+available encodings (kvp, xml, soap).
+
+If a single supported request or encoding is configured, all non
+configured requests or encodings are disabled.
+
+Example: To limit the provided request types to GetCapabilities and
+GetFeature this request types can be added without SupportedEncodings
+sub-option:
+
+[source,xml]
+----
+<SupportedRequests>
+  <GetCapabilities />
+  <GetFeature />
+</SupportedRequests>
+----
+
+Example: To disable SOAP encoding the other encodings can be added
+without SupportedRequests sub-option:
+
+
+[source,xml]
+----
+<SupportedRequests>
+  <SupportedEncodings>kvp xml</SupportedEncodings>
+</SupportedRequests>
+----
+
+WARNING: It is not checked if the configuration is valid against the WMS
+specification!
+
+WARNING: WMS 1.1.1 just supports KVP. SOAP can only be used for GetCapabilities,
+GetMap and GetFeatureInfo operations of WMS 1.3.0. Nevertheless,
+configuration of all combinations is possible.
+
+==== Service content configuration
+
+You can configure the behaviour of layers using the
+_DefaultLayerOptions_ element.
+
+Have a look at the layer options and their values:
+
+[width="100%",cols="12%,8%,5%,75%",options="header",]
+|===
+|Option |Cardinality |String |Description
+|Antialiasing |0..1 |String |Whether to antialias NONE, TEXT, IMAGE or
+BOTH, default is BOTH
+
+|RenderingQuality |0..1 |String |Whether to render LOW, NORMAL or HIGH
+quality, default is HIGH
+
+|Interpolation |0..1 |String |Whether to use BILINEAR, NEARESTNEIGHBOUR
+or BICUBIC interpolation, default is NEARESTNEIGHBOUR
+
+|MaxFeatures |0..1 |Integer |Maximum number of features to render at
+once, default is 10000
+
+|FeatureInfoRadius |0..1 |Integer |Number of pixels to consider when
+doing GetFeatureInfo, default is 1
+
+|Opaque |0..1 |Boolean |Indicates if the map data of the layer are
+mostly or completely opaque (true) or represents vector features that
+probably do not completely fill space (false), default is false
+|===
+
+You can configure the WMS to use one or more preconfigured themes. In
+WMS terms, each theme is mapped to a layer in the WMS capabilities. So
+if you use one theme, the WMS root layer corresponds to the root theme.
+If you use multiple themes, a synthetic root layer is exported in the
+capabilities, with one child layer corresponding to each root theme. The
+themes are configured using the _ThemeId_ element.
+
+Here is an example snippet of the content section:
+
+[source,xml]
+----
+<ServiceConfiguration>
+
+  <DefaultLayerOptions>
+    <Antialiasing>NONE</Antialiasing>
+  </DefaultLayerOptions>
+
+  <ThemeId>mytheme</ThemeId>
+
+</ServiceConfiguration>
+----
+
+==== Custom capabilities formats
+
+Any mime type can be configured to be available as response format for
+GetCapabilities requests, although the most commonly used is probably
+_text/html_. A XSLT script is used to generate the output.
+
+This is how the configuration section looks like:
+
+[source,xml]
+----
+<GetCapabilitiesFormats>
+  <GetCapabilitiesFormat>
+    <XSLTFile>capabilities2html.xsl</XSLTFile>
+    <Format>text/html</Format>
+  </GetCapabilitiesFormat>
+</GetCapabilitiesFormats>
+----
+
+Of course it is possible to define as many custom formats as you want,
+as long as you use a different mime type for each (just duplicate the
+_GetCapabilitiesFormat_ element). If you use one of the default
+formats, the default output will be overridden with your configuration.
+
+[[anchor-featureinfo-configuration]]
+==== Custom feature info formats
+
+Any mime type can be configured to be available as response format for
+GetFeatureInfo requests, although the most commonly used is probably
+_text/html_. There are two alternative ways of controlling how the
+output is generated (besides using the default HTML output). One
+involves a deegree specific templating mechanism, the other involves
+writing an XSLT script. The deegree specific mechanism has the advantage
+of being considerably less verbose, making common use cases very easy,
+while the XSLT approach gives you all the freedom.
+
+This is how the configuration section looks like for configuring a
+deegree templating based format:
+
+[source,xml]
+----
+<FeatureInfoFormats>
+  <GetFeatureInfoFormat>
+    <File>../customformat.gfi</File>
+    <Format>text/html</Format>
+    <Property name="customname" value="customvalue" />
+  </GetFeatureInfoFormat>
+</FeatureInfoFormats>
+----
+
+The configuration for the XSLT approach looks like this:
+
+[source,xml]
+----
+<FeatureInfoFormats>
+  <GetFeatureInfoFormat>
+    <XSLTFile gmlVersion="GML_32">../customformat.xsl</XSLTFile>
+    <Format>text/html</Format>
+    <Property name="customname" value="customvalue" />
+  </GetFeatureInfoFormat>
+</FeatureInfoFormats>
+----
+
+Of course it is possible to define as many custom formats as you want,
+as long as you use a different mime type for each (just duplicate the
+_GetFeatureInfoFormat_ element). If you use one of the default
+formats, the default output will be overridden with your configuration.
+
+In order to write your XSLT script, you'll need to develop it against a
+specific GML version (namespaces between GML versions may differ, GML
+output itself will differ). The default is GML 3.2, you can override it
+by specifying the _gmlVersion_ attribute on the _XSLTFile_ element.
+Valid GML version strings are _GML_2_, _GML_30_, _GML_31_ and
+_GML_32_.
+
+If you want to learn more about the templating format, read the
+following sections.
+
+==== FeatureInfo templating format
+
+The templating format can be used to create text based output formats
+for featureinfo output. It uses a number of definitions, rules and
+special constructs to replace content with other content based on
+feature and property values. Please note that you should make sure your
+file is UTF-8 encoded if you're using umlauts.
+
+===== Introduction/Example
+
+This section gives a quick overview how the format works and
+demonstrates the development of a small sample HTML output.
+
+On top level, you can have a number of _template definitions_. A
+template always has a name, and there always needs to be a template
+named _start_ (yes, it's the one we start with).
+
+A simple valid templating file that does not actually depend on the
+features coming in looks like this:
+
+[source,xml]
+----
+<?template start>
+<html>
+<body>
+  <p>Hello</p>
+</body>
+</html>
+----
+
+A featureinfo request will now always yield the body of this template.
+In order to use the features coming in, you need to define other
+templates, and call them from a template. So let's add another template,
+and call it from the _start_ template:
+
+[source,xml]
+----
+<?template start>
+<html>
+<body>
+<ul>
+<?feature *:myfeaturetemplate>
+</ul>
+</body>
+</html>
+
+<?template myfeaturetemplate>
+<li>I have a feature</li>
+----
+
+What happens now is that first the body of the _start_ template is
+being output. In that output, the _<?feature *:myfeaturetemplate>_ is
+replaced with the content of the _myfeaturetemplate_ template for each
+feature in the feature collection. So if your query hits five features,
+you'll get five _li_ tags like in the template. The asterisk is used
+to select all features, it's possible to limit the number of objects
+matched. See below in the reference section for a detailed explanation
+on how it works.
+
+Within the _myfeaturetemplate_ template you have switched context. In
+the _start_ template your context is the feature collection, and you
+can call _feature templates_. In the _myfeaturetemplate_ you 'went
+down' the tree and are now in a feature context, where you can call
+_property templates_. So what can we do in a feature context? Let's
+start simple by writing out the feature type name. Change the
+_myfeaturetemplate_ like this:
+
+[source,xml]
+----
+<?template myfeaturetemplate>
+<li>I have a <?name> feature</li>
+----
+
+What happens now is that for each use of the _myfeaturetemplate_ the
+_<?name>_ part is being replaced with the name of the feature type of
+the feature you hit. So if you hit two features, each of a different
+type, you get two different _li_ tags in the document, each with its
+name written in it.
+
+So deegree only replaces the _template call_ in the _start_ template
+with its replacement once the special constructs in the _called_
+template are all replaced, and all the special constructs/calls within
+_that_ template are all replaced, ... and so on.
+
+Let's take it to the next level. What's you really want to do in
+featureinfo responses is of course get the value of the features'
+properties. So let's add another template, and call it from the
+_myfeaturetemplate_ template:
+
+[source,xml]
+----
+<?template myfeaturetemplate>
+<li>I have a <?name> feature and properties: <?property *:mypropertytemplate></li>
+
+<?template mypropertytemplate>
+<?name>=<?value>
+----
+
+Now you also get all property names and values in the _li_ item. Note
+that again you switched the context in the template, now you are at
+property level. The _<?name>_ and _<?value>_ special constructs
+yield the property name and value, respectively (remember, we're at
+property level here).
+
+While that's already nice, people often put non human readable values in
+properties, even property names are sometimes not human readable. In
+order to fix that, you often have code lists mapping the codes to proper
+text. To use these, there's a special kind of template called a _map_. A
+map is like a simple property file. Let's have a look at how to define
+one:
+
+[source,xml]
+----
+<?map mycodelistmap>
+code1=Street
+code2=Highway
+code3=Railway
+
+<?map mynamecodelistmap>
+tp=Type of way
+----
+
+Looks simple enough. Instead of _template_ we use map, after that
+comes the name. Then we just map codes to values. So how do we use this?
+Instead of just using the _<?name>_ or _<?value>_ we push it through
+the map:
+
+[source,xml]
+----
+<?template mypropertytemplate>
+<?name:map mynamecodelistmap>=<?value:map mycodelistmap>
+----
+
+Here the name of the property is replaced with values from the
+_mynamecodelistmap_, the value is replaced with values from the
+_mycodelistmap_. If the map does not contain a fitting mapping, the
+original value is used instead.
+
+That concludes the introduction, the next section explains all available
+special constructs in detail.
+
+===== Templating special constructs
+
+This section shows all available special constructs. The selectors are
+explained in the table below. The validity describes in which context
+the construct can be used (and where the description applies). The
+validity can be one of _top level_ (which means it's the definition of
+something), _featurecollection_ (the _start_ template), _feature_ (a
+template on feature level), _property_ (a template on property level) or
+_map_ (a map definition).
+
+[width="100%",cols="22%,13%,65%",options="header",]
+|===
+|Construct |Validity |Description
+|<?template __name_>_ |top level |defines a template with name _name_
+
+|<?map __name_>_ |top level |defines a map with name _name_
+
+|<?feature _selector_:__name_>_ |featurecollection |calls the template
+with name _name_ for features matching the selector _selector_
+
+|<?property _selector_:__name_>_ |feature |calls the template with name
+_name_ for properties matching the selector _selector_
+
+|<?name> |feature |evaluates to the feature type name
+
+|<?name> |property |evaluates to the property name
+
+|<?name:map __name_>_ |feature |uses the map _name_ to map the feature
+type name to a value
+
+|<?name:map __name_>_ |property |uses the map _name_ to map the property
+name to a value
+
+|<?value> |property |evaluates to the property's value
+
+|<?value:map __name_>_ |property |uses the map _name_ to map the
+property's value to another value
+
+|<?index> |feature |evaluates to the index of the feature (in the list
+of matches from the previous template call)
+
+|<?index> |property |evaluates to the index of the property (in the list
+of matches from the previous template call)
+
+|<?gmlid> |feature |evaluates to the feature's gml:id
+
+|<?odd:__name_>_ |feature |calls the _name_ template if the index of the
+current feature is odd
+
+|<?odd:__name_>_ |property |calls the _name_ template if the index of
+the current property is odd
+
+|<?even:__name_>_ |feature |calls the _name_ template if the index of
+the current feature is even
+
+|<?even:__name_>_ |property |calls the _name_ template if the index of
+the current property is even
+
+|<?link:_prefix_:> |property |if the value of the property is not an
+absolute link, the prefix is prepended
+
+|<?link:_prefix_:__text_>_ |property |the text of the link will be
+_text_ instead of the link address
+|===
+
+The selector for properties and features is a kind of pattern matching
+on the object's name.
+
+[width="100%",cols="32%,68%",options="header",]
+|===
+|Selector |Description
+|* |matches all objects
+
+|* _text_ |matches all objects with names ending in _text_
+
+|_text_ * |matches all objects with names starting with _text_
+
+|not(_selector_) |matches all objects not matching the selector
+_selector_
+
+|_selector1_, _selector2_ |matches all objects matching _selector1_ and
+_selector2_
+|===
+
+[[anchor-image-output-configuration]]
+==== Custom image output formats
+
+Any mime type of the following output formats can be configured to be
+available as response format for GetMap requests.
+
+
+* _image/png_
+* _image/png; subtype=8bit_
+* _image/png; mode=8bit_
+* _image/gif_
+* _image/jpeg_
+* _image/tiff_
+* _image/x-ms-bmp_
+
+
+If no format has been configured, all formats are supported.
+
+This is how the configuration section looks like for configuring only
+_image/png_ as image output format:
+
+[source,xml]
+----
+<GetMapFormats>
+  <GetMapFormat>image/png</GetMapFormat>
+</GetMapFormats>
+----
+
+===== Custom format provider class
+
+Using option element _CustomGetMapFormat_, it is possible to plug-in
+your own Java classes to generate the output for a specific mime type
+
+[width="100%",cols="15%,15%,10%,60%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|Format |1..1 |String |Mime type associated with this format
+configuration
+
+|JavaClass |1..1 |String |Qualified Java class name
+
+|Property |0..n |Complex |Configure properties of the JavaClass
+|===
+
+* _Format_: Mime type associated with this format configuration (and
+announced in GetCapabilities)
+* _JavaClass_: Therefore, an implementation of interface
+_org.deegree.rendering.r2d.ImageSerializer_ must be present on the
+classpath.
+* _Property_:
+
+This is how the configuration looks like for the implementation of
+GeoTIFF:
+
+[source,xml]
+----
+<GetMapFormats>
+  <CustomGetMapFormat>
+    <Format>image/tiff</Format>
+    <JavaClass>org.deegree.services.wms.controller.plugins.ImageSerializerGeoTiff</JavaClass>
+  </CustomGetMapFormat>
+</GetMapFormats>
+----
+
+==== Custom exception formats
+
+Any mime type can be configured to be available as response format for
+Exceptions, although the most commonly used is probably _text/html_. A
+XSLT script is used to generate the output.
+
+This is how the configuration section looks like:
+
+[source,xml]
+----
+<ExceptionFormats>
+  <ExceptionFormat>
+    <XSLTFile>exception2html.xsl</XSLTFile>
+    <Format>text/html</Format>
+  </ExceptionFormat>
+</ExceptionFormats>
+----
+
+Of course it is possible to define as many custom formats as you want,
+as long as you use a different mime type for each (just duplicate the
+_ExceptionFormat_ element). If you use one of the default formats, the
+default output will be overridden with your configuration.
+
+==== Extended capabilities
+
+Important for applications like INSPIRE, it is often desirable to
+include predefined blocks of XML in the extended capabilities section of
+the WMS capabilities output. This can be achieved simply by adding these
+blocks to the extended capabilities element of the configuration:
+
+[source,xml]
+----
+<ExtendedCapabilities>
+  <MyCustomOutput xmlns="http://www.custom.org/output">
+    ...
+  </MyCustomOutput>
+</ExtendedCapabilities>
+----
+
+WARNING: The extended capabilities set in the WMS service configuration are
+ignored, if a metadata configuration file (see chapter
+<<anchor-configuration-service-metadata>>) exists. Instead, the extended
+capabilities must be configured there.
+
+WARNING: Extended Capabilities are currently not supported by WMS 1.1.1. In WMS 1.1.1 configured extended capabilities are ignored and not included in the capabilities document.
+
+==== Vendor specific parameters
+
+The deegree WMS supports a number of vendor specific parameters. Some
+parameters are supported on a per layer basis while some are applied to
+the whole request. Most of the parameters correspond to the layer
+options above.
+
+The parameters which are supported on a per layer basis can be used to
+set an option globally, eg. ...&REQUEST=GetMap&ANTIALIAS=BOTH&..., or
+for each layer separately (using a comma separated list):
+...&REQUEST=GetMap&ANTIALIAS=BOTH,TEXT,NONE&LAYERS=layer1,layer2,layer3&...
+Most of the layer options have a corresponding parameter with a similar
+name: ANTIALIAS, INTERPOLATION, QUALITY and MAX_FEATURES. The feature
+info radius can currently not be set dynamically.
+
+The PIXELSIZE parameter can be used to dynamically adjust the resolution
+of the resulting image. The default is the WMS default of 0.28 mm. So to
+achieve a double resolution, you can double the WIDTH/HEIGHT parameter
+values and set the PIXELSIZE parameter to 0.14.
+
+Using the QUERYBOXSIZE parameter you can include features when rendering
+that would normally not intersect the envelope specified in the BBOX
+parameter. That can be useful if you have labels at point symbols out of
+the envelope which would be rendered partly inside the map. Normal
+GetMap behaviour will exclude such a label. With the QUERYBOXSIZE
+parameter you can specify a factor by which to enlarge the original
+bounding box, which is used solely for querying the data store (the
+actual extent returned will not be changed!). Use values like 1.1 to
+enlarge the envelope by 5% in each direction (this would be 10% in
+total).
+
+[[anchor-xml-request-encoding]]
+==== XML request encoding
+
+A WMS 1.3.0 can be requested by HTTP POST (without any KVP) containing
+XML in request body. The provided XML has to be compliant to a specific
+XML schema depending on the requested operation.
+
+The operations GetCapabilities, GetMap and GetFeatureInfo support XML
+request encoding.
+
+===== GetCapabilities
+
+The GetCapabilities XML request body has to be compliant to following
+schema:
+
+* http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd
+
+*GetCapabilities XML request body example (can be used with Utah example
+workspace)*
+
+[source,xml]
+----
+<GetCapabilities xmlns="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd"/>
+----
+
+===== GetMap
+
+The GetMap XML request body has to be compliant to following schema:
+
+* http://schemas.opengis.net/sld/1.1/GetMap.xsd
+
+*GetMap XML request body example (can be used with Utah example
+workspace)*
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se"
+  xmlns:wms="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1/GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>municipalities</se:Name>
+      <NamedStyle>
+        <se:Name>Municipalities</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>counties</se:Name>
+      <NamedStyle>
+        <se:Name>CountyBoundary</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>zipcodes</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:4326</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>-115.4 35.0</ows:LowerCorner>
+    <ows:UpperCorner>-108.0 44.0</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>true</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+----
+
+===== GetFeatureInfo
+
+The GetFeatureInfo XML request body has to be compliant to following
+schema:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.opengis.net/ows"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:sld="http://www.opengis.net/sld"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="http://www.opengis.net/sld" schemaLocation="http://schemas.opengis.net/sld/1.1.0/GetMap.xsd"/>
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+      XML Schema for OGC Web Map Service GetFeatureInfo request.
+    </xs:documentation>
+  </xs:annotation>
+  <!-- Root Element -->
+  <xs:element name="GetFeatureInfo"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sld:GetMap"/>
+        <xs:element name="QueryLayer" type="xs:string"
+          minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element name="I" type="xs:nonNegativeInteger"/>
+        <xs:element name="J" type="xs:nonNegativeInteger"/>
+        <xs:element name="Output">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="InfoFormat" type="xs:string"/>
+              <xs:element name="FeatureCount" type="xs:positiveInteger" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Exceptions" type="xs:string" minOccurs="0"/>
+        <xs:element name="Vendor" minOccurs="0">
+          <!--not sure how to define vendor-specific area in open manner-->
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required"/>
+      <xs:attribute name="service" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+----
+
+*GetFeatureInfo XML request body example (can be used with Utah example
+workspace)*
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<GetFeatureInfo xmlns="http://www.opengis.net/ows" xmlns:sld="http://www.opengis.net/sld" xmlns:se="http://www.opengis.net/se"
+  xmlns:wms="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows ../xsd/GFI.xsd"
+  version="1.3.0" service="WMS">
+  <sld:GetMap version="1.3.0">
+    <sld:StyledLayerDescriptor version="1.1.0">
+      <sld:NamedLayer>
+        <se:Name>municipalities</se:Name>
+        <sld:NamedStyle>
+          <se:Name>Municipalities</se:Name>
+        </sld:NamedStyle>
+      </sld:NamedLayer>
+      <sld:NamedLayer>
+        <se:Name>counties</se:Name>
+        <sld:NamedStyle>
+          <se:Name>CountyBoundary</se:Name>
+        </sld:NamedStyle>
+      </sld:NamedLayer>
+      <sld:NamedLayer>
+        <se:Name>zipcodes</se:Name>
+        <sld:NamedStyle>
+          <se:Name>default</se:Name>
+        </sld:NamedStyle>
+      </sld:NamedLayer>
+    </sld:StyledLayerDescriptor>
+    <sld:CRS>EPSG:4326</sld:CRS>
+    <sld:BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+      <LowerCorner>-115.4 35.0</LowerCorner>
+      <UpperCorner>-108.0 44.0</UpperCorner>
+    </sld:BoundingBox>
+    <sld:Output>
+      <sld:Size>
+        <sld:Width>1024</sld:Width>
+        <sld:Height>512</sld:Height>
+      </sld:Size>
+      <wms:Format>image/png</wms:Format>
+    </sld:Output>
+  </sld:GetMap>
+  <QueryLayer>counties</QueryLayer>
+  <I>50</I>
+  <J>15</J>
+  <Output>
+    <InfoFormat>text/xml</InfoFormat>
+  </Output>
+</GetFeatureInfo>
+----
+
+==== SOAP request encoding
+
+The SOAP protocol can be used to request a WMS 1.3.0. SOAP 1.1 and 1.2
+are supported.
+
+A SOAP request is send via HTTP POST (without any KVP) and contains a
+XML request body. The request body consists of a SOAP envelope and a XML
+request body as described in chapter <<anchor-xml-request-encoding>>.
+
+The operations GetCapabilities, GetMap and GetFeatureInfo support SOAP
+request encoding.
+
+*GetCapabilities SOAP request body example (can be used with Utah
+example workspace)*
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <GetCapabilities xmlns="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsGetCapabilities.xsd"/>
+  </soapenv:Body>
+</soapenv:Envelope>
+----
+
+NOTE: SOAP encoding can be deactivated. Chapter
+<<anchor-wms-supportedrequests>> describes and gives an example how to
+disable it.
+
+===== Capabilities
+
+The support of the SOAP protocol by the WMS is described by an
+ExtendedCapabilities element in namespace
+_http://schemas.deegree.org/extensions/services/wms/1.3.0_.
+
+The ExtendedCapabilities are compliant to following schema:
+
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://schemas.deegree.org/extensions/services/wms/1.3.0" xmlns:wms="http://www.opengis.net/wms"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapwms="http://schemas.deegree.org/extensions/services/wms/1.3.0"
+  targetNamespace="http://schemas.deegree.org/extensions/services/wms/1.3.0">
+
+  <xs:import namespace="http://www.opengis.net/wms" schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd" />
+
+  <xs:element name="SOAP">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="wms:OnlineResource" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="soapwms:Constraint" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="soapwms:SupportedOperations" minOccurs="1" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Value">
+    <xs:simpleType>
+      <xs:restriction base="xs:decimal">
+        <xs:enumeration value="1.1" />
+        <xs:enumeration value="1.2" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Operation">
+    <xs:complexType>
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="GetCapabilities" />
+            <xs:enumeration value="GetFeatureInfo" />
+            <xs:enumeration value="GetMap" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Constraint">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="soapwms:Value" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="name" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="SOAPVersion" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SupportedOperations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="soapwms:Operation" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExtendedCapabilities" substitutionGroup="wms:_ExtendedCapabilities">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="soapwms:SOAP" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+----
+
+[[anchor-configuration-wmts]]
+=== Web Map Tile Service (WMTS)
+
+In deegree terminology, a deegree WMTS provides access to tiles stored
+in tile stores. The WMTS is configured using so-called _themes_. A theme
+can be thought of as a collection of layers, organized in a tree
+structure.
+
+.A WMTS resource is connected to any number of theme resources (with tile layers)
+image::workspace-wmts.png[A WMTS resource is connected to any number of theme resources (with tile layers),scaledwidth=80.0%]
+
+TIP: In order to fully understand deegree WMTS configuration, you will have
+to learn configuration of other workspace aspects as well. Chapter
+<<anchor-configuration-tilestore>> describes the configuration of tile
+data access. Chapter <<anchor-configuration-layers>> describes the
+configuration of layers (only tile layers are usable for the WMTS).
+Chapter <<anchor-configuration-themes>> describes how to create a theme
+from layers.
+
+==== Minimal example
+
+The only mandatory section is _ServiceConfiguration_ (which can be
+empty), therefore a minimal WMTS configuration example looks like this:
+
+*WMTS config example 1: Minimal configuration*
+
+[source,xml]
+----
+<deegreeWMTS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wmts"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wmts
+  http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd">
+
+  <ServiceConfiguration />
+
+</deegreeWMTS>
+----
+
+This will create a deegree WMTS resource that connects to all configured
+themes of the workspace.
+
+==== More complex example
+
+A more complex configuration that restricts the offered themes looks
+like this:
+
+*WMTS config example 2: More complex configuration*
+
+[source,xml]
+----
+<deegreeWMTS configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/wmts"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wmts
+  http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd">
+
+  <ServiceConfiguration>
+    <ThemeId>water</ThemeId>
+    <ThemeId>roads</ThemeId>
+  </ServiceConfiguration>
+
+</deegreeWMTS>
+----
+
+==== Configuration overview
+
+The deegree WMTS config file format is defined by schema file
+http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd. The root
+element is _deegreeWMTS_ and the config attribute must be _3.4.0_.
+
+The following table lists all available configuration options. When
+specifying them, their order must be respected.
+
+[width="100%",cols="22%,11%,7%,60%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|MetadataURLTemplate |0..1 |String |Template for generating URLs to
+layer metadata
+
+|ThemeId |0..n |String |Limit the themes to use
+|===
+
+Below the _ServiceConfiguration_ section you can specify custom
+featureinfo format handlers:
+
+[source,xml]
+----
+...
+<ServiceConfiguration>
+...
+</ServiceConfiguration>
+<FeatureInfoFormats>
+...
+</FeatureInfoFormats>
+----
+
+Have a look at section <<anchor-featureinfo-configuration>> (in the WMS
+chapter) to see how custom featureinfo formats are configured. Take note
+that the GetFeatureInfo operation is currently only supported for remote
+WMS tile store backends.
+
+==== A complete WMTS configuration example, based on a GeoTIFFTileStore
+
+. Storing the GeoTIFF file in the _data/geotiff/.._ directory of the deegree workspace
+
+. Adding the GeoTIFFTileMatrixSet configuration to _datasources/tile/tilematrixset/.._, referencing config file from step (1)
+
+* GeoTIFFTileMatrixSet config example:
+[source,xml]
+<GeoTIFFTileMatrixSet   xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff http://schemas.deegree.org/datasource/tile/tilematrixset/3.4.0/geotiff/geotiff.xsd"
+    configVersion="3.4.0">
+ <StorageCRS>EPSG:25832</StorageCRS>
+ <File>../../../data/geotiff/kulturlandschaft.tif</File>
+</GeoTIFFTileMatrixSet>
+
+. Adding a GeoTIFFTileStore configuration to _datasources/tile/.._ for the GeoTIFF file added in (1) and (2)
+
+* GeoTIFFTileStore config example:
+[source,xml]
+<GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/datasource/tile/geotiff/3.4.0/geotiff.xsd"
+    configVersion="3.4.0">
+    <TileDataSet>
+        <Identifier>wmts_acrit</Identifier>
+        <TileMatrixSetId>tilematrixset_wmts_acrit</TileMatrixSetId>
+        <File>../../data/geotiff/kulturlandschaft_1.tif</File>
+        <ImageFormat>image/png</ImageFormat>
+    </TileDataSet>
+</GeoTIFFTileStore>
+
+NOTE: Use "image/png" as ImageFormat even if the source is GeoTIFF.
+
+[start=4]
+. Adding a TileLayer configuration  in _layers/.._ with reference to the TileDataSet in (3)
+
+* TileLayer config example:
+[source,xml]
+<TileLayers xmlns="http://www.deegree.org/layers/tile"
+           xmlns:l="http://www.deegree.org/layers/base"
+           xmlns:d="http://www.deegree.org/metadata/description"
+           xmlns:s="http://www.deegree.org/metadata/spatial"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/layers/tile/3.4.0/tile.xsd"
+           configVersion="3.4.0">
+ <TileLayer>
+   <l:Name>wmts_acrit</l:Name>
+   <d:Title>Wmts Acrit tiled</d:Title>
+   <!-- Tile layers are not capable of on-the-fly reprojection so only the source CRS can be requested -->
+   <s:CRS>EPSG:25832</s:CRS>
+   <l:ScaleDenominators min="0.0" max="1000000.0" />
+   <TileDataSet tileStoreId="wmts_acrit">wmts_acrit</TileDataSet>
+ </TileLayer>
+</TileLayers>
+
+[start=5]
+. Adding a Themes configuration in _themes/.._ with reference to the TileLayer in (4)
+
+* Themes config example:
+[source,xml]
+<Themes xmlns="http://www.deegree.org/themes/standard"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:d="http://www.deegree.org/metadata/description"
+xmlns:s="http://www.deegree.org/metadata/spatial"
+xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.4.0/themes.xsd"
+configVersion="3.4.0">
+ <LayerStoreId>layer_tile_wmts_acrit</LayerStoreId>
+ <Theme>
+   <d:Title>Root theme</d:Title>
+     <s:CRS>EPSG:25832</s:CRS>
+      <Theme>
+         <Identifier>Karte</Identifier>
+        <d:Title>Karte</d:Title>
+        <Layer>wmts_acrit</Layer>
+      </Theme>
+ </Theme>
+</Themes>
+
+. Adding a WMTS service configuration file to _services/.._ with reference to the theme in (5)
+
+* WMTS service config example:
+[source,xml]
+<deegreeWMTS xmlns="http://www.deegree.org/services/wmts"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.deegree.org/services/wmts http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd"
+            configVersion="3.4.0">
+ <MetadataURLTemplate>http://some.service/services?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=${metadataSetId}</MetadataURLTemplate>
+ <ServiceConfiguration>
+   <ThemeId>wmts_acrit_theme</ThemeId>
+ </ServiceConfiguration>
+</deegreeWMTS>
+
+==== Optimizing deegree WMTS
+
+In order to improve the response time of WMTS GetTile requests, it is possible to add an Ehcache configuration to optimize the throughput of the service.
+The configuration is placed in the root directory of the workspace.
+
+* Ehcache config example:
+[source,xml]
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+        dynamicConfig="true" monitoring="autodetect" name="map_cache">
+    <defaultCache eternal="true" maxElementsInMemory="100" overflowToDisk="false"/>
+    <cache name="map_cache"
+          maxElementsInMemory="10000"
+          eternal="true"
+          timeToIdleSeconds="300"
+          timeToLiveSeconds="600"
+          overflowToDisk="false"
+          diskPersistent="false"
+          diskExpiryThreadIntervalSeconds="1"
+          memoryStoreEvictionPolicy="FIFO"
+          statistics="true"/>
+</ehcache>
+
+* To enable the caching tile store add the following configuration along with the GeoTIFFTileStore configuration to the _datasources/tile/.._ directory:
+[source,xml]
+<CachingTileStore xmlns="http://www.deegree.org/datasource/tile/cache"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache http://schemas.deegree.org/datasource/tile/cache/3.4.0/cache.xsd"
+                 configVersion="3.4.0">
+   <!-- TileStoreId refers to tile store config file wmts_acrit.xml in the same directory -->
+   <TileStoreId>wmts_acrit</TileStoreId>
+   <!-- The related ehcache configuration file in the root directory of the deegree workspace -->
+   <CacheConfiguration>../../ehcache_wmts_acrit.xml</CacheConfiguration>
+   <!-- The name of the cache in the ehcache configuration file /ehcache/cache/@name -->
+   <CacheName>map_cache</CacheName>
+</CachingTileStore>
+
+==== Supported steps by deegree services console
+
+Currently the deegree services console supports the following steps:
+
+* creating TileStore and TileMatrixSet configuration files
+* creating Layer and Themes configuration files
+* creating WMTS configuration file
+
+NOTE: Not supported is the creation of the optional Ehcache configuration.
+
+[[anchor-configuration-csw]]
+=== Catalogue Service for the Web (CSW)
+
+In deegree terminology, a deegree CSW provides access to metadata
+records stored in a metadata store. If the metadata store is
+transaction-capable, CSW transactions can be used to modify the stored
+records.
+
+.A CSW resource is connected to exactly one metadata store resource
+image::workspace-csw.png[A CSW resource is connected to exactly one metadata store resource,scaledwidth=80.0%]
+
+TIP: In order to fully understand deegree CSW configuration, you will have to
+learn configuration of other workspace aspects as well. Chapter
+<<anchor-configuration-metadatastore>> describes the configuration of
+metadatastores.
+
+==== Minimal example
+
+There is no mandatory element, therefore a minimal CSW configuration
+example looks like this:
+
+*CSW config example 1: Minimal configuration*
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeCSW configVersion="3.4.0"
+  xmlns="http://www.deegree.org/services/csw"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/csw
+  http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd">
+</deegreeCSW>
+----
+
+==== Configuration overview
+
+The deegree CSW config file format is defined by schema file
+http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd. The
+root element is _deegreeCSW_ and the config attribute must be
+_3.4.0_.
+
+The following table lists all available configuration options. When
+specifiying them, their order must be respected.
+
+[width="100%",cols="20%,10%,6%,64%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedVersions |0..1 |String |Supported CSW Version (Default: 2.0.2)
+
+|MaxMatches |0..1 |Integer |Not negative number of matches (Default:0)
+
+|MetadataStoreId |0..1 |String |Id of the meradatastoreId to use as
+backenend. By default the only configured store is used.
+
+|EnableTransactions |0..1 |Boolean |Enable transactions (CSW operations)
+default: disabled. (Default: false)
+
+|EnableInspireExtensions |0..1 | |Enable the INSPIRE extensions,
+default: disabled
+
+|ExtendedCapabilities |0..1 |anyURI |Include referenced capabilities
+section.
+
+|ElementNames |0..1 | a|
+----
+List of configured return profiles. See following xml snippet for
+detailed informations.
+----
+
+|===
+
+[source,xml]
+----
+...
+ <ElementNames>
+   <!-- Can contain multiuple sets of element names -->
+   <ElementName>
+     <!-- name of this set. Used <csw:ElementName>Base</csw:ElementName>
+          in a reqest to query this profile -->
+     <name>Base</name>
+     <!-- List of XPath elements to return. If an element node is specified
+          the complete node is returned -->
+     <XPath>/gmd:MD_Metadata/gmd:language</XPath>
+     <XPath>/gmd:MD_Metadata/gmd:fileIdentifier</XPath>
+     <XPath>/gmd:MD_Metadata/gmd:hierarchyLevel</XPath>
+  </ElementName>
+  ...
+ <ElementName>
+...
+----
+
+==== Extended Functionality
+
+* deegree3 CSW supports JSON as additional output format. Use
+_outputFormat="application/json"_ in your GetRecords or GetRecordById
+Request to get the matching records in JSON.
+
+[[anchor-configuration-wps]]
+=== Web Processing Service (WPS)
+
+A deegree WPS allows the invocation of geospatial processes. The offered
+processes are determined by the attached process provider resources.
+
+.Workspace components involved in a deegree WPS configuration
+image::workspace-wps.png[Workspace components involved in a deegree WPS configuration,scaledwidth=90.0%]
+
+TIP: In order to fully master deegree WPS configuration, you will have to
+understand <<anchor-configuration-processproviders>> as well.
+
+==== Minimal example
+
+A minimal valid WPS configuration example looks like this:
+
+[source,xml]
+----
+<deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
+</deegreeWPS>
+----
+
+This will create a WPS resource with the following properties:
+
+* All WPS protocol versions are enabled. Currently, this is only 1.0.0.
+* The WPS resource will attach to all process provider resources in the
+workspace.
+* Temporary files (e.g. for process results) are stored in the standard
+Java temp directory of the deegree webapp.
+* The last 100 process executions are tracked.
+* Memory buffers (e.g. for inline XML inputs) are limited to 1 MB each.
+If this limit is exceeded, buffering is switched to use a file in the
+storage directory.
+
+==== Complex example
+
+A more complex configuration example looks like this:
+
+[source,xml]
+----
+<deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
+
+  <SupportedVersions>
+    <Version>1.0.0</Version>
+  </SupportedVersions>
+
+  <DefaultExecutionManager>
+    <StorageDir>../var/wps/</StorageDir>
+    <TrackedExecutions>1000</TrackedExecutions>
+    <InputDiskSwitchLimit>1048576</InputDiskSwitchLimit>
+  </DefaultExecutionManager>
+
+</deegreeWPS>
+----
+
+This will create a WPS resource with the following properties:
+
+* Enabled WPS protocol versions: 1.0.0
+* The WPS resource will attach to all process provider resources in the
+workspace.
+* Storage directory for temporary files (e.g. for process results) is
+_/var/wps_ inside the workspace.
+* The last 1000 process executions will be tracked.
+* Memory buffers (e.g. for inline XML inputs) are limited to 1 MB each.
+If this limit is exceeded, buffering is switched to use a file in the
+storage directory.
+
+==== Configuration overview
+
+The deegree WPS config file format is defined by schema file
+http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd. The
+root element is _deegreeWPS_ and the config attribute must be
+_3.1.0_. The following table lists all available configuration options
+(complex ones contain nested options themselves). When specifiying them,
+their order must be respected.
+
+[width="100%",cols="28%,14%,10%,48%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|SupportedVersions |0..1 |Complex |Activated OGC protocol versions,
+default: all
+
+|DefaultExecutionManager |0..1 |Complex |Settings for tracking process
+executions
+|===
+
+The remainder of this section describes these options and their
+sub-options in detail.
+
+* _SupportedVersions_: By default, all implemented WMS protocol
+versions are activated. Currently, this is just 1.0.0 anyway.
+Alternatively you can control offered WPS protocol versions using the
+element _SupportedVersions_. This element allows the child element
+_<Version>1.0.0</Version>_ for now.
+
+==== DefaultExecutionManager section
+
+This section controls aspects that are related to temporary storage (for
+input and output parameter values) during the execution of processes.
+The _DefaultExecutionManager_ option has the following sub-options:
+
+[width="100%",cols="20%,11%,7%,62%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|StorageDir |0..1 |String |Directory for storing execution-related data,
+default: Java tempdir
+
+|TrackedExecutions |0..1 |Integer |Number of executions to track,
+default: 100
+
+|InputDiskSwitchLimit |0..1 |Integer |Limit in bytes, before a
+ComplexInputInput is written to disk, default: 1 MiB
+|===
+
+[[anchor-configuration-service-metadata]]
+=== Metadata
+
+This section describes the configuration for the different types of
+metadata that a service reports in the _GetCapabilities_ response.
+These options don't affect the data that the service offers or the
+behaviour of the service. It merely changes the descriptive metadata
+that the service reports.
+
+In order to configure the metadata for a web service instance _xyz_,
+create a corresponding _xyz_metadata.xml_ file in the _services_
+directory of the workspace. The actual service type does not matter, the
+configuration works for all types of service alike.
+
+*Example for _deegreeServicesMetadata_*
+
+[source,xml]
+----
+<deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
+  xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd">
+
+  <ServiceIdentification>
+    <Title>INSPIRE Addresses</Title>
+    <Abstract>Direct Access Download Service for INSPIRE Addresses</Abstract>
+  </ServiceIdentification>
+
+  <ServiceProvider>
+    <ProviderName>The deegree project</ProviderName>
+    <ProviderSite>http://www.deegree.org</ProviderSite>
+    <ServiceContact>
+      <IndividualName>Markus Schneider</IndividualName>
+      <PositionName>deegree TMC</PositionName>
+      <Phone>0228/18496-0</Phone>
+      <Facsimile>0228/18496-29</Facsimile>
+      <ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
+      <Address>
+        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
+        <City>Bonn</City>
+        <AdministrativeArea>NRW</AdministrativeArea>
+        <PostalCode>53177</PostalCode>
+        <Country>Germany</Country>
+      </Address>
+      <OnlineResource>http://www.deegree.org</OnlineResource>
+      <HoursOfService>24x7</HoursOfService>
+      <ContactInstructions>Do not hesitate to call</ContactInstructions>
+      <Role>PointOfContact</Role>
+    </ServiceContact>
+  </ServiceProvider>
+
+  <DatasetMetadata>
+    <MetadataUrlTemplate>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=${metadataSetId}</MetadataUrlTemplate>
+    <Dataset>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:Address</Name>
+      <Title>ad:Address</Title>
+      <Abstract>Harmonized INSPIRE Addresses (Annex I)</Abstract>
+      <MetadataSetId>beefcafe-beef-cafe-beef-cafebeefcaf</MetadataSetId>
+    </Dataset>
+  </DatasetMetadata>
+
+  <ExtendedCapabilities protocolVersions="2.0.0">
+    <inspire_dls:ExtendedCapabilities xmlns:inspire_dls="http://inspire.ec.europa.eu/schemas/inspire_dls/1.0"
+      xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0"
+      xsi:schemaLocation="http://inspire.ec.europa.eu/schemas/common/1.0 http://inspire.ec.europa.eu/schemas/common/1.0/common.xsd http://inspire.ec.europa.eu/schemas/inspire_dls/1.0 http://inspire.ec.europa.eu/schemas/inspire_dls/1.0/inspire_dls.xsd">
+      <inspire_common:MetadataUrl>
+        <inspire_common:URL>http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=eea97fc0-8291-11e1-afa6-0800200c9a66</inspire_common:URL>
+        <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
+      </inspire_common:MetadataUrl>
+      <inspire_common:SupportedLanguages>
+        <inspire_common:DefaultLanguage>
+          <inspire_common:Language>ger</inspire_common:Language>
+        </inspire_common:DefaultLanguage>
+      </inspire_common:SupportedLanguages>
+      <inspire_common:ResponseLanguage>
+        <inspire_common:Language>ger</inspire_common:Language>
+      </inspire_common:ResponseLanguage>
+      <inspire_dls:SpatialDataSetIdentifier>
+        <inspire_common:Code>eea97fc0-8291-11e1-afa6-0800200c9a66</inspire_common:Code>
+      </inspire_dls:SpatialDataSetIdentifier>
+    </inspire_dls:ExtendedCapabilities>
+  </ExtendedCapabilities>
+
+</deegreeServicesMetadata>
+----
+
+The metadata config file format is defined by schema file
+http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd. The
+root element is _deegreeServicesMetadata_ and the config attribute
+must be _3.4.0_. The following table lists all available configuration
+options (complex ones contain nested options themselves). When
+specifiying them, their order must be respected.
+
+[width="100%",cols="24%,11%,8%,57%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|ServiceIdentification |1..1 |Complex |Metadata that describes the
+service
+
+|ServiceProvider |1..1 |Complex |Metadata that describes the provider of
+the service
+
+|DatasetMetadata |0..1 |Complex |Metadata on the datasets provided by
+the service
+
+|ExtendedCapabilities |0..n |Complex |Extended Metadata reported in
+OperationsMetadata section
+|===
+
+The remainder of this section describes these options and their
+sub-options in detail.
+
+WARNING: If a metadata configuration file exists, extended capabilities
+configured in any service configuration (see chapters
+<<anchor-configuration-wfs>> and <<anchor-configuration-wms>>) are
+ignored. Instead, all extended capabilities must be configured in this
+file.
+
+==== Service identification
+
+The _ServiceIdentification_ option has the following sub-options:
+
+[width="100%",cols="20%,11%,7%,62%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|Title |0..n |String |Title of the service
+|Abstract |0..n |String |Abstract
+|Keywords |0..n |Complex |Keywords that describe the service
+|Fees |0..1 |String |Fees that apply for using this service
+|AccessConstraints |0..n |String |Access constraints for this service
+|===
+
+==== Service provider
+
+The _ServiceProvider_ option has the following sub-options:
+
+[width="100%",cols="23%,17%,12%,48%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|ProviderName |0..1 |String |Name of the service provider
+|ProviderSite |0..1 |String |Website of the service provider
+|ServiceContact |0..1 |Complex |Contact information
+|===
+
+==== Dataset metadata
+
+This type of metadata is attached to the datasets that a service offers
+(e.g. layers for the WMS or feature types for the WFS). The services
+themselves may have specific mechanisms to override this metadata, so
+make sure to have a look at the appropriate service sections. However,
+some metadata configuration can be done right here.
+
+To start with, you'll need to add a _DatasetMetadata_ container
+element:
+
+[source,xml]
+----
+<DatasetMetadata>
+...
+</DatasetMetadata>
+----
+
+Apart from the descriptive metadata (title, abstract etc.) for each
+dataset, you can also configure _MetadataURL_s, external metadata
+links and metadata as well as external metadata IDs.
+
+For general _MetadataURL_ configuration, you can configure the element
+_MetadataUrlTemplate_. Its content can be any URL, which may contain
+the pattern _${metadataSetId}_. For each dataset (layer, feature type)
+the service will output a _MetadataURL_ based on that pattern, if a
+_MetadataSetId_ has been configured for that dataset (see below). The
+template is optional, if omitted, no _MetadataURL_ will be produced.
+
+Configuration for the template looks like this:
+
+[source,xml]
+----
+<DatasetMetadata>
+  <MetadataUrlTemplate>http://some.url.de/csw?request=GetRecordById&amp;service=CSW&amp;version=2.0.2&amp;outputschema=http://www.isotc211.org/2005/gmd&amp;elementsetname=full&amp;id=${metadataSetId}</MetadataUrlTemplate>
+...
+</DatasetMetadata>
+----
+
+You can also configure _ExternalMetadataAuthority_ elements, which are
+currently only used by the WMS. You can define multiple authorities,
+with the authority URL as text content and a unique _name_ attribute.
+For each dataset you can define an ID for an authority by refering to
+that name. This will generate an _AuthorityURL_ and _Identifier_
+pair in WMS capabilities documents (version 1.3.0 only).
+
+Configuration for an external authority looks like this:
+
+[source,xml]
+----
+<DatasetMetadata>
+  <ExternalMetadataAuthority name="myorg">http://www.myauthority.org/metadataregistry/</ExternalMetadataAuthority>
+...
+</DatasetMetadata>
+----
+
+Now follows the list of the actual dataset metadata. You can add as many
+as you need:
+
+[source,xml]
+----
+<DatasetMetadata>
+  <MetadataUrlTemplate>...</MetadataUrlTemplate>
+  ...
+  <Dataset>
+  ...
+  </Dataset>
+  <Dataset>
+  ...
+  </Dataset>
+  ...
+</DatasetMetadata>
+----
+
+For each dataset, you can configure the metadata as outlined in the
+following table:
+
+[width="100%",cols="19%,9%,10%,62%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|Name |1 |String/QName |the layer/feature type name you refer to
+
+|Title |0..n |String |can be multilingual by using the _lang_
+attribute
+
+|Abstract |0..n |String |can be multilingual by using the _lang_
+attribute
+
+|MetadataSetId |0..1 |String |is used to generate _MetadataURL_ s, see
+above
+
+|ExternalMetadataSetId |0..n |String |is used to generate
+_AuthorityURL_ s and _Identifier_ s for WMS, see above. Refer to an
+authority using the _authority_ attribute.
+|===
+
+==== Extended capabilities
+
+Extended capabilities are generic metadata sections below the
+_OperationsMetadata_ element in the _GetCapabilities_ response. They
+are not defined by the OGC service specifications, but by additional
+guidance documents, such as the INSPIRE Network Service TGs. deegree
+treats this section as a generic XML element and includes it in the
+output. If your service supports multiple protocol versions (e.g. a WFS
+that supports 1.1.0 and 2.0.0), you may include multiple
+_ExtendedCapabilities_ elements in the metadata configuration and use
+attribute _protocolVersions_ to indicate the version that you want to
+define the extended capabilities for.
+
+=== Service controller
+
+The controller configuration is used to configure various global aspects
+that affect all services.
+
+Since it's a global configuration file for all services, it's called
+_main.xml_, and located in the _services_ directory. All of the
+options are optional, and you can also omit the file completely.
+
+An empty example file looks like follows:
+
+[source,xml]
+----
+<?xml version='1.0'?>
+<deegreeServiceController xmlns='http://www.deegree.org/services/controller' configVersion='3.4.0'>
+</deegreeServiceController>
+----
+
+The following table lists all available configuration options. When
+specifiying them, their order must be respected.
+
+[width="100%",cols="30%,14%,10%,46%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|ReportedUrls |0..1 |Complex |Hardcode reported URLs in service
+responses
+
+|PreventClassloaderLeaks |0..1 |Boolean |TODO
+
+|RequestLogging |0..1 |Complex |TODO
+
+|ValidateResponses |0..1 |Boolean |TODO
+
+|RequestTimeoutMilliseconds |0..n |Complex |Maximum request execution
+time
+|===
+
+The following sections describe the available options in detail.
+
+==== Reported URLs
+
+Some web service responses contain URLs that refer back to the service,
+for example in capabilities documents (responses to GetCapabilities
+requests). By default, deegree derives these URLs from the incoming
+request, so you don't have to think about this, even when your server
+has multiple network interfaces or hostnames. However, sometimes it is
+required to override these URLs, for example when using deegree behind a
+proxy or load balancer.
+
+TIP: If you don't have a proxy setup that requires it, don't configure the
+reported URLs. In standard setups, the default behaviour works best.
+
+To override the reported URLs, put a fragment like the following into
+the _main.xml_:
+
+[source,xml]
+----
+<ReportedUrls>
+  <Services>http://www.mygeoportal.com/ows</Services>
+  <Resources>http://www.mygeoportal.com/ows-resources</Resources>
+</ReportedUrls>
+----
+
+For this example, deegree would report
+_http://www.mygeoportal.com/ows_ as service endpoint URL in
+capabilities responses, regardless of the real connection details of the
+deegree server. If a specific service is contacted on the deegree
+server, for example via a request to
+_http://realnameofdeegreemachine:8080/deegree-webservices/services/inspire-wfs-ad_,
+deegree would report _http://www.mygeoportal.com/ows/inspire-wfs-ad_.
+
+The URL configured by _Resources_ relates to the reported URL of the
+_resources_ servlet, which allows to access parts of the active
+deegree workspace via HTTP. Currently, this is only used in WFS
+DescribeFeatureType responses that access GML application schema
+directories.
+
+The URLs changed by this configuration option are overwritten by the URL
+specified by the X-Forwarded-Host, X-Forwarded-Port and
+X-Forwarded-Proto header values. For example via a request to
+_http://realnameofdeegreemachine:8080/deegree-webservices/services/inspire-wfs-ad_
+and the specified header values
+
+----
+* X-Forwarded-Host = www.mysecondgeoportal.com
+* X-Forwarded-Port = 8088
+* X-Forwarded-Proto = https
+----
+
+deegree would report
+_https://www.mysecondgeoportal.com:8088/deegree-webservices/services/inspire-wfs-ad_.
+The URL path is kept as in the request URL. Host, port and protocol are
+replaced by the values from the header. If X-Forwarded-Port or
+X-Forwarded-Proto are missing the values are taken from the request URL,
+deegree would report
+_http://www.mysecondgeoportal.com/deegree-webservices/services/inspire-wfs-ad_.
+This behaviour is usefull when the deegree webservice can be requested
+via different URLs.
+
+==== Request timeouts
+
+By default, the execution time of a request to a web service is not
+constrained. It depends on the complexity of the request and the
+configuration -- it's well possible to create a WMS configuration and a
+GetMap request that will require hours of processing time. Generally, it
+is the responsibility of the configuration creator to ensure that
+service requests will return in a reasonable time (e.g. by applying
+scale limitations in the layer configuration).
+
+Nevertheless, it is sometimes desirable to enforce an execution time
+limit. This can be achieved by using the RequestTimeoutMilliseconds
+option:
+
+[source,xml]
+----
+...
+  <RequestTimeoutMilliseconds serviceId="wms1" request="GetMap">1000</RequestTimeoutMilliseconds>
+  <RequestTimeoutMilliseconds serviceId="wms2" request="GetMap">2500</RequestTimeoutMilliseconds>
+...
+----
+
+This example enforces the following time-out behaviour:
+
+* GetMap requests to WMS instance wms1 will be interrupted after an
+execution time of 1000 milliseconds
+* GetMap requests to WMS instance wms2 will be interrupted after an
+execution time of 2500 milliseconds
+
+Besides the time-out value in milliseconds, the following sub-options
+are supported by RequestTimeoutMilliseconds:
+
+[width="100%",cols="19%,18%,13%,50%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|@serviceId |1 |String |Resource identifier of the service
+|@request |1 |String |Service request
+|===
+
+NOTE: A time-out value can be configured for any service type and request.
+However, a correct termination of requests requires that the relevant
+Java code is actually interruptible. So far, this has only been verified
+for GetMap requests to WMS based on feature layers.
