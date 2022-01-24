@@ -137,7 +137,6 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -233,6 +232,13 @@ public class SQLFeatureStore implements FeatureStore {
         } else {
             cache = null;
         }
+    }
+
+    /**
+     * @return the currently active transaction., may be <code>null</code> if no transaction was acquired
+     */
+    public FeatureStoreTransaction getTransaction() {
+        return transaction.get();
     }
 
     private void initConverters() {
@@ -674,7 +680,7 @@ public class SQLFeatureStore implements FeatureStore {
 
         try {
             conn = getConnection();
-            AbstractWhereBuilder wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
+            AbstractWhereBuilder wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn, query.isHandleStrict() );
 
             if ( wb.getPostFilter() != null ) {
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
@@ -1310,7 +1316,7 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = getConnection();
 
-            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
+            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn, query.isHandleStrict() );
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
@@ -1479,9 +1485,9 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
-                                                  Connection conn )
+                                                  Connection conn, boolean handleStrict )
                             throws FilterEvaluationException, UnmappableException {
-        PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
+        PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ), handleStrict );
         return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
     }
 

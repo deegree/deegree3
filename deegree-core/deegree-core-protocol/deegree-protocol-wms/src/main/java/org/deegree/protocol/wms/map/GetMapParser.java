@@ -36,6 +36,7 @@
 package org.deegree.protocol.wms.map;
 
 import static java.awt.Color.WHITE;
+import static java.util.Collections.emptyMap;
 import static org.deegree.commons.xml.CommonNamespaces.OWS_NS;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
@@ -96,6 +97,16 @@ public class GetMapParser extends AbstractWmsParser {
 
     private static final SimpleGeometryFactory GEOMETRY_FACTORY = new SimpleGeometryFactory();
 
+    private final Map<String, String> requestParameters;
+    
+    public GetMapParser() {
+        requestParameters = emptyMap();
+    }
+    
+    public GetMapParser( Map<String, String> requestParameters) {
+        this.requestParameters = requestParameters;
+    }
+    
     /**
      * Parses a WMS <code>GetMap</code> document into a {@link GetMap} object.
      * 
@@ -164,7 +175,7 @@ public class GetMapParser extends AbstractWmsParser {
         boolean transparent = output.transparent;
         Color color = output.bgcolor;
         return new GetMap( layers, styles, width, height, envelope, crs, format, transparent, color, parameterMap,
-                           dimensions );
+                           dimensions, requestParameters );
     }
 
     private Output parseOutput( XMLStreamReader in )

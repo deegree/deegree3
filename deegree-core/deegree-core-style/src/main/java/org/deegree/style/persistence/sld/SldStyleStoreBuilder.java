@@ -68,7 +68,7 @@ public class SldStyleStoreBuilder implements ResourceBuilder<StyleStore> {
             in = metadata.getLocation().getAsStream();
             DefaultResourceLocation<StyleStore> loc = (DefaultResourceLocation<StyleStore>) metadata.getLocation();
             XMLInputFactory fac = XMLInputFactory.newInstance();
-            reader = fac.createXMLStreamReader( loc.getFile().toString(), in );
+            reader = fac.createXMLStreamReader( loc.getAsFile().toString(), in );
             Map<String, LinkedList<Style>> map = getStyles( reader );
             return new SLDStyleStore( map, metadata );
         } catch ( Exception e ) {

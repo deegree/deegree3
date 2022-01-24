@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
   version="2.2">
 
-  <name>goawayeclipsebug</name>
+  <name>deegree services console UI</name>
 
   <application>
     <locale-config>
@@ -55,6 +55,10 @@
     <navigation-case>
       <from-outcome>failed</from-outcome>
       <to-view-id>/console/jsf/logInFailed.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>home</from-outcome>
+      <to-view-id>/index.xhtml</to-view-id>
     </navigation-case>
   </navigation-rule>
   <!-- PhaseListener -->

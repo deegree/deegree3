@@ -42,8 +42,9 @@ import java.util.NoSuchElementException;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * {@link Points} implementation that aggregates the members from a sequence of {@link Points} objects.
@@ -187,6 +188,11 @@ public class PointsSubsequence implements Points {
 
     @Override
     public Object clone() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CoordinateSequence copy() {
         throw new UnsupportedOperationException();
     }
 }

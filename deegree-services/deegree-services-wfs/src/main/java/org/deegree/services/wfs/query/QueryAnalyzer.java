@@ -130,7 +130,7 @@ public class QueryAnalyzer {
 
     private final Map<FeatureStore, List<Query>> fsToQueries = new LinkedHashMap<FeatureStore, List<Query>>();
 
-    private List<ProjectionClause> projections = null;
+    private final Map<QName, List<ProjectionClause>> projections = new HashMap<>();
 
     private ICRS requestedCrs;
 
@@ -171,6 +171,7 @@ public class QueryAnalyzer {
         for ( int i = 0; i < adHocQueries.size(); i++ ) {
             AdHocQuery wfsQuery = adHocQueries.get( i ).first;
             Query query = validateQuery( wfsQuery );
+            query.setHandleStrict( controller.isStrict() );
             queries[i] = query;
 
             // yes, use the original WFS query (not necessarily adHoc)
@@ -185,7 +186,10 @@ public class QueryAnalyzer {
 
             // TODO cope with more queries than one
             if ( wfsQuery.getProjectionClauses() != null ) {
-                this.projections = Arrays.asList( wfsQuery.getProjectionClauses() );
+                for ( TypeName typeName : wfsQuery.getTypeNames() ) {
+                    QName bestMatch = findBestMatchingFeatureTypeName( typeName );
+                    this.projections.put( bestMatch, Arrays.asList( wfsQuery.getProjectionClauses() ) );
+                }
             }
         }
 
@@ -210,6 +214,18 @@ public class QueryAnalyzer {
                 fsQueries.add( query );
             }
         }
+    }
+
+    private QName findBestMatchingFeatureTypeName( TypeName typeName ) {
+        QName[] featureTypeNames = service.getFeatureTypeNames();
+        if ( featureTypeNames == null )
+            return typeName.getFeatureTypeName();
+        List<QName> allFeatureTypeNames = Arrays.asList( featureTypeNames );
+        QName bestMatch = QNameUtils.findBestMatch( typeName.getFeatureTypeName(), allFeatureTypeNames );
+
+        if ( bestMatch != null )
+            return bestMatch;
+        return typeName.getFeatureTypeName();
     }
 
     private List<Pair<AdHocQuery, org.deegree.protocol.wfs.query.Query>> convertTemplateStoredQuery( StoredQuery query )
@@ -339,7 +355,7 @@ public class QueryAnalyzer {
      * 
      * @return specific XLink-behaviour or <code>null</code> (no specific behaviour)
      */
-    public List<ProjectionClause> getProjections() {
+    public Map<QName, List<ProjectionClause>> getProjections() {
         return projections;
     }
 

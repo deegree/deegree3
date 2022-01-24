@@ -8,62 +8,11 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4-pre11-SNAPSHOT</version>
+    <version>3.4.24-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>init</id>
-            <goals>
-              <goal>generate-portnumber</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>start-tomcat</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run-war</goal>
-            </goals>
-            <configuration>
-              <port>${portnumber}</port>
-              <fork>true</fork>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-tomcat</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -72,7 +21,7 @@
           <includes>
             <include>**/*IntegrationTest.java</include>
           </includes>
-          <argLine>-Xmx512m -Dportnumber=${portnumber} -Drequestdir=${project.basedir}/src/test/requests/</argLine>
+          <argLine>-Xmx512m -Dportnumber=${jetty.http.port}</argLine>
         </configuration>
         <executions>
           <execution>
@@ -86,6 +35,21 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <webApp>
+            <contextPath>/deegree-wms-remoteows-tests</contextPath>
+          </webApp>
+          <systemProperties>
+            <systemProperty>
+              <name>DEEGREE_WORKSPACE_ROOT</name>
+              <value>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</value>
+            </systemProperty>
+          </systemProperties>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -103,7 +67,7 @@
           <replacements>
             <replacement>
               <token>8080</token>
-              <value>${previousportnumber}</value>
+              <value>${jetty.http.port}</value>
             </replacement>
           </replacements>
         </configuration>
@@ -121,6 +85,10 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-layers-remotewms</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

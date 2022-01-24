@@ -1,7 +1,0 @@
-<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0" xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory http://schemas.deegree.org/datasource/3.4.0/feature/memory.xsd">
-  <StorageCRS>EPSG:25832</StorageCRS>
-  <NamespaceHint prefix="adv" namespaceURI="http://www.adv-online.de/namespaces/adv/gid/5.1.1"/>
-  <GMLSchema version="GML_30">../../appschemas/NAS5.1.1/NAS-Operationen.xsd</GMLSchema>
-  <!-- <GMLFeatureCollectionFileURL gmlVersion="GML_32">gml/091119-ALKIS_NAS_Beispieldaten_BB.xml</GMLFeatureCollectionFileURL>-->
-  <!-- <GMLFeatureCollectionFileURL gmlVersion="GML_30">gml/511k2.gml</GMLFeatureCollectionFileURL-->
-</MemoryFeatureStore>

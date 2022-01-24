@@ -55,7 +55,7 @@ import org.deegree.geometry.io.WKTReader;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * 

@@ -56,14 +56,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to deegree module metadata (e.g. Maven artifact identifier and build information).
- * <p>
- * The information is extracted from the following resources on the classpath:
- * <ul>
- * <li><code>META-INF/deegree/buildinfo.properties</code></li>
- * <li><code>META-INF/maven/$groupId/$artifactId/pom.properties</code></li>
- * </ul>
- * </p>
- * 
+ * The information is extracted from <code>META-INF/MANIFEST.MF</code> on the classpath:
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
@@ -112,12 +106,8 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
      *            classpath urls, must not be <code>null</code>
      * @return module infos, never <code>null</code>, but can be empty (if no deegree module information is present on
      *         the given classpathes)
-     * @throws IOException
-     *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
-     *             <code>META-INF/maven/[..]/pom.properties</code> fails
      */
-    public static Collection<ModuleInfo> extractModulesInfo( Collection<URL> classpathURLs )
-                            throws IOException {
+    public static Collection<ModuleInfo> extractModulesInfo( Collection<URL> classpathURLs ) {
         SortedSet<ModuleInfo> modules = new TreeSet<ModuleInfo>();
         for ( URL classpathURL : classpathURLs ) {
             if ( classpathURL.getFile().toLowerCase().endsWith( ".zip" ) ) {
@@ -140,22 +130,18 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
      * 
      * @param classpathURL
      *            classpath url, must not be <code>null</code>
-     * @return module info or <code>null</code> (if the module does not have file META-INF/deegree/buildinfo.properties)
+     * @return module info or <code>null</code> (if the module does not have file META-INF/MANIFEST.MF)
      * @throws IOException
-     *             if accessing <code>META-INF/deegree/buildinfo.properties</code> or
-     *             <code>META-INF/maven/[..]/pom.properties</code> fails
+     *             if accessing <code>META-INF/MANIFEST.MF</code> fails
      */
     public static ModuleInfo extractModuleInfo( URL classpathURL )
                             throws IOException {
-
-        ModuleInfo moduleInfo = null;
-
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder = builder.setUrls( classpathURL );
         builder = builder.setScanners( new ResourcesScanner() );
         Reflections r = new Reflections( builder );
 
-        Set<String> resources = r.getResources( Pattern.compile( "(MANIFEST\\.MF|buildinfo\\.properties)" ) );
+        Set<String> resources = r.getResources( Pattern.compile( "(MANIFEST\\.MF)" ) );
         if ( !resources.isEmpty() ) {
             URLClassLoader classLoader = new URLClassLoader( new URL[] { classpathURL }, null );
             String resourcePath = resources.iterator().next();
@@ -164,43 +150,22 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
                 Properties props = new Properties();
                 buildInfoStream = classLoader.getResourceAsStream( resourcePath );
                 props.load( buildInfoStream );
-                String buildBy = props.getProperty( "deegree-build-by", props.getProperty( "build.by" ) );
                 String buildArtifactId = props.getProperty( "deegree-build-artifactId",
                                                             props.getProperty( "build.artifactId" ) );
-                String buildDate = props.getProperty( "deegree-build-date", props.getProperty( "build.date" ) );
-                String buildRev = props.getProperty( "deegree-build-rev", props.getProperty( "build.svnrev" ) );
-                String pomVersion = null;
-
                 if ( buildArtifactId == null ) {
                     // skipping because this jar is not from deegree
                     return null;
                 }
-
-                resources = r.getResources( Pattern.compile( "pom\\.properties" ) );
-                InputStream pomInputStream = null;
-                if ( !resources.isEmpty() ) {
-                    resourcePath = resources.iterator().next();
-                    try {
-                        props = new Properties();
-                        pomInputStream = classLoader.findResource( resourcePath ).openStream();
-                        props.load( pomInputStream );
-                        String pomArtifactId = props.getProperty( "artifactId" );
-                        if ( !pomArtifactId.equals( buildArtifactId ) ) {
-                            LOG.warn( "ArtifactId mismatch for module on path: {} (MANIFEST.MF/buildinfo.properties vs. pom.properties).",
-                                      classpathURL );
-                        }
-                        pomVersion = props.getProperty( "version" );
-                    } finally {
-                        closeQuietly( pomInputStream );
-                    }
-                }
-                moduleInfo = new ModuleInfo( buildArtifactId, pomVersion, buildRev, buildDate, buildBy );
+                String buildBy = props.getProperty( "deegree-build-by", props.getProperty( "build.by" ) );
+                String buildDate = props.getProperty( "deegree-build-date", props.getProperty( "build.date" ) );
+                String buildRev = props.getProperty( "deegree-build-rev", props.getProperty( "build.svnrev" ) );
+                String version = retrieveVersion( props, r, classLoader, buildArtifactId, classpathURL );
+                return new ModuleInfo( buildArtifactId, version, buildRev, buildDate, buildBy );
             } finally {
                 closeQuietly( buildInfoStream );
-                // * closeQuietly( classLoader ); */ // TODO enable for JDK 1.7
             }
         }
-        return moduleInfo;
+        return null;
     }
 
     @Override
@@ -219,10 +184,6 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        // if ( groupId != null ) {
-        // sb.append( groupId );
-        // sb.append( "." );
-        // }
         sb.append( artifactId );
         if ( version != null ) {
             sb.append( "-" );
@@ -236,6 +197,34 @@ public final class ModuleInfo implements Comparable<ModuleInfo> {
         sb.append( buildBy );
         sb.append( ")" );
         return sb.toString();
+    }
+
+    private static String retrieveVersion( Properties props, Reflections r, URLClassLoader classLoader,
+                                           String buildArtifactId, URL classpathURL )
+                    throws IOException {
+        String version = props.getProperty( "Implementation-Version" );
+        if ( version != null ) {
+            return version;
+        }
+        Set<String> resources = r.getResources( Pattern.compile( "pom\\.properties" ) );
+        InputStream pomInputStream = null;
+        if ( !resources.isEmpty() ) {
+            String resourcePath = resources.iterator().next();
+            try {
+                props = new Properties();
+                pomInputStream = classLoader.findResource( resourcePath ).openStream();
+                props.load( pomInputStream );
+                String pomArtifactId = props.getProperty( "artifactId" );
+                if ( !pomArtifactId.equals( buildArtifactId ) ) {
+                    LOG.warn( "ArtifactId mismatch for module on path: {} (MANIFEST.MF/buildinfo.properties vs. pom.properties).",
+                              classpathURL );
+                }
+                return props.getProperty( "version" );
+            } finally {
+                closeQuietly( pomInputStream );
+            }
+        }
+        return null;
     }
 
 }

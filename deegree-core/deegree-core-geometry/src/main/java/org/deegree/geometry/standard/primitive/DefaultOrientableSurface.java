@@ -247,7 +247,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+    public org.locationtech.jts.geom.Geometry getJTSGeometry() {
         // TODO Auto-generated method stub
         return null;
     }

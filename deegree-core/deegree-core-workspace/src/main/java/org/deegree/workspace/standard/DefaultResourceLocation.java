@@ -158,7 +158,9 @@ public class DefaultResourceLocation<T extends Resource> implements ResourceLoca
         return null;
     }
 
-    public File getFile() {
+
+    @Override
+    public File getAsFile() {
         return file;
     }
 

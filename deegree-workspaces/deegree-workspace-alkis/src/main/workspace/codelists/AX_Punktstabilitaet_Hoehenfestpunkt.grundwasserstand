@@ -1,7 +1,0 @@
-1000	Grundwasserstand sehr tief (groesser 10 m)
-2000	Grundwasserstand tief (groesser 5 m und kleiner gleich 10 m)
-3000	Grundwasserstand normal (groesser 2 m und kleiner gleich 5 m)
-4000	Grundwasserstand hoch (groesser 0,5 m und kleiner gleich 2 m)
-5000	Grundwasserstand sehr hoch (kleiner gleich 0,5 m)
-9000	Grundwasserstand abgesenkt
-9998	Grundwasserstand nicht ermittelt

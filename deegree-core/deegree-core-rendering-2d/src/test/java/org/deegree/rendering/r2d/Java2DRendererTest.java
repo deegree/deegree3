@@ -41,14 +41,9 @@ import static java.awt.Color.green;
 import static java.awt.Color.red;
 import static java.awt.Color.white;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.getProperty;
 import static javax.imageio.ImageIO.read;
-import static javax.imageio.ImageIO.write;
 import static org.deegree.geometry.utils.GeometryUtils.move;
-import static org.deegree.rendering.r2d.GeometryGenerator.randomCurve;
-import static org.deegree.rendering.r2d.GeometryGenerator.randomQuad;
 import static org.deegree.style.styling.components.Font.Style.ITALIC;
 import static org.deegree.style.styling.components.Font.Style.NORMAL;
 import static org.deegree.style.styling.components.Font.Style.OBLIQUE;
@@ -64,14 +59,13 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
@@ -95,6 +89,7 @@ import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
 import org.deegree.style.styling.components.Stroke.LineJoin;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -107,37 +102,17 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class Java2DRendererTest {
+public class Java2DRendererTest extends AbstractSimilarityTest {
 
     private static final Logger LOG = getLogger( Java2DRendererTest.class );
 
     private static File textFile, perfFile;
-
-    // setting this to true will delete all rendering_* files in your temporary directory!
-    private static final boolean INTERACTIVE_TESTS = true;
 
     private static BufferedImage fill;
 
     private static final ICRS mapcs = CRSManager.getCRSRef( "CRS:1" );
 
     static {
-        if ( INTERACTIVE_TESTS ) {
-            String tmp = getProperty( "java.io.tmpdir" );
-            textFile = new File( tmp, "rendering.txt" );
-            textFile.delete();
-            perfFile = new File( tmp, "performance.txt" );
-            perfFile.delete();
-
-            File[] fs = new File( tmp ).listFiles();
-            if ( fs != null ) {
-                for ( File f : fs ) {
-                    if ( f.getName().startsWith( "rendering_" ) ) {
-                        f.delete();
-                    }
-                }
-            }
-        }
-
         try {
             fill = read( Java2DRendererTest.class.getResource( "logo-deegree.png" ) );
         } catch ( MalformedURLException e ) {
@@ -147,26 +122,17 @@ public class Java2DRendererTest {
         }
     }
 
-    private void writeTestImage( RenderedImage img, List<String> expectedTexts, long ms )
-                            throws IOException {
-        if ( INTERACTIVE_TESTS ) {
-            File tmp = createTempFile( "rendering_", ".png" );
-            PrintWriter out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( textFile, true ), "UTF-8" ) );
-            for ( String str : expectedTexts ) {
-                out.println( tmp.getName() + ": " + str );
-            }
-            out.close();
-            out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( perfFile, true ), "UTF-8" ) );
-            out.println( tmp.getName() + " was created in " + ms + "ms" );
-            out.close();
-            write( img, "png", tmp );
-        }
+    private void validateImage( RenderedImage img, double time, String testName )
+                            throws Exception {
+        LOG.debug( "Test {} ran in {} ms", testName, time );
+        RenderedImage expected = ImageIO.read( this.getClass().getResource( "./renderertest/" + testName + ".png" ) );
+        Assert.assertTrue( "Image for " + testName + "are not similar enough",
+                           isImageSimilar( expected, img, 0.01, testName ) );
     }
 
     /**
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testPointStyling()
                             throws Exception {
@@ -175,9 +141,8 @@ public class Java2DRendererTest {
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                            5000d },
-                                                                       mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 5000d, 5000d }, mapcs ) );
 
         PointStyling style = new PointStyling();
         r.render( style, geomFac.createPoint( null, new double[] { 100, 4900 }, mapcs ) );
@@ -300,13 +265,12 @@ public class Java2DRendererTest {
         texts.add( "third line: 32 pixel default square, inside a 16 pixel rotated square" );
         texts.add( "third line: 32 pixel default square, outside a 16 pixel rotated square (lower right corner)" );
         texts.add( "third line: 32 pixel default square, outside a 16 pixel square (upper center at lower right corner of the large square) and a 16 pixel rotated square (lower right corner)" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "pointstyling" );
     }
 
     /**
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testLineStyling()
                             throws Exception {
@@ -315,13 +279,13 @@ public class Java2DRendererTest {
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                            5000d },
-                                                                       mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 5000d, 5000d }, mapcs ) );
 
         List<Curve> curves = new LinkedList<Curve>();
         for ( int i = 0; i < 10; ++i ) {
-            curves.add( randomCurve( 500, i * 500, 0 ) );
+            //curves.add( randomCurve( 500, i * 500, 0 ) );
+            curves.add( testCurve( 100 + i * 480, 100, 300, 250 ) );
         }
 
         LineStyling styling = new LineStyling();
@@ -379,13 +343,12 @@ public class Java2DRendererTest {
         texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
         texts.add( "line 9: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending square" );
         texts.add( "line 10: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending round" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "linestyling" );
     }
 
     /**
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testLineStyling2()
                             throws Exception {
@@ -394,12 +357,12 @@ public class Java2DRendererTest {
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                            5000d },
-                                                                       mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 5000d, 5000d }, mapcs ) );
         List<Curve> curves = new LinkedList<Curve>();
         for ( int i = 0; i < 10; ++i ) {
-            curves.add( randomCurve( 500, i * 500, 0 ) );
+            //curves.add( randomCurve( 500, i * 500, 0 ) );
+            curves.add( testCurve( 100 + i * 480, 100, 300, 250 ) );
         }
 
         LineStyling styling = new LineStyling();
@@ -470,13 +433,12 @@ public class Java2DRendererTest {
         texts.add( "line 3: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending butt" );
         texts.add( "line 4: same as previous, but with offset = 10" );
         texts.add( "line 5: perpendicular offset of 1" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "linestyling2" );
     }
 
     /**
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testPolygonStyling()
                             throws Exception {
@@ -486,13 +448,13 @@ public class Java2DRendererTest {
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                            5000d },
-                                                                       mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                       new double[] { 5000d, 5000d }, mapcs ) );
 
         List<Surface> polygons = new LinkedList<Surface>();
         for ( int i = 0; i < 10; ++i ) {
-            polygons.add( randomQuad( 500, i * 500, 0 ) );
+            //polygons.add( randomQuad( 500, i * 500, 0 ) );
+            polygons.add( testPolygon( 100 + i * 480, 100, 300, 250 ) );
         }
 
         PolygonStyling styling = new PolygonStyling();
@@ -520,13 +482,12 @@ public class Java2DRendererTest {
         List<String> texts = new LinkedList<String>();
         texts.add( "first line: polygon style with black lines with line width 0, 1, ..., 9 and external image fill" );
         texts.add( "other lines: polygon style with black lines with line width 0, 1, ..., 9 and increasingly red fill" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "polygonstyling" );
     }
 
     /**
      * @throws Exception
      */
-    @Ignore
     @Test
     public void testTextStyling()
                             throws Exception {
@@ -536,17 +497,16 @@ public class Java2DRendererTest {
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r2d = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                                 geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                              5000d },
-                                                                         mapcs ) );
+                                                 geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                         new double[] { 5000d, 5000d }, mapcs ) );
         Java2DTextRenderer r = new Java2DTextRenderer( r2d );
 
         LinkedList<Point> points = new LinkedList<Point>();
         for ( int i = 0; i < 50; ++i ) {
-            points.add( geomFac.createPoint( null, new double[] { 2500, 5000 - ( i + 1 ) * 150 }, mapcs ) );
+            points.add( geomFac.createPoint( null, new double[] { 3500 - ( i + 1 ) * 100 , 4500 - ( i + 1 ) * 250 }, mapcs ) );
         }
 
-        String text = "This is a sample text with Umläütß";
+        String text = "AbC \u00c4\u00fc\u00d6";
         TextStyling styling = new TextStyling();
         r.render( styling, text, points.poll() );
         styling.fill = new Fill();
@@ -616,14 +576,14 @@ public class Java2DRendererTest {
         texts.add( "same, no rotation, one normal, one displaced by 10 pixels to left and top" );
         texts.add( "same, one ending in the middle of the screen, one starting there" );
         texts.add( "same, only one ending in the middle of the screen" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "textstyling" );
     }
 
     /**
      * @throws Exception
      */
-    @Ignore
     @Test
+    @Ignore
     public void testTextStyling2()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -632,27 +592,26 @@ public class Java2DRendererTest {
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r2d = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                                 geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
-                                                                                                              5000d },
-                                                                         mapcs ) );
+                                                 geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                         new double[] { 5000d, 5000d }, mapcs ) );
         Java2DTextRenderer r = new Java2DTextRenderer( r2d );
 
         LinkedList<Curve> curves = new LinkedList<Curve>();
         for ( int y = 0; y < 4; ++y ) {
             for ( int i = 0; i < 6; ++i ) {
-                curves.add( randomCurve( 700, i * 800, 4100 - 800 * y ) );
+                //curves.add( randomCurve( 700, i * 800, 4100 - 800 * y ) );
+                curves.add( testCurve( 200+ i * 800, 4100 - 1200 * y, 300, 600 ) );
             }
         }
 
         LineStyling lineStyle = new LineStyling();
         lineStyle.stroke.width = 20;
         lineStyle.stroke.linecap = BUTT;
-        String text = "geeky Street";
+        String text = "5th Street";
         TextStyling styling = new TextStyling();
         styling.linePlacement = new LinePlacement();
-        styling.font.fontSize = 15;
-        styling.font.fontFamily.add( "Lucida Sans" );
-        styling.font.fontFamily.add( "Comic Sans" );
+        styling.font.fontSize = 25;
+        styling.font.fontFamily.add( "Courier" );
         r2d.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.repeat = true;
@@ -721,20 +680,19 @@ public class Java2DRendererTest {
         texts.add( "second line: renders the same text directly above the gray line (perpendicular offset)" );
         texts.add( "third line: renders with initial gap of 20" );
         texts.add( "fourth line: renders with initial gap of 20 and gap of 10 (with text size 12)" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "textstyling2" );
     }
 
-    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingSmallClipping()
-                            throws IOException {
+                            throws Exception {
         BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 },
-                                                                       new double[] { 50d, 50d }, mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 50d, 50d },
+                                                                       mapcs ) );
         Envelope envelope = new GeometryFactory().createEnvelope( 0, 0, 100000000, 100000000, null );
 
         PolygonStyling styling = new PolygonStyling();
@@ -751,20 +709,19 @@ public class Java2DRendererTest {
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "line: default style line dashed with pattern 15, 15, 17, 5" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "polygonstylingsmallclipping" );
     }
 
-    @Ignore
     @Test(timeout = 2500)
     public void testLineStylingSmallClipping()
-                            throws IOException {
+                            throws Exception {
         BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 },
-                                                                       new double[] { 50d, 50d }, mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 50d, 50d },
+                                                                       mapcs ) );
         Point p1 = geomFac.createPoint( "testP1", 0, 0, null );
         Point p2 = geomFac.createPoint( "testP1", 10000000, 100000000, null );
         Points points = new PointsArray( p1, p2 );
@@ -781,10 +738,9 @@ public class Java2DRendererTest {
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "line: default style line dashed with pattern 15, 15, 25, 5" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "linestylingsmallclipping" );
     }
 
-    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingWithCirclesSmallClipping()
                             throws Exception {
@@ -818,13 +774,12 @@ public class Java2DRendererTest {
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "polygon: black line with circles stroke vertical on the left and horizontal on the bottom" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "polygonstylingwithcircelssmallclipping" );
     }
 
-    @Ignore
     @Test(timeout = 2500)
     public void testPolygonStylingWithStrokeWithoutSize()
-                            throws IOException {
+                            throws Exception {
         BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
@@ -846,13 +801,12 @@ public class Java2DRendererTest {
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "polygon: default style line with circles stroke" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "polygonstylingwithstrokewithoutsize" );
     }
 
-    @Ignore
     @Test
     public void testPolygonStylingPerpendicularOffset()
-                            throws IOException {
+                            throws Exception {
         BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
@@ -883,37 +837,37 @@ public class Java2DRendererTest {
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "polygon: white rectangle with red triangle stroke and perpendicular offest of -4. Expected: triangles points to the INSIDE of the geometry!" );
-        writeTestImage( img, texts, time2 - time );
+        validateImage( img, time2 - time, "polygonstylingperpendicularoffset" );
     }
 
     /**
      * Prevent reintroducing of a clipping error on extra large geometries
      * 
-     * Prevent endless dash generation in rendering of strokes (or JVM Crashes in Tomcat) 
-     * if one of the coordinates of a geometry has an invalid value (which is out of bounds)
-     * and the clipper does not clip the geometry
+     * Prevent endless dash generation in rendering of strokes (or JVM Crashes in Tomcat) if one of the coordinates of a
+     * geometry has an invalid value (which is out of bounds) and the clipper does not clip the geometry
      * 
-     * A timeout is required to prevent a endless runtime in JUnit test runner 
+     * A timeout is required to prevent a endless runtime in JUnit test runner
      * 
      * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
      * @throws Exception
      */
-    @Test(timeout=30000)
-    public void testClipperJvmCrash() throws Exception {
+    @Test(timeout = 30000)
+    public void testClipperJvmCrash()
+                            throws Exception {
         BufferedImage img = new BufferedImage( 100, 100, TYPE_INT_ARGB );
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = new GeometryFactory();
-        
+
         double cen0 = 642800d;
         double cen1 = 5600049000d;
-        
+
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
-                                               geomFac.createEnvelope( new double[] { 0, 0 },
-                                                                       new double[] { 50d, 50d }, mapcs ) );
+                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 50d, 50d },
+                                                                       mapcs ) );
         Point p1 = geomFac.createPoint( "testP1", 0, 0, null );
         Point p2 = geomFac.createPoint( "testP1", cen0, cen1, null );
         Points points = new PointsArray( p1, p2 );
-        
+
         LineString lineString = geomFac.createLineString( "testLineString", null, points );
 
         LineStyling styling = new LineStyling();

@@ -35,6 +35,59 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.schema;
 
+import org.apache.xerces.xs.StringList;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSFacet;
+import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSNamespaceItem;
+import org.apache.xerces.xs.XSNamespaceItemList;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
+import org.apache.xerces.xs.XSWildcard;
+import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.BaseType;
+import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.URITranslator;
+import org.deegree.commons.xml.stax.XMLStreamUtils;
+import org.deegree.feature.types.AppSchema;
+import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CodePropertyType;
+import org.deegree.feature.types.property.CustomPropertyType;
+import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.gml.GMLVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
@@ -72,63 +125,19 @@ import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
+import static org.deegree.commons.xml.schema.SchemaUtils.copy;
 import static org.deegree.commons.xml.schema.SchemaUtils.writeWrapperDoc;
 import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_30;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.schema.GMLSchemaInfoSet.isGMLNamespace;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.xerces.xs.StringList;
-import org.apache.xerces.xs.XSAttributeUse;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSFacet;
-import org.apache.xerces.xs.XSModel;
-import org.apache.xerces.xs.XSModelGroup;
-import org.apache.xerces.xs.XSNamedMap;
-import org.apache.xerces.xs.XSNamespaceItem;
-import org.apache.xerces.xs.XSNamespaceItemList;
-import org.apache.xerces.xs.XSObjectList;
-import org.apache.xerces.xs.XSParticle;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.apache.xerces.xs.XSTerm;
-import org.apache.xerces.xs.XSTypeDefinition;
-import org.apache.xerces.xs.XSWildcard;
-import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.commons.tom.primitive.BaseType;
-import org.deegree.commons.utils.Pair;
-import org.deegree.commons.utils.URITranslator;
-import org.deegree.feature.types.AppSchema;
-import org.deegree.feature.types.FeatureCollectionType;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.CodePropertyType;
-import org.deegree.feature.types.property.CustomPropertyType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
-import org.deegree.feature.types.property.MeasurePropertyType;
-import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.gml.GMLVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Stream-based writer for exporting {@link AppSchema} or {@link FeatureType} instances as a GML application schema.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GMLAppSchemaWriter {
@@ -172,7 +181,7 @@ public class GMLAppSchemaWriter {
 
     /**
      * Creates a new {@link GMLAppSchemaWriter} for the given GML version and optional import URL.
-     * 
+     *
      * @param version
      *            gml version that exported schemas will comply to, must not be <code>null</code>
      * @param targetNamespace
@@ -256,7 +265,7 @@ public class GMLAppSchemaWriter {
 
     /**
      * Exports a wrapper schema document for the given XML Schema Infoset.
-     * 
+     *
      * @param writer
      * @param xsModel
      * @param targetNs
@@ -265,18 +274,45 @@ public class GMLAppSchemaWriter {
      */
     public static void export( XMLStreamWriter writer, GMLSchemaInfoSet xsModel, String targetNs,
                                URITranslator translator )
-                            throws XMLStreamException {
-
+                    throws XMLStreamException, IOException {
+        Set<String> schemaLocations = new HashSet<>();
         List<Pair<String, String>> nsImports = new ArrayList<Pair<String, String>>();
         for ( String ns : xsModel.getAppNamespaces() ) {
             List<String> locations = xsModel.getComponentLocations( ns );
             for ( String location : locations ) {
+                if ( !location.startsWith( "http" ) )
+                    schemaLocations.add( location );
                 String translated = translator.translate( location );
                 nsImports.add( new Pair<String, String>( ns, translated ) );
             }
         }
 
-        writeWrapperDoc( writer, targetNs, nsImports );
+        if ( schemaLocations.size() == 1 ) {
+            try {
+                copyOriginalSchema( writer, schemaLocations );
+            } catch ( URISyntaxException e ) {
+                // fallback
+                writeWrapperDoc( writer, targetNs, nsImports );
+            }
+        } else {
+            writeWrapperDoc( writer, targetNs, nsImports );
+        }
+    }
+
+    private static void copyOriginalSchema( XMLStreamWriter writer, Set<String> schemaLocations )
+                    throws IOException, XMLStreamException, URISyntaxException {
+        XMLStreamReader reader = null;
+        try {
+            String next = schemaLocations.iterator().next();
+            File file = new File( new URI( next ) );
+            InputStream schemaLocation = new FileInputStream( file );
+            reader = XMLInputFactory.newFactory().createXMLStreamReader( schemaLocation );
+            XMLStreamUtils.skipStartDocument( reader );
+            copy( reader, writer );
+        } finally {
+            if ( reader != null )
+                reader.close();
+        }
     }
 
     public void export( XMLStreamWriter writer, AppSchema schema )
@@ -289,7 +325,7 @@ public class GMLAppSchemaWriter {
      * <p>
      * NOTE: The given writer must be configured to repair namespaces.
      * </p>
-     * 
+     *
      * @param writer
      * @param fts
      * @throws XMLStreamException
@@ -516,7 +552,7 @@ public class GMLAppSchemaWriter {
 
     /**
      * Returns the XML schema type name to use for exporting the complex type for the given {@link FeatureType}.
-     * 
+     *
      * @param ft
      *            feature type, must not be <code>null</code>
      * @return the qualified complex type name or <code>null</code> if the type should be exported anonymously
@@ -543,7 +579,8 @@ public class GMLAppSchemaWriter {
             XSTypeDefinition typeDef = elDecl.getTypeDefinition();
             if ( !typeDef.getAnonymous() ) {
                 if ( isGMLNamespace( typeDef.getNamespace() )
-                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals( "AbstractFeatureCollectionType" ) ) ) {
+                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals(
+                                "AbstractFeatureCollectionType" ) ) ) {
                     if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
                         typeName = new QName( gmlNsURI, "AbstractFeatureCollectionType" );
                     } else {
