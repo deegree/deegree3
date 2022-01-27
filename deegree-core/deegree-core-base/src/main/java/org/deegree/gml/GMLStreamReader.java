@@ -132,7 +132,7 @@ public class GMLStreamReader {
 
 	private final GMLVersion version;
 
-	private final GmlDocumentIdContext idContext;
+	private GmlDocumentIdContext idContext;
 
 	private GMLReferenceResolver resolver;
 
@@ -271,6 +271,10 @@ public class GMLStreamReader {
 
 	public GMLReferenceResolver getInternalResolver() {
 		return internalResolver;
+	}
+
+	public void setIdContext(GmlDocumentIdContext idContext) {
+		this.idContext = idContext;
 	}
 
 	/**
