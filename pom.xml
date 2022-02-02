@@ -322,13 +322,14 @@
             <goals>
               <goal>enforce</goal>
             </goals>
+            <phase>initialize</phase>
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.0.5</version>
+                  <version>[3.6.0,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>1.8</version>
+                  <version>[1.8,1.9)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
