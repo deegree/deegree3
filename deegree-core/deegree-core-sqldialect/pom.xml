@@ -13,12 +13,6 @@
 
   <profiles>
     <profile>
-      <id>oracle</id>
-      <modules>
-        <module>deegree-sqldialect-oracle</module>
-      </modules>
-    </profile>
-    <profile>
       <id>mssql</id>
       <modules>
         <module>deegree-sqldialect-mssql</module>
@@ -29,6 +23,7 @@
   <modules>
     <module>deegree-sqldialect-commons</module>
     <module>deegree-sqldialect-postgis</module>
+    <module>deegree-sqldialect-oracle</module>
   </modules>
 
 </project>
