@@ -115,6 +115,12 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-sqldialect-oracle</artifactId>
+      <version>${project.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -187,19 +193,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>oracle</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.deegree</groupId>
-          <artifactId>deegree-sqldialect-oracle</artifactId>
-          <version>${project.version}</version>
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 
 </project>
