@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.sql.mapper;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
@@ -94,13 +95,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
@@ -362,7 +364,7 @@ public class AppSchemaMapper {
                         XSComplexTypeDefinition typeDefinition = (XSComplexTypeDefinition) substitution.getTypeDefinition();
                         List<Mapping> particles;
                         if ( opt != null ) {
-                            particles = generateMapping( typeDefinition, propMc, opt );
+                            particles = generateMapping( typeDefinition, propMc, opt, cycleAnalyser );
                         } else {
                             particles = generateMapping( typeDefinition, propMc, cycleAnalyser,
                                                          substitution.getNillable() );
@@ -412,7 +414,8 @@ public class AppSchemaMapper {
         return mappings;
     }
 
-    private PrimitiveMapping generatePropMapping( SimplePropertyType pt, MappingContext mc, CycleAnalyser cycleAnalyser ) {
+    private PrimitiveMapping generatePropMapping( SimplePropertyType pt, MappingContext mc,
+                                                  CycleAnalyser cycleAnalyser ) {
         LOG.debug( "Mapping simple property '" + pt.getName() + "'" );
         ValueReference path = getPropName( pt.getName() );
         MappingContext propMc = null;
@@ -477,7 +480,7 @@ public class AppSchemaMapper {
                 jc = Collections.singletonList( ftJoin );
             }
         } else {
-            LOG.warn( "Ambigous feature property type '" + pt.getName() + "'. Not creating a Join mapping." );
+            LOG.warn( "Ambiguous feature property type '" + pt.getName() + "'. Not creating a Join mapping." );
         }
 
         return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( hrefMC.getColumn() ), pt.getFTName(),
@@ -558,7 +561,7 @@ public class AppSchemaMapper {
 
     private TableJoin generateFtJoin( MappingContext from, FeatureType valueFt ) {
         if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
-            LOG.warn( "Ambigous feature join." );
+            LOG.warn( "Ambiguous feature join." );
         }
         TableName fromTable = new TableName( from.getTable() );
         TableName toTable = new TableName( "?" );
@@ -634,7 +637,7 @@ public class AppSchemaMapper {
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
-                                           ObjectPropertyType opt ) {
+                                           ObjectPropertyType opt, CycleAnalyser cycleAnalyser ) {
         List<Mapping> particles = new ArrayList<Mapping>();
 
         // attributes
@@ -686,10 +689,78 @@ public class AppSchemaMapper {
             MappingContext hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
             particles.add( new FeatureMapping( path, true, new DBField( hrefMC.getColumn() ), valueFtName, jc ) );
         } else {
-            LOG.warn( "Unhandled object property type '" + opt.getClass() + "'." );
+            switch ( opt.getCategory() ) {
+            case TIME_OBJECT:
+                if ( typeDef.derivedFrom( GML3_2_NS, "TimeInstantPropertyType",
+                                          (short) ( XSConstants.DERIVATION_RESTRICTION
+                                                    | XSConstants.DERIVATION_EXTENSION
+                                                    | XSConstants.DERIVATION_UNION
+                                                    | XSConstants.DERIVATION_LIST ) ) ) {
+                    addTimeInstantMapping( mc , opt.getMinOccurs() == 0,  opt.getElementDecl() , particles);
+                } else if ( typeDef.derivedFrom( GML3_2_NS, "TimePeriodPropertyType",
+                                                 (short) ( XSConstants.DERIVATION_RESTRICTION
+                                                           | XSConstants.DERIVATION_EXTENSION
+                                                           | XSConstants.DERIVATION_UNION
+                                                           | XSConstants.DERIVATION_LIST ) ) ) {
+
+                    addTimePeriodMapping( mc , opt.getMinOccurs() == 0,  opt.getElementDecl() , particles);
+                } else {
+                    XSParticle particle = typeDef.getParticle();
+                    particles.addAll( generateMapping( particle, opt.getMaxOccurs(), mc, cycleAnalyser ) );
+                }
+            default:
+                LOG.warn( "Unhandled object property type '" + opt.getClass() + "' with category "
+                          + opt.getCategory() );
+            }
         }
 
         return particles;
+    }
+
+    private void addTimeInstantMapping( MappingContext mc, boolean voidable, XSElementDeclaration elDecl,
+                                        List<Mapping> particles ) {
+        QName timeInstant = new QName( GML3_2_NS, "TimeInstant", nsToPrefix.get( GML3_2_NS ) );
+        MappingContext mappingContext = mcManager.mapOneToOneElement( mc, timeInstant );
+
+        List<Mapping> timeInstantParticles = new ArrayList<>();
+        createAndAddGmlId( mappingContext, timeInstantParticles );
+        createAndAddTimeProperty( mappingContext, "timePosition", timeInstantParticles );
+
+        ValueReference timePositionPath = new ValueReference( timeInstant );
+        particles.add( new CompoundMapping( timePositionPath, voidable, timeInstantParticles, null, elDecl ) );
+    }
+
+    private void addTimePeriodMapping( MappingContext mc, boolean voidable, XSElementDeclaration elDecl,
+                                       List<Mapping> particles ) {
+        QName timePeriod = new QName( GML3_2_NS, "TimePeriod", nsToPrefix.get( GML3_2_NS ) );
+        MappingContext mappingContext = mcManager.mapOneToOneElement( mc, timePeriod );
+
+        List<Mapping> timePeriodParticles = new ArrayList<>();
+        createAndAddGmlId( mappingContext, timePeriodParticles );
+        createAndAddTimeProperty( mappingContext, "beginPosition", timePeriodParticles );
+        createAndAddTimeProperty( mappingContext, "endPosition", timePeriodParticles );
+
+        ValueReference timePeriodPath = new ValueReference( timePeriod );
+        particles.add( new CompoundMapping( timePeriodPath, voidable, timePeriodParticles, null, elDecl ) );
+    }
+
+    private void createAndAddTimeProperty( MappingContext mc, String propertyName, List<Mapping> particles ) {
+        ValueReference path = new ValueReference( new QName( GML3_2_NS, propertyName, nsToPrefix.get( GML3_2_NS ) ) );
+        MappingContext mappingContext = mcManager.mapOneToOneElement( mc, new QName( GML3_2_NS,
+                                                                                     propertyName ) );
+        DBField dbField = new DBField( mappingContext.getTable(), mappingContext.getColumn() );
+        PrimitiveType primitiveType = new PrimitiveType( DATE_TIME );
+        PrimitiveMapping timePositionMapping = new PrimitiveMapping( path, false, dbField, primitiveType, null,
+                                                                     null );
+        particles.add( timePositionMapping );
+    }
+
+    private void createAndAddGmlId( MappingContext mc, List<Mapping> particles ) {
+        QName attrName = new QName( GML3_2_NS, "id", nsToPrefix.get( GML3_2_NS ) );
+        MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
+        ValueReference path = new ValueReference( "@" + getName( attrName ), null );
+        DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
+        particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( STRING ), null, null ) );
     }
 
     private List<Mapping> generateMapping( XSParticle particle, int maxOccurs, MappingContext mc,
@@ -780,6 +851,12 @@ public class AppSchemaMapper {
         if ( eName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Identifier" ) ) ) {
             substitutions.clear();
             substitutions.add( elDecl );
+        }
+
+        if ( eName.equals( new QName( GML3_2_NS, "AbstractTimeObject" ) ) ) {
+            substitutions.clear();
+            addTimeInstantMapping( mc, occurence == 0, elDecl, mappings );
+            addTimePeriodMapping( mc, occurence == 0, elDecl, mappings );
         }
 
         NamespaceContext nsContext = null;
