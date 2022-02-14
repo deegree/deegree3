@@ -145,6 +145,11 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     }
 
     @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
+    }
+
+    @Override
     public Envelope getEnvelope( QName ftName )
                             throws FeatureStoreException {
         WFSFeatureType ftMetadata = client.getFeatureType( ftName );

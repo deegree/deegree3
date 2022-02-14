@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4.24-SNAPSHOT</version>
+    <version>3.4.25-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -35,16 +35,12 @@
       <artifactId>ehcache-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
+      <groupId>com.sun.media</groupId>
       <artifactId>jai-codec</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-imageio</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-mlibwrapper</artifactId>
+      <groupId>com.sun.media</groupId>
+      <artifactId>jai_imageio</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
