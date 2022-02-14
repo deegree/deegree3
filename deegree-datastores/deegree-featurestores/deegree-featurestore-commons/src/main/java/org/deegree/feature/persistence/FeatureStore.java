@@ -90,6 +90,15 @@ public interface FeatureStore extends Resource {
     boolean isMapped( QName ftName );
 
     /**
+     * Returns whether the store supports evaluation of maxFeatures and startIndex.
+     *
+     * @param queries
+     *            the queries to check if evaluation of maxFeatures and startIndex is applicable, must not be <code>null</code>
+     * @return <code>true</code>, if evaluation of maxFeatures and startIndex is applicable, <code>false</code> otherwise
+     */
+    boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries );
+
+    /**
      * Returns the envelope for all stored features of the given type.
      * <p>
      * NOTE: This method may return incorrect (cached) results. Use {@link #calcEnvelope(QName)} to force the
