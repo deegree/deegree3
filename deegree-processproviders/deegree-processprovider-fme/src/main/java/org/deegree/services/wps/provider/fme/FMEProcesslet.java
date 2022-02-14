@@ -2,7 +2,7 @@
  * Copyright lat/lon GmbH 2011
  * All rights reserved.
  */
-package de.latlon.fme.processprovider;
+package org.deegree.services.wps.provider.fme;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.apache.commons.io.IOUtils.closeQuietly;

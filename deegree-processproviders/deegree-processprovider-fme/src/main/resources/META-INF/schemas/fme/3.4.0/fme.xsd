@@ -6,7 +6,7 @@
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
-        <jaxb:package name="de.latlon.fme.processprovider.jaxb" />
+        <jaxb:package name="org.deegree.services.wps.provider.fme.jaxb" />
       </jaxb:schemaBindings>
     </appinfo>
   </annotation>

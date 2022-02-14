@@ -1,1 +1,1 @@
-de.latlon.fme.processprovider.FMEProcessProviderProvider
+org.deegree.services.wps.provider.fme.FMEProcessProviderProvider
