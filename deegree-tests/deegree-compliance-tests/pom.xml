@@ -6,28 +6,15 @@
   <description>OGC CITE tests</description>
 
   <properties>
-    <serviceUrl>http://localhost:${portnumber}/deegree-compliance-tests</serviceUrl>
-    <testPattern>*IntegrationTest</testPattern>
+    <baseUrl>http://localhost</baseUrl>
+    <testPattern>**IntegrationTest</testPattern>
   </properties>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.15-SNAPSHOT</version>
+    <version>3.4.25-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <testResources>
@@ -49,32 +36,31 @@
 
     <plugins>
       <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>${project.basedir}/src/main/webapp</directory>
-            </fileset>
-            <fileset>
-              <directory>${project.basedir}/src/main/workspace</directory>
-            </fileset>
-          </filesets>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>workspace-inplace</id>
+            <id>compliance-tests</id>
+            <phase>prepare-package</phase>
             <goals>
-              <goal>workspace-inplace</goal>
+              <goal>unpack</goal>
             </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.deegree</groupId>
+                  <artifactId>deegree-workspace-compliance-tests</artifactId>
+                  <version>${project.version}</version>
+                  <type>zip</type>
+                  <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspace/</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -82,11 +68,14 @@
           <skip>true</skip>
           <reuseForks>false</reuseForks>
           <useSystemClassLoader>false</useSystemClassLoader>
+          <!-- enable for execution time improvement, requires testing
+          <parallel>classes</parallel>
+          <useUnlimitedThreads>true</useUnlimitedThreads>
+          -->
           <includes>
             <include>**/${testPattern}.java</include>
           </includes>
-          <argLine>-Djava.awt.headless=true -Xmx2048m -Xss2048k -DserviceUrl=${serviceUrl}/services</argLine>
-          <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx2048m -DserviceUrl=${baseUrl}:${jetty.http.port}/deegree-compliance-tests/services -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
         </configuration>
         <executions>
           <execution>
@@ -101,69 +90,19 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <webApp>
+            <contextPath>/deegree-compliance-tests</contextPath>
+          </webApp>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <activation>
-        <property>
-          <name>!serviceUrl</name>
-        </property>
-      </activation>
-      <id>internal-tomcat</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>generate-portnumber</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>generate-portnumber</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>start-tomcat</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>run-war</goal>
-                </goals>
-                <configuration>
-                  <port>${portnumber}</port>
-                  <fork>true</fork>
-                </configuration>
-              </execution>
-              <execution>
-                <id>stop-tomcat</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>shutdown</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
   <dependencies>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-workspace-compliance-tests</artifactId>
-      <version>${project.version}</version>
-      <type>deegree-workspace</type>
-    </dependency>
     <dependency>
       <groupId>cite</groupId>
       <artifactId>teamengine</artifactId>
@@ -225,9 +164,45 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wms</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>xalan</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-services-wcs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-feature</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-coverage</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-    </dependency>   
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

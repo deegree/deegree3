@@ -126,7 +126,7 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
                             throws Exception {
         LOG.debug( "Test {} ran in {} ms", testName, time );
         RenderedImage expected = ImageIO.read( this.getClass().getResource( "./renderertest/" + testName + ".png" ) );
-        Assert.assertTrue( "Iamge for " + testName + "are not similar enough",
+        Assert.assertTrue( "Image for " + testName + "are not similar enough",
                            isImageSimilar( expected, img, 0.01, testName ) );
     }
 

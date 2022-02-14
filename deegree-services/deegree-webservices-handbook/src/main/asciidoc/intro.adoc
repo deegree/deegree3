@@ -3,7 +3,7 @@
 deegree webservices are implementations of the geospatial webservice
 specifications of the http://www.opengeospatial.org[Open Geospatial
 Consortium (OGC)] and the http://inspire.jrc.ec.europa.eu[INSPIRE
-Network Services]. deegree webservices 3.2 includes the following
+Network Services]. deegree webservices 3.4 includes the following
 services:
 
 * http://www.opengeospatial.org/standards/wfs[Web Feature Service
