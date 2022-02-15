@@ -61,6 +61,7 @@ public class AppSchemaMapperTest {
 
     private File schemaForSampleValues;
 
+    private File schemaWithNilValues;
     @Before
     public void copySchemas()
                             throws IOException {
@@ -71,6 +72,7 @@ public class AppSchemaMapperTest {
         this.schemaWithTwoCycles = copyToTmpFolder( "schemaWithTwoCycles.xsd" );
         this.schemaWithTwoSelfDependentCycles = copyToTmpFolder( "schemaWithTwoSelfDependentCycles.xsd" );
         this.schemaForSampleValues = copyToTmpFolder( "schemaForSampleValues.xsd" );
+        this.schemaWithNilValues = copyToTmpFolder( "schemaWithNilValues.xsd" );
     }
 
     @Test
@@ -737,6 +739,43 @@ public class AppSchemaMapperTest {
         assertThat( getPrimitive( mappings, "prop_A1" ), is( notNullValue() ) );
         assertThat( getPrimitive( mappings, "prop_A2" ), is( notNullValue() ) );
         assertThat( getPrimitive( mappings, "prop_A3" ), is( nullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceDataAndNilProperties()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaWithNilValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasProperty( featureTypeName, Collections.singletonList( propA3 ) ) ).thenReturn( true );
+        when( referenceData.isPropertyNilled( featureTypeName, Collections.singletonList( propA3 ) ) ).thenReturn(
+                        true );
+        QName propA4 = new QName( "http://test.de/schema", "complex_A4", "te" );
+        when( referenceData.hasProperty( featureTypeName, Collections.singletonList( propA4 ) ) ).thenReturn( true );
+        when( referenceData.isPropertyNilled( featureTypeName, Collections.singletonList( propA4 ) ) ).thenReturn(
+                        true );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0,
+                                                      referenceData, true );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 1 ) );
+
+        FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappings = featureA.getMappings();
+        assertThat( mappings.size(), is( 4 ) );
+        assertThat( getCompound( mappings, "prop_A3" ), is( notNullValue() ) );
+        assertThat( getCompound( mappings, "prop_A3" ).getParticles().size(), is( 2 ) );
+        assertThat( getCompound( mappings, "complex_A4" ), is( notNullValue() ) );
+        assertThat( getCompound( mappings, "complex_A4" ).getParticles().size(), is( 2 ) );
     }
 
     private CompoundMapping getFeatureC( List<Mapping> mappings ) {

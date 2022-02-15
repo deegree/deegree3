@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:te="http://test.de/schema"
+        xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified"
+        targetNamespace="http://test.de/schema" version="4.0">
+
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+
+  <element name="FeatureA" substitutionGroup="gml:AbstractFeature" type="te:FeatureAType"/>
+  <complexType name="FeatureAType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="prop_A1" type="string" maxOccurs="unbounded"/>
+          <element name="prop_A2" type="int"/>
+          <element name="prop_A3" minOccurs="0" maxOccurs="unbounded" nillable="true">
+            <complexType>
+              <simpleContent>
+                <extension base="int">
+                  <attribute name="nilReason" type="gml:NilReasonType"/>
+                </extension>
+              </simpleContent>
+            </complexType>
+          </element>
+          <element name="complex_A4" maxOccurs="unbounded" nillable="true">
+            <complexType>
+              <sequence>
+                <element name="prop_A4_1" type="string" maxOccurs="unbounded" nillable="true"/>
+                <element name="prop_A4_2" type="int" nillable="true"/>
+                <element name="prop_A4_3" type="int" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+              </sequence>
+              <attribute name="nilReason" type="gml:NilReasonType"/>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+</schema>
+

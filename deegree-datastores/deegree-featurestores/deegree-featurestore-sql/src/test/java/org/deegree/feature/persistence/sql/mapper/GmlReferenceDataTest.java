@@ -210,8 +210,8 @@ public class GmlReferenceDataTest {
 
         List<QName> posSpec = new ArrayList<>();
         posSpec.add( inspireId );
-        posSpec.add( new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "Identifier", "ad" ) );
-        posSpec.add( new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "localId", "ad" ) );
+        posSpec.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad" ) );
+        posSpec.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "localId", "ad" ) );
 
         boolean hasProperty = gmlReferenceData.hasProperty( AdressFeatureTypeName,
                                                             Collections.singletonList( inspireId ) );
@@ -225,4 +225,32 @@ public class GmlReferenceDataTest {
                                                                    Collections.singletonList( unknown ) );
         assertThat( hasPropertyUnknown, is( false ) );
     }
+
+    @Test
+    public void test_Inspire_isPropertyNilled()
+                    throws Exception {
+        URL resource = getClass().getResource( "data/Inspire-Adress.xml" );
+        GmlReferenceData gmlReferenceData = new GmlReferenceData( resource );
+
+        QName adressFeatureTypeName = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad" );
+        QName inspireId = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "inspireId", "ad" );
+
+        List<QName> versionId = new ArrayList<>();
+        versionId.add( inspireId );
+        versionId.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad" ) );
+        versionId.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "versionId", "ad" ) );
+
+        boolean propertyIsNilled = gmlReferenceData.isPropertyNilled( adressFeatureTypeName,
+                                                                      Collections.singletonList( inspireId ) );
+        assertThat( propertyIsNilled, is( false ) );
+
+        boolean propertyIsNilledVersionId = gmlReferenceData.isPropertyNilled( adressFeatureTypeName, versionId );
+        assertThat( propertyIsNilledVersionId, is( true ) );
+
+        QName status = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "status", "ad" );
+        boolean propertyIsNilledStatus = gmlReferenceData.isPropertyNilled( adressFeatureTypeName,
+                                                                            Collections.singletonList( status ) );
+        assertThat( propertyIsNilledStatus, is( true ) );
+    }
+
 }
