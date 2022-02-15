@@ -58,10 +58,9 @@ import java.util.StringTokenizer;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 
+import it.geosolutions.imageio.plugins.tiff.GeoTIFFTagSet;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.sun.media.imageio.plugins.tiff.GeoTIFFTagSet;
 
 /**
  * This class provides an abstraction from the details of TIFF data access for the purpose of retrieving GeoTIFF
