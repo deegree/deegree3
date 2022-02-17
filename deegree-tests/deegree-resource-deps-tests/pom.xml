@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.25</version>
+    <version>3.4.26-SNAPSHOT</version>
   </parent>
 
   <dependencies>
