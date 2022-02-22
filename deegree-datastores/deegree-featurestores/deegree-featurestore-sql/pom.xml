@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
-    <version>3.4.25-SNAPSHOT</version>
+    <version>3.4.26-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -45,6 +45,12 @@
       <artifactId>deegree-sqldialect-postgis</artifactId>
       <groupId>org.deegree</groupId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>deegree-sqldialect-oracle</artifactId>
+      <groupId>org.deegree</groupId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -87,25 +93,6 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
-      <id>oracle</id>
-      <repositories>
-        <repository>
-          <id>deegree-restricted</id>
-          <name>deegree-restricted</name>
-          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
-        </repository>
-      </repositories>
-      <dependencies>
-        <dependency>
-          <artifactId>deegree-sqldialect-oracle</artifactId>
-          <groupId>org.deegree</groupId>
-          <version>${project.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
   </profiles>
 
 </project>
-
