@@ -222,10 +222,10 @@ public class SQLFeatureStore implements FeatureStore {
         this.jdbcConnId = config.getJDBCConnId().getValue();
         this.allowInMemoryFiltering = config.getDisablePostFiltering() == null;
         fetchSize = config.getJDBCConnId().getFetchSize() != null ? config.getJDBCConnId().getFetchSize().intValue()
-                                                                  : DEFAULT_FETCH_SIZE;
+                                                                 : DEFAULT_FETCH_SIZE;
         LOG.debug( "Fetch size: " + fetchSize );
         readAutoCommit = config.getJDBCConnId().isReadAutoCommit() != null ? config.getJDBCConnId().isReadAutoCommit()
-                                                                           : !dialect.requiresTransactionForCursorMode();
+                                                                          : !dialect.requiresTransactionForCursorMode();
         LOG.debug( "Read auto commit: " + readAutoCommit );
 
         if ( config.getFeatureCache() != null ) {
@@ -233,6 +233,13 @@ public class SQLFeatureStore implements FeatureStore {
         } else {
             cache = null;
         }
+    }
+
+    /**
+     * @return the currently active transaction., may be <code>null</code> if no transaction was acquired
+     */
+    public FeatureStoreTransaction getTransaction() {
+        return transaction.get();
     }
 
     private void initConverters() {
@@ -274,8 +281,8 @@ public class SQLFeatureStore implements FeatureStore {
             if ( fm.getValueFtName() != null ) {
                 valueFt = schema.getFeatureType( fm.getValueFtName() );
             }
-            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(), valueFt,
-                                                                           schema );
+            ParticleConverter<?> converter = new FeatureParticleConverter( fkColumn, hrefColumn, getResolver(),
+                                                                           valueFt, schema );
             particleMappingToConverter.put( particleMapping, converter );
         } else if ( particleMapping instanceof CompoundMapping ) {
             CompoundMapping cm = (CompoundMapping) particleMapping;
@@ -324,6 +331,11 @@ public class SQLFeatureStore implements FeatureStore {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return queries.length == 1 && dialect.isRowLimitingCapable();
     }
 
     public String getConnId() {
@@ -574,8 +586,7 @@ public class SQLFeatureStore implements FeatureStore {
             ta = new SQLFeatureStoreTransaction( this, conn, getSchema(), inspectors );
             transaction.set( ta );
         } catch ( SQLException e ) {
-            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(),
-                                             e );
+            throw new FeatureStoreException( "Unable to acquire JDBC connection for transaction: " + e.getMessage(), e );
         }
         return ta;
     }
@@ -679,7 +690,7 @@ public class SQLFeatureStore implements FeatureStore {
 
             if ( wb.getPostFilter() != null ) {
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
-                hits = queryByOperatorFilter( query, ftNames, filter ).count();
+                hits = queryByOperatorFilter( query, ftNames, filter, false ).count();
             } else {
                 StringBuilder sql = new StringBuilder( "SELECT " );
                 if ( wb.getWhere() == null ) {
@@ -892,26 +903,7 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-
-        if ( query.getTypeNames() == null ) {
-            String msg = "Requestes TypeNames are not available, this ist not supported.";
-            throw new UnsupportedOperationException( msg );
-        }
-
-        FeatureInputStream result = null;
-        Filter filter = query.getFilter();
-
-        if ( filter == null || filter instanceof OperatorFilter ) {
-            result = queryByOperatorFilter( query, (OperatorFilter) filter );
-        } else {
-            // must be an id filter based query
-            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
-                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
-                throw new FilterEvaluationException( msg );
-            }
-            result = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() );
-        }
-        return result;
+        return query( query, true );
     }
 
     @Override
@@ -936,7 +928,7 @@ public class SQLFeatureStore implements FeatureStore {
         if ( wmsStyleQuery ) {
             return queryMultipleFts( queries, env );
         }
-
+        boolean isMaxFeaturesAndStartIndexApplicable = isMaxFeaturesAndStartIndexApplicable( queries );
         Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
@@ -952,7 +944,7 @@ public class SQLFeatureStore implements FeatureStore {
                 }
                 FeatureInputStream rs;
                 try {
-                    rs = query( queries[i++] );
+                    rs = query( queries[i++], isMaxFeaturesAndStartIndexApplicable );
                 } catch ( InvalidParameterValueException e ){
                     throw e;
                 } catch ( Throwable e ) {
@@ -968,6 +960,32 @@ public class SQLFeatureStore implements FeatureStore {
             }
         };
         return new CombinedFeatureInputStream( rsIter );
+    }
+
+
+    private FeatureInputStream query( Query query, boolean  isMaxFeaturesAndStartIndexApplicable)
+                            throws FeatureStoreException, FilterEvaluationException {
+
+
+        if ( query.getTypeNames() == null ) {
+            String msg = "Requestes TypeNames are not available, this ist not supported.";
+            throw new UnsupportedOperationException( msg );
+        }
+
+        FeatureInputStream result = null;
+        Filter filter = query.getFilter();
+
+        if ( filter == null || filter instanceof OperatorFilter ) {
+            result = queryByOperatorFilter( query, (OperatorFilter) filter, isMaxFeaturesAndStartIndexApplicable );
+        } else {
+            // must be an id filter based query
+            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
+                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
+                throw new FilterEvaluationException( msg );
+            }
+            result = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() );
+        }
+        return result;
     }
 
     private FeatureInputStream queryByIdFilter( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
@@ -1045,7 +1063,8 @@ public class SQLFeatureStore implements FeatureStore {
         }
 
         if ( ftNameToIdAnalysis.size() != 1 ) {
-            throw new FeatureStoreException( "Currently, only relational id queries are supported that target single feature types." );
+            throw new FeatureStoreException(
+                                             "Currently, only relational id queries are supported that target single feature types." );
         }
 
         QName ftName = ftNameToIdAnalysis.keySet().iterator().next();
@@ -1148,7 +1167,8 @@ public class SQLFeatureStore implements FeatureStore {
         return transaction.get() != null;
     }
 
-    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter,
+                                                          boolean isMaxFeaturesAndStartIndexApplicable )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing blob query by operator filter" );
@@ -1239,6 +1259,9 @@ public class SQLFeatureStore implements FeatureStore {
             // sql.append( wb.getOrderBy().getSQL() );
             // }
 
+            if ( isMaxFeaturesAndStartIndexApplicable )
+                appendOffsetAndFetch( sql, query.getMaxFeatures(), query.getStartIndex() );
+
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
@@ -1284,20 +1307,22 @@ public class SQLFeatureStore implements FeatureStore {
 
         if ( query.getSortProperties().length > 0 ) {
             LOG.debug( "Applying in-memory post-sorting." );
-            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(),
-                                                                    query.getSortProperties() ) );
+            result = new MemoryFeatureInputStream( Features.sortFc( result.toCollection(), query.getSortProperties() ) );
         }
         return result;
     }
 
-    private FeatureInputStream queryByOperatorFilter( Query query, OperatorFilter filter )
-                            throws FeatureStoreException {
+    private FeatureInputStream queryByOperatorFilter( Query query, OperatorFilter filter,
+                                                      boolean isMaxFeaturesAndStartIndexApplicable )
+                    throws FeatureStoreException {
         List<QName> ftNames = collectFeatureTypesNames( query );
-        return queryByOperatorFilter( query, ftNames, filter );
+        return queryByOperatorFilter( query, ftNames, filter, isMaxFeaturesAndStartIndexApplicable );
     }
 
-    private FeatureInputStream queryByOperatorFilter( Query query, List<QName> ftNames, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilter( Query query, List<QName> ftNames, OperatorFilter filter,
+                                                      boolean isMaxFeaturesAndStartIndexApplicable )
                             throws FeatureStoreException {
+
         LOG.debug( "Performing query by operator filter" );
 
         if ( getSchema().getBlobMapping() != null ) {
@@ -1305,7 +1330,7 @@ public class SQLFeatureStore implements FeatureStore {
                 String msg = "Join queries between multiple feature types in blob mode are not by SQLFeatureStore (yet).";
                 throw new FeatureStoreException( msg );
             }
-            return queryByOperatorFilterBlob( query, ftNames.get( 0 ), filter );
+            return queryByOperatorFilterBlob( query, ftNames.get( 0 ), filter, isMaxFeaturesAndStartIndexApplicable );
         }
 
         AbstractWhereBuilder wb = null;
@@ -1373,6 +1398,9 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( " ORDER BY " );
                 sql.append( wb.getOrderBy().getSQL() );
             }
+
+            if ( isMaxFeaturesAndStartIndexApplicable )
+                appendOffsetAndFetch( sql, query.getMaxFeatures(), query.getStartIndex() );
 
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
@@ -1695,6 +1723,13 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new InvalidParameterValueException( "Requested feature does not match the requested feature type.",
                                                           "RESOURCEID" );
         }
+    }
+
+    private void appendOffsetAndFetch( StringBuilder sql, int maxFeatures, int startIndex ) {
+        if ( startIndex > 0 )
+            sql.append( " OFFSET " ).append( startIndex ).append( " ROWS" );
+        if ( maxFeatures > -1 )
+            sql.append( " FETCH NEXT " ).append( maxFeatures ).append( " ROWS ONLY " );
     }
 
 }

@@ -1,0 +1,254 @@
+[[deegree-gml-tools]]
+== deegree GML tools CLI
+The deegree GML tools command line interface (CLI) provides commands to generate SQL DDL scripts and deegree SQLFeatureStore configuration files from GML application schemas. Furthermore it provides a interface to load a GML file from disk into a deegree SQLFeatureStore splitting large files into smaller chunks so that even huge (1 GB and more) files can be imported.
+
+You can download the latest release from https://repo.deegree.org/repository/public/org/deegree/deegree-tools-gml/.
+
+=== Prerequisite
+
+Java is installed and the _JAVA_HOME_ system environment variable points to the correct installation directory of a compatible JDK.
+Supported JDK versions are listed in <<system-requirements>>.
+
+=== Usage
+
+The executable JAR file contains help information. The following command line option shows the usage:
+
+----
+java -jar deegree-tools-gml.jar -h
+----
+
+Results in:
+
+----
+The deegree CLI includes tools to create SQLFeatureStore configurations and load GML files.
+Use the keywords 'SqlFeatureStoreConfigCreator' or 'GmlLoader' to choose between the tools:
+   SqlFeatureStoreConfigCreator -h (Prints the usage for this tool)
+   GmlLoader -h (Prints the usage for this tool)
+----
+
+Using the SqlFeatureStoreConfigCreator CLI:
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -h
+----
+
+Results in:
+----
+Usage: java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator -schemaUrl=<url-or-path/to/file> [options]
+
+arguments:
+ -schemaUrl=<url-or-path/to/file>, path to the schema, may be an local reference or http url
+
+options:
+ -format={deegree|ddl|all}, default=deegree
+ -srid=<epsg_code>, default=4258
+ -idtype={int|uuid}, default=int
+ -mapping={relational|blob}, default=relational
+ -dialect={postgis|oracle}, default=postgis
+ -cycledepth=INT, positive integer value to specify the depth of cycles, default=0
+ -listOfPropertiesWithPrimitiveHref=<path/to/file>, not set by default
+ -referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection.)
+
+The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):
+---------- begin file ----------
+# lines beginning with an # are ignored
+# property with namespace binding
+{http://inspire.ec.europa.eu/schemas/ps/4.0}designation
+# property without namespace binding
+designation
+# empty lines are ignored
+
+# leading and trailing white spaces are ignored
+---------- end file ----------
+----
+
+The SQL DDL and XML output is written into files in the current directory. The filename of each file is derived from the schema file name in the given `schemaUrl`.
+
+==== Usage of option cycledepth
+
+Some GML application schemas defines cycles, e.g. http://schemas.opengis.net/sweCommon/2.0/simple_components.xsd[Sensor Web Enablement (SWE) Common Data Model]: Quantity may have a complex property "quality", which may have a Quantity.
+In deegree it is not possible to configure infinite dependencies and it is not recommended to configure deep structures. With the option _cycledepth_ the max depth can be specified. The default is 0 which means, that writing of the configuration and DDL stops as soon as a cycle is detected. This is the recommended behaviour.
+
+==== Usage of option listOfPropertiesWithPrimitiveHref
+
+The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings.
+
+For example, in some INSPIRE themes codelists values are stored in xlink:href attributes. Corresponding to the GML application schema the type is a gml:ReferenceType. Usually deegree would handle this as feature mapping but it is recommended to use a primitive mapping here.
+
+Primitive mapping enables direct filtering on those properties with deegree. For example, filtering on INSPIRE codelist hrefs is possible then.
+
+Syntax of content of file:
+
+----
+{NamespaceURI}localPart
+----
+
+If multiple properties shall use primitive mappings, they must be listed in new lines.
+
+Example:
+
+----
+{http://inspire.ec.europa.eu/schemas/gn/4.0}nativeness
+{http://inspire.ec.europa.eu/schemas/ps/4.0}designation
+----
+
+==== Usage of option referenceData
+
+The data which should be imported in a _SQLFeatureStore_ may be much less complex than the GML application schema. This option allows to reference sample data which must be the highest complexity level as the data to import in the _SQLFeatureStore_ configured with the generated configuration.
+The referenced file must contain a GML 3.2 FeatureCollection containing at least one _featureMember_. The _SqlFeatureStoreConfigCreator_ considers this data and tries to create a configuration with less complexity than the GML application schema allows.
+This concerns the cardinality of properties, e.g. if a property may occur multiple times but occurs only one time in the data, the configuration is limited to exact one occurrence of this property. The number of joins is reduced, which speeds up the creation of the java representation of the features.
+This option effects also the generated mappings of feature types. If the option is missing the mapping is generated for each feature type defined in the application schema. If reference data are passed only mappings for feature types with features in the reference data are generated.
+
+Reducing the complexity of the mapping can result in a much faster processing of requests, especially of GetMap requests. The features requested via WFS (GetFeature requests) are still schema conform.
+
+Example content of the referenced file:
+
+[source,xml]
+----
+<?xml version='1.0' encoding='UTF-8'?>
+<gml:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml/3.2">
+  <gml:featureMember>
+    <au:AdministrativeUnit xmlns:au="http://inspire.ec.europa.eu/schemas/au/4.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gn="http://inspire.ec.europa.eu/schemas/gn/4.0" xmlns:base="http://inspire.ec.europa.eu/schemas/base/3.3" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gml:id="AdministrativeUnit_DERPKP0100000npz">
+      <gml:identifier codeSpace="http://inspire.ec.europa.eu/ids">https://deegree.org/id/AdministrativeUnit_1</gml:identifier>
+      <au:geometry>
+        ...
+      </au:geometry>
+      <au:nationalCode>987789</au:nationalCode>
+      <au:inspireId>
+        <base:Identifier>
+          <base:localId>AdministrativeUnit_1</base:localId>
+          <base:namespace>https://deegree.org/id</base:namespace>
+        </base:Identifier>
+      </au:inspireId>
+      <au:nationalLevel xlink:href="http://inspire.ec.europa.eu/codelist/AdministrativeHierarchyLevel/5thOrder"/>
+      <au:nationalLevelName>
+        <gmd:LocalisedCharacterString>Gemeinde</gmd:LocalisedCharacterString>
+      </au:nationalLevelName>
+      <au:country>
+        <gmd:Country codeList="http://inspire.ec.europa.eu/codelist/CountryCode" codeListValue="DE">DE</gmd:Country>
+      </au:country>
+      <au:name>
+        <gn:GeographicalName>
+          <gn:language>deu</gn:language>
+          <gn:nativeness xlink:href="http://inspire.ec.europa.eu/codelist/NativenessValue/endonym"/>
+          <gn:nameStatus xlink:href="http://inspire.ec.europa.eu/codelist/NameStatusValue/official"/>
+          <gn:sourceOfName nilReason="unknown" xsi:nil="true"/>
+          <gn:pronunciation nilReason="other:unpopulated" xsi:nil="true"/>
+          <gn:spelling>
+            <gn:SpellingOfName>
+              <gn:text>Test</gn:text>
+              <gn:script>Latn</gn:script>
+            </gn:SpellingOfName>
+          </gn:spelling>
+        </gn:GeographicalName>
+      </au:name>
+      <au:residenceOfAuthority nilReason="other:unpopulated" xsi:nil="true"/>
+      <au:beginLifespanVersion>2021-09-08T13:49:44Z</au:beginLifespanVersion>
+      <au:lowerLevelUnit xlink:href="#AdministrativeUnit_2"/>
+      <au:lowerLevelUnit xlink:href="#AdministrativeUnit_3"/>
+      <au:upperLevelUnit xlink:href="#AdministrativeUnit_4"/>
+      <au:boundary nilReason="other:unpopulated" xsi:nil="true"/>
+    </au:AdministrativeUnit>
+  </gml:featureMember>
+</gml:FeatureCollection>
+----
+
+Using the GmlLoader CLI:
+
+----
+java -jar deegree-tools-gml.jar GmlLoader -h
+----
+
+Results in:
+----
+Usage: java -jar deegree-tools-gml.jar GmlLoader -pathToFile=<path/to/gmlfile> -workspaceName=<workspace_identifier> -sqlFeatureStoreId=<feature_store_identifier> [options]
+Description: Imports a GML file directly into a given deegree SQLFeatureStore
+
+arguments:
+ -pathToFile=<path/to/gmlfile>, the path to the GML file to import
+ -workspaceName=<workspace_identifier>, the name of the deegree workspace used for the import. Must be located at default DEEGREE_WORKSPACE_ROOT directory
+ -sqlFeatureStoreId=<feature_store_identifier>, the ID of the SQLFeatureStore in the given workspace
+
+options:
+ -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default
+
+Example:
+ java -jar deegree-tools-gml.jar GmlLoader -pathToFile=/path/to/cadastralparcels.gml -workspaceName=inspire -sqlFeatureStoreId=cadastralparcels
+
+----
+
+
+=== Examples
+
+**Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=uuid schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.sql'.
+
+**Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with UUIDGenerator**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=uuid schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.xml'.
+
+**Generate SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=ddl --idtype=int schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.sql'.
+
+**Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=deegree --idtype=int schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.xml'.
+
+**Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with AutoIDGenerator**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --srid=25832 --format=all --idtype=int schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated files are './CadastralParcels.sql' and './CadastralParcels.xml'.
+
+**Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 with Blob-Mapping**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=all --mapping=blob schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with Blob-Mapping for PostGIS.
+
+**Generate deegree SQLFeatureStore and SQL DDL for INSPIRE Cadastral Parcels 4.0 for Oracle DBMS with Oracle Locator**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=all --dialect=oracle schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated files are './CadastralParcels.sql' and './CadastralParcels.xml' with relational mapping for Oracle Locator.
+
+**Generate deegree SQLFeatureStore for INSPIRE Cadastral Parcels 4.0 with list of properties with primitive href**
+
+----
+java -jar deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=deegree --listOfPropertiesWithPrimitiveHref=<path/to/file> schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----
+
+The generated file is './CadastralParcels.xml'. All properties listed in the referenced file are written with primitive instead of feature mappings.
+
+==== Configure proxy
+
+Set the `http.proxyHost`, `http.proxyPort` and `http.nonProxyHosts` config properties to define proxy settings for HTTP. To configure proxy settings for HTTPS use `https` as a prefix.
+
+Example for http proxy:
+----
+java -jar -Dhttp.proxyHost=your-proxy.net -Dhttp.proxyPort=80 deegree-tools-gml.jar SqlFeatureStoreConfigCreator --format=ddl --idtype=uuid schemaUrl=http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd
+----

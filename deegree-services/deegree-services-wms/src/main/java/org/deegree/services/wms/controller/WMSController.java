@@ -341,8 +341,25 @@ public class WMSController extends AbstractOWS {
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
         String v = getVersionValueFromRequest( map );
-        Version version = v == null ? highestVersion : Version.parseVersion( v );
+        Version version;
+        try {
+            version = v == null ? highestVersion : Version.parseVersion( v );
+        } catch ( InvalidParameterValueException e ) {
+            controllers.get( highestVersion ).sendException( new OWSException( get( "WMS.VERSION_UNSUPPORTED", v ),
+                                                                               OWSException.INVALID_PARAMETER_VALUE ),
+                                                             response, this );
+            return;
+        }
 
+        if ( isStrict ) {
+            String service = map.get( "SERVICE" );
+            if ( service != null && !"WMS".equalsIgnoreCase( service ) ) {
+                controllers.get( version ).sendException(
+                                        new OWSException( "The parameter SERVICE must be 'WMS', but is '" + service + "'",
+                                                          OWSException.INVALID_PARAMETER_VALUE ), response, this );
+                return;
+            }
+        }
         WMSRequestType req;
         String requestName = map.get( "REQUEST" );
         try {
@@ -521,7 +538,8 @@ public class WMSController extends AbstractOWS {
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
         org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
-                                                                                           service.getExtensions() );
+                                                                                           service.getExtensions(),
+                                                                                           isStrict );
 
         doGetMap( map, response, version, gm2 );
     }

@@ -43,6 +43,7 @@ import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_T
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,11 +139,17 @@ public class QueryAnalyzer {
 
     private final boolean checkAreaOfUse;
 
+    private final int count;
+
+    private final int startIndex;
+
     /**
      * Creates a new {@link QueryAnalyzer}.
-     * 
+     *
      * @param wfsQueries
      *            queries be performed, must not be <code>null</code>
+     * @param controller
+     *            {@link WebFeatureService} to be used, must not be <code>null</code>
      * @param service
      *            {@link WfsFeatureStoreManager} to be used, must not be <code>null</code>
      * @param checkInputDomain
@@ -153,10 +160,36 @@ public class QueryAnalyzer {
      */
     public QueryAnalyzer( List<org.deegree.protocol.wfs.query.Query> wfsQueries, WebFeatureService controller,
                           WfsFeatureStoreManager service, boolean checkInputDomain ) throws OWSException {
+        this(wfsQueries, controller, service, checkInputDomain, -1, 0);
+    }
+
+    /**
+     * Creates a new {@link QueryAnalyzer}.
+     *
+     * @param wfsQueries
+     *            queries be performed, must not be <code>null</code>
+     * @param controller
+     *            {@link WebFeatureService} to be used, must not be <code>null</code>
+     * @param service
+     *            {@link WfsFeatureStoreManager} to be used, must not be <code>null</code>
+     * @param checkInputDomain
+     *            true, if geometries in query constraints should be checked against validity domain of the SRS (needed
+     *            for CITE 1.1.0 compliance)
+     * @param count
+     *            number of features to return, if not specified: -1
+     * @param startIndex
+     *            index of the first feature to return, default: 0
+     * @throws OWSException
+     *             if the request cannot be performed, e.g. because it queries feature types that are not served
+     */
+    public QueryAnalyzer( List<org.deegree.protocol.wfs.query.Query> wfsQueries, WebFeatureService controller,
+                          WfsFeatureStoreManager service, boolean checkInputDomain, int count, int startIndex ) throws OWSException {
 
         this.controller = controller;
         this.service = service;
         this.checkAreaOfUse = checkInputDomain;
+        this.count = count;
+        this.startIndex = startIndex;
 
         // generate validated feature store queries
         if ( wfsQueries.isEmpty() ) {
@@ -474,8 +507,7 @@ public class QueryAnalyzer {
             Filters.setDefaultCRS( filter, controller.getDefaultQueryCrs() );
         }
 
-        return new Query( typeNames, filter, ( (AdHocQuery) wfsQuery ).getFeatureVersion(),
-                          ( (AdHocQuery) wfsQuery ).getSrsName(), sortProps );
+        return new Query( typeNames, filter, sortProps, count, startIndex );
     }
 
     private void validatePropertyName( ValueReference propName, TypeName[] typeNames )

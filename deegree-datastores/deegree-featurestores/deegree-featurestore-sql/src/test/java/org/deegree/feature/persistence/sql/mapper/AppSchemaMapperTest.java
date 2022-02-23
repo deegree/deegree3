@@ -8,6 +8,7 @@ import org.deegree.feature.persistence.sql.GeometryStorageParams;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
+import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.junit.Before;
@@ -20,13 +21,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -34,6 +40,8 @@ import static org.junit.Assert.assertThat;
 public class AppSchemaMapperTest {
 
     private static final QName FEATURE_A = new QName( "http://test.de/schema", "FeatureA" );
+
+    private static final QName FEATURE_B = new QName( "http://test.de/schema", "FeatureB" );
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -50,6 +58,8 @@ public class AppSchemaMapperTest {
 
     private File schemaWithTwoSelfDependentCycles;
 
+    private File schemaForSampleValues;
+
     @Before
     public void copySchemas()
                             throws IOException {
@@ -59,6 +69,7 @@ public class AppSchemaMapperTest {
         this.schemaWithSimpleCycle = copyToTmpFolder( "schemaWithSimpleCycle.xsd" );
         this.schemaWithTwoCycles = copyToTmpFolder( "schemaWithTwoCycles.xsd" );
         this.schemaWithTwoSelfDependentCycles = copyToTmpFolder( "schemaWithTwoSelfDependentCycles.xsd" );
+        this.schemaForSampleValues = copyToTmpFolder( "schemaForSampleValues.xsd" );
     }
 
     @Test
@@ -68,7 +79,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -97,7 +108,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -126,7 +137,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 1 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -160,7 +171,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -200,7 +211,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -249,7 +260,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -265,7 +276,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -281,7 +292,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -297,7 +308,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 2 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -393,7 +404,7 @@ public class AppSchemaMapperTest {
         AppSchema appSchema = xsdDecoder.extractAppSchema();
 
         CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
-        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, String.valueOf( "0" ), DIM_2 );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 1 );
 
         MappedAppSchema mappedSchema = mapper.getMappedSchema();
@@ -452,26 +463,279 @@ public class AppSchemaMapperTest {
         assertThat( getFeatureC( featureEofEDepth2Depth3Mapping ), is( nullValue() ) );
     }
 
+    @Test
+    public void testWithoutReferenceData()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, null );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 2 ) );
+
+        FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappings = featureA.getMappings();
+        assertThat( mappings.size(), is( 5 ) );
+        assertThat( getPrimitive( mappings, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A3" ).getJoinedTable(), is( notNullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceData()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
+        QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA3 ) ) ).thenReturn( true );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 1 ) );
+
+        FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappings = featureA.getMappings();
+        assertThat( mappings.size(), is( 5 ) );
+        assertThat( getPrimitive( mappings, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A3" ).getJoinedTable(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceData_ComplexData_ComplexN()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
+        QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA3 ) ) ).thenReturn( true );
+        QName propComplexA4 = new QName( "http://test.de/schema", "complex_A4", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propComplexA4 ) ) ).thenReturn( false );
+        List<QName> complexA4_1 = new ArrayList<>();
+        complexA4_1.add( new QName( "http://test.de/schema", "complex_A4", "te" ) );
+        complexA4_1.add( new QName( "http://test.de/schema", "prop_A4_1", "te" ) );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, complexA4_1 ) ).thenReturn( false );
+        List<QName> complexA4_2 = new ArrayList<>();
+        complexA4_2.add( new QName( "http://test.de/schema", "complex_A4", "te" ) );
+        complexA4_2.add( new QName( "http://test.de/schema", "prop_A4_3", "te" ) );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, complexA4_2 ) ).thenReturn( true );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 1 ) );
+
+        FeatureTypeMapping feature = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappings = feature.getMappings();
+        assertThat( mappings.size(), is( 5 ) );
+        assertThat( getPrimitive( mappings, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A3" ).getJoinedTable(), is( nullValue() ) );
+        CompoundMapping complexMapping = getCompound( mappings, "complex_A4" );
+        assertThat( complexMapping.getJoinedTable(), is( notNullValue() ) );
+        List<Mapping> complexMappings = complexMapping.getParticles();
+        assertThat( getPrimitive( complexMappings, "prop_A4_1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( complexMappings, "prop_A4_2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( complexMappings, "prop_A4_3" ).getJoinedTable(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceData_ComplexData_Complex1()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeName = new QName( "http://test.de/schema", "FeatureA", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeName ) ).thenReturn( true );
+        QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA1 ) ) ).thenReturn( false );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propA3 ) ) ).thenReturn( true );
+        QName propComplexA4 = new QName( "http://test.de/schema", "complex_A4", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, Collections.singletonList( propComplexA4 ) ) ).thenReturn( true );
+        List<QName> complexA4_1 = new ArrayList<>();
+        complexA4_1.add( new QName( "http://test.de/schema", "complex_A4", "te" ) );
+        complexA4_1.add( new QName( "http://test.de/schema", "prop_A4_1", "te" ) );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, complexA4_1 ) ).thenReturn( false );
+        List<QName> complexA4_2 = new ArrayList<>();
+        complexA4_2.add( new QName( "http://test.de/schema", "complex_A4", "te" ) );
+        complexA4_2.add( new QName( "http://test.de/schema", "prop_A4_3", "te" ) );
+        when( referenceData.hasZeroOrOneProperty( featureTypeName, complexA4_2 ) ).thenReturn( true );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 1 ) );
+
+        FeatureTypeMapping feature = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappings = feature.getMappings();
+        assertThat( mappings.size(), is( 5 ) );
+        assertThat( getPrimitive( mappings, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappings, "prop_A3" ).getJoinedTable(), is( nullValue() ) );
+        CompoundMapping complexMapping = getCompound( mappings, "complex_A4" );
+        assertThat( complexMapping.getJoinedTable(), is( nullValue() ) );
+        List<Mapping> complexMappings = complexMapping.getParticles();
+        assertThat( getPrimitive( complexMappings, "prop_A4_1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( complexMappings, "prop_A4_2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( complexMappings, "prop_A4_3" ).getJoinedTable(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceData_ReferencedFeature_RefN()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeNameB = new QName( "http://test.de/schema", "FeatureB", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameB ) ).thenReturn( true );
+        QName propB1 = new QName( "http://test.de/schema", "prop_B1", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propB1 ) ) ).thenReturn( false );
+        QName propB3 = new QName( "http://test.de/schema", "prop_B3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propB3 ) ) ).thenReturn( true );
+        QName propFfeatureA = new QName( "http://test.de/schema", "featureA", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propFfeatureA ) ) ).thenReturn( false );
+
+        QName featureTypeNameA = new QName( "http://test.de/schema", "FeatureA", "te" );
+        QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameA ) ).thenReturn( true );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA1 ) ) ).thenReturn( false );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA3 ) ) ).thenReturn( true );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 2 ) );
+
+        FeatureTypeMapping featureB = mappedSchema.getFtMapping( FEATURE_B );
+        List<Mapping> mappingsB = featureB.getMappings();
+        assertThat( mappingsB.size(), is( 5 ) );
+        assertThat( getPrimitive( mappingsB, "prop_B1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappingsB, "prop_B2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappingsB, "prop_B3" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getCompound( mappingsB, "featureA" ).getJoinedTable(), is( notNullValue() ) );
+
+        FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappingsA = featureA.getMappings();
+        assertThat( mappingsA.size(), is( 5 ) );
+        assertThat( getPrimitive( mappingsA, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappingsA, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappingsA, "prop_A3" ).getJoinedTable(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testWithReferenceData_ReferencedFeature_Ref1()
+                    throws Exception {
+        GMLAppSchemaReader xsdDecoder = new GMLAppSchemaReader( null, null, schemaForSampleValues );
+        AppSchema appSchema = xsdDecoder.extractAppSchema();
+
+        QName featureTypeNameB = new QName( "http://test.de/schema", "FeatureB", "te" );
+        ReferenceData referenceData = mock( ReferenceData.class );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameB ) ).thenReturn( true );
+        QName propB1 = new QName( "http://test.de/schema", "prop_B1", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propB1 ) ) ).thenReturn( false );
+        QName propB3 = new QName( "http://test.de/schema", "prop_B3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propB3 ) ) ).thenReturn( true );
+        QName propFfeatureA = new QName( "http://test.de/schema", "featureA", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameB, Collections.singletonList( propFfeatureA ) ) ).thenReturn( true );
+
+        QName featureTypeNameA = new QName( "http://test.de/schema", "FeatureA", "te" );
+        when( referenceData.shouldFeatureTypeMapped( featureTypeNameA ) ).thenReturn( true );
+        QName propA1 = new QName( "http://test.de/schema", "prop_A1", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA1 ) ) ).thenReturn( false );
+        QName propA3 = new QName( "http://test.de/schema", "prop_A3", "te" );
+        when( referenceData.hasZeroOrOneProperty( featureTypeNameA, Collections.singletonList( propA3 ) ) ).thenReturn( true );
+
+        CRSRef storageCrs = CRSManager.getCRSRef( "EPSG:4326" );
+        GeometryStorageParams geometryParams = new GeometryStorageParams( storageCrs, "0", DIM_2 );
+        AppSchemaMapper mapper = new AppSchemaMapper( appSchema, false, true, geometryParams, 63, true, true, 0, referenceData );
+
+        MappedAppSchema mappedSchema = mapper.getMappedSchema();
+
+        Map<QName, FeatureTypeMapping> ftMappings = mappedSchema.getFtMappings();
+        assertThat( ftMappings.size(), is( 2 ) );
+
+        FeatureTypeMapping featureB = mappedSchema.getFtMapping( FEATURE_B );
+        List<Mapping> mappingsB = featureB.getMappings();
+        assertThat( mappingsB.size(), is( 5 ) );
+        assertThat( getPrimitive( mappingsB, "prop_B1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappingsB, "prop_B2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappingsB, "prop_B3" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getCompound( mappingsB, "featureA" ).getJoinedTable(), is( nullValue() ) );
+
+        FeatureTypeMapping featureA = mappedSchema.getFtMapping( FEATURE_A );
+        List<Mapping> mappingsA = featureA.getMappings();
+        assertThat( mappingsA.size(), is( 5 ) );
+        assertThat( getPrimitive( mappingsA, "prop_A1" ).getJoinedTable(), is( notNullValue() ) );
+        assertThat( getPrimitive( mappingsA, "prop_A2" ).getJoinedTable(), is( nullValue() ) );
+        assertThat( getPrimitive( mappingsA, "prop_A3" ).getJoinedTable(), is( nullValue() ) );
+    }
+
     private CompoundMapping getFeatureC( List<Mapping> mappings ) {
-        return getFeature( mappings, "FeatureC" );
+        return getCompound( mappings, "FeatureC" );
     }
 
     private CompoundMapping getFeatureD( List<Mapping> mappings ) {
-        return getFeature( mappings, "FeatureD" );
+        return getCompound( mappings, "FeatureD" );
     }
 
     private CompoundMapping getFeatureE( List<Mapping> mappings ) {
-        return getFeature( mappings, "FeatureE" );
+        return getCompound( mappings, "FeatureE" );
     }
 
     private CompoundMapping getFeatureF( List<Mapping> mappings ) {
-        return getFeature( mappings, "FeatureF" );
+        return getCompound( mappings, "FeatureF" );
     }
 
-    private CompoundMapping getFeature( List<Mapping> mappings, String featureE ) {
+    private CompoundMapping getCompound( List<Mapping> mappings, String name ) {
         for ( Mapping mapping : mappings ) {
-            if ( mapping.getPath().getAsQName().getLocalPart().equals( featureE ) ) {
+            if ( mapping.getPath().getAsQName().getLocalPart().equals( name ) ) {
                 return (CompoundMapping) mapping;
+            }
+        }
+        return null;
+    }
+
+    private PrimitiveMapping getPrimitive( List<Mapping> mappings, String name ) {
+        for ( Mapping mapping : mappings ) {
+            if ( mapping.getPath().getAsQName().getLocalPart().equals( name ) ) {
+                return (PrimitiveMapping) mapping;
             }
         }
         return null;
