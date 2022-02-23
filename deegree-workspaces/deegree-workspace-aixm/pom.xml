@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-workspace-aixm</artifactId>
   <name>deegree-workspace-aixm</name>
+  <packaging>pom</packaging>
   <description>Example configuration for deploying AIXM data via deegree WFS</description>
 
   <properties>
@@ -11,21 +12,16 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-workspaces</artifactId>
-    <version>3.4.18-SNAPSHOT</version>
+    <version>3.4.26-SNAPSHOT</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
 
