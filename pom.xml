@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4.25-SNAPSHOT</version>
+  <version>3.4.26-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -705,7 +705,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.25</version>
+        <version>42.3.3</version>
       </dependency>
       <!-- Oracle (Offical provided driver from repo1.maven.org) -->
       <dependency>
