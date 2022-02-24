@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4.24-SNAPSHOT</version>
+  <version>3.4.26-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -323,10 +323,11 @@
             <goals>
               <goal>enforce</goal>
             </goals>
+            <phase>initialize</phase>
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.6.0</version>
+                  <version>[3.6.0,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>${java.version}</version>
@@ -735,7 +736,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.12.0</version>
+        <version>2.12.2</version>
       </dependency>
       <dependency>
         <groupId>de.odysseus.staxon</groupId>
@@ -759,24 +760,19 @@
       </dependency>
       <!-- JAI -->
       <dependency>
-        <groupId>jai</groupId>
+        <groupId>javax.media</groupId>
         <artifactId>jai-core</artifactId>
         <version>1.1.3</version>
       </dependency>
       <dependency>
-        <groupId>jai</groupId>
+        <groupId>com.sun.media</groupId>
         <artifactId>jai-codec</artifactId>
         <version>1.1.3</version>
       </dependency>
       <dependency>
-        <groupId>jai</groupId>
-        <artifactId>jai-imageio</artifactId>
-        <version>1.1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>jai</groupId>
-        <artifactId>jai-mlibwrapper</artifactId>
-        <version>1.1.3</version>
+        <groupId>com.sun.media</groupId>
+        <artifactId>jai_imageio</artifactId>
+        <version>1.1</version>
       </dependency>
       <!-- PostgreSQL -->
       <dependency>
@@ -787,13 +783,52 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.8</version>
+        <version>42.3.3</version>
       </dependency>
-      <!-- Oracle -->
+      <!-- Oracle (Offical provided driver from repo1.maven.org) -->
       <dependency>
-        <groupId>com.oracle</groupId>
+        <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
+        <exclusions>
+          <!-- exclude Java Connection Pool (UCP) -->
+          <exclusion>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ucp</artifactId>
+          </exclusion>
+          <!-- exclude Oracle Wallets and/or the Notification System-->
+          <exclusion>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>oraclepki</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>osdt_cert</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>osdt_core</artifactId>
+          </exclusion>
+          <!-- exclude FAN events with UCP and/or the JDBC driver -->
+          <exclusion>
+            <groupId>com.oracle.database.ha</groupId>
+            <artifactId>simplefan</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.oracle.database.ha</groupId>
+            <artifactId>ons</artifactId>
+          </exclusion>
+          <!-- exclude Internationalization -->
+          <exclusion>
+            <groupId>com.oracle.database.nls</groupId>
+            <artifactId>orai18n</artifactId>
+          </exclusion>
+          <!-- exclude XMLType (xmlparserv2) -->
+          <exclusion>
+            <groupId>com.oracle.database.xml</groupId>
+            <artifactId>xmlparserv2</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Oracle GeoRaster -->
       <dependency>
@@ -818,54 +853,54 @@
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>xdb6</artifactId>
-        <version>12.2.0.1</version>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.oracle</groupId>
-        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
-        <version>12.2.0.1</version>
+        <groupId>com.oracle.database.xml</groupId>
+        <artifactId>xdb</artifactId>
+        <version>${oracle.version}</version>
       </dependency>
       <!-- Batik -->
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-bridge</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-anim</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-gvt</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-svg-dom</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-awt-util</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-css</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-ext</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -876,12 +911,12 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-parser</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-transcoder</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -892,12 +927,12 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-script</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -908,12 +943,12 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-codec</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-xml</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>
@@ -1040,7 +1075,7 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.1.9</version>
+        <version>1.1.29</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1059,7 +1094,7 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.1.9</version>
+        <version>1.1.29</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -1163,11 +1198,13 @@
     <site.dir>${user.home}/Sites</site.dir>
     <java.version>11</java.version>
     <antlr.version>3.5.2</antlr.version>
+    <oracle.version>19.3.0.0</oracle.version>
     <spring-boot.version>2.4.13</spring-boot.version>
     <spring-batch.version>4.3.3</spring-batch.version>
     <spring-framework.version>5.3.12</spring-framework.version>
     <log4j.version>2.17.1</log4j.version>
     <slf4j.version>1.7.32</slf4j.version>
+    <batik.version>1.14</batik.version>
   </properties>
 
   <modules>
