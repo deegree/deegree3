@@ -42,11 +42,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <artifactId>deegree-sqldialect-postgis</artifactId>
-      <groupId>org.deegree</groupId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <artifactId>deegree-sqldialect-oracle</artifactId>
       <groupId>org.deegree</groupId>
       <version>${project.version}</version>
