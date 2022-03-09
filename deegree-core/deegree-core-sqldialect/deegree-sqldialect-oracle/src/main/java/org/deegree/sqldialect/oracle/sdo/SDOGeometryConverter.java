@@ -133,6 +133,10 @@ public class SDOGeometryConverter {
 
         public GeomHolderTyp last;
 
+        public GeomHolder( SDOGeometry sdo, ICRS crs ) {
+            this( sdo.gtype, sdo.srid, sdo.point, sdo.elem_info, sdo.ordinates, crs );
+        }
+
         public GeomHolder( final int gtype, final int srid, final double point[], final int[] elem_info,
                            final double[] ordinates, ICRS crs ) {
             this.gtype = gtype;
@@ -271,61 +275,70 @@ public class SDOGeometryConverter {
         if ( sdoStruct == null ) {
             return null;
         }
-
+        
         Datum data[] = sdoStruct.getOracleAttributes();
+        SDOGeometry sdo = new SDOGeometry();
 
-        int gtype = OracleObjectTools.fromInteger( data[0], 0 );
-        int srid = OracleObjectTools.fromInteger( data[1], -1 );
-        double[] point = OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN );
-        int[] elemInfo = OracleObjectTools.fromIntegerArray( (ARRAY) data[3] );
-        double[] ordinates = OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN );
+        sdo.gtype = OracleObjectTools.fromInteger( data[0], 0 );
+        sdo.srid = OracleObjectTools.fromInteger( data[1], -1 );
+        sdo.point = OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN );
+        sdo.elem_info = OracleObjectTools.fromIntegerArray( (ARRAY) data[3] );
+        sdo.ordinates = OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN );
 
-        int gtype_d, tdims = gtype / 1000;
+        removeLinearReferencingSystem(sdo);
+
+        if ( inspector != null ) {
+            inspector.toGeometry(sdo);
+        }
+
+        return toGeometry( sdo, crs );
+    }
+
+    protected void removeLinearReferencingSystem( SDOGeometry sdo ) {
+        int gtype_d, tdims = sdo.gtype / 1000;
         if ( tdims < 2 || tdims > 4 ) {
             gtype_d = 2;
         } else {
             gtype_d = tdims;
         }
 
-        int gtype_l = ( gtype % 1000 ) / 100;
+        int gtype_l = ( sdo.gtype % 1000 ) / 100;
         if ( gtype_l > 0 ) { // contains LRS?
             // create ordinates array without LRS dimension
-            double[] newOrdinates = new double[( ordinates.length / gtype_d ) * ( gtype_d - 1 )];
+            double[] newOrdinates = new double[( sdo.ordinates.length / gtype_d ) * ( gtype_d - 1 )];
 
             int j = 0;
-            for ( int i = 0; i < ordinates.length; i++ ) {
+            for ( int i = 0; i < sdo.ordinates.length; i++ ) {
                 if ( i % gtype_d != ( gtype_l - 1 ) ) { // ordinate not in LRS dimension?
-                    newOrdinates[j++] = ordinates[i];
+                    newOrdinates[j++] = sdo.ordinates[i];
                 }
             }
 
-            ordinates = newOrdinates;
+            sdo.ordinates = newOrdinates;
 
             // create elemInfo array without LRS dimension
-            int[] newElemInfo = new int[elemInfo.length];
+            int[] newElemInfo = new int[sdo.elem_info.length];
             for ( int i = 0; i < newElemInfo.length; i++ ) {
                 if ( i % 3 == 0 ) { 
                     // compute new offset in ordinates array
-                    newElemInfo[i] = ( ( elemInfo[i] - 1 ) / gtype_d ) * ( gtype_d - 1 ) + 1;
+                    newElemInfo[i] = ( ( sdo.elem_info[i] - 1 ) / gtype_d ) * ( gtype_d - 1 ) + 1;
                 } else {
-                    newElemInfo[i] = elemInfo[i];
+                    newElemInfo[i] = sdo.elem_info[i];
                 }
             }
 
-            elemInfo = newElemInfo;
+            sdo.elem_info = newElemInfo;
 
             // compute new gtype
-            gtype = gtype - 1000 - gtype_l * 100;
+            sdo.gtype = sdo.gtype - 1000 - gtype_l * 100;
         }
-
-        GeomHolder sdo = new GeomHolder( gtype, srid, point, elemInfo, ordinates, crs );
-
-        return toGeometry( sdo, crs );
     }
 
     @SuppressWarnings("unchecked")
-    protected Geometry toGeometry( GeomHolder sdo, ICRS crs )
+    protected Geometry toGeometry( SDOGeometry geom, ICRS crs )
                             throws SQLException {
+        GeomHolder sdo = new GeomHolder( geom, crs );
+
         if ( sdo.cnt_o < sdo.gtype_d || sdo.cnt_e < 3 || sdo.cnt_o % sdo.gtype_d > 0 || sdo.cnt_e % 3 > 0 )
             throw new SQLException( "Illegal Geometry" );
         else if ( sdo.gtype_tt == SDOGTypeTT.UNKNOWN )
@@ -730,7 +743,7 @@ public class SDOGeometryConverter {
     }
 
     @SuppressWarnings("unchecked")
-    protected GeomHolder fromGeometry( int srid, Geometry geometry, boolean allowJTSfallback ) {
+    protected SDOGeometry fromGeometry( int srid, Geometry geometry, boolean allowJTSfallback ) {
         List<Triplet> info = new LinkedList<Triplet>();
         List<Point> pnts = new LinkedList<Point>();
         int gtypett = SDOGTypeTT.UNKNOWN;
@@ -781,21 +794,22 @@ public class SDOGeometryConverter {
             int gtyp = ( 1000 * dim ) + gtypett;
             LOG.trace( "fromGeometry: MDSYS.SDO_GEOMETRY( {}, {}, NULL, MDSYS.SDO_ELEM_INFO_ARRAY{}, MDSYS.SDO_ORDINATE_ARRAY{} )",
                        gtyp, srid, elemInfo, ordinates );
-            
-            return new GeomHolder( gtyp, srid, null, elemInfo, ordinates, null );
+            return SDOGeometry( gtyp, srid, null, elemInfo, ordinates );
         }
-        
+
         // no parse able geometry found
         return null;
     }
 
-    
     public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback )
                             throws SQLException {
         
-        GeomHolder holder = fromGeometry( srid, geometry, allowJTSfallback );
-        if ( holder != null ) {
-            return OracleObjectTools.toSDOGeometry( holder, conn );
+        SDOGeometry geom = fromGeometry( srid, geometry, allowJTSfallback );
+        if ( inspector != null ) {
+            inspector.fromGeometry(geom); 
+        }
+        if ( geom != null ) {
+            return OracleObjectTools.toSDOGeometry( geom, conn );
         } else {
             // create error message
         }
