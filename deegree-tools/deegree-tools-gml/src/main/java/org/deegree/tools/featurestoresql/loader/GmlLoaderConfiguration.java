@@ -3,6 +3,7 @@
  * deegree-cli-utility
  * %%
  * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * Copyright (C) 2022 grit graphische Informationstechnik Beratungsgesellschaft mbH
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -38,6 +39,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -64,9 +66,16 @@ public class GmlLoaderConfiguration {
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
+    @JobScope
     @Bean
-    public Summary summary() {
-        return new Summary();
+    public Summary summary( @Value("#{jobParameters[reportWriteStatistics] ?: false}") boolean reportWriteStatistics ) {
+        Summary summary = new Summary();
+
+        if ( reportWriteStatistics ) {
+            summary.setStatistics( new FeatureStatistics() );
+        }
+
+        return summary;
     }
 
     @Bean

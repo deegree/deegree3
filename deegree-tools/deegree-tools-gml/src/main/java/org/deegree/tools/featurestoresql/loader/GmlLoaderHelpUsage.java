@@ -25,6 +25,7 @@ package org.deegree.tools.featurestoresql.loader;
  * GmlLoader CLI usage info.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class GmlLoaderHelpUsage {
 
@@ -38,6 +39,7 @@ public class GmlLoaderHelpUsage {
         System.out.println( " -sqlFeatureStoreId=<feature_store_identifier>, the ID of the SQLFeatureStore in the given workspace" );
         System.out.println();
         System.out.println( "options:" );
+        System.out.println( " -reportWriteStatistics=true, enable per feature statistics for all written features");
         System.out.println( " -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default" );
         System.out.println();
         System.out.println( "Example:" );
