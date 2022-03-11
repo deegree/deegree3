@@ -25,6 +25,7 @@ package org.deegree.tools.featurestoresql.loader;
  * GmlLoader CLI usage info.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class GmlLoaderHelpUsage {
 
@@ -34,11 +35,14 @@ public class GmlLoaderHelpUsage {
         System.out.println();
         System.out.println( "arguments:" );
         System.out.println( " -pathToFile=<path/to/gmlfile>, the path to the GML file to import" );
+        System.out.println( " -pathToList=<path/to/listfile>, the path to the file containing the files to import (one path per line. lines starting with # will be ignored)" );
         System.out.println( " -workspaceName=<workspace_identifier>, the name of the deegree workspace used for the import. Must be located at default DEEGREE_WORKSPACE_ROOT directory" );
         System.out.println( " -sqlFeatureStoreId=<feature_store_identifier>, the ID of the SQLFeatureStore in the given workspace" );
         System.out.println();
         System.out.println( "options:" );
         System.out.println( " -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default" );
+        System.out.println( " -chunkSize=<features_per_chunk>, number of features processed per chunk");
+        System.out.println( " -dryRun=true, skip writeing features (only check if reading is possible)");
         System.out.println();
         System.out.println( "Example:" );
         System.out.println( " java -jar deegree-tools-gml.jar GmlLoader -pathToFile=/path/to/cadastralparcels.gml -workspaceName=inspire -sqlFeatureStoreId=cadastralparcels" );
