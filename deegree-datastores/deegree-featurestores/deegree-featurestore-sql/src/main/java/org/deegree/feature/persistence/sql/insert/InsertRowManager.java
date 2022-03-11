@@ -1,10 +1,11 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2022 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,12 +32,22 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
 
+import static java.lang.System.getProperty;
+import static java.util.Collections.emptyMap;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,33 +55,38 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.array.TypedObjectNodeArray;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.ParticleConverter;
+import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.sql.FeatureTypeMapping;
 import org.deegree.feature.persistence.sql.MappedAppSchema;
 import org.deegree.feature.persistence.sql.SQLFeatureStore;
 import org.deegree.feature.persistence.sql.SQLFeatureStoreTransaction;
+import org.deegree.feature.persistence.sql.converter.MultiParticleConverter;
 import org.deegree.feature.persistence.sql.expressions.TableJoin;
 import org.deegree.feature.persistence.sql.id.KeyPropagation;
 import org.deegree.feature.persistence.sql.id.TableDependencies;
 import org.deegree.feature.persistence.sql.rules.CompoundMapping;
-import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.persistence.sql.rules.FeatureMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
+import org.deegree.feature.persistence.sql.rules.SqlExpressionMapping;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.xpath.TypedObjectNodeXPathEvaluator;
 import org.deegree.filter.FilterEvaluationException;
@@ -96,13 +112,15 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class InsertRowManager {
 
     private static Logger LOG = LoggerFactory.getLogger( InsertRowManager.class );
+
+    private static final int DEFAULT_BATCH_SIZE = Integer.getInteger( "deegree.sql.batchsize", 20 );
+
+    private static final boolean ENABLE_BATCH = "true".equalsIgnoreCase( getProperty( "deegree.sql.use_existing_no_ref_batching", "false" ));
 
     private final SQLFeatureStore fs;
 
@@ -126,6 +144,10 @@ public class InsertRowManager {
     // values: rows that have not been inserted yet, but can be inserted (no parents)
     private final Set<InsertRow> rootRows = new HashSet<InsertRow>();
 
+    private final boolean batchEnabled;
+
+    private final Map<String, Triple<String, PreparedStatement, AtomicInteger>> batchStatements;
+
     /**
      * Creates a new {@link InsertRowManager} instance.
      * 
@@ -142,6 +164,8 @@ public class InsertRowManager {
         this.conn = conn;
         this.idGenMode = idGenMode;
         this.tableDeps = fs.getSchema().getKeyDependencies();
+        this.batchEnabled = ENABLE_BATCH && idGenMode == IDGenMode.USE_EXISTING && idGenMode.isSkipResolveReferences();
+        this.batchStatements = batchEnabled ? new HashMap<>() : emptyMap();
     }
 
     /**
@@ -310,6 +334,17 @@ public class InsertRowManager {
 
         TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
         TypedObjectNode[] values = evaluator.eval( particle, mapping.getPath() );
+
+        // TICKY allow a direct mapping for a CompoundMapping without children through MultiParticleConverter
+        ParticleConverter<?> compoundConverter = fs.getConverter( mapping );
+        if ( mapping instanceof CompoundMapping && compoundConverter instanceof MultiParticleConverter //
+             && ( (CompoundMapping) mapping ).getParticles().size() == 0 ) {
+            MultiParticleConverter converter = (MultiParticleConverter) compoundConverter;
+            String column = converter.getColumn();
+            row.addPreparedArgument( column, new TypedObjectNodeArray<>( values ), converter );
+            return;
+        }
+
         int childIdx = 1;
         for ( TypedObjectNode value : values ) {
             InsertRow currentRow = row;
@@ -552,4 +587,143 @@ public class InsertRowManager {
         return delayedRows.size();
     }
 
+    /**
+     * Generate a unique identifier from SQL and the auto generated key columns
+     * 
+     * @param sql
+     *            the SQL statement
+     * @param autoGenColumns
+     *            the auto generated key columns if any
+     * @return Identifier that represents the SQL command and all auto generated columns
+     */
+    public String identifyStatement( String sql, String... autoGenColumns) {
+        return String.join( ";", sql, String.join( ";", autoGenColumns ));
+    }
+    
+
+    /**
+     * Prepare a statement and cache it if possible
+     * 
+     * @param key identifier to be used to identify a statement in case of batching
+     * @param sql the SQL text to be prepared
+     * @param autoGenColumns auto generated columns, may be omitted
+     * @return the prepared statement
+     * @throws SQLException if a database error occurs 
+     */
+    public PreparedStatement prepareStatement(String key, String sql, String... autoGenColumns) throws SQLException {
+        PreparedStatement stmt;
+        if (autoGenColumns.length > 0) {
+            stmt = conn.prepareStatement( sql, autoGenColumns );
+        } else if ( batchEnabled ) {
+            Triple<?, PreparedStatement, ?> cache = batchStatements.get( key );
+            if ( cache != null && cache.second != null) {
+                stmt = cache.second;
+                stmt.clearParameters();
+            } else {
+                stmt = conn.prepareStatement( sql );
+                batchStatements.put( key, new Triple<>(key, stmt, new AtomicInteger(0)) );                
+            }
+        } else {
+            stmt = conn.prepareStatement( sql );
+        }
+        return stmt;
+    }
+
+    /**
+     * Execute a statement
+     * 
+     * @param key identifier to be used to identify a statement in case of batching
+     * @param stmt the statement to be executed or batched if enabled
+     * @throws SQLException if a database error occurs
+     */
+    public void executeStatementIgnoreResult( String key, PreparedStatement stmt )
+                            throws SQLException {
+        if (!batchEnabled ) {
+            stmt.execute();
+            return;
+        }
+        
+        Triple<?, PreparedStatement, AtomicInteger> cache = batchStatements.get( key );
+        if ( cache == null ) {
+            stmt.execute();
+        } else {
+            cache.second.addBatch();
+            if ( cache.third.incrementAndGet() > DEFAULT_BATCH_SIZE ) {
+                checkBatchResultForFailures(key, stmt.executeBatch());
+                cache.third.set( 0 );
+            }
+        }
+    }
+
+    /**
+     * Close the statement
+     * 
+     * In case of batch
+     * 
+     * @param key key identifier to be used to identify a statement in case of batching
+     * @param stmt
+     * @param autoGenColumns
+     * @throws SQLException if a database error occurs
+     */
+    public void closeStatement( String key, PreparedStatement stmt ) throws SQLException {
+        if (!batchEnabled ) {
+            stmt.close();
+            return;
+        }
+        
+        if ( !batchStatements.containsKey( key ) ) {
+            // close statement if not cached
+            stmt.close();
+        }
+    }
+
+    /**
+     * Check batch execution results for error
+     * 
+     * @see PreparedStatement#executeBatch()
+     * 
+     * @param key key identifier to be used to identify a statement in case of batching
+     * @param batchResults results returned from {@link PreparedStatement#executeBatch()}
+     * @throws SQLException if a result contains an error of {@link java.sql.Statement.EXECUTE_FAILED}
+     */
+    private void checkBatchResultForFailures( String key, int[] batchResults ) throws SQLException {
+        for ( int i = 0; i < batchResults.length; i++ ) {
+            int stmtResult = batchResults[i];
+            if ( stmtResult == Statement.EXECUTE_FAILED ) {
+                final String msg = "Statement '" + key + "' failed to be executed in batch mode.";
+                throw new SQLException( msg );
+            }
+        }
+    }
+
+    /**
+     * Complete operation
+     * 
+     * If batching is enabled all open batches will be executed 
+     * 
+     * @throws SQLException if a result an executed batch returned an error 
+     */
+    public void complete() throws SQLException {
+        if (!batchEnabled) {
+            // if batching is not enabled, there are no pending actions
+            return;
+        }
+                                    
+        for( Triple<String, PreparedStatement, AtomicInteger> elem : batchStatements.values() ) {
+            if ( elem.third.get() > 0 ) {
+                checkBatchResultForFailures( elem.first, elem.second.executeBatch() );
+            }
+            JDBCUtils.close( elem.second );
+        }
+        batchStatements.clear();
+    }
+
+    /**
+     * Check if batching is available;
+     * 
+     * @return true if batching would be possible in this InsertRowManager
+     */
+    public boolean isBatchingEnabled() {
+        return ENABLE_BATCH;
+    }
 }

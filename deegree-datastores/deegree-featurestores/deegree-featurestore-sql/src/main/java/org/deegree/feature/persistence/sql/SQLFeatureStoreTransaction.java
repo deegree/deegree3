@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2022 by:
@@ -127,6 +126,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
@@ -669,6 +669,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                                  + " delayed rows left uninserted. Probably a cyclic key constraint blocks insertion.";
                     throw new RuntimeException( msg );
                 }
+                insertManager.complete();
                 // TODO why is this necessary?
                 fids.clear();
                 for ( FeatureRow assignment : idAssignments ) {
@@ -1040,6 +1041,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
             Feature f = featureType.newFeature( id.getRid(), props, null );
             mgr.updateFeature( f, ftMapping, analysis.getIdKernels(), mapping, replacement );
         }
+        mgr.complete();
     }
 
     private IdFilter getIdFilter( QName ftName, OperatorFilter filter )

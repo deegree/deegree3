@@ -1,10 +1,11 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,6 +32,11 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.insert;
@@ -40,6 +46,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -119,7 +126,7 @@ public abstract class InsertRow extends TransactionRow {
         ResultSet rs = null;
         try {
             stmt = mgr.getConnection().createStatement();
-            LOG.debug( "Determing feature ID from db sequence: " + sql );
+            LOG.debug( "Determing feature ID from db sequence: {}", sql );
             rs = stmt.executeQuery( sql );
             if ( rs.next() ) {
                 return rs.getInt( 1 );
@@ -190,33 +197,36 @@ public abstract class InsertRow extends TransactionRow {
     void performInsert( Connection conn, boolean propagateNonFidAutoGenColumns )
                             throws SQLException, FeatureStoreException {
 
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Inserting row: " + this );
-        }
+        LOG.debug( "Inserting row: {}", this );
 
         String sql = getSql();
         PreparedStatement stmt = null;
 
-        Set<SQLIdentifier> autoGenColumns = getAutogenColumns( propagateNonFidAutoGenColumns );
-        if ( autoGenColumns.isEmpty() ) {
-            stmt = conn.prepareStatement( sql );
-        } else {
-            String[] cols = new String[autoGenColumns.size()];
-            int i = 0;
-            for ( SQLIdentifier id : autoGenColumns ) {
-                if ( !id.isEscaped() ) {
-                    cols[i++] = id.getName().toLowerCase();
-                } else {
-                    cols[i++] = id.getName();
-                }
-            }
-            stmt = conn.prepareStatement( sql, cols );
-        }
+        List<SQLIdentifier> autoGenColumns = new ArrayList<>();
+        String[] autoGenColumnIds = this.getAutogenColumns( propagateNonFidAutoGenColumns ) //
+                                        .stream() //
+                                        .filter( id -> {
+                                            Object val = columnToObject.get( id );
+                                            if ( val != null && !( val instanceof ParticleConversion<?> ) ) {
+                                                // NOTE Ids that have no particle conversion and are available from
+                                                // columnToObject, are not required to be fetched through
+                                                // getGeneratedKeys
+                                                return false;
+                                            } else {
+                                                autoGenColumns.add( id );
+                                                return true;
+                                            }
+                                        } ) //
+                                        .map( id -> !id.isEscaped() ? id.getName().toLowerCase() : id.getName() ) //
+                                        .toArray( String[]::new );
+
+        final String stmtIdent = mgr.identifyStatement( sql, autoGenColumnIds );
+        stmt = mgr.prepareStatement( stmtIdent, sql, autoGenColumnIds );
+
         int columnId = 1;
         for ( Entry<SQLIdentifier, Object> entry : columnToObject.entrySet() ) {
             if ( entry.getValue() != null ) {
-                LOG.debug( "- Argument " + entry.getKey() + " = " + entry.getValue() + " ("
-                           + entry.getValue().getClass() + ")" );
+                LOG.debug( "- Argument {} = {} ({})", entry.getKey(), entry.getValue(), entry.getValue().getClass() );
                 if ( entry.getValue() instanceof ParticleConversion<?> ) {
                     ParticleConversion<?> conversion = (ParticleConversion<?>) entry.getValue();
                     conversion.setParticle( stmt, columnId++ );
@@ -224,12 +234,14 @@ public abstract class InsertRow extends TransactionRow {
                     stmt.setObject( columnId++, entry.getValue() );
                 }
             } else {
-                LOG.debug( "- Argument " + entry.getKey() + " = NULL" );
+                LOG.debug( "- Argument {} = NULL", entry.getKey() );
                 stmt.setObject( columnId++, null );
             }
         }
-        stmt.execute();
 
+        mgr.executeStatementIgnoreResult( stmtIdent, stmt );
+
+        //NOTE: Ids that have no particle conversion and are available from columnToObject are not retrieved through getGeneratedKeys
         if ( !autoGenColumns.isEmpty() ) {
             ResultSet rs = null;
             try {
@@ -239,7 +251,7 @@ public abstract class InsertRow extends TransactionRow {
                     for ( SQLIdentifier autoGenCol : autoGenColumns ) {
                         Object keyValue = rs.getObject( i++ );
                         columnToObject.put( autoGenCol, keyValue );
-                        LOG.debug( "Retrieved auto generated key: " + autoGenCol + "=" + keyValue );
+                        LOG.debug( "Retrieved auto generated key: {} = {}", autoGenCol, keyValue );
                     }
                 } else {
                     throw new FeatureStoreException( "DB didn't return auto-generated columns." );
@@ -250,7 +262,8 @@ public abstract class InsertRow extends TransactionRow {
                 }
             }
         }
-        stmt.close();
+
+        mgr.closeStatement( stmtIdent, stmt );
     }
 
     protected Set<SQLIdentifier> getAutogenColumns( boolean propagateNonFidAutoGenColumns ) {

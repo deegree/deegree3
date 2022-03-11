@@ -1,10 +1,11 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2022 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -30,6 +31,11 @@
  Postfach 1147, 53001 Bonn
  Germany
  http://www.geographie.uni-bonn.de/deegree/
+
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -65,9 +71,7 @@ import org.deegree.protocol.wfs.transaction.action.IDGenMode;
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class FeatureRow extends InsertRow {
 
@@ -208,7 +212,14 @@ public class FeatureRow extends InsertRow {
             PrimitiveValue primitiveValue = new PrimitiveValue( value, type );
             PrimitiveParticleConverter primitiveConverter = mgr.getDialect().getPrimitiveConverter( idColumn.first.getName(),
                                                                                                     type );
+            // TRICKY
+            // do not require primitive conversation for single string value identifier when batching is enabled
+            // this prevents that the identifier has to be set on the statement and retrieved afterwards
+            if ( mgr.isBatchingEnabled() && fidMapping.getColumns().size() == 1 && BaseType.STRING == baseType ) {
+                addPreparedArgument( idColumn.getFirst(), value );
+            } else {
             addPreparedArgument( idColumn.getFirst(), primitiveValue, primitiveConverter );
+            }
         }
     }
 
