@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-datastores</artifactId>
-    <version>3.4.27</version>
+    <version>3.4.28-SNAPSHOT</version>
   </parent>
 
   <modules>
