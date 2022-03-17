@@ -12,27 +12,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-sqldialect</artifactId>
-    <version>3.4.21-SNAPSHOT</version>
+    <version>3.4.28-SNAPSHOT</version>
   </parent>
-
-  <profiles>
-    <profile>
-      <id>oracle</id>
-      <repositories>
-        <repository>
-          <id>deegree-restricted</id>
-          <name>deegree-restricted</name>
-          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
-        </repository>
-      </repositories>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc8</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 
   <dependencies>
     <dependency>
@@ -46,6 +27,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.locationtech.jts</groupId>
       <artifactId>jts-core</artifactId>
     </dependency>
@@ -56,4 +41,3 @@
   </dependencies>
 
 </project>
-

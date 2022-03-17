@@ -35,15 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wmts;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.services.OWSProvider;
 import org.deegree.services.wmts.controller.WMTSController;
-import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
@@ -51,11 +44,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 /**
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class WMTSControllerTest {
@@ -64,10 +62,10 @@ public class WMTSControllerTest {
 
     @Before
     public void setup()
-                            throws URISyntaxException, IOException, ResourceInitException {
-        URL u = FileSystemTileStoreTest.class.getResource( "FileSystemTileStoreTest.class" );
+                            throws URISyntaxException, IOException {
+        URL u = WMTSControllerTest.class.getResource( "WMTSControllerTest.class" );
         File dir = new File( new File( u.toURI() ).getParentFile(),
-                             "../../../../../../../src/main/webapp/WEB-INF/workspace" );
+                             "../../../../../../src/main/webapp/WEB-INF/workspace" );
         dir = dir.getCanonicalFile();
         workspace = new DefaultWorkspace( dir );
         workspace.initAll();
