@@ -48,11 +48,13 @@ import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.services.wms.controller.capabilities.theme.XMLAssert.assertValidity;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -119,10 +121,11 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeEndElement();
         writer.flush();
         bos.close();
+        final byte[] actual = bos.toByteArray();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_minimal.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
         assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
-        assertArrayEquals( expected, bos.toByteArray() );
+        assertEquals( new String(expected, StandardCharsets.UTF_8), new String(actual, StandardCharsets.UTF_8) );
     }
 
     @Test
@@ -142,10 +145,11 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeEndElement();
         writer.flush();
         bos.close();
+        final byte[] actual = bos.toByteArray();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
         assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
-        assertArrayEquals( expected, bos.toByteArray() );
+        assertEquals( new String(expected, StandardCharsets.UTF_8), new String(actual, StandardCharsets.UTF_8) );
     }
 
     @Test
@@ -174,10 +178,11 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeEndElement();
         writer.flush();
         bos.close();
+        final byte[] actual = bos.toByteArray();
         final InputStream is = WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_multipleMetadataUrls.xml" );
         final byte[] expected = IOUtils.readBytesAndClose( is, -1 );
         assertValidity( new ByteArrayInputStream( bos.toByteArray() ), SCHEMA_URL );
-        assertArrayEquals( expected, bos.toByteArray() );
+        assertEquals( new String(expected, StandardCharsets.UTF_8), new String(actual, StandardCharsets.UTF_8) );
     }
 
     private DatasetMetadata createDatasetMetadataMinimal() {

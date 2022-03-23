@@ -17,6 +17,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-protocol-commons</artifactId>
       <version>${project.version}</version>
