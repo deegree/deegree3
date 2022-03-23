@@ -37,8 +37,6 @@ package org.deegree.coverage.raster.io.imageio;
 
 import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
 
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
-
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
@@ -55,6 +53,7 @@ import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
