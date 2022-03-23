@@ -76,6 +76,7 @@ import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.rendering.r2d.context.RenderContext;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.wms.visibility.RequestedLayerVisibilityInspector;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.ImageUtils;
@@ -114,9 +115,12 @@ public class MapService {
 
     private final GetLegendHandler getLegendHandler;
 
+    private final RequestedLayerVisibilityInspector visibilityInspector;
+
     /**
      * @param conf
-     * @param adapter
+     * @param workspace
+     * @param updateSequence
      * @throws MalformedURLException
      */
     public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
@@ -150,7 +154,11 @@ public class MapService {
             }
         }
         getLegendHandler = new GetLegendHandler( this );
+
+        visibilityInspector = new RequestedLayerVisibilityInspector( conf.getVisibilityInspector(), workspace );
     }
+
+
 
     /**
      * @return the list of themes if configuration is based on themes, else null
@@ -203,7 +211,8 @@ public class MapService {
             OperatorFilter f = filterItr == null ? null : filterItr.next();
 
             LayerQuery query = buildQuery( sr, lr, options, mapOptions, f, gm );
-            queries.add( query );
+            if ( query != null )
+                queries.add( query );
         }
 
         ListIterator<LayerQuery> queryIter = queries.listIterator();
@@ -237,11 +246,15 @@ public class MapService {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
-            List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
-            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
+            String layerName = lr.getName();
+            List<Layer> layers = getAllLayers( themeMap.get( layerName ) );
+            assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), layerName );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
                      || layer.getMetadata().getScaleDenominators().second < scale ) {
+                    continue;
+                }
+                if ( !visibilityInspector.isVisible( layerName, layer.getMetadata() ) ) {
                     continue;
                 }
                 if ( layer.isStyleApplicable( query.getStyle() ) ) {
@@ -265,17 +278,17 @@ public class MapService {
 
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
                                    OperatorFilter f, org.deegree.protocol.wms.ops.GetMap gm ) {
+        String layerName = lr.getName();
 
-        for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+        for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( layerName ) ) ) {
             insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
                                   defaultLayerOptions );
             mapOptions.add( options.get( l.getMetadata().getName() ) );
         }
 
-        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
-                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
-                                           gm.getQueryBox() );
-        return query;
+        return new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
+                               gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
+                               gm.getQueryBox() );
     }
 
     public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> headers )
