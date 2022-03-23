@@ -4,7 +4,7 @@
   <groupId>de.latlon</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4.28-SNAPSHOT</version>
+  <version>3.4.27</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -13,7 +13,7 @@
     <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
     <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
     <url>https://github.com/lat-lon/deegree3</url>
-    <tag>HEAD</tag>
+    <tag>xplanbox-deegree-3.4.27</tag>
   </scm>
 
   <repositories>

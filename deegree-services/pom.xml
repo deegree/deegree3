@@ -9,7 +9,7 @@
   <parent>
     <groupId>de.latlon</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.28-SNAPSHOT</version>
+    <version>3.4.27</version>
   </parent>
 
   <build>
