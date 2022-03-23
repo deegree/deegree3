@@ -35,29 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml.feature;
 
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
-import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
-import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
-import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
-import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
-import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
-import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
@@ -92,6 +69,28 @@ import org.deegree.gml.schema.WellKnownGMLTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.tom.gml.GMLObjectCategory.TIME_SLICE;
+import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS;
+import static org.deegree.feature.property.ExtraProps.EXTRA_PROP_NS_GEOMETRY;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
+import static org.deegree.feature.types.property.ValueRepresentation.INLINE;
+
 /**
  * {@link AbstractGMLObjectReader} for features and feature collections.
  *
@@ -112,6 +111,8 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
     public static final QName BOUNDED_BY_GML32 = new QName( GML3_2_NS, "boundedBy", "gml" );
 
+    private final List<FeatureInspector> inspectors;
+
     /**
      * Creates a new {@link GMLFeatureReader} instance that is configured from the given {@link GMLStreamReader}.
      *
@@ -120,6 +121,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
      */
     public GMLFeatureReader( GMLStreamReader gmlStreamReader ) {
         super( gmlStreamReader );
+        this.inspectors = gmlStreamReader.getInspectors();
     }
 
     /**
@@ -249,7 +251,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
             }
             idContext.addObject( feature );
         }
-
+        inspect( feature );
         return feature;
     }
 
@@ -321,8 +323,6 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
 
     private Feature parseFeatureStatic( XMLStreamReaderWrapper xmlStream, ICRS crs )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
-
-        Feature feature = null;
         String fid = parseFeatureId( xmlStream );
 
         QName featureName = xmlStream.getName();
@@ -354,8 +354,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
         if ( extraPropertyList != null ) {
             extraProps = new ExtraProps( extraPropertyList.toArray( new Property[extraPropertyList.size()] ) );
         }
-        feature = ft.newFeature( fid, propertyList, extraProps );
-
+        Feature feature = ft.newFeature( fid, propertyList, extraProps );
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getObject( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
@@ -363,6 +362,7 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
             }
             idContext.addObject( feature );
         }
+        inspect( feature );
         return feature;
     }
 
@@ -565,4 +565,13 @@ public class GMLFeatureReader extends AbstractGMLObjectReader {
         }
         return fid;
     }
+
+ private Feature inspect( Feature feature ) {
+        Feature inspected = feature;
+        for ( FeatureInspector inspector : inspectors ) {
+            inspected = inspector.inspect( inspected );
+        }
+        return inspected;
+    }
+
 }
