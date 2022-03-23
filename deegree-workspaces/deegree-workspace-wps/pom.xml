@@ -10,7 +10,7 @@
   </properties>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-workspaces</artifactId>
     <version>3.4.28-SNAPSHOT</version>
   </parent>
@@ -33,7 +33,7 @@
       <artifactId>jfreechart</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wps</artifactId>
       <version>${project.version}</version>
     </dependency>

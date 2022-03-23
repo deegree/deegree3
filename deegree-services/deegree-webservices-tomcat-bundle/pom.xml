@@ -6,7 +6,7 @@
   <name>deegree-webservices-tomcat-bundle</name>
   <description>Distribution bundle of Apache Tomcat webcontainer with deegree webservices as root web app</description>
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-services</artifactId>
     <version>3.4.28-SNAPSHOT</version>
   </parent>
@@ -24,7 +24,7 @@
       <type>zip</type>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-webservices</artifactId>
       <version>${project.version}</version>
       <type>war</type>
