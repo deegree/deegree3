@@ -45,6 +45,7 @@ import java.util.List;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKTReader;
+import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -57,6 +58,8 @@ import org.deegree.geometry.standard.curvesegments.DefaultCubicSpline;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultCurve;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -331,6 +334,23 @@ public class CurveLinearizerTest {
         Assert.assertEquals( p0[0], positions.get( 2 ).get0(), 1.0E-9 );
         Assert.assertEquals( p0[1], positions.get( 2 ).get1(), 1.0E-9 );
     }
+
+	/**
+	 * Tests the linearization of a circle with collinear control points (on a line).
+	 */
+	@Test
+	public void testLinearize() {
+		List<Point> pointList = new ArrayList<>();
+		pointList.add( geomFac.createPoint( null, 568088.299, 5932202.548, null ) );
+		pointList.add( geomFac.createPoint( null, 568080.921, 5932196.541, null ) );
+		pointList.add( geomFac.createPoint( null, 568074.760, 5932189.290, null ) );
+		Points points = geomFac.createPoints( pointList );
+		Curve curve = geomFac.createCurve( null, null, geomFac.createArcString( points ) );
+
+		Curve linearizedCurve = linearizer.linearize( curve, new MaxErrorCriterion( 1.0, 500 ) );
+		Points controlPoints = linearizedCurve.getControlPoints();
+		Assert.assertTrue( controlPoints.size() > 2 );
+	}
 
     /**
      * creates a circle or a an arc and outputs them to wkt.
