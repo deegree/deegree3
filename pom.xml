@@ -239,9 +239,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <doclint>none</doclint>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>false</detectOfflineLinks>
+          <excludePackageNames>*.jaxb</excludePackageNames>
         </configuration>
       </plugin>
       <plugin>
@@ -1171,7 +1172,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>3.3.2</version>
             <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
+              <doclint>none</doclint>
               <detectLinks>false</detectLinks>
               <detectOfflineLinks>false</detectOfflineLinks>
               <failOnError>false</failOnError>
