@@ -1598,7 +1598,8 @@ public class SQLFeatureStore implements FeatureStore {
                                || new QName( "http://www.xplanung.de/xplangml/5/1", expectedLocalPart ).equals( lastStepQName )
                                || new QName( "http://www.xplanung.de/xplangml/5/2", expectedLocalPart ).equals( lastStepQName )
                                || new QName( "http://www.xplanung.de/xplangml/5/3", expectedLocalPart ).equals( lastStepQName )
-                               || new QName( "http://www.xplanung.de/xplangml/5/4", expectedLocalPart ).equals( lastStepQName );
+                               || new QName( "http://www.xplanung.de/xplangml/5/4", expectedLocalPart ).equals( lastStepQName )
+                               || new QName( "http://www.xplanung.de/xplangml/6/0", expectedLocalPart ).equals( lastStepQName );
                     }
                 }
                 return false;
