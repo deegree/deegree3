@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.ddl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -56,12 +51,16 @@ import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
+ *
  * @version $Revision: 31176 $, $Date: 2011-07-01 11:31:06 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDDLCreator extends DDLCreator {
@@ -72,7 +71,7 @@ public class PostGISDDLCreator extends DDLCreator {
 
     /**
      * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedAppSchema}.
-     * 
+     *
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
@@ -129,6 +128,11 @@ public class PostGISDDLCreator extends DDLCreator {
                     + "','" + column + "','" + srid + "','" + geometryType + "', " + dim + ")" );
         ddls.add( sql );
 
+        StringBuffer indexSql = new StringBuffer( "CREATE INDEX " );
+        indexSql.append( "spidx_" ).append( table.getTable().toLowerCase() ).append( "_" ).append( column.toLowerCase() );
+        indexSql.append( " ON " ).append( currentFtTable );
+        indexSql.append( " USING GIST (" ). append( column ).append( " ); " );
+        ddls.add( indexSql );
         return ddls;
     }
 
