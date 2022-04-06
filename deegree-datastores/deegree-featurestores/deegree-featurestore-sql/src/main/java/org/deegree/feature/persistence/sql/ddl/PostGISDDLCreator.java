@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.ddl;
 
+import gcardone.junidecode.Junidecode;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
@@ -69,7 +71,9 @@ public class PostGISDDLCreator extends DDLCreator {
 
     private final String undefinedSrid;
 
-    /**
+	private int spatialIndexIndex = 0;
+
+	/**
      * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedAppSchema}.
      *
      * @param schema
@@ -129,7 +133,8 @@ public class PostGISDDLCreator extends DDLCreator {
         ddls.add( sql );
 
         StringBuffer indexSql = new StringBuffer( "CREATE INDEX " );
-        indexSql.append( "spidx_" ).append( table.getTable().toLowerCase() ).append( "_" ).append( column.toLowerCase() );
+        String idxName = createIdxName( table.getTable(), column );
+        indexSql.append( idxName );
         indexSql.append( " ON " ).append( currentFtTable );
         indexSql.append( " USING GIST (" ). append( column ).append( " ); " );
         ddls.add( indexSql );
@@ -243,5 +248,25 @@ public class PostGISDDLCreator extends DDLCreator {
         }
         return "text";
     }
+
+	private String createIdxName( String tableName, String columnName ) {
+		String id = "spidx_" + tableName.toLowerCase() + "_"+ columnName.toLowerCase();
+		int maxColumnNameLength = dialect.getMaxColumnNameLength();
+		if ( id.length() >= maxColumnNameLength ) {
+			String idAsString = Integer.toString( this.spatialIndexIndex++ );
+			String suffix = "_" + idAsString;
+			int delta = id.length() - maxColumnNameLength;
+			int substringUntilPos = id.length() - delta - suffix.length();
+			if ( substringUntilPos >= 0 ) {
+				String substring = id.substring( 0, substringUntilPos );
+				return substring + suffix;
+			} else if ( maxColumnNameLength == idAsString.length() ) {
+				return idAsString;
+			} else {
+				return UUID.randomUUID().toString().substring( 0, maxColumnNameLength );
+			}
+		}
+		return id;
+	}
 
 }
