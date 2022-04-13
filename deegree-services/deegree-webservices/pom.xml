@@ -13,13 +13,22 @@
     <version>3.4.29-SNAPSHOT</version>
   </parent>
   <build>
+    <resources>
+      <resource>
+          <directory>src/main/resources</directory>
+          <excludes>
+              <exclude>log4j2.properties</exclude>
+          </excludes>
+          <filtering>false</filtering>
+      </resource>
+  </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.1</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <attachClasses>true</attachClasses>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -34,61 +43,32 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>assemble-tomcat</id>
-            <phase>package</phase>
+            <id>copy-resources</id>
+            <phase>install</phase>
             <goals>
-              <goal>single</goal>
+              <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>**/log4j2.properties</include>
+                  </includes>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
   <profiles>
-    <profile>
-      <id>activate-dependency-plugin</id>
-      <activation>
-        <property>
-          <name>!deactivateDependencyPlugin</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>tomcat</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>unpack-dependencies</goal>
-                </goals>
-                <configuration>
-                  <type>zip</type>
-                  <includeGroupIds>org.deegree</includeGroupIds>
-                  <includeArtifactIds>deegree-tomcat</includeArtifactIds>
-                  <outputDirectory>target/deegree-tomcat</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>jersey-provided</id>
       <dependencies>
