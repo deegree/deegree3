@@ -96,8 +96,15 @@ import org.slf4j.LoggerFactory;
 public class SDOGeometryConverter {
     static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
 
-    public SDOGeometryConverter() {
+    private final SDOInspector inspector;
 
+    public SDOGeometryConverter() {
+        this.inspector = null;
+    }
+
+    public SDOGeometryConverter(SDOInspector inspector)
+    {
+        this.inspector = inspector;
     }
 
     private GeometryFactory _gf = new GeometryFactory();
@@ -794,7 +801,7 @@ public class SDOGeometryConverter {
             int gtyp = ( 1000 * dim ) + gtypett;
             LOG.trace( "fromGeometry: MDSYS.SDO_GEOMETRY( {}, {}, NULL, MDSYS.SDO_ELEM_INFO_ARRAY{}, MDSYS.SDO_ORDINATE_ARRAY{} )",
                        gtyp, srid, elemInfo, ordinates );
-            return SDOGeometry( gtyp, srid, null, elemInfo, ordinates );
+            return new SDOGeometry( gtyp, srid, null, elemInfo, ordinates );
         }
 
         // no parse able geometry found
