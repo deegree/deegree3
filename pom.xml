@@ -315,7 +315,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -334,7 +334,43 @@
               </rules>
             </configuration>
           </execution>
+          <execution>
+            <id>enforce-ban-duplicate-classes</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <banDuplicateClasses>
+                  <ignoreClasses>
+                    <ignoreClass>javax.activation.*</ignoreClass>
+                    <ignoreClass>javax.servlet.*</ignoreClass>
+                    <ignoreClass>javax.xml.stream.*</ignoreClass>
+                    <ignoreClass>org.apache.commons.logging.*</ignoreClass>
+                    <ignoreClass>org.w3c.css.*</ignoreClass>
+                    <ignoreClass>org.w3c.dom.*</ignoreClass>
+                    <ignoreClass>com.sun.media.*</ignoreClass>
+                    <ignoreClass>oracle.xml.*</ignoreClass>
+                  </ignoreClasses>
+                  <scopes>
+                    <scope>compile</scope>
+                    <scope>provided</scope>
+                  </scopes>
+                  <findAllDuplicates>true</findAllDuplicates>
+                  <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                </banDuplicateClasses>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.5.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
