@@ -315,7 +315,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>enforce-versions</id>
@@ -334,7 +334,43 @@
               </rules>
             </configuration>
           </execution>
+          <execution>
+            <id>enforce-ban-duplicate-classes</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <banDuplicateClasses>
+                  <ignoreClasses>
+                    <ignoreClass>javax.activation.*</ignoreClass>
+                    <ignoreClass>javax.servlet.*</ignoreClass>
+                    <ignoreClass>javax.xml.stream.*</ignoreClass>
+                    <ignoreClass>org.apache.commons.logging.*</ignoreClass>
+                    <ignoreClass>org.w3c.css.*</ignoreClass>
+                    <ignoreClass>org.w3c.dom.*</ignoreClass>
+                    <ignoreClass>com.sun.media.*</ignoreClass>
+                    <ignoreClass>oracle.xml.*</ignoreClass>
+                  </ignoreClasses>
+                  <scopes>
+                    <scope>compile</scope>
+                    <scope>provided</scope>
+                  </scopes>
+                  <findAllDuplicates>true</findAllDuplicates>
+                  <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                </banDuplicateClasses>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.5.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -1126,11 +1162,11 @@
     <java.version>1.8</java.version>
     <site.dir>${user.home}/Sites</site.dir>
     <oracle.version>19.3.0.0</oracle.version>
-    <spring-boot.version>2.4.13</spring-boot.version>
-    <spring-batch.version>4.3.3</spring-batch.version>
-    <spring-framework.version>5.3.12</spring-framework.version>
     <log4j.version>2.17.1</log4j.version>
     <slf4j.version>1.7.32</slf4j.version>
+    <spring-boot.version>2.5.12</spring-boot.version>
+    <spring-batch.version>4.3.5</spring-batch.version>
+    <spring-framework.version>5.3.18</spring-framework.version>
     <batik.version>1.14</batik.version>
   </properties>
 
