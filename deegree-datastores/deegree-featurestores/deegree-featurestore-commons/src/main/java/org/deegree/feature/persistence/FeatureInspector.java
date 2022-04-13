@@ -1,10 +1,11 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2022 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
+ and
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,6 +32,11 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence;
@@ -46,9 +52,7 @@ import org.deegree.geometry.GeometryInspectionException;
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public interface FeatureInspector {
 
@@ -62,4 +66,21 @@ public interface FeatureInspector {
      *             if the inspector rejects the {@link Geometry}
      */
     public Feature inspect( Feature f );
+
+    /**
+     * Invokes the inspection of the given {@link Feature}.
+     * 
+     * @param f
+     *            feature to be inspected, never <code>null</code>
+     * @param transaction
+     *            transaction if feature is inspected in context of a {@link FeatureStoreTransaction}, may be
+     *            <code>null</null>
+     * @return inspected feature, may be a different or modified instance
+     * @throws GeometryInspectionException
+     *             if the inspector rejects the {@link Geometry}
+     */
+    default public Feature inspect( Feature f, FeatureStoreTransaction transaction ) {
+        // default implementation to be compatible to previous inspectors
+        return inspect( f );
+    }
 }
