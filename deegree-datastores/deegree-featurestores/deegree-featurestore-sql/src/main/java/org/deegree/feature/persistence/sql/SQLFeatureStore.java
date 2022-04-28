@@ -304,7 +304,7 @@ public class SQLFeatureStore implements FeatureStore {
     @SuppressWarnings("unchecked")
     private CustomParticleConverter<TypedObjectNode> instantiateConverter( CustomConverterJAXB config ) {
         String className = config.getClazz();
-        LOG.info( "Instantiating configured custom particle converter (class=" + className + ")" );
+        LOG.debug( "Instantiating configured custom particle converter (class={})", className );
         try {
             return (CustomParticleConverter<TypedObjectNode>) workspace.getModuleClassLoader().loadClass( className ).newInstance();
         } catch ( Throwable t ) {
