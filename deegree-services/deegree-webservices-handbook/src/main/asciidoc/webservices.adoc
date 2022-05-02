@@ -500,7 +500,7 @@ application schemas for different GML versions and is fine for simple
 feature models (e.g. feature types served from shapefiles or flat
 database tables). However, valid re-encoding of complex GML application
 schema (such as INSPIRE Data Themes) is technically not feasible. In
-these cases, you will have to set this option to _false_, so the WFS
+these cases, you will have to set this option to _true_, so the WFS
 will produce a response that refers to the original schema files used
 for configuring the feature store. If you want the references to point
 to an external copy of your GML application schema files (instead of
