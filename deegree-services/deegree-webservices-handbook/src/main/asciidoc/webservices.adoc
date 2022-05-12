@@ -9,7 +9,7 @@ workspace directory.
 
 .Web services are the top-level resources of the deegree workspace
 image::workspace-overview-services.png[Web services are the top-level resources of the deegree workspace,scaledwidth=80.0%]
-Propagation of supported SLD functionality
+
 TIP: The identifier of a web service resource has a special purpose. If your
 deegree instance can be reached at
 _http://localhost:8080/deegree-webservices_, the common endpoint for
