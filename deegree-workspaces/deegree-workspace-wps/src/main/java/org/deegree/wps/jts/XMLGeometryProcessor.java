@@ -73,7 +73,7 @@ public class XMLGeometryProcessor {
     private Map<String, Object> params;
 
     /**
-     * Initializes the {@link XMLGeomtryProcessor} with a geometry processor
+     * Initializes the {@link XMLGeometryProcessor} with a geometry processor
      * 
      * @param handler
      */

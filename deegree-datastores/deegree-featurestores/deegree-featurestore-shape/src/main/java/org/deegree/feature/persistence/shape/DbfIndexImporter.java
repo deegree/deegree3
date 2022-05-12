@@ -72,10 +72,10 @@ import org.slf4j.Logger;
 
 /**
  * Copies the dbf contents into the h2 db.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 class DbfIndexImporter {
@@ -86,7 +86,7 @@ class DbfIndexImporter {
 
     private Pair<ArrayList<Pair<float[], Long>>, Boolean> envelopes;
 
-    private ArrayList<String> fields = new ArrayList<String>();
+    private ArrayList<String> fields = new ArrayList<>();
 
     private List<Mapping> mappings;
 
@@ -111,7 +111,7 @@ class DbfIndexImporter {
     private Map<String, Mapping> createMappingMap( List<Mapping> mappings ) {
         Map<String, Mapping> fieldMap = null;
         if ( mappings != null ) {
-            fieldMap = new HashMap<String, Mapping>();
+            fieldMap = new HashMap<>();
             for ( Mapping m : mappings ) {
                 if ( m.propname != null ) {
                     fieldMap.put( m.propname, m );
@@ -159,8 +159,7 @@ class DbfIndexImporter {
         create.append( ")" );
     }
 
-    private String createInsertStatement( Map<SimplePropertyType, Property> entry )
-                            throws IOException {
+    private String createInsertStatement( Map<SimplePropertyType, Property> entry ) {
         StringBuilder sb = new StringBuilder();
         StringBuilder qms = new StringBuilder();
         sb.setLength( 0 );
@@ -304,7 +303,7 @@ class DbfIndexImporter {
 
         connProvider = new LegacyConnectionProvider( "jdbc:h2:" + dbfile, "SA", "", false, null );
 
-        if ( new File( dbfile.toString() + ".h2.db" ).exists() ) {
+        if ( new File( dbfile.toString() + ".mv.db" ).exists() ) {
             // TODO proper check for database consistency
             return connProvider;
         }

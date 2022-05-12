@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.25-SNAPSHOT</version>
+    <version>3.4.31-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -57,7 +57,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj-pdf</artifactId>
-            <version>1.5.4</version>
+            <version>1.6.2</version>
           </dependency>
         </dependencies>
         <executions>

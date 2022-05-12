@@ -576,20 +576,13 @@ public class GMLAppSchemaWriter {
         } else {
             XSElementDeclaration elDecl = analyzer.getXSModel().getElementDeclaration( elName.getLocalPart(),
                                                                                        elName.getNamespaceURI() );
-            XSTypeDefinition typeDef = elDecl.getTypeDefinition();
-            if ( !typeDef.getAnonymous() ) {
-                if ( isGMLNamespace( typeDef.getNamespace() )
-                     && ( typeDef.getName().equals( "AbstractFeatureType" ) || typeDef.getName().equals(
-                                "AbstractFeatureCollectionType" ) ) ) {
-                    if ( ft instanceof FeatureCollectionType && abstractGMLFeatureCollectionElement != null ) {
-                        typeName = new QName( gmlNsURI, "AbstractFeatureCollectionType" );
-                    } else {
-                        typeName = new QName( gmlNsURI, "AbstractFeatureType" );
-                    }
-                }
-                typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
-            }
-        }
+            if ( elDecl != null ) {
+				XSTypeDefinition typeDef = elDecl.getTypeDefinition();
+				if (!typeDef.getAnonymous()) {
+					typeName = new QName(typeDef.getNamespace(), typeDef.getName());
+				}
+			}
+		}
         return typeName;
     }
 

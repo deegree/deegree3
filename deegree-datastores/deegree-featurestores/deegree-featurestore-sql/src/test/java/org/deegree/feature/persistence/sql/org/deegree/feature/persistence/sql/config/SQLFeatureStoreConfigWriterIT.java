@@ -10,8 +10,6 @@ import org.deegree.feature.persistence.sql.config.SQLFeatureStoreConfigWriter;
 import org.deegree.feature.persistence.sql.mapper.AppSchemaMapper;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.gml.schema.GMLAppSchemaReader;
-import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.postgis.PostGISDialect;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import org.xmlmatchers.validation.SchemaFactory;
@@ -43,7 +41,11 @@ import static org.xmlmatchers.XmlMatchers.hasXPath;
  */
 public class SQLFeatureStoreConfigWriterIT {
 
-    public static final NamespaceBindings NAMESPACE_CONTEXT = getNamespaceContext();
+    private static final int MAX_TABLE_NAME_LENGTH_POSTGRES = 63;
+
+    private static final String UNDEFINED_SRID_POSTGRES = "0";
+
+    private static final NamespaceBindings NAMESPACE_CONTEXT = getNamespaceContext();
 
     static {
         NAMESPACE_CONTEXT.addNamespace( "fsc", "http://www.deegree.org/datasource/feature/sql" );
@@ -52,11 +54,10 @@ public class SQLFeatureStoreConfigWriterIT {
     @Test
     public void testWriteConfig()
                             throws Exception {
-        SQLDialect dialect = new PostGISDialect( "2.0" );
         URL appSchemaResource = new URL( "http://inspire.ec.europa.eu/schemas/ps/4.0/ProtectedSites.xsd" );
         List<String> schemaUrls = new ArrayList<String>();
         AppSchema appSchema = readApplicationSchema( appSchemaResource );
-        MappedAppSchema mappedSchema = mapApplicationSchema( dialect, appSchema );
+        MappedAppSchema mappedSchema = mapApplicationSchema( appSchema );
         byte[] config = writeConfig( mappedSchema, schemaUrls );
 
         assertThat( the( config ), hasXPath( "/fsc:SQLFeatureStore/@configVersion",
@@ -102,15 +103,14 @@ public class SQLFeatureStoreConfigWriterIT {
         return streamSource;
     }
 
-    private static MappedAppSchema mapApplicationSchema( SQLDialect dialect, AppSchema appSchema ) {
+    private static MappedAppSchema mapApplicationSchema( AppSchema appSchema ) {
         ICRS crs = CRSManager.getCRSRef( "EPSG:4326" );
-        String databaseSrid = dialect.getUndefinedSrid();
-        GeometryStorageParams storageParams = new GeometryStorageParams( crs, databaseSrid, DIM_2 );
+        GeometryStorageParams storageParams = new GeometryStorageParams( crs, UNDEFINED_SRID_POSTGRES, DIM_2 );
         boolean createBlobMapping = false;
         boolean createRelationalMapping = true;
         AppSchemaMapper mapper = new AppSchemaMapper( appSchema, createBlobMapping, createRelationalMapping,
-                                                      storageParams,
-                                                      dialect.getMaxTableNameLength(), false, true );
+                                                      storageParams, MAX_TABLE_NAME_LENGTH_POSTGRES, false, true );
         return mapper.getMappedSchema();
     }
+
 }
