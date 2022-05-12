@@ -68,7 +68,7 @@ public class UpdateBboxCache {
         try {
             List<String> featureStoreIds = parseFeatureStoreIds( queryString );
             updateBboxCache( ws.getNewWorkspace(), featureStoreIds, response );
-        } catch ( IllegalArgumentException e ) {
+        } catch ( Exception e ) {
             response.setStatus( 400 );
             write( "Error while processing request: " + e.getLocalizedMessage() + "\n", response.getOutputStream() );
         }
