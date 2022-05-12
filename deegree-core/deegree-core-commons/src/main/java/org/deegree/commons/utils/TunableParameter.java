@@ -55,14 +55,14 @@ import org.slf4j.LoggerFactory;
  * This class contains static utility methods to access system tunable settings
  * 
  * If a settings is requested for the first time, the lookup order is JNDI first
- * followed by System.getProperty. The results are cached so that no further lookups 
- * are made.
+ * followed by {@link System#getProperty(String)}. The results are cached so
+ * that no further lookups are made.
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
-public class Tunable {
+public class TunableParameter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Tunable.class );
+    private static final Logger LOG = LoggerFactory.getLogger( TunableParameter.class );
 
     private static final Map<String, String> CONFIG_STR = new HashMap<>();
 
