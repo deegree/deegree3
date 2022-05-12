@@ -48,3 +48,5 @@ include::restapi.adoc[]
 include::javamodules.adoc[]
 
 include::gdal.adoc[]
+
+include::appendix.adoc[]
