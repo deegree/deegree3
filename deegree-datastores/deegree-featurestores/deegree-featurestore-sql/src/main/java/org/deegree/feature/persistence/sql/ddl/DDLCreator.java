@@ -56,7 +56,6 @@ import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.persistence.sql.rules.PrimitiveMapping;
 import org.deegree.sqldialect.SQLDialect;
-import org.deegree.sqldialect.postgis.PostGISDialect;
 
 /**
  * Creates DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
@@ -74,7 +73,7 @@ public abstract class DDLCreator {
 
     private final boolean hasBlobTable;
 
-    private final SQLDialect dialect;
+    protected final SQLDialect dialect;
 
     protected TableName currentFtTable;
 
@@ -235,7 +234,7 @@ public abstract class DDLCreator {
 
     // TODO get rid of this (DDLCreator should be the only needed implementation)
     public static DDLCreator newInstance( MappedAppSchema appSchema, SQLDialect dialect ) {
-        if ( dialect instanceof PostGISDialect ) {
+        if ( dialect.getClass().getSimpleName().equals( "PostGISDialect" ) ) {
             return new PostGISDDLCreator( appSchema, dialect );
         }
         if ( dialect.getClass().getSimpleName().equals( "OracleDialect" ) ) {

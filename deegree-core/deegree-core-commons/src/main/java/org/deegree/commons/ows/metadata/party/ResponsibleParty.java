@@ -40,14 +40,13 @@ import org.deegree.commons.tom.ows.CodeType;
 /**
  * Encapsulates information on the identification of, and the means of communication with the person/party responsible
  * for the server.
- * <p>
+ * <br/>
  * Data model has been carefully designed to capture the expressiveness of all OWS specifications and versions and was
  * verified for the following specifications:
  * <ul>
  * <li>OWS Common 2.0</li>
  * </ul>
- * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author$

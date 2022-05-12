@@ -40,6 +40,7 @@ import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.tom.datetime.ISO8601Converter.formatDateTime;
 import static org.deegree.commons.utils.JDBCUtils.close;
 import static org.deegree.feature.i18n.Messages.getMessage;
+import static org.h2.engine.Constants.SCHEMA_MAIN;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -119,7 +120,7 @@ public class DefaultLockManager implements LockManager {
         try {
             conn = connection.getConnection();
             DatabaseMetaData dbMetaData = conn.getMetaData();
-            rs = dbMetaData.getTables( null, null, "LOCKS", new String[] { "TABLE" } );
+            rs = dbMetaData.getTables( null, SCHEMA_MAIN, "LOCKS", new String[] { "TABLE" } );
             if ( !rs.next() ) {
                 LOG.debug( "Creating table 'LOCKS'." );
                 stmt = conn.createStatement();
@@ -134,7 +135,7 @@ public class DefaultLockManager implements LockManager {
             }
             rs.close();
 
-            rs = dbMetaData.getTables( null, null, "LOCKED_FIDS", new String[] { "TABLE" } );
+            rs = dbMetaData.getTables( null, SCHEMA_MAIN, "LOCKED_FIDS", new String[] { "TABLE" } );
             if ( !rs.next() ) {
                 LOG.debug( "Creating table 'LOCKED_FIDS'." );
                 if ( stmt == null ) {
@@ -150,7 +151,7 @@ public class DefaultLockManager implements LockManager {
             }
             rs.close();
 
-            rs = dbMetaData.getTables( null, null, "LOCK_FAILED_FIDS", new String[] { "TABLE" } );
+            rs = dbMetaData.getTables( null, SCHEMA_MAIN, "LOCK_FAILED_FIDS", new String[] { "TABLE" } );
             if ( !rs.next() ) {
                 LOG.debug( "Creating table 'LOCK_FAILED_FIDS'." );
                 if ( stmt == null ) {
