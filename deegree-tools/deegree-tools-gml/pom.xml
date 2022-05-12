@@ -22,6 +22,10 @@
       <name>Lyn Goltz</name>
       <email>goltz@lat-lon.de</email>
     </developer>
+    <developer>
+      <name>Stephan Reichhelm</name>
+      <email>reichhelm@grit.de</email>
+    </developer>
   </developers>
 
   <build>
