@@ -57,8 +57,8 @@ public class LoadParameterBuilder {
     }
 
     public LoadParameterBuilder setSchemaUrl( String schemaUrl ) {
-        if (schemaUrl == null || schemaUrl.isEmpty())
-            throw new IllegalArgumentException("Value for option 'schemaUrl' must not be null. Option is mandatory.");
+        if ( schemaUrl == null || schemaUrl.isEmpty() )
+            throw new IllegalArgumentException( "Value for option 'schemaUrl' must not be null. Option is mandatory." );
         loadParameter.setSchemaUrl( schemaUrl );
         return this;
     }
@@ -123,10 +123,12 @@ public class LoadParameterBuilder {
         return this;
     }
 
-    public LoadParameterBuilder setListOfPropertiesWithPrimitiveHref( String pathToFileWithPropertiesWithPrimitiveHref ) {
+    public LoadParameterBuilder setListOfPropertiesWithPrimitiveHref(
+                    String pathToFileWithPropertiesWithPrimitiveHref ) {
         if ( pathToFileWithPropertiesWithPrimitiveHref != null ) {
             PropertyNameParser propertyNameParser = new PropertyNameParser();
-            List<QName> propertiesWithPrimitiveHref = propertyNameParser.parsePropertiesWithPrimitiveHref( pathToFileWithPropertiesWithPrimitiveHref );
+            List<QName> propertiesWithPrimitiveHref = propertyNameParser.parsePropertiesWithPrimitiveHref(
+                            pathToFileWithPropertiesWithPrimitiveHref );
             loadParameter.setPropertiesWithPrimitiveHref( propertiesWithPrimitiveHref );
         }
         return this;
@@ -145,6 +147,20 @@ public class LoadParameterBuilder {
                 throw new IllegalArgumentException( "Invalid value of parameter referenceData: " + referenceData
                                                     + ". Could not be parsed as GML 3.2." );
             }
+        }
+        return this;
+    }
+
+    public LoadParameterBuilder setuseRefDataProps( String useRefDataProps ) {
+        if ( useRefDataProps != null && !useRefDataProps.isEmpty() ) {
+            if ( !"true".equalsIgnoreCase( useRefDataProps ) && !"false".equalsIgnoreCase(
+                            useRefDataProps ) ) {
+                throw new IllegalArgumentException( "Invalid value of parameter useRefDataProps: "
+                                                    + useRefDataProps
+                                                    + ". Must be true or false" );
+            }
+            loadParameter.setUseRefDataProps(
+                            Boolean.parseBoolean( useRefDataProps ) );
         }
         return this;
     }

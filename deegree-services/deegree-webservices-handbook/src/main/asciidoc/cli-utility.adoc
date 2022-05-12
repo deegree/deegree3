@@ -48,6 +48,7 @@ options:
  -cycledepth=INT, positive integer value to specify the depth of cycles, default=0
  -listOfPropertiesWithPrimitiveHref=<path/to/file>, not set by default
  -referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection.)
+ - useRefDataProps={true|false}, default: false (true if mapping should be created only for properties defined in referenceData)
 
 The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):
 ---------- begin file ----------
@@ -152,6 +153,13 @@ Example content of the referenced file:
   </gml:featureMember>
 </gml:FeatureCollection>
 ----
+
+==== Usage of option useRefDataProps
+
+The option useRefDataProps must be used with the option referenceData and results in a more reduced mapping:
+
+ * Mapping of optional properties not in the referenceData is omitted.
+ * Mapping of properties with xsi:nil="true" in the referenceData is reduced to the mapping of @xsi:nil and @nilReason.
 
 Using the GmlLoader CLI:
 
