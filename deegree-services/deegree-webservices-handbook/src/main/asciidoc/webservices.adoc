@@ -1435,6 +1435,19 @@ capabilities must be configured there.
 
 WARNING: Extended Capabilities are currently not supported by WMS 1.1.1. In WMS 1.1.1 configured extended capabilities are ignored and not included in the capabilities document.
 
+==== Propagation of supported SLD functionality
+
+The deegree WMS has extensive support for styling languages SLD/SE versions 1.0.0 and
+1.1.0 but does not propagate this by default. This can be achieved by adding
+these blocks to the extended capabilities element of the configuration:
+
+[source,xml]
+----
+<ExtendedCapabilities>
+  <sld:UserDefinedSymbolization xmlns:sld="http://www.opengis.net/sld" SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="0" InlineFeature="1"/>
+</ExtendedCapabilities>
+----
+
 ==== Vendor specific parameters
 
 The deegree WMS supports a number of vendor specific parameters. Some
