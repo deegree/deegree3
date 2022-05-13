@@ -13,6 +13,9 @@
       <Column name="attr_gml_id" type="string" />
       <UUIDGenerator />
     </FIDMapping>
+    <OrderBy>
+      <Column name="attr_gml_id" sortOrder="DESC"/>
+    </OrderBy>
     <Complex path="ad:inspireId">
       <Complex path="base:Identifier">
         <Primitive path="base:localId" mapping="localid" />
