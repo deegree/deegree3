@@ -16,15 +16,20 @@
 
   <complexType name="EnvelopeType">
     <sequence>
-      <element name="LowerCorner" type="s:PositionType" />
-      <element name="UpperCorner" type="s:PositionType" />
+      <element name="LowerCorner">
+        <simpleType>
+          <list itemType="double"/>
+        </simpleType>
+      </element>
+      <element name="UpperCorner">
+        <simpleType>
+          <list itemType="double"/>
+        </simpleType>
+      </element>
     </sequence>
     <!-- default is EPSG:4326 -->
     <attribute name="crs" type="anyURI" use="optional" />
   </complexType>
-  <simpleType name="PositionType">
-    <list itemType="double" />
-  </simpleType>
 
   <group name="SpatialMetadata">
     <sequence>
