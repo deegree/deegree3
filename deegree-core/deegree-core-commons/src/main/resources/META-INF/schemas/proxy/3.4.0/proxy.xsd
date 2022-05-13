@@ -19,18 +19,23 @@
       <sequence>
         <element name="ProxyHost" type="string" minOccurs="0" />
         <element name="HttpProxyHost" type="string" minOccurs="0" />
+        <element name="HttpsProxyHost" type="string" minOccurs="0" />
         <element name="FtpProxyHost" type="string" minOccurs="0" />
         <element name="ProxyPort" type="positiveInteger" minOccurs="0" />
         <element name="HttpProxyPort" type="positiveInteger" minOccurs="0" />
+        <element name="HttpsProxyPort" type="positiveInteger" minOccurs="0" />
         <element name="FtpProxyPort" type="positiveInteger" minOccurs="0" />
         <element name="ProxyUser" type="string" minOccurs="0" />
         <element name="HttpProxyUser" type="string" minOccurs="0" />
+        <element name="HttpsProxyUser" type="string" minOccurs="0" />
         <element name="FtpProxyUser" type="string" minOccurs="0" />
         <element name="ProxyPassword" type="string" minOccurs="0" />
         <element name="HttpProxyPassword" type="string" minOccurs="0" />
+        <element name="HttpsProxyPassword" type="string" minOccurs="0" />
         <element name="FtpProxyPassword" type="string" minOccurs="0" />
         <element name="NonProxyHosts" type="string" minOccurs="0" />
         <element name="HttpNonProxyHosts" type="string" minOccurs="0" />
+        <element name="HttpsNonProxyHosts" type="string" minOccurs="0" />
         <element name="FtpNonProxyHosts" type="string" minOccurs="0" />
       </sequence>
       <attribute name="overrideSystemSettings" type="boolean" use="optional" />
