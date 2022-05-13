@@ -137,6 +137,7 @@
                       </simpleContent>
                     </complexType>
                   </element>
+                  <element name="SchemaLocation" type="string" minOccurs="0" />
                   <element name="DisableStreaming" type="boolean" minOccurs="0" default="false" />
                   <element name="PrebindNamespace" minOccurs="0" maxOccurs="unbounded">
                     <complexType>
