@@ -43,8 +43,8 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 
-import com.vividsolutions.jts.io.InputStreamInStream;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.InputStreamInStream;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
@@ -63,15 +63,15 @@ public class WKBReader {
 
     public static Geometry read( byte[] wkb, ICRS crs )
                             throws ParseException {
-        // com.vividsolutions.jts.io.WKBReader() is not thread safe        
-        return defaultGeom.createFromJTS( new com.vividsolutions.jts.io.WKBReader().read( wkb ), crs );
+        // org.locationtech.jts.io.WKBReader() is not thread safe
+        return defaultGeom.createFromJTS( new org.locationtech.jts.io.WKBReader().read( wkb ), crs );
     }
 
     public static Geometry read( InputStream is, ICRS crs )
                             throws IOException, ParseException {
-        // com.vividsolutions.jts.io.WKBReader() is not thread safe
+        // org.locationtech.jts.io.WKBReader() is not thread safe
         return defaultGeom.createFromJTS(
-                                          new com.vividsolutions.jts.io.WKBReader().read( new InputStreamInStream( is ) ),
+                                          new org.locationtech.jts.io.WKBReader().read( new InputStreamInStream( is ) ),
                                           crs );
     }
 }

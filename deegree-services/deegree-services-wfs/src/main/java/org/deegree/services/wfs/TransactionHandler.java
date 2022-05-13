@@ -917,6 +917,8 @@ class TransactionHandler {
                 gmlVersion = GMLVersion.GML_31;
             } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
                 gmlVersion = GMLVersion.GML_32;
+            } else if ( "text/xml; subtype=gml/3.2.2".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_32;
             }
         }
         return gmlVersion;

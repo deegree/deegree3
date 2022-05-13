@@ -67,12 +67,12 @@ The following diagram shows the different types of resources and their
 dependencies. The deegree configuration can be divided into several
 sections:
 
-----
-* web sevrices
+
+* web services
 * data stores
 * map layers
 * server connections
-----
+
 
 For example, to offer a Web Feature Service, a feature store (based on a
 shapefile, database, etc) must be configured. With a rasterfile, like a
@@ -175,6 +175,7 @@ scanned for XML resource configuration files:
 |processes/ |Processes
 |jdbc/ |Server Connections (JDBC)
 |datasources/remoteows/ |Server Connections (Remote OWS)
+|storedqueries/managed/ |Stored queries created via WFS interface
 |===
 
 A workspace directory may contain additional directories to provide
@@ -521,9 +522,9 @@ logged, along with error messages.
 .Log messages in the deegree log
 image::terminal.png[Log messages in the deegree log,scaledwidth=50.0%]
 
-TIP: If you deployed the WAR version, the location of the deegree log depends
+TIP: If you deployed the WAR file, the location of the deegree log depends
 on your web application container. For Tomcat, you will find it in file
-_catalina.out_ in the _log/_ directory.
+_catalina.out_ in the _logs/_ directory.
 
-TIP: More logging can be activated by adjusting file _log4j.properties_ in
-the _/WEB-INF/classes/_ directory of the deegree webapplication.
+TIP: More logging can be activated by adjusting file _log4j2.properties_ in
+the _/WEB-INF/classes/_ directory of the deegree web application. See chapter <<anchor-logging-configuration>> for more information how to configure the logging framework.

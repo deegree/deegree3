@@ -68,7 +68,8 @@ public class DescribeFeatureTypeXMLAdapterTest {
                             throws Exception {
 
         DescribeFeatureTypeXMLAdapter parser = new DescribeFeatureTypeXMLAdapter();
-        parser.load( get200ExampleUrl( "DescribeFeatureType_Example01_Request.xml" ) );
+        parser.load( DescribeFeatureTypeXMLAdapterTest.class.getResource(
+                                "wfs200/DescribeFeatureType_Example01_Request.xml" ) );
         DescribeFeatureType request = parser.parse();
         assertEquals( VERSION_200, request.getVersion() );
         assertEquals( null, request.getHandle() );
@@ -83,7 +84,8 @@ public class DescribeFeatureTypeXMLAdapterTest {
                             throws Exception {
 
         DescribeFeatureTypeXMLAdapter parser = new DescribeFeatureTypeXMLAdapter();
-        parser.load( get200ExampleUrl( "DescribeFeatureType_Example02_Request.xml" ) );
+        parser.load( DescribeFeatureTypeXMLAdapterTest.class.getResource(
+                                "wfs200/DescribeFeatureType_Example02_Request.xml" ) );
         DescribeFeatureType request = parser.parse();
         assertEquals( VERSION_200, request.getVersion() );
         assertEquals( null, request.getHandle() );
@@ -91,6 +93,11 @@ public class DescribeFeatureTypeXMLAdapterTest {
         assertEquals( 1, request.getTypeNames().length );
     }
 
+    /**
+     * TODO: Unused until https://github.com/deegree/deegree3/issues/1091 is implemented.
+     * @param name
+     * @return
+     */
     private URL get200ExampleUrl( String name ) {
         try {
             String url = new RedirectingEntityResolver().redirect( WFS200_EXAMPLES_BASE_URL + name );

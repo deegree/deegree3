@@ -47,11 +47,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import javax.imageio.metadata.IIOMetadata;
 
+import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.coverage.raster.geom.RasterGeoReference;
 import org.deegree.coverage.raster.io.imageio.geotiff.GeoTiffIIOMetadataAdapter;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.geometry.Envelope;
 import org.deegree.workspace.ResourceInitException;
 import org.slf4j.Logger;
@@ -81,8 +83,10 @@ public class GeoTiffUtils {
                 }
                 if ( epsgCode != null && epsgCode.length() != 0 ) {
                     try {
-                        crs = CRSManager.lookup( "EPSG:" + epsgCode );
-                    } catch ( UnknownCRSException e ) {
+                        CRSRef ref = CRSManager.getCRSRef( "EPSG:" + epsgCode );
+                        ref.getReferencedObject();
+                        crs = ref;
+                    } catch ( ReferenceResolvingException e ) {
                         LOG.error( "No coordinate system found for EPSG:" + epsgCode );
                     }
                 }

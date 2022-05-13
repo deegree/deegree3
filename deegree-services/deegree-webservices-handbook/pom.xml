@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.11</version>
+    <version>3.4.32-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -16,19 +16,6 @@
     <revnumber>${project.version}</revnumber>
     <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
@@ -70,7 +57,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj-pdf</artifactId>
-            <version>1.5.0-beta.2</version>
+            <version>1.6.2</version>
           </dependency>
         </dependencies>
         <executions>
@@ -101,7 +88,7 @@
               <doctype>book</doctype>
               <backend>html</backend>
               <attributes>
-                <toc />
+                <toc>left</toc>
                 <linkcss>false</linkcss>
                 <revdate>${revdate}</revdate>
                 <revnumber>${revnumber}</revnumber>

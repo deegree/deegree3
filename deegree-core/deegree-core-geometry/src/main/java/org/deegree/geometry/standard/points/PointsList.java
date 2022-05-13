@@ -43,8 +43,9 @@ import org.deegree.commons.tom.Reference;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * <code>List</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with id
@@ -203,6 +204,11 @@ public class PointsList implements Points {
     @Override
     public Object clone() {
         return new PointsList( new ArrayList<Point>( points ) );
+    }
+
+    @Override
+    public CoordinateSequence copy() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

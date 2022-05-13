@@ -36,6 +36,7 @@
 
 package org.deegree.services.wms;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
 import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
@@ -68,6 +69,7 @@ import org.deegree.layer.Layer;
 import org.deegree.layer.LayerData;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.LayerRef;
+import org.deegree.protocol.wms.filter.EnvFunction;
 import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
@@ -208,21 +210,25 @@ public class MapService {
         ListIterator<LayerQuery> queryIter = queries.listIterator();
 
         ScaleFunction.getCurrentScaleValue().set( scale );
+        EnvFunction.getCurrentEnvValue().set( EnvFunction.parse( gm.getParameterMap(), gm.getBoundingBox(), gm.getCoordinateSystem(), gm.getWidth(), gm.getHeight(), scale ) );
 
-        List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );
-        Iterator<MapOptions> optIter = mapOptions.iterator();
-        for ( LayerData d : layerDataList ) {
-            ctx.applyOptions( optIter.next() );
-            try {
-                d.render( ctx );
-            } catch ( InterruptedException e ) {
-                String msg = "Request time-out.";
-                throw new OWSException( msg, NO_APPLICABLE_CODE );
+        try {
+            List<LayerData> layerDataList = checkStyleValidAndBuildLayerDataList( gm, headers, scale, queryIter );
+            Iterator<MapOptions> optIter = mapOptions.iterator();
+            for ( LayerData d : layerDataList ) {
+                ctx.applyOptions( optIter.next() );
+                try {
+                    d.render( ctx );
+                } catch ( InterruptedException e ) {
+                    String msg = "Request time-out.";
+                    throw new OWSException( msg, NO_APPLICABLE_CODE );
+                }
             }
+            ctx.optimizeAndDrawLabels();
+        } finally {
+            ScaleFunction.getCurrentScaleValue().remove();
+            EnvFunction.getCurrentEnvValue().remove();
         }
-        ctx.optimizeAndDrawLabels();
-
-        ScaleFunction.getCurrentScaleValue().remove();
     }
 
     private List<LayerData> checkStyleValidAndBuildLayerDataList( org.deegree.protocol.wms.ops.GetMap gm,
@@ -232,7 +238,14 @@ public class MapService {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
-            List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
+            //List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
+            List<Layer> layers;
+            // TODO Workaround for InlineFeature
+            if ( lr.getName() == null && lr.getLayer() != null ) {
+                layers = singletonList( lr.getLayer() );
+            } else {
+                layers = getAllLayers( themeMap.get( lr.getName() ) );
+            }
             assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
@@ -261,10 +274,15 @@ public class MapService {
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
                                    OperatorFilter f, org.deegree.protocol.wms.ops.GetMap gm ) {
 
-        for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-            insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
-                                  defaultLayerOptions );
-            mapOptions.add( options.get( l.getMetadata().getName() ) );
+        if ( lr.getName() == null && lr.getLayer() != null ) {
+            // TODO Is it required to take the Options from the map options and merge them with defaultLayerOptions ? 
+            mapOptions.add( defaultLayerOptions );
+        } else {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
+                insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
+                                      defaultLayerOptions );
+                mapOptions.add( options.get( l.getMetadata().getName() ) );
+            }
         }
 
         LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,

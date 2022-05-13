@@ -71,7 +71,7 @@ import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequence;
 
 /**
  * Abstract base class for the default {@link Geometry} implementation.
@@ -96,7 +96,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     /**
      * Used to built JTS geometries.
      */
-    protected final static com.vividsolutions.jts.geom.GeometryFactory jtsFactory = new com.vividsolutions.jts.geom.GeometryFactory();
+    protected final static org.locationtech.jts.geom.GeometryFactory jtsFactory = new org.locationtech.jts.geom.GeometryFactory();
 
     /** Geometry identifier. */
     protected String id;
@@ -111,7 +111,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected PrecisionModel pm;
 
     // contains an equivalent (or best-fit) JTS geometry object
-    protected com.vividsolutions.jts.geom.Geometry jtsGeometry;
+    protected org.locationtech.jts.geom.Geometry jtsGeometry;
 
     protected Envelope env;
 
@@ -245,21 +245,21 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         if ( crs == null ) {
             crs = geometry.getCoordinateSystem();
         }
-        com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.intersection( jtsGeoms.second );
+        org.locationtech.jts.geom.Geometry jtsGeom = jtsGeoms.first.intersection( jtsGeoms.second );
         return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Geometry getUnion( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
-        com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.union( jtsGeoms.second );
+        org.locationtech.jts.geom.Geometry jtsGeom = jtsGeoms.first.union( jtsGeoms.second );
         return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Geometry getDifference( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
-        com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.difference( jtsGeoms.second );
+        org.locationtech.jts.geom.Geometry jtsGeom = jtsGeoms.first.difference( jtsGeoms.second );
         return createFromJTS( jtsGeom, crs );
     }
 
@@ -267,20 +267,20 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     public Geometry getBuffer( Measure distance ) {
         // TODO get double in CoordinateSystem units
         double crsDistance = distance.getValueAsDouble();
-        com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().buffer( crsDistance );
+        org.locationtech.jts.geom.Geometry jtsGeom = getJTSGeometry().buffer( crsDistance );
         return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Geometry getConvexHull() {
-        com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().convexHull();
+        org.locationtech.jts.geom.Geometry jtsGeom = getJTSGeometry().convexHull();
         return createFromJTS( jtsGeom, crs );
     }
 
     @Override
     public Envelope getEnvelope() {
         if ( env == null ) {
-            com.vividsolutions.jts.geom.Envelope jtsEnvelope = getJTSGeometry().getEnvelopeInternal();
+            org.locationtech.jts.geom.Envelope jtsEnvelope = getJTSGeometry().getEnvelopeInternal();
             Point min = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMinX(), jtsEnvelope.getMinY() } );
             Point max = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMaxX(), jtsEnvelope.getMaxY() } );
             env = new DefaultEnvelope( null, crs, pm, min, max );
@@ -293,14 +293,14 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      * 
      * @return an equivalent (or best-fit) JTS geometry
      */
-    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+    public org.locationtech.jts.geom.Geometry getJTSGeometry() {
         if ( jtsGeometry == null ) {
             jtsGeometry = buildJTSGeometry();
         }
         return jtsGeometry;
     }
 
-    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+    protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
         throw new UnsupportedOperationException( "#buildJTSGeometry() is not implemented for "
                                                  + this.getClass().getName() );
     }
@@ -342,28 +342,28 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      *         geometry, or null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
-    public AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom, ICRS crs ) {
+    public AbstractDefaultGeometry createFromJTS( org.locationtech.jts.geom.Geometry jtsGeom, ICRS crs ) {
 
         AbstractDefaultGeometry geom = null;
         if ( jtsGeom.isEmpty() ) {
             return null;
         }
-        if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
-            com.vividsolutions.jts.geom.Point jtsPoint = (com.vividsolutions.jts.geom.Point) jtsGeom;
+        if ( jtsGeom instanceof org.locationtech.jts.geom.Point ) {
+            org.locationtech.jts.geom.Point jtsPoint = (org.locationtech.jts.geom.Point) jtsGeom;
             if ( Double.isNaN( jtsPoint.getCoordinate().z ) ) {
                 geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY() } );
             } else {
                 geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY(),
                                                                       jtsPoint.getCoordinate().z } );
             }
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LinearRing ) {
-            com.vividsolutions.jts.geom.LinearRing jtsLinearRing = (com.vividsolutions.jts.geom.LinearRing) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.LinearRing ) {
+            org.locationtech.jts.geom.LinearRing jtsLinearRing = (org.locationtech.jts.geom.LinearRing) jtsGeom;
             geom = new DefaultLinearRing( null, crs, pm, getAsPoints( jtsLinearRing.getCoordinateSequence(), crs ) );
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LineString ) {
-            com.vividsolutions.jts.geom.LineString jtsLineString = (com.vividsolutions.jts.geom.LineString) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.LineString ) {
+            org.locationtech.jts.geom.LineString jtsLineString = (org.locationtech.jts.geom.LineString) jtsGeom;
             geom = new DefaultLineString( null, crs, pm, getAsPoints( jtsLineString.getCoordinateSequence(), crs ) );
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
-            com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.Polygon ) {
+            org.locationtech.jts.geom.Polygon jtsPolygon = (org.locationtech.jts.geom.Polygon) jtsGeom;
             Points exteriorPoints = getAsPoints( jtsPolygon.getExteriorRing().getCoordinateSequence(), crs );
             LinearRing exteriorRing = new DefaultLinearRing( null, crs, pm, exteriorPoints );
             List<Ring> interiorRings = new ArrayList<Ring>( jtsPolygon.getNumInteriorRing() );
@@ -372,8 +372,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 interiorRings.add( new DefaultLinearRing( null, crs, pm, interiorPoints ) );
             }
             geom = new DefaultPolygon( null, crs, pm, exteriorRing, interiorRings );
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPoint ) {
-            com.vividsolutions.jts.geom.MultiPoint jtsMultiPoint = (com.vividsolutions.jts.geom.MultiPoint) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.MultiPoint ) {
+            org.locationtech.jts.geom.MultiPoint jtsMultiPoint = (org.locationtech.jts.geom.MultiPoint) jtsGeom;
             if ( jtsMultiPoint.getNumGeometries() > 0 ) {
                 List<Point> members = new ArrayList<Point>( jtsMultiPoint.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
@@ -381,8 +381,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 }
                 geom = new DefaultMultiPoint( null, crs, pm, members );
             }
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiLineString ) {
-            com.vividsolutions.jts.geom.MultiLineString jtsMultiLineString = (com.vividsolutions.jts.geom.MultiLineString) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.MultiLineString ) {
+            org.locationtech.jts.geom.MultiLineString jtsMultiLineString = (org.locationtech.jts.geom.MultiLineString) jtsGeom;
             if ( jtsMultiLineString.getNumGeometries() > 0 ) {
                 List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
@@ -391,8 +391,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 }
                 geom = new DefaultMultiLineString( null, crs, pm, members );
             }
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPolygon ) {
-            com.vividsolutions.jts.geom.MultiPolygon jtsMultiPolygon = (com.vividsolutions.jts.geom.MultiPolygon) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.MultiPolygon ) {
+            org.locationtech.jts.geom.MultiPolygon jtsMultiPolygon = (org.locationtech.jts.geom.MultiPolygon) jtsGeom;
             if ( jtsMultiPolygon.getNumGeometries() > 0 ) {
                 List<Polygon> members = new ArrayList<Polygon>( jtsMultiPolygon.getNumGeometries() );
                 for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
@@ -400,8 +400,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                 }
                 geom = new DefaultMultiPolygon( null, crs, pm, members );
             }
-        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection ) {
-            com.vividsolutions.jts.geom.GeometryCollection jtsGeometryCollection = (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom;
+        } else if ( jtsGeom instanceof org.locationtech.jts.geom.GeometryCollection ) {
+            org.locationtech.jts.geom.GeometryCollection jtsGeometryCollection = (org.locationtech.jts.geom.GeometryCollection) jtsGeom;
             if ( jtsGeometryCollection.getNumGeometries() > 0 ) {
                 List<Geometry> members = new ArrayList<Geometry>( jtsGeometryCollection.getNumGeometries() );
                 for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {

@@ -208,7 +208,7 @@ public class FeatureInfoGmlWriter implements FeatureInfoSerializer {
             if ( format.endsWith( "3.1" ) || format.endsWith( "3.1.1" ) ) {
                 gmlVersion = GMLVersion.GML_31;
             }
-            if ( format.endsWith( "3.2" ) || format.endsWith( "3.2.1" ) ) {
+            if ( format.endsWith( "3.2" ) || format.endsWith( "3.2.1" ) || format.endsWith( "3.2.2" ) ) {
                 gmlVersion = GMLVersion.GML_32;
             }
 

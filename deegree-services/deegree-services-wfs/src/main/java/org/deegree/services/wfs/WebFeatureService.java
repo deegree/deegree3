@@ -159,6 +159,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -270,6 +271,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private ReferencePatternMatcher referencePatternMatcher;
 
+    private boolean isStrict;
+
     public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
     }
@@ -283,6 +286,7 @@ public class WebFeatureService extends AbstractOWS {
         DeegreeWFS jaxbConfig = (DeegreeWFS) controllerConf;
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
+        isStrict = jaxbConfig.isStrict() != null ? jaxbConfig.isStrict() : false;
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
         if ( enableTransactions != null ) {
             this.enableTransactions = enableTransactions.isValue();
@@ -323,7 +327,8 @@ public class WebFeatureService extends AbstractOWS {
                 list.add( url );
             }
         }
-        storedQueryHandler = new StoredQueryHandler( this, list );
+        File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
+        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
@@ -567,10 +572,12 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.2", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml32 );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -1460,6 +1467,13 @@ public class WebFeatureService extends AbstractOWS {
     }
 
     /**
+     * @return <code>true</code> if the service should behave strict, <code>false</code> otherwise
+     */
+    public boolean isStrict() {
+        return isStrict;
+    }
+
+    /**
      * Checks if a request version can be handled by this controller (i.e. if is supported by the implementation *and*
      * offered by the current configuration).
      * <p>
@@ -1497,5 +1511,4 @@ public class WebFeatureService extends AbstractOWS {
             throw new InvalidParameterValueException(
                                                       "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
-
 }

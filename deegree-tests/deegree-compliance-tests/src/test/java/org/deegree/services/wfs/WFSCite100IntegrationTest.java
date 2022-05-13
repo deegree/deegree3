@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.deegree.services.AbstractCiteIntegrationTest;
 import org.deegree.services.CiteWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,75 +60,20 @@ import org.junit.runners.Parameterized.Parameters;
  * @version $Revision$, $Date$
  */
 @RunWith(Parameterized.class)
-public class WFSCite100IntegrationTest {
+public class WFSCite100IntegrationTest extends AbstractCiteIntegrationTest {
 
-    private static String CITE_SCRIPT_PROP = "cite.script";
+    private static final String CITE_SCRIPT_PROP = "cite.script";
 
     private String testLabel = "WFS100";
 
-    private String resultSnippet;
+    @Parameters
+    public static Collection getResultSnippets() throws Exception {
+        return getResultSnippets("/citewfs100/ctl/wfs.xml", "VAR_WFS_CAPABILITIES_URL", "wfs100?request=GetCapabilities&service=WFS" );
+    }
 
     public WFSCite100IntegrationTest( String testLabel, String resultSnippet ) {
         this.testLabel = testLabel;
         this.resultSnippet = resultSnippet;
-    }
-
-    @Parameters
-    public static Collection getResultSnippets()
-                            throws Exception {
-        URL url = WFSCite100IntegrationTest.class.getResource( "/citewfs100/ctl/wfs.xml" );
-        String file = new File( url.toURI() ).getAbsolutePath();
-
-        CiteWrapper wrapper = new CiteWrapper( file );
-        try {
-            wrapper.execute();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-        String out = wrapper.getOutput();
-        String err = wrapper.getError();
-
-        System.out.println( out );
-        if ( !err.isEmpty() ) {
-            System.out.println( "Standard error messages: " + err );
-        }
-
-        return getResultSnippets( out );
-    }
-
-    private static Collection getResultSnippets( String out )
-                            throws IOException {
-
-        List resultSnippets = new ArrayList();
-
-        BufferedReader reader = new BufferedReader( new StringReader( out ) );
-        List<String> lines = new ArrayList<String>();
-        String line = null;
-        while ( ( line = reader.readLine() ) != null ) {
-            lines.add( line );
-        }
-
-        int currentLine = 0;
-        while ( currentLine < lines.size() ) {
-            String trimmed = lines.get( currentLine++ ).trim();
-            if ( trimmed.startsWith( "Testing" ) && !trimmed.startsWith( "Testing suite" ) ) {
-                String s = trimmed.substring( 8 );
-                String caseId = s.substring( 0, s.indexOf( ' ' ) );
-                String result = findCorrespondingResult( lines, currentLine, caseId );
-                resultSnippets.add( new Object[] { caseId, result } );
-            }
-        }
-        return resultSnippets;
-    }
-
-    private static String findCorrespondingResult( List<String> lines, int currentLine, String caseId ) {
-        while ( currentLine < lines.size() ) {
-            String trimmed = lines.get( currentLine++ ).trim();
-            if ( trimmed.startsWith( "Test " + caseId ) ) {
-                return trimmed;
-            }
-        }
-        throw new RuntimeException( "Error parsing CITE result log." );
     }
 
     @Test

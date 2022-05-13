@@ -442,6 +442,8 @@ contrast to the simple SQL feature store, the SQL feature store is
 transaction capable (even for complex mappings) and ideally suited for
 mapping rich GML application schemas.
 
+TIP: SQLFeatureStore configurations can be filed in sub directories. To reference a feature store the id must include the directory. Example: 'dir/featureStore' if the SQLFeatureStore configuration file 'featureStore.xml' is filed in the directory 'dir'.
+
 ==== Minimal configuration example
 
 A very minimal valid configuration example looks like this:
@@ -673,7 +675,8 @@ _cities_.
 *SQL feature store: Mapping two tables*
 
 [source,xml]
-----<SQLFeatureStore configVersion="3.4.0"
+----
+<SQLFeatureStore configVersion="3.4.0"
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql

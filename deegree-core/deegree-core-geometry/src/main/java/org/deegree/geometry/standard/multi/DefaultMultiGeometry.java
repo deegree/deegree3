@@ -43,11 +43,12 @@ import java.util.ListIterator;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryException;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link MultiGeometry}.
@@ -82,7 +83,9 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
 
     @Override
     public int getCoordinateDimension() {
-        return members.get( 0 ).getCoordinateDimension();
+        if ( isEmpty() )
+            throw new GeometryException( "MultiGeometry is empty, coordinate dimension can not be calculated." );
+        return get( 0 ).getCoordinateDimension();
     }
 
     @Override
@@ -92,7 +95,7 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
 
     @Override
     protected GeometryCollection buildJTSGeometry() {
-        com.vividsolutions.jts.geom.Geometry[] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        org.locationtech.jts.geom.Geometry[] jtsMembers = new org.locationtech.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : members ) {
             jtsMembers[i++] = getAsDefaultGeometry( geometry ).getJTSGeometry();
@@ -200,7 +203,8 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
     @Override
     public Envelope getEnvelope() {
         if ( env == null ) {
-            // TODO NullEnvelope for emtpy aggregates? or throw an exception?
+            if ( isEmpty() )
+                throw new GeometryException( "MultiGeometry is empty, coordinate envelope can not be calculated." );
             env = get( 0 ).getEnvelope();
             for ( Geometry geom : this ) {
                 env = env.merge( geom.getEnvelope() );

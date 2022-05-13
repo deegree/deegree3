@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd"
   version="2.0">
 
-  <name>goawayeclipsebug</name>
+  <name>deegree services console UI</name>
 
   <application>
     <locale-config>
@@ -54,6 +54,10 @@
     <navigation-case>
       <from-outcome>failed</from-outcome>
       <to-view-id>/console/jsf/logInFailed.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>home</from-outcome>
+      <to-view-id>/index.xhtml</to-view-id>
     </navigation-case>
   </navigation-rule>
   <!-- PhaseListener -->

@@ -95,7 +95,7 @@ import com.google.gson.JsonParser;
  * 
  * <code>
  * var u = org.deegree.commons.utils.net.HttpUtils
- * u.retrieve(u.UTF8STRING, "http://demo.deegree.org/deegree-wms/services?request=capabilities&service=WMS")
+ * u.retrieve(u.UTF8STRING, "http://demo.deegree.org/deegree-wms/services?request=capabilities&amp;service=WMS")
  * </code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
