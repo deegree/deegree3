@@ -500,7 +500,7 @@ application schemas for different GML versions and is fine for simple
 feature models (e.g. feature types served from shapefiles or flat
 database tables). However, valid re-encoding of complex GML application
 schema (such as INSPIRE Data Themes) is technically not feasible. In
-these cases, you will have to set this option to _false_, so the WFS
+these cases, you will have to set this option to _true_, so the WFS
 will produce a response that refers to the original schema files used
 for configuring the feature store. If you want the references to point
 to an external copy of your GML application schema files (instead of
@@ -1434,6 +1434,19 @@ ignored, if a metadata configuration file (see chapter
 capabilities must be configured there.
 
 WARNING: Extended Capabilities are currently not supported by WMS 1.1.1. In WMS 1.1.1 configured extended capabilities are ignored and not included in the capabilities document.
+
+==== Propagation of supported SLD functionality
+
+The deegree WMS has extensive support for styling languages SLD/SE versions 1.0.0 and
+1.1.0 but does not propagate this by default. This can be achieved by adding
+these blocks to the extended capabilities element of the configuration:
+
+[source,xml]
+----
+<ExtendedCapabilities>
+  <sld:UserDefinedSymbolization xmlns:sld="http://www.opengis.net/sld" SupportSLD="1" UserLayer="1" UserStyle="1" RemoteWFS="0" InlineFeature="1"/>
+</ExtendedCapabilities>
+----
 
 ==== Vendor specific parameters
 

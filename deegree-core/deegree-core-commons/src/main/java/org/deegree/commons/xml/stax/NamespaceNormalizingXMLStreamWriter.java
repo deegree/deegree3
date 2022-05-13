@@ -45,7 +45,7 @@ import org.deegree.commons.xml.NamespaceBindings;
 
 /**
  * {@link XMLStreamWriter} that performs normalization of namespace bindings.
- * <p>
+ *
  * Performed normalizations:
  * <ul>
  * <li><b>Prefixes</b>: The given namespace-prefix bindings take precedence over the prefixes specified when writing
@@ -53,8 +53,7 @@ import org.deegree.commons.xml.NamespaceBindings;
  * <li><b>Removal of redundant bindings</b>: If a namespace prefix is already bound (to the same namespace) at a certain
  * position in the document, subsequent (redundant) bindings are skipped.</li>
  * </ul>
- * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 

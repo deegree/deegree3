@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools</artifactId>
-    <version>3.4.28-SNAPSHOT</version>
+    <version>3.4.31-SNAPSHOT</version>
   </parent>
 
   <inceptionYear>2016</inceptionYear>
@@ -21,6 +21,10 @@
     <developer>
       <name>Lyn Goltz</name>
       <email>goltz@lat-lon.de</email>
+    </developer>
+    <developer>
+      <name>Stephan Reichhelm</name>
+      <email>reichhelm@grit.de</email>
     </developer>
   </developers>
 
