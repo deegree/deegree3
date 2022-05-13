@@ -1,0 +1,38 @@
+[[anchor-appendix]]
+== Appendix
+
+The following chapters of the documentation are aimed at users with specialized knowledge on the inner workings of deegree.
+
+NOTE: As the internal workings of deegree are always evolving, the information in these chapters might become obsolete without any prior notice. There is no guarantee for anything described in here to be the same for future versions of deegree.
+
+=== Tunable deegree parameters
+
+How to set up deegree is described in the chapter <<anchor-configuration-basics>> and following.
+If it is required to change the default behavior of deegree in more specific use cases, this can be done through setting tunable deegree specific parameters.
+
+These parameters can either be set through Java system property, for example when starting command line tools by adding the parameter in form of `-Dparameter=value`.
+When deploying deegree webservices to existing Java Servlet container, these options can either be defined as system property or through JNDI environment definitions. 
+footnote:[More details can be found in the Java tutorial on the topic of https://docs.oracle.com/javase/jndi/tutorial/beyond/env/source.html#SYS/[Specifying Environment Properties] or your Java Servlet container.]
+
+.Example of JNDI environment
+
+When using JNDI environment, more complex configurations are possible. For example, it is possible to limit the defined parameters to a specific deployment inside a Java Servlet container.
+
+[source,xml]
+----
+<Environment name="deegree.rendering.stroke.miterlimit" value="2.66" 
+             type="java.lang.Float" override="false" 
+             description="deegree Rendering - Miter Limit Factor"/>
+----
+More details on the datails of configuration can be found inside the documentation of the used Java Servlet containter 
+like https://tomcat.apache.org/tomcat-8.5-doc/config/context.html#Environment_Entries[Apache Tomcat].
+
+.List of current available parameters
+
+[width="100%",cols="20%,20%,10%,50%",options="header",]
+|===
+|Option |Type |Default Value |Description
+
+|deegree.rendering.stroke.miterlimit |java.lang.Float |10 |When the configured factor is exceeded portrayal changes from JOIN_MITER to JOIN_BEVEL (see https://docs.oracle.com/javase/tutorial/2d/geometry/strokeandfill.html).
+
+|===
