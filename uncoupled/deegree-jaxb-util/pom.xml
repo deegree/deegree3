@@ -58,6 +58,16 @@
 		</plugins>
 	</build>
 
+	<distributionManagement>
+		<repository>
+			<id>deegree-releases</id>
+			<url>https://repo.deegree.org/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>deegree-snapshots</id>
+			<url>https://repo.deegree.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<licenses>
 		<license>
