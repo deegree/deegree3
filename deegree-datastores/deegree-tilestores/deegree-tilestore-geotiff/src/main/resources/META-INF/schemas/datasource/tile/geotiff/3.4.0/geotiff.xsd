@@ -26,6 +26,7 @@
               <element name="TileMatrixSetId" type="string" />
               <element name="File" type="string" />
               <element name="ImageFormat" type="string" minOccurs="0" />
+              <element name="AccessConfig" type="t:AccessConfig" minOccurs="0" />
             </sequence>
           </complexType>
         </element>
@@ -40,5 +41,11 @@
       </attribute>
     </complexType>
   </element>
+
+  <complexType name="AccessConfig">
+    <sequence>
+      <element name="MaxActive"  type="integer" default="8" minOccurs="0" />
+    </sequence>
+  </complexType>
 
 </schema>

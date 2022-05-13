@@ -42,6 +42,7 @@
 package org.deegree.tile.persistence.geotiff;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +79,7 @@ class GeoTiffTileDataSetBuilder {
         String filename = cfg.getFile();
         String format = cfg.getImageFormat();
         String tmsId = cfg.getTileMatrixSetId();
+        int maxActive = getMaxActive( cfg );
 
         File file = location.resolveToFile( filename );
 
@@ -93,10 +95,16 @@ class GeoTiffTileDataSetBuilder {
             int yoff = (int) Math.round( y / tm.getTileHeight() );
             int numx = (int) Math.ceil( envelope.getSpan0() / tm.getTileWidth() );
             int numy = (int) Math.ceil( envelope.getSpan1() / tm.getTileHeight() );
-            levels.add( new GeoTIFFTileDataLevel( tm, file, idx++, xoff, yoff, numx, numy ) );
+            levels.add( new GeoTIFFTileDataLevel( tm, file, idx++, xoff, yoff, numx, numy, maxActive ) );
         }
 
         return new DefaultTileDataSet( levels, tms, format );
+    }
+
+    private int getMaxActive( GeoTIFFTileStoreJAXB.TileDataSet cfg ) {
+        if ( cfg.getAccessConfig() != null && cfg.getAccessConfig().getMaxActive() != null )
+            return cfg.getAccessConfig().getMaxActive().intValue();
+        return 8;
     }
 
 }
