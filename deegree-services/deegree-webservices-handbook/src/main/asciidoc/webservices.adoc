@@ -855,6 +855,8 @@ unlimited
 |MaxHeight |0..1 |Integer |Maximum height in a GetMap request, default:
 unlimited
 
+|CrsCheckStrict |0..1 |Boolean |Configures if the check of the CRS should be strict or not, default: false
+
 |Strict |0..1 |Boolean | Indicates if the server should behave strictly as specified. default: false
 |===
 
@@ -880,6 +882,7 @@ http://discovery.eu/csw?service=CSW&request=GetRecordById&version=2.0.2&id=$%7Bm
 Please note that you'll need to escape the & symbols with &amp; as shown
 in the example. The $\{metadataSetId} will be replaced with the metadata
 set id from each layer.
+* _CrsCheckStrict_: By default the requested CRS are limited by the CRS supported by deegree. Set this to false if an exception (with code InvalidCRS or InvalidSRS) should be thrown if the request CRS is not support by the layer.
 
 Here is a snippet for quick copy & paste:
 

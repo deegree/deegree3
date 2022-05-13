@@ -216,6 +216,8 @@ public class WMSController extends AbstractOWS {
 
     private DeegreeWMS conf;
 
+    private boolean isCrsCheckStrict = false;
+
     private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
 
     private SupportedEncodings supportedEncodings;
@@ -281,6 +283,9 @@ public class WMSController extends AbstractOWS {
                 caps.add( new XMLAdapter( xmlStream ).getRootElement() );
             }
         }
+
+        if ( conf.isCrsCheckStrict() != null )
+            isCrsCheckStrict = conf.isCrsCheckStrict();
 
         try {
             addSupportedCapabilitiesFormats( conf );
@@ -555,6 +560,9 @@ public class WMSController extends AbstractOWS {
                 throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
                                         "layers" );
             }
+            if ( isCrsCheckStrict && !service.isCrsSupported( lr.getName(), gfi.getRequestCoordinateSystem() ) ) {
+                controllers.get( version ).throwSRSException( gfi.getRequestCoordinateSystem().getAlias() );
+            }
         }
         for ( StyleRef sr : gfi.getStyles() ) {
             // TODO check style availability
@@ -584,6 +592,9 @@ public class WMSController extends AbstractOWS {
             if ( !service.hasTheme( lr.getName() ) ) {
                 throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
                                         "layers" );
+            }
+            if ( isCrsCheckStrict && !service.isCrsSupported( lr.getName(), gm.getRequestCoordinateSystem() ) ) {
+                controllers.get( version ).throwSRSException( gm.getRequestCoordinateSystem().getAlias() );
             }
         }
         for ( StyleRef sr : gm.getStyles() ) {

@@ -59,6 +59,7 @@ import java.util.ListIterator;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
@@ -184,6 +185,14 @@ public class MapService {
 
     public boolean hasTheme( String name ) {
         return themeMap.get( name ) != null;
+    }
+
+    public boolean isCrsSupported( String name, ICRS requestedCrs ) {
+        Theme theme = themeMap.get( name );
+        if ( theme == null )
+            return false;
+        List<ICRS> supportedCrs = theme.getLayerMetadata().getSpatialMetadata().getCoordinateSystems();
+        return supportedCrs.contains( requestedCrs );
     }
 
     public void getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers, RenderContext ctx )
@@ -313,7 +322,7 @@ public class MapService {
                                             + l.getMetadata().getName() + ") that is not queryable.",
                                             LAYER_NOT_QUERYABLE );
                 }
-
+                
                 list.add( l.infoQuery( query, headers ) );
             }
         }
