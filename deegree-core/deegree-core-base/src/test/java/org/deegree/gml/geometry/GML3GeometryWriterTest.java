@@ -36,12 +36,15 @@
 
 package org.deegree.gml.geometry;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
 import static org.deegree.gml.GMLOutputFactory.createGMLStreamWriter;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 import java.io.IOException;
 import java.net.URL;
@@ -82,10 +85,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exporting all types of geometries and validating them.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class GML3GeometryWriterTest {
@@ -432,10 +435,11 @@ public class GML3GeometryWriterTest {
         exporter.write( geom );
         xmlWriter.flush();
 
-        byte[] expected = IOUtils.toByteArray( GML3GeometryWriterTest.class.getResourceAsStream( "../aixm/geometry/"
-                                                                                                 + expectedFileName ) );
-        String s = new String( expected, "UTF-8" );
-        Assert.assertEquals( s, memoryWriter.toString() );
+        String expected = IOUtils.toString( GML3GeometryWriterTest.class.getResourceAsStream( "../aixm/geometry/"
+                                                                                              + expectedFileName ),
+                                            UTF_8.name() );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
     private Geometry readAIXMGeometry( String fileName )
@@ -447,7 +451,8 @@ public class GML3GeometryWriterTest {
         GMLAppSchemaReader adapter = new GMLAppSchemaReader( null, null, schemaUrl );
         AppSchema schema = adapter.extractAppSchema();
 
-        GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource( "../aixm/geometry/" + fileName ) );
+        GMLStreamReader gmlStream = createGMLStreamReader( GML_32, this.getClass().getResource(
+                        "../aixm/geometry/" + fileName ) );
         gmlStream.setApplicationSchema( schema );
 
         XMLStreamReader xmlReader = gmlStream.getXMLReader();

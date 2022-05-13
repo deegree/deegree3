@@ -35,12 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.metadata.iso;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -96,9 +98,9 @@ public class ISORecordTest {
                             throws Exception {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
-        byte[] actual = writeOut( filterEl, null );
-        byte[] expected = IOUtils.toByteArray( ISORecordTest.class.getResourceAsStream( "full_expected.xml" ) );
-        Assert.assertArrayEquals( expected, actual );
+        String actual = writeOut( filterEl, null );
+        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "full_expected.xml" ), UTF_8.name() );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
     @Ignore
@@ -107,9 +109,9 @@ public class ISORecordTest {
                             throws Exception {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
-        byte[] actual = writeOut( filterEl, ISORecord.briefFilterElementsXPath );
-        byte[] expected = IOUtils.toByteArray( ISORecordTest.class.getResourceAsStream( "brief.xml" ) );
-        Assert.assertArrayEquals( expected, actual );
+        String actual = writeOut( filterEl, ISORecord.briefFilterElementsXPath );
+        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "brief.xml" ), UTF_8.name() );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
     @Ignore
@@ -118,12 +120,12 @@ public class ISORecordTest {
                             throws Exception {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
-        byte[] actual = writeOut( filterEl, ISORecord.summaryFilterElementsXPath );
-        byte[] expected = IOUtils.toByteArray( ISORecordTest.class.getResourceAsStream( "summary.xml" ) );
-        Assert.assertArrayEquals( expected, actual );
+        String actual = writeOut( filterEl, ISORecord.summaryFilterElementsXPath );
+        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "summary.xml" ), UTF_8.name() );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
-    private byte[] writeOut( OMElement filterEl, List<XPath> paths )
+    private String writeOut( OMElement filterEl, List<XPath> paths )
                             throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( bos );
@@ -132,7 +134,7 @@ public class ISORecordTest {
         }
         filterEl.serialize( writer );
         writer.close();
-        return bos.toByteArray();
+        return bos.toString();
     }
 
     @Test
