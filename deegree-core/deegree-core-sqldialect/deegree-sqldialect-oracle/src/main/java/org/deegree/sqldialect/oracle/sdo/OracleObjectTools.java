@@ -37,10 +37,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle.sdo;
 
-import static java.lang.System.getProperty;
-
 import java.sql.SQLException;
 
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter.GeomHolder;
 
 import oracle.jdbc.OracleConnection;
@@ -66,7 +65,8 @@ import oracle.sql.StructDescriptor;
  */
 public class OracleObjectTools {
 
-    private static final boolean USE_OPTIMIZED_POINT_STORAGE = "true".equalsIgnoreCase( getProperty( "deegree.sqldialect.oracle.optimized_point_storage", "true" ));
+    private static final boolean USE_OPTIMIZED_POINT_STORAGE = TunableParameter.get( "deegree.sqldialect.oracle.optimized_point_storage",
+                                                                                     true );
 
     protected static int fromInteger( Datum data, int defaultValue )
                             throws SQLException {
