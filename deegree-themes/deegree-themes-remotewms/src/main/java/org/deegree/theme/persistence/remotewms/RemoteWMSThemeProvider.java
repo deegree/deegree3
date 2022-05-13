@@ -52,7 +52,7 @@ import org.deegree.workspace.Workspace;
  */
 public class RemoteWMSThemeProvider extends ThemeProvider {
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSThemeProvider.class.getResource( "/META-INF/schemas/themes/remotewms/3.4.0/remotewms.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWMSThemeProvider.class.getResource( "/META-INF/schemas/themes/remotewms/remotewms.xsd" );
 
     @Override
     public String getNamespace() {

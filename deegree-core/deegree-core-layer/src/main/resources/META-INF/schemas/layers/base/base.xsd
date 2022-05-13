@@ -12,8 +12,8 @@
     </appinfo>
   </annotation>
 
-  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="http://schemas.deegree.org/commons/description/3.4.0/description.xsd" />
-  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.4.0/spatialmetadata.xsd" />
+  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="../../commons/description/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../commons/spatialmetadata/spatialmetadata.xsd" />
 
   <group name="LayerInfo">
     <sequence>

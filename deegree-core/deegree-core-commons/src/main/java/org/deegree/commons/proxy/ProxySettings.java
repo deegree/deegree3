@@ -74,7 +74,7 @@ public final class ProxySettings implements Initializable {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.proxy.jaxb";
 
-    private static final URL CONFIG_SCHEMA = ProxySettings.class.getResource( "/META-INF/schemas/proxy/3.4.0/proxy.xsd" );
+    private static final URL CONFIG_SCHEMA = ProxySettings.class.getResource( "/META-INF/schemas/proxy/proxy.xsd" );
 
     private static final String PROXY_HOST = "proxyHost";
 

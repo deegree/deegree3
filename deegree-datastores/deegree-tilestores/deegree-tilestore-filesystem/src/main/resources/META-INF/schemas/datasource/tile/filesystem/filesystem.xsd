@@ -3,7 +3,7 @@
   targetNamespace="http://www.deegree.org/datasource/tile/filesystem" xmlns:t="http://www.deegree.org/datasource/tile/filesystem"
   elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="http://schemas.deegree.org/commons/spatialmetadata/3.4.0/spatialmetadata.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../../commons/spatialmetadata/spatialmetadata.xsd" />
 
   <annotation>
     <appinfo>

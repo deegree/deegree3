@@ -11,7 +11,7 @@
     </appinfo>
   </annotation>
 
-  <import namespace="http://www.deegree.org/layers/base" schemaLocation="http://schemas.deegree.org/layers/base/3.4.0/base.xsd" />
+  <import namespace="http://www.deegree.org/layers/base" schemaLocation="../../layers/base/base.xsd" />
 
   <complexType name="TileLayerType">
     <sequence>
