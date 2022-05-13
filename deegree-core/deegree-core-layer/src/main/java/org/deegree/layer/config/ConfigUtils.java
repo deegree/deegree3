@@ -127,6 +127,7 @@ public final class ConfigUtils {
         for ( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s : srt.getStyle() ) {
             boolean isDefault = false;
             String name = s.getStyleName();
+            String title = s.getStyleTitle();
             String nameRef = s.getStyleNameRef();
             String layerRef = s.getLayerNameRef();
             Style st = store.getStyle( layerRef, nameRef );
@@ -141,6 +142,7 @@ public final class ConfigUtils {
             }
             st = st.copy();
             st.setName( name );
+            st.setTitle( title );
             styleMap.put( name, st );
             if ( isDefault && !styleMap.containsKey( "default" ) ) {
                 styleMap.put( "default", st );
