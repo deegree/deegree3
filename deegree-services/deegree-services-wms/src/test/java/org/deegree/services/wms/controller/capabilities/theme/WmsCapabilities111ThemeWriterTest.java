@@ -46,16 +46,10 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.when;
-import static org.xmlmatchers.XmlMatchers.conformsTo;
-import static org.xmlmatchers.XmlMatchers.isEquivalentTo;
-import static org.xmlmatchers.transform.XmlConverters.the;
-import static org.xmlmatchers.validation.SchemaFactory.w3cXmlSchemaFrom;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -65,7 +59,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.ExtendedDescription;
@@ -89,7 +82,6 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.StandardTheme;
-import org.h2.util.IOUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -120,9 +112,11 @@ public class WmsCapabilities111ThemeWriterTest {
         writer.flush();
         bos.close();
 
-        String expected = org.apache.commons.io.IOUtils.toString( WmsCapabilities111ThemeWriterTest.class.getResourceAsStream( "wms111_layer_minimal.xml" ), UTF_8 );
-        String xml = bos.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expected ) ) );
+        String expected = org.apache.commons.io.IOUtils.toString(
+                        WmsCapabilities111ThemeWriterTest.class.getResourceAsStream( "wms111_layer_minimal.xml" ),
+                        UTF_8 );
+        String actual = bos.toString();
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
     }
 
     @Test
@@ -141,9 +135,10 @@ public class WmsCapabilities111ThemeWriterTest {
         writer.flush();
         bos.close();
 
-        String expected = org.apache.commons.io.IOUtils.toString( WmsCapabilities111ThemeWriterTest.class.getResourceAsStream( "wms111_layer_full.xml" ), UTF_8 );
-        String xml = bos.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expected ) ) );
+        String expected = org.apache.commons.io.IOUtils.toString(
+                        WmsCapabilities111ThemeWriterTest.class.getResourceAsStream( "wms111_layer_full.xml" ), UTF_8 );
+        String actual = bos.toString();
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
     }
 
     @Test
@@ -171,9 +166,11 @@ public class WmsCapabilities111ThemeWriterTest {
         writer.flush();
         bos.close();
 
-        String expected = org.apache.commons.io.IOUtils.toString( WmsCapabilities111ThemeWriterTest.class.getResourceAsStream( "wms111_layer_multipleMetadataUrls.xml" ), UTF_8 );
-        String xml = bos.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expected ) ) );
+        String expected = org.apache.commons.io.IOUtils.toString(
+                        WmsCapabilities111ThemeWriterTest.class.getResourceAsStream(
+                                        "wms111_layer_multipleMetadataUrls.xml" ), UTF_8 );
+        String actual = bos.toString();
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
     }
 
     private DatasetMetadata createDatasetMetadataMinimal() {
