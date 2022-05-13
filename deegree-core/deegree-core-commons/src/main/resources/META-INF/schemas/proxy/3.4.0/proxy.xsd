@@ -39,14 +39,7 @@
         <element name="FtpNonProxyHosts" type="string" minOccurs="0" />
       </sequence>
       <attribute name="overrideSystemSettings" type="boolean" use="optional" />
-      <attribute name="configVersion" use="required">
-        <simpleType>
-          <restriction base="string">
-            <enumeration value="3.4.0" />
-            <enumeration value="3.0.0" />
-          </restriction>
-        </simpleType>
-      </attribute>
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
 </schema>

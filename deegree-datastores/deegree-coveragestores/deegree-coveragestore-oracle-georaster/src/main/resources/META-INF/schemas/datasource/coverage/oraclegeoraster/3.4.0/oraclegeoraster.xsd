@@ -21,7 +21,7 @@
 		<complexType>
 			<complexContent>
 				<extension base="raster:AbstractOracleGeorasterType">
-					<attribute name="configVersion" type="raster:ConfigVersionType" use="required" />
+					<attribute name="configVersion" type="string" use="optional"/>
 				</extension>
 			</complexContent>
 		</complexType>
@@ -121,11 +121,5 @@
 		<list itemType="double" />
 	</simpleType>
 
-	<simpleType name="ConfigVersionType">
-		<restriction base="string">
-			<enumeration value="3.1.0" />
-			<enumeration value="3.4.0" />
-		</restriction>
-	</simpleType>
 	<!-- end copied from commons -->
 </schema>

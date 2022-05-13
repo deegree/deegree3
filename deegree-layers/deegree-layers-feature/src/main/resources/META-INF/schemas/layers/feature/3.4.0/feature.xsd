@@ -68,15 +68,7 @@
           </element>
         </choice>
       </sequence>
-      <attribute name="configVersion" type="f:ConfigVersionType" use="required" />
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
-
-  <simpleType name="ConfigVersionType">
-    <restriction base="string">
-      <enumeration value="3.4.0" />
-      <enumeration value="3.2.0" />
-    </restriction>
-  </simpleType>
-
 </schema>

@@ -21,15 +21,7 @@
         </element>
         <element ref="wps:AbstractExecutionManager" minOccurs="0" />
       </sequence>
-      <attribute name="configVersion" use="required">
-        <simpleType>
-          <restriction base="string">
-            <enumeration value="3.4.0" />
-            <enumeration value="3.1.0" />
-            <enumeration value="3.0.0" />
-          </restriction>
-        </simpleType>
-      </attribute>
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
   <element name="AbstractExecutionManager" abstract="true" />

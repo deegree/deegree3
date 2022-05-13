@@ -20,15 +20,7 @@
         <element name="RemoteWMSId" type="string" />
         <element name="LayerStoreId" type="string" />
       </sequence>
-      <attribute name="configVersion" type="l:ConfigVersionType" use="required" />
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
-
-  <simpleType name="ConfigVersionType">
-    <restriction base="string">
-      <enumeration value="3.4.0" />
-      <enumeration value="3.1.0" />
-    </restriction>
-  </simpleType>
-
 </schema>

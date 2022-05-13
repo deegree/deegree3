@@ -22,14 +22,7 @@
         <element name="Password" type="string" />
         <element name="ReadOnly" type="boolean" minOccurs="0" default="false"/>
       </sequence>
-      <attribute name="configVersion" use="required">
-        <simpleType>
-          <restriction base="string">
-            <enumeration value="3.4.0" />
-            <enumeration value="3.0.0" />
-          </restriction>
-        </simpleType>
-      </attribute>
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
 </schema>

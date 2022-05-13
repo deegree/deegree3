@@ -26,14 +26,7 @@
       <sequence>
         <element name="GDALLayer" type="g:GDALLayerType" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="configVersion" type="g:ConfigVersionType" use="required" />
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
-
-  <simpleType name="ConfigVersionType">
-    <restriction base="string">
-      <enumeration value="3.4.0" />
-    </restriction>
-  </simpleType>
-
 </schema>

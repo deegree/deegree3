@@ -14,7 +14,7 @@
         <element name="TileMatrixSetId" type="string" />
         <element name="TileStoreId" maxOccurs="unbounded" type="string" />
       </sequence>
-      <attribute name="configVersion" use="required" fixed="3.4.0" />
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
 </schema>

@@ -52,17 +52,8 @@
       </xs:element>
       <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="configVersion" type="controller:ConfigVersionType" use="required" />
+    <xs:attribute name="configVersion" type="xs:string" use="optional"/>
   </xs:complexType>
-
-  <xs:simpleType name="ConfigVersionType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="3.0.0" />
-      <xs:enumeration value="3.1.0" />
-      <xs:enumeration value="3.2.0" />
-      <xs:enumeration value="3.4.0" />
-    </xs:restriction>
-  </xs:simpleType>
 
   <xs:complexType name="ReportedUrlsType">
     <xs:sequence>

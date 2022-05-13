@@ -24,7 +24,7 @@
         <!-- if no layers are specified, all layers are copied from source -->
         <element name="Layer" type="l:LayerType" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="configVersion" type="l:ConfigVersionType" use="required" />
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
 
@@ -55,14 +55,6 @@
       </element>
     </sequence>
   </complexType>
-
-  <simpleType name="ConfigVersionType">
-    <restriction base="string">
-      <enumeration value="3.4.0" />
-      <enumeration value="3.2.0" />
-      <enumeration value="3.1.0" />
-    </restriction>
-  </simpleType>
 
   <simpleType name="GMLVersionType">
     <restriction base="string">

@@ -83,16 +83,7 @@
         </element>
         <element name="Strict" minOccurs="0" type="boolean" default="false"/>
       </sequence>
-      <attribute name="configVersion" use="required">
-        <simpleType>
-          <restriction base="string">
-            <enumeration value="3.0.0" />
-            <enumeration value="3.1.0" />
-            <enumeration value="3.2.0" />
-            <enumeration value="3.4.0" />
-          </restriction>
-        </simpleType>
-      </attribute>
+      <attribute name="configVersion" type="string" use="optional"/>
     </complexType>
   </element>
 

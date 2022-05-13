@@ -20,14 +20,7 @@
         <xs:element ref="wcs:ServiceConfiguration" />
         <xs:element ref="wcs:PublishedInformation" />
       </xs:sequence>
-      <xs:attribute name="configVersion" use="required">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="3.4.0" />
-            <xs:enumeration value="3.0.0" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="configVersion" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>

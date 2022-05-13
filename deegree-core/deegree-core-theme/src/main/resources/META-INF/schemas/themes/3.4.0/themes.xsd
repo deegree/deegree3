@@ -45,16 +45,7 @@
     <element name="LayerStoreId" type="string" minOccurs="0" maxOccurs="unbounded" />
     <element name="Theme" type="t:ThemeType" minOccurs="0" />
    </sequence>
-   <attribute name="configVersion" use="required" type="t:ConfigVersionType" />
+   <attribute name="configVersion" type="string" use="optional"/>
   </complexType>
  </element>
-
- <simpleType name="ConfigVersionType">
-  <restriction base="string">
-   <enumeration value="3.1.0" />
-   <enumeration value="3.2.0" />
-   <enumeration value="3.4.0" />
-  </restriction>
- </simpleType>
-
 </schema>
