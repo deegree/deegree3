@@ -40,10 +40,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.layer.Layer;
 import org.deegree.layer.persistence.LayerStoreProvider;
-import org.deegree.tile.persistence.filesystem.FileSystemTileStoreTest;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
 import org.junit.After;
@@ -64,8 +62,8 @@ public class TileLayerTest {
 
     @Before
     public void setup()
-                            throws URISyntaxException, IOException, ResourceInitException {
-        URL u = FileSystemTileStoreTest.class.getResource( "FileSystemTileStoreTest.class" );
+                            throws URISyntaxException, IOException {
+        URL u = TileLayerTest.class.getResource( "TileLayerTest.class" );
         File dir = new File( new File( u.toURI() ).getParentFile(),
                              "../../../../../../../src/main/webapp/WEB-INF/workspace" );
         dir = dir.getCanonicalFile();

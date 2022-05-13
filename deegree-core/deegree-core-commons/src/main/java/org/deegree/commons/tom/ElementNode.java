@@ -45,18 +45,16 @@ import org.deegree.commons.tom.primitive.PrimitiveValue;
 
 /**
  * {@link TypedObjectNode} with an (XML) element semantic.
- * <p>
- * Chararacteristics:
+ * Characteristics:
  * <ul>
  * <li>Element name</li>
  * <li>Attributes</li>
  * <li>Child nodes</li>
- * </p>
- * 
+ * </ul>
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public interface ElementNode extends TypedObjectNode {

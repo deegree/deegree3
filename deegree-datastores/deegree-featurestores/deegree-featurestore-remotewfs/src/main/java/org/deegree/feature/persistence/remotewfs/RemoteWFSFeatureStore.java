@@ -98,6 +98,8 @@ public class RemoteWFSFeatureStore implements FeatureStore {
 
     private AppSchema appSchema;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link RemoteWFSFeatureStore} for the given capabilities URL.
      * 
@@ -140,6 +142,11 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     @Override
     public boolean isMapped( QName ftName ) {
         return appSchema.getFeatureType( ftName ) != null;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
     }
 
     @Override

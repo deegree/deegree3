@@ -1,7 +1,0 @@
-0500	SFP(0) - Schweregrundnetzpunkt
-1000	SFP(1) - Schwerefestpunkt 1.Ordnung, Hauptschwerenetzpunkt
-2000	SFP(2) - Schwerefestpunkt 2.Ordnung
-3000	SFP(3) - Schwerefestpunkt 3.Ordnung
-4000	SFP(4) - Schwerefestpunkt 4. Ordnung
-9000	SFP, der nur eine interne Bedeutung hat
-9998	nach Quellenlage nicht zu spezifizieren

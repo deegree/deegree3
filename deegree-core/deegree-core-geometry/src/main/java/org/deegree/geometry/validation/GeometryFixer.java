@@ -198,7 +198,7 @@ public class GeometryFixer {
             for ( Curve memberCurve : compositeCurve ) {
                 fixedMemberCurves.add( invertOrientation( memberCurve ) );
             }
-            
+            Collections.reverse( fixedMemberCurves );
             fixedCurve = new DefaultCompositeCurve( curve.getId(), curve.getCoordinateSystem(), curve.getPrecision(),
                                                     fixedMemberCurves );
             break;
@@ -243,25 +243,29 @@ public class GeometryFixer {
             final List<CurveSegment> curveSegments = curve.getCurveSegments();
             for ( final CurveSegment curveSegment : curveSegments ) {
                 final CurveSegmentType segmentType = curveSegment.getSegmentType();
-
+                
                 Points points;
                 switch ( segmentType ) {
+                case ARC:
+                    points = ( (Arc) curveSegment ).getControlPoints();
+                    break;
                 case ARC_STRING:
                     points = ( (ArcString) curveSegment ).getControlPoints();
+                    break;
                 case LINE_STRING_SEGMENT:
                     points = ( (LineStringSegment) curveSegment ).getControlPoints();
-                    for ( int i = 0; i < points.size(); i++ ) {
-                        final Point first = points.get( i );
-                        final Point second = points.get( ( i + 1 ) % points.size() );
-
-                        shoelaceSum += ( second.get0() - first.get0() ) * ( second.get1() + first.get1() );
-                    }
-
-                    continue;
+                    break;   
                 default:
                     LOG.warn( "Calculating orientation of " + segmentType.name()
                               + " segments is not implemented yet. Ring orientation remains unchanged." );
                     return ring;
+                }
+                
+                for ( int i = 1; i < points.size(); i++ ) {
+                    final Point first = points.get( i - 1 );
+                    final Point second = points.get( i );
+
+                    shoelaceSum += ( second.get0() - first.get0() ) * ( second.get1() + first.get1() );
                 }
             }
         }
@@ -283,6 +287,7 @@ public class GeometryFixer {
             for ( Curve memberCurve : ring.getMembers() ) {
                 fixedMemberCurves.add( invertOrientation( memberCurve ) );
             }
+            Collections.reverse( fixedMemberCurves );
             fixedRing = new DefaultRing( ring.getId(), ring.getCoordinateSystem(), ring.getPrecision(),
                                          fixedMemberCurves );
             break;

@@ -12,21 +12,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-protocol</artifactId>
-    <version>3.4.15-SNAPSHOT</version>
+    <version>3.4.31-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>
@@ -47,6 +34,11 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-layer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-feature</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

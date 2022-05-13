@@ -35,19 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services.wfs.query;
 
-import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
-import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.xmlmatchers.XmlMatchers.hasXPath;
-import static org.xmlmatchers.transform.XmlConverters.xml;
+import org.apache.commons.io.IOUtils;
+import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
+import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
+import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
+import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+import org.deegree.services.controller.utils.HttpResponseBuffer;
+import org.deegree.services.wfs.WebFeatureService;
+import org.deegree.services.wfs.WfsFeatureStoreManager;
+import org.junit.Before;
+import org.junit.Test;
+import org.xmlunit.matchers.HasXPathMatcher;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,43 +65,28 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.commons.io.IOUtils;
-import org.deegree.commons.ows.exception.OWSException;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.feature.types.FeatureType;
-import org.deegree.protocol.wfs.storedquery.CreateStoredQuery;
-import org.deegree.protocol.wfs.storedquery.DropStoredQuery;
-import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
-import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
-import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.wfs.WebFeatureService;
-import org.deegree.services.wfs.WfsFeatureStoreManager;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_ID;
+import static org.deegree.services.wfs.query.StoredQueryHandler.GET_FEATURE_BY_TYPE;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class StoredQueryHandlerTest {
 
-    private static final NamespaceBindings NS_CONTEXT = new NamespaceBindings();
-
     private static File managedStoredQueries;
-
-    @BeforeClass
-    public static void initNamespaceContext()
-                            throws IOException {
-        NS_CONTEXT.addNamespace( "wfs", WFS_200_NS );
-    }
 
     @Before
     public void createManagedStoredQueriesDirectory()
-                            throws IOException {
+                    throws IOException {
         managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
         managedStoredQueries.deleteOnExit();
     }
@@ -109,7 +98,8 @@ public class StoredQueryHandlerTest {
                                                                         managedStoredQueries );
 
         List<QName> configuredFeatureTypeNames = Collections.emptyList();
-        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
+        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport(
+                        configuredFeatureTypeNames );
 
         assertThat( featureTypeNamesToExport.size(), is( featureTypes.size() ) );
         for ( FeatureType featureType : featureTypes ) {
@@ -124,7 +114,8 @@ public class StoredQueryHandlerTest {
                                                                         managedStoredQueries );
 
         List<QName> configuredFeatureTypeNames = Collections.emptyList();
-        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
+        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport(
+                        configuredFeatureTypeNames );
 
         assertThat( featureTypeNamesToExport.size(), is( 0 ) );
     }
@@ -136,7 +127,8 @@ public class StoredQueryHandlerTest {
                                                                         managedStoredQueries );
 
         List<QName> configuredFeatureTypeNames = configuredFeatureTypeNames();
-        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport( configuredFeatureTypeNames );
+        List<QName> featureTypeNamesToExport = storedQueryHandler.collectAndSortFeatureTypesToExport(
+                        configuredFeatureTypeNames );
 
         assertThat( featureTypeNamesToExport.size(), is( 1 ) );
 
@@ -174,7 +166,7 @@ public class StoredQueryHandlerTest {
 
     @Test
     public void testInitManagedStoredQueries()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
 
         File managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
@@ -194,7 +186,7 @@ public class StoredQueryHandlerTest {
 
     @Test
     public void testInitErroneousManagedStoredQueries()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
 
         File managedStoredQueries = Files.createTempDirectory( "managedStoredQueries" ).toFile();
@@ -209,7 +201,7 @@ public class StoredQueryHandlerTest {
 
     @Test
     public void testDoCreateStoredQuery()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         managedStoredQueries );
@@ -222,13 +214,14 @@ public class StoredQueryHandlerTest {
         xmlStreamWriter.close();
 
         assertThat( storedQueryHandler.hasStoredQuery( id ), is( true ) );
-        assertThat( xml( outStream.toString() ),
-                    hasXPath( "/wfs:CreateStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
+        assertThat( outStream.toString(),
+                    hasXPath( "/wfs:CreateStoredQueryResponse[@status='OK']" ).withNamespaceContext(
+                                    nsContext() ) );
     }
 
     @Test(expected = OWSException.class)
     public void testDoCreateStoredQuery_NullManagedStoredQueryDirectory()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         null );
@@ -243,7 +236,7 @@ public class StoredQueryHandlerTest {
 
     @Test(expected = OWSException.class)
     public void testDoCreateStoredQuery_NotExistingManagedStoredQueryDirectory()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         new File( "this/directory/does/not/exist" ) );
@@ -258,7 +251,7 @@ public class StoredQueryHandlerTest {
 
     @Test(expected = OWSException.class)
     public void testDoCreateStoredQuery_DuplicateId()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         managedStoredQueries );
@@ -277,7 +270,7 @@ public class StoredQueryHandlerTest {
 
     @Test(expected = OWSException.class)
     public void testDoCreateStoredQuery_UnsupportedLanguage()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         managedStoredQueries );
@@ -292,7 +285,7 @@ public class StoredQueryHandlerTest {
 
     @Test
     public void testDoDropStoredQuery()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         managedStoredQueries );
@@ -306,12 +299,14 @@ public class StoredQueryHandlerTest {
         xmlStreamWriter.close();
 
         assertThat( storedQueryHandler.hasStoredQuery( id ), is( false ) );
-        assertThat( xml( outStream.toString() ), hasXPath( "/wfs:DropStoredQueryResponse[@status='OK']", NS_CONTEXT ) );
+        assertThat( outStream.toString(),
+                    HasXPathMatcher.hasXPath( "/wfs:DropStoredQueryResponse[@status='OK']" ).withNamespaceContext(
+                                    nsContext() ) );
     }
 
     @Test
     public void testDoDropStoredQuery_Unremovable()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         managedStoredQueries );
@@ -329,7 +324,7 @@ public class StoredQueryHandlerTest {
 
     @Test(expected = OWSException.class)
     public void testDoDropStoredQuery_Unremovable_Exception()
-                            throws Exception {
+                    throws Exception {
         List<FeatureType> featureTypes = featureTypes();
         StoredQueryHandler storedQueryHandler = new StoredQueryHandler( mockWFS( featureTypes ), new ArrayList<URL>(),
                                                                         managedStoredQueries );
@@ -344,7 +339,7 @@ public class StoredQueryHandlerTest {
     }
 
     private void insertStoredQuery( StoredQueryHandler storedQueryHandler, String id )
-                            throws Exception {
+                    throws Exception {
         CreateStoredQuery request = createStoredQuery( id );
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter( outStream );
@@ -407,10 +402,13 @@ public class StoredQueryHandlerTest {
     }
 
     private HttpResponseBuffer mockHttpResponseBuffer( XMLStreamWriter xmlStreamWriter )
-                            throws Exception {
+                    throws Exception {
         HttpResponseBuffer mockedResponse = mock( HttpResponseBuffer.class );
         when( mockedResponse.getXMLWriter( anyBoolean() ) ).thenReturn( xmlStreamWriter );
         return mockedResponse;
     }
 
+    private java.util.Map<String, String> nsContext() {
+        return Collections.singletonMap( "wfs", WFS_200_NS );
+    }
 }

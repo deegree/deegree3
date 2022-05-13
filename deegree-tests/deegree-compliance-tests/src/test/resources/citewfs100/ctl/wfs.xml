@@ -74,12 +74,15 @@
       </java>
    </parser>
    <test name="wfs:main">
+       <ctl:param name="VAR_WFS_CAPABILITIES_URL"/>
       <assertion>This WFS is valid</assertion>
       <code>
         <!-- ***** Hard-wired the URL and test options (everything) ***** -->
          <xsl:variable name="VAR_WFS_CAPABILITIES_URL">
             <request>
-               <url>${serviceUrl}/services/wfs100?request=GetCapabilities&amp;service=WFS</url>
+                <url>
+                    <xsl:value-of select="$VAR_WFS_CAPABILITIES_URL"/>
+                </url>
                <method>get</method>
             </request>
          </xsl:variable>
