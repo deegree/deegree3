@@ -2,7 +2,9 @@ pipeline {
     agent {
         label 'openjdk8bot'
     }
-
+    options { 
+        disableConcurrentBuilds() 
+    }
     tools {
         maven 'maven-3.6'
         jdk 'adoptopenjdk-jdk8'

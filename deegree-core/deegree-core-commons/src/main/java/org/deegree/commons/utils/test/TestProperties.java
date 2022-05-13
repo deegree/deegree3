@@ -76,7 +76,7 @@ public class TestProperties {
     /**
      * Returns the properties from <code>${user.home}/.deegree-test.properties</code>.
      * 
-     * @return the properties, can be empty, but never <code>null/<code>
+     * @return the properties, can be empty, but never <code>null</code>
      */
     public static Properties getProperties() {
         return props;
