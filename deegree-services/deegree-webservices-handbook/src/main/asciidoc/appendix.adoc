@@ -3,7 +3,7 @@
 
 The following chapters of the documentation are aimed at users with specialized knowledge on the inner workings of deegree.
 
-NOTE: The functionality is currently in evolving status and may be change without future notice.
+NOTE: As the internal workings of deegree are always evolving, the information in these chapters might become obsolete without any prior notice. There is no guarantee for anything described in here to be the same for future versions of deegree.
 
 === Tunable deegree parameters
 
