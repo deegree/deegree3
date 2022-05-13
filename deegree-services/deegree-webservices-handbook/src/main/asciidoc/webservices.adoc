@@ -49,7 +49,7 @@ configuration example looks like this:
   xmlns="http://www.deegree.org/services/wfs"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wfs
-  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+  http://schemas.deegree.org/3.5/services/wfs/wfs_configuration.xsd">
 
   <QueryCRS>urn:ogc:def:crs:EPSG::4258</QueryCRS>
 
@@ -73,7 +73,7 @@ A more complex configuration example looks like this:
   xmlns="http://www.deegree.org/services/wfs"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wfs
-  http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd">
+  http://schemas.deegree.org/3.5/services/wfs/wfs_configuration.xsd">
 
   <SupportedVersions>
     <Version>2.0.0</Version>
@@ -126,7 +126,7 @@ A more complex configuration example looks like this:
 ==== Configuration overview
 
 The deegree WFS config file format is defined by schema file
-http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd. The
+http://schemas.deegree.org/3.5/services/wfs/wfs_configuration.xsd. The
 root element is <deegreeWFS> and the config attribute must be
 _3.4.0_. The following table lists all available configuration options
 (complex ones contain nested options themselves). When specifiying them,
@@ -1930,7 +1930,7 @@ empty), therefore a minimal WMTS configuration example looks like this:
   xmlns="http://www.deegree.org/services/wmts"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wmts
-  http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd">
+  http://schemas.deegree.org/3.5/services/wmts/wmts.xsd">
 
   <ServiceConfiguration />
 
@@ -1953,7 +1953,7 @@ like this:
   xmlns="http://www.deegree.org/services/wmts"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wmts
-  http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd">
+  http://schemas.deegree.org/3.5/services/wmts/wmts.xsd">
 
   <ServiceConfiguration>
     <ThemeId>water</ThemeId>
@@ -1966,7 +1966,7 @@ like this:
 ==== Configuration overview
 
 The deegree WMTS config file format is defined by schema file
-http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd. The root
+http://schemas.deegree.org/3.5/services/wmts/wmts.xsd. The root
 element is _deegreeWMTS_ and the config attribute must be _3.4.0_.
 
 The following table lists all available configuration options. When
@@ -2010,7 +2010,7 @@ WMS tile store backends.
 [source,xml]
 <GeoTIFFTileMatrixSet   xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff http://schemas.deegree.org/datasource/tile/tilematrixset/3.4.0/geotiff/geotiff.xsd"
+    xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff http://schemas.deegree.org/3.5/datasource/tile/tilematrixset/geotiff/geotiff.xsd"
     configVersion="3.4.0">
  <StorageCRS>EPSG:25832</StorageCRS>
  <File>../../../data/geotiff/kulturlandschaft.tif</File>
@@ -2022,7 +2022,7 @@ WMS tile store backends.
 [source,xml]
 <GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/datasource/tile/geotiff/3.4.0/geotiff.xsd"
+    xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/3.5/datasource/tile/geotiff/geotiff.xsd"
     configVersion="3.4.0">
     <TileDataSet>
         <Identifier>wmts_acrit</Identifier>
@@ -2044,7 +2044,7 @@ NOTE: Use "image/png" as ImageFormat even if the source is GeoTIFF.
            xmlns:d="http://www.deegree.org/metadata/description"
            xmlns:s="http://www.deegree.org/metadata/spatial"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/layers/tile/3.4.0/tile.xsd"
+           xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/3.5/layers/tile/tile.xsd"
            configVersion="3.4.0">
  <TileLayer>
    <l:Name>wmts_acrit</l:Name>
@@ -2065,7 +2065,7 @@ NOTE: Use "image/png" as ImageFormat even if the source is GeoTIFF.
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xmlns:d="http://www.deegree.org/metadata/description"
 xmlns:s="http://www.deegree.org/metadata/spatial"
-xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/themes/3.4.0/themes.xsd"
+xsi:schemaLocation="http://www.deegree.org/themes/standard http://schemas.deegree.org/3.5/themes/themes.xsd"
 configVersion="3.4.0">
  <LayerStoreId>layer_tile_wmts_acrit</LayerStoreId>
  <Theme>
@@ -2085,7 +2085,7 @@ configVersion="3.4.0">
 [source,xml]
 <deegreeWMTS xmlns="http://www.deegree.org/services/wmts"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.deegree.org/services/wmts http://schemas.deegree.org/services/wmts/3.4.0/wmts.xsd"
+            xsi:schemaLocation="http://www.deegree.org/services/wmts http://schemas.deegree.org/3.5/services/wmts/wmts.xsd"
             configVersion="3.4.0">
  <MetadataURLTemplate>http://some.service/services?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=${metadataSetId}</MetadataURLTemplate>
  <ServiceConfiguration>
@@ -2120,7 +2120,7 @@ The configuration is placed in the root directory of the workspace.
 [source,xml]
 <CachingTileStore xmlns="http://www.deegree.org/datasource/tile/cache"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache http://schemas.deegree.org/datasource/tile/cache/3.4.0/cache.xsd"
+                 xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache http://schemas.deegree.org/3.5/datasource/tile/cache/cache.xsd"
                  configVersion="3.4.0">
    <!-- TileStoreId refers to tile store config file wmts_acrit.xml in the same directory -->
    <TileStoreId>wmts_acrit</TileStoreId>
@@ -2171,14 +2171,14 @@ example looks like this:
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/csw
-  http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd">
+  http://schemas.deegree.org/3.5/services/csw/csw_configuration.xsd">
 </deegreeCSW>
 ----
 
 ==== Configuration overview
 
 The deegree CSW config file format is defined by schema file
-http://schemas.deegree.org/services/csw/3.4.0/csw_configuration.xsd. The
+http://schemas.deegree.org/3.5/services/csw/csw_configuration.xsd. The
 root element is _deegreeCSW_ and the config attribute must be
 _3.4.0_.
 
@@ -2257,7 +2257,7 @@ A minimal valid WPS configuration example looks like this:
 [source,xml]
 ----
 <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/3.5/services/wps/wps_configuration.xsd">
 </deegreeWPS>
 ----
 
@@ -2280,7 +2280,7 @@ A more complex configuration example looks like this:
 [source,xml]
 ----
 <deegreeWPS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/3.5/services/wps/wps_configuration.xsd">
 
   <SupportedVersions>
     <Version>1.0.0</Version>
@@ -2310,7 +2310,7 @@ storage directory.
 ==== Configuration overview
 
 The deegree WPS config file format is defined by schema file
-http://schemas.deegree.org/services/wps/3.1.0/wps_configuration.xsd. The
+http://schemas.deegree.org/3.5/services/wps/wps_configuration.xsd. The
 root element is _deegreeWPS_ and the config attribute must be
 _3.1.0_. The following table lists all available configuration options
 (complex ones contain nested options themselves). When specifiying them,
@@ -2374,7 +2374,7 @@ configuration works for all types of service alike.
 ----
 <deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
-  xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/3.5/services/metadata/metadata.xsd">
 
   <ServiceIdentification>
     <Title>INSPIRE Addresses</Title>
@@ -2440,7 +2440,7 @@ configuration works for all types of service alike.
 ----
 
 The metadata config file format is defined by schema file
-http://schemas.deegree.org/services/metadata/3.4.0/metadata.xsd. The
+http://schemas.deegree.org/3.5/services/metadata/metadata.xsd. The
 root element is _deegreeServicesMetadata_ and the config attribute
 must be _3.4.0_. The following table lists all available configuration
 options (complex ones contain nested options themselves). When

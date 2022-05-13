@@ -1,5 +1,5 @@
 <JDBCConnection configVersion="3.4.0" xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.4.0/jdbc.xsd">
+  xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/3.5/jdbc/jdbc.xsd">
 
   <!-- [1] JDBC URL (without username / password) -->
   <Url>jdbc:postgresql://localhost:5432/${DB_NAME}</Url>

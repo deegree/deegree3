@@ -87,7 +87,7 @@ public class SQLFeatureStoreConfigWriter {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 
-    private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd";
+    private static final String SCHEMA_LOCATION = "http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd";
 
     private final MappedAppSchema schema;
 

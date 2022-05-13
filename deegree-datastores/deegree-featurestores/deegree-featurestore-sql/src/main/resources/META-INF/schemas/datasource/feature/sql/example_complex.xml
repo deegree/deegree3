@@ -1,7 +1,7 @@
 <SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
   xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>inspire</JDBCConnId>
   <StorageCRS srid="0" dim="2D">EPSG:4258</StorageCRS>
   <GMLSchema>../../appschemas/inspire/annex1/Addresses.xsd</GMLSchema>

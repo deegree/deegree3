@@ -2,7 +2,7 @@
 <FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:app="http://www.deegree.org/app" xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se ./symbology-1.1.0.xsd">
-  <!-- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.deegree.org/se/3.4.0/symbology-1.1.0.xsd" -->
+  <!-- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.deegree.org/3.5/se/symbology-1.1.0.xsd" -->
 
   <Name>CountyNames</Name>
   <!-- This rule shows the use of a Halo within a TextSymbolizer -->

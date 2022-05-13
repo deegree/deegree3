@@ -52,7 +52,7 @@ database:
 ----
 <DataSourceConnectionProvider configVersion="3.4.0"
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
   <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
@@ -99,7 +99,7 @@ This example defines a connection pool for an Oracle database:
 ----
 <DataSourceConnectionProvider configVersion="3.4.0"
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
   <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
@@ -144,7 +144,7 @@ This example defines a connection pool for a Microsoft SQL Server:
 ----
 <DataSourceConnectionProvider configVersion="3.4.0"
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
   <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
@@ -185,7 +185,7 @@ servlet container that runs deegree webservices (e.g. Apache Tomcat):
 ----
 <DataSourceConnectionProvider configVersion="3.4.0"
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
   <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
@@ -215,7 +215,7 @@ Connection Pool):
 ----
 <DataSourceConnectionProvider configVersion="3.4.0"
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
   <DataSource javaClass="oracle.ucp.jdbc.PoolDataSourceFactory" factoryMethod="getPoolDataSource" />
@@ -242,7 +242,7 @@ creating an Oracle UCP connection pool.
 ==== Configuration options
 
 The database connection config file format is defined by schema file
-http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd. The
+http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd. The
 root element is _DataSourceConnectionProvider_ and the config
 attribute must be _3.4.0_. The following table lists the available
 configuration options. When specifiying them, their order must be
@@ -381,7 +381,7 @@ is called 'inspire', the database user is 'postgres' and password is
 [source,xml]
 ----
 <JDBCConnection configVersion="3.4.0" xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd">
+                xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/3.5/jdbc/jdbc.xsd">
   <Url>jdbc:postgresql://localhost:5432/inspire</Url>
   <User>postgres</User>
   <Password>postgres</Password>
@@ -389,7 +389,7 @@ is called 'inspire', the database user is 'postgres' and password is
 ----
 
 The legacy connection config file format is defined by schema file
-http://schemas.deegree.org/jdbc/3.0.0/jdbc.xsd. The root element is
+http://schemas.deegree.org/3.5/jdbc/jdbc.xsd. The root element is
 _JDBCConnection_ and the config attribute must be _3.0.0_. The
 following table lists the available configuration options. When
 specifiying them, their order must be respected.
