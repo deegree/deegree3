@@ -192,10 +192,9 @@ public class LayerMetadata {
                     mapOptions.setFeatureInfoRadius( 0 );
                 }
             }
-        } else if ( queryable ) {
-            mapOptions = new MapOptions( null, null, null, -1, 1 );
         } else {
-            mapOptions = new MapOptions( null, null, null, -1, 0 );
+            int featureInfoRadius = queryable ? 1 : 0;
+            mapOptions = new MapOptions.Builder().featureInfoRadius( featureInfoRadius ).build();
         }
     }
 

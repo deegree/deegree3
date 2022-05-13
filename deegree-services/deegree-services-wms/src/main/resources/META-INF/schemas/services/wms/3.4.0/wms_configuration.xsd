@@ -73,6 +73,7 @@
     <sequence>
       <element name="DefaultLayerOptions" type="wms:LayerOptionsType" minOccurs="0" />
       <element name="ThemeId" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Copyright" minOccurs="0" type="wms:CopyrightType" />
     </sequence>
   </complexType>
 
@@ -114,7 +115,7 @@
                     <element name="Property" minOccurs="0" maxOccurs="unbounded">
                       <complexType>
                         <attribute name="name" use="required" />
-                        <attribute name="value" use="required" />            
+                        <attribute name="value" use="required" />
                       </complexType>
                     </element>
                   </sequence>
@@ -167,7 +168,7 @@
             <element name="Property" minOccurs="0" maxOccurs="unbounded">
               <complexType>
                 <attribute name="name" use="required" />
-                <attribute name="value" use="required" />            
+                <attribute name="value" use="required" />
               </complexType>
             </element>
           </sequence>
@@ -203,6 +204,25 @@
       </simpleType>
     </list>
   </simpleType>
+
+  <complexType name="CopyrightType">
+    <annotation>
+      <documentation>Configure a copyright displayed in GetMap responses. A text or image
+        (via relative or absolute file reference or http url) can be configured.
+        Furthermore the position of the copyright can be specified with OffsetX/OffsetY (default is 8/13).
+        Anchor point in the GetMap response as well as the text or image is the lower-left corner.</documentation>
+    </annotation>
+    <sequence>
+      <choice minOccurs="1">
+        <element name="Text" type="string" />
+        <element name="Image" type="string" />
+      </choice>
+      <sequence minOccurs="0">
+        <element name="OffsetX" type="int" minOccurs="1" />
+        <element name="OffsetY" type="int" minOccurs="1" />
+      </sequence>
+    </sequence>
+  </complexType>
 
   <simpleType name="WMSVersionType">
     <restriction base="string">

@@ -247,7 +247,12 @@ public final class ConfigUtils {
         if ( cfg.isOpaque() != null ) {
             opaque = cfg.isOpaque();
         }
-        return new MapOptions( quali, interpol, alias, maxFeats, rad, opaque );
+        return new MapOptions.Builder().
+                               quality( quali ).
+                               interpolation( interpol ).
+                               antialias( alias ).
+                               maxFeatures( maxFeats ).
+                               featureInfoRadius( rad ).build();
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {

@@ -976,6 +976,16 @@ configuration of all combinations is possible.
 
 ==== Service content configuration
 
+The following table shows what options are available.
+
+[width="100%",cols="14%,7%,5%,74%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+| DefaultLayerOptions | 0..1        | Complex | Configure the behaviour of layers
+| ThemeId             | 0..n        | String  | Configure the WMS to use one or more preconfigured themes
+| Copyright           | 0..1        | Complex | Adds a watermark to the image of GetMap response
+|===
+
 You can configure the behaviour of layers using the
 _DefaultLayerOptions_ element.
 
@@ -1010,6 +1020,29 @@ if you use one theme, the WMS root layer corresponds to the root theme.
 If you use multiple themes, a synthetic root layer is exported in the
 capabilities, with one child layer corresponding to each root theme. The
 themes are configured using the _ThemeId_ element.
+
+The following table shows the _Copyright_ configuration:
+
+[width="100%",cols="12%,8%,5%,75%",options="header",]
+|===
+|Option |Cardinality |String |Description
+| Text     | 0..1        | String  | The text of the copyright.
+| Image    | 0..1        | String  | An image used as copyright. May be a relative or absolute reference to a file or a http url.
+| OffsetX  | 0..1        | Integer | The offset from the left of the GetMap response image to the left of the copyright in pixel (default: 8).
+| OffsetY  | 0..1        | Integer | The offset from the bottom of the GetMap response image to the bottom of the copyright in pixel (default: 13).
+|===
+
+At least one of Text or Image must be configured. OffsetX and OffsetY are optional, but if OffsetX is configured, OffsetY must be configured, too (and vice versa).
+
+Here is an example snippet:
+[source,xml]
+----
+<Copyright>
+  <Text>(c) deegree</Text>
+  <OffsetX>10</OffsetX>
+  <OffsetY>20</OffsetY>
+</Copyright>
+----
 
 Here is an example snippet of the content section:
 

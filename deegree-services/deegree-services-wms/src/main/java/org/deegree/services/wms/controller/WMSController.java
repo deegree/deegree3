@@ -325,7 +325,7 @@ public class WMSController extends AbstractOWS {
 
             ServiceConfigurationType sc = conf.getServiceConfiguration();
             int capabilitiesVersion = conf.getUpdateSequence() != null ? conf.getUpdateSequence().intValue() : 0;
-            service = new MapService( sc, workspace, capabilitiesVersion );
+            service = new MapService( sc, workspace, metadata, capabilitiesVersion );
 
             // after the service knows what layers are available:
             handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
