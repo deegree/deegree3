@@ -1092,6 +1092,11 @@
         <version>2.2.4</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>1.7</version>
+      </dependency>
+      <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
         <version>20191108</version>
