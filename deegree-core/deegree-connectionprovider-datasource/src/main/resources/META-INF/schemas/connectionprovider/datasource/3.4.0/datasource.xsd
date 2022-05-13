@@ -18,8 +18,8 @@
             <sequence>
               <element name="Argument" minOccurs="0" maxOccurs="unbounded">
                 <complexType>
-                  <attribute name="javaClass" use="required" />                
-                  <attribute name="value" use="required" />                  
+                  <attribute name="javaClass" use="required" />
+                  <attribute name="value" use="required" />
                 </complexType>
               </element>
             </sequence>
@@ -31,7 +31,12 @@
         <element name="Property" minOccurs="0" maxOccurs="unbounded">
           <complexType>
             <attribute name="name" use="required" />
-            <attribute name="value" use="required" />            
+            <attribute name="value" use="required" />
+          </complexType>
+        </element>
+        <element name="DialectProvider" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <attribute name="javaClass" use="required" />
           </complexType>
         </element>
       </sequence>

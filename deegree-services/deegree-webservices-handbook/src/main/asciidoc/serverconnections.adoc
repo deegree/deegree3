@@ -255,6 +255,8 @@ respected.
 object
 
 |Property |0..n |Complex |Configuration of javax.sql.DataSource object
+
+|DialectProvider |0..1 |Complex |Configuration of the dialect provider
 |===
 
 Technically, the _DataSource_ element defines how the
@@ -355,6 +357,17 @@ For completeness, here's the list of options of element _Property_:
 |Option |Cardinality |Value |Description
 |name |1..1 |String |Name of the property
 |value |1..1 |String |Property value
+|===
+
+For cases where deegree cannot automatically determine the dialect provider to use or
+a special dialect provider has to be used, a manual configuration can be done with 
+the element _DialectProvider_:
+
+[width="77%",cols="17%,25%,17%,41%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|javaClass |1..1 |String |Java class of the dialect provider (e.g.
+org.deegree.sqldialect.postgis.PostGISDialectProvider)
 |===
 
 ==== Legacy configuration format
