@@ -1,12 +1,11 @@
 /*----------------------------------------------------------------------------
- This file is part of deegree
- Copyright (C) 2001-2014 by:
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2022 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
  and
- - grit GmbH -
- and others
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -22,21 +21,30 @@
 
  Contact information:
 
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
  e-mail: info@deegree.org
- website: http://www.deegree.org/
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.uncoupled.jaxb;
 
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.InputSource;
 
 /**
  * JAXB Catalog Resolver

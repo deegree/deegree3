@@ -9,6 +9,12 @@
 	<packaging>jar</packaging>
 	<description>JAXB util to manipulate source tree related to deegree schema files</description>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+		<java.version>1.8</java.version>
+	</properties>
+
 	<repositories>
 		<repository>
 			<id>deegree-repo</id>
@@ -22,6 +28,14 @@
 		</repository>
 	</repositories>
 
+	<scm>
+		<connection>scm:git:git@github.com:deegree/deegree3.git</connection>
+		<developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
+		<url>https://github.com/deegree/deegree3</url>
+		<tag>HEAD</tag>
+	</scm>
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -33,21 +47,46 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<tagNameFormat>jaxb-util-@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
-		<java.version>1.8</java.version>
-	</properties>
 
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL), version 2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/deegree/deegree3/issues</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<id>TMC</id>
+			<name>Technical Management Committee</name>
+			<organization>OSGeo deegree project</organization>
+			<organizationUrl>https://www.deegree.org</organizationUrl>
+			<email>tmc@deegree.org</email>
+		</developer>
+	</developers>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.30</version>
+			<version>1.7.36</version>
 		</dependency>
 		<dependency>
 			<groupId>info.picocli</groupId>
@@ -55,4 +94,9 @@
 			<version>4.6.1</version>
 		</dependency>
 	</dependencies>
+
+	<ciManagement>
+		<system>Jenkins CI</system>
+		<url>http://buildserver.deegree.org/</url>
+	</ciManagement>
 </project>
