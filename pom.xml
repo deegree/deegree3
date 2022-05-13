@@ -352,6 +352,7 @@
                     <ignoreClass>com.sun.media.jai.*</ignoreClass>
                     <ignoreClass>com.sun.xml.*</ignoreClass>
                     <ignoreClass>org.w3c.dom.*</ignoreClass>
+                    <ignoreClass>oracle.xml.*</ignoreClass>
                   </ignoreClasses>
                   <scopes>
                     <scope>compile</scope>
