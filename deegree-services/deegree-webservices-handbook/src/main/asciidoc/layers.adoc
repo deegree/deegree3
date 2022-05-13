@@ -289,7 +289,7 @@ Here's a copy of the corresponding table for reference:
 
 [width="100%",cols="18%,12%,7%,63%",options="header",]
 |===
-|Option |Cardinality |String |Description
+|Option |Cardinality |Value |Description
 |AntiAliasing |0..1 |String |Whether to antialias NONE, TEXT, IMAGE or
 BOTH, default is BOTH
 
@@ -522,10 +522,37 @@ and one or many coverage layer definitions:
 </CoverageLayers>
 ----
 
-Within the _CoverageLayer_ element you can only define the
-link:#common[common] layer options. While only one coverage is supported
+Within the _CoverageLayer_ element you can define the link:#common[common] 
+layer options and one optional element. While only one coverage is supported
 per coverage store, it might still be desirable to define multiple
 layers based on the store, for example one layer per style.
+
+The optional element _FeatureInfoMode_ can be used to control how
+the GetFeatureInfo operations are dealt with. 
+
+[source,xml]
+----
+<CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
+                xmlns:d="http://www.deegree.org/metadata/description"
+                xmlns:l="http://www.deegree.org/layers/base"
+                configVersion="3.4.0">
+  <CoverageStoreId>dem</CoverageStoreId>
+  <CoverageLayer>
+    <!-- standard layer options -->
+    <FeatureInfoMode>POINT</FeatureInfoMode>
+  </CoverageLayer>
+</CoverageLayers>
+----
+
+[width="100%",cols="18%,12%,7%,63%",options="header",]
+|=======================================================================
+|Option |Cardinality |Value |Description
+
+
+|FeatureInfoMode |0..1 |String |Whether to use a INTERPOLATION
+or POINT based approach to get a GetFeatureInfo result, default is INTERPOLATION
+
+|=======================================================================
 
 === Remote WMS layers
 

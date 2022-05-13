@@ -17,6 +17,7 @@
   <complexType name="CoverageLayerType">
     <sequence>
       <group ref="l:LayerInfo" />
+      <element name="FeatureInfoMode" type="f:FeatureInfoModeType" minOccurs="0" />
     </sequence>
   </complexType>
 
@@ -41,6 +42,13 @@
       <attribute name="configVersion" type="f:ConfigVersionType" use="required" />
     </complexType>
   </element>
+
+  <simpleType name="FeatureInfoModeType">
+    <restriction base="string">
+      <enumeration value="INTERPOLATION" />
+      <enumeration value="POINT" />
+    </restriction>
+  </simpleType>
 
   <simpleType name="ConfigVersionType">
     <restriction base="string">
