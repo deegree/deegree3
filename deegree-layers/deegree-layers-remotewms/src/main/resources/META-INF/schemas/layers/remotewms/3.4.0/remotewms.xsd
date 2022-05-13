@@ -43,6 +43,15 @@
       <!-- if not set, will be copied from source -->
       <group ref="s:SpatialMetadata" />
       <element name="LayerOptions" type="b:LayerOptionsType" minOccurs="0" />
+      <element name="XSLTFile" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="targetGmlVersion" type="l:GMLVersionType" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
     </sequence>
   </complexType>
 
@@ -54,6 +63,15 @@
     </restriction>
   </simpleType>
 
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>
+  
   <complexType name="RequestOptionsType">
     <sequence>
       <element name="ImageFormat" minOccurs="0">

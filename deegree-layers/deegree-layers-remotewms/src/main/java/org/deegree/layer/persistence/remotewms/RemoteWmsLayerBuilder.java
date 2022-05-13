@@ -41,6 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.remotewms;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,13 +51,19 @@ import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.DescriptionConverter;
 import org.deegree.geometry.metadata.SpatialMetadata;
 import org.deegree.geometry.metadata.SpatialMetadataConverter;
+import org.deegree.gml.GMLVersion;
 import org.deegree.layer.Layer;
 import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.metadata.XsltFile;
+import org.deegree.layer.persistence.LayerStore;
+import org.deegree.layer.persistence.remotewms.jaxb.GMLVersionType;
 import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
+import org.deegree.layer.persistence.remotewms.jaxb.LayerType.XSLTFile;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
 import org.deegree.protocol.wms.client.WMSClient;
+import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +83,12 @@ class RemoteWmsLayerBuilder {
 
     private RemoteWMSLayers cfg;
 
-    RemoteWmsLayerBuilder( WMSClient client, RemoteWMSLayers cfg ) {
+    private ResourceMetadata<LayerStore> metadata;
+
+    RemoteWmsLayerBuilder( WMSClient client, RemoteWMSLayers cfg, ResourceMetadata<LayerStore> metadata ) {
         this.client = client;
         this.cfg = cfg;
+        this.metadata = metadata;
     }
 
     Map<String, Layer> buildLayerMap() {
@@ -136,10 +146,25 @@ class RemoteWmsLayerBuilder {
                 }
                 LayerMetadata md = new LayerMetadata( name, desc, smd );
                 md.setMapOptions( ConfigUtils.parseLayerOptions( l.getLayerOptions() ) );
+                md.setXsltFile( parseXsltFile( md, l.getXSLTFile() ) );
                 configured.put( l.getOriginalName(), md );
             }
         }
         return configured;
+    }
+
+    private XsltFile parseXsltFile( LayerMetadata md, XSLTFile xsltFileConfig ) {
+        if(xsltFileConfig != null){
+            GMLVersion gmlVersion = GMLVersion.valueOf( xsltFileConfig.getTargetGmlVersion().value() );
+            String xslFile = xsltFileConfig.getValue();
+            URL xsltFileUrl = metadata.getLocation().resolveToUrl( xslFile );
+            if ( xsltFileUrl == null ) {
+                LOG.warn( "Could not resolve xslt file url {}.", xslFile );
+            } else {
+                return new XsltFile( xsltFileUrl, gmlVersion );
+            }
+        }
+        return null;
     }
 
 }

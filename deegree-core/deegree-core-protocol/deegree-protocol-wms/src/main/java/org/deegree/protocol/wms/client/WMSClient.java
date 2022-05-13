@@ -76,9 +76,9 @@ import java.util.concurrent.Callable;
 import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.proxy.ProxySettings;
@@ -96,6 +96,7 @@ import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
 import org.deegree.featureinfo.parsing.FeatureInfoParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -338,19 +339,42 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public FeatureCollection doGetFeatureInfo( GetFeatureInfo request, Map<String, String> hardParams )
                             throws IOException, OWSExceptionReport, XMLStreamException {
+        return doGetFeatureInfo( request, hardParams, new DefaultFeatureInfoParser() );
+    }
+    
+    /**
+     * Performs a <code>GetFeatureInfo</code> request and returns the response as a {@link FeatureCollection}.
+     * 
+     * @param request
+     *            request parameter, must not be <code>null</code>
+     * @param hardParams
+     *            raw parameters for augmenting overriding KVPs, must not be <code>null</code>
+     * @param featureInfoParser
+     *            used to parse the feature info response as feature collection, never <code>null</code>
+     * @return response parsed as feature collection, never <code>null</code>
+     * @throws IOException
+     * @throws OWSExceptionReport
+     * @throws XMLStreamException
+     */
+    public FeatureCollection doGetFeatureInfo( GetFeatureInfo request, Map<String, String> hardParams,
+                                               FeatureInfoParser featureInfoParser )
+                                                                       throws IOException, OWSExceptionReport,
+                                                                       XMLStreamException {
 
         Map<String, String> params = buildGetFeatureInfoParamMap( request, hardParams );
         overrideHardParams( params, hardParams );
 
         OwsHttpResponse response = null;
+        InputStream responseStream = null;
         try {
             URL url = getGetUrl( GetFeatureInfo.name() );
             response = httpClient.doGet( url, params, null );
             response.assertHttpStatus200();
-            XMLStreamReader reader = response.getAsXMLStream();
+            responseStream = response.getAsBinaryStream();
             String csvLayerNames = join( ",", request.getQueryLayers() );
-            return FeatureInfoParser.parseAsFeatureCollection( reader, csvLayerNames );
+            return featureInfoParser.parseAsFeatureCollection( responseStream, csvLayerNames );
         } finally {
+            IOUtils.closeQuietly( responseStream );
             closeQuietly( response );
         }
     }

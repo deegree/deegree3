@@ -36,29 +36,35 @@
 package org.deegree.featureinfo.parsing;
 
 import java.io.InputStream;
+import java.net.URL;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.feature.FeatureCollection;
+import org.deegree.gml.GMLVersion;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
- * Responsible for parsing 'feature collections'.
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public interface FeatureInfoParser {
+public class XsltFeatureInfoParserTest {
 
-    /**
-     * @param featureInfoToParse
-     *            the feature info to parse, never <code>null</code>
-     * @param csvLayerNames
-     *            a comma separated list of layer names, should not be <code>null</code>
-     * @return a feature collection containingall features that could be reconstructed or synthesized, never
-     *         <code>null</code>
-     * @throws XMLStreamException
-     *             if the content could not be parsed as feature collection
-     */
-    FeatureCollection parseAsFeatureCollection( InputStream featureInfoToParse, String csvLayerNames )
-                            throws XMLStreamException;
+    private static XsltFeatureInfoParser featureInfoParser;
+
+    @BeforeClass
+    public static void initParser() {
+        URL xsltFile = XsltFeatureInfoParserTest.class.getResource( "esriwithnamespaceTo2gml2.xsl" );
+        featureInfoParser = new XsltFeatureInfoParser( xsltFile, GMLVersion.GML_2 );
+    }
+
+    @Test
+    public void testEsriCollection()
+                            throws XMLStreamException {
+        InputStream in = XsltFeatureInfoParser.class.getResourceAsStream( "esriwithnamespace.xml" );
+        FeatureCollection fc = featureInfoParser.parseAsFeatureCollection( in, "test" );
+        Assert.assertEquals( 8, fc.size() );
+    }
 
 }
