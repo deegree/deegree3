@@ -45,6 +45,7 @@
         <element name="GetCapabilitiesFormats" minOccurs="0" type="wms:GetCapabilitiesFormatsType" />
         <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
         <element name="GetMapFormats" minOccurs="0" type="wms:GetMapFormatsType" />
+        <element name="GetLegendGraphicBackgroundColor" minOccurs="0" type="wms:GetLegendGraphicBackgroundColorType" />
         <element name="ExceptionFormats" minOccurs="0" type="wms:ExceptionFormatsType" />
         <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -176,6 +177,12 @@
       </element>
     </sequence>
   </complexType>
+
+  <simpleType name="GetLegendGraphicBackgroundColorType">
+    <restriction base="string">
+      <pattern value="#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})" />
+    </restriction>
+  </simpleType>
 
   <complexType name="LayerOptionsType">
     <sequence>

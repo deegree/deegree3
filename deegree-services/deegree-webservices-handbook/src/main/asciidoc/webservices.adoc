@@ -886,6 +886,8 @@ output formats
 |GetMapFormats |0..1 |Complex |Configures additional image output
 formats
 
+|GetLegendGraphicBackgroundColor |0..1 |String |Configures the background color of generated legends
+
 |ExceptionFormats |0..1 |Complex |Configures additional exception output
 formats
 
@@ -1434,6 +1436,17 @@ _image/png_ as image output format:
   <GetMapFormat>image/png</GetMapFormat>
 </GetMapFormats>
 ----
+
+===== Custom legend graphic background
+
+The background color of generated legends can be configured as follows:
+
+[source,xml]
+----
+<wms:GetLegendGraphicBackgroundColor>#859644</wms:GetLegendGraphicBackgroundColor>
+----
+
+The color must be encoded as hexadecimal value.
 
 ===== Custom format provider class
 

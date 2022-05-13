@@ -116,6 +116,8 @@ public class MapService {
 
     private int updateSequence; // TODO how to restore this after restart?
 
+    private final String getLegendGraphicBackgroundColor;
+
     private List<Theme> themes;
 
     private HashMap<String, org.deegree.layer.Layer> newLayers;
@@ -128,13 +130,16 @@ public class MapService {
 
     /**
      * @param conf
+     * @param workspace
      * @param metadata
-     * @param adapter
+     * @param updateSequence
+     * @param getLegendGraphicBackgroundColor
      * @throws MalformedURLException
      */
     public MapService( ServiceConfigurationType conf, Workspace workspace, ResourceMetadata<OWS> metadata,
-                       int updateSequence ) throws MalformedURLException {
+                       int updateSequence, String getLegendGraphicBackgroundColor ) throws MalformedURLException {
         this.updateSequence = updateSequence;
+        this.getLegendGraphicBackgroundColor = getLegendGraphicBackgroundColor;
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -174,24 +179,21 @@ public class MapService {
     }
 
     /**
-     * @param req
-     *            should be a GetMap or GetLegendGraphic
+     * @param glg
+     *                 GetLegendGraphic, never <code>null</code>
      * @return an empty image conforming to the request parameters
      */
-    public static BufferedImage prepareImage( Object req ) {
-        String format = null;
-        int width = 0, height = 0;
+    public BufferedImage prepareImage( GetLegendGraphic glg ) {
         Color bgcolor = null;
-        boolean transparent = false;
-        if ( req instanceof GetLegendGraphic ) {
-            GetLegendGraphic glg = (GetLegendGraphic) req;
-            format = glg.getFormat();
-            width = glg.getWidth();
-            height = glg.getHeight();
-            transparent = true;
-        } else {
-            return null;
+        boolean transparent = true;
+        if ( getLegendGraphicBackgroundColor != null ) {
+            bgcolor = Color.decode( getLegendGraphicBackgroundColor );
+            transparent = false;
         }
+
+        String format = glg.getFormat();
+        int width = glg.getWidth();
+        int height = glg.getHeight();
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
