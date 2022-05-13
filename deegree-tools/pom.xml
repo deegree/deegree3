@@ -57,13 +57,13 @@
           <execution>
             <phase>package</phase>
             <configuration>
-              <tasks>
+              <target>
                 <chmod perm="+x">
                   <fileset dir="target/appassembler/bin">
                     <include name="${toolboxname}" />
                   </fileset>
                 </chmod>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
