@@ -60,7 +60,7 @@ public class SQLValueMangler {
     /**
      * Converts the given {@link PrimitiveValue} value to the corresponding SQL object type.
      * 
-     * @param value
+     * @param pv
      * @return
      */
     public static Object internalToSQL( PrimitiveValue pv ) {

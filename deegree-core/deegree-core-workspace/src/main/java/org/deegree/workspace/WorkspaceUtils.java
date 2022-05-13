@@ -70,24 +70,29 @@ public class WorkspaceUtils {
      *            may not be <code>null</code>
      * @param id
      *            may not be <code>null</code>
+     * @return a list of identifiers of the initialized resources, never <code>null</code>
      */
-    public static void reinitializeChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
+    public static List<String> reinitializeChain( Workspace workspace, ResourceIdentifier<? extends Resource> id ) {
+        List<String> initialisedIdentifiers = new ArrayList<>();
         ResourceNode<? extends Resource> node = workspace.getDependencyGraph().getNode( id );
         List<ResourceMetadata<? extends Resource>> list = new ArrayList<ResourceMetadata<? extends Resource>>();
         ResourceMetadata<? extends Resource> meta = workspace.getResourceMetadata( id.getProvider(), id.getId() );
-        if ( meta == null ) {
-            return;
+        if ( meta != null ) {
+            list.add( meta );
+            collectDependencies( list, node );
+            collectDependents( list, node );
+            ResourceGraph g = new ResourceGraph( list );
+            list = g.toSortedList();
+            workspace.destroy( list.get( 0 ).getIdentifier() );
+            for ( ResourceMetadata<? extends Resource> md : list ) {
+                ResourceIdentifier<? extends Resource> identifier = md.getIdentifier();
+                workspace.add( md.getLocation() );
+                workspace.prepare( identifier );
+                workspace.init( identifier, null );
+                initialisedIdentifiers.add( identifier.getId() );
+            }
         }
-        list.add( meta );
-        collectDependencies( list, node );
-        collectDependents( list, node );
-        ResourceGraph g = new ResourceGraph( list );
-        list = g.toSortedList();
-        workspace.destroy( list.get( 0 ).getIdentifier() );
-        for ( ResourceMetadata<? extends Resource> md : list ) {
-            workspace.add( md.getLocation() );
-            workspace.init( md.getIdentifier(), null );
-        }
+        return initialisedIdentifiers;
     }
 
     /**
@@ -103,12 +108,8 @@ public class WorkspaceUtils {
         if ( node == null ) {
             return;
         }
-        for ( ResourceNode<? extends Resource> n : node.getDependencies() ) {
-            if ( n.getMetadata() != null ) {
-                list.add( n.getMetadata() );
-                collectDependencies( list, n );
-            }
-        }
+        collectDependencies( list, node.getDependencies() );
+        collectDependencies( list, node.getSoftDependencies() );
     }
 
     /**
@@ -247,6 +248,16 @@ public class WorkspaceUtils {
             result.add( new DefaultResourceIdentifier( cls, id ) );
         }
         return result;
+    }
+
+    private static void collectDependencies( List<ResourceMetadata<? extends Resource>> list,
+                                             List<ResourceNode<? extends Resource>> dependencies ) {
+        for ( ResourceNode<? extends Resource> n : dependencies ) {
+            if ( n.getMetadata() != null ) {
+                list.add( n.getMetadata() );
+                collectDependencies( list, n );
+            }
+        }
     }
 
 }

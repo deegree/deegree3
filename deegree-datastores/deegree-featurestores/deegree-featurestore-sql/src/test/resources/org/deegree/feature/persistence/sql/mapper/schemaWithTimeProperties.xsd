@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:te="http://test.de/schema"
+        xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified"
+        targetNamespace="http://test.de/schema" version="4.0">
+
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+
+  <element name="FeatureA" substitutionGroup="gml:AbstractFeature" type="te:FeatureAType"/>
+  <complexType name="FeatureAType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="prop_timeInstant" type="gml:TimeInstantPropertyType"/>
+          <element name="prop_timePeriod" type="gml:TimePeriodPropertyType"/>
+          <element name="prop_timeObject" type="te:TimeObjectPropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="TimeObjectPropertyType">
+    <annotation>
+      <documentation>This property type is not provided directly by GML</documentation>
+    </annotation>
+    <sequence minOccurs="0">
+      <element ref="gml:AbstractTimeObject"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </complexType>
+
+</schema>
+

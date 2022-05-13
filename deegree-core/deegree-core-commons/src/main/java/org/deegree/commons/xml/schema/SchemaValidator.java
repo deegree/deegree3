@@ -67,17 +67,15 @@ import org.w3c.dom.ls.LSInput;
  * Provides utility methods for the easy validation of XML instance documents against XML schemas and for the validation
  * of XML schema documents.
  * <p>
- * <h4>Validation of instance documents</h4>
+ * <h3>Validation of instance documents</h3>
  * The XML schemas are either determined from the <code>xsi:schemaLocation</code> attribute of the document or may be
  * explicitly specified. The validator uses the {@link RedirectingEntityResolver}, so OGC core schemas are not fetched
  * over the network, but loaded from a local copy.
  * </p>
- * <p>
- * <h4>Validation of schema documents</h4>
+ * <h3>Validation of schema documents</h3>
  * The validator uses the {@link RedirectingEntityResolver}, so OGC core schemas are not fetched over the network, but
  * loaded from a local copy.
- * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 

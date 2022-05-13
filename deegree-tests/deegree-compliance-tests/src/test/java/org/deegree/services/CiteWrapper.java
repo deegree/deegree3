@@ -35,10 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.services;
 
+import org.slf4j.Logger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class CiteWrapper {
+
+    private static final Logger LOG = getLogger( CiteWrapper.class );
 
     private final String citeScript;
 
@@ -50,29 +57,45 @@ public class CiteWrapper {
 
     private String err;
 
-    public CiteWrapper( String citeScript ) {
+    private String baseUrl;
+
+    private String paramName;
+
+    private String getCapsPath;
+
+    public CiteWrapper( String citeScript, String paramName, String getCapsPath ) {
         this.citeScript = citeScript;
         this.oldSysOut = System.out;
         this.oldSysErr = System.err;
+        this.paramName = paramName;
+        this.getCapsPath = getCapsPath;
+
+        if (System.getProperty("serviceUrl") == null || System.getProperty("serviceUrl").isEmpty() ) {
+            this.baseUrl = "http://localhost:8080/deegree-compliance-tests/services";
+            LOG.debug("Using default URL: '" + this.baseUrl + "'");
+        } else {
+            LOG.debug("Retrieving serviceUrl from context '" + System.getProperty("serviceUrl") + "'");
+            this.baseUrl = System.getProperty("serviceUrl");
+        }
+        LOG.info("Running CITE wrapper with " + baseUrl);
     }
 
     public void execute()
                             throws Exception {
-
-        String[] args = new String[] { "-cmd=-mode=test", "-mode=test", "-source=" + citeScript, "-workdir=/tmp" };
+        String[] args = new String[] { "-cmd=-mode=test", "-mode=test", "-source=" + citeScript, "-workdir=/tmp", "@"+paramName+"="+baseUrl+"/"+getCapsPath };
+        LOG.debug("using args "+ Arrays.toString(args));
+        ByteArrayOutputStream sysOut = new ByteArrayOutputStream();
+        ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
         try {
-            ByteArrayOutputStream sysOut = new ByteArrayOutputStream();
-            ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
             System.setOut( new PrintStream( sysOut ) );
             System.setErr( new PrintStream( sysErr ) );
-
             // TODO what about the build path?
             com.occamlab.te.Test.main( args );
-            out = sysOut.toString( "UTF-8" );
-            err = sysErr.toString( "UTF-8" );
         } catch ( Exception e ) {
             throw e;
         } finally {
+            out = sysOut.toString( "UTF-8" );
+            err = sysErr.toString( "UTF-8" );
             System.setOut( oldSysOut );
             System.setErr( oldSysErr );
         }

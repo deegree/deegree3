@@ -16,7 +16,7 @@
 	<repositories>
 		<repository>
 			<id>deegree-repo</id>
-			<url>http://repo.deegree.org/content/groups/public</url>
+			<url>https://repo.deegree.org/content/groups/public</url>
 			<releases>
 				<updatePolicy>never</updatePolicy>
 			</releases>
