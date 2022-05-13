@@ -80,7 +80,7 @@ public class CatalogResolver extends com.sun.org.apache.xml.internal.resolver.to
 
 	private static final String REWRITE_TO = "META-INF/schemas/";
 
-	private boolean debug = true;
+	private boolean debug = false;
 
 	public CatalogResolver() {
 		String dbg = System.getProperty("deeegree.jaxb.debug");

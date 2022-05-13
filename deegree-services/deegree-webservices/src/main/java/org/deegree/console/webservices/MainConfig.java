@@ -82,7 +82,7 @@ public class MainConfig extends Config implements Serializable {
 
     @Override
     public URL getTemplate() {
-        return ServicesBean.class.getResource( "/META-INF/schemas/services/controller/3.4.0/example.xml" );
+        return ServicesBean.class.getResource( "/META-INF/schemas/services/controller/example.xml" );
     }
 
     @Override

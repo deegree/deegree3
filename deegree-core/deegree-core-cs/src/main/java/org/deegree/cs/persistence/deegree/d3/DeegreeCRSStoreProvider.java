@@ -73,7 +73,7 @@ public class DeegreeCRSStoreProvider implements CRSStoreProvider {
 
     private static final URL CONFIG_SCHEMA = DeegreeCRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/deegree/deegree.xsd" );
 
-    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/deegree/3.4.0/example.xml";
+    private static final String CONFIG_TEMPLATE = "/META-INF/schemas/crs/stores/deegree/example.xml";
 
     @Override
     public String getConfigNamespace() {

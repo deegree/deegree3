@@ -66,7 +66,7 @@ public class OwsGlobalConfigLoader implements Initializable {
 
     private static final URL METADATA_CONFIG_SCHEMA = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/metadata.xsd" );
 
-    private static final URL METADATA_CONFIG_EXAMPLE = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/3.4.0/example.xml" );
+    private static final URL METADATA_CONFIG_EXAMPLE = OwsGlobalConfigLoader.class.getResource( "/META-INF/schemas/services/metadata/example.xml" );
 
     private DeegreeServicesMetadataType metadataConfig;
 
