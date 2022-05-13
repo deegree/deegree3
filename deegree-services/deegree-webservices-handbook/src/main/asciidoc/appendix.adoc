@@ -35,4 +35,6 @@ like https://tomcat.apache.org/tomcat-8.5-doc/config/context.html#Environment_En
 
 |deegree.rendering.stroke.miterlimit |java.lang.Float |10 |When the configured factor is exceeded portrayal changes from JOIN_MITER to JOIN_BEVEL (see https://docs.oracle.com/javase/tutorial/2d/geometry/strokeandfill.html).
 
+|deegree.sqldialect.oracle.optimized_point_storage |java.lang.Boolean |true |Use optimized point storage for 2D points in oracle database.
+
 |===
