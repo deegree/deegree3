@@ -1,3 +1,25 @@
+/*-
+ * #%L
+ * deegree-cli-utility
+ * %%
+ * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * Copyright (C) 2022 grit graphische Informationstechnik Beratungsgesellschaft mbH
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.deegree.tools.featurestoresql.loader;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -11,6 +33,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.ServiceLoader;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -70,6 +94,8 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
 
     private List<String> disabledResources;
 
+    private ServiceLoader<FeatureStreamFactory> featureStreamFactories = ServiceLoader.load(FeatureStreamFactory.class);
+
     /**
      * @param sqlFeatureStore
      *            the {@link SQLFeatureStore} used for insert, may be <code>null</code>
@@ -107,6 +133,8 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
         if ( !this.resource.isReadable() )
             throw new IllegalStateException( "Input resource must be readable." );
 
+        LOG.info( "Opening file {}", getResourceFileName() );
+
         openFeatureStream();
     }
 
@@ -130,7 +158,7 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
             this.xmlStreamReader = null;
             this.inputStream = null;
         }
-
+        LOG.info( "Finished file {}", getResourceFileName() );
     }
 
     public void setDisabledResources( List<String> disabledResources ) {
@@ -140,6 +168,10 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
     private void openFeatureStream() {
         try {
             this.inputStream = this.resource.getInputStream();
+            String fname = getResourceFileName();
+            if ( fname != null && fname.toLowerCase().endsWith( ".gz" )) {
+                this.inputStream = new GZIPInputStream( this.inputStream );
+            }
             GMLVersion version = GMLVersion.GML_32;
             XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
             xmlInputFactory.setProperty( XMLInputFactory.IS_COALESCING, true );
@@ -151,7 +183,20 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
             resolver.setReferencePatternMatcher( parseDisabledResources() );
             gmlStreamReader.setResolver( resolver );
 
-            if ( new QName( WFS_200_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
+            boolean featureStreamFromFactory = false;
+            {
+                Iterator<FeatureStreamFactory> it = featureStreamFactories.iterator();
+                while (it.hasNext()) {
+                    FeatureStreamFactory fac = it.next();
+                    if ( fac.isApplicableToDocumentRoot(  xmlStream.getName() ) ) {
+                        featureStreamFromFactory = true;
+                        this.featureStream = fac.createStream( xmlStream, gmlStreamReader);
+                    }
+                }
+            }
+            if ( featureStreamFromFactory ) {
+                // loaded from external factory
+            } else if ( new QName( WFS_200_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
                 LOG.debug( "Features embedded in wfs20:FeatureCollection" );
                 this.featureStream = new WfsFeatureInputStream( xmlStream, gmlStreamReader, WFS_20_MEMBER );
             } else if ( new QName( WFS_NS, "FeatureCollection" ).equals( xmlStream.getName() ) ) {
@@ -276,4 +321,20 @@ public class GmlReader extends AbstractItemStreamItemReader<Feature> implements
         }
     }
 
+    /**
+     * Gets the file name of the resource
+     * 
+     * @return the name of the resource, may be <code>null</code>
+     */
+    private String getResourceFileName() {
+        String name = null;
+        try {
+            if ( this.resource != null ) {
+                name = this.resource.getFilename();
+            }
+        } catch ( Exception ex ) {
+            LOG.trace( "Could not determine filename of resource", ex );
+        }
+        return name;
+    }
 }

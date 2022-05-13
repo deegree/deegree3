@@ -88,7 +88,7 @@ import org.slf4j.LoggerFactory;
  * <code>XMLAdapter</code> is the common base class of all hand-written (i.e. not automatically generated) XML parsers
  * and exporters in deegree. Classes that extend <code>XMLAdapter</code> provide the binding between a certain type of
  * XML documents and their corresponding Java bean representation.
- * <p>
+ * <br/>
  * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It provides
  * the following functionality:
  * <ul>
@@ -103,12 +103,10 @@ import org.slf4j.LoggerFactory;
  * <li>Resolving of relative URLs that occur in the document content, i.e. that refer to resources that are located
  * relative to the document.</li>
  * </ul>
- * </p>
- * <p>
+ * <br/>
  * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object
  * Model)</a>.
- * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
  * 
@@ -1216,7 +1214,7 @@ public class XMLAdapter {
      * @param value
      *            the text value of the element
      * @param attrNS
-     *            the namespace of the attribute, <code>null</null> if the local namespace of the element should be used
+     *            the namespace of the attribute, <code>null</code> if the local namespace of the element should be used
      * @param attribPRE
      *            to use for the namespace binding
      * @param attrName
@@ -1309,7 +1307,7 @@ public class XMLAdapter {
      * @param elemName
      *            the element name
      * @param attrNS
-     *            the namespace of the attribute, <code>null</null> if the local namespace of the element should be used
+     *            the namespace of the attribute, <code>null</code> if the local namespace of the element should be used
      * @param attrName
      *            the attribute name
      * @param attrValue

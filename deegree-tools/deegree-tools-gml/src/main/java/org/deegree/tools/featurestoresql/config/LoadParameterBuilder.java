@@ -1,3 +1,24 @@
+/*-
+ * #%L
+ * deegree-cli-utility
+ * %%
+ * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 package org.deegree.tools.featurestoresql.config;
 
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -10,6 +31,11 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Load parameter builder.
+ *
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
+ */
 public class LoadParameterBuilder {
 
     private static final String DEFAULT_FORMAT = "deegree";
@@ -31,8 +57,8 @@ public class LoadParameterBuilder {
     }
 
     public LoadParameterBuilder setSchemaUrl( String schemaUrl ) {
-        if (schemaUrl == null || schemaUrl.isEmpty())
-            throw new IllegalArgumentException("Value for option 'schemaUrl' must not be null. Option is mandatory.");
+        if ( schemaUrl == null || schemaUrl.isEmpty() )
+            throw new IllegalArgumentException( "Value for option 'schemaUrl' must not be null. Option is mandatory." );
         loadParameter.setSchemaUrl( schemaUrl );
         return this;
     }
@@ -97,10 +123,12 @@ public class LoadParameterBuilder {
         return this;
     }
 
-    public LoadParameterBuilder setListOfPropertiesWithPrimitiveHref( String pathToFileWithPropertiesWithPrimitiveHref ) {
+    public LoadParameterBuilder setListOfPropertiesWithPrimitiveHref(
+                    String pathToFileWithPropertiesWithPrimitiveHref ) {
         if ( pathToFileWithPropertiesWithPrimitiveHref != null ) {
             PropertyNameParser propertyNameParser = new PropertyNameParser();
-            List<QName> propertiesWithPrimitiveHref = propertyNameParser.parsePropertiesWithPrimitiveHref( pathToFileWithPropertiesWithPrimitiveHref );
+            List<QName> propertiesWithPrimitiveHref = propertyNameParser.parsePropertiesWithPrimitiveHref(
+                            pathToFileWithPropertiesWithPrimitiveHref );
             loadParameter.setPropertiesWithPrimitiveHref( propertiesWithPrimitiveHref );
         }
         return this;
@@ -119,6 +147,20 @@ public class LoadParameterBuilder {
                 throw new IllegalArgumentException( "Invalid value of parameter referenceData: " + referenceData
                                                     + ". Could not be parsed as GML 3.2." );
             }
+        }
+        return this;
+    }
+
+    public LoadParameterBuilder setuseRefDataProps( String useRefDataProps ) {
+        if ( useRefDataProps != null && !useRefDataProps.isEmpty() ) {
+            if ( !"true".equalsIgnoreCase( useRefDataProps ) && !"false".equalsIgnoreCase(
+                            useRefDataProps ) ) {
+                throw new IllegalArgumentException( "Invalid value of parameter useRefDataProps: "
+                                                    + useRefDataProps
+                                                    + ". Must be true or false" );
+            }
+            loadParameter.setUseRefDataProps(
+                            Boolean.parseBoolean( useRefDataProps ) );
         }
         return this;
     }
