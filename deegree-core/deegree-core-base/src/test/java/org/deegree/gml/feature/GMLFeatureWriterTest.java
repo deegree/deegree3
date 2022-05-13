@@ -68,9 +68,9 @@ import org.deegree.gml.GMLVersion;
 import org.deegree.gml.schema.GMLAppSchemaReader;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
-import org.xmlmatchers.namespace.SimpleNamespaceContext;
+import org.xmlunit.diff.DifferenceEvaluator;
+import org.xmlunit.matchers.HasXPathMatcher;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -79,11 +79,12 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.filter.MatchAction.ALL;
@@ -93,14 +94,12 @@ import static org.deegree.gml.GMLVersion.GML_2;
 import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.gml.GMLVersion.GML_32;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-import static org.xmlmatchers.XmlMatchers.conformsTo;
-import static org.xmlmatchers.XmlMatchers.hasXPath;
-import static org.xmlmatchers.XmlMatchers.isEquivalentTo;
-import static org.xmlmatchers.transform.XmlConverters.the;
-import static org.xmlmatchers.validation.SchemaFactory.w3cXmlSchemaFromClasspath;
-import static org.xmlmatchers.xpath.XpathReturnType.returningANumber;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+import static org.xmlunit.diff.ComparisonResult.DIFFERENT;
+import static org.xmlunit.diff.ComparisonResult.EQUAL;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
+import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
 
 /**
  * Exports the features in the Philosophers example and validates them against the corresponding schema.
@@ -149,8 +148,10 @@ public class GMLFeatureWriterTest {
         writer.flush();
         writer.close();
 
-        String xml = memoryWriter.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-gml2.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-gml2.xml" ) ).ignoreWhitespace().ignoreElementContentWhitespace().withDifferenceEvaluator(
+                        inoreLineBreaksInElementContent() ) );
     }
 
     @Test
@@ -183,8 +184,10 @@ public class GMLFeatureWriterTest {
         writer.flush();
         writer.close();
 
-        String xml = memoryWriter.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-gml31.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-gml31.xml" ) ).ignoreWhitespace().ignoreElementContentWhitespace().withDifferenceEvaluator(
+                        inoreLineBreaksInElementContent() ) );
     }
 
     @Test
@@ -212,8 +215,10 @@ public class GMLFeatureWriterTest {
         writer.flush();
         writer.close();
 
-        String xml = memoryWriter.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-gml32.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-gml32.xml" ) ).ignoreWhitespace().ignoreElementContentWhitespace().withDifferenceEvaluator(
+                        inoreLineBreaksInElementContent() ) );
     }
 
     // @Test
@@ -275,8 +280,8 @@ public class GMLFeatureWriterTest {
         gmlwriter.write( fc );
         gmlwriter.close();
 
-        String xml = os.toString();
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-reexport.xml" ) ) ) );
+        String actual = os.toString();
+        assertThat( actual, isSimilarTo( expectedXml( "expectedExport-reexport.xml" ) ).ignoreWhitespace() );
     }
 
     @Test
@@ -298,11 +303,12 @@ public class GMLFeatureWriterTest {
         gmlwriter.write( fc );
         gmlwriter.close();
 
-        String xml = os.toString();
-        assertThat( the( xml ),
-                    hasXPath( "count(gml31:featureMember/*/gml31:boundedBy)", nsContext(), returningANumber(),
-                              is( 0d ) ) );
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-withoutBoundedBy.xml" ) ) ) );
+        String actual = os.toString();
+        assertThat( actual, hasXPath( "count(gml31:featureMember/*/gml31:boundedBy)", is( "0" ) ).withNamespaceContext(
+                        nsContext() ) );
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-withoutBoundedBy.xml" ) ).ignoreWhitespace().ignoreElementContentWhitespace().withDifferenceEvaluator(
+                        inoreLineBreaksInElementContent() ) );
     }
 
     @Test
@@ -325,11 +331,13 @@ public class GMLFeatureWriterTest {
         gmlwriter.write( fc );
         gmlwriter.close();
 
-        String xml = os.toString();
-        assertThat( the( xml ),
-                    hasXPath( "count(//gml31:featureMember/*/gml31:boundedBy)", nsContext(), returningANumber(),
-                              is( 15d ) ) );
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml( "expectedExport-withBoundedBy.xml" ) ) ) );
+        String actual = os.toString();
+        assertThat( actual,
+                    hasXPath( "count(//gml31:featureMember/*/gml31:boundedBy)", is( "15" ) ).withNamespaceContext(
+                                    nsContext() ) );
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-withBoundedBy.xml" ) ).ignoreWhitespace().ignoreElementContentWhitespace().withDifferenceEvaluator(
+                        inoreLineBreaksInElementContent() ) );
     }
 
     @Test
@@ -346,11 +354,9 @@ public class GMLFeatureWriterTest {
         gmlwriter.write( f );
         gmlwriter.close();
 
-        String xml = memoryWriter.toString();
-        assertThat( the( xml ),
-                    conformsTo( w3cXmlSchemaFromClasspath( "org/deegree/gml/aixm/schema/AIXM_Features.xsd" ) ) );
-        assertThat( the( xml ),
-                    isEquivalentTo( the( expectedXml( "expectedExport-testAIXM51RouteSegmentWithUrnXlink.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-testAIXM51RouteSegmentWithUrnXlink.xml" ) ).ignoreWhitespace() );
     }
 
     @Test
@@ -378,14 +384,13 @@ public class GMLFeatureWriterTest {
         gmlwriter.write( f );
         gmlwriter.close();
 
-        String xml = memoryWriter.toString();
-
-        assertThat( the( xml ),
-                    conformsTo( w3cXmlSchemaFromClasspath( "org/deegree/gml/aixm/schema/AIXM_Features.xsd" ) ) );
-        assertThat( the( xml ), hasXPath( "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts207']", nsContext() ) );
-        assertThat( the( xml ), not( hasXPath( "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts206']", nsContext() ) ) );
-        assertThat( the( xml ), isEquivalentTo( the(
-                        expectedXml( "expectedExport-AIXM51RouteSegmentTimeSliceProjection1.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, HasXPathMatcher.hasXPath(
+                        "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts207']" ).withNamespaceContext( nsContext() ) );
+        assertThat( actual, not( HasXPathMatcher.hasXPath(
+                        "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts206']" ).withNamespaceContext( nsContext() ) ) );
+        assertThat( actual, isSimilarTo( expectedXml(
+                        "expectedExport-AIXM51RouteSegmentTimeSliceProjection1.xml" ) ).ignoreWhitespace() );
     }
 
     @Test
@@ -413,13 +418,13 @@ public class GMLFeatureWriterTest {
         gmlwriter.write( f );
         gmlwriter.close();
 
-        String xml = memoryWriter.toString();
-        assertThat( the( xml ),
-                    conformsTo( w3cXmlSchemaFromClasspath( "org/deegree/gml/aixm/schema/AIXM_Features.xsd" ) ) );
-        assertThat( the( xml ), hasXPath( "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts206']", nsContext() ) );
-        assertThat( the( xml ), not( hasXPath( "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts207']", nsContext() ) ) );
-        assertThat( the( xml ), isEquivalentTo( the(
-                        expectedXml( "expectedExport-AIXM51RouteSegmentTimeSliceProjection2.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, HasXPathMatcher.hasXPath(
+                        "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts206']" ).withNamespaceContext( nsContext() ) );
+        assertThat( actual, not( HasXPathMatcher.hasXPath(
+                        "//aixm:RouteSegmentTimeSlice[@gml32:id = 'rsts207']" ).withNamespaceContext( nsContext() ) ) );
+        assertThat( actual, isSimilarTo(
+                        expectedXml( "expectedExport-AIXM51RouteSegmentTimeSliceProjection2.xml" ) ).ignoreWhitespace() );
     }
 
     @Test
@@ -440,10 +445,9 @@ public class GMLFeatureWriterTest {
         writer.flush();
         writer.close();
 
-        String xml = memoryWriter.toString();
+        String actual = memoryWriter.toString();
         String expectedXml = "<property>0.00000009</property>";
-
-        assertThat( the( xml ), isEquivalentTo( the( expectedXml ) ) );
+        assertThat( actual, isSimilarTo( expectedXml ).ignoreWhitespace() );
     }
 
     @Test
@@ -481,10 +485,9 @@ public class GMLFeatureWriterTest {
         writer.flush();
         writer.close();
 
-        String xml = memoryWriter.toString();
-
-        assertThat( the( xml ), isEquivalentTo( the(
-                        expectedXml( "expectedExport-projectionQName.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo(
+                        expectedXml( "expectedExport-projectionQName.xml" ) ).ignoreWhitespace() );
     }
 
     @Test
@@ -513,8 +516,9 @@ public class GMLFeatureWriterTest {
         QName ftName = new QName( "http://www.deegree.org/app", "Philosopher", "app" );
         List<ProjectionClause> ftProjections = new ArrayList<>();
         ftProjections.add( createPropertyName( "id" ) );
-        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:name" )  );
-        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) );
+        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:name" ) );
+        ftProjections.add(
+                        createPropertyNameWithXPath( "app:placeOfBirth/app:Place/app:country/app:Country/app:name" ) );
         projections.put( ftName, ftProjections );
         exporter.setProjections( projections );
 
@@ -522,10 +526,9 @@ public class GMLFeatureWriterTest {
         writer.flush();
         writer.close();
 
-        String xml = memoryWriter.toString();
-
-        assertThat( the( xml ), isEquivalentTo( the(
-                        expectedXml( "expectedExport-projectionXPath.xml" ) ) ) );
+        String actual = memoryWriter.toString();
+        assertThat( actual, isSimilarTo(
+                        expectedXml( "expectedExport-projectionXPath.xml" ) ).ignoreWhitespace() );
     }
 
     @Test
@@ -554,7 +557,7 @@ public class GMLFeatureWriterTest {
         QName ftName = new QName( "http://www.deegree.org/app", "Philosopher", "app" );
         List<ProjectionClause> ftProjections = new ArrayList<>();
         ftProjections.add( createPropertyName( "id" ) );
-        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place" )  );
+        ftProjections.add( createPropertyNameWithXPath( "app:placeOfBirth/app:Place" ) );
         projections.put( ftName, ftProjections );
         exporter.setProjections( projections );
 
@@ -563,9 +566,9 @@ public class GMLFeatureWriterTest {
         writer.close();
 
         String xml = memoryWriter.toString();
-
-        assertThat( the( xml ), isEquivalentTo( the(
-                        expectedXml( "expectedExport-projectionXPath_Place.xml" ) ) ) );
+        assertThat( xml, isSimilarTo(
+                        expectedXml( "expectedExport-projectionXPath_Place.xml" ) ).ignoreWhitespace().ignoreElementContentWhitespace().withDifferenceEvaluator(
+                        inoreLineBreaksInElementContent() ) );
     }
 
     private PropertyName createPropertyName( String propertyName ) {
@@ -583,16 +586,34 @@ public class GMLFeatureWriterTest {
         return new PropertyName( valueRef, resolveParams, null );
     }
 
-    private NamespaceContext nsContext() {
-        return new SimpleNamespaceContext()
-                        .withBinding( "gml31", GML_31.getNamespace() )
-                        .withBinding( "gml32", GML_32.getNamespace() )
-                        .withBinding( "aixm", "http://www.aixm.aero/schema/5.1" );
+    private Map<String, String> nsContext() {
+        Map<String, String> nsContext = new HashMap<>();
+        nsContext.put( "gml31", GML_31.getNamespace() );
+        nsContext.put( "gml32", GML_32.getNamespace() );
+        nsContext.put( "aixm", "http://www.aixm.aero/schema/5.1" );
+        return nsContext;
     }
 
     private String expectedXml( String resource )
                     throws IOException {
-        return IOUtils.toString( getClass().getResourceAsStream( resource ) );
+        return IOUtils.toString( getClass().getResourceAsStream( resource ), UTF_8.name() );
     }
 
+    private DifferenceEvaluator inoreLineBreaksInElementContent() {
+        return ( comparison, comparisonResult ) -> {
+            if ( comparisonResult.equals( DIFFERENT ) ) {
+                Object testValue = comparison.getTestDetails().getValue();
+                Object controlValue = comparison.getControlDetails().getValue();
+                if ( testValue instanceof String && controlValue instanceof String && testValue != null
+                     && testValue != null ) {
+                    String control = ( (String) controlValue ).replaceAll( "\n", "" ).replace( " ",
+                                                                                               "" );
+                    String test = ( (String) testValue ).replaceAll( "\n", "" ).replace( " ", "" );
+                    return control.equals( test ) ? EQUAL : DIFFERENT;
+                }
+                return comparisonResult;
+            }
+            return comparisonResult;
+        };
+    }
 }
