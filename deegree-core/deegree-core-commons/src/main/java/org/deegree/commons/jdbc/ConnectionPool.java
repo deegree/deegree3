@@ -41,12 +41,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.commons.dbcp.ConnectionFactory;
-import org.apache.commons.dbcp.DelegatingConnection;
-import org.apache.commons.dbcp.DriverManagerConnectionFactory;
-import org.apache.commons.dbcp.PoolableConnectionFactory;
-import org.apache.commons.dbcp.PoolingDataSource;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
+import org.apache.commons.dbcp2.PoolableConnection;
+import org.apache.commons.dbcp2.PoolableConnectionFactory;
+import org.apache.commons.dbcp2.PoolingDataSource;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.slf4j.Logger;
 
@@ -67,7 +67,7 @@ public class ConnectionPool {
 
     private final PoolingDataSource ds;
 
-    private final GenericObjectPool<Connection> pool;
+    private final GenericObjectPool<PoolableConnection> pool;
 
     /**
      * Creates a new {@link ConnectionPool} instance.
@@ -84,14 +84,16 @@ public class ConnectionPool {
                     int maxActive ) {
 
         this.id = id;
-        pool = new GenericObjectPool<Connection>( null );
-        pool.setMinIdle( minIdle );
-        pool.setMaxActive( maxActive );
-
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory( connectURI, user, password );
-        // TODO make this configurable
-        new PoolableConnectionFactory( connectionFactory, pool, null, null, readOnly, true );
+        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory( connectionFactory, null );
+        pool = new GenericObjectPool<>(poolableConnectionFactory);
+        pool.setMinIdle( minIdle );
+        pool.setMaxTotal( maxActive );
+        pool.setTestOnBorrow(true);
+
+        poolableConnectionFactory.setPool(pool);
         ds = new PoolingDataSource( pool );
+
         // needed, so users can retrieve the underlying connection from pooled
         // connections, e.g. to access the
         // LargeObjectManager from a PGConnection
@@ -117,11 +119,13 @@ public class ConnectionPool {
     public void destroy()
                             throws Exception {
         pool.close();
+        ds.close();
     }
 
-    public void invalidate( DelegatingConnection conn )
+    public void invalidate( PoolableConnection conn )
                             throws Exception {
         conn.getDelegate().close();
+        conn.reallyClose();
         pool.invalidateObject( conn );
     }
 }

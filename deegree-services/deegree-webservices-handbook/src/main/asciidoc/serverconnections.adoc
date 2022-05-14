@@ -55,7 +55,7 @@ database:
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
@@ -68,7 +68,7 @@ database:
 ----
 
 * The DataSource object uses Java class
-_org.apache.commons.dbcp.BasicDataSource_ (a connection pool class
+_org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by
 http://commons.apache.org/proper/commons-dbcp/index.html[Apache Commons
 DBCP].). If you don't know what this means, then this is most likely
@@ -102,7 +102,7 @@ This example defines a connection pool for an Oracle database:
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />
@@ -119,7 +119,7 @@ This example defines a connection pool for an Oracle database:
 This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class
-_org.apache.commons.dbcp.BasicDataSource_ (a connection pool class
+_org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by Apache DBCP). If you are not familiar with J2EE containers,
 this is most likely what you want to use.
 * The JDBC driver class is _oracle.jdbc.OracleDriver_. This is the
@@ -147,7 +147,7 @@ This example defines a connection pool for a Microsoft SQL Server:
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
@@ -164,7 +164,7 @@ This example defines a connection pool for a Microsoft SQL Server:
 This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class
-_org.apache.commons.dbcp.BasicDataSource_ (a connection pool class
+_org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by Apache DBCP). If you are not familiar with J2EE containers,
 this is most likely what you want to use.
 * The JDBC driver class is _org.postgresql.Driver_. This is the Java
@@ -286,13 +286,13 @@ snippets for clarification:
 [source,xml]
 ----
 ... 
-<DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+<DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
 ...
 ----
 
 In this snippet, no _factoryMethod_ attribute is present. Therefore,
 the constructor of Java class
-_org.apache.commons.dbcp.BasicDataSource_ is invoked. The returned
+_org.apache.commons.dbcp2.BasicDataSource_ is invoked. The returned
 instance must be an implementation of _javax.sql.DataSource_, and this
 is guaranteed, because the class implements this interface. There are no
 arguments passed to the constructor.
@@ -346,7 +346,7 @@ The properties available for configuration depend on the implementation
 of _javax.sql.DataSource_:
 
 * Apache Commons DBCP: See
-http://commons.apache.org/proper/commons-dbcp/api-1.4/org/apache/commons/dbcp/BasicDataSource.html
+http://commons.apache.org/proper/commons-dbcp/api-2.7.0/org/apache/commons/dbcp2/BasicDataSource.html
 * Oracle UCP:
 http://docs.oracle.com/cd/E11882_01/java.112/e12826/oracle/ucp/jdbc/PoolDataSource.html
 
