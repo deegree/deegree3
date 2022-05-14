@@ -246,7 +246,7 @@ element to specify it:
 
 [source,xml]
 ----
-<ISOMetadataStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/metadata/iso19115">
+<ISOMetadataStore xmlns="http://www.deegree.org/datasource/metadata/iso19115">
 
   <!-- [1] Identifier of JDBC connection -->
   <JDBCConnId>conn1</JDBCConnId>
@@ -324,7 +324,7 @@ specifiying them, their order must be respected.
 *Example for a proxy setup with proxy server for HTTP and HTTPS*
 [source,xml]
 ----
-<ProxyConfiguration configVersion="3.4.0"
+<ProxyConfiguration
                     xmlns="http://www.deegree.org/proxy"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://www.deegree.org/proxy http://schemas.deegree.org/3.5/proxy/proxy.xsd"

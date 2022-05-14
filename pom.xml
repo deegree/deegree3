@@ -233,6 +233,11 @@
           <artifactId>asciidoctor-maven-plugin</artifactId>
           <version>2.2.2</version>
         </plugin>
+        <plugin>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>9.4.43.v20210629</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -336,7 +341,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>enforce-ban-duplicate-classes</id>
+            <id>enforce-ban</id>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -361,6 +366,11 @@
                   <findAllDuplicates>true</findAllDuplicates>
                   <ignoreWhenIdentical>true</ignoreWhenIdentical>
                 </banDuplicateClasses>
+                <bannedDependencies>
+                  <excludes>
+                    <include>commons-logging:commons-logging</include>
+                  </excludes>
+                </bannedDependencies>
               </rules>
               <fail>true</fail>
             </configuration>
@@ -542,6 +552,12 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
         <version>2.7.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>

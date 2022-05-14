@@ -36,7 +36,7 @@ layer stores you intend to use:
 
 [source,xml]
 ----
-<Themes configVersion="3.4.0" xmlns="http://www.deegree.org/themes/standard"
+<Themes xmlns="http://www.deegree.org/themes/standard"
                               xmlns:d="http://www.deegree.org/metadata/description"
                               xmlns:s="http://www.deegree.org/metadata/spatial">
 
@@ -103,7 +103,7 @@ should be extracted:
 
 [source,xml]
 ----
-<RemoteWMSThemes xmlns="http://www.deegree.org/themes/remotewms" configVersion="3.4.0">
+<RemoteWMSThemes xmlns="http://www.deegree.org/themes/remotewms">
   <RemoteWMSId>d3</RemoteWMSId>
   <LayerStoreId>d3</LayerStoreId>
 </RemoteWMSThemes>

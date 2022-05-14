@@ -341,8 +341,7 @@ and optionally, what styles. Let's have a look at an example:
 <FeatureLayers xmlns='http://www.deegree.org/layers/feature' 
                xmlns:d='http://www.deegree.org/metadata/description'
                xmlns:s='http://www.deegree.org/metadata/spatial'
-               xmlns:l='http://www.deegree.org/layers/base'
-               configVersion='3.4.0'>
+               xmlns:l='http://www.deegree.org/layers/base'>
 
   <AutoLayers>
     <FeatureStoreId>myfeaturestore</FeatureStoreId>
@@ -372,8 +371,7 @@ The basic structure of a manual configuration looks like this:
 <FeatureLayers xmlns='http://www.deegree.org/layers/feature' 
                xmlns:d='http://www.deegree.org/metadata/description'
                xmlns:s='http://www.deegree.org/metadata/spatial'
-               xmlns:l='http://www.deegree.org/layers/base'
-               configVersion='3.4.0'>
+               xmlns:l='http://www.deegree.org/layers/base'>
   <FeatureStoreId>myfeaturestore</FeatureStoreId>
   <FeatureLayer>
   ...
@@ -450,8 +448,7 @@ In most cases, a configuration like the following is sufficient:
 ----
 <TileLayers xmlns="http://www.deegree.org/layers/tile"
             xmlns:d="http://www.deegree.org/metadata/description" 
-            xmlns:l="http://www.deegree.org/layers/base"
-            configVersion="3.4.0">
+            xmlns:l="http://www.deegree.org/layers/base">
   <TileLayer>
     <l:Name>example</l:Name>
     <d:Title>Example INSPIRE layer</d:Title>
@@ -489,8 +486,7 @@ store:
 ----
 <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                 xmlns:d="http://www.deegree.org/metadata/description"
-                xmlns:l="http://www.deegree.org/layers/base"
-                configVersion="3.4.0">
+                xmlns:l="http://www.deegree.org/layers/base">
   <AutoLayers>
     <CoverageStoreId>dem</CoverageStoreId>
     <StyleStoreId>heightmap</StyleStoreId>
@@ -513,8 +509,7 @@ and one or many coverage layer definitions:
 ----
 <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                 xmlns:d="http://www.deegree.org/metadata/description"
-                xmlns:l="http://www.deegree.org/layers/base"
-                configVersion="3.4.0">
+                xmlns:l="http://www.deegree.org/layers/base">
   <CoverageStoreId>dem</CoverageStoreId>
   <CoverageLayer>
   <!-- standard layer options -->
@@ -534,8 +529,7 @@ the GetFeatureInfo operations are dealt with.
 ----
 <CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
                 xmlns:d="http://www.deegree.org/metadata/description"
-                xmlns:l="http://www.deegree.org/layers/base"
-                configVersion="3.4.0">
+                xmlns:l="http://www.deegree.org/layers/base">
   <CoverageStoreId>dem</CoverageStoreId>
   <CoverageLayer>
     <!-- standard layer options -->
@@ -568,7 +562,7 @@ all available layers looks like this:
 
 [source,xml]
 ----
-<RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" configVersion="3.4.0">
+<RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms">
   <RemoteWMSId>d3</RemoteWMSId>
   <!-- more detailed options would follow here -->
 </RemoteWMSLayers>

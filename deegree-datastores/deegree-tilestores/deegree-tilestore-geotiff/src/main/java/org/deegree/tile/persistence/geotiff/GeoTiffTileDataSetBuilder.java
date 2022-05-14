@@ -42,7 +42,6 @@
 package org.deegree.tile.persistence.geotiff;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
