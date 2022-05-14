@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
  * setting is changed, because of internal API:
  * 
  * <pre>
- * Window > Preferences > Java > Compiler > Errors/Warnings
+ * Window &gt; Preferences &gt; Java &gt; Compiler &gt; Errors/Warnings
  *  - Deprecated and restricted API
  *    Set "Forbidden reference (access rules)" to "Warning"
  * </pre>
