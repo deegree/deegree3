@@ -91,11 +91,11 @@ class StoredFeatures {
 
     private final TypedObjectNodeXPathEvaluator evaluator = new TypedObjectNodeXPathEvaluator();
 
-    private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
+    private final Map<QName, FeatureCollection> ftToFeatures = new HashMap<>();
 
-    private final Map<String, GMLObject> idToObject = new HashMap<String, GMLObject>();
+    private final Map<String, GMLObject> idToObject = new HashMap<>();
 
-    private final Map<FeatureType, RTree<Feature>> ftToIndex = new HashMap<FeatureType, RTree<Feature>>();
+    private final Map<QName, RTree<Feature>> ftToIndex = new HashMap<>();
 
     /**
      * Creates a new {@link StoredFeatures} instance.
@@ -123,10 +123,10 @@ class StoredFeatures {
         for ( FeatureType ft : schema.getFeatureTypes( null, true, false ) ) {
             FeatureCollection fc = new GenericFeatureCollection();
             if ( former != null ) {
-                FeatureCollection oldFc = former.ftToFeatures.get( ft );
+                FeatureCollection oldFc = former.ftToFeatures.get( ft.getName() );
                 fc.addAll( oldFc );
             }
-            ftToFeatures.put( ft, fc );
+            ftToFeatures.put( ft.getName(), fc );
         }
     }
 
@@ -138,7 +138,7 @@ class StoredFeatures {
      * @return stored features of the given type, never <code>null</code>
      */
     FeatureCollection getFeatures( FeatureType ft ) {
-        return ftToFeatures.get( ft );
+        return ftToFeatures.get( ft.getName() );
     }
 
     /**
@@ -168,10 +168,10 @@ class StoredFeatures {
             }
 
             // determine / filter features
-            fc = ftToFeatures.get( ft );
+            fc = ftToFeatures.get( ft.getName() );
 
             // perform index filtering
-            Envelope ftEnv = ftToFeatures.get( ft ).getEnvelope();
+            Envelope ftEnv = fc.getEnvelope();
             if ( query.getPrefilterBBoxEnvelope() != null && ftEnv != null && storageCRS != null ) {
                 Envelope prefilterBox = query.getPrefilterBBoxEnvelope();
                 if ( prefilterBox.getCoordinateSystem() != null
@@ -185,7 +185,7 @@ class StoredFeatures {
                 }
 
                 float[] floats = toFloats( prefilterBox );
-                RTree<Feature> index = ftToIndex.get( ft );
+                RTree<Feature> index = ftToIndex.get( ft.getName() );
                 fc = new GenericFeatureCollection( null, index.query( floats ) );
             }
 
@@ -235,23 +235,23 @@ class StoredFeatures {
     /**
      * Adds the given {@link Feature} instance and updates the index structures.
      * 
-     * @param features
+     * @param feature
      *            feature to be added, must not be <code>null</code> and must have an id (as well as every geometry)
      */
     void addFeature( Feature feature ) {
         FeatureType ft = feature.getType();
-        FeatureCollection fc = ftToFeatures.get( ft );
+        FeatureCollection fc = ftToFeatures.get( ft.getName() );
         if ( fc == null ) {
             fc = new GenericFeatureCollection();
-            ftToFeatures.put( ft, fc );
+            ftToFeatures.put( ft.getName(), fc );
         }
         fc.add( feature );
         idToObject.put( feature.getId(), feature );
         if ( feature.getEnvelope() != null ) {
-            RTree<Feature> rTree = ftToIndex.get( ft );
+            RTree<Feature> rTree = ftToIndex.get( ft.getName() );
             float[] insertBox = toFloats( feature.getEnvelope() );
             if ( rTree == null ) {
-                rTree = new RTree<Feature>( insertBox, 16 );
+                rTree = new RTree<>( insertBox, 16 );
             }
             rTree.insert( insertBox, feature );
         }
@@ -266,11 +266,11 @@ class StoredFeatures {
     void removeFeature( Feature feature ) {
         idToObject.remove( feature.getId() );
         FeatureType ft = feature.getType();
-        RTree<Feature> rTree = ftToIndex.get( ft );
+        RTree<Feature> rTree = ftToIndex.get( ft.getName() );
         if ( rTree != null ) {
             rTree.remove( feature );
         }
-        FeatureCollection fc = ftToFeatures.get( ft );
+        FeatureCollection fc = ftToFeatures.get( ft.getName() );
         if ( fc != null ) {
             fc.remove( feature );
         }
@@ -303,11 +303,11 @@ class StoredFeatures {
 
     private void rebuildRtrees() {
         ftToIndex.clear();
-        for ( FeatureType ft : ftToFeatures.keySet() ) {
-            FeatureCollection fc = ftToFeatures.get( ft );
+        for ( QName ftName : ftToFeatures.keySet() ) {
+            FeatureCollection fc = ftToFeatures.get( ftName );
             Envelope env = fc.getEnvelope();
             if ( env != null ) {
-                RTree<Feature> index = new RTree<Feature>( toFloats( env ), 16 );
+                RTree<Feature> index = new RTree<>( toFloats( env ), 16 );
                 List<Pair<float[], Feature>> fBboxes = new ArrayList<Pair<float[], Feature>>( fc.size() );
                 for ( Feature f : fc ) {
                     Envelope fEnv = f.getEnvelope();
@@ -317,7 +317,7 @@ class StoredFeatures {
                     }
                 }
                 index.insertBulk( fBboxes );
-                ftToIndex.put( ft, index );
+                ftToIndex.put( ftName, index );
             }
         }
     }
