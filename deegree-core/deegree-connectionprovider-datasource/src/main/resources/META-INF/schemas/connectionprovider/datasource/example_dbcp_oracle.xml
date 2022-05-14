@@ -1,9 +1,9 @@
 <DataSourceConnectionProvider configVersion="3.4.0"
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
+  xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
 
   <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />

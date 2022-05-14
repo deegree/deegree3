@@ -54,21 +54,21 @@ database:
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
   <Property name="url" value="jdbc:postgresql://localhost/deegree-db" />
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
 
 </DataSourceConnectionProvider>
 ----
 
 * The DataSource object uses Java class
-_org.apache.commons.dbcp.BasicDataSource_ (a connection pool class
+_org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by
 http://commons.apache.org/proper/commons-dbcp/index.html[Apache Commons
 DBCP].). If you don't know what this means, then this is most likely
@@ -101,8 +101,8 @@ This example defines a connection pool for an Oracle database:
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="oracle.jdbc.OracleDriver" />
@@ -110,7 +110,7 @@ This example defines a connection pool for an Oracle database:
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="poolPreparedStatements" value="true" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
   <Property name="maxIdle" value="10" />
 
 </DataSourceConnectionProvider>
@@ -119,7 +119,7 @@ This example defines a connection pool for an Oracle database:
 This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class
-_org.apache.commons.dbcp.BasicDataSource_ (a connection pool class
+_org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by Apache DBCP). If you are not familiar with J2EE containers,
 this is most likely what you want to use.
 * The JDBC driver class is _oracle.jdbc.OracleDriver_. This is the
@@ -146,8 +146,8 @@ This example defines a connection pool for a Microsoft SQL Server:
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
-  <DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+  <!-- Creation of javax.sql.DataSource instance -->
+  <DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" destroyMethod="close" />
 
   <!-- Configuration of DataSource properties -->
   <Property name="driverClassName" value="org.postgresql.Driver" />
@@ -155,7 +155,7 @@ This example defines a connection pool for a Microsoft SQL Server:
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="poolPreparedStatements" value="true" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
   <Property name="maxIdle" value="10" />
 
 </DataSourceConnectionProvider>
@@ -164,7 +164,7 @@ This example defines a connection pool for a Microsoft SQL Server:
 This defines a database connection with the following properties:
 
 * The DataSource object uses the Java class
-_org.apache.commons.dbcp.BasicDataSource_ (a connection pool class
+_org.apache.commons.dbcp2.BasicDataSource_ (a connection pool class
 provided by Apache DBCP). If you are not familiar with J2EE containers,
 this is most likely what you want to use.
 * The JDBC driver class is _org.postgresql.Driver_. This is the Java
@@ -187,7 +187,7 @@ servlet container that runs deegree webservices (e.g. Apache Tomcat):
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
-  <!-- Creation / lookup of javax.sql.DataSource instance -->
+  <!-- Lookup of javax.sql.DataSource instance via JNDI -->
   <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
     <Argument value="java:comp/env/jdbc/DatabaseName" javaClass="java.lang.String" />
   </DataSource>
@@ -272,8 +272,8 @@ allows for the following options:
 |factoryMethod |0..1 |String |If present, this static method is used
 (instead of constructor)
 
-|destroyMethod |0..1 |String |Configuration of javax.sql.DataSource
-object
+|destroyMethod |0..1 |String |Method to be invoked on the javax.sql.DataSource
+object to close the underlying connection pool. Which method to be called depends on the implementation of the javax.sql.DataSource. Check the API documentation for more information.
 
 |Argument |0..1 |Complex |Argument to use for instantiation/method call
 |===
@@ -286,13 +286,13 @@ snippets for clarification:
 [source,xml]
 ----
 ... 
-<DataSource javaClass="org.apache.commons.dbcp.BasicDataSource" />
+<DataSource javaClass="org.apache.commons.dbcp2.BasicDataSource" />
 ...
 ----
 
 In this snippet, no _factoryMethod_ attribute is present. Therefore,
 the constructor of Java class
-_org.apache.commons.dbcp.BasicDataSource_ is invoked. The returned
+_org.apache.commons.dbcp2.BasicDataSource_ is invoked. The returned
 instance must be an implementation of _javax.sql.DataSource_, and this
 is guaranteed, because the class implements this interface. There are no
 arguments passed to the constructor.
@@ -300,6 +300,7 @@ arguments passed to the constructor.
 [source,xml]
 ----
 ... 
+<!-- Lookup of javax.sql.DataSource instance via JNDI -->
 <DataSource javaClass="org.deegree.db.datasource.JndiLookup" factoryMethod="lookup">
   <Argument value="java:comp/env/jdbc/DatabaseName" javaClass="java.lang.String" />
 </DataSource>
@@ -337,7 +338,7 @@ _javax.sql.DataSource_ instance:
 <Property name="username" value="kelvin" />
 <Property name="password" value="s3cr3t" />
 <Property name="poolPreparedStatements" value="true" />
-<Property name="maxActive" value="10" />
+<Property name="maxTotal" value="10" />
 <Property name="maxIdle" value="10" />
 ...
 ----
@@ -346,7 +347,7 @@ The properties available for configuration depend on the implementation
 of _javax.sql.DataSource_:
 
 * Apache Commons DBCP: See
-http://commons.apache.org/proper/commons-dbcp/api-1.4/org/apache/commons/dbcp/BasicDataSource.html
+http://commons.apache.org/proper/commons-dbcp/api-2.7.0/org/apache/commons/dbcp2/BasicDataSource.html
 * Oracle UCP:
 http://docs.oracle.com/cd/E11882_01/java.112/e12826/oracle/ucp/jdbc/PoolDataSource.html
 
