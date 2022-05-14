@@ -41,7 +41,6 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -64,7 +63,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about axis of the projection as well as the used projection and the incoming ordinates.")
 public class ProjectionTransform extends Transformation {
 
     private static Logger LOG = LoggerFactory.getLogger( ProjectionTransform.class );

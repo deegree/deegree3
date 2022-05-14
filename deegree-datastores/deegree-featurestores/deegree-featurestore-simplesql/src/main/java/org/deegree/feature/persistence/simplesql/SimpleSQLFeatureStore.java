@@ -50,7 +50,6 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -108,7 +107,6 @@ import org.locationtech.jts.io.ParseException;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(info = "logs problems when connecting to the DB/getting data from the DB", debug = "logs the SQL statements sent to the SQL server", trace = "logs stack traces")
 public class SimpleSQLFeatureStore implements FeatureStore {
 
     static final Logger LOG = getLogger( SimpleSQLFeatureStore.class );

@@ -64,7 +64,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.codec.binary.Base64;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
@@ -106,7 +105,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 31398 $, $Date: 2011-08-02 09:03:40 +0200 (Tue, 02 Aug 2011) $
  */
-@LoggingNotes(debug = "logs when problematic styles were found in the database", info = "logs problems when accessing the DB", trace = "logs stack traces")
 public class PostgreSQLReader {
 
     enum Type {

@@ -54,7 +54,6 @@ import java.util.List;
 
 import javax.vecmath.Matrix4d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.crs.store.AbstractStore;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
@@ -109,7 +108,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about the transformation steps which were 'automatically' created.")
 public class TransformationFactory {
     private static Logger LOG = LoggerFactory.getLogger( TransformationFactory.class );
 

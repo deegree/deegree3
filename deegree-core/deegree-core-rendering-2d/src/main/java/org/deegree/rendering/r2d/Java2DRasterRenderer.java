@@ -45,7 +45,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -75,7 +74,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 19497 $, $Date: 2009-09-11 $
  */
-@LoggingNotes(debug = "logs which raster style is used for rendering", trace = "logs details about the raster rendering process", warn = "logs when null rasters are rendered")
 public class Java2DRasterRenderer implements RasterRenderer {
 
     private static final Logger LOG = getLogger( Java2DRasterRenderer.class );

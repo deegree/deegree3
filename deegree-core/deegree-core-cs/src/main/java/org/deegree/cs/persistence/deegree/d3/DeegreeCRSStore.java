@@ -53,7 +53,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
@@ -140,7 +139,6 @@ import org.slf4j.Logger;
  *            The return type of the {@link CRSParser#getURIAsType(String)} method
  * 
  */
-@LoggingNotes(debug = "the deegree XML format provider")
 public class DeegreeCRSStore extends AbstractCRSStore {
 
     private static final Logger LOG = getLogger( DeegreeCRSStore.class );

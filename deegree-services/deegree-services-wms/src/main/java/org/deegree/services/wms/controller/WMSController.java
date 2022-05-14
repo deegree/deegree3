@@ -93,7 +93,6 @@ import org.apache.axiom.soap.SOAP11Version;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -180,7 +179,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(trace = "logs stack traces", debug = "logs sent exception messages, security information", warn = "logs problems with custom serializer classes", error = "logs unknown errors, problems with GetFeatureInfo templates")
 public class WMSController extends AbstractOWS {
 
     private static final Logger LOG = getLogger( WMSController.class );
