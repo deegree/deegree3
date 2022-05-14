@@ -43,7 +43,10 @@ package org.deegree.tile.persistence.geotiff;
 import java.io.File;
 import java.util.List;
 
+import javax.imageio.ImageReader;
+
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.tile.TileDataLevel;
@@ -67,7 +70,7 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
 
     private final GeometryFactory fac = new GeometryFactory();
 
-    private GenericObjectPool readerPool;
+    private GenericObjectPool<ImageReader> readerPool;
 
     private final int xoff, yoff, numx, numy;
 
@@ -76,7 +79,9 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
         this.metadata = metadata;
         this.imageIndex = imageIndex;
         ImageReaderFactory fac = new ImageReaderFactory( file );
-        this.readerPool = new GenericObjectPool( fac, maxActive );
+        GenericObjectPoolConfig<ImageReader> poolConfig = new GenericObjectPoolConfig<>();
+        poolConfig.setMaxTotal( maxActive );
+        this.readerPool = new GenericObjectPool<ImageReader>( fac, poolConfig );
         this.xoff = xoff;
         this.yoff = yoff;
         this.numx = numx;

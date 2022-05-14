@@ -71,13 +71,13 @@ public class ImageReaderFactory implements PooledObjectFactory<ImageReader> {
     }
 
     @Override
-    public void destroyObject(PooledObject pooledObject) throws Exception {
+    public void destroyObject(PooledObject<ImageReader> pooledObject) throws Exception {
         ImageReader reader = (ImageReader) pooledObject;
         reader.dispose();
     }
 
     @Override
-    public boolean validateObject(PooledObject pooledObject) {
+    public boolean validateObject(PooledObject<ImageReader> pooledObject) {
         // ImageReader reader = (ImageReader) o;
         // ImageInputStream iis = (ImageInputStream) reader.getInput();
         // unknown if we need something here, so far no readers have become invalid
@@ -85,12 +85,12 @@ public class ImageReaderFactory implements PooledObjectFactory<ImageReader> {
     }
 
     @Override
-    public void activateObject(PooledObject pooledObject) throws Exception {
+    public void activateObject(PooledObject<ImageReader> pooledObject) throws Exception {
         // nothing to do
     }
 
     @Override
-    public void passivateObject(PooledObject pooledObject) throws Exception {
+    public void passivateObject(PooledObject<ImageReader> pooledObject) throws Exception {
         // nothing to do
     }
 
@@ -105,6 +105,6 @@ public class ImageReaderFactory implements PooledObjectFactory<ImageReader> {
         iis = createImageInputStream( file );
         // already checked in provider
         reader.setInput( iis );
-        return new DefaultPooledObject(reader);
+        return new DefaultPooledObject<ImageReader>(reader);
     }
 }
