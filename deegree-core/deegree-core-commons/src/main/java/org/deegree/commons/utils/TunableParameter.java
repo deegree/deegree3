@@ -140,10 +140,6 @@ public class TunableParameter {
         return get( key, Byte.valueOf( defaultValue ) ).byteValue();
     }
 
-    public static boolean get( String key, boolean defaultValue ) {
-        return "true".equalsIgnoreCase( get( key, defaultValue ? "true" : "false" ) );
-    }
-
     private static Number get( String key, Number defaultValue ) {
         boolean has = CONFIG_NUM.containsKey( key );
         Number val = CONFIG_NUM.get( key );
