@@ -50,7 +50,7 @@ database:
 
 [source,xml]
 ----
-<DataSourceConnectionProvider configVersion="3.4.0"
+<DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
@@ -97,7 +97,7 @@ This example defines a connection pool for an Oracle database:
 
 [source,xml]
 ----
-<DataSourceConnectionProvider configVersion="3.4.0"
+<DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
@@ -142,7 +142,7 @@ This example defines a connection pool for a Microsoft SQL Server:
 
 [source,xml]
 ----
-<DataSourceConnectionProvider configVersion="3.4.0"
+<DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
@@ -183,7 +183,7 @@ servlet container that runs deegree webservices (e.g. Apache Tomcat):
 
 [source,xml]
 ----
-<DataSourceConnectionProvider configVersion="3.4.0"
+<DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
@@ -213,7 +213,7 @@ Connection Pool):
 
 [source,xml]
 ----
-<DataSourceConnectionProvider configVersion="3.4.0"
+<DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd">
 
@@ -381,7 +381,7 @@ is called 'inspire', the database user is 'postgres' and password is
 
 [source,xml]
 ----
-<JDBCConnection configVersion="3.4.0" xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<JDBCConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/3.5/jdbc/jdbc.xsd">
   <Url>jdbc:postgresql://localhost:5432/inspire</Url>
   <User>postgres</User>
@@ -422,7 +422,7 @@ Let's have a look at an example:
 
 [source,xml]
 ----
-<RemoteWMS xmlns="http://www.deegree.org/remoteows/wms" configVersion="3.4.0">
+<RemoteWMS xmlns="http://www.deegree.org/remoteows/wms">
   <CapabilitiesDocumentLocation
     location="http://deegree3-demo.deegree.org/utah-workspace/services?request=GetCapabilities&amp;service=WMS&amp;version=1.1.1" />
   <ConnectionTimeout>10</ConnectionTimeout>
@@ -460,7 +460,7 @@ Let's have a look at an example:
 
 [source,xml]
 ----
-<RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts" configVersion="3.4.0">
+<RemoteWMTS xmlns="http://www.deegree.org/remoteows/wmts">
   <CapabilitiesDocumentLocation
     location="http://deegree3-testing.deegree.org/utah-workspace/services?request=GetCapabilities&amp;service=WMTS&amp;version=1.0.0" />
   <ConnectionTimeout>10</ConnectionTimeout>

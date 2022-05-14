@@ -40,7 +40,7 @@ A very minimal valid configuration example looks like this:
 
 [source,xml]
 ----
-<ProcessDefinition configVersion="3.4.0" processVersion="1.0.0" xmlns="http://www.deegree.org/processes/java"
+<ProcessDefinition processVersion="1.0.0" xmlns="http://www.deegree.org/processes/java"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/3.5/processes/java/java.xsd">
   <Identifier>Process42</Identifier>
   <JavaClass>Processlet42</JavaClass>
@@ -107,7 +107,7 @@ A more complex configuration example looks like this:
 
 [source,xml]
 ----
-<ProcessDefinition configVersion="3.4.0" processVersion="1.0.0" storeSupported="true" statusSupported="false"
+<ProcessDefinition processVersion="1.0.0" storeSupported="true" statusSupported="false"
   xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/3.5/processes/java/java.xsd">
   <Identifier>Addition</Identifier>

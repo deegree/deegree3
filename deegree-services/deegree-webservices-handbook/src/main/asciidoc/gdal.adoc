@@ -96,7 +96,7 @@ configuration example looks like this:
 
 [source,xml]
 ----
-<GDALSettings configVersion="3.4.0"
+<GDALSettings
   xmlns="http://www.deegree.org/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/3.5/commons/gdal/gdal.xsd">
   <OpenDatasets>5</OpenDatasets>
@@ -112,7 +112,7 @@ maximum of five GDAL datasets to be kept open for simultaneous access.
 
 [source,xml]
 ----
-<GDALSettings configVersion="3.4.0"
+<GDALSettings
   xmlns="http://www.deegree.org/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/3.5/commons/gdal/gdal.xsd" />
   <OpenDatasets>10</OpenDatasets>
@@ -170,7 +170,7 @@ example looks like this:
 
 [source,xml]
 ----
-<GDALLayers configVersion="3.4.0"
+<GDALLayers
   xmlns="http://www.deegree.org/layers/gdal" xmlns:d="http://www.deegree.org/metadata/description"
   xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial">
   <GDALLayer>
@@ -211,7 +211,7 @@ A minimal valid configuration example looks like this:
 
 [source,xml]
 ----
-<GDALTileStore configVersion="3.4.0"
+<GDALTileStore
   xmlns="http://www.deegree.org/datasource/tile/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd">
   <TileDataSet>
@@ -239,7 +239,7 @@ A more complex example that uses all available configuration options:
 
 [source,xml]
 ----
-<GDALTileStore configVersion="3.4.0"
+<GDALTileStore
   xmlns="http://www.deegree.org/datasource/tile/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd">
   <TileDataSet>

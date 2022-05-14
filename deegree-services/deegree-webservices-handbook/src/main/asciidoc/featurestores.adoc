@@ -132,7 +132,7 @@ example looks like this:
 
 [source,xml]
 ----
-<ShapeFeatureStore configVersion="3.4.0"
+<ShapeFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
@@ -167,7 +167,7 @@ A more complex example that uses all available configuration options:
 
 [source,xml]
 ----
-<ShapeFeatureStore configVersion="3.4.0"
+<ShapeFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
@@ -250,7 +250,7 @@ configuration example looks like this:
 
 [source,xml]
 ----
-<MemoryFeatureStore configVersion="3.4.0"
+<MemoryFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
@@ -279,7 +279,7 @@ A more complex example that uses all available configuration options:
 
 [source,xml]
 ----
-<MemoryFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/memory"
+<MemoryFeatureStore xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
   http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd">
@@ -347,7 +347,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
 
 [source,xml]
 ----
-<SimpleSQLFeatureStore configVersion="3.4.0"
+<SimpleSQLFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
@@ -374,7 +374,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
 
 [source,xml]
 ----
-<SimpleSQLFeatureStore configVersion="3.4.0"
+<SimpleSQLFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
@@ -452,7 +452,7 @@ A very minimal valid configuration example looks like this:
 
 [source,xml]
 ----
-<SQLFeatureStore configVersion="3.4.0"
+<SQLFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
@@ -492,7 +492,7 @@ A more complex example:
 ----
 <SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
-  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>inspire</JDBCConnId>
   <StorageCRS srid="-1" dim="2D">EPSG:4258</StorageCRS>
@@ -644,7 +644,7 @@ between one table and one feature type:
 
 [source,xml]
 ----
-<SQLFeatureStore configVersion="3.4.0"
+<SQLFeatureStore
 xmlns="http://www.deegree.org/datasource/feature/sql"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
@@ -676,7 +676,7 @@ _cities_.
 
 [source,xml]
 ----
-<SQLFeatureStore configVersion="3.4.0"
+<SQLFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
@@ -963,7 +963,7 @@ GML application schema files:
 
 [source,xml]
 ----
-<SQLFeatureStore configVersion="3.4.0"
+<SQLFeatureStore
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
