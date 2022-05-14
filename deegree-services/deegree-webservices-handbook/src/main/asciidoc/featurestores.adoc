@@ -136,7 +136,7 @@ example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
-  http://schemas.deegree.org/datasource/feature/shape/3.4.0/shape.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/shape/shape.xsd">
 
   <!-- Required: Path to shape file on file system (can be relative) -->
   <File>/tmp/rivers.shp</File>
@@ -171,7 +171,7 @@ A more complex example that uses all available configuration options:
   xmlns="http://www.deegree.org/datasource/feature/shape"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/shape
-  http://schemas.deegree.org/datasource/feature/shape/3.4.0/shape.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/shape/shape.xsd">
   <StorageCRS>EPSG:4326</StorageCRS>
   <FeatureTypeName>River</FeatureTypeName>
   <FeatureTypeNamespace>http://www.deegree.org/app</FeatureTypeNamespace>
@@ -206,7 +206,7 @@ file
 
 The configuration format for the deegree shape feature store is defined
 by schema file
-http://schemas.deegree.org/datasource/feature/shape/3.1.0/shape.xsd. The
+http://schemas.deegree.org/3.5/datasource/feature/shape/shape.xsd. The
 following table lists all available configuration options. When
 specifiying them, their order must be respected.
 
@@ -254,7 +254,7 @@ configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
-  http://schemas.deegree.org/datasource/feature/memory/3.4.0/memory.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd">
 
   <!-- Required: GML application schema file / directory to read feature types from -->
   <GMLSchema version="GML_32">../../appschemas/inspire/annex1/addresses.xsd</GMLSchema>
@@ -282,7 +282,7 @@ A more complex example that uses all available configuration options:
 <MemoryFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/memory"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/memory
-  http://schemas.deegree.org/datasource/feature/memory/3.4.0/memory.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd">
   <StorageCRS>urn:ogc:def:crs:EPSG::4258</StorageCRS>
   <GMLSchema version="GML_32">../../appschemas/inspire/annex1/</GMLSchema>
   <GMLFeatureCollection version="GML_32">../../data/gml/address.gml</GMLFeatureCollection>
@@ -309,7 +309,7 @@ _urn:ogc:def:crs:EPSG::4258_.
 
 The configuration format for the deegree memory feature store is defined
 by schema file
-http://schemas.deegree.org/datasource/feature/memory/3.0.0/memory.xsd.
+http://schemas.deegree.org/3.5/datasource/feature/memory/memory.xsd.
 The following table lists all available configuration options (the
 complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
@@ -351,7 +351,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
-  http://schemas.deegree.org/datasource/feature/simplesql/3.4.0/simplesql.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/simplesql/simplesql.xsd">
 
   <!-- Required: Database connection -->
   <JDBCConnId>connid</JDBCConnId>
@@ -378,7 +378,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/simplesql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/simplesql
-  http://schemas.deegree.org/datasource/feature/simplesql/3.4.0/simplesql.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/simplesql/simplesql.xsd">
 
   <!-- Required: Database connection -->
   <JDBCConnId>connid</JDBCConnId>
@@ -398,7 +398,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
 ==== Configuration options
 
 The configuration format is defined by schema file
-http://schemas.deegree.org/datasource/feature/simplesql/3.0.1/simplesql.xsd.
+http://schemas.deegree.org/3.5/datasource/feature/simplesql/simplesql.xsd.
 The following table lists all available configuration options (the
 complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
@@ -456,7 +456,7 @@ A very minimal valid configuration example looks like this:
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>postgis</JDBCConnId>
   <FeatureTypeMapping table="country"/>
 </SQLFeatureStore>
@@ -493,7 +493,7 @@ A more complex example:
 <SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0"
   xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>inspire</JDBCConnId>
   <StorageCRS srid="-1" dim="2D">EPSG:4258</StorageCRS>
   <GMLSchema>../../appschemas/inspire/annex1/Addresses.xsd</GMLSchema>
@@ -602,7 +602,7 @@ PostgreSQL)
 ==== Overview of configuration options
 
 The SQL feature store configuration format is defined by schema file
-http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd. The
+http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd. The
 following table lists all available configuration options (the complex
 ones contain nested options themselves). When specifying them, their
 order must be respected:
@@ -648,7 +648,7 @@ between one table and one feature type:
 xmlns="http://www.deegree.org/datasource/feature/sql"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
 <JDBCConnId>postgis</JDBCConnId>
 <FeatureTypeMapping table="country"/>
 </SQLFeatureStore>
@@ -680,7 +680,7 @@ _cities_.
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>postgis</JDBCConnId>
   <FeatureTypeMapping table="country"/>
   <FeatureTypeMapping table="city"/>
@@ -701,6 +701,8 @@ with database schema)
 |_name_ |0..1 |QName |Name of the feature type
 
 |_<FIDMapping>_ |0..1 |Complex |Defines the mapping of the feature id
+
+|_<OrderBy>_ |0..1 |Complex |Defines the default sort order of a feature collection
 
 |_<Primitive>_ |0..n |Complex |Defines the mapping of a
 primitive-valued column
@@ -816,6 +818,47 @@ NOTE: Technically, the feature id prefix is important to determine the feature
 type when performing queries by feature id. Every
 _<FeatureTypeMapping>_ must have a unique feature id prefix.
 
+===== Customizing the default sort order of features
+
+By default the sort order of the features returned is given by the underlying database.
+To configure a defined sort order the _<OrderBy>_ element can be used. The configuration
+applies to simple properties only. It is possible to define multiple properties and
+if sorting should be ascending or descending. If this configuration is applied it is
+mapped to a SQL ORDER BY clause and a collection of features is returned in a defined
+sort order.
+The defined sort order can be overwritten when clients use the WFS GetFeature
+request parameter SORTBY.
+
+[source,xml]
+----
+...
+<OrderBy>
+  <!-- ascending sort order by default-->
+  <Column name="prop1" />
+  <!-- descending sort order -->
+  <Column name="prop2" sortOrder="DESC" />
+</OrderBy>
+...
+----
+
+Here are the options for _<OrderBy>_:
+
+[width="100%",cols="17%,11%,8%,64%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|_Column_ |0..n |Complex |Settings of a column describing the sort order
+|===
+
+Here are the options for _<Column>_:
+
+[width="100%",cols="17%,11%,8%,64%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|_name_ |1 |String |Name of the database column
+
+|_sortOrder_ |0..1 |String |sort order (ASC, DESC), default: ASC
+|===
+
 ===== Customizing the mapping between columns and properties
 
 By default, the SQL feature store will try to automatically determine
@@ -924,7 +967,7 @@ GML application schema files:
   xmlns="http://www.deegree.org/datasource/feature/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
-  http://schemas.deegree.org/datasource/feature/sql/3.4.0/sql.xsd">
+  http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
 
   <JDBCConnId>postgis</JDBCConnId>
   <StorageCRS dim="2D" srid="-1">EPSG:4258</StorageCRS>

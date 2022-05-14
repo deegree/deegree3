@@ -428,7 +428,8 @@ public class HttpUtils {
         if ( !u.valid() ) {
             return null;
         }
-        if ( !u.getURL().getProtocol().equalsIgnoreCase( "http" ) ) {
+        final String protocol = u.getURL().getProtocol();
+        if ( !( "http".equalsIgnoreCase( protocol ) || "https".equalsIgnoreCase( protocol ) ) ) {
             return worker.work( u.getURL().openStream() );
         }
         DefaultHttpClient client = enableProxyUsage( new DefaultHttpClient(), u );

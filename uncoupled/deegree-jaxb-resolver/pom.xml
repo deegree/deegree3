@@ -1,17 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.deegree</groupId>
 	<artifactId>deegree-jaxb-resolver</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>deegree-jaxb-resolver</name>
 	<packaging>jar</packaging>
 	<description>JAXB resolver to search for deegree schema files on classpath</description>
 
-	<parent>
-		<groupId>org.deegree</groupId>
-		<artifactId>deegree</artifactId>
-		<version>3.4-RC1</version>
-	</parent>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+		<java.version>11</java.version>
+	</properties>
+
 
 	<repositories>
 		<repository>
@@ -26,29 +29,103 @@
 		</repository>
 	</repositories>
 
-	<!-- TRICKY require to start compiler forked, to allow build against reference in rt.jar -->
+	<scm>
+		<connection>scm:git:git@github.com:deegree/deegree3.git</connection>
+		<developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
+		<url>https://github.com/deegree/deegree3</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.8.5,)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>${java.version}</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
-					<compilerArgs>
-						<arg>-XDignore.symbol.file</arg>
-					</compilerArgs>
-					<fork>true</fork>
+					<release>${java.version}</release>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<tagNameFormat>jaxb-resolver-@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
+	<distributionManagement>
+		<repository>
+			<id>deegree-releases</id>
+			<url>https://repo.deegree.org/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>deegree-snapshots</id>
+			<url>https://repo.deegree.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL), version 2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/deegree/deegree3/issues</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<id>TMC</id>
+			<name>Technical Management Committee</name>
+			<organization>OSGeo deegree project</organization>
+			<organizationUrl>https://www.deegree.org</organizationUrl>
+			<email>tmc@deegree.org</email>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<dependency>
-			<groupId>java</groupId>
-			<artifactId>rt</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${java.home}/lib/rt.jar</systemPath>
+			<groupId>com.sun.org.apache.xml.internal</groupId>
+			<artifactId>resolver</artifactId>
+			<version>20050927</version>
 		</dependency>
 	</dependencies>
+
+	<ciManagement>
+		<system>Jenkins CI</system>
+		<url>http://buildserver.deegree.org/</url>
+	</ciManagement>
 </project>

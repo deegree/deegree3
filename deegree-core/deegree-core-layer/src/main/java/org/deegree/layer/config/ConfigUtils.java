@@ -127,6 +127,7 @@ public final class ConfigUtils {
         for ( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s : srt.getStyle() ) {
             boolean isDefault = false;
             String name = s.getStyleName();
+            String title = s.getStyleTitle();
             String nameRef = s.getStyleNameRef();
             String layerRef = s.getLayerNameRef();
             Style st = store.getStyle( layerRef, nameRef );
@@ -141,6 +142,7 @@ public final class ConfigUtils {
             }
             st = st.copy();
             st.setName( name );
+            st.setTitle( title );
             styleMap.put( name, st );
             if ( isDefault && !styleMap.containsKey( "default" ) ) {
                 styleMap.put( "default", st );
@@ -247,7 +249,12 @@ public final class ConfigUtils {
         if ( cfg.isOpaque() != null ) {
             opaque = cfg.isOpaque();
         }
-        return new MapOptions( quali, interpol, alias, maxFeats, rad, opaque );
+        return new MapOptions.Builder().
+                               quality( quali ).
+                               interpolation( interpol ).
+                               antialias( alias ).
+                               maxFeatures( maxFeats ).
+                               featureInfoRadius( rad ).build();
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {

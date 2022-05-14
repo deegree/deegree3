@@ -125,13 +125,14 @@ public interface SQLDialect {
      * @param allowPartialMappings
      *            if <code>false</code>, any unmappable expression will cause an {@link UnmappableException} to be
      *            thrown
+     * @param defaultSortCriteria
+     *             criteria to use for generating the ORDER-BY clause if the sort order is not specified by the query, may be <code>null</code>
      * @return where builder, never <code>null</code>
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      * @throws FilterEvaluationException
      */
-    AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit,
-                                          boolean allowPartialMappings )
+    AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter, SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException;
 
     /**

@@ -76,7 +76,7 @@ public class WMTSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WMTSProvider.class.getResource( "/META-INF/schemas/services/wmts/3.4.0/wmts.xsd" );
+        return WMTSProvider.class.getResource( "/META-INF/schemas/services/wmts/wmts.xsd" );
     }
 
     @Override

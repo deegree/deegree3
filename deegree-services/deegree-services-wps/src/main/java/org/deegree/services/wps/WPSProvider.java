@@ -75,7 +75,7 @@ public class WPSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/3.4.0/wps_configuration.xsd" );
+        return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/wps_configuration.xsd" );
     }
 
     @Override

@@ -89,7 +89,7 @@ public class ISOMetadataStoreTransaction implements MetadataStoreTransaction {
             // TODO: mapping!
             ISOPropertyNameMapper mapping = new ISOPropertyNameMapper( dialect, queryables );
             AbstractWhereBuilder builder = dialect.getWhereBuilder( mapping, (OperatorFilter) delete.getConstraint(),
-                                                                    null, false );
+                                                                    null, null,false );
 
             TransactionService transactionService = getTransactionalSqlService();
             return transactionService.executeDelete( conn, builder );

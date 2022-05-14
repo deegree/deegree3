@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.31-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <modules>
@@ -19,9 +19,7 @@
     <module>deegree-core-coverage</module>
     <module>deegree-core-cs</module>
     <module>deegree-core-db</module>
-    <module>deegree-core-feature</module>
     <module>deegree-core-featureinfo</module>
-    <module>deegree-core-filter</module>
     <module>deegree-core-filterfunctions</module>
     <module>deegree-core-gdal</module>
     <module>deegree-core-geometry</module>

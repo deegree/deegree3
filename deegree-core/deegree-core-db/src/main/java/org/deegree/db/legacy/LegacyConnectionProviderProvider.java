@@ -59,7 +59,7 @@ import org.deegree.workspace.Workspace;
  */
 public class LegacyConnectionProviderProvider extends ConnectionProviderProvider {
 
-    static final URL SCHEMA_URL = LegacyConnectionProviderProvider.class.getResource( "/META-INF/schemas/jdbc/3.4.0/jdbc.xsd" );
+    static final URL SCHEMA_URL = LegacyConnectionProviderProvider.class.getResource( "/META-INF/schemas/jdbc/jdbc.xsd" );
 
     @Override
     public String getNamespace() {
