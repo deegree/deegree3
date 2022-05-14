@@ -90,11 +90,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>java</groupId>
-			<artifactId>rt</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${java.home}/lib/rt.jar</systemPath>
+			<groupId>com.sun.org.apache.xml.internal</groupId>
+			<artifactId>resolver</artifactId>
+			<version>20050927</version>
 		</dependency>
 	</dependencies>
 
