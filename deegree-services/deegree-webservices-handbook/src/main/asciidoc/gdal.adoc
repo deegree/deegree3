@@ -23,7 +23,7 @@ to be installed correctly and must be accessible by your deegree
 webservices installation. Please see http://www.gdal.org/ for general
 GDAL installation instructions.
 
-NOTE: Currently, GDAL library version 2.4 is supported. Other versions may
+NOTE: Currently, GDAL library version 3.0 is supported. Other versions may
 work as well, but have not been tested.
 
 In order to verify that deegree webservices can use the GDAL library,
