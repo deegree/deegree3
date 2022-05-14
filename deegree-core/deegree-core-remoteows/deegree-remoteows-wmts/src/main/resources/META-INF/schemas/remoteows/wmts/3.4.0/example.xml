@@ -1,5 +1,0 @@
-<RemoteWMTS configVersion="3.4.0" xmlns="http://www.deegree.org/remoteows/wmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/remoteows/wmts http://schemas.deegree.org/remoteows/wmts/3.4.0/remotewmts.xsd">
-  <CapabilitiesDocumentLocation
-    location="http://v2.suite.opengeo.org/geoserver/gwc/service/wmts?service=WMTS&amp;version=1.0.0&amp;request=GetCapabilities" />
-</RemoteWMTS>

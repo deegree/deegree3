@@ -311,7 +311,7 @@ public class DefaultQueryService extends AbstractSqlHelper implements QueryServi
     protected AbstractWhereBuilder getWhereBuilder( MetadataQuery query, Connection conn )
                             throws FilterEvaluationException, UnmappableException {
         return dialect.getWhereBuilder( new ISOPropertyNameMapper( dialect, queryables ),
-                                        (OperatorFilter) query.getFilter(), query.getSorting(), false );
+                                        (OperatorFilter) query.getFilter(), query.getSorting(), null, false );
     }
 
     protected PreparedStatement createPreparedStatement( Connection conn, String sql )

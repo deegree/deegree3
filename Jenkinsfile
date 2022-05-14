@@ -6,8 +6,8 @@ pipeline {
         disableConcurrentBuilds() 
     }
     tools {
-        maven 'maven-3.6'
-        jdk 'adoptopenjdk-jdk8'
+        maven 'maven-3.8'
+        jdk 'adoptopenjdk-jdk11'
     }
     environment {
         MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'

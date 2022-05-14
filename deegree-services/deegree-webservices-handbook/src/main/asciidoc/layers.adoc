@@ -204,6 +204,7 @@ you want extracted:
 ----
 <l:Style>
   <l:StyleName>highways</l:StyleName>
+  <l:StyleTitle>Colorful Highways</l:StyleTitle>
   <l:LayerNameRef>highways</l:LayerNameRef>
   <l:StyleNameRef>highways</l:StyleNameRef>
   ...
@@ -212,7 +213,7 @@ you want extracted:
 
 The _StyleName_ specifies the name under which the style will be known
 in the WMS. The _LayerNameRef_ and _StyleNameRef_ are used to
-extract the style from the style store.
+extract the style from the style store. The optional _StyleTitle_ can be used to specify the title of the style. If _StyleTitle_ is not configured, the _StyleName_ is used for the title instead.
 
 The next part to configure within the _Style_ element is the legend
 generation, if you don't want to use the default legend generated from
@@ -267,6 +268,7 @@ A full example you will find below:
 <l:StyleStoreId>road_styles</l:StyleStoreId>
   <l:Style>
     <l:StyleName>highways</l:StyleName>
+    <l:StyleTitle>Colorful Highways</l:StyleTitle>
     <l:LayerNameRef>highways</l:LayerNameRef>
     <l:StyleNameRef>highways</l:StyleNameRef>
     <l:LegendGraphic outputGetLegendGraphicUrl="false">http://legends.acme.com/menu.png</l:LegendGraphic>
@@ -287,7 +289,7 @@ Here's a copy of the corresponding table for reference:
 
 [width="100%",cols="18%,12%,7%,63%",options="header",]
 |===
-|Option |Cardinality |String |Description
+|Option |Cardinality |Value |Description
 |AntiAliasing |0..1 |String |Whether to antialias NONE, TEXT, IMAGE or
 BOTH, default is BOTH
 
@@ -520,10 +522,37 @@ and one or many coverage layer definitions:
 </CoverageLayers>
 ----
 
-Within the _CoverageLayer_ element you can only define the
-link:#common[common] layer options. While only one coverage is supported
+Within the _CoverageLayer_ element you can define the link:#common[common] 
+layer options and one optional element. While only one coverage is supported
 per coverage store, it might still be desirable to define multiple
 layers based on the store, for example one layer per style.
+
+The optional element _FeatureInfoMode_ can be used to control how
+the GetFeatureInfo operations are dealt with. 
+
+[source,xml]
+----
+<CoverageLayers xmlns="http://www.deegree.org/layers/coverage"
+                xmlns:d="http://www.deegree.org/metadata/description"
+                xmlns:l="http://www.deegree.org/layers/base"
+                configVersion="3.4.0">
+  <CoverageStoreId>dem</CoverageStoreId>
+  <CoverageLayer>
+    <!-- standard layer options -->
+    <FeatureInfoMode>POINT</FeatureInfoMode>
+  </CoverageLayer>
+</CoverageLayers>
+----
+
+[width="100%",cols="18%,12%,7%,63%",options="header",]
+|=======================================================================
+|Option |Cardinality |Value |Description
+
+
+|FeatureInfoMode |0..1 |String |Whether to use a INTERPOLATION
+or POINT based approach to get a GetFeatureInfo result, default is INTERPOLATION
+
+|=======================================================================
 
 === Remote WMS layers
 
@@ -647,6 +676,9 @@ example:
     <!-- optionally override description (title, abstract, keywords) -->
     <!-- optionally override envelope, crs -->
     <!-- optionally set layer options -->
+    <!-- optionally configure XSLT script to transform GetFeatureInfo response to a arbitrary GML version
+    <XSLTFile targetGmlVersion="GML_32">remoteGfiResponse2gml32.xsl</XSLTFile>
+    -->
   </Layer>
 </RemoteWMSLayers>
 ----
@@ -655,3 +687,5 @@ Please note that once you specify one layer, you'll need to specify each
 layer you want to make available. If you want all layers to be
 available, don't specify a _Layer_ element. Of course, you can specify
 as many _Layer_ elements as you like.
+
+With the element _XSLTFile_ a xslt-Script can be configured transforming the response of a GetFeatureInfo request of the remote WMS to gml per layer. The values GML_2, GML_30, GML_31 and GML_32 are allowed as values of the attribute _targetGmlVersion_.

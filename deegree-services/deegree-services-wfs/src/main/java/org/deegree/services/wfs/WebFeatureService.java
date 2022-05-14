@@ -140,6 +140,7 @@ import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.format.csv.CsvFormat;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
@@ -245,6 +246,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private IDGenMode idGenMode;
 
+    private boolean transactionCheckAreaOfUse = false;
+
     private boolean disableBuffering = true;
 
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
@@ -264,6 +267,8 @@ public class WebFeatureService extends AbstractOWS {
     private boolean checkAreaOfUse;
 
     private boolean enableResponsePaging;
+
+    private boolean allowFeatureReferencesToDatastore = false;
 
     private ReferenceResolvingMode referenceResolvingMode = CHECK_ALL;
 
@@ -292,6 +297,8 @@ public class WebFeatureService extends AbstractOWS {
             this.enableTransactions = enableTransactions.isValue();
             IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
             this.idGenMode = parseIdGenMode( configuredIdGenMode );
+            this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
+            this.transactionCheckAreaOfUse = enableTransactions.isCheckAreaOfUse();
             if ( USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode ) )
                 this.referenceResolvingMode = CHECK_INTERNALLY;
             if ( USE_EXISTING_SKIP_RESOLVING_REFERENCES.equals( configuredIdGenMode ) )
@@ -578,6 +585,7 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml32 );
+            mimeTypeToFormat.put( "text/csv", new CsvFormat( this ) );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -586,6 +594,8 @@ public class WebFeatureService extends AbstractOWS {
                 Format format = null;
                 if ( formatDef instanceof GMLFormat ) {
                     format = new org.deegree.services.wfs.format.gml.GmlFormat( this, (GMLFormat) formatDef );
+                } else if (formatDef instanceof org.deegree.services.jaxb.wfs.CsvFormat ){
+                    format = new CsvFormat( this );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();
@@ -673,7 +683,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 try {
                     DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,
-                                                                metadataUrls, null, null, null, null );
+                                                                metadataUrls, null, null, null, null, null );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
@@ -1464,6 +1474,10 @@ public class WebFeatureService extends AbstractOWS {
      */
     public ReferencePatternMatcher getReferencePatternMatcher() {
         return referencePatternMatcher;
+    }
+
+    public boolean isTransactionCheckAreaOfUse() {
+        return this.transactionCheckAreaOfUse;
     }
 
     /**

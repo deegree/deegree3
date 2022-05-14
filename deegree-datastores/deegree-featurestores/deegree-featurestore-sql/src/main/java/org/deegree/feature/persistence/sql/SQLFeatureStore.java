@@ -128,6 +128,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
@@ -1505,8 +1506,14 @@ public class SQLFeatureStore implements FeatureStore {
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
                                                   Connection conn, boolean handleStrict )
                             throws FilterEvaluationException, UnmappableException {
+        List<SortCriterion> defaultSortCriteria = null;
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
+        if ( ftMapping != null ) {
+            defaultSortCriteria = ftMapping.getDefaultSortCriteria();
+        }
         PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ), handleStrict );
-        return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
+        AbstractWhereBuilder whereBuilder = dialect.getWhereBuilder( mapper, filter, sortCrit, defaultSortCriteria, allowInMemoryFiltering );
+        return whereBuilder;
     }
 
     private AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
@@ -1531,7 +1538,7 @@ public class SQLFeatureStore implements FeatureStore {
                 return getMapping( propName, aliasManager );
             }
         };
-        return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );
+        return dialect.getWhereBuilder( mapper, filter, null, null, allowInMemoryFiltering );
     }
 
     public SQLDialect getDialect() {

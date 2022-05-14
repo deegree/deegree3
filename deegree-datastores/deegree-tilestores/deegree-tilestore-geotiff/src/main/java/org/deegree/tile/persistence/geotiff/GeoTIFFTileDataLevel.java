@@ -71,11 +71,12 @@ public class GeoTIFFTileDataLevel implements TileDataLevel {
 
     private final int xoff, yoff, numx, numy;
 
-    public GeoTIFFTileDataLevel( TileMatrix metadata, File file, int imageIndex, int xoff, int yoff, int numx, int numy ) {
+    public GeoTIFFTileDataLevel( TileMatrix metadata, File file, int imageIndex, int xoff, int yoff, int numx, int numy,
+                                 int maxActive ) {
         this.metadata = metadata;
         this.imageIndex = imageIndex;
         ImageReaderFactory fac = new ImageReaderFactory( file );
-        this.readerPool = new GenericObjectPool( fac );
+        this.readerPool = new GenericObjectPool( fac, maxActive );
         this.xoff = xoff;
         this.yoff = yoff;
         this.numx = numx;

@@ -63,7 +63,7 @@ public class GdalSettings implements Initializable, Destroyable {
 
     private static final Logger LOG = getLogger( GdalSettings.class );
 
-    private static final URL CONFIG_SCHEMA = GdalSettings.class.getResource( "/META-INF/schemas/commons/gdal/3.4.0/gdal.xsd" );
+    private static final URL CONFIG_SCHEMA = GdalSettings.class.getResource( "/META-INF/schemas/commons/gdal/gdal.xsd" );
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.commons.gdal.jaxb";
 
