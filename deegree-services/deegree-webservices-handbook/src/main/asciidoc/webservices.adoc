@@ -242,7 +242,7 @@ to _true_ to enforce this check.
 By default, WFS-T requests will be rejected. Setting the
 _EnableTransactions_ option to _true_ will enable transaction
 support. This option has the optional attribute _idGenMode_ which
-controls how ids of inserted features (the values in the gml:idGML format configuration
+controls how ids of inserted features (the values in the gml:id
 attribute) are treated. There are three id generation modes available:
 
 * *UseExisting*: The original gml:id values from the input are stored.

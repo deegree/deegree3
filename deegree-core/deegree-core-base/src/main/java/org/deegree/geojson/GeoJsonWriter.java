@@ -167,8 +167,9 @@ public class GeoJsonWriter extends JsonWriter implements GeoJsonFeatureWriter, G
                             throws IOException, UnknownCRSException, TransformationException {
         beginObject();
 
-        Set<QName> propertyNames = feature.getProperties().stream().map( property -> property.getName() ).collect(
-                        Collectors.toSet() );
+        List<QName> propertyNames = feature.getProperties().stream().map(
+                        property -> property.getName() ).distinct().collect(
+                        Collectors.toList() );
         for ( QName propertyName : propertyNames ) {
             List<Property> properties = feature.getProperties( propertyName );
             exportPropertyByName( propertyName, properties );
