@@ -67,6 +67,8 @@ import org.deegree.protocol.wfs.getfeature.TypeName;
  */
 public class Query {
 
+    private boolean strict;
+
     /**
      * Names for hints and additional parameters that a {@link FeatureStore} implementation may take into account to
      * increase efficient query processing.
@@ -96,6 +98,8 @@ public class Query {
     private final Map<QueryHint, Object> hints = new HashMap<QueryHint, Object>();
 
     private int maxFeatures = -1;
+
+    private int startIndex = 0;
 
     private final List<ProjectionClause> projections;
 
@@ -156,6 +160,34 @@ public class Query {
 
     /**
      * Creates a new {@link Query} instance.
+     *
+     * @param typeNames
+     *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
+     * @param filter
+     *            filter to be applied, can be <code>null</code>, if not <code>null</code>, all contained geometry
+     *            operands must have a non-null {@link CRS}
+     * @param sortBy
+     *            sort criteria to be applied, can be <code>null</code>
+     * @param maxFeatures
+     *            number of features to return, if not specified: -1
+     * @param startIndex
+     *            index of the first feature to return, default: 0
+     */
+    public Query( TypeName[] typeNames, Filter filter, SortProperty[] sortBy, int maxFeatures, int startIndex ) {
+        this.typeNames = typeNames;
+        this.filter = filter;
+        this.maxFeatures = maxFeatures;
+        this.startIndex = startIndex;
+        if ( sortBy != null ) {
+            this.sortBy = sortBy;
+        } else {
+            this.sortBy = new SortProperty[0];
+        }
+        this.projections = emptyList();
+    }
+
+    /**
+     * Creates a new {@link Query} instance.
      * 
      * @param typeNames
      *            feature type names to be queried, must not be <code>null</code> and contain at least one entry
@@ -188,6 +220,14 @@ public class Query {
             hints.put( HINT_RESOLUTION, resolution );
         }
         this.projections = emptyList();
+    }
+
+    public void setHandleStrict( boolean strict ) {
+        this.strict = strict;
+    }
+
+    public boolean isHandleStrict() {
+        return this.strict;
     }
 
     public Object getHint( QueryHint code ) {
@@ -277,4 +317,12 @@ public class Query {
     public int getMaxFeatures() {
         return maxFeatures;
     }
+
+    /**
+     * @return the index of the first feature to return
+     */
+    public int getStartIndex() {
+        return startIndex;
+    }
+
 }

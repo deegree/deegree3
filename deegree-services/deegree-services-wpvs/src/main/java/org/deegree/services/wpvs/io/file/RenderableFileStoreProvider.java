@@ -55,7 +55,7 @@ public class RenderableFileStoreProvider extends RenderableStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/renderable/file";
 
-    private static final URL CONFIG_SCHEMA = RenderableFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/3.4.0/file.xsd" );
+    private static final URL CONFIG_SCHEMA = RenderableFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/file.xsd" );
 
     @Override
     public String getNamespace() {

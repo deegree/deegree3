@@ -139,6 +139,8 @@ public class SimpleSQLFeatureStore implements FeatureStore {
 
     private ConnectionProvider connProvider;
 
+    private boolean strict;
+
     /**
      * @param connId
      * @param crs
@@ -282,6 +284,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     @Override
     public boolean isAvailable() {
         return available;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
     }
 
     public FeatureInputStream query( Query query )

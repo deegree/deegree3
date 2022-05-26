@@ -162,6 +162,8 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private ResourceMetadata<FeatureStore> metadata;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link ShapeFeatureStore} instance from the given parameters.
      * 
@@ -599,6 +601,11 @@ public class ShapeFeatureStore implements FeatureStore {
     @Override
     public boolean isMapped( QName ftName ) {
         return schema.getFeatureType( ftName ) != null;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
     }
 
     /**

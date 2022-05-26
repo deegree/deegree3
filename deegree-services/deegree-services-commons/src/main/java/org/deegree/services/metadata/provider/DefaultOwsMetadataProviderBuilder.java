@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -43,6 +45,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.ExtendedDescription;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -62,6 +65,7 @@ import org.deegree.services.jaxb.metadata.DatasetMetadataType.FeatureListURL;
 import org.deegree.services.jaxb.metadata.DatasetMetadataType.MetadataURL;
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.jaxb.metadata.ExtendedCapabilitiesType;
+import org.deegree.services.jaxb.metadata.ExtendedDescriptionType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataAuthorityType;
 import org.deegree.services.jaxb.metadata.ExternalMetadataSetIdType;
 import org.deegree.services.jaxb.metadata.KeywordsType;
@@ -70,6 +74,7 @@ import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
+import org.w3c.dom.Element;
 
 /**
  * This class is responsible for building web service metadata providers.
@@ -174,8 +179,18 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
             featureListUrls.add( new UrlWithFormat( jaxbFeatureListUrl.getValue(), jaxbFeatureListUrl.getFormat() ) );
         }
         final Attribution attribution = fromJaxb( jaxbEl.getAttribution() );
+     	final List<ExtendedDescription> extendedDescriptions = new ArrayList<>();
+		List<ExtendedDescriptionType> extendedDescriptionTypes = jaxbEl.getExtendedDescription();
+		if ( extendedDescriptionTypes != null ) {
+			extendedDescriptionTypes.stream().forEach(extendedDescriptionType -> {
+                ExtendedDescription extendedDescription = new ExtendedDescription( extendedDescriptionType.getName(),
+                        extendedDescriptionType.getType(), extendedDescriptionType.getMetadata(),
+                        extendedDescriptionType.getValue() );
+                extendedDescriptions.add( extendedDescription );
+			});
+		}
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution );
+                                    featureListUrls, attribution, extendedDescriptions );
     }
 
     private String buildMetadataUrl( DeegreeServicesMetadataType.DatasetMetadata.MetadataUrlTemplate template,

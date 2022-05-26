@@ -2,10 +2,12 @@ pipeline {
     agent {
         label 'openjdk8bot'
     }
-
+    options { 
+        disableConcurrentBuilds() 
+    }
     tools {
-        maven 'maven-3.6'
-        jdk 'adoptopenjdk-jdk8'
+        maven 'maven-3.8'
+        jdk 'adoptopenjdk-jdk11'
     }
     environment {
         MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
@@ -45,11 +47,11 @@ pipeline {
             }
             steps {
                 echo 'Quality checking'
-                sh 'mvn -B -C -fae -Poracle,mssql findbugs:findbugs checkstyle:checkstyle javadoc:javadoc'
+                sh 'mvn -B -C -fae -Poracle,mssql com.github.spotbugs:spotbugs-maven-plugin:spotbugs checkstyle:checkstyle javadoc:javadoc'
             }
             post {
                 success {
-                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/findbugsXml.xml', unHealthy: ''
+                    findbugs canComputeNew: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', pattern: '**/spotbugsXml.xml', unHealthy: ''
                     checkstyle canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '**/checkstyle-result.xml', unHealthy: ''
                 }
             }

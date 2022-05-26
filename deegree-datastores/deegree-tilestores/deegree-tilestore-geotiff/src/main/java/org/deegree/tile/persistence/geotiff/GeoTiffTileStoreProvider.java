@@ -59,7 +59,7 @@ import org.deegree.workspace.Workspace;
  */
 public class GeoTiffTileStoreProvider extends TileStoreProvider {
 
-    private static final URL SCHEMA = GeoTiffTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/geotiff/3.4.0/geotiff.xsd" );
+    private static final URL SCHEMA = GeoTiffTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/geotiff/geotiff.xsd" );
 
     @Override
     public String getNamespace() {
