@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'openjdk8bot'
+        label 'openjdk11bot'
     }
     options { 
         disableConcurrentBuilds() 
@@ -58,7 +58,7 @@ pipeline {
         }
         stage ('Acceptance Test') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 echo 'Preparing test harness: TEAM Engine'
@@ -74,7 +74,7 @@ pipeline {
         }
         stage ('Release') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 echo 'Prepare release version...'
@@ -91,7 +91,7 @@ pipeline {
         }
         stage ('Deploy PROD') {
             when {
-                branch 'master'
+                branch 'main'
             }
             // install current release version on demo.deegree.org
             steps {
