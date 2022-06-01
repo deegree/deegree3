@@ -9,7 +9,10 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<moduleSets>
 		<moduleSet>
-			<includeSubModules />
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>org.deegree:*</include>
+			</includes>
 			<sources>
 				<includeModuleDirectory>false</includeModuleDirectory>
 				<fileSets>

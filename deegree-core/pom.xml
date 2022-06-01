@@ -27,6 +27,7 @@
     <module>deegree-core-metadata</module>
     <module>deegree-core-remoteows</module>
     <module>deegree-core-rendering-2d</module>
+    <module>deegree-core-schema</module>
     <module>deegree-core-sqldialect</module>
     <module>deegree-core-style</module>
     <module>deegree-core-theme</module>
