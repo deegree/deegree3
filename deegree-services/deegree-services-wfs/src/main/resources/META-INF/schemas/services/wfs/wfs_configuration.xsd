@@ -166,6 +166,16 @@
       </complexContent>
     </complexType>
   </element>
+  <element name="GeoJSONFormat" substitutionGroup="wfs:AbstractFormat" >
+    <complexType>
+      <complexContent>
+        <extension base="wfs:AbstractFormatType" >
+          <attribute name="allowOtherCrsThanWGS84" type="boolean" default="false"/>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
 
   <!-- AbstractCoordinateFormatter and substitutions -->
   <element name="AbstractCoordinateFormatter" abstract="true" />
@@ -247,8 +257,8 @@
         </restriction>
       </simpleType>
     </list>
-  </simpleType>    
-                    
+  </simpleType>
+
   <simpleType name="IdentifierGenerationOptionType">
     <restriction base="string">
       <enumeration value="UseExisting">

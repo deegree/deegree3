@@ -145,15 +145,20 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
         return datasets;
     }
 
-    private DatasetMetadata fromJaxb( final DatasetMetadataType jaxbEl, final String metadataUrlPattern ) {
+    private DatasetMetadata fromJaxb( final DatasetMetadataType jaxbEl, final List<DeegreeServicesMetadataType.DatasetMetadata.MetadataUrlTemplate> metadataUrlTemplates ) {
         final QName name = jaxbEl.getName();
         final List<LanguageString> titles = fromJaxb( jaxbEl.getTitle() );
         final List<LanguageString> abstracts = fromJaxb( jaxbEl.getAbstract() );
         final List<Pair<List<LanguageString>, CodeType>> keywords = fromJaxbKeywords( jaxbEl.getKeywords() );
         final List<MetadataUrl> metadataUrls = new ArrayList<MetadataUrl>();
-        final String metadataUrl = buildMetadataUrl( metadataUrlPattern, jaxbEl.getMetadataSetId() );
-        if ( metadataUrl != null ) {
-            metadataUrls.add( new MetadataUrl( metadataUrl, null, null ) );
+        if ( metadataUrlTemplates != null ) {
+            for ( DeegreeServicesMetadataType.DatasetMetadata.MetadataUrlTemplate metadataUrlTemplate : metadataUrlTemplates ) {
+                final String metadataUrl = buildMetadataUrl( metadataUrlTemplate, jaxbEl.getMetadataSetId() );
+                final String format = parseFormat( metadataUrlTemplate );
+                if ( metadataUrl != null ) {
+                    metadataUrls.add( new MetadataUrl( metadataUrl, null, format ) );
+                }
+            }
         }
         if ( jaxbEl.getMetadataURL() != null ) {
             for ( final MetadataURL jaxbMetadataUrl : jaxbEl.getMetadataURL() ) {
@@ -188,11 +193,19 @@ public class DefaultOwsMetadataProviderBuilder implements ResourceBuilder<OWSMet
                                     featureListUrls, attribution, extendedDescriptions );
     }
 
-    private String buildMetadataUrl( String pattern, String datasetId ) {
-        if ( pattern == null || datasetId == null ) {
+    private String buildMetadataUrl( DeegreeServicesMetadataType.DatasetMetadata.MetadataUrlTemplate template,
+                                     String datasetId ) {
+        if ( template == null || template.getValue() == null || datasetId == null ) {
             return null;
         }
-        return StringUtils.replaceAll( pattern, "${metadataSetId}", datasetId );
+        return StringUtils.replaceAll( template.getValue(), "${metadataSetId}", datasetId );
+    }
+
+    private String parseFormat( DeegreeServicesMetadataType.DatasetMetadata.MetadataUrlTemplate template ) {
+        if ( template == null ) {
+            return null;
+        }
+        return template.getFormat();
     }
 
     private List<Pair<List<LanguageString>, CodeType>> fromJaxbKeywords( final List<KeywordsType> jaxbEls ) {
