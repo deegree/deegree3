@@ -38,6 +38,7 @@ package org.deegree.feature.persistence.sql.mapper;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
@@ -88,6 +89,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,8 +99,10 @@ import java.util.Map;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_ELEMENT;
 import static org.apache.xerces.xs.XSComplexTypeDefinition.CONTENTTYPE_EMPTY;
 import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.INTEGER;
 import static org.deegree.commons.tom.primitive.BaseType.STRING;
+import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.feature.persistence.sql.blob.BlobCodec.Compression.NONE;
@@ -132,9 +136,11 @@ public class AppSchemaMapper {
 
     private final int maxComplexityIndex;
 
+    private final ReferenceData referenceData;
+
     private final int allowedCycleDepth;
 
-
+    private final boolean useRefDataProps;
 
     /**
      * Creates a new {@link AppSchemaMapper} instance for the given schema.
@@ -184,11 +190,43 @@ public class AppSchemaMapper {
     public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
                             GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
                             boolean useIntegerFids, int allowedCycleDepth ) {
+        this(appSchema, createBlobMapping, createRelationalMapping, geometryParams, maxLength,
+             usePrefixedSQLIdentifiers, useIntegerFids, allowedCycleDepth, null, false );
+    }
+    /**
+     * Creates a new {@link AppSchemaMapper} instance for the given schema.
+     *
+     * @param appSchema
+     *                         application schema to be mapped, must not be <code>null</code>
+     * @param createBlobMapping
+     *                         true, if BLOB mapping should be performed, false otherwise
+     * @param createRelationalMapping
+     *                         true, if relational mapping should be performed, false otherwise
+     * @param geometryParams
+     *                         parameters for storing geometries, must not be <code>null</code>
+     * @param maxLength
+     *                         max length of column names
+     * @param usePrefixedSQLIdentifiers
+     *                         <code>true</code> if the sql identifiers should be prefixed, <code>false</code> otherwise
+     * @param useIntegerFids
+     *                         <code>true</code> if the integer fids should be used, <code>false</code> for uuids
+     * @param allowedCycleDepth
+     *                         depth of the allowed cycles
+     * @param  referenceData
+     *                         describing the data stored in the features store
+     * @param useRefDataProps
+     *                         <code>true</code> if only properties defined in reference data should be mapped
+     */
+    public AppSchemaMapper( AppSchema appSchema, boolean createBlobMapping, boolean createRelationalMapping,
+                            GeometryStorageParams geometryParams, int maxLength, boolean usePrefixedSQLIdentifiers,
+                            boolean useIntegerFids, int allowedCycleDepth, ReferenceData referenceData, boolean useRefDataProps ) {
         this.appSchema = appSchema;
         this.geometryParams = geometryParams;
         this.useIntegerFids = useIntegerFids;
         this.allowedCycleDepth = allowedCycleDepth;
         this.maxComplexityIndex = DEFAULT_COMPLEXITY_INDEX * ( allowedCycleDepth + 1 );
+        this.referenceData = referenceData;
+        this.useRefDataProps = useRefDataProps;
 
         List<FeatureType> ftList = appSchema.getFeatureTypes( null, false, false );
         List<FeatureType> blackList = new ArrayList<FeatureType>();
@@ -207,7 +245,6 @@ public class AppSchemaMapper {
         Map<String, String> prefixToNs = appSchema.getNamespaceBindings();
         GMLSchemaInfoSet xsModel = appSchema.getGMLSchema();
 
-        FeatureTypeMapping[] ftMappings = null;
 
         nsToPrefix = new HashMap<String, String>();
         Iterator<String> nsIter = CommonNamespaces.getNamespaceContext().getNamespaceURIs();
@@ -218,6 +255,7 @@ public class AppSchemaMapper {
         nsToPrefix.putAll( xsModel.getNamespacePrefixes() );
 
         mcManager = new MappingContextManager( nsToPrefix, maxLength, usePrefixedSQLIdentifiers );
+        FeatureTypeMapping[] ftMappings = null;
         if ( createRelationalMapping ) {
             ftMappings = generateFtMappings( fts );
         }
@@ -254,15 +292,15 @@ public class AppSchemaMapper {
     }
 
     private FeatureTypeMapping[] generateFtMappings( FeatureType[] fts ) {
-        FeatureTypeMapping[] ftMappings = new FeatureTypeMapping[fts.length];
-        for ( int i = 0; i < fts.length; i++ ) {
-            ftMappings[i] = generateFtMapping( fts[i] );
-        }
-        return ftMappings;
+        return Arrays.stream( fts ).filter(
+                        ft -> referenceData != null ?
+                              referenceData.shouldFeatureTypeMapped( ft.getName() ) :
+                              true ).map(
+                        ft -> generateFtMapping( ft ) ).toArray( FeatureTypeMapping[]::new );
     }
 
     private FeatureTypeMapping generateFtMapping( FeatureType ft ) {
-        CycleAnalyser cycleAnalyser = new CycleAnalyser( allowedCycleDepth );
+        CycleAnalyser cycleAnalyser = new CycleAnalyser( allowedCycleDepth, ft.getName() );
         LOG.info( "Mapping feature type '" + ft.getName() + "'" );
         MappingContext mc = mcManager.newContext( ft.getName(), detectPrimaryKeyColumnName() );
 
@@ -283,7 +321,7 @@ public class AppSchemaMapper {
             cycleAnalyser.stop();
         }
 
-        return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
+        return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings, Collections.emptyList() );
     }
 
     private FIDMapping generateFidMapping( FeatureType ft ) {
@@ -318,7 +356,10 @@ public class AppSchemaMapper {
 
                         MappingContext propMc = null;
                         List<TableJoin> jc = null;
-                        if ( pt.getMaxOccurs() == 1 ) {
+                        if ( pt.getMinOccurs() < 1 && !referenceDataHasProperty( cycleAnalyser ) ) {
+                            continue;
+                        }
+                        if ( pt.getMaxOccurs() == 1 || referenceDataHasOnlyOne( cycleAnalyser ) ) {
                             propMc = mcManager.mapOneToOneElement( mc, eName );
                         } else {
                             propMc = mcManager.mapOneToManyElements( mc, eName );
@@ -331,7 +372,7 @@ public class AppSchemaMapper {
                         XSComplexTypeDefinition typeDefinition = (XSComplexTypeDefinition) substitution.getTypeDefinition();
                         List<Mapping> particles;
                         if ( opt != null ) {
-                            particles = generateMapping( typeDefinition, propMc, opt );
+                            particles = generateMapping( typeDefinition, propMc, opt, cycleAnalyser );
                         } else {
                             particles = generateMapping( typeDefinition, propMc, cycleAnalyser,
                                                          substitution.getNillable() );
@@ -352,19 +393,22 @@ public class AppSchemaMapper {
                 }
                 return mappings;
             }
-
+            Mapping generatedMapping = null;
             if ( pt instanceof SimplePropertyType ) {
-                mappings.add( generatePropMapping( (SimplePropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (SimplePropertyType) pt, mc, cycleAnalyser );
             } else if ( pt instanceof GeometryPropertyType ) {
-                mappings.add( generatePropMapping( (GeometryPropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (GeometryPropertyType) pt, mc );
             } else if ( pt instanceof FeaturePropertyType ) {
-                mappings.add( generatePropMapping( (FeaturePropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (FeaturePropertyType) pt, mc );
             } else if ( pt instanceof CustomPropertyType ) {
-                mappings.add( generatePropMapping( (CustomPropertyType) pt, mc, cycleAnalyser ) );
+                generatedMapping = generatePropMapping( (CustomPropertyType) pt, mc, cycleAnalyser );
             } else if ( pt instanceof CodePropertyType ) {
-                mappings.add( generatePropMapping( (CodePropertyType) pt, mc ) );
+                generatedMapping = generatePropMapping( (CodePropertyType) pt, mc );
             } else {
                 LOG.warn( "Unhandled property type '" + pt.getName() + "': " + pt.getClass().getName() );
+            }
+            if ( generatedMapping != null ) {
+                mappings.add( generatedMapping );
             }
         } catch ( Throwable t ) {
             LOG.warn( "Unable to create relational mapping for property type '" + pt.getName() + "': "
@@ -381,13 +425,17 @@ public class AppSchemaMapper {
         return mappings;
     }
 
-    private PrimitiveMapping generatePropMapping( SimplePropertyType pt, MappingContext mc ) {
+    private PrimitiveMapping generatePropMapping( SimplePropertyType pt, MappingContext mc,
+                                                  CycleAnalyser cycleAnalyser ) {
         LOG.debug( "Mapping simple property '" + pt.getName() + "'" );
         ValueReference path = getPropName( pt.getName() );
         MappingContext propMc = null;
         List<TableJoin> jc = null;
         MappingExpression mapping = null;
-        if ( pt.getMaxOccurs() == 1 ) {
+        if ( pt.getMinOccurs() < 1 && !referenceDataHasProperty( cycleAnalyser ) ) {
+            return null;
+        }
+        if ( pt.getMaxOccurs() == 1 || referenceDataHasOnlyOne( cycleAnalyser ) ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
             mapping = new DBField( propMc.getColumn() );
         } else {
@@ -446,7 +494,7 @@ public class AppSchemaMapper {
                 jc = Collections.singletonList( ftJoin );
             }
         } else {
-            LOG.warn( "Ambigous feature property type '" + pt.getName() + "'. Not creating a Join mapping." );
+            LOG.warn( "Ambiguous feature property type '" + pt.getName() + "'. Not creating a Join mapping." );
         }
 
         return new FeatureMapping( path, pt.getMinOccurs() == 0, new DBField( hrefMC.getColumn() ), pt.getFTName(),
@@ -468,7 +516,10 @@ public class AppSchemaMapper {
 
         MappingContext propMc = null;
         List<TableJoin> jc = null;
-        if ( pt.getMaxOccurs() == 1 ) {
+        if ( pt.getMinOccurs() < 1 && !referenceDataHasProperty( cycleAnalyser ) ) {
+            return null;
+        }
+        if ( pt.getMaxOccurs() == 1 || referenceDataHasOnlyOne( cycleAnalyser ) ) {
             propMc = mcManager.mapOneToOneElement( mc, pt.getName() );
         } else {
             propMc = mcManager.mapOneToManyElements( mc, pt.getName() );
@@ -527,7 +578,7 @@ public class AppSchemaMapper {
 
     private TableJoin generateFtJoin( MappingContext from, FeatureType valueFt ) {
         if ( valueFt != null && valueFt.getSchema().getSubtypes( valueFt ).length == 1 ) {
-            LOG.warn( "Ambigous feature join." );
+            LOG.warn( "Ambiguous feature join." );
         }
         TableName fromTable = new TableName( from.getTable() );
         TableName toTable = new TableName( "?" );
@@ -546,7 +597,37 @@ public class AppSchemaMapper {
             return Collections.emptyList();
         }
 
-        List<Mapping> particles = new ArrayList<Mapping>();
+        List<Mapping> particles = new ArrayList<>();
+        addNilAttributeMapping( isNillable, mc, particles );
+
+        // attributes
+        boolean propertyIsNilled = referenceDataPropertyIsNil( cycleAnalyser );
+        XSObjectList attributeUses = typeDef.getAttributeUses();
+        for ( int i = 0; i < attributeUses.getLength(); i++ ) {
+            XSAttributeUse attrUse = ( (XSAttributeUse) attributeUses.item( i ) );
+            XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
+            QName attrName = new QName( attrDecl.getName() );
+            if ( attrDecl.getNamespace() != null ) {
+                attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+            }
+            if ( propertyIsNilled && !"nilReason".equals( attrName.getLocalPart() ) ) {
+                continue;
+            }
+            if ( attrDecl.getNamespace() != null ) {
+                attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
+            }
+            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
+            // TODO
+            NamespaceContext nsContext = null;
+            ValueReference path = new ValueReference( "@" + getName( attrName ), nsContext );
+            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
+            PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
+            particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
+        }
+
+        if ( propertyIsNilled ) {
+            return particles;
+        }
 
         // text node
         if ( typeDef.getContentType() != CONTENTTYPE_EMPTY && typeDef.getContentType() != CONTENTTYPE_ELEMENT ) {
@@ -565,33 +646,6 @@ public class AppSchemaMapper {
             particles.add( new PrimitiveMapping( path, false, dbField, pt, null, null ) );
         }
 
-        // attributes
-        XSObjectList attributeUses = typeDef.getAttributeUses();
-        for ( int i = 0; i < attributeUses.getLength(); i++ ) {
-            XSAttributeUse attrUse = ( (XSAttributeUse) attributeUses.item( i ) );
-            XSAttributeDeclaration attrDecl = attrUse.getAttrDeclaration();
-            QName attrName = new QName( attrDecl.getName() );
-            if ( attrDecl.getNamespace() != null ) {
-                attrName = new QName( attrDecl.getNamespace(), attrDecl.getName() );
-            }
-            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
-            // TODO
-            NamespaceContext nsContext = null;
-            ValueReference path = new ValueReference( "@" + getName( attrName ), nsContext );
-            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            PrimitiveType pt = new PrimitiveType( attrDecl.getTypeDefinition() );
-            particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
-        }
-
-        // xsi:nil attribute
-        if ( isNillable ) {
-            QName attrName = new QName( XSINS, "nil", "xsi" );
-            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
-            ValueReference path = new ValueReference( "@" + getName( attrName ), null );
-            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
-        }
-
         // child elements
         XSParticle particle = typeDef.getParticle();
         if ( particle != null ) {
@@ -603,10 +657,12 @@ public class AppSchemaMapper {
     }
 
     private List<Mapping> generateMapping( XSComplexTypeDefinition typeDef, MappingContext mc,
-                                           ObjectPropertyType opt ) {
+                                           ObjectPropertyType opt, CycleAnalyser cycleAnalyser ) {
         List<Mapping> particles = new ArrayList<Mapping>();
+        addNilAttributeMapping( opt.isNillable(), mc, particles );
 
         // attributes
+        boolean propertyIsNilled = referenceDataPropertyIsNil( cycleAnalyser );
         XSObjectList attributeUses = typeDef.getAttributeUses();
         for ( int i = 0; i < attributeUses.getLength(); i++ ) {
             XSAttributeUse attrUse = ( (XSAttributeUse) attributeUses.item( i ) );
@@ -614,6 +670,9 @@ public class AppSchemaMapper {
             QName attrName = new QName( attrDecl.getName() );
             if ( XLNNS.equals( attrDecl.getNamespace() ) ) {
                 // TODO should all xlink attributes be skipped?
+                continue;
+            }
+            if ( propertyIsNilled && !"nilReason".equals( attrName.getLocalPart() ) ) {
                 continue;
             }
             if ( attrDecl.getNamespace() != null ) {
@@ -628,13 +687,8 @@ public class AppSchemaMapper {
             particles.add( new PrimitiveMapping( path, !attrUse.getRequired(), dbField, pt, null, null ) );
         }
 
-        // xsi:nil attribute
-        if ( opt.isNillable() ) {
-            QName attrName = new QName( XSINS, "nil", "xsi" );
-            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
-            ValueReference path = new ValueReference( "@" + getName( attrName ), null );
-            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
-            particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
+        if ( propertyIsNilled ) {
+            return particles;
         }
 
         ValueReference path = new ValueReference( ".", null );
@@ -655,10 +709,89 @@ public class AppSchemaMapper {
             MappingContext hrefMC = mcManager.mapOneToOneElement( mc, new QName( "href" ) );
             particles.add( new FeatureMapping( path, true, new DBField( hrefMC.getColumn() ), valueFtName, jc ) );
         } else {
-            LOG.warn( "Unhandled object property type '" + opt.getClass() + "'." );
+            switch ( opt.getCategory() ) {
+            case TIME_OBJECT:
+                if ( typeDef.derivedFrom( GML3_2_NS, "TimeInstantPropertyType",
+                                          (short) ( XSConstants.DERIVATION_RESTRICTION
+                                                    | XSConstants.DERIVATION_EXTENSION
+                                                    | XSConstants.DERIVATION_UNION
+                                                    | XSConstants.DERIVATION_LIST ) ) ) {
+                    addTimeInstantMapping( mc , opt.getMinOccurs() == 0,  opt.getElementDecl() , particles);
+                } else if ( typeDef.derivedFrom( GML3_2_NS, "TimePeriodPropertyType",
+                                                 (short) ( XSConstants.DERIVATION_RESTRICTION
+                                                           | XSConstants.DERIVATION_EXTENSION
+                                                           | XSConstants.DERIVATION_UNION
+                                                           | XSConstants.DERIVATION_LIST ) ) ) {
+
+                    addTimePeriodMapping( mc , opt.getMinOccurs() == 0,  opt.getElementDecl() , particles);
+                } else {
+                    XSParticle particle = typeDef.getParticle();
+                    particles.addAll( generateMapping( particle, opt.getMaxOccurs(), mc, cycleAnalyser ) );
+                }
+            default:
+                LOG.warn( "Unhandled object property type '" + opt.getClass() + "' with category "
+                          + opt.getCategory() );
+            }
         }
 
         return particles;
+    }
+
+    private void addNilAttributeMapping( boolean isNillable, MappingContext mc, List<Mapping> particles ) {
+        // xsi:nil attribute
+        if ( isNillable ) {
+            QName attrName = new QName( XSINS, "nil", "xsi" );
+            MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
+            ValueReference path = new ValueReference( "@" + getName( attrName ), null );
+            DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
+            particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( BOOLEAN ), null, null ) );
+        }
+    }
+
+    private void addTimeInstantMapping( MappingContext mc, boolean voidable, XSElementDeclaration elDecl,
+                                        List<Mapping> particles ) {
+        QName timeInstant = new QName( GML3_2_NS, "TimeInstant", nsToPrefix.get( GML3_2_NS ) );
+        MappingContext mappingContext = mcManager.mapOneToOneElement( mc, timeInstant );
+
+        List<Mapping> timeInstantParticles = new ArrayList<>();
+        createAndAddGmlId( mappingContext, timeInstantParticles );
+        createAndAddTimeProperty( mappingContext, "timePosition", timeInstantParticles );
+
+        ValueReference timePositionPath = new ValueReference( timeInstant );
+        particles.add( new CompoundMapping( timePositionPath, voidable, timeInstantParticles, null, elDecl ) );
+    }
+
+    private void addTimePeriodMapping( MappingContext mc, boolean voidable, XSElementDeclaration elDecl,
+                                       List<Mapping> particles ) {
+        QName timePeriod = new QName( GML3_2_NS, "TimePeriod", nsToPrefix.get( GML3_2_NS ) );
+        MappingContext mappingContext = mcManager.mapOneToOneElement( mc, timePeriod );
+
+        List<Mapping> timePeriodParticles = new ArrayList<>();
+        createAndAddGmlId( mappingContext, timePeriodParticles );
+        createAndAddTimeProperty( mappingContext, "beginPosition", timePeriodParticles );
+        createAndAddTimeProperty( mappingContext, "endPosition", timePeriodParticles );
+
+        ValueReference timePeriodPath = new ValueReference( timePeriod );
+        particles.add( new CompoundMapping( timePeriodPath, voidable, timePeriodParticles, null, elDecl ) );
+    }
+
+    private void createAndAddTimeProperty( MappingContext mc, String propertyName, List<Mapping> particles ) {
+        ValueReference path = new ValueReference( new QName( GML3_2_NS, propertyName, nsToPrefix.get( GML3_2_NS ) ) );
+        MappingContext mappingContext = mcManager.mapOneToOneElement( mc, new QName( GML3_2_NS,
+                                                                                     propertyName ) );
+        DBField dbField = new DBField( mappingContext.getTable(), mappingContext.getColumn() );
+        PrimitiveType primitiveType = new PrimitiveType( DATE_TIME );
+        PrimitiveMapping timePositionMapping = new PrimitiveMapping( path, false, dbField, primitiveType, null,
+                                                                     null );
+        particles.add( timePositionMapping );
+    }
+
+    private void createAndAddGmlId( MappingContext mc, List<Mapping> particles ) {
+        QName attrName = new QName( GML3_2_NS, "id", nsToPrefix.get( GML3_2_NS ) );
+        MappingContext attrMc = mcManager.mapOneToOneAttribute( mc, attrName );
+        ValueReference path = new ValueReference( "@" + getName( attrName ), null );
+        DBField dbField = new DBField( attrMc.getTable(), attrMc.getColumn() );
+        particles.add( new PrimitiveMapping( path, true, dbField, new PrimitiveType( STRING ), null, null ) );
     }
 
     private List<Mapping> generateMapping( XSParticle particle, int maxOccurs, MappingContext mc,
@@ -714,6 +847,8 @@ public class AppSchemaMapper {
     private List<Mapping> generateMapping( XSElementDeclaration elDecl, int occurence, MappingContext mc,
                                            CycleAnalyser cycleAnalyser ) {
         cycleAnalyser.add( elDecl );
+        if ( referenceDataHasOnlyOne( cycleAnalyser ) )
+            occurence = 1;
 
         List<Mapping> mappings = new ArrayList<Mapping>();
 
@@ -747,6 +882,12 @@ public class AppSchemaMapper {
         if ( eName.equals( new QName( "http://www.isotc211.org/2005/gmd", "MD_Identifier" ) ) ) {
             substitutions.clear();
             substitutions.add( elDecl );
+        }
+
+        if ( eName.equals( new QName( GML3_2_NS, "AbstractTimeObject" ) ) ) {
+            substitutions.clear();
+            addTimeInstantMapping( mc, occurence == 0, elDecl, mappings );
+            addTimePeriodMapping( mc, occurence == 0, elDecl, mappings );
         }
 
         NamespaceContext nsContext = null;
@@ -816,6 +957,30 @@ public class AppSchemaMapper {
         sb.append( "wildcard" );
         LOG.debug( "Skipping wildcard at path: " + sb );
         return new ArrayList<>();
+    }
+
+    private boolean referenceDataHasProperty( CycleAnalyser cycleAnalyser ) {
+        if ( referenceData == null || !useRefDataProps )
+            return true;
+        List<QName> xpath = cycleAnalyser.getPath();
+        QName featureTypeName = cycleAnalyser.getFeatureTypeName();
+        return referenceData.hasProperty( featureTypeName, xpath );
+    }
+
+    private boolean referenceDataPropertyIsNil( CycleAnalyser cycleAnalyser ) {
+        if ( referenceData == null || !useRefDataProps )
+            return false;
+        List<QName> xpath = cycleAnalyser.getPath();
+        QName featureTypeName = cycleAnalyser.getFeatureTypeName();
+        return referenceData.isPropertyNilled( featureTypeName, xpath );
+    }
+
+    private boolean referenceDataHasOnlyOne( CycleAnalyser cycleAnalyser ) {
+        if ( referenceData == null )
+            return false;
+        List<QName> xpath = cycleAnalyser.getPath();
+        QName featureTypeName = cycleAnalyser.getFeatureTypeName();
+        return referenceData.hasZeroOrOneProperty( featureTypeName, xpath );
     }
 
     private String getName( QName name ) {

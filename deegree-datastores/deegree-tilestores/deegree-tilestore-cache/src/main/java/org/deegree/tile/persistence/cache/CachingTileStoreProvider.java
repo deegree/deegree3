@@ -59,7 +59,7 @@ import org.deegree.workspace.Workspace;
 
 public class CachingTileStoreProvider extends TileStoreProvider {
 
-    private static final URL SCHEMA = CachingTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/cache/3.4.0/cache.xsd" );
+    private static final URL SCHEMA = CachingTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/cache/cache.xsd" );
 
     @Override
     public String getNamespace() {

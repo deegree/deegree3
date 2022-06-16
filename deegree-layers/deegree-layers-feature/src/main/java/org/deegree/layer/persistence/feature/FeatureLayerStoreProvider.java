@@ -44,7 +44,7 @@ import org.deegree.workspace.Workspace;
  */
 public class FeatureLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL SCHEMA_URL = FeatureLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/feature/3.4.0/feature.xsd" );
+    private static final URL SCHEMA_URL = FeatureLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/feature/feature.xsd" );
 
     @Override
     public String getNamespace() {

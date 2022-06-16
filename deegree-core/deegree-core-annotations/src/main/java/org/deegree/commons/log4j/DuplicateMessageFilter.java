@@ -37,8 +37,8 @@ package org.deegree.commons.log4j;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.slf4j.Logger;
 
 /**
@@ -47,8 +47,10 @@ import org.slf4j.Logger;
  * @author last edited by: $Author: stranger $
  * 
  * @version $Revision: $, $Date: $
+ * @deprecated This class is deprecated as of version 3.4 of deegree.
  */
-public class DuplicateMessageFilter extends Filter {
+@Deprecated
+public class DuplicateMessageFilter extends AbstractFilter {
 
     private static final Logger LOG = getLogger( DuplicateMessageFilter.class );
 
@@ -57,26 +59,26 @@ public class DuplicateMessageFilter extends Filter {
     private int count;
 
     @Override
-    public int decide( LoggingEvent event ) {
+    public Result filter( LogEvent event ) {
         if ( last == null ) {
-            last = event.getRenderedMessage();
+            last = event.getMessage().getFormattedMessage();
             count = 0;
-            return ACCEPT;
+            return Result.ACCEPT;
         }
 
-        if ( last.equals( event.getRenderedMessage() ) ) {
+        if ( last.equals( event.getMessage().getFormattedMessage() ) ) {
             ++count;
             // would be cool to log (... repeated 12452 times)
             if ( count % 100 == 0 ) {
                 LOG.warn( "Last message repeated 100 times." );
             }
-            return DENY;
+            return Result.DENY;
         }
 
-        last = event.getRenderedMessage();
+        last = event.getMessage().getFormattedMessage();
         count = 1;
 
-        return ACCEPT;
+        return Result.ACCEPT;
     }
 
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/layers/remotewms" xmlns:l="http://www.deegree.org/layers/remotewms" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:b="http://www.deegree.org/layers/base" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.layer.persistence.remotewms.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="../../commons/description/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../commons/spatialmetadata/spatialmetadata.xsd" />
+  <import namespace="http://www.deegree.org/layers/base" schemaLocation="../../layers/base/base.xsd" />
+
+  <element name="RemoteWMSLayers">
+    <complexType>
+      <sequence>
+        <element name="RemoteWMSId" type="string" />
+        <element name="RequestOptions" type="l:RequestOptionsType" minOccurs="0" />
+        <!-- if no layers are specified, all layers are copied from source -->
+        <element name="Layer" type="l:LayerType" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <complexType name="LayerType">
+    <sequence>
+      <element name="OriginalName" type="string" />
+      <element name="Name" type="string" />
+      <!-- if not set, will be copied from source -->
+      <element name="Description" minOccurs="0">
+        <complexType>
+          <sequence>
+            <group ref="d:Description" />
+          </sequence>
+        </complexType>
+      </element>
+      <!-- if not set, will be copied from source -->
+      <group ref="s:SpatialMetadata" />
+      <element name="ScaleDenominators" type="b:ScaleDenominatorsType" minOccurs="0" />
+      <element name="LayerOptions" type="b:LayerOptionsType" minOccurs="0" />
+      <element name="XSLTFile" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="targetGmlVersion" type="l:GMLVersionType" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>
+  
+  <complexType name="RequestOptionsType">
+    <sequence>
+      <element name="ImageFormat" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="transparent" type="boolean" default="true" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="DefaultCRS" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="useAlways" type="boolean" default="false" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="name" type="string" use="required" />
+              <attribute name="use" type="l:ParameterUseType" use="optional" default="allowOverride" />
+              <attribute name="scope" type="l:ParameterScopeType" use="optional" default="All" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="ParameterUseType">
+    <restriction base="string">
+      <enumeration value="allowOverride" />
+      <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
+    </restriction>
+  </simpleType>
+
+</schema>

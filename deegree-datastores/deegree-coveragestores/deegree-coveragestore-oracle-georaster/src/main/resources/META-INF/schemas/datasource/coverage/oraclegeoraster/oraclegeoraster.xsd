@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:raster="http://www.deegree.org/datasource/coverage/oraclegeoraster" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/coverage/oraclegeoraster"
+	elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+	<annotation>
+		<appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="org.deegree.coverage.persistence.oraclegeoraster.jaxb" />
+			</jaxb:schemaBindings>
+		</appinfo>
+	</annotation>
+
+	<element name="OracleGeoraster">
+		<annotation>
+			<documentation>CoverageStore that is backed by an Oracle SQL database with
+				spatial extension
+			</documentation>
+			<appinfo>
+				<jaxb:class name="OracleGeorasterConfig" />
+			</appinfo>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="raster:AbstractOracleGeorasterType">
+					<attribute name="configVersion" type="string" use="optional"/>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+
+	<group name="GeoRasterDefinition">
+		<sequence>
+			<element name="StorageBBox" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="LowerCorner" type="raster:PositionType" />
+						<element name="UpperCorner" type="raster:PositionType" />
+					</sequence>
+				</complexType>
+			</element>
+			<element name="Raster" minOccurs="1" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="Table" minOccurs="0" maxOccurs="1" type="string" />
+						<element name="RDTTable" minOccurs="0" maxOccurs="1" type="string" />
+						<element name="Column" minOccurs="0" maxOccurs="1" type="string" />
+					</sequence>
+					<attribute name="id" type="int" use="required" />
+					<attribute name="maxLevel" type="int" use="optional" default="-1" />
+					<attribute name="rows" type="int" use="optional" default="-1" />
+					<attribute name="columns" type="int" use="optional" default="-1" />
+				</complexType>
+			</element>
+			<element name="Bands" minOccurs="0" maxOccurs="1">
+				<complexType>
+					<choice minOccurs="1" maxOccurs="1">
+						<element name="Single" type="int" />
+						<element name="RGB">
+							<complexType>
+								<attribute name="red" type="int" use="required" />
+								<attribute name="green" type="int" use="required" />
+								<attribute name="blue" type="int" use="required" />
+							</complexType>
+						</element>
+					</choice>
+					<attribute name="nodata" type="string" use="optional" />
+				</complexType>
+			</element>
+		</sequence>
+	</group>
+
+	<complexType name="AbstractOracleGeorasterType" abstract="true">
+		<sequence>
+			<element name="Debug" minOccurs="0" maxOccurs="1" type="int" />
+
+			<element name="JDBCConnId" minOccurs="1" maxOccurs="1" type="string" />
+			<element name="StorageCRS" minOccurs="1" maxOccurs="1" type="string" />
+			<choice>
+				<group ref="raster:GeoRasterDefinition" minOccurs="1" maxOccurs="1"/>
+				<element name="Part" minOccurs="1" maxOccurs="unbounded">
+					<complexType>
+						<sequence>
+							<group ref="raster:GeoRasterDefinition" minOccurs="1" maxOccurs="1" />
+						</sequence>
+						<attribute name="name" type="string" use="required" />
+					</complexType>
+				</element>
+			</choice>
+		</sequence>
+	</complexType>
+
+	<!-- start copied from commons -->
+	<simpleType name="PositionType">
+		<annotation>
+			<documentation>
+				Position instances hold the coordinates of a position
+				in a coordinate reference system (CRS)referenced by the related
+				"crs" attribute or elsewhere. For an
+				angular coordinate axis that is
+				physically continuous for multiple revolutions, but whose recorded
+				values can be discontinuous, special conditions apply when the
+				bounding
+				box is continuous across the value discontinuity: a) If the
+				bounding box is continuous clear around this angular axis, then
+				ordinate values of minus and plus infinity
+				shall be used. b) If the
+				bounding box is continuous across the value discontinuity but is not
+				continuous clear around this angular axis, then some non-normal
+				value can be
+				used if specified for a specific OWS use of the
+				BoundingBoxType. For more information, see Subclauses 10.2.5 and
+				C.13.
+			</documentation>
+			<documentation>
+				This type is adapted from DirectPositionType and
+				doubleList of GML 3.1. The adaptations include omission of all the
+				attributes, since the needed information
+				is included in the
+				BoundingBoxType.
+			</documentation>
+		</annotation>
+		<list itemType="double" />
+	</simpleType>
+
+	<!-- end copied from commons -->
+</schema>

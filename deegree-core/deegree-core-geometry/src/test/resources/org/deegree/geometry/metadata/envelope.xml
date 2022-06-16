@@ -1,0 +1,4 @@
+<s:Envelope xmlns:s="http://www.deegree.org/metadata/spatial">
+  <s:LowerCorner>8.3 53.2</s:LowerCorner>
+  <s:UpperCorner>10.4 54.0</s:UpperCorner>
+</s:Envelope>

@@ -39,6 +39,7 @@ package org.deegree.feature.persistence;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.persistence.lock.LockManager;
@@ -49,6 +50,8 @@ import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.workspace.Resource;
+
+import java.util.Date;
 
 /**
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
@@ -91,6 +94,15 @@ public interface FeatureStore extends Resource {
     boolean isMapped( QName ftName );
 
     /**
+     * Returns whether the store supports evaluation of maxFeatures and startIndex.
+     *
+     * @param queries
+     *            the queries to check if evaluation of maxFeatures and startIndex is applicable, must not be <code>null</code>
+     * @return <code>true</code>, if evaluation of maxFeatures and startIndex is applicable, <code>false</code> otherwise
+     */
+    boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries );
+
+    /**
      * Returns the envelope for all stored features of the given type.
      * <p>
      * NOTE: This method may return incorrect (cached) results. Use {@link #calcEnvelope(QName)} to force the
@@ -121,6 +133,40 @@ public interface FeatureStore extends Resource {
      */
     Envelope calcEnvelope( QName ftName )
                             throws FeatureStoreException;
+
+    /**
+     * Returns the temporal extent for all stored features of the given type.
+     * <p>
+     * NOTE: This method may return incorrect (cached) results. Use {@link #calcTemporalExtent(QName,QName)} to force the
+     * recalculation of the temporal extent.
+     * </p>
+     *
+     * @param ftName
+     *            name of the feature type, must not be <code>null</code> and must be served by this store
+     * @param datetimeProperty
+     *            the name of the date time property must not be <code>null</code> and must be served by the feature store
+     * @return the min and max values of the temporal extent, or <code>null</code> if the temporal extent could not be calculated
+     * @throws FeatureStoreException
+     */
+    Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException;
+
+    /**
+     * Recalculates the temporal extent for all stored features of the given type.
+     * <p>
+     * NOTE: This method may potentially be expensive. Depending on the implementation, it may involve fetching all
+     * features of the specified type.
+     * </p>
+     *
+     * @param ftName
+     *            name of the feature type, must not be <code>null</code> and must be served by this store
+     * @param datetimeProperty
+     *            the name of the date time property must not be <code>null</code> and must be served by the feature store
+     * @return the min and max values of the temporal extent, or <code>null</code> if the temporal extent could not be calculated
+     * @throws FeatureStoreException
+     */
+    Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException;
 
     /**
      * Performs the given query and returns the matching features as a {@link FeatureInputStream}.
