@@ -61,7 +61,7 @@ public class SimpleSqlFeatureStoreProvider extends FeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/simplesql";
 
-    static final URL CONFIG_SCHEMA = SimpleSqlFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/3.4.0/simplesql.xsd" );
+    static final URL CONFIG_SCHEMA = SimpleSqlFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/simplesql/simplesql.xsd" );
 
     @Override
     public String getNamespace() {

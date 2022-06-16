@@ -140,6 +140,6 @@ public class ISOMetadataStoreProvider extends MetadataStoreProvider {
 
     @Override
     public URL getSchema() {
-        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/3.4.0/iso19115.xsd" );
+        return ISOMetadataStoreProvider.class.getResource( "/META-INF/schemas/datasource/metadata/iso19115/iso19115.xsd" );
     }
 }

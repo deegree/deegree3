@@ -1,10 +1,12 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2022 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -30,6 +32,11 @@
  Postfach 1147, 53001 Bonn
  Germany
  http://www.geographie.uni-bonn.de/deegree/
+
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -120,9 +127,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
  */
 public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
 
@@ -556,7 +560,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         for ( FeatureInspector inspector : inspectors ) {
             for ( Feature f : features ) {
                 // TODO cope with inspectors that return a different instance
-                inspector.inspect( f );
+                inspector.inspect( f, this );
             }
         }
 

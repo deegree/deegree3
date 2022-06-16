@@ -60,7 +60,7 @@ public class RemoteWMTSTileStoreProvider extends TileStoreProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/remotewmts";
 
-    private static final URL CONFIG_SCHEMA = RemoteWMTSTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/remotewmts/3.4.0/remotewmts.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWMTSTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/remotewmts/remotewmts.xsd" );
 
     @Override
     public String getNamespace() {
