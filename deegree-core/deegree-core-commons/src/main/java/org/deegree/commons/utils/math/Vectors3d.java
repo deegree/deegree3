@@ -227,7 +227,7 @@ public class Vectors3d {
      * vector will be returned .
      * 
      * @param a
-     *            array containing the ordinates of the vectors with length > index + 9
+     *            array containing the ordinates of the vectors with length &gt; index + 9
      * @param index
      *            index of the first vector
      * @return a new allocated array with length 3 containing the normalized normal vector.
@@ -264,7 +264,7 @@ public class Vectors3d {
      * the (unnormalized) vector will be returned .
      * 
      * @param a
-     *            array containing the ordinates of the vectors with length > index + 9
+     *            array containing the ordinates of the vectors with <code>length &gt; index + 9</code>
      * @param index
      *            index of the first vector
      * @param result

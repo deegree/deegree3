@@ -59,7 +59,7 @@ public class DataSourceConnectionProviderProvider extends ConnectionProviderProv
 
     static final String CONFIG_NAMESPACE = "http://www.deegree.org/connectionprovider/datasource";
 
-    static final URL SCHEMA_URL = DataSourceConnectionProviderProvider.class.getResource( "/META-INF/schemas/connectionprovider/datasource/3.4.0/datasource.xsd" );
+    static final URL SCHEMA_URL = DataSourceConnectionProviderProvider.class.getResource( "/META-INF/schemas/connectionprovider/datasource/datasource.xsd" );
 
     @Override
     public String getNamespace() {

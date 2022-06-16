@@ -69,7 +69,7 @@ public class PROJ4CRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.proj4.jaxb";
 
-    private static final URL CONFIG_SCHEMA = PROJ4CRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/proj4/3.4.0/proj4.xsd" );
+    private static final URL CONFIG_SCHEMA = PROJ4CRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/proj4/proj4.xsd" );
 
     @Override
     public String getConfigNamespace() {

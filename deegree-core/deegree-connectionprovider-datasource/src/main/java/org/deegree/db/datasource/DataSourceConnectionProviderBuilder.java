@@ -1,11 +1,13 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2014 by:
+ Copyright (C) 2001-2022 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
  and
  - Occam Labs UG (haftungsbeschränkt) -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -35,6 +37,11 @@
  Occam Labs UG (haftungsbeschränkt)
  Godesberger Allee 139, 53175 Bonn
  Germany
+ 
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -49,6 +56,7 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import org.deegree.db.ConnectionProvider;
+import org.deegree.db.dialect.SqlDialectProvider;
 import org.deegree.db.dialect.SqlDialects;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.workspace.ResourceBuilder;
@@ -60,6 +68,7 @@ import org.slf4j.Logger;
  * {@link ResourceBuilder} for the {@link DataSourceConnectionProvider}.
  * 
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * 
  * @since 3.4
  */
@@ -85,7 +94,21 @@ class DataSourceConnectionProviderBuilder implements ResourceBuilder<ConnectionP
         final DataSource ds = initializeDataSourceInstance();
         final Method destroyMethod = getDestroyMethod( ds, config.getDataSource().getDestroyMethod() );
         final Connection conn = checkConnectivity( ds );
-        final SQLDialect dialect = SqlDialects.lookupSqlDialect( conn, workspace.getModuleClassLoader() );
+        final SQLDialect dialect;
+        if ( config.getDialectProvider() != null ) {
+            String dialectProviderCls = config.getDialectProvider().getJavaClass();
+            try {
+                Class<?> clazz = workspace.getModuleClassLoader().loadClass( dialectProviderCls );
+                SqlDialectProvider prov = clazz.asSubclass( SqlDialectProvider.class ).newInstance();
+                dialect = prov.createDialect( conn );
+            } catch ( Exception ex ) {
+                final String msg = "Configured SQL dialect provider '" + dialectProviderCls + "' failed to initialize: "
+                                   + ex.getLocalizedMessage();
+                throw new ResourceException( msg, ex );
+            }
+        } else {
+            dialect = SqlDialects.lookupSqlDialect( conn, workspace.getModuleClassLoader() );
+        }
         close( conn );
         return new DataSourceConnectionProvider( metadata, ds, dialect, destroyMethod );
     }

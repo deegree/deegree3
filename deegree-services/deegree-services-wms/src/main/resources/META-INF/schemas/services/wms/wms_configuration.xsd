@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/wms" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.wms" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="deegreeWMS">
+    <complexType>
+      <sequence>
+        <element name="SupportedVersions" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="Version" type="wms:WMSVersionType" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+        <element name="SupportedRequests" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element name="SupportedEncodings" type="wms:Encodings" minOccurs="0" />
+              <element name="GetCapabilities" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetMap" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetFeatureInfo" minOccurs="0" type="wms:RequestType"/>
+              <element name="DescribeLayer" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetLegendGraphic" minOccurs="0" type="wms:RequestType"/>
+              <element name="GetFeatureInfoSchema" minOccurs="0" type="wms:RequestType"/>
+              <element name="DTD" minOccurs="0" type="wms:RequestType"/>
+            </sequence>
+          </complexType>
+        </element>
+        <element name="UpdateSequence" type="integer" minOccurs="0" />
+        <!-- if set, it will be checked upon startup if metadata ids for layers actually exist -->
+        <element name="MetadataStoreId" type="string" minOccurs="0" />
+        <!-- if set, this template will be used for generating MetadataURL elements for layers (default is to use an internal 
+          CSW if available) -->
+        <element name="MetadataURLTemplate" minOccurs="0" type="string" />
+        <element name="ServiceConfiguration" type="wms:ServiceConfigurationType" />
+        <element name="GetCapabilitiesFormats" minOccurs="0" type="wms:GetCapabilitiesFormatsType" />
+        <element name="FeatureInfoFormats" minOccurs="0" type="wms:FeatureInfoFormatsType" />
+        <element name="GetMapFormats" minOccurs="0" type="wms:GetMapFormatsType" />
+        <element name="GetLegendGraphicBackgroundColor" minOccurs="0" type="wms:GetLegendGraphicBackgroundColorType" />
+        <element name="ExceptionFormats" minOccurs="0" type="wms:ExceptionFormatsType" />
+        <element name="ExtendedCapabilities" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <any processContents="lax">
+                <annotation>
+                  <appinfo>
+                    <jaxb:dom />
+                  </appinfo>
+                </annotation>
+              </any>
+            </sequence>
+          </complexType>
+        </element>
+        <element name="LayerLimit" minOccurs="0" type="positiveInteger" />
+        <element name="MaxWidth" minOccurs="0" type="positiveInteger" />
+        <element name="MaxHeight" minOccurs="0" type="positiveInteger" />
+        <element name="KeyValueRewrite" minOccurs="0" maxOccurs="unbounded" type="wms:KeyValueRewriteType" />
+        <element name="CrsCheckStrict" minOccurs="0" type="boolean" default="false" />
+        <element name="Strict" minOccurs="0" type="boolean" default="false"/>
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <complexType name="ServiceConfigurationType">
+    <sequence>
+      <element name="DefaultLayerOptions" type="wms:LayerOptionsType" minOccurs="0" />
+      <element name="ThemeId" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Copyright" minOccurs="0" type="wms:CopyrightType" />
+      <element name="VisibilityInspector" type="wms:VisibilityInspectorType" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="GetCapabilitiesFormatsType">
+    <sequence>
+      <element name="GetCapabilitiesFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="XSLTFile" type="string" />
+            <element name="Format" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="enableDefaultFormats" type="boolean" default="true" />
+  </complexType>
+
+  <complexType name="FeatureInfoFormatsType">
+    <sequence>
+      <element name="GetFeatureInfoFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <choice>
+              <element name="File" type="string" />
+              <element name="XSLTFile">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="gmlVersion" type="wms:GMLVersionType" default="GML_32" use="optional" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+              <element name="Serializer">
+                <complexType>
+                  <sequence>
+                    <element name="JavaClass" type="string" />
+                    <element name="File" type="string" />
+                    <element name="Property" minOccurs="0" maxOccurs="unbounded">
+                      <complexType>
+                        <attribute name="name" use="required" />
+                        <attribute name="value" use="required" />
+                      </complexType>
+                    </element>
+                  </sequence>
+                </complexType>
+              </element>
+            </choice>
+            <element name="Format" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="enableDefaultFormats" type="boolean" default="true" />
+  </complexType>
+
+  <complexType name="ExceptionFormatsType">
+    <sequence>
+      <element name="ExceptionFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="XSLTFile" type="string"/>
+            <element name="Format" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="enableDefaultFormats" type="boolean" default="true" />
+  </complexType>
+  
+  <complexType name="GetMapFormatsType">
+    <sequence>
+      <element name="GetMapFormat" minOccurs="0" maxOccurs="unbounded">
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="image/png" />
+            <enumeration value="image/png; subtype=8bit" />
+            <enumeration value="image/png; mode=8bit" />
+            <enumeration value="image/gif" />
+            <enumeration value="image/jpeg" />
+            <enumeration value="image/tiff" />
+            <enumeration value="image/x-ms-bmp" />
+            <enumeration value="image/svg+xml" />
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="CustomGetMapFormat" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="Format" type="string" />
+            <element name="JavaClass" type="string" />
+            <element name="Property" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <attribute name="name" use="required" />
+                <attribute name="value" use="required" />
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="GetLegendGraphicBackgroundColorType">
+    <restriction base="string">
+      <pattern value="#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})" />
+    </restriction>
+  </simpleType>
+
+  <complexType name="LayerOptionsType">
+    <sequence>
+      <element name="AntiAliasing" type="string" minOccurs="0" />
+      <element name="RenderingQuality" type="string" minOccurs="0" />
+      <element name="Interpolation" type="string" minOccurs="0" />
+      <element name="MaxFeatures" type="int" minOccurs="0" />
+      <element name="FeatureInfoRadius" type="int" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="VisibilityInspectorType">
+    <annotation>
+      <documentation>Configure an implementation of the interface
+        org.deegree.services.wms.visibility.LayerVisibilityInspector to check if a requested layer and corresponding
+        sublayers should be rendered in a GetMap response. With CategoryLayerIdentifier the identifier of (category)
+        layers (which are requestable in GetMap requests) can be specified which should be checked. If no
+        CategoryLayerIdentifier is specified all layers are checked.
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="JavaClass" type="string" />
+      <element name="CategoryLayerIdentifier" type="string" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="RequestType">
+    <sequence>
+      <element name="SupportedEncodings" minOccurs="0" type="wms:Encodings" />
+    </sequence>
+  </complexType>
+
+  <complexType name="KeyValueRewriteType">
+    <choice minOccurs="0" maxOccurs="unbounded">
+		<element name="Remove">
+			<complexType>
+				<attribute name="key" type="string" use="required"/>
+			</complexType>
+		</element>
+		<element name="RemoveMatch">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+						<attribute name="match" type="string" use="required"/>
+						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="Default">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="HeaderMatch">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+						<attribute name="replacement" type="string" use="required"/>
+						<attribute name="header" type="string" use="required"/>
+						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="ParameterMatch">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+						<attribute name="replacement" type="string" use="required"/>
+						<attribute name="match" type="string" use="required"/>
+						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="Custom">
+			<complexType>
+				<attribute name="javaClass" type="string" use="required"/>
+			</complexType>
+		</element>
+    </choice>
+    <attribute name="type" type="wms:RewriteRequestType" use="required" />
+  </complexType>
+
+  <simpleType name="Encodings">
+    <list>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="kvp" />
+          <enumeration value="xml" />
+          <enumeration value="soap" />
+        </restriction>
+      </simpleType>
+    </list>
+  </simpleType>
+
+  <complexType name="CopyrightType">
+    <annotation>
+      <documentation>Configure a copyright displayed in GetMap responses. A text or image
+        (via relative or absolute file reference or http url) can be configured.
+        Furthermore the position of the copyright can be specified with OffsetX/OffsetY (default is 8/13).
+        Anchor point in the GetMap response as well as the text or image is the lower-left corner.</documentation>
+    </annotation>
+    <sequence>
+      <choice minOccurs="1">
+        <element name="Text" type="string" />
+        <element name="Image" type="string" />
+      </choice>
+      <sequence minOccurs="0">
+        <element name="OffsetX" type="int" minOccurs="1" />
+        <element name="OffsetY" type="int" minOccurs="1" />
+      </sequence>
+    </sequence>
+  </complexType>
+
+  <simpleType name="WMSVersionType">
+    <restriction base="string">
+      <enumeration value="1.1.1" />
+      <enumeration value="1.3.0" />
+      <!-- enumeration value="2.0.0" / -->
+    </restriction>
+  </simpleType>
+
+  <simpleType name="GMLVersionType">
+    <restriction base="string">
+      <enumeration value="GML_2" />
+      <enumeration value="GML_30" />
+      <enumeration value="GML_31" />
+      <enumeration value="GML_32" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="RewriteRequestType">
+    <restriction base="string">
+      <enumeration value="DescribeLayer" />
+      <enumeration value="GetCapabilities" />
+      <enumeration value="capabilities" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="GetMap" />
+      <enumeration value="map" />
+      <enumeration value="GetFeatureInfoSchema" />
+      <enumeration value="GetLegendGraphic" />
+      <enumeration value="DTD" />
+      <enumeration value="GetStyles" />
+      <enumeration value="PutStyles" />
+    </restriction>
+  </simpleType>
+</schema>

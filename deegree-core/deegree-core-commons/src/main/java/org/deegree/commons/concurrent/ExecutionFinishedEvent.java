@@ -40,19 +40,16 @@ import java.util.concurrent.CancellationException;
 
 /**
  * Event that is sent when an asynchronous task finished.
- * <p>
+ * <br/>
  * This can mean:
  * <ul>
  * <li>it finished successfully</li>
  * <li>it terminated abnormally (with an exception or error)</li>
  * <li>a time out occurred during the performing of the task (or it's thread has been cancelled)</li>
  * </ul>
- * </p>
- * <p>
  * If the task did not finish successfully, the thrown exception / error is rethrown when {@link #getResult()} is
  * called.
- * </p>
- * 
+ *
  * @param <T>
  *            type of return value
  * 

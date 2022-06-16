@@ -1,1 +1,9 @@
-<Layer xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink"><Title>Container</Title><Layer queryable="0" cascaded="0" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0"><Name>SimpleTheme</Name><Title>SimpleTheme</Title><MinScaleDenominator>0.0</MinScaleDenominator><MaxScaleDenominator>999999.9</MaxScaleDenominator></Layer></Layer>
+<Layer xmlns="http://www.opengis.net/wms">
+  <Title>Container</Title>
+  <Layer queryable="0" cascaded="0" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+    <Name>SimpleTheme</Name>
+    <Title>SimpleTheme</Title>
+    <MinScaleDenominator>0.0</MinScaleDenominator>
+    <MaxScaleDenominator>999999.9</MaxScaleDenominator>
+  </Layer>
+</Layer>
