@@ -1,7 +1,0 @@
-<FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/feature http://schemas.deegree.org/layers/feature/3.4.0/feature.xsd" configVersion="3.4.0">
-  <AutoLayers>
-    <FeatureStoreId>osm</FeatureStoreId>
-    <StyleStoreId>osm</StyleStoreId>
-  </AutoLayers>
-
-</FeatureLayers>

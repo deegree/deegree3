@@ -13,9 +13,13 @@ import java.util.Map;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
+import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
+import org.deegree.featureinfo.parsing.FeatureInfoParser;
+import org.deegree.featureinfo.parsing.XsltFeatureInfoParser;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.layer.metadata.XsltFile;
 import org.deegree.layer.persistence.remotewms.jaxb.ParameterScopeType;
 import org.deegree.layer.persistence.remotewms.jaxb.ParameterUseType;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
@@ -60,9 +64,16 @@ class RemoteWMSLayer extends AbstractLayer {
 
     private final String originalName;
 
+    private FeatureInfoParser featureInfoParser;
+
     RemoteWMSLayer( String originalName, LayerMetadata md, WMSClient client, RequestOptionsType opts ) {
+        this( originalName, md, client, opts, null );
+    }
+
+    RemoteWMSLayer( String originalName, LayerMetadata md, WMSClient client, RequestOptionsType opts, XsltFile xsltFile ) {
         super( md );
         this.originalName = originalName;
+        this.featureInfoParser = createFeatureInfoParser( xsltFile );
         md.setCascaded( md.getCascaded() + 1 );
         this.client = client;
         if ( opts != null ) {
@@ -166,7 +177,13 @@ class RemoteWMSLayer extends AbstractLayer {
         GetFeatureInfo gfi = new GetFeatureInfo( Collections.singletonList( originalName ), query.getWidth(),
                                                  query.getHeight(), query.getX(), query.getY(), query.getEnvelope(),
                                                  crs, query.getFeatureCount() );
-        return new RemoteWMSLayerData( client, gfi, extraParams );
+        return new RemoteWMSLayerData( client, gfi, extraParams, featureInfoParser );
+    }
+
+    private FeatureInfoParser createFeatureInfoParser( XsltFile xsltFile ) {
+        if ( xsltFile != null )
+            return new XsltFeatureInfoParser( xsltFile.getXsltFile(), xsltFile.getTargetGmlVersion() );
+        return new DefaultFeatureInfoParser();
     }
 
     @Override

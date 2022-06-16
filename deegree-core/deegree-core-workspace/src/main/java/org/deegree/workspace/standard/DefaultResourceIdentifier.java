@@ -89,8 +89,8 @@ public class DefaultResourceIdentifier<T extends Resource> implements ResourceId
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
      * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
+     * @return <code>(int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;</code>
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

@@ -57,7 +57,7 @@ public class ShapeFeatureStoreProvider extends FeatureStoreProvider {
 
     static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.shape.jaxb";
 
-    private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/3.4.0/shape.xsd" );
+    private static final URL CONFIG_SCHEMA = ShapeFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/shape/shape.xsd" );
 
     static class Mapping {
         String fieldname;

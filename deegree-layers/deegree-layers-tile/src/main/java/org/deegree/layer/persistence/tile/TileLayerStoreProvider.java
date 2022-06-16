@@ -44,7 +44,7 @@ import org.deegree.workspace.Workspace;
  */
 public class TileLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL SCHEMA = TileLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/tile/3.4.0/tile.xsd" );
+    private static final URL SCHEMA = TileLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/tile/tile.xsd" );
 
     @Override
     public String getNamespace() {

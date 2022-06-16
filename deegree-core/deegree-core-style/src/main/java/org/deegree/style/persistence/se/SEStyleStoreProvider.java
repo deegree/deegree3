@@ -57,7 +57,7 @@ import org.deegree.workspace.Workspace;
  */
 public class SEStyleStoreProvider extends StyleStoreProvider {
 
-    private static final URL CONFIG_SCHEMA = SEStyleStoreProvider.class.getResource( "/META-INF/schemas/se/3.4.0/symbology-1.1.0.xsd" );
+    private static final URL CONFIG_SCHEMA = SEStyleStoreProvider.class.getResource( "/META-INF/schemas/se/symbology-1.1.0.xsd" );
 
     @Override
     public String getNamespace() {

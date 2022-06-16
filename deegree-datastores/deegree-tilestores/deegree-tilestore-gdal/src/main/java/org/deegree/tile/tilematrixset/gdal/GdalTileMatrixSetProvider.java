@@ -48,7 +48,7 @@ public class GdalTileMatrixSetProvider extends TileMatrixSetProvider {
 
     private static final String SCHEMA_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset/gdal";
 
-    private static final URL SCHEMA_URL = GdalTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/gdal/3.4.0/gdal.xsd" );
+    private static final URL SCHEMA_URL = GdalTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/gdal/gdal.xsd" );
 
     @Override
     public String getNamespace() {

@@ -123,10 +123,8 @@ class GdalLayerData implements LayerData {
     }
 
     private BufferedImage extractAndReprojectRegion( ICRS nativeCrs ) {
-        int requestEpsgCode = CRSUtils.getEpsgCode( bbox.getCoordinateSystem() );
-        int nativeEpsgCode = CRSUtils.getEpsgCode( nativeCrs );
-        SpatialReference requestSr = gdalSettings.getCrsAsWkt( requestEpsgCode );
-        SpatialReference nativeSr = gdalSettings.getCrsAsWkt( nativeEpsgCode );
+        SpatialReference requestSr = getSpatialReference( bbox.getCoordinateSystem() );
+        SpatialReference nativeSr = getSpatialReference( nativeCrs );
         Envelope nativeBbox = transform( bbox, requestSr, nativeSr );
         List<byte[][]> nativeRegions = getIntersectingRegionsFromAllDatasets( nativeBbox );
         if ( nativeRegions.isEmpty() ) {
@@ -258,6 +256,18 @@ class GdalLayerData implements LayerData {
             band.ReadRaster( 0, 0, width, height, width, height, GDT_Byte, bandBytes, 0, 0 );
         }
         return bands;
+    }
+
+    private SpatialReference getSpatialReference( ICRS coordinateSystem ) {
+        try {
+            int requestEpsgCode = CRSUtils.getEpsgCode( coordinateSystem );
+            return gdalSettings.getCrsAsWkt( requestEpsgCode );
+        } catch ( IllegalArgumentException e ) {
+            boolean isCrs84 = coordinateSystem.hasId( "crs:84", true, true );
+            if ( isCrs84 )
+                return gdalSettings.getCrs84();
+            throw e;
+        }
     }
 
     private Envelope transform( Envelope bbox, SpatialReference requestSr, SpatialReference nativeSr ) {

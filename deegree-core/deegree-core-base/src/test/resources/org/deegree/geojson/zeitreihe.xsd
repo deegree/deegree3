@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--Quelle: : Freie und Hansestadt Hamburg, Behörde für Arbeit, Soziales, Familie und Integration (Sozialbehörde) -->
+<!-- https://geodienste.hamburg.de/HH_WFS_KitaEinrichtung?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:mic="http://www.deegree.org/datasource/feature/sql" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" targetNamespace="http://www.deegree.org/datasource/feature/sql" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+  <element name="AbstractFeature" type="gml:AbstractFeatureType" abstract="true" substitutionGroup="gml:AbstractFeature"/>
+  <element name="Zuzuege_Auszuege_oerU" substitutionGroup="gml:AbstractFeature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="zuzuege_real">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="davon_zuzuege_aus_zea_za_ea">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="zuzuege_real_aus_oeru">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="differenz_zugzug_auszug_oeru">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Zuwanderung" substitutionGroup="gml:AbstractFeature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="wohnungslose_jep">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="wohnberechtigte_zuwanderer">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="nicht_wohnberechtigte_zuwanderer">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="summe_zuwanderer_wohnungslose">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Zuzuege" substitutionGroup="gml:AbstractFeature">
+    <complexType>
+      <complexContent>
+        <extension base="gml:AbstractFeatureType">
+          <sequence>
+            <element name="zuzuege_ausserhalb_hh">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+            <element name="davon_familiennachzuege">
+              <complexType>
+                <sequence>
+                  <element ref="mic:zeitreihe"/>
+                </sequence>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="zeitreihe">
+    <complexType>
+      <sequence>
+        <element ref="mic:zeitreihen-element" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="zeitreihen-element">
+    <complexType>
+      <sequence>
+        <element name="datum" type="mic:intervall-classification"/>
+        <element name="wert" type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+  <simpleType name="intervall-classification">
+    <restriction base="string"/>
+  </simpleType>
+</schema>

@@ -53,7 +53,7 @@ public class FileSystemTileStoreProvider extends TileStoreProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/filesystem";
 
-    private static final URL CONFIG_SCHEMA = FileSystemTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/filesystem/3.4.0/filesystem.xsd" );
+    private static final URL CONFIG_SCHEMA = FileSystemTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/filesystem/filesystem.xsd" );
 
     @Override
     public String getNamespace() {

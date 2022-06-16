@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:crs="http://www.deegree.org/crs/stores/gml" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:str="http://www.deegree.org/crs/store" targetNamespace="http://www.deegree.org/crs/stores/gml"
+	elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	jaxb:version="2.1">
+	<import namespace="http://www.deegree.org/crs/store"
+		schemaLocation="../store.xsd" />
+	<annotation>
+		<appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="org.deegree.cs.persistence.gml.jaxb" />
+			</jaxb:schemaBindings>
+		</appinfo>
+	</annotation>
+	<element name="GMLCRSStore">
+		<annotation>
+			<documentation>
+				CRSStore handling the CRS described in GML.
+			</documentation>
+			<appinfo>
+				<jaxb:class name="GMLCRSStoreConfig" />
+			</appinfo>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="str:_AbstractStore">
+					<choice>
+						<element name="GMLFile" type="string" />
+						<sequence>
+							<element name="GMLResourceClass" type="string">
+								<annotation>
+									<documentation><![CDATA[
+										must have an constructur like: GMLResourceClass(GMLCRSStore
+										store, Map<String, List<String>> params )]]>
+									</documentation>
+								</annotation>
+							</element>
+							<element ref="crs:Param" maxOccurs="unbounded" />
+						</sequence>
+					</choice>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	<element name="Param">
+		<complexType>
+			<sequence>
+				<element name="Name" type="string" />
+				<element name="Value" type="string" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

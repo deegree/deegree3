@@ -37,8 +37,8 @@ package org.deegree.commons.jdbc;
 
 /**
  * An SQL identifier (e.g. a table, column or sequence name) with optional qualifier and optional escaping.
- * <p>
- * <h4>Qualification</h4>
+ * <br/>
+ * <h3>Qualification</h3>
  * Each identifier consists of a name part and an optional qualifier part and has the syntax
  * <code>(qualifier.)* name</code>. Examples:
  * <ul>
@@ -48,7 +48,7 @@ package org.deegree.commons.jdbc;
  * <li><code>mytable.mycolumn</code></li>
  * <li><code>myschema.mytable.mycolumn</code></li>
  * </ul>
- * <h4>Escaping</h4>
+ * <h3>Escaping</h3>
  * Escaping an identifier has two effects (TODO verify on all DBMS): it allows to use normally reserved characters/words
  * and tells the DBMS to treat the identifier in a case-sensitive manner. However, different DBMSs use different ways to
  * mark an escaped identifier, e.g. for table names:
@@ -58,8 +58,7 @@ package org.deegree.commons.jdbc;
  * <li>SQL Server uses brackets: [escaped table name] (needs verification)</li>
  * <li>MySQL uses ticks: `escaped table name` (needs verification)</li>
  * </ul>
- * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 

@@ -66,6 +66,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -162,9 +163,9 @@ public class OracleDialect extends AbstractSQLDialect implements SQLDialect {
 
     @Override
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, boolean allowPartialMappings )
+                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new OracleWhereBuilder( this, mapper, filter, sortCrit, allowPartialMappings, versionMajor );
+        return new OracleWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings, versionMajor );
     }
 
     @Override
@@ -268,4 +269,8 @@ public class OracleDialect extends AbstractSQLDialect implements SQLDialect {
         return "SELECT " + sequence + ".NEXTVAL from DUAL";
     }
 
+    @Override
+    public boolean isRowLimitingCapable() {
+        return versionMajor < 12 ? false: true;
+    }
 }
