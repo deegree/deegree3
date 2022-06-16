@@ -53,7 +53,7 @@ public class BatchedMTFileStoreProvider extends BatchedMTStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/3d/batchedmt/file";
 
-    private static final URL CONFIG_SCHEMA = BatchedMTFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/batchedmt/3.4.0/file.xsd" );
+    private static final URL CONFIG_SCHEMA = BatchedMTFileStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/batchedmt/file.xsd" );
 
     public String getNamespace() {
         return CONFIG_NS;

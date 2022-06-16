@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2011 by:
+ Copyright (C) 2011-2022 by:
  - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
@@ -40,6 +39,7 @@ package org.deegree.sqldialect.oracle.sdo;
 
 import java.sql.SQLException;
 
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter.GeomHolder;
 
 import oracle.jdbc.OracleConnection;
@@ -62,10 +62,11 @@ import oracle.sql.StructDescriptor;
  *      org.geotools.data.oracle.sdo.GeometryConverter
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * 
- * @version $Revision$, $Date$
  */
 public class OracleObjectTools {
+
+    private static final boolean USE_OPTIMIZED_POINT_STORAGE = TunableParameter.get( "deegree.sqldialect.oracle.optimized_point_storage",
+                                                                                     true );
 
     protected static int fromInteger( Datum data, int defaultValue )
                             throws SQLException {
@@ -136,12 +137,17 @@ public class OracleObjectTools {
         /*
          * a single 2/3D point will be stored optimized as SDO_POINT_TYPE which is preferred by oracle
          */
-
-        if ( elemInfo.length == 3 && elemInfo[0] == 1 && elemInfo[1] == 1 && elemInfo[2] == 1 && ordinates.length > 2
-             && ordinates.length < 4 ) {
+        if ( USE_OPTIMIZED_POINT_STORAGE && elemInfo != null && ordinates != null && //
+             elemInfo.length == 3 && elemInfo[0] == 1 && elemInfo[1] == 1 && elemInfo[2] == 1 && //
+             ordinates.length > 1 && ordinates.length < 4 && //
+             ( gtype == 2001 || gtype == 3001 ) ) {
             NUMBER z = null;
-            if ( ordinates.length > 2 )
+            if ( ordinates.length > 2 ) {
                 z = toNumber( ordinates[2] );
+                sdoGtype = toNumber( 3001 );
+            } else {
+                sdoGtype = toNumber( 2001 );
+            }
             Datum elements[] = new Datum[] { toNumber( ordinates[0] ), toNumber( ordinates[1] ), z, };
             sdoPoint = toStruct( elements, "MDSYS.SDO_POINT_TYPE", conn );
         } else {

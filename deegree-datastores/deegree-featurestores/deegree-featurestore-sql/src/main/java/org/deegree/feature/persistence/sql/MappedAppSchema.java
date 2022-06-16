@@ -186,6 +186,8 @@ public class MappedAppSchema extends GenericAppSchema {
      * @return id of the feature type
      */
     public short getFtId( QName ftName ) {
+        if ( !ftNameToId.containsKey( ftName ) )
+            return -1;
         return ftNameToId.get( ftName );
     }
 

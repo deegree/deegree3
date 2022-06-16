@@ -48,8 +48,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.ExtendedDescription;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
@@ -105,8 +107,9 @@ class DatasetMetadataFactory {
         final List<UrlWithFormat> dataUrls = null;
         final List<UrlWithFormat> featureListUrls = null;
         final Attribution attribution = null;
+        final List<ExtendedDescription> extendedDescriptions = null;
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution );
+                                    featureListUrls, attribution, extendedDescriptions );
     }
 
     private String getFirstMetadataSetId( final Theme theme ) {

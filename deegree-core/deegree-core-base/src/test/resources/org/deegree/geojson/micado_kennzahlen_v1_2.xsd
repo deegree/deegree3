@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Quelle: Freie und Hansestadt Hamburg, Behörde für Arbeit, Gesundheit, Soziales, Familie und Integration (Sozialbehörde) -->
+<!-- https://geodienste.hamburg.de/HH_WFS_Zuwanderung?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities -->
+<!-- Erweiterung von G. Helle (LGV HH) um zeitreihen-element/country-list -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:de.hh.up="https://registry.gdi-de.org/id/de.hh.up" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:mic="http://www.deegree.org/datasource/feature/sql" targetNamespace="http://www.deegree.org/datasource/feature/sql" elementFormDefault="qualified">
+	<xsd:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<xsd:include schemaLocation="zeitreihen_v1.xsd"/>
+	<xsd:element name="Zuzuege" substitutionGroup="gml:AbstractFeature">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="gml:AbstractFeatureType">
+					<xsd:sequence>
+						<xsd:element name="test_geom" type="gml:GeometryPropertyType"></xsd:element>	
+						<xsd:element name="zuzuege_ausserhalb_hh">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>					
+						<xsd:element name="davon_familiennachzuege">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Zuwanderung" substitutionGroup="gml:AbstractFeature">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="gml:AbstractFeatureType">
+					<xsd:sequence>
+						<xsd:element name="test_geom" type="gml:GeometryPropertyType"></xsd:element>	
+						<xsd:element name="wohnungslose_jep">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="wohnberechtigte_zuwanderer">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="nicht_wohnberechtigte_zuwanderer">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="summe_zuwanderer_wohnungslose">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="Zuzuege_Auszuege_oerU" substitutionGroup="gml:AbstractFeature">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="gml:AbstractFeatureType">
+					<xsd:sequence>
+						<xsd:element name="test_geom" type="gml:GeometryPropertyType"></xsd:element>
+						<xsd:element name="zuzuege_real">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="davon_zuzuege_aus_zea_za_ea">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="zuzuege_real_aus_oeru">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="differenz_zugzug_auszug_oeru">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element ref="mic:zeitreihe"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

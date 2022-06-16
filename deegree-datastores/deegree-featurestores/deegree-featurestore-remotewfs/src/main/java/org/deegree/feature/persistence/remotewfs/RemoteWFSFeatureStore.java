@@ -41,12 +41,14 @@ import static org.deegree.protocol.wfs.WFSVersion.WFS_110;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObject;
+import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -163,6 +165,19 @@ public class RemoteWFSFeatureStore implements FeatureStore {
     public Envelope calcEnvelope( QName ftName )
                             throws FeatureStoreException {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
+    @Override
+    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
         return null;
     }
 

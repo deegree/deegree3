@@ -73,7 +73,7 @@ public abstract class DDLCreator {
 
     private final boolean hasBlobTable;
 
-    private final SQLDialect dialect;
+    protected final SQLDialect dialect;
 
     protected TableName currentFtTable;
 

@@ -72,7 +72,7 @@ public class RemoteWmsLayerStoreBuilder implements ResourceBuilder<LayerStore> {
                                              + " is not available or not of type WMS." );
         }
 
-        RemoteWmsLayerBuilder builder = new RemoteWmsLayerBuilder( ( (RemoteWMS) store ).getClient(), cfg );
+        RemoteWmsLayerBuilder builder = new RemoteWmsLayerBuilder( ( (RemoteWMS) store ).getClient(), cfg, metadata );
 
         Map<String, Layer> map = builder.buildLayerMap();
 

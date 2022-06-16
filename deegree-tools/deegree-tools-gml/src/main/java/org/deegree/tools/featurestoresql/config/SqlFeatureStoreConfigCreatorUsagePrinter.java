@@ -43,6 +43,8 @@ public class SqlFeatureStoreConfigCreatorUsagePrinter {
         System.out.println( " -cycledepth=INT, positive integer value to specify the depth of cycles, default=0" );
         System.out.println( " -listOfPropertiesWithPrimitiveHref=<path/to/file>, not set by default" );
         System.out.println( " -referenceData=<path/to/file> (GML Feature collection containing reference features. The generated config is simplified to map this feature collection.)" );
+        System.out.println( " -useRefDataProps={true|false}, default: false (true if mapping should be created only for properties defined in referenceData)" );
+
         System.out.println();
         System.out.println( "The option listOfPropertiesWithPrimitiveHref references a file listing properties which are written with primitive instead of feature mappings (see deegree-webservices documentation and README of this tool for further information):" );
         System.out.println( "---------- begin file ----------" );

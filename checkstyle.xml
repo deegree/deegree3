@@ -23,9 +23,6 @@
     <module name='RedundantModifier'>
       <property name="severity" value="warning" />
     </module>
-    <module name='RedundantThrows'>
-      <property name="severity" value="warning" />
-    </module>
   </module>
   <module name='FileLength' />
   <module name='NewlineAtEndOfFile'>
