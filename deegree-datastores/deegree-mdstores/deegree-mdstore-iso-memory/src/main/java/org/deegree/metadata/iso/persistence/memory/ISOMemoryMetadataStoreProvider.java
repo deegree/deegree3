@@ -58,7 +58,7 @@ public class ISOMemoryMetadataStoreProvider extends MetadataStoreProvider {
 
     private final static String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/metadata/iso19139/memory";
 
-    private final static URL CONFIG_SCHEMA = ISOMemoryMetadataStore.class.getResource( "/META-INF/schemas/datasource/metadata/iso19139/memory/3.4.0/memory.xsd" );
+    private final static URL CONFIG_SCHEMA = ISOMemoryMetadataStore.class.getResource( "/META-INF/schemas/datasource/metadata/iso19139/memory/memory.xsd" );
 
     @Override
     public String[] getCreateStatements( SQLDialect dbType )

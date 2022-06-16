@@ -63,7 +63,7 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.deegree.commons.utils.Tunable;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.style.styling.components.Graphic;
 import org.slf4j.Logger;
 
@@ -81,7 +81,7 @@ class SvgRenderer {
 
     private static final Logger LOG = getLogger( SvgRenderer.class );
 
-    private final int cacheSize = Tunable.get( "deegree.cache.svgrenderer", 256 );
+    private final int cacheSize = TunableParameter.get( "deegree.cache.svgrenderer", 256 );
 
     final LinkedHashMap<String, BufferedImage> svgCache = new LinkedHashMap<String, BufferedImage>( cacheSize ) {
         private static final long serialVersionUID = -6847956873232942891L;

@@ -1,6 +1,6 @@
-| Master (3.4) | Release   | OpenHUB       |
-| ------------ | --------- | ------------- |
-| [![Master Build Status](https://buildserver.deegree.org/buildStatus/icon?job=deegree-3.4-master)](https://buildserver.deegree.org/job/deegree-3.4-master/) | [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/deegree/deegree3?sort=semver)](https://github.com/deegree/deegree3/releases/latest) | [![OpenHUB](https://www.openhub.net/p/deegree3/widgets/project_thin_badge.gif)](https://www.openhub.net/p/deegree3) |
+| Main (3.5)   | Maintenance (3.4) | Release   | OpenHUB       |
+| ------------ | ----------------- | --------- | ------------- |
+| [![Main Build Status](https://buildserver.deegree.org/buildStatus/icon?job=deegree-3.5-release)](https://buildserver.deegree.org/job/deegree-3.5-release/) | [![Master Build Status](https://buildserver.deegree.org/buildStatus/icon?job=deegree-3.4%2Fdeegree-3.4-master)](https://buildserver.deegree.org/job/deegree-3.4/job/deegree-3.4-master/) | [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/deegree/deegree3?sort=semver)](https://github.com/deegree/deegree3/releases/latest) | [![OpenHUB](https://www.openhub.net/p/deegree3/widgets/project_thin_badge.gif)](https://www.openhub.net/p/deegree3) |
 # deegree webservices
 deegree is open source software for spatial data infrastructures and the geospatial web. deegree includes components for geospatial data management, including data access, visualization, discovery and security. Open standards are at the heart of deegree. The software is built on the standards of the Open Geospatial Consortium (OGC) and the ISO Technical Committee 211.
 

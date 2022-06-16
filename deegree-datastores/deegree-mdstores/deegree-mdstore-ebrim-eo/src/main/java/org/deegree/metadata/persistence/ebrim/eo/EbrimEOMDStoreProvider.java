@@ -64,7 +64,7 @@ public class EbrimEOMDStoreProvider extends MetadataStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/metadata/ebrim/eo";
 
-    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/metadata/ebrim/eo/3.4.0/ebrim-eo.xsd";
+    private static final String CONFIG_SCHEMA = "/META-INF/schemas/datasource/metadata/ebrim/eo/ebrim-eo.xsd";
 
     // TODO : don't copy
     private List<String> readStatements( BufferedReader reader )

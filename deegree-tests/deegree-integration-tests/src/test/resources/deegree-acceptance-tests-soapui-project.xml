@@ -22,7 +22,7 @@
           </con:assertion>
           <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
             <con:configuration>
-              <token>Restart complete.</token>
+              <token>Restart of workspace deegree-workspace-utah completed.</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
             </con:configuration>
@@ -123,7 +123,7 @@
           <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <deegreeWFS xmlns="http://www.deegree.org/services/wfs"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/services/wfs/3.4.0/wfs_configuration.xsd"
+            xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/3.5/services/wfs/wfs_configuration.xsd"
             configVersion="3.4.0">
 
   <SupportedVersions>
@@ -464,7 +464,7 @@
           </con:assertion>
           <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
             <con:configuration>
-              <token>Restart complete.</token>
+              <token>Restart of workspace deegree-workspace-utah completed.</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
             </con:configuration>
@@ -497,7 +497,7 @@
           </con:assertion>
           <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
             <con:configuration>
-              <token>Restart complete.</token>
+              <token>Restart of workspace deegree-workspace-utah completed.</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
             </con:configuration>

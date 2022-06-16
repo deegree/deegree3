@@ -50,7 +50,8 @@ import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import org.deegree.commons.utils.Tunable;
+import org.deegree.commons.utils.TunableParameter;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.style.styling.components.Fill;
 import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.UOM;
@@ -77,9 +78,9 @@ class Java2DFillRenderer {
      * 
      * SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
      */
-    private boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+    private boolean strictSize = TunableParameter.get( "deegree.rendering.graphics.size.strict", false );
 
-    private int undefinedImageHeight = Tunable.get( "deegree.redering.graphics.height.undefined", 6 );
+    private int undefinedImageHeight = TunableParameter.get( "deegree.redering.graphics.height.undefined", 6 );
     
     Java2DFillRenderer( UomCalculator uomCalculator, Graphics2D graphics, SvgRenderer svgRenderer ) {
         this.uomCalculator = uomCalculator;

@@ -66,7 +66,7 @@ import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
-import org.deegree.commons.utils.Tunable;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.mark.BoundedShape;
 import org.slf4j.Logger;
@@ -202,7 +202,7 @@ public class ShapeHelper {
     public static Shape getShapeFromMark( Mark mark, double size, double rotation, boolean translate, double x, double y ) {
         // Derive undefined image size Strictly according to OGC
         // SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
-        boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+        boolean strictSize = TunableParameter.get( "deegree.rendering.graphics.size.strict", false );
 
         Shape shape;
 
@@ -245,7 +245,7 @@ public class ShapeHelper {
     public static Shape getShapeFromMarkForFill( Mark mark, double size, double rotation ) {
         // Derive undefined image size Strictly according to OGC
         // SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
-        boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+        boolean strictSize = TunableParameter.get( "deegree.rendering.graphics.size.strict", false );
 
         Shape shape;
 
@@ -296,7 +296,7 @@ public class ShapeHelper {
     public static Shape getShapeFromSvg( String url, double size, double rotation ) {
         // Derive undefined image size Strictly according to OGC
         // SLD 02-070 Cap. 11.3.2 / SE 05-077r4 Cap. 11.3.2
-        boolean strictSize = Tunable.get( "deegree.rendering.graphics.size.strict", false );
+        boolean strictSize = TunableParameter.get( "deegree.rendering.graphics.size.strict", false );
 
         try {
             Shape shape = getShapeFromSvg( new URL( url ).openStream(), url );

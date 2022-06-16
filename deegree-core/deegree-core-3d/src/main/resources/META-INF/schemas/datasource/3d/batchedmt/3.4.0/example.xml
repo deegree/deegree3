@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<BatchedMTFileStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/3d/batchedmt/file"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/3d/batchedmt/file http://schemas.deegree.org/datasource/3d/batchedmt/3.4.0/file.xsd">
-  <Directory>../../../data/batchedmt</Directory>
-  <MaxDirectMemory>500048576</MaxDirectMemory>
-</BatchedMTFileStore>
