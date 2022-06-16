@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/layers/gdal" xmlns:g="http://www.deegree.org/layers/gdal"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1"
+  xmlns:l="http://www.deegree.org/layers/base">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.layer.persistence.gdal.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/layers/base" schemaLocation="../../layers/base/base.xsd" />
+
+  <complexType name="GDALLayerType">
+    <sequence>
+      <group ref="l:LayerInfo" />
+      <element name="File" type="string" maxOccurs="unbounded" />      
+    </sequence>
+  </complexType>
+
+  <element name="GDALLayers">
+    <complexType>
+      <sequence>
+        <element name="GDALLayer" type="g:GDALLayerType" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+</schema>

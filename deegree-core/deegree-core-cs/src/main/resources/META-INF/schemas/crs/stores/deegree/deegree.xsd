@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:crs="http://www.deegree.org/crs/stores/deegree" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:str="http://www.deegree.org/crs/store" targetNamespace="http://www.deegree.org/crs/stores/deegree"
+	elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	jaxb:version="2.1">
+	<import namespace="http://www.deegree.org/crs/store"
+		schemaLocation="../store.xsd" />
+	<annotation>
+		<appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="org.deegree.cs.persistence.deegree.d3.jaxb" />
+			</jaxb:schemaBindings>
+		</appinfo>
+	</annotation>
+	<element name="DeegreeCRSStore">
+		<annotation>
+			<documentation>
+				CRSStore handling the CRS in the deegree3 format.
+			</documentation>
+			<appinfo>
+				<jaxb:class name="DeegreeCRSStoreConfig" />
+			</appinfo>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="str:_AbstractStore">
+					<sequence>
+						<element name="File" type="string" />
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+</schema>

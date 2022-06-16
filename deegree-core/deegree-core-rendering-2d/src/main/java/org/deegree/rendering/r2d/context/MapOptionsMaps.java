@@ -52,30 +52,28 @@ import org.deegree.rendering.r2d.context.MapOptions.Quality;
  */
 public class MapOptionsMaps {
 
-    private Map<String, MapOptions> options;
+    private final Map<String, MapOptions> options = new HashMap<String, MapOptions>();
 
     public MapOptionsMaps() {
-        options = new HashMap<String, MapOptions>();
     }
 
     public MapOptionsMaps( Map<String, Quality> qualities, Map<String, Interpolation> interpolations,
                            Map<String, Antialias> antialiases, Map<String, Integer> maxFeatures ) {
-        options = new HashMap<String, MapOptions>();
         for ( Entry<String, Quality> e : qualities.entrySet() ) {
-            options.put( e.getKey(), new MapOptions( e.getValue(), null, null, -1, -1 ) );
+            options.put( e.getKey(), new MapOptions.Builder().quality( e.getValue() ).build() );
         }
         for ( Entry<String, Interpolation> e : interpolations.entrySet() ) {
             if ( options.get( e.getKey() ) != null ) {
                 options.get( e.getKey() ).setInterpolation( e.getValue() );
             } else {
-                options.put( e.getKey(), new MapOptions( null, e.getValue(), null, -1, -1 ) );
+                options.put( e.getKey(), new MapOptions.Builder().interpolation( e.getValue() ).build() );
             }
         }
         for ( Entry<String, Antialias> e : antialiases.entrySet() ) {
             if ( options.get( e.getKey() ) != null ) {
                 options.get( e.getKey() ).setAntialias( e.getValue() );
             } else {
-                options.put( e.getKey(), new MapOptions( null, null, e.getValue(), -1, -1 ) );
+                options.put( e.getKey(), new MapOptions.Builder().antialias( e.getValue() ).build() );
             }
         }
         for ( Entry<String, Integer> e : maxFeatures.entrySet() ) {
@@ -110,7 +108,7 @@ public class MapOptionsMaps {
 
     public void setMaxFeatures( String layer, int maxFeatures ) {
         if ( options.get( layer ) == null ) {
-            options.put( layer, new MapOptions( null, null, null, maxFeatures, -1 ) );
+            options.put( layer, new MapOptions.Builder().maxFeatures( maxFeatures ).build() );
         } else {
             options.get( layer ).setMaxFeatures( maxFeatures );
         }
@@ -118,7 +116,7 @@ public class MapOptionsMaps {
 
     public void setFeatureInfoRadius( String layer, int radius ) {
         if ( options.get( layer ) == null ) {
-            options.put( layer, new MapOptions( null, null, null, -1, radius ) );
+            options.put( layer, new MapOptions.Builder().featureInfoRadius( radius ).build() );
         } else {
             options.get( layer ).setFeatureInfoRadius( radius );
         }
@@ -126,7 +124,7 @@ public class MapOptionsMaps {
 
     public void setQuality( String layer, Quality q ) {
         if ( options.get( layer ) == null ) {
-            options.put( layer, new MapOptions( q, null, null, -1, -1 ) );
+            options.put( layer, new MapOptions.Builder().quality( q ).build() );
         } else {
             options.get( layer ).setQuality( q );
         }
@@ -134,7 +132,7 @@ public class MapOptionsMaps {
 
     public void setInterpolation( String layer, Interpolation interpol ) {
         if ( options.get( layer ) == null ) {
-            options.put( layer, new MapOptions( null, interpol, null, -1, -1 ) );
+            options.put( layer, new MapOptions.Builder().interpolation( interpol ).build() );
         } else {
             options.get( layer ).setInterpolation( interpol );
         }
@@ -142,15 +140,19 @@ public class MapOptionsMaps {
 
     public void setAntialias( String layer, Antialias alias ) {
         if ( options.get( layer ) == null ) {
-            options.put( layer, new MapOptions( null, null, alias, -1, -1 ) );
+            options.put( layer, new MapOptions.Builder().antialias( alias ).build() );
         } else {
             options.get( layer ).setAntialias( alias );
         }
     }
 
     public MapOptions get( String layer ) {
-        return new MapOptions( getQuality( layer ), getInterpolation( layer ), getAntialias( layer ),
-                               getMaxFeatures( layer ), getFeatureInfoRadius( layer ) );
+        return new MapOptions.Builder().
+                                quality( getQuality( layer ) ).
+                                interpolation( getInterpolation( layer ) ).
+                                antialias( getAntialias( layer ) ).
+                                maxFeatures( getMaxFeatures( layer ) ).
+                                featureInfoRadius( getFeatureInfoRadius( layer ) ).build();
     }
 
 }

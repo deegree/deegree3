@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -532,6 +533,18 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
+    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
+    @Override
+    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
+    @Override
     public void destroy() {
         cache.clear();
         try {
@@ -588,6 +601,11 @@ public class ShapeFeatureStore implements FeatureStore {
     @Override
     public boolean isMapped( QName ftName ) {
         return schema.getFeatureType( ftName ) != null;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
     }
 
     /**

@@ -79,7 +79,7 @@ public class WFSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WFSProvider.class.getResource( "/META-INF/schemas/services/wfs/3.4.0/wfs_configuration.xsd" );
+        return WFSProvider.class.getResource( "/META-INF/schemas/services/wfs/wfs_configuration.xsd" );
     }
 
     @Override

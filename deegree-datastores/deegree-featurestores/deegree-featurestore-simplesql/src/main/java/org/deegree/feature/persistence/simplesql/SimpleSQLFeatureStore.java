@@ -43,6 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
@@ -241,6 +242,19 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         }
     }
 
+
+    @Override
+    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
+    @Override
+    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
     public LockManager getLockManager()
                             throws FeatureStoreException {
         throw new FeatureStoreException( "Transactions are not implemented for the simple SQL datastore." );
@@ -270,6 +284,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
     @Override
     public boolean isAvailable() {
         return available;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
     }
 
     public FeatureInputStream query( Query query )
