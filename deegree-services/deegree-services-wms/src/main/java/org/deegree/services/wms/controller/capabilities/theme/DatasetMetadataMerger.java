@@ -45,7 +45,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.ExtendedDescription;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
@@ -140,8 +142,12 @@ class DatasetMetadataMerger {
         if ( attribution == null ) {
             attribution = layerMetadata.getAttribution();
         }
+        List<ExtendedDescription> extendedDescriptions = providerMetadata.getExtendedDescriptions();
+        if ( extendedDescriptions == null ) {
+            extendedDescriptions = layerMetadata.getExtendedDescriptions();
+        }
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution );
+                                    featureListUrls, attribution, extendedDescriptions );
     }
 
     private List<LanguageString> merge( final List<LanguageString> first, final List<LanguageString> second ) {

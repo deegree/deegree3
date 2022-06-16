@@ -35,45 +35,33 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.storedquery.xml;
 
-import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.xmlmatchers.XmlMatchers.hasXPath;
-import static org.xmlmatchers.XmlMatchers.isSimilarTo;
-import static org.xmlmatchers.transform.XmlConverters.xml;
-
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
+import org.junit.Test;
+import org.xmlunit.matchers.CompareMatcher;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.deegree.commons.xml.NamespaceBindings;
-import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
-import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinition200Encoder;
-import org.deegree.protocol.wfs.storedquery.xml.StoredQueryDefinitionXMLAdapter;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_200_NS;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
 public class StoredQueryDefinition200EncoderTest {
 
-    private static final NamespaceBindings NS_CONTEXT = new NamespaceBindings();
-
-    @BeforeClass
-    public static void initNamespaceContext()
-                            throws IOException {
-        NS_CONTEXT.addNamespace( "wfs", WFS_200_NS );
-    }
-
     @Test
     public void testExport()
-                            throws Exception {
+                    throws Exception {
         String storedQueryResource = "storedQuery.xml";
         StoredQueryDefinition queryDefinition = parseStoredQueryDefinition( storedQueryResource );
 
@@ -82,18 +70,21 @@ public class StoredQueryDefinition200EncoderTest {
         StoredQueryDefinition200Encoder.export( queryDefinition, writer );
         writer.close();
 
-        assertThat( xml( stream.toString() ),
-                    hasXPath( "/wfs:StoredQueryDefinition/wfs:QueryExpressionText/wfs:Query/@typeNames",
-                              is( "cp:CadastralParcel" ), NS_CONTEXT ) );
-
-        assertThat( xml( stream.toString() ),
-                    hasXPath( "/wfs:StoredQueryDefinition/wfs:Parameter/@name", is( "label" ), NS_CONTEXT ) );
-
-        assertThat( xml( stream.toString() ), isSimilarTo( the( storedQueryResource ) ) );
+        String actual = stream.toString( UTF_8 );
+        assertThat( actual,
+                    hasXPath(
+                                    "/wfs:StoredQueryDefinition/wfs:QueryExpressionText/wfs:Query/@typeNames",
+                                    is( "cp:CadastralParcel" ) ).withNamespaceContext( nsContext() ) );
+        assertThat( actual,
+                    hasXPath( "/wfs:StoredQueryDefinition/wfs:Parameter/@name", is( "label" ) ).withNamespaceContext(
+                                    nsContext() ) );
+        assertThat( actual, CompareMatcher.isSimilarTo(
+                        IOUtils.toString( getClass().getResourceAsStream( storedQueryResource ),
+                                          UTF_8 ) ).ignoreWhitespace() );
     }
 
     private StoredQueryDefinition parseStoredQueryDefinition( String resource )
-                            throws IOException {
+                    throws IOException {
         InputStream storedQueryResource = StoredQueryDefinition200EncoderTest.class.getResourceAsStream( resource );
         StoredQueryDefinitionXMLAdapter storedQueryXMLAdapter = new StoredQueryDefinitionXMLAdapter();
         storedQueryXMLAdapter.load( storedQueryResource );
@@ -102,9 +93,8 @@ public class StoredQueryDefinition200EncoderTest {
         return queryDefinition;
     }
 
-    private Source the( String resource ) {
-        InputStream inputStream = StoredQueryDefinition200EncoderTest.class.getResourceAsStream( resource );
-        return new StreamSource( inputStream );
+    private Map<String, String> nsContext() {
+        return Collections.singletonMap( "wfs", WFS_200_NS );
     }
 
 }

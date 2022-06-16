@@ -61,7 +61,7 @@ public class SqlFeatureStoreProvider extends FeatureStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/feature/sql";
 
-    static final URL CONFIG_SCHEMA = SqlFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/sql/3.4.0/sql.xsd" );
+    static final URL CONFIG_SCHEMA = SqlFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/sql/sql.xsd" );
 
     @Override
     public String getNamespace() {

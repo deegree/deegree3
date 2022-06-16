@@ -1,0 +1,28 @@
+<schema xmlns:tms="http://www.deegree.org/datasource/tile/tilematrixset/geotiff" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/tile/tilematrixset/geotiff" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.tile.tilematrixset.geotiff.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="GeoTIFFTileMatrixSet">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="GeoTIFFTileMatrixSetConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="StorageCRS" type="string" minOccurs="0" />
+        <element name="File" type="string" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+</schema>

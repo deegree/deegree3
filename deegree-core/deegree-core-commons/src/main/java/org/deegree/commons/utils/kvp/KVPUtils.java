@@ -340,13 +340,12 @@ public class KVPUtils {
      * <li>Keys are uppercased.</li>
      * <li>Values are URL decoded.</li>
      * </ul>
-     * </p>
-     * 
+     *
      * @param url
      *            url of the text file
-     * @return map with the contents of the file, keys are uppercased
+     * @return map with the contents of the file, keys are uppercase
      * @throws IOException
-     *             if the the file cannot be loaded
+     *             if the file cannot be loaded
      */
     public static Map<String, String> readFileIntoMap( URL url )
                             throws IOException {

@@ -13,23 +13,18 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tools</artifactId>
-    <version>3.4.18-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <dependencies>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-rendering-2d</artifactId>
@@ -49,6 +44,10 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-protocol-csw</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
 

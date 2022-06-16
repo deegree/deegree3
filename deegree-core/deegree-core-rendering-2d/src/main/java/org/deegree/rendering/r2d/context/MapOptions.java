@@ -54,6 +54,15 @@ public class MapOptions {
 
     private boolean opaque;
 
+    /**
+     * Instantiates {@link MapOptions} with default values (quality = null, interpol = null, antialias = null,
+     * maxFeatures = -1, featureInfoRadius = -1)
+     *
+     */
+    public MapOptions() {
+        this( null, null, null, -1, -1 );
+    }
+
     public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
                        int featureInfoRadius ) {
         this( quality, interpol, antialias, maxFeatures, featureInfoRadius, false );
@@ -169,8 +178,10 @@ public class MapOptions {
      */
     public static enum Quality {
         /***/
-        LOW, /***/
-        NORMAL, /***/
+        LOW,
+        /***/
+        NORMAL,
+        /***/
         HIGH
     }
 
@@ -184,9 +195,12 @@ public class MapOptions {
      */
     public static enum Interpolation {
         /***/
-        NEARESTNEIGHBOR, /***/
-        NEARESTNEIGHBOUR, /***/
-        BILINEAR, /***/
+        NEARESTNEIGHBOR,
+        /***/
+        NEARESTNEIGHBOUR,
+        /***/
+        BILINEAR,
+        /***/
         BICUBIC
     }
 
@@ -200,9 +214,12 @@ public class MapOptions {
      */
     public static enum Antialias {
         /***/
-        IMAGE, /***/
-        TEXT, /***/
-        BOTH, /***/
+        IMAGE,
+        /***/
+        TEXT,
+        /***/
+        BOTH,
+        /***/
         NONE
     }
 
@@ -267,4 +284,68 @@ public class MapOptions {
             }
         };
     }
+
+    public static class Builder {
+
+        private Quality quality;
+
+        private Interpolation interpolation;
+
+        private Antialias antialias;
+
+        private int maxFeatures;
+
+        private int featureInfoRadius;
+
+        /**
+         * @param quality
+         *            the quality to set
+         */
+        public Builder quality( Quality quality ) {
+            this.quality = quality;
+            return this;
+        }
+
+        /**
+         * @param interpolation
+         *            the interpolation to set
+         */
+        public Builder interpolation( Interpolation interpolation ) {
+            this.interpolation = interpolation;
+            return this;
+        }
+
+        /**
+         * @param antialias
+         *            the antialias to set
+         */
+        public Builder antialias( Antialias antialias ) {
+            this.antialias = antialias;
+            return this;
+        }
+
+        /**
+         * @param maxFeatures
+         *            the maxFeatures to set
+         */
+        public Builder maxFeatures( int maxFeatures ) {
+            this.maxFeatures = maxFeatures;
+            return this;
+        }
+
+        /**
+         * @param featureInfoRadius
+         *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
+         */
+        public Builder featureInfoRadius( int featureInfoRadius ) {
+            this.featureInfoRadius = featureInfoRadius;
+            return this;
+        }
+
+        public MapOptions build() {
+            return new MapOptions( quality, interpolation, antialias, maxFeatures, featureInfoRadius );
+        }
+
+    }
+
 }
