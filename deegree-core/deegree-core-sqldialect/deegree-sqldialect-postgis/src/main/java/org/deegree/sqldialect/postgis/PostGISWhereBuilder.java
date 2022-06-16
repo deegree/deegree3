@@ -40,6 +40,7 @@ import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
 import java.util.Date;
+import java.util.List;
 
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveType;
