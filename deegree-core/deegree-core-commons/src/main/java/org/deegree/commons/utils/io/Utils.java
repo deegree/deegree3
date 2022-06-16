@@ -64,7 +64,6 @@ public class Utils {
      * @param in1
      * @param in2
      * @return the percentage (0..1)
-     * @throws IOException
      */
     public static double determineSimilarity( RenderedImage in1, RenderedImage in2 ) {
         Raster data1 = in1.getData();

@@ -165,7 +165,7 @@ public class FeatureTypesToLayerTree {
             out.writeAttribute( "configVersion", "0.5.0" );
             out.writeNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             out.writeAttribute( "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation",
-                                "http://www.deegree.org/services/wms http://schemas.deegree.org/wms/0.5.0/wms_configuration.xsd" );
+                                "http://www.deegree.org/services/wms http://schemas.deegree.org/3.5/wms/wms_configuration.xsd" );
             out.writeStartElement( ns, "ServiceConfiguration" );
 
             HashSet<FeatureType> visited = new HashSet<FeatureType>();

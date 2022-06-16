@@ -52,6 +52,8 @@ public class LoadParameter {
 
     private int depth;
 
+    private boolean useRefDataProps;
+
     LoadParameter() {
     }
 
@@ -127,4 +129,11 @@ public class LoadParameter {
         return depth;
     }
 
+    public boolean isUseRefDataProps() {
+        return useRefDataProps;
+    }
+
+    public void setUseRefDataProps( boolean useRefDataProps ) {
+        this.useRefDataProps = useRefDataProps;
+    }
 }

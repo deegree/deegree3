@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/remoteows/wmts"
+  xmlns:wmts="http://www.deegree.org/remoteows/wmts" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.remoteows.wmts.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="RemoteWMTS">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="RemoteWMTSConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="CapabilitiesDocumentLocation">
+          <complexType>
+            <attribute name="location" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="ConnectionTimeout" type="int" minOccurs="0" default="5" />
+        <element name="RequestTimeout" type="int" minOccurs="0" default="60" />
+        <element ref="wmts:Authentication" minOccurs="0" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+  <element name="Authentication" type="wmts:AuthenticationType" />
+  <complexType name="AuthenticationType" abstract="true" />
+  <complexType name="HTTPBasicAuthenticationType">
+    <complexContent>
+      <extension base="wmts:AuthenticationType">
+        <sequence>
+          <element name="Username" type="string" />
+          <element name="Password" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="HTTPBasicAuthentication" type="wmts:HTTPBasicAuthenticationType" substitutionGroup="wmts:Authentication" />
+</schema>
