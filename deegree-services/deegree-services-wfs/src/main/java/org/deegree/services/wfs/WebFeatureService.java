@@ -130,6 +130,7 @@ import org.deegree.services.jaxb.wfs.DeegreeWFS.SupportedVersions;
 import org.deegree.services.jaxb.wfs.DisabledResources;
 import org.deegree.services.jaxb.wfs.FeatureTypeMetadata;
 import org.deegree.services.jaxb.wfs.GMLFormat;
+import org.deegree.services.jaxb.wfs.GeoJSONFormat;
 import org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType;
 import org.deegree.services.jaxb.wfs.RequestType;
 import org.deegree.services.metadata.MetadataUtils;
@@ -140,6 +141,8 @@ import org.deegree.services.ows.OWS100ExceptionReportSerializer;
 import org.deegree.services.ows.OWS110ExceptionReportSerializer;
 import org.deegree.services.ows.PreOWSExceptionReportSerializer;
 import org.deegree.services.wfs.format.Format;
+import org.deegree.services.wfs.format.csv.CsvFormat;
+import org.deegree.services.wfs.format.geojson.GeoJsonFormat;
 import org.deegree.services.wfs.query.StoredQueryHandler;
 import org.deegree.workspace.ResourceIdentifier;
 import org.deegree.workspace.ResourceInitException;
@@ -159,6 +162,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.dom.DOMSource;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -203,6 +207,10 @@ import static org.deegree.protocol.wfs.WFSRequestType.LockFeature;
 import static org.deegree.protocol.wfs.WFSRequestType.Transaction;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY;
+import static org.deegree.services.jaxb.wfs.IdentifierGenerationOptionType.USE_EXISTING_SKIP_RESOLVING_REFERENCES;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
+import static org.deegree.services.wfs.ReferenceResolvingMode.SKIP_ALL;
 
 /**
  * Implementation of the <a href="http://www.opengeospatial.org/standards/wfs">OpenGIS Web Feature Service</a> server
@@ -240,6 +248,8 @@ public class WebFeatureService extends AbstractOWS {
 
     private IDGenMode idGenMode;
 
+    private boolean transactionCheckAreaOfUse = false;
+
     private boolean disableBuffering = true;
 
     private ICRS defaultQueryCRS = CRSUtils.EPSG_4326;
@@ -262,9 +272,13 @@ public class WebFeatureService extends AbstractOWS {
 
     private boolean allowFeatureReferencesToDatastore = false;
 
+    private ReferenceResolvingMode referenceResolvingMode = CHECK_ALL;
+
     private OWSMetadataProvider mdProvider;
 
     private ReferencePatternMatcher referencePatternMatcher;
+
+    private boolean isStrict;
 
     public WebFeatureService( ResourceMetadata<OWS> metadata, Workspace workspace, Object jaxbConfig ) {
         super( metadata, workspace, jaxbConfig );
@@ -279,12 +293,18 @@ public class WebFeatureService extends AbstractOWS {
         DeegreeWFS jaxbConfig = (DeegreeWFS) controllerConf;
         initOfferedVersions( jaxbConfig.getSupportedVersions() );
 
+        isStrict = jaxbConfig.isStrict() != null ? jaxbConfig.isStrict() : false;
         EnableTransactions enableTransactions = jaxbConfig.getEnableTransactions();
         if ( enableTransactions != null ) {
             this.enableTransactions = enableTransactions.isValue();
             IdentifierGenerationOptionType configuredIdGenMode = enableTransactions.getIdGen();
             this.idGenMode = parseIdGenMode( configuredIdGenMode );
             this.allowFeatureReferencesToDatastore = USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode );
+            this.transactionCheckAreaOfUse = enableTransactions.isCheckAreaOfUse();
+            if ( USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY.equals( configuredIdGenMode ) )
+                this.referenceResolvingMode = CHECK_INTERNALLY;
+            if ( USE_EXISTING_SKIP_RESOLVING_REFERENCES.equals( configuredIdGenMode ) )
+                this.referenceResolvingMode = SKIP_ALL;
         }
         if ( jaxbConfig.isEnableResponseBuffering() != null ) {
             disableBuffering = !jaxbConfig.isEnableResponseBuffering();
@@ -316,7 +336,8 @@ public class WebFeatureService extends AbstractOWS {
                 list.add( url );
             }
         }
-        storedQueryHandler = new StoredQueryHandler( this, list );
+        File managedStoredQueryDirectory = metadata.getLocation().resolveToFile( "../storedqueries/managed" );
+        storedQueryHandler = new StoredQueryHandler( this, list, managedStoredQueryDirectory );
 
         initQueryCRS( jaxbConfig.getQueryCRS() );
         initFormats( jaxbConfig.getAbstractFormat() );
@@ -476,6 +497,9 @@ public class WebFeatureService extends AbstractOWS {
         case GENERATE_NEW: {
             return IDGenMode.GENERATE_NEW;
         }
+        case USE_EXISTING_SKIP_RESOLVING_REFERENCES: {
+            return IDGenMode.USE_EXISTING.withSkipResolveReferences( true );
+        }
         case USE_EXISTING_RESOLVING_REFERENCES_INTERNALLY:
         case USE_EXISTING: {
             return IDGenMode.USE_EXISTING;
@@ -557,10 +581,14 @@ public class WebFeatureService extends AbstractOWS {
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.0.1", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.1.1", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.1", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=gml/3.2.2", gml32 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/2.1.2\"", gml21 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.0.1\"", gml30 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.1.1\"", gml31 );
             mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.1\"", gml32 );
+            mimeTypeToFormat.put( "text/xml; subtype=\"gml/3.2.2\"", gml32 );
+            mimeTypeToFormat.put( "text/csv", new CsvFormat( this ) );
+            mimeTypeToFormat.put( "application/geo+json", new GeoJsonFormat( this ) );
         } else {
             LOG.debug( "Using customized format configuration." );
             for ( JAXBElement<? extends AbstractFormatType> formatEl : formatList ) {
@@ -569,6 +597,11 @@ public class WebFeatureService extends AbstractOWS {
                 Format format = null;
                 if ( formatDef instanceof GMLFormat ) {
                     format = new org.deegree.services.wfs.format.gml.GmlFormat( this, (GMLFormat) formatDef );
+                } else if (formatDef instanceof org.deegree.services.jaxb.wfs.CsvFormat ){
+                    format = new CsvFormat( this );
+                } else if (formatDef instanceof  GeoJSONFormat ){
+                    boolean allowOtherCrsThanWGS84 = ((GeoJSONFormat) formatDef).isAllowOtherCrsThanWGS84();
+                    format = new GeoJsonFormat( this, allowOtherCrsThanWGS84 );
                 } else if ( formatDef instanceof CustomFormat ) {
                     CustomFormat cf = (CustomFormat) formatDef;
                     String className = cf.getJavaClass();
@@ -656,7 +689,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 try {
                     DatasetMetadata dsMd = new DatasetMetadata( ftMd.getName(), titles, abstracts, keywords,
-                                                                metadataUrls, null, null, null, null );
+                                                                metadataUrls, null, null, null, null, null );
                     ftMetadata.add( dsMd );
                 } catch ( Throwable t ) {
                     t.printStackTrace();
@@ -820,7 +853,7 @@ public class WebFeatureService extends AbstractOWS {
                 }
                 checkTransactionsEnabled( requestName );
                 Transaction transaction = TransactionKVPAdapter.parse( kvpParamsUC );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, referenceResolvingMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -983,7 +1016,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( xmlStream );
                 Transaction transaction = transactionReader.read( xmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, referenceResolvingMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1150,7 +1183,7 @@ public class WebFeatureService extends AbstractOWS {
                 checkTransactionsEnabled( requestName );
                 TransactionXmlReader transactionReader = new TransactionXmlReaderFactory().createReader( requestVersion );
                 Transaction transaction = transactionReader.read( bodyXmlStream );
-                new TransactionHandler( this, service, transaction, idGenMode, allowFeatureReferencesToDatastore ).doTransaction( response );
+                new TransactionHandler( this, service, transaction, idGenMode, referenceResolvingMode ).doTransaction( response );
                 break;
             default:
                 throw new RuntimeException( "Internal error: Unhandled request '" + requestName + "'." );
@@ -1449,6 +1482,17 @@ public class WebFeatureService extends AbstractOWS {
         return referencePatternMatcher;
     }
 
+    public boolean isTransactionCheckAreaOfUse() {
+        return this.transactionCheckAreaOfUse;
+    }
+
+    /**
+     * @return <code>true</code> if the service should behave strict, <code>false</code> otherwise
+     */
+    public boolean isStrict() {
+        return isStrict;
+    }
+
     /**
      * Checks if a request version can be handled by this controller (i.e. if is supported by the implementation *and*
      * offered by the current configuration).
@@ -1487,5 +1531,4 @@ public class WebFeatureService extends AbstractOWS {
             throw new InvalidParameterValueException(
                                                       "ResultType 'hits' is not allowed in GetFeatureWithLock requests!" );
     }
-
 }

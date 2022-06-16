@@ -43,6 +43,7 @@ import java.util.Map;
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
+import org.deegree.featureinfo.parsing.FeatureInfoParser;
 import org.deegree.layer.LayerData;
 import org.deegree.protocol.wms.client.WMSClient;
 import org.deegree.protocol.wms.ops.GetFeatureInfo;
@@ -69,16 +70,20 @@ public class RemoteWMSLayerData implements LayerData {
 
     private GetFeatureInfo gfi;
 
+    private FeatureInfoParser featureInfoParser;
+
     public RemoteWMSLayerData( WMSClient client, GetMap gm, Map<String, String> extraParams ) {
         this.client = client;
         this.gm = gm;
         this.extraParams = extraParams;
     }
 
-    public RemoteWMSLayerData( WMSClient client, GetFeatureInfo gfi, Map<String, String> extraParams ) {
+    public RemoteWMSLayerData( WMSClient client, GetFeatureInfo gfi, Map<String, String> extraParams,
+                               FeatureInfoParser featureInfoParser ) {
         this.client = client;
         this.gfi = gfi;
         this.extraParams = extraParams;
+        this.featureInfoParser = featureInfoParser;
     }
 
     @Override
@@ -98,8 +103,7 @@ public class RemoteWMSLayerData implements LayerData {
     @Override
     public FeatureCollection info() {
         try {
-            FeatureCollection col = client.doGetFeatureInfo( gfi, extraParams );
-            return col;
+            return client.doGetFeatureInfo( gfi, extraParams, featureInfoParser );
         } catch ( Exception e ) {
             LOG.warn( "Error when retrieving remote feature info: {}", e.getLocalizedMessage() );
             LOG.trace( "Stack trace:", e );

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://www.deegree.org/commons" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/feature/shape" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.feature.persistence.shape.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ShapeFeatureStore">
+    <annotation>
+      <documentation>FeatureStore that is backed by a shape file.
+			</documentation>
+      <appinfo>
+        <jaxb:class name="ShapeFeatureStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="StorageCRS" type="string" minOccurs="0" />
+        <element name="FeatureTypeName" type="string" minOccurs="0" />
+        <element name="FeatureTypeNamespace" type="string" minOccurs="0" />
+        <element name="FeatureTypePrefix" type="string" minOccurs="0" />
+        <element name="File" type="string" />
+        <element name="Encoding" type="string" minOccurs="0" />
+        <element name="GenerateAlphanumericIndexes" type="boolean" minOccurs="0" default="true" />
+        <element name="Mapping" minOccurs="0">
+          <complexType>
+            <sequence>
+              <choice maxOccurs="unbounded">
+                <element name="SimpleProperty">
+                  <complexType>
+                    <attribute name="mapping" type="string" use="required" />
+                    <attribute name="name" type="string" use="optional" />
+                    <attribute name="generateIndex" type="boolean" use="optional" default="true" />
+                  </complexType>
+                </element>
+                <element name="GeometryProperty">
+                  <complexType>
+                    <attribute name="name" type="string" use="required" />
+                  </complexType>
+                </element>
+              </choice>
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+</schema>

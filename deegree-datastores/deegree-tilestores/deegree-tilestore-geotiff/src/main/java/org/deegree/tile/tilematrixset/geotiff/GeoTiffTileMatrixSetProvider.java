@@ -44,7 +44,7 @@ import org.deegree.workspace.Workspace;
  */
 public class GeoTiffTileMatrixSetProvider extends TileMatrixSetProvider {
 
-    private static final URL SCHEMA_URL = GeoTiffTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/3.4.0/geotiff/geotiff.xsd" );
+    private static final URL SCHEMA_URL = GeoTiffTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/geotiff/geotiff.xsd" );
 
     @Override
     public String getNamespace() {

@@ -1,4 +1,0 @@
-<GeoTIFFTileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff http://schemas.deegree.org/datasource/tile/tilematrixset/3.4.0/geotiff/geotiff.xsd" configVersion="3.4.0">
-  <StorageCRS>EPSG:26912</StorageCRS>
-  <File>../../../data/utah/raster/Satellite_Provo/Satellite_Provo.tif</File>
-</GeoTIFFTileMatrixSet>

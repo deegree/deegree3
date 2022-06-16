@@ -42,6 +42,8 @@
 package org.deegree.rendering.r2d.legends;
 
 import static java.lang.Math.max;
+import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
+import static org.deegree.commons.utils.net.HttpUtils.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Graphics2D;
@@ -55,6 +57,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r2d.Java2DRasterRenderer;
@@ -106,7 +109,7 @@ class LegendBuilder {
         }
         if ( url != null ) {
             try {
-                BufferedImage legend = ImageIO.read( url );
+                BufferedImage legend = get( IMAGE, url.toExternalForm(), null );
                 if ( legend != null ) {
                     return new Pair<Integer, Integer>( legend.getWidth(), legend.getHeight() );
                 } else {
@@ -122,6 +125,11 @@ class LegendBuilder {
         for ( LegendItem item : LegendItemBuilder.prepareLegend( style, null, null, null ) ) {
             res.second += item.getHeight() * ( 2 * opts.spacing + opts.baseHeight );
             res.first = max( res.first, item.getMaxWidth( opts ) );
+        }
+
+        if ( res.second == 0 ) {
+            // prevent >0 * 0 sized images
+            res.second = 2 * opts.spacing + opts.baseWidth;
         }
 
         return res;

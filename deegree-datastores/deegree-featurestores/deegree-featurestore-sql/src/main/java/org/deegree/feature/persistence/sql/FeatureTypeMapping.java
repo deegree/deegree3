@@ -50,6 +50,7 @@ import org.deegree.feature.persistence.sql.rules.CompoundMapping;
 import org.deegree.feature.persistence.sql.rules.GeometryMapping;
 import org.deegree.feature.persistence.sql.rules.Mapping;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.sqldialect.SortCriterion;
 
 /**
  * Defines the mapping between a {@link FeatureType} and tables in a relational database.
@@ -67,6 +68,8 @@ public class FeatureTypeMapping {
 
     private final FIDMapping fidMapping;
 
+    private final List<SortCriterion> defaultSortCriteria;
+
     private final Map<QName, Mapping> propToMapping;
 
     private final List<Mapping> particles = new ArrayList<Mapping>();
@@ -82,11 +85,15 @@ public class FeatureTypeMapping {
      *            mapping for the feature id, must not be <code>null</code>
      * @param particleMappings
      *            particle mappings for the feature type, must not be <code>null</code>
+     * @param defaultSortCriteria
+     *            default sort criterion for the feature type, must not be <code>null</code>
      */
-    public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings ) {
+    public FeatureTypeMapping( QName ftName, TableName table, FIDMapping fidMapping, List<Mapping> particleMappings,
+                               List<SortCriterion> defaultSortCriteria ) {
         this.ftName = ftName;
         this.table = table;
         this.fidMapping = fidMapping;
+        this.defaultSortCriteria = defaultSortCriteria;
         this.propToMapping = new HashMap<QName, Mapping>();
         // TODO cope with non-QName XPaths as well
         for ( Mapping mapping : particleMappings ) {
@@ -147,6 +154,15 @@ public class FeatureTypeMapping {
      */
     public List<Mapping> getMappings() {
         return particles;
+    }
+
+    /**
+     * Returns the default {@link SortCriterion}.
+     *
+     * @return sort criterions, may be empty, but never <code>null</code>
+     */
+    public List<SortCriterion> getDefaultSortCriteria() {
+        return defaultSortCriteria;
     }
 
     /**

@@ -45,18 +45,21 @@ import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.KEY_TEXT_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
+import static org.deegree.cs.i18n.Messages.get;
 import static org.deegree.style.utils.ImageUtils.postprocessPng8bit;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
+import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.layer.LayerRef;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
 import org.deegree.rendering.r2d.legends.Legends;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
+import org.deegree.theme.Theme;
 
 /**
  * Produces legends for the map service.
@@ -78,7 +81,7 @@ class GetLegendHandler {
         this.service = service;
     }
 
-    BufferedImage getLegend( GetLegendGraphic req ) {
+    BufferedImage getLegend( GetLegendGraphic req ) throws OWSException {
         Legends renderer = new Legends( req.getLegendOptions() );
 
         Style style = findLegendStyle( req.getLayer(), req.getStyle() );
@@ -122,18 +125,30 @@ class GetLegendHandler {
         return res;
     }
 
-    private Style findLegendStyle( LayerRef layer, StyleRef styleRef ) {
+    private Style findLegendStyle( LayerRef layer, StyleRef styleRef )
+                            throws OWSException {
         Style style;
-        style = service.themeMap.get( layer.getName() ).getLayerMetadata().getLegendStyles().get( styleRef.getName() );
-        if ( style == null ) {
-            style = service.themeMap.get( layer.getName() ).getLayerMetadata().getStyles().get( styleRef.getName() );
+        Theme theme = service.themeMap.get( layer.getName() );
+        if ( theme == null ) {
+            throw new OWSException( get( "WMS.LAYER_NOT_KNOWN", layer.getName() ), OWSException.LAYER_NOT_DEFINED );
         }
+
+        style = theme.getLayerMetadata().getLegendStyles().get( styleRef.getName() );
+        if ( style == null ) {
+            style = theme.getLayerMetadata().getStyles().get( styleRef.getName() );
+        }
+
+        if ( style == null ) {
+            throw new OWSException( get( "WMS.UNDEFINED_STYLE", styleRef.getName(), layer.getName() ),
+                                    OWSException.STYLE_NOT_DEFINED );
+        }
+
         return style;
     }
 
     private BufferedImage buildLegend( GetLegendGraphic req, Legends renderer, Style style, boolean originalSize,
                                        HashMap<String, BufferedImage> legendMap ) {
-        BufferedImage img = MapService.prepareImage( req );
+        BufferedImage img = service.prepareImage( req );
         Graphics2D g = img.createGraphics();
         g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
         g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );

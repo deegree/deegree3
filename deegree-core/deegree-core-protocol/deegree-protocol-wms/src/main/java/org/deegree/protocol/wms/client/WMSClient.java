@@ -76,15 +76,17 @@ import java.util.concurrent.Callable;
 import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.entity.ContentType;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.struct.Tree;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XmlHttpUtils;
 import org.deegree.coverage.raster.RasterTransformer;
@@ -96,6 +98,7 @@ import org.deegree.cs.components.Axis;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.featureinfo.parsing.DefaultFeatureInfoParser;
 import org.deegree.featureinfo.parsing.FeatureInfoParser;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -118,12 +121,7 @@ import org.slf4j.Logger;
  * API-level client for accessing servers that implement the <a
  * href="http://www.opengeospatial.org/standards/wms">OpenGIS Web Map Service (WMS) 1.1.1/1.3.0</a> protocol.
  * 
- * TODO refactor to use {@link AbstractOWSClient#httpClient}
- * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 31298 $, $Date: 2011-07-17 15:33:07 +0200 (Sun, 17 Jul 2011) $
  */
 public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
 
@@ -338,19 +336,42 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
      */
     public FeatureCollection doGetFeatureInfo( GetFeatureInfo request, Map<String, String> hardParams )
                             throws IOException, OWSExceptionReport, XMLStreamException {
+        return doGetFeatureInfo( request, hardParams, new DefaultFeatureInfoParser() );
+    }
+    
+    /**
+     * Performs a <code>GetFeatureInfo</code> request and returns the response as a {@link FeatureCollection}.
+     * 
+     * @param request
+     *            request parameter, must not be <code>null</code>
+     * @param hardParams
+     *            raw parameters for augmenting overriding KVPs, must not be <code>null</code>
+     * @param featureInfoParser
+     *            used to parse the feature info response as feature collection, never <code>null</code>
+     * @return response parsed as feature collection, never <code>null</code>
+     * @throws IOException
+     * @throws OWSExceptionReport
+     * @throws XMLStreamException
+     */
+    public FeatureCollection doGetFeatureInfo( GetFeatureInfo request, Map<String, String> hardParams,
+                                               FeatureInfoParser featureInfoParser )
+                                                                       throws IOException, OWSExceptionReport,
+                                                                       XMLStreamException {
 
         Map<String, String> params = buildGetFeatureInfoParamMap( request, hardParams );
         overrideHardParams( params, hardParams );
 
         OwsHttpResponse response = null;
+        InputStream responseStream = null;
         try {
             URL url = getGetUrl( GetFeatureInfo.name() );
             response = httpClient.doGet( url, params, null );
             response.assertHttpStatus200();
-            XMLStreamReader reader = response.getAsXMLStream();
+            responseStream = response.getAsBinaryStream();
             String csvLayerNames = join( ",", request.getQueryLayers() );
-            return FeatureInfoParser.parseAsFeatureCollection( reader, csvLayerNames );
+            return featureInfoParser.parseAsFeatureCollection( responseStream, csvLayerNames );
         } finally {
+            IOUtils.closeQuietly( responseStream );
             closeQuietly( response );
         }
     }
@@ -559,33 +580,10 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
                     }
                 }
 
-                url += toQueryString( map );
-
-                URL theUrl = new URL( url );
-                LOG.debug( "Connecting to URL " + theUrl );
-                URLConnection conn = ProxySettings.openURLConnection( theUrl, ProxySettings.getHttpProxyUser( true ),
-                                                                      ProxySettings.getHttpProxyPassword( true ),
-                                                                      httpBasicUser, httpBasicPass );
-                conn.setConnectTimeout( connectionTimeout * 1000 );
-                conn.setReadTimeout( requestTimeout * 1000 );
-                conn.connect();
-                LOG.debug( "Connected." );
-                if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( "Requesting from " + theUrl );
-                    LOG.trace( "Content type is " + conn.getContentType() );
-                    LOG.trace( "Content encoding is " + conn.getContentEncoding() );
-                }
-                if ( conn.getContentType() != null && conn.getContentType().startsWith( format ) ) {
-                    res.first = IMAGE.work( conn.getInputStream() );
-                } else if ( conn.getContentType() != null
-                            && conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
-                    res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
-                } else { // try and find out the hard way
-                    res.first = IMAGE.work( conn.getInputStream() );
-                    if ( res.first == null ) {
-                        conn = theUrl.openConnection();
-                        res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
-                    }
+                if ( TunableParameter.get( "deegree.protocol.wms.client.fallback", false ) ) {
+                    doGetMapUrlConnection( url, map, res );
+                } else {
+                    doGetMapHttpClient( url, map, res );
                 }
 
                 // hack to ensure correct raster transformations. 4byte_abgr seems to be working best with current api
@@ -628,6 +626,74 @@ public class WMSClient extends AbstractOWSClient<WMSCapabilitiesAdapter> {
             }
 
             return res;
+        }
+        
+        private void doGetMapHttpClient( String url, Map<String, String> map, Pair<BufferedImage, String> res )
+                                throws Exception {
+            OwsHttpResponse response = null;
+            try {
+                LOG.trace( "Requesting from {}", url );
+                response = httpClient.doGet( new URL( url ), map, null );
+                response.assertHttpStatus200();
+                ContentType responseContentType = ContentType.getLenient( response.getAsHttpResponse().getEntity() );
+                String responseMimeType = responseContentType != null ? responseContentType.getMimeType() : null;
+                LOG.trace( "Content type is {}", responseMimeType );
+
+                if ( responseMimeType != null && responseMimeType.startsWith( format ) ) {
+                    try (InputStream is = response.getAsBinaryStream()) {
+                        res.first = IMAGE.work( is );
+                    }
+                } else if ( responseMimeType != null && responseMimeType.startsWith( "application/vnd.ogc.se_xml" ) ) {
+                    try (InputStream is = response.getAsBinaryStream()) {
+                        res.second = XmlHttpUtils.XML.work( is ).toString();
+                    }
+                } else { // try and find out the hard way
+                    try (InputStream is = response.getAsBinaryStream()) {
+                        res.first = IMAGE.work( is );
+                    }
+                    if ( res.first == null ) {
+                        closeQuietly( response );
+                        response = httpClient.doGet( new URL( url ), map, null );
+                        response.assertHttpStatus200();
+                        try (InputStream is = response.getAsBinaryStream()) {
+                            res.second = XmlHttpUtils.XML.work( is ).toString();
+                        }
+                    }
+                }
+            } finally {
+                closeQuietly( response );
+            }
+        }
+
+        private void doGetMapUrlConnection( String url, Map<String, String> map, Pair<BufferedImage, String> res )
+                                throws Exception {
+            url += toQueryString( map );
+            URL theUrl = new URL( url );
+            LOG.debug( "Connecting to URL " + theUrl );
+            URLConnection conn = ProxySettings.openURLConnection( theUrl, ProxySettings.getHttpProxyUser( true ),
+                                                                  ProxySettings.getHttpProxyPassword( true ),
+                                                                  httpBasicUser, httpBasicPass );
+            conn.setConnectTimeout( connectionTimeout * 1000 );
+            conn.setReadTimeout( requestTimeout * 1000 );
+            conn.connect();
+            LOG.debug( "Connected." );
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( "Requesting from " + theUrl );
+                LOG.trace( "Content type is " + conn.getContentType() );
+                LOG.trace( "Content encoding is " + conn.getContentEncoding() );
+            }
+            if ( conn.getContentType() != null && conn.getContentType().startsWith( format ) ) {
+                res.first = IMAGE.work( conn.getInputStream() );
+            } else if ( conn.getContentType() != null
+                        && conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
+                res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
+            } else { // try and find out the hard way
+                res.first = IMAGE.work( conn.getInputStream() );
+                if ( res.first == null ) {
+                    conn = theUrl.openConnection();
+                    res.second = XmlHttpUtils.XML.work( conn.getInputStream() ).toString();
+                }
+            }
         }
 
         private BufferedImage createErrorImage( String error, int width, int height, int type ) {

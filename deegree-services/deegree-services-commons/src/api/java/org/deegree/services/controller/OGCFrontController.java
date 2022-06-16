@@ -50,7 +50,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -94,7 +93,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.LogManager;
 import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.config.DeegreeWorkspace;
@@ -102,7 +100,6 @@ import org.deegree.commons.config.ResourceInitException;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.DeegreeAALogoUtils;
-import org.deegree.commons.utils.io.LoggingInputStream;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -116,7 +113,7 @@ import org.deegree.services.authentication.SecurityException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
 import org.deegree.services.controller.security.SecurityConfiguration;
 import org.deegree.services.controller.utils.HttpResponseBuffer;
-import org.deegree.services.controller.utils.LoggingHttpResponseWrapper;
+import org.deegree.services.controller.utils.LoggingHttpRequestWrapper;
 import org.deegree.services.controller.watchdog.RequestWatchdog;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType;
 import org.deegree.services.jaxb.controller.DeegreeServiceControllerType.RequestTimeoutMilliseconds;
@@ -318,7 +315,8 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-        HttpResponseBuffer responseBuffer = createHttpResponseBuffer( request, response );
+        request = createHttpRequest( request );
+        HttpResponseBuffer responseBuffer = new HttpResponseBuffer( response, request );
 
         try {
             long entryTime = System.currentTimeMillis();
@@ -430,8 +428,8 @@ public class OGCFrontController extends HttpServlet {
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
                             throws ServletException, IOException {
-
-        HttpResponseBuffer responseBuffer = createHttpResponseBuffer( request, response );
+        request = createHttpRequest( request );
+        HttpResponseBuffer responseBuffer = new HttpResponseBuffer( response, request );
 
         try {
             logHeaders( request );
@@ -527,42 +525,22 @@ public class OGCFrontController extends HttpServlet {
         }
     }
 
-    private HttpResponseBuffer createHttpResponseBuffer( HttpServletRequest request, HttpServletResponse response )
-                            throws FileNotFoundException, IOException {
+    private HttpServletRequest createHttpRequest( HttpServletRequest request ) {
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         if ( loader.getRequestLogger() != null ) {
-            response = createLoggingResponseWrapper( request, response );
+            return createLoggingResponseWrapper( request );
         }
-        return new HttpResponseBuffer( response );
+        return request;
     }
 
-    private HttpServletResponse createLoggingResponseWrapper( HttpServletRequest request, HttpServletResponse response )
-                            throws IOException, FileNotFoundException {
+    private HttpServletRequest createLoggingResponseWrapper( HttpServletRequest request ) {
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
 
-        Boolean conf = mainConfig.getRequestLogging().isOnlySuccessful();
-        boolean onlySuccessful = conf != null && conf;
-
-        if ( "POST".equals( request.getMethod() ) && loader.getRequestLogger() != null ) {
-            String dir = mainConfig.getRequestLogging().getOutputDirectory();
-            File file;
-            if ( dir == null ) {
-                file = createTempFile( "request", ".body" );
-            } else {
-                File directory = new File( dir );
-                if ( !directory.exists() ) {
-                    directory.mkdirs();
-                }
-                file = createTempFile( "request", ".body", directory );
-            }
-            InputStream is = new LoggingInputStream( request.getInputStream(), new FileOutputStream( file ) );
-            response = new LoggingHttpResponseWrapper( request.getRequestURL().toString(), response, file,
-                                                       onlySuccessful, loader.getRequestLogger(), is );
-        } else {
-            response = new LoggingHttpResponseWrapper( response, request.getQueryString(), onlySuccessful,
-                                                       loader.getRequestLogger(), null );
+        Boolean onlySuccessfulConfig = mainConfig.getRequestLogging().isOnlySuccessful();
+        if ( onlySuccessfulConfig != null ) {
+            LOG.warn( "The option OnlySuccessful of RequestLogging is ignored. All requests are logged." );
         }
-        return response;
+        return new LoggingHttpRequestWrapper(  request, mainConfig.getRequestLogging().getOutputDirectory(), loader.getRequestLogger() );
     }
 
     private OWS determineOWSByPath( HttpServletRequest request )
@@ -711,7 +689,6 @@ public class OGCFrontController extends HttpServlet {
             Credentials cred = null;
             if ( credentialsProvider != null ) {
                 cred = credentialsProvider.doKVP( normalizedKVPParams, requestWrapper, response );
-                response.setCredentials( cred );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -859,7 +836,6 @@ public class OGCFrontController extends HttpServlet {
             Credentials cred = null;
             if ( credentialsProvider != null ) {
                 cred = credentialsProvider.doXML( xmlStream, requestWrapper, response );
-                response.setCredentials( cred );
             }
             LOG.debug( "credentials: " + cred );
             bindContextToThread( requestWrapper, cred );
@@ -961,7 +937,6 @@ public class OGCFrontController extends HttpServlet {
             Credentials creds = null;
             if ( credentialsProvider != null ) {
                 creds = credentialsProvider.doSOAP( env, requestWrapper );
-                response.setCredentials( creds );
             }
             LOG.debug( "credentials: " + creds );
             bindContextToThread( requestWrapper, creds );
@@ -1084,6 +1059,7 @@ public class OGCFrontController extends HttpServlet {
             LOG.info( "" );
 
             initWorkspace();
+            DeegreeWorkspaceUpdater.INSTANCE.init( workspace );
 
         } catch ( NoClassDefFoundError e ) {
             LOG.error( "Initialization failed!" );
@@ -1196,8 +1172,34 @@ public class OGCFrontController extends HttpServlet {
         destroyWorkspace();
         try {
             initWorkspace();
+            DeegreeWorkspaceUpdater.INSTANCE.notifyWorkspaceChange( workspace );
         } catch ( ResourceInitException e ) {
             throw new ServletException( e.getLocalizedMessage(), e.getCause() );
+        }
+    }
+
+    /**
+     * Checks for deleted, modified or added resource configs and updates the workspace resources
+     * accordingly.
+     *
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws ServletException
+     */
+    public void update()
+                            throws IOException, URISyntaxException, ServletException {
+        if ( DeegreeWorkspaceUpdater.INSTANCE.isWorkspaceChange(getActiveWorkspace()) ) {
+            // do complete reload
+            destroyWorkspace();
+            try {
+                initWorkspace();
+            } catch ( ResourceInitException e ) {
+                throw new ServletException( e.getLocalizedMessage(), e.getCause() );
+            }
+            DeegreeWorkspaceUpdater.INSTANCE.notifyWorkspaceChange( workspace );
+        } else {
+            // no complete reload - update only
+            DeegreeWorkspaceUpdater.INSTANCE.updateWorkspace( workspace );
         }
     }
 
@@ -1401,7 +1403,6 @@ public class OGCFrontController extends HttpServlet {
         Executor.getInstance().shutdown();
 
         LogFactory.releaseAll();
-        LogManager.shutdown();
 
         // image io
         Iterator<Class<?>> i = IIORegistry.getDefaultInstance().getCategories();
@@ -1549,7 +1550,6 @@ public class OGCFrontController extends HttpServlet {
                     LOG.error( "An error occurred while trying to send an exception: " + e2.getLocalizedMessage(), e );
                     throw new ServletException( e2 );
                 }
-                res.setExceptionSent();
             }
         }
 

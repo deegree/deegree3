@@ -45,6 +45,7 @@ import java.util.List;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.io.WKTReader;
+import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -57,17 +58,19 @@ import org.deegree.geometry.standard.curvesegments.DefaultCubicSpline;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.geometry.standard.primitive.DefaultCurve;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * Tests for {@link CurveLinearizer}.
@@ -332,6 +335,23 @@ public class CurveLinearizerTest {
         Assert.assertEquals( p0[1], positions.get( 2 ).get1(), 1.0E-9 );
     }
 
+	/**
+	 * Tests the linearization of a circle with collinear control points (on a line).
+	 */
+	@Test
+	public void testLinearize() {
+		List<Point> pointList = new ArrayList<>();
+		pointList.add( geomFac.createPoint( null, 568088.299, 5932202.548, null ) );
+		pointList.add( geomFac.createPoint( null, 568080.921, 5932196.541, null ) );
+		pointList.add( geomFac.createPoint( null, 568074.760, 5932189.290, null ) );
+		Points points = geomFac.createPoints( pointList );
+		Curve curve = geomFac.createCurve( null, null, geomFac.createArcString( points ) );
+
+		Curve linearizedCurve = linearizer.linearize( curve, new MaxErrorCriterion( 1.0, 500 ) );
+		Points controlPoints = linearizedCurve.getControlPoints();
+		Assert.assertTrue( controlPoints.size() > 2 );
+	}
+
     /**
      * creates a circle or a an arc and outputs them to wkt.
      * 
@@ -527,14 +547,14 @@ public class CurveLinearizerTest {
         double[] p1 = new double[] { -3, 0.5 };
         double[] p2 = new double[] { -2.3, -2.5 };
         Points positions = createLinearArc( p0, p1, p2, true );
-        Assert.assertEquals( exportToWKT( positions ).trim(),
-                             "LINESTRING (-1.7 2.5, -2.7016581805723767 1.3123248162113277, -3.088808067948505 -0.1923367462669825, -2.7847698788517685 -1.715968011523047, -1.8497621054164624 -2.95679512136171, -0.4689745042892608 -3.6690570489335883, 1.0841110058779768 -3.711681584163785, 2.50188679245283 -3.0762264150943404, 3.5035449730252055 -1.8885512313056685, 3.8906948604013345 -0.3838896688273583, 3.5866566713045978 1.1397415964287063, 2.651648897869292 2.3805687062673697, 1.2708612967420905 3.092830633839248, -0.2822242134251467 3.1354551690694445, -1.7 2.5)" );
+        Assert.assertEquals( "LINESTRING (-1.7 2.5, -2.7016581805723767 1.3123248162113277, -3.088808067948505 -0.1923367462669825, -2.7847698788517685 -1.715968011523047, -1.8497621054164624 -2.9567951213617105, -0.4689745042892608 -3.6690570489335883, 1.0841110058779768 -3.711681584163785, 2.50188679245283 -3.0762264150943404, 3.5035449730252055 -1.8885512313056685, 3.8906948604013345 -0.3838896688273583, 3.5866566713045978 1.1397415964287063, 2.651648897869292 2.3805687062673697, 1.2708612967420905 3.092830633839248, -0.2822242134251467 3.1354551690694445, -1.7 2.5)",
+                exportToWKT( positions ).trim() );
 
         // inverse
         positions = createLinearArc( p2, p1, p0, true );
         LOG.debug( exportToWKT( positions ).trim() );
-        Assert.assertEquals( exportToWKT( positions ).trim(),
-                             "LINESTRING (-2.3 -2.5, -2.992224229754389 -1.109058926972116, -3.0123899967132983 0.4444805140263982, -2.3565032234136143 1.8529207837948918, -1.1544703292307315 2.8373030135193718, 0.3556313291764255 3.2026582299471267, 1.8747075981788668 2.8766233516769613, 3.1018867924528286 1.9237735849056588, 3.794111022207218 0.5328325118777754, 3.814276789166127 -1.0207069291207391, 3.1583900158664444 -2.4291471988892326, 1.9563571216835611 -3.413529428613713, 0.4462554632764042 -3.778884645041468, -1.0728208057260369 -3.452849766771303, -2.3 -2.5)" );
+        Assert.assertEquals( "LINESTRING (-2.3 -2.5, -2.992224229754389 -1.109058926972116, -3.0123899967132983 0.4444805140263982, -2.3565032234136143 1.8529207837948918, -1.1544703292307315 2.8373030135193718, 0.3556313291764255 3.2026582299471267, 1.8747075981788668 2.8766233516769617, 3.1018867924528286 1.9237735849056588, 3.794111022207218 0.5328325118777754, 3.814276789166127 -1.0207069291207391, 3.1583900158664444 -2.4291471988892326, 1.9563571216835611 -3.413529428613713, 0.4462554632764042 -3.778884645041468, -1.0728208057260369 -3.452849766771303, -2.3 -2.5)",
+                exportToWKT( positions ).trim() );
     }
 
     /**

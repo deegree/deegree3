@@ -57,6 +57,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.style.styling.components.PerpendicularOffsetType;
@@ -151,7 +152,7 @@ class Java2DStrokeRenderer {
     private void applyNormalStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset,
                                     PerpendicularOffsetType type ) {
         int linecap = getLinecap( stroke );
-        float miterLimit = 10;
+        float miterLimit = TunableParameter.get( "deegree.rendering.stroke.miterlimit", 10f );
         int linejoin = getLinejoin( stroke );
         float dashoffset = (float) uomCalculator.considerUOM( stroke.dashoffset, uom );
         float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];

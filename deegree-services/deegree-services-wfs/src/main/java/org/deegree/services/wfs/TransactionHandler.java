@@ -61,6 +61,8 @@ import static org.deegree.protocol.wfs.WFSConstants.WFS_200_SCHEMA_URL;
 import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
 import static org.deegree.protocol.wfs.transaction.ReleaseAction.ALL;
 import static org.deegree.protocol.wfs.transaction.action.IDGenMode.GENERATE_NEW;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_ALL;
+import static org.deegree.services.wfs.ReferenceResolvingMode.CHECK_INTERNALLY;
 import static org.deegree.services.wfs.WebFeatureService.getXMLResponseWriter;
 
 import java.io.IOException;
@@ -124,7 +126,6 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
-import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -181,7 +182,7 @@ class TransactionHandler {
 
     private final IDGenMode idGenMode;
 
-    private final boolean allowFeatureReferencesToDatastore;
+    private final ReferenceResolvingMode referenceResolvingMode;
 
     /**
      * Creates a new {@link TransactionHandler} instance that uses the given service to lookup requested
@@ -193,15 +194,15 @@ class TransactionHandler {
      * @param request
  *            request to be handled
      * @param idGenMode
-     * @param allowFeatureReferencesToDatastore
+     * @param referenceResolvingMode
      */
     TransactionHandler( WebFeatureService master, WfsFeatureStoreManager service, Transaction request,
-                        IDGenMode idGenMode, boolean allowFeatureReferencesToDatastore ) {
+                        IDGenMode idGenMode, ReferenceResolvingMode referenceResolvingMode ) {
         this.master = master;
         this.service = service;
         this.request = request;
         this.idGenMode = idGenMode;
-        this.allowFeatureReferencesToDatastore = allowFeatureReferencesToDatastore;
+        this.referenceResolvingMode = referenceResolvingMode;
     }
 
     /**
@@ -397,6 +398,7 @@ class TransactionHandler {
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
+            evaluateValidDomainOfGeometriesInFeature( fc, insert.getHandle() );
             FeatureStore fs = service.getStores()[0];
             FeatureStoreTransaction ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
@@ -441,8 +443,10 @@ class TransactionHandler {
         FeatureStore featureStore = service.getStores()[0];
         AppSchema schema = featureStore.getSchema();
         GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( inputFormat, xmlStream );
-        if ( allowFeatureReferencesToDatastore )
+
+        if ( CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
             gmlStream.setInternalResolver( new FeatureStoreGMLIdResolver( featureStore ) );
+        }
         gmlStream.setApplicationSchema( schema );
         gmlStream.setDefaultCRS( defaultCRS );
         gmlStream.setReferencePatternMatcher( master.getReferencePatternMatcher() );
@@ -473,8 +477,10 @@ class TransactionHandler {
             }
         }
 
-        // resolve local xlink references
-        gmlStream.getIdContext().resolveLocalRefs();
+        if ( CHECK_ALL.equals( referenceResolvingMode ) || CHECK_INTERNALLY.equals( referenceResolvingMode ) ) {
+            // resolve local xlink references
+            gmlStream.getIdContext().resolveLocalRefs();
+        }
 
         return fc;
     }
@@ -911,6 +917,8 @@ class TransactionHandler {
                 gmlVersion = GMLVersion.GML_31;
             } else if ( "text/xml; subtype=gml/3.2.1".equals( format ) ) {
                 gmlVersion = GMLVersion.GML_32;
+            } else if ( "text/xml; subtype=gml/3.2.2".equals( format ) ) {
+                gmlVersion = GMLVersion.GML_32;
             }
         }
         return gmlVersion;
@@ -938,6 +946,49 @@ class TransactionHandler {
             }
         }
         return null;
+    }
+
+    private void evaluateValidDomainOfGeometriesInFeature( FeatureCollection fc, String handle )
+                    throws OWSException {
+        if ( this.master.isTransactionCheckAreaOfUse() ) {
+            for ( Feature feature : fc )
+                evaluateValidDomainOfGeometriesInFeature( feature, handle );
+        }
+    }
+
+    private void evaluateValidDomainOfGeometriesInFeature( Feature feature, String handle )
+                    throws OWSException {
+        Set<Geometry> geometries = new LinkedHashSet<>();
+        findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<>(), new LinkedHashSet<>(),
+                                   new LinkedHashSet<>() );
+        for ( Geometry geometry : geometries ) {
+            ICRS crs = geometry.getCoordinateSystem();
+            evaluateValidDomain( feature, crs, geometry, handle );
+        }
+    }
+
+    private void evaluateValidDomain( Feature feature, ICRS crs, Geometry geometry, String handle )
+                    throws OWSException {
+        if ( crs == null ) {
+            LOG.warn( "CRS of geometry of fetaure with id {} is not available. Check if geometry is inside the valid "
+                      + "domain not possible. The check is skipped and insert processed.", feature.getId() );
+            return;
+        }
+        double[] validDomain = crs.getValidDomain();
+        if ( validDomain == null ) {
+            LOG.warn( "Valid domain of crs {} is not available (concerns feature with id {}). Check if geometry is inside the valid "
+                      + "domain not possible. The check is skipped and insert processed.", crs.getAlias(),
+                      feature.getId() );
+            return;
+        }
+        Envelope validDomainBbox = GEOM_FACTORY.createEnvelope( validDomain[0], validDomain[1], validDomain[2],
+                                                                validDomain[3], crs );
+        if ( !geometry.isWithin( validDomainBbox ) ) {
+            String message = "At least one geometry is not in the valid domain of the srs.";
+            if ( handle == null || "".equals( handle ) )
+                handle = "Transaction";
+            throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
+        }
     }
 
 }

@@ -239,7 +239,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
     }
 
     private void doDescribeFeatureType( DescribeFeatureType request, GMLVersion version, XMLStreamWriter writer )
-                            throws XMLStreamException, OWSException {
+                    throws XMLStreamException, OWSException, IOException {
         // check for deegree-specific DescribeFeatureType request that asks for the WFS schema in a GML
         // version that does not match the WFS schema (e.g. WFS 1.1.0, GML 2)
         if ( request.getTypeNames() != null && request.getTypeNames().length == 1
@@ -250,12 +250,16 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
             Collection<String> namespaces = determineRequiredNamespaces( request );
             String targetNs = namespaces.iterator().next();
             if ( options.isExportOriginalSchema() ) {
-                GMLSchemaInfoSet gmlSchema = findGmlSchema( namespaces, version );
-                if ( gmlSchema != null ) {
-                    exportOriginalInfoSet( writer, gmlSchema, targetNs );
+                if (options.getOriginalSchemaLocation() != null) {
+                    exportOriginalInfoSet(writer, options.getOriginalSchemaLocation(), targetNs);
                 } else {
-                    LOG.warn( "Could not find original schema corresponding to the requested schema, try to reencode the schema!" );
-                    reencodeSchema( request, writer, targetNs, namespaces, version );
+                    GMLSchemaInfoSet gmlSchema = findGmlSchema(namespaces, version);
+                    if (gmlSchema != null) {
+                        exportOriginalInfoSet(writer, gmlSchema, targetNs);
+                    } else {
+                        LOG.warn("Could not find original schema corresponding to the requested schema, try to reencode the schema!");
+                        reencodeSchema(request, writer, targetNs, namespaces, version);
+                    }
                 }
             } else {
                 reencodeSchema( request, writer, targetNs, namespaces, version );
@@ -308,7 +312,7 @@ public class GmlDescribeFeatureTypeHandler extends AbstractGmlRequestHandler {
      * @throws XMLStreamException
      */
     private void exportOriginalInfoSet( XMLStreamWriter writer, GMLSchemaInfoSet infoSet, String targetNs )
-                            throws XMLStreamException {
+                    throws XMLStreamException, IOException {
         LOG.debug( "Exporting wrapper schema for original infoset." );
         GMLAppSchemaWriter.export( writer, infoSet, targetNs, new URITranslator() {
             @SuppressWarnings("synthetic-access")

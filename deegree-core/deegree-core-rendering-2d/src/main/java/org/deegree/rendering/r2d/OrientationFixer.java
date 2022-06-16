@@ -41,7 +41,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static com.vividsolutions.jts.algorithm.CGAlgorithms.isCCW;
+import static org.locationtech.jts.algorithm.CGAlgorithms.isCCW;
 import static org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType.Surface;
 import static org.deegree.geometry.primitive.Ring.RingType.LinearRing;
 import static org.deegree.geometry.primitive.Surface.SurfaceType.Polygon;
@@ -63,8 +63,8 @@ import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
 import org.deegree.geometry.standard.multi.DefaultMultiSurface;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Responsible for fixing geometry orientation (ring orientations of polygons).

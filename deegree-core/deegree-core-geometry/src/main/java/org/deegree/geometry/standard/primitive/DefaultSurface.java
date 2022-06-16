@@ -53,9 +53,9 @@ import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
-import com.vividsolutions.jts.algorithm.InteriorPointArea;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.algorithm.InteriorPointArea;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Surface}.
@@ -161,7 +161,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+    protected org.locationtech.jts.geom.Geometry buildJTSGeometry() {
 
         if ( patches.size() < 1 || !( patches.get( 0 ) instanceof PolygonPatch ) ) {
             throw new IllegalArgumentException( Messages.getMessage( "SURFACE_NOT_EQUIVALENT_TO_POLYGON" ) );

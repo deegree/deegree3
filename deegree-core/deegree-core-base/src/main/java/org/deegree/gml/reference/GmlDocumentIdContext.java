@@ -1,10 +1,11 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2022 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -30,6 +31,11 @@
  Postfach 1147, 53001 Bonn
  Germany
  http://www.geographie.uni-bonn.de/deegree/
+
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -66,9 +72,7 @@ import org.slf4j.LoggerFactory;
  * @see GMLStreamReader
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class GmlDocumentIdContext implements GMLReferenceResolver {
 
@@ -85,6 +89,8 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
     private AppSchema schema;
 
     private ReferencePatternMatcher referencePatternMatcher;
+
+    private boolean skipUrnWarning = false;
 
     /**
      * Creates a new {@link GmlDocumentIdContext} instance for a GML document of the given version.
@@ -139,6 +145,9 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
      */
     public void setReferencePatternMatcher( ReferencePatternMatcher referencePatternMatcher ) {
         this.referencePatternMatcher = referencePatternMatcher;
+
+        // NOTE allow to suppress warnings regarding urn: (only if explicitly requested)
+        this.skipUrnWarning = uriShouldBeSkipped( "urn:" );
     }
 
     /**
@@ -175,12 +184,14 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
         if ( uri.startsWith( "#" ) ) {
             return idToObject.get( uri.substring( 1 ) );
         } else if ( uri.startsWith( "urn:" ) ) {
-            LOG.warn( "Unable to resolve external object reference: " + uri
-                      + ". Resolving of urn references is not implemented yet." );
-        } else if( !uriShouldBeSkipped( uri) ) {
+            if ( !skipUrnWarning ) {
+                LOG.warn( "Unable to resolve external object reference: {}. Resolving of urn references is not implemented yet.",
+                          uri );
+            }
+        } else if ( !uriShouldBeSkipped( uri ) ) {
             return fetchExternalGmlObject( uri, baseURL );
         } else {
-            LOG.info( "URL " + uri + " is configured to be skipped" );
+            LOG.info( "URL {} is configured to be skipped", uri );
         }
         return null;
     }
@@ -198,7 +209,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
             gmlReader.setApplicationSchema( schema );
             object = gmlReader.read();
             gmlReader.close();
-            LOG.debug( "Read GML object: id='" + object.getId() + "'" );
+            LOG.debug( "Read GML object: id='{}'", object.getId() );
         } catch ( Throwable e ) {
             String msg = "Unable to resolve external object reference to '" + uri + "': " + e.getMessage();
             throw new ReferenceResolvingException( msg );
@@ -217,7 +228,7 @@ public class GmlDocumentIdContext implements GMLReferenceResolver {
 
         for ( GMLReference<?> ref : localRefs ) {
             String id = ref.getURI().substring( 1 );
-            LOG.debug( "Resolving reference to object '" + id + "'" );
+            LOG.debug( "Resolving reference to object '{}'", id );
             if ( ref.getReferencedObject() == null ) {
                 String msg = "Cannot resolve reference to object with id '" + id
                              + "'. There is no object with this id in the document.";

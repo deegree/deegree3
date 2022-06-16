@@ -69,7 +69,7 @@ It is constructed like this:
 
 [source,xml]
 ----
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
     <FeatureTypeName>plan:yourFeatureType</FeatureTypeName>
     <Rule>
         ...
@@ -92,23 +92,19 @@ from it.
 Depending on the type of symbolization to create, one of the following
 symbolizers can be used:
 
-----
 * <PointSymbolizer>
 * <LineSymbolizer>
 * <PolygonSymbolizer>
 * <TextSymbolizer>
 * <RasterSymbolizer>
-----
 
 Symbolizers can have an uom-attribute (units of measure), which
 determines the unit of all values set inside the Symbolizer. The
 following values for UoM are supported within deegree:
 
-----
 * uom="pixel"
 * uom="meter"
 * uom="mm"
-----
 
 The default value is "pixel".
 
@@ -120,7 +116,7 @@ FeatureType will be used.
 Each of the (Vector-)Symbolizer-elements has its dimensions, which are
 described in more detail below:
 
-----
+
 * *<LineSymbolizer>* has only one dimension: the <Stroke>-element (to
 style the stroke).
 * *<PolygonSymbolizer>* has two dimensions: the <Stroke> (to sytle the
@@ -132,26 +128,25 @@ inside of the point).
 * *<TextSymbolizer>* has three dimensions: the <Label> (to set the
 property, which is to be styled), the <Font> (to style the font) and the
 <Fill>-element (to style the inside of the font).
-----
+
 
 ===== Stroke
 
 To describe a <Stroke>, a number of different <SvgParameter> can be
 used.
 
-----
-* name="stroke" ==> The stroke (color) is defined by the hex color code
+* `name="stroke"` => The stroke (color) is defined by the hex color code
 (e.g. black ==> #000000).
-* name="opacity" ==> Opacity can be set by a percentage number, written
-as decimal (e.g. 0,25 ==> 25% opacity).
-* name="with" ==> Wide or thin, set your stroke-width however you want.
-* name="linecap" ==> For linecap (ending) a stroke you can choose the
+* `name="opacity"` => Opacity can be set by a percentage number, written
+as decimal (e.g. 0,25 => 25% opacity).
+* `name="with"` => Wide or thin, set your stroke-width however you want.
+* `name="linecap"` => For linecap (ending) a stroke you can choose the
 following types: round, edged, square, butt.
-* name="linejoin" ==> Also there are different types of linejoin
+* `name="linejoin"` => Also there are different types of linejoin
 possibilities: round, mitre, bevel.
-* name="dasharray" ==> The dasharray defines where the stroke is painted
-and where not (e.g. "1 1" ==> - - - ).
-----
+* `name="dasharray"` => The dasharray defines where the stroke is painted
+and where not (e.g. "1 1" => - - - ).
+
 
 [source,xml]
 ----
@@ -176,10 +171,8 @@ For the visualization of polygons, points and texts, the <Fill> element
 can be used additional to styling the <Stroke>. You can set the
 following <SvgParameter>:
 
-----
 * name="fill" (color)
 * name="fill-opacity"
-----
 
 These two <SvgParameter> are working like those from <Stroke>.
 
@@ -206,13 +199,12 @@ displayed text have to be set. Every <TextSymbolizer> needs a <Label> to
 be specified. The <Font> to be used for the text symbolization can be
 set with <SvgParameter> elements. These are the possible <SvgParameter>:
 
-----
-* name="font-family" ==> Possible types are: e.g. Arial, Times Roman,
+* `name="font-family"` => Possible types are: e.g. Arial, Times Roman,
 Sans-Serif
-* name="font-weight" ==> Possible types are: normal, bold, bolder,
+* `name="font-weight"` => Possible types are: normal, bold, bolder,
 lighter
-* name="font-size"
-----
+* `name="font-size"` => Possible values are integer values
+
 
 With a <Fill>-element a color and opacity of the font can be defined.
 This method is used to show text which is stored in your database.
@@ -461,7 +453,7 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
  <Name>Weatherstations</Name>
  <Rule>
     <Name>Weatherstations</Name>
@@ -504,7 +496,7 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
   <Name>Railroads</Name>
   <Rule>
     <Name>Railroads</Name>
@@ -546,7 +538,7 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
   <Name>LandslideAreas</Name>
   <Rule>
     <Name>LandslideAreas</Name>
@@ -579,7 +571,7 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
   <Name>Municipalities</Name>
   <Rule>
     <Name>Municipalities</Name>

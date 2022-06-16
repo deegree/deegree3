@@ -507,22 +507,74 @@ public class DefaultWorkspace implements Workspace {
 
     @Override
     public <T extends Resource> void destroy( ResourceIdentifier<T> id ) {
+        List<ResourceIdentifier<T>> resourcesToRemove = collectResourcesToDestroy( id );
+
+        for ( ResourceIdentifier resourceId : resourcesToRemove ) {
+            T res = (T) resources.get( resourceId );
+            if ( res != null ) {
+                LOG.info( "Shutting down {}.", resourceId );
+                res.destroy();
+            }
+            states.remove( resourceId );
+            removeMetadataFromResourceManager( resourceId );
+            resources.remove( resourceId );
+            graph.removeNode( resourceId );
+            errors.clear( resourceId );
+        }
+    }
+
+
+    private <T extends Resource> List<ResourceIdentifier<T>> collectResourcesToDestroy( ResourceIdentifier<T> id ) {
+        List<ResourceIdentifier<T>> resourcesToRemove = new ArrayList<>();
+        ResourceNode<T> node = graph.getNode( id );
+        if ( node == null ) {
+            return resourcesToRemove;
+        }
+        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
+            collectResourcesToDestroy( n.getMetadata().getIdentifier() );
+        }
+        resourcesToRemove.add( id );
+        return resourcesToRemove;
+    }
+
+    @Override
+    public <T extends Resource> void destroyAndShutdownDependents( ResourceIdentifier<T> id ) {
         ResourceNode<T> node = graph.getNode( id );
         if ( node == null ) {
             return;
         }
         for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
-            destroy( n.getMetadata().getIdentifier() );
+            shutdownResourceAndDependents( n.getMetadata().getIdentifier() );
         }
         T res = (T) resources.get( id );
         if ( res != null ) {
             LOG.info( "Shutting down {}.", id );
             res.destroy();
         }
-        states.setState( id, null );
+        states.remove( id );
         removeMetadataFromResourceManager( id );
         resources.remove( id );
+        graph.removeNode( id );
         errors.clear( id );
+    }
+
+    private <T extends Resource> void shutdownResourceAndDependents( ResourceIdentifier<T> id ) {
+        ResourceNode<T> node = graph.getNode( id );
+        if ( node == null ) {
+            return;
+        }
+        for ( ResourceNode<? extends Resource> n : node.getDependents() ) {
+            shutdownResourceAndDependents( n.getMetadata().getIdentifier() );
+        }
+        T res = (T) resources.get( id );
+        if ( res != null ) {
+            LOG.info( "Shutting down {}.", id );
+            res.destroy();
+        }
+        resources.remove( id );
+        states.setState( id, ResourceState.Error );
+        errors.clear( id );
+        errors.registerError( id, "Required dependency unavailable." );
     }
 
     private void removeMetadataFromResourceManager( ResourceIdentifier<?> id ) {
