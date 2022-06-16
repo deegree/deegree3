@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:md="http://www.deegree.org/services/metadata" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/metadata" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.metadata" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="deegreeServicesMetadata" type="md:deegreeServicesMetadataType" />
+  <complexType name="deegreeServicesMetadataType">
+    <sequence>
+      <element name="ServiceIdentification" type="md:ServiceIdentificationType" minOccurs="0" />
+      <element name="ServiceProvider" type="md:ServiceProviderType" minOccurs="0" />
+      <element name="DatasetMetadata" minOccurs="0">
+        <complexType>
+          <sequence>
+            <element name="MetadataUrlTemplate" minOccurs="0" maxOccurs="unbounded">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="format" type="string" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+            <element name="ExternalMetadataAuthority" type="md:ExternalMetadataAuthorityType" minOccurs="0"
+              maxOccurs="unbounded" />
+            <element name="Dataset" type="md:DatasetMetadataType" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="ExtendedCapabilities" type="md:ExtendedCapabilitiesType" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+    <attribute name="configVersion" type="string" use="optional"/>
+  </complexType>
+
+  <complexType name="ExternalMetadataAuthorityType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="name" type="string" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <complexType name="ServiceIdentificationType">
+    <sequence>
+      <element name="Title" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Abstract" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Fees" type="string" minOccurs="0" />
+      <element name="AccessConstraints" type="string" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="ServiceProviderType">
+    <sequence>
+      <element name="ProviderName" type="string" />
+      <element name="ProviderSite" type="anyURI" />
+      <element name="ServiceContact" type="md:ServiceContactType" />
+    </sequence>
+  </complexType>
+
+  <complexType name="ServiceContactType">
+    <sequence>
+      <element name="IndividualName" type="string" />
+      <element name="PositionName" type="string" />
+      <element name="Phone" type="string" minOccurs="0" />
+      <element name="Facsimile" type="string" minOccurs="0" />
+      <element name="ElectronicMailAddress" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Address" type="md:AddressType" minOccurs="0" />
+      <element name="OnlineResource" type="anyURI" />
+      <element name="HoursOfService" type="string" minOccurs="0" />
+      <element name="ContactInstructions" type="string" minOccurs="0" />
+      <element name="Role" type="string" />
+    </sequence>
+  </complexType>
+
+  <complexType name="AddressType">
+    <sequence>
+      <element name="DeliveryPoint" type="string" minOccurs="0" maxOccurs="unbounded" />
+      <element name="City" type="string" minOccurs="0" />
+      <element name="AdministrativeArea" type="string" minOccurs="0" />
+      <element name="PostalCode" type="string" minOccurs="0" />
+      <element name="Country" type="string" minOccurs="0" />
+    </sequence>
+  </complexType>
+  <!-- ========================================================== -->
+  <element name="Keywords" type="md:KeywordsType" />
+  <!-- ========================================================== -->
+  <complexType name="LanguageStringType">
+    <annotation>
+      <documentation>
+        Text string with the language of the string identified as recommended in the XML 1.0 W3C
+        Recommendation, section 2.12.
+      </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="lang" type="string" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="CodeType">
+    <annotation>
+      <documentation>
+        Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall
+        reference a dictionary, thesaurus, or authority for the name or code, such as the organisation who assigned the
+        value, or the dictionary from which it is taken.
+      </documentation>
+      <documentation>
+        Type copied from basicTypes.xsd of GML 3 with documentation edited, for possible use outside the
+        ServiceIdentification section of a service metadata document.
+      </documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="codeSpace" type="anyURI" use="optional" />
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="KeywordsType">
+    <annotation>
+      <documentation>
+        Unordered list of one or more commonly used or formalised word(s) or phrase(s) used to describe the
+        subject. When needed, the optional "type" can name the type of the associated list of keywords that shall all
+        have the same type. Also when needed, the codeSpace attribute of that "type" can reference the type name
+        authority and/or thesaurus. If the xml:lang attribute is not included in a Keyword element, then no language is
+        specified for that element unless specified by another means. All Keyword elements in the same Keywords element
+        that share the same xml:lang attribute value represent different keywords in that language.
+      </documentation>
+      <documentation>
+        For OWS use, the optional thesaurusName element was omitted as being complex information that could
+        be referenced by the codeSpace attribute of the Type element.
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="Keyword" type="md:LanguageStringType" maxOccurs="unbounded" />
+      <element name="Type" type="md:CodeType" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="DatasetMetadataType">
+    <sequence>
+      <element name="Name" type="QName" />
+      <element name="Title" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
+      <element name="Abstract" type="md:LanguageStringType" minOccurs="0" maxOccurs="unbounded" />
+      <element ref="md:Keywords" minOccurs="0" maxOccurs="unbounded" />
+      <element name="MetadataSetId" type="string" minOccurs="0" />
+      <element name="MetadataURL" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="format" type="string" use="optional" />
+              <attribute name="type" type="NMTOKEN" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="ExternalMetadataSetId" type="md:ExternalMetadataSetIdType" minOccurs="0" maxOccurs="unbounded" />
+      <element name="DataURL" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="format" type="string" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="FeatureListURL" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="format" type="string" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="Attribution" minOccurs="0" maxOccurs="1">
+        <complexType>
+          <sequence>
+            <element name="Title" type="string" minOccurs="0" />
+            <element name="URL" type="string" minOccurs="0" />
+            <element name="LogoURL" minOccurs="0">
+              <complexType>
+                <simpleContent>
+                  <extension base="string">
+                    <attribute name="format" type="string" use="required" />
+                    <attribute name="width" type="int" />
+                    <attribute name="height" type="int" />
+                  </extension>
+                </simpleContent>
+              </complexType>
+            </element>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="ExtendedDescription" type="md:ExtendedDescriptionType" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+    <complexType name="ExternalMetadataSetIdType">
+    <simpleContent>
+      <extension base="string">
+        <attribute name="authority" type="string" use="required" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <complexType name="ExtendedCapabilitiesType">
+    <sequence>
+      <any processContents="lax">
+        <annotation>
+          <appinfo>
+            <jaxb:dom />
+          </appinfo>
+        </annotation>
+      </any>
+    </sequence>
+    <attribute name="protocolVersions" type="string" use="optional" />
+  </complexType>
+
+
+  <complexType name="ExtendedDescriptionType">
+    <sequence>
+      <element name="Name" type="string" />
+      <element name="Type" type="QName" />
+      <element name="Metadata" type="anyURI"/>
+      <element name="Value" type="string" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+</schema>

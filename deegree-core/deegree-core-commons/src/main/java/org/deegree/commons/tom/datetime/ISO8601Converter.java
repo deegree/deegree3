@@ -101,7 +101,7 @@ public final class ISO8601Converter {
      * Parses the given <code>xs:time</code> string.
      * 
      * @param xsTime
-     *            the <code>xs:time/code> to be parsed, must not be <code>null</code>
+     *            the <code>xs:time</code> to be parsed, must not be <code>null</code>
      * @return the parsed date, never <code>null</code> (available timezone information is kept)
      * @throws IllegalArgumentException
      *             if parameter does not conform to lexical value space defined in XML Schema Part 2: Datatypes for

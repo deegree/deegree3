@@ -48,6 +48,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -128,6 +129,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
@@ -137,7 +139,6 @@ import org.deegree.sqldialect.filter.PropertyNameMapping;
 import org.deegree.sqldialect.filter.TableAliasManager;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
-import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceMetadata;
@@ -235,6 +236,13 @@ public class SQLFeatureStore implements FeatureStore {
         }
     }
 
+    /**
+     * @return the currently active transaction., may be <code>null</code> if no transaction was acquired
+     */
+    public FeatureStoreTransaction getTransaction() {
+        return transaction.get();
+    }
+
     private void initConverters() {
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
@@ -298,7 +306,7 @@ public class SQLFeatureStore implements FeatureStore {
     @SuppressWarnings("unchecked")
     private CustomParticleConverter<TypedObjectNode> instantiateConverter( CustomConverterJAXB config ) {
         String className = config.getClazz();
-        LOG.info( "Instantiating configured custom particle converter (class=" + className + ")" );
+        LOG.debug( "Instantiating configured custom particle converter (class={})", className );
         try {
             return (CustomParticleConverter<TypedObjectNode>) workspace.getModuleClassLoader().loadClass( className ).newInstance();
         } catch ( Throwable t ) {
@@ -324,6 +332,11 @@ public class SQLFeatureStore implements FeatureStore {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return queries.length == 1 && dialect.isRowLimitingCapable();
     }
 
     public String getConnId() {
@@ -377,6 +390,80 @@ public class SQLFeatureStore implements FeatureStore {
             release( null, null, conn );
         }
         return env;
+    }
+
+    @Override
+    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return calcTemporalExtent( ftName, datetimeProperty );
+    }
+
+    @Override
+    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        if ( getSchema().getBlobMapping() != null ) {
+            LOG.warn( "Calculating temporal extent for blob mode is not supported" );
+            return null;
+        }
+
+        FeatureTypeMapping ftMapping = getMapping( ftName );
+        if ( ftMapping == null ) {
+            String msg = String.format(
+                            "Cannot calculate temporal extent on feature type '%s'. Feature type is not mapped.",
+                            ftName );
+            throw new FeatureStoreException( msg );
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            Mapping datetimeMapping = ftMapping.getMapping( datetimeProperty );
+            if ( datetimeMapping == null ) {
+                String msg = String.format(
+                                "Cannot calculate temporal extent  on feature type '%s'. Datetime property '%s' is not mapped.",
+                                ftName, datetimeProperty );
+                throw new FeatureStoreException( msg );
+            }
+
+            ParticleConverter<?> converter = getConverter( datetimeMapping );
+            String datetimeSnippet = converter.getSelectSnippet( null );
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( "min( " ).append( datetimeSnippet ).append( " ) as mindate, " );
+            sql.append( "max( " ).append( datetimeSnippet ).append( " ) as maxdate " );
+            sql.append( "FROM " );
+            sql.append( ftMapping.getFtTable() );
+
+            LOG.debug( "SQL: {}", sql );
+            long begin = System.currentTimeMillis();
+            stmt = conn.prepareStatement( sql.toString() );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            begin = System.currentTimeMillis();
+            stmt.setFetchSize( fetchSize );
+            rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            if ( rs.next() ) {
+                java.sql.Date mindate = rs.getDate( "mindate" );
+                java.sql.Date maxdate = rs.getDate( "maxdate" );
+                Date min = new Date( mindate.getTime() );
+                Date max = new Date( maxdate.getTime() );
+                return new Pair<>( min, max );
+            }
+        } catch ( Exception e ) {
+            String msg = String.format(
+                            "Error calculating temporal extent for feature type '%s' and date property '%s': %S",
+                            ftName, datetimeProperty, e.getMessage() );
+            LOG.error( msg, e );
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            release( rs, stmt, conn );
+        }
+        return null;
     }
 
     Envelope calcEnvelope( QName ftName, Connection conn )
@@ -674,11 +761,11 @@ public class SQLFeatureStore implements FeatureStore {
 
         try {
             conn = getConnection();
-            AbstractWhereBuilder wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
+            AbstractWhereBuilder wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn, query.isHandleStrict() );
 
             if ( wb.getPostFilter() != null ) {
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
-                hits = queryByOperatorFilter( query, ftName, filter ).count();
+                hits = queryByOperatorFilter( query, ftName, filter, false ).count();
             } else {
                 StringBuilder sql = new StringBuilder( "SELECT " );
                 if ( wb.getWhere() == null ) {
@@ -881,32 +968,7 @@ public class SQLFeatureStore implements FeatureStore {
     @Override
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
-
-        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-            String msg = "Join queries between multiple feature types are not by SQLFeatureStore (yet).";
-            throw new UnsupportedOperationException( msg );
-        }
-
-        FeatureInputStream result = null;
-        Filter filter = query.getFilter();
-
-        if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
-            QName ftName = query.getTypeNames()[0].getFeatureTypeName();
-            FeatureType ft = getSchema().getFeatureType( ftName );
-            if ( ft == null ) {
-                String msg = "Feature store is not configured to serve feature type '" + ftName + "'.";
-                throw new FeatureStoreException( msg );
-            }
-            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter );
-        } else {
-            // must be an id filter based query
-            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
-                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
-                throw new FilterEvaluationException( msg );
-            }
-            result = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() );
-        }
-        return result;
+        return query( query, true );
     }
 
     @Override
@@ -931,7 +993,7 @@ public class SQLFeatureStore implements FeatureStore {
         if ( wmsStyleQuery ) {
             return queryMultipleFts( queries, env );
         }
-
+        boolean isMaxFeaturesAndStartIndexApplicable = isMaxFeaturesAndStartIndexApplicable( queries );
         Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
@@ -947,7 +1009,7 @@ public class SQLFeatureStore implements FeatureStore {
                 }
                 FeatureInputStream rs;
                 try {
-                    rs = query( queries[i++] );
+                    rs = query( queries[i++], isMaxFeaturesAndStartIndexApplicable );
                 } catch ( InvalidParameterValueException e ){
                     throw e;
                 } catch ( Throwable e ) {
@@ -963,6 +1025,36 @@ public class SQLFeatureStore implements FeatureStore {
             }
         };
         return new CombinedFeatureInputStream( rsIter );
+    }
+
+
+    private FeatureInputStream query( Query query, boolean  isMaxFeaturesAndStartIndexApplicable)
+                            throws FeatureStoreException, FilterEvaluationException {
+        if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+            String msg = "Join queries between multiple feature types are not by SQLFeatureStore (yet).";
+            throw new UnsupportedOperationException( msg );
+        }
+
+        FeatureInputStream result = null;
+        Filter filter = query.getFilter();
+
+        if ( query.getTypeNames().length == 1 && ( filter == null || filter instanceof OperatorFilter ) ) {
+            QName ftName = query.getTypeNames()[0].getFeatureTypeName();
+            FeatureType ft = getSchema().getFeatureType( ftName );
+            if ( ft == null ) {
+                String msg = "Feature store is not configured to serve feature type '" + ftName + "'.";
+                throw new FeatureStoreException( msg );
+            }
+            result = queryByOperatorFilter( query, ftName, (OperatorFilter) filter, isMaxFeaturesAndStartIndexApplicable );
+        } else {
+            // must be an id filter based query
+            if ( query.getFilter() == null || !( query.getFilter() instanceof IdFilter ) ) {
+                String msg = "Invalid query. If no type names are specified, it must contain an IdFilter.";
+                throw new FilterEvaluationException( msg );
+            }
+            result = queryByIdFilter( query.getTypeNames(), (IdFilter) filter, query.getSortProperties() );
+        }
+        return result;
     }
 
     private FeatureInputStream queryByIdFilter( TypeName[] typeNames, IdFilter filter, SortProperty[] sortCrit )
@@ -1144,7 +1236,8 @@ public class SQLFeatureStore implements FeatureStore {
         return transaction.get() != null;
     }
 
-    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilterBlob( Query query, QName ftName, OperatorFilter filter,
+                                                          boolean isMaxFeaturesAndStartIndexApplicable )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing blob query by operator filter" );
@@ -1235,6 +1328,9 @@ public class SQLFeatureStore implements FeatureStore {
             // sql.append( wb.getOrderBy().getSQL() );
             // }
 
+            if ( isMaxFeaturesAndStartIndexApplicable )
+                appendOffsetAndFetch( sql, query.getMaxFeatures(), query.getStartIndex() );
+
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
             stmt = conn.prepareStatement( sql.toString() );
@@ -1285,13 +1381,14 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureInputStream queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter )
+    private FeatureInputStream queryByOperatorFilter( Query query, QName ftName, OperatorFilter filter,
+                                                      boolean isMaxFeaturesAndStartIndexApplicable )
                             throws FeatureStoreException {
 
         LOG.debug( "Performing query by operator filter" );
 
         if ( getSchema().getBlobMapping() != null ) {
-            return queryByOperatorFilterBlob( query, ftName, filter );
+            return queryByOperatorFilterBlob( query, ftName, filter, isMaxFeaturesAndStartIndexApplicable );
         }
 
         AbstractWhereBuilder wb = null;
@@ -1310,7 +1407,7 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = getConnection();
 
-            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn );
+            wb = getWhereBuilder( ft, filter, query.getSortProperties(), conn, query.isHandleStrict() );
             String ftTableAlias = wb.getAliasManager().getRootTableAlias();
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
@@ -1357,6 +1454,9 @@ public class SQLFeatureStore implements FeatureStore {
                 sql.append( " ORDER BY " );
                 sql.append( wb.getOrderBy().getSQL() );
             }
+
+            if ( isMaxFeaturesAndStartIndexApplicable )
+                appendOffsetAndFetch( sql, query.getMaxFeatures(), query.getStartIndex() );
 
             LOG.debug( "SQL: {}", sql );
             long begin = System.currentTimeMillis();
@@ -1479,10 +1579,16 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private AbstractWhereBuilder getWhereBuilder( FeatureType ft, OperatorFilter filter, SortProperty[] sortCrit,
-                                                  Connection conn )
+                                                  Connection conn, boolean handleStrict )
                             throws FilterEvaluationException, UnmappableException {
-        PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ) );
-        return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
+        List<SortCriterion> defaultSortCriteria = null;
+        FeatureTypeMapping ftMapping = schema.getFtMapping( ft.getName() );
+        if ( ftMapping != null ) {
+            defaultSortCriteria = ftMapping.getDefaultSortCriteria();
+        }
+        PropertyNameMapper mapper = new SQLPropertyNameMapper( this, getMapping( ft.getName() ), handleStrict );
+        AbstractWhereBuilder whereBuilder = dialect.getWhereBuilder( mapper, filter, sortCrit, defaultSortCriteria, allowInMemoryFiltering );
+        return whereBuilder;
     }
 
     private AbstractWhereBuilder getWhereBuilderBlob( OperatorFilter filter, Connection conn )
@@ -1507,7 +1613,7 @@ public class SQLFeatureStore implements FeatureStore {
                 return getMapping( propName, aliasManager );
             }
         };
-        return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );
+        return dialect.getWhereBuilder( mapper, filter, null, null, allowInMemoryFiltering );
     }
 
     public SQLDialect getDialect() {
@@ -1645,6 +1751,13 @@ public class SQLFeatureStore implements FeatureStore {
                 throw new InvalidParameterValueException( "Requested feature does not match the requested feature type.",
                                                           "RESOURCEID" );
         }
+    }
+
+    private void appendOffsetAndFetch( StringBuilder sql, int maxFeatures, int startIndex ) {
+        if ( startIndex > 0 )
+            sql.append( " OFFSET " ).append( startIndex ).append( " ROWS" );
+        if ( maxFeatures > -1 )
+            sql.append( " FETCH NEXT " ).append( maxFeatures ).append( " ROWS ONLY " );
     }
 
 }

@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<Deegree2CRSStore configVersion="3.4.0" xmlns="http://www.deegree.org/crs/stores/deegree2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/stores/deegree2/3.4.0/deegree2.xsd">
-  <!-- [1] -->
-  <File>...</File>
-</Deegree2CRSStore>

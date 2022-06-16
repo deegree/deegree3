@@ -2,7 +2,7 @@
 	<!-- CTL supports XSLT 1.0 instructions, but since the W3C has not published an XSLT 1.0 schema
 	     and 1.0 instructions are forwards-compatible with 2.0 instructions, include the XSLT 2.0 schema -->
 	<xs:import namespace="http://www.w3.org/1999/XSL/Transform" schemaLocation="../../w3c/xslt/1999/xslt.xsd"/>
-	<xs:import namespace="http://www.w3.org/2001/XInclude" schemaLocation="../../w3c/xinclude/1.0/xinclude.xsd"/>
+	<xs:import namespace="http://www.w3.org/2001/XInclude" schemaLocation="../../w3c/xinclude/1.0/XInclude.xsd"/>
 	<xs:element name="package" type="ctl:packageType"/>
 	<xs:complexType name="packageType">
 		<xs:sequence minOccurs="0" maxOccurs="unbounded">

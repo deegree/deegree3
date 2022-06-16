@@ -91,15 +91,22 @@ public class CoverageLayerData implements LayerData {
 
     private CoverageDimensionHandler dimensionHandler;
 
-    public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
-                              RangeSet filter, Style style, FeatureType featureType ) {
-        this( raster, bbox, width, height, interpol, filter, style, featureType, null );
+    private final CoverageFeatureInfoMode featureInfoMode;
 
+    private final int infoPosX;
+
+    private final int infoPosY;
+
+    public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
+                              RangeSet filter, Style style, FeatureType featureType,
+                              CoverageFeatureInfoMode featureInfoMode ) {
+        this( raster, bbox, width, height, interpol, filter, style, featureType, null, featureInfoMode, -1, -1 );
     }
 
     public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
                               RangeSet filter, Style style, FeatureType featureType,
-                              CoverageDimensionHandler dimensionHandler ) {
+                              CoverageDimensionHandler dimensionHandler, CoverageFeatureInfoMode featureInfoMode,
+                              int infoPosX, int infoPosY ) {
         this.raster = raster;
         this.bbox = bbox;
         this.width = width;
@@ -109,6 +116,9 @@ public class CoverageLayerData implements LayerData {
         this.style = style;
         this.featureType = featureType;
         this.dimensionHandler = dimensionHandler;
+        this.featureInfoMode = featureInfoMode;
+        this.infoPosX = infoPosX;
+        this.infoPosY = infoPosY;
     }
 
     @Override
@@ -167,7 +177,10 @@ public class CoverageLayerData implements LayerData {
     public FeatureCollection info() {
         CoverageFeatureInfoHandler handler = new CoverageFeatureInfoHandler( raster, bbox, featureType, interpol,
                                                                              dimensionHandler );
-        return handler.handleFeatureInfo();
+        if ( featureInfoMode == CoverageFeatureInfoMode.POINT ) {
+            return handler.handleFeatureInfoPoint( infoPosX, infoPosY, width, height );
+        } else {
+            return handler.handleFeatureInfo();
+        }
     }
-
 }

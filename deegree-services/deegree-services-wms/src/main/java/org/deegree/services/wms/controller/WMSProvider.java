@@ -76,7 +76,7 @@ public class WMSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/3.4.0/wms_configuration.xsd" );
+        return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/wms_configuration.xsd" );
     }
 
     @Override

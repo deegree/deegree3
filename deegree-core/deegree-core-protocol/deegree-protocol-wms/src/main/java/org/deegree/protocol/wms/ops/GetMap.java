@@ -109,9 +109,13 @@ public class GetMap extends RequestBase {
 
     private static final Logger LOG = getLogger( GetMap.class );
 
+    private static final boolean PARSE_LAX = false;
+
     private static GeometryFactory fac = new GeometryFactory();
 
     private ICRS crs;
+
+    private ICRS requestCrs;
 
     private Envelope bbox;
 
@@ -140,15 +144,16 @@ public class GetMap extends RequestBase {
     /**
      * @param map
      * @param version
-     * @param service
+     * @param exts
      * @throws OWSException
      */
-    public GetMap( Map<String, String> map, Version version, MapOptionsMaps exts ) throws OWSException {
+    public GetMap( Map<String, String> map, Version version, MapOptionsMaps exts, boolean parseStrict )
+                    throws OWSException {
         if ( version.equals( VERSION_111 ) ) {
             parse111( map, exts );
         }
         if ( version.equals( VERSION_130 ) ) {
-            parse130( map, exts );
+            parse130( map, exts, parseStrict );
         }
         parameterMap.putAll( map );
         try {
@@ -164,7 +169,6 @@ public class GetMap extends RequestBase {
     }
 
     /**
-     * @param service
      * @param layers
      * @param styles
      * @param width
@@ -179,6 +183,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = boundingBox;
+        this.requestCrs = boundingBox.getCoordinateSystem();
         this.crs = boundingBox.getCoordinateSystem();
         this.bgcolor = white;
         format = "image/png";
@@ -202,6 +207,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
@@ -215,6 +221,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
@@ -246,6 +253,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = boundingBox;
+        this.requestCrs = boundingBox.getCoordinateSystem();
         this.crs = boundingBox.getCoordinateSystem();
         this.bgcolor = white;
         this.format = format;
@@ -268,6 +276,7 @@ public class GetMap extends RequestBase {
         if ( c == null || c.trim().isEmpty() ) {
             throw new OWSException( "The SRS parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
+        requestCrs = CRSManager.getCRSRef( c );
         crs = getCRS111( c );
 
         String box = map.get( "BBOX" );
@@ -299,7 +308,7 @@ public class GetMap extends RequestBase {
 
         bbox = fac.createEnvelope( new double[] { vals[0], vals[1] }, new double[] { vals[2], vals[3] }, crs );
 
-        handleCommon( map, exts );
+        handleCommon( map, exts, PARSE_LAX );
     }
 
     static LinkedList<StyleRef> handleKVPStyles( String ss, int numLayers )
@@ -384,7 +393,7 @@ public class GetMap extends RequestBase {
         }
     }
     
-    private void handleCommon( Map<String, String> map, MapOptionsMaps exts )
+    private void handleCommon( Map<String, String> map, MapOptionsMaps exts, boolean parseStrict )
                             throws OWSException {
         String ls = map.get( "LAYERS" );
         String sld = map.get( "SLD" );
@@ -440,6 +449,13 @@ public class GetMap extends RequestBase {
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
         String t = map.get( "TRANSPARENT" );
+
+        if ( parseStrict && ( t != null && !t.equalsIgnoreCase( "true" ) && !t.equalsIgnoreCase( "false" ) ) ) {
+            throw new OWSException(
+                            "The TRANSPARENT parameter value is not valid (was " + t
+                            + "), expected is TRUE or FALSE.",
+                            OWSException.INVALID_PARAMETER_VALUE );
+        }
         transparent = t != null && t.equalsIgnoreCase( "true" );
         if ( transparent && ( format.indexOf( "gif" ) != -1 || format.indexOf( "png" ) != -1 ) ) {
             bgcolor = new Color( 255, 255, 255, 0 );
@@ -603,7 +619,7 @@ public class GetMap extends RequestBase {
         return null;
     }
 
-    private void parse130( Map<String, String> map, MapOptionsMaps exts )
+    private void parse130( Map<String, String> map, MapOptionsMaps exts, boolean parseStrict )
                             throws OWSException {
         String c = map.get( "CRS" );
         if ( c == null || c.trim().isEmpty() ) {
@@ -615,7 +631,13 @@ public class GetMap extends RequestBase {
             throw new OWSException( "The BBOX parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
 
-        double[] vals = splitAsDoubles( box, "," );
+        double[] vals;
+        try {
+            vals = splitAsDoubles( box, "," );
+        } catch ( NumberFormatException e ) {
+            throw new OWSException( "The value of the BBOX parameter is invalid: " + box,
+                                    OWSException.INVALID_PARAMETER_VALUE );
+        }
         if ( vals.length != 4 ) {
             throw new OWSException( "The value of the BBOX parameter had too many values: " + box,
                                     OWSException.INVALID_PARAMETER_VALUE );
@@ -629,11 +651,11 @@ public class GetMap extends RequestBase {
             throw new OWSException( "The maxy component of the BBOX was smaller that the miny component.",
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
-
+        requestCrs = CRSManager.getCRSRef( c );
         bbox = getCRSAndEnvelope130( c, vals );
         crs = bbox.getCoordinateSystem();
 
-        handleCommon( map, exts );
+        handleCommon( map, exts, parseStrict );
     }
 
     /**
@@ -641,6 +663,13 @@ public class GetMap extends RequestBase {
      */
     public ICRS getCoordinateSystem() {
         return crs;
+    }
+
+    /**
+     * @return the requested coordinate system
+     */
+    public ICRS getRequestCoordinateSystem() {
+        return requestCrs;
     }
 
     /**

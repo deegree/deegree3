@@ -42,9 +42,9 @@ import org.deegree.console.Config;
  */
 public class ProxyConfig extends Config {
 
-    private static final URL PROXY_SCHEMA_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/3.4.0/proxy.xsd" );
+    private static final URL PROXY_SCHEMA_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/proxy.xsd" );
 
-    private static final URL PROXY_EXAMPLE_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/3.4.0/example.xml" );
+    private static final URL PROXY_EXAMPLE_URL = ProxyConfig.class.getResource( "/META-INF/schemas/proxy/example.xml" );
 
     private String file;
 
