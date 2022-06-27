@@ -38,6 +38,9 @@ package org.deegree.geometry.refs;
 
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+
+import java.util.Arrays;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -92,4 +95,10 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
     public double get2() {
         return getReferencedObject().get2();
     }
+
+    @Override
+    public Point copy() {
+        return new PointReference( (GMLReferenceResolver) getResolver(), getURI(), getBaseURL() );
+    }
+
 }

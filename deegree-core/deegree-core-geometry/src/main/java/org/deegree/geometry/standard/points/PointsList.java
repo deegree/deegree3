@@ -36,8 +36,11 @@
 package org.deegree.geometry.standard.points;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.deegree.commons.tom.Reference;
 import org.deegree.geometry.points.Points;
@@ -208,7 +211,8 @@ public class PointsList implements Points {
 
     @Override
     public CoordinateSequence copy() {
-        throw new UnsupportedOperationException();
+        List<Point> copiedPoints = points.stream().map( point -> point.copy() ).collect( Collectors.toList() );
+        return new PointsList( copiedPoints );
     }
 
     @Override
