@@ -216,6 +216,6 @@ public class JTSPoints implements Points {
 
     @Override
     public CoordinateSequence copy() {
-        throw new UnsupportedOperationException();
+        return new JTSPoints( crs, seq.copy() );
     }
 }
