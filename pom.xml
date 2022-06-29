@@ -1182,7 +1182,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20191108</version>
+        <version>20210817</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
