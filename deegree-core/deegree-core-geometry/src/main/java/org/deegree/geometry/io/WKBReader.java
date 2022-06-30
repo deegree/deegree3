@@ -35,16 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
-
+import org.deegree.geometry.GeometryFactory;
 import org.locationtech.jts.io.InputStreamInStream;
 import org.locationtech.jts.io.ParseException;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
@@ -58,20 +56,18 @@ import org.locationtech.jts.io.ParseException;
  */
 public class WKBReader {
 
-    // TODO remove the need for this object
-    private static AbstractDefaultGeometry defaultGeom = new DefaultPoint( null, null, null, new double[] { 0.0, 0.0 } );
-
     public static Geometry read( byte[] wkb, ICRS crs )
                             throws ParseException {
         // org.locationtech.jts.io.WKBReader() is not thread safe
-        return defaultGeom.createFromJTS( new org.locationtech.jts.io.WKBReader().read( wkb ), crs );
+        org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read( wkb );
+        return new GeometryFactory().createFromJTS( jtsGeom, crs );
     }
 
     public static Geometry read( InputStream is, ICRS crs )
                             throws IOException, ParseException {
         // org.locationtech.jts.io.WKBReader() is not thread safe
-        return defaultGeom.createFromJTS(
-                                          new org.locationtech.jts.io.WKBReader().read( new InputStreamInStream( is ) ),
-                                          crs );
+        org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read(
+                        new InputStreamInStream( is ) );
+        return new GeometryFactory().createFromJTS( jtsGeom, crs );
     }
 }
