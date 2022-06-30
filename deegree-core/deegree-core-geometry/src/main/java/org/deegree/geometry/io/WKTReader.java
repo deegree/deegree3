@@ -35,27 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
+import org.apache.commons.io.IOUtils;
+import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.geometry.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.postgis.GeometryBuilder;
+import org.postgis.binary.BinaryWriter;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.SQLException;
 
-import org.apache.commons.io.IOUtils;
-import org.deegree.cs.coordinatesystems.ICRS;
-import org.deegree.geometry.Geometry;
-import org.postgis.binary.BinaryWriter;
-
-import org.locationtech.jts.io.ParseException;
-
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).
- * 
+ *
  * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves) TODO
  * TODO TODO do not go about using PostGIS for parsing the WKT, generate WKB and then parse it back using JTS TODO TODO
  * TODO repeat after me s/TODO/TODO TODO/g
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class WKTReader {
@@ -79,7 +79,7 @@ public class WKTReader {
     public Geometry read( String wkt )
                             throws ParseException {
         try {
-            org.postgis.Geometry g = org.postgis.PGgeometry.geomFromString( wkt );
+            org.postgis.Geometry g = GeometryBuilder.geomFromString( wkt );
             byte[] bs = new BinaryWriter().writeBinary( g );
             return WKBReader.read( bs, crs );
         } catch ( SQLException e ) {
