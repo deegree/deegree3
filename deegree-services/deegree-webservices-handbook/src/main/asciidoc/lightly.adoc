@@ -25,7 +25,7 @@ console from your browser via http://localhost:8080
 .deegree webservices administration console
 image::console_start.png[deegree webservices administration console,scaledwidth=50.0%]
 
-TIP: If you're not running the ZIP version, but deployed the WAR version into
+TIP: If you deployed the WAR version into
 a web container, you most probably will have to use a different URL for
 accessing the console, e.g.
 http://localhost:8080/deegree-webservices-${project.version}. The port

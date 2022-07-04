@@ -52,9 +52,7 @@ the web application or the web application container to make the new
 code available to deegree webservices.
 
 NOTE: All Java libraries shipped with deegree webservices are located in the
-_WEB-INF/lib_ directory of the deegree webservices webapp. If you
-downloaded the ZIP version, this directory is located in
-_webapps/ROOT/WEB-INF/lib_.
+_WEB-INF/lib_ directory of the deegree webservices webapp.
 
 ==== Workspace classpath
 
@@ -73,7 +71,7 @@ classpath. This is usually not required.
 WARNING: Since deegree 3.4 jdbc drivers are not longer loaded from workspace
 classpath. Instead deegree follows the commonly used method to only use
 jdbc drivers which are available either by the system (shared or server
-libraries) or by the application (WEB-INF/lib).
+libraries) or by the application (_WEB-INF/lib_).
 
 === Checking available JARs
 
