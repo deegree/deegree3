@@ -40,8 +40,8 @@ http://schemas.deegree.org/3.5/datasource/metadata/iso19139/memory.xsd
 </ISOMemoryMetadataStore>
 ----
 
-The root element has to be _ISOMemoryMetadataStore_ and the config
-attribute must be _3.4.0_. The only mandatory element is:
+The root element has to be _ISOMemoryMetadataStore_ and the optional
+attribute `config` can be set to _3.5.0_. The only mandatory element is:
 
 * _ISORecordDirectory_: A list of directories containing records
 loaded in the store during start of the store.
@@ -96,8 +96,8 @@ http://schemas.deegree.org/3.5/datasource/metadata/iso19115/iso19115.xsd
 </ISOMetadataStore>
 ----
 
-The root element has to be _ISOMetadataStore_ and the config attribute
-must be _3.4.0_. The only mandatory element is:
+The root element has to be _ISOMetadataStore_ and the optional
+attribute `config` can be set to _3.5.0_. The only mandatory element is:
 
 * _JDBCConnId_: Id of the JDBC connection to use (see ...)
 

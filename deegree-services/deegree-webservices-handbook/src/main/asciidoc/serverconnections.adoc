@@ -243,8 +243,8 @@ creating an Oracle UCP connection pool.
 
 The database connection config file format is defined by schema file
 http://schemas.deegree.org/3.5/jdbc/datasource/datasource.xsd. The
-root element is _DataSourceConnectionProvider_ and the config
-attribute must be _3.4.0_. The following table lists the available
+root element is _DataSourceConnectionProvider_ and the optional
+attribute `config` can be set to _3.5.0_. The following table lists the available
 configuration options. When specifiying them, their order must be
 respected.
 
