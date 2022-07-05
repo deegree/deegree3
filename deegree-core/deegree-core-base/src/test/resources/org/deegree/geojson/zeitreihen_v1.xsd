@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Quelle: Freie und Hansestadt Hamburg, Behörde für Arbeit, Gesundheit, Soziales, Familie und Integration (Sozialbehörde) -->
+<!-- https://geodienste.hamburg.de/HH_WFS_Zuwanderung?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities -->
+<!-- Erweiterung von G. Helle (LGV HH) um zeitreihen-element/country-list -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:de.hh.up="https://registry.gdi-de.org/id/de.hh.up" xmlns:zeitreihe="http://www.deegree.org/datasource/feature/sql" xmlns:gml="http://www.opengis.net/gml/3.2" targetNamespace="http://www.deegree.org/datasource/feature/sql" elementFormDefault="qualified">
+	<xsd:element name="zeitreihe">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="zeitreihe:zeitreihen-element" maxOccurs="unbounded"/>	
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="zeitreihen-element">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="datum" type="zeitreihe:intervall-classification"/>
+				<xsd:element name="wert" type="xsd:string"/>
+				<xsd:element ref="zeitreihe:country-list" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="country-list">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="zeitreihe:country-complex" maxOccurs="unbounded"/>	
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+		<xsd:element name="country-complex">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="name" type="xsd:string"/>
+				<xsd:element name="pop" type="xsd:integer"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="intervall-classification">
+		<xsd:annotation>
+			<xsd:documentation>Definition der Zeitintervall-Typen</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-9][0-9][0-9][0-9]"/>
+			<xsd:pattern value="[0-9][0-9][0-9][0-9]-[0-9][0-9]"/>
+			<xsd:pattern value="[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

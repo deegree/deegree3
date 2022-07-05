@@ -49,12 +49,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import javax.xml.namespace.QName;
 
@@ -129,6 +131,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.protocol.wfs.getfeature.TypeName;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.DBField;
 import org.deegree.sqldialect.filter.Join;
@@ -305,7 +308,7 @@ public class SQLFeatureStore implements FeatureStore {
     @SuppressWarnings("unchecked")
     private CustomParticleConverter<TypedObjectNode> instantiateConverter( CustomConverterJAXB config ) {
         String className = config.getClazz();
-        LOG.info( "Instantiating configured custom particle converter (class=" + className + ")" );
+        LOG.debug( "Instantiating configured custom particle converter (class={})", className );
         try {
             return (CustomParticleConverter<TypedObjectNode>) workspace.getModuleClassLoader().loadClass( className ).newInstance();
         } catch ( Throwable t ) {
@@ -389,6 +392,80 @@ public class SQLFeatureStore implements FeatureStore {
             release( null, null, conn );
         }
         return env;
+    }
+
+    @Override
+    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return calcTemporalExtent( ftName, datetimeProperty );
+    }
+
+    @Override
+    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        if ( getSchema().getBlobMapping() != null ) {
+            LOG.warn( "Calculating temporal extent for blob mode is not supported" );
+            return null;
+        }
+
+        FeatureTypeMapping ftMapping = getMapping( ftName );
+        if ( ftMapping == null ) {
+            String msg = String.format(
+                            "Cannot calculate temporal extent on feature type '%s'. Feature type is not mapped.",
+                            ftName );
+            throw new FeatureStoreException( msg );
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            Mapping datetimeMapping = ftMapping.getMapping( datetimeProperty );
+            if ( datetimeMapping == null ) {
+                String msg = String.format(
+                                "Cannot calculate temporal extent  on feature type '%s'. Datetime property '%s' is not mapped.",
+                                ftName, datetimeProperty );
+                throw new FeatureStoreException( msg );
+            }
+
+            ParticleConverter<?> converter = getConverter( datetimeMapping );
+            String datetimeSnippet = converter.getSelectSnippet( null );
+
+            StringBuilder sql = new StringBuilder( "SELECT " );
+            sql.append( "min( " ).append( datetimeSnippet ).append( " ) as mindate, " );
+            sql.append( "max( " ).append( datetimeSnippet ).append( " ) as maxdate " );
+            sql.append( "FROM " );
+            sql.append( ftMapping.getFtTable() );
+
+            LOG.debug( "SQL: {}", sql );
+            long begin = System.currentTimeMillis();
+            stmt = conn.prepareStatement( sql.toString() );
+            LOG.debug( "Preparing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            begin = System.currentTimeMillis();
+            stmt.setFetchSize( fetchSize );
+            rs = stmt.executeQuery();
+            LOG.debug( "Executing SELECT took {} [ms] ", System.currentTimeMillis() - begin );
+
+            if ( rs.next() ) {
+                java.sql.Date mindate = rs.getDate( "mindate" );
+                java.sql.Date maxdate = rs.getDate( "maxdate" );
+                Date min = new Date( mindate.getTime() );
+                Date max = new Date( maxdate.getTime() );
+                return new Pair<>( min, max );
+            }
+        } catch ( Exception e ) {
+            String msg = String.format(
+                            "Error calculating temporal extent for feature type '%s' and date property '%s': %S",
+                            ftName, datetimeProperty, e.getMessage() );
+            LOG.error( msg, e );
+            throw new FeatureStoreException( msg, e );
+        } finally {
+            release( rs, stmt, conn );
+        }
+        return null;
     }
 
     Envelope calcEnvelope( QName ftName, Connection conn )
@@ -686,7 +763,7 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = getConnection();
             AbstractWhereBuilder wb = getWhereBuilder( featureTypeAndMappings.values(), filter,
-                                                       query.getSortProperties(), conn, query.isHandleStrict() );
+                                                       query.getSortProperties(), query.isHandleStrict() );
 
             if ( wb.getPostFilter() != null ) {
                 LOG.debug( "Filter not fully mappable to WHERE clause. Need to iterate over all features to determine count." );
@@ -1344,7 +1421,7 @@ public class SQLFeatureStore implements FeatureStore {
         try {
             conn = getConnection();
 
-            wb = getWhereBuilder( featureTypeAndMappings.values(), filter, query.getSortProperties(), conn, query.isHandleStrict() );
+            wb = getWhereBuilder( featureTypeAndMappings.values(), filter, query.getSortProperties(), query.isHandleStrict() );
             TableAliasManager aliasManager = wb.getAliasManager();
             LOG.debug( "WHERE clause: " + wb.getWhere() );
             LOG.debug( "ORDER BY clause: " + wb.getOrderBy() );
@@ -1523,14 +1600,19 @@ public class SQLFeatureStore implements FeatureStore {
     }
 
     private AbstractWhereBuilder getWhereBuilder( Collection<FeatureTypeMapping> ftMappings, OperatorFilter filter, SortProperty[] sortCrit,
-                                                  Connection conn, boolean handleStrict )
+                                                  boolean handleStrict )
                             throws FilterEvaluationException, UnmappableException {
-        PropertyNameMapper mapper = createPropertyNameMapper( ftMappings, handleStrict);
-        return dialect.getWhereBuilder( mapper, filter, sortCrit, allowInMemoryFiltering );
-    }
-
-    private PropertyNameMapper createPropertyNameMapper( Collection<FeatureTypeMapping> ftMappings, boolean handleStrict ) {
-        return new SQLPropertyNameMapper( this, ftMappings, handleStrict );
+        List<SortCriterion> defaultSortCriteria = null;
+        if( ftMappings != null ) {
+            Optional<FeatureTypeMapping> ftMapping = ftMappings.stream().findFirst();
+            if ( ftMapping.isPresent() ) {
+                defaultSortCriteria = ftMapping.get().getDefaultSortCriteria();
+            }
+        } else  {
+            LOG.warn( "Default sort criteria are currently not applied in queries with joins." );
+        }
+        PropertyNameMapper mapper = new SQLPropertyNameMapper( this, ftMappings, handleStrict );
+        return dialect.getWhereBuilder( mapper, filter, sortCrit, defaultSortCriteria, allowInMemoryFiltering );
     }
 
     private List<QName> collectFeatureTypesNames( Query query )
@@ -1585,7 +1667,7 @@ public class SQLFeatureStore implements FeatureStore {
                 return getMapping( propName, aliasManager );
             }
         };
-        return dialect.getWhereBuilder( mapper, filter, null, allowInMemoryFiltering );
+        return dialect.getWhereBuilder( mapper, filter, null, null, allowInMemoryFiltering );
     }
 
     public SQLDialect getDialect() {

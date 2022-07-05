@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<schema xmlns:ds="http://www.deegree.org/datasource/metadata/iso19139/memory" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/metadata/iso19139/memory" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.metadata.iso.persistence.memory.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ISOMemoryMetadataStore">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="ISOMemoryMetadataStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="ISORecordDirectory" type="string"  maxOccurs="unbounded"/>
+        <element name="InsertDirectory" type="string"  minOccurs="0"/>
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+</schema>

@@ -51,7 +51,7 @@ import org.deegree.workspace.Workspace;
  */
 public class JavaProcessProviderProvider extends ProcessProviderProvider {
 
-    private static final URL JAXB_CONFIG_SCHEMA = JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/3.4.0/java.xsd" );
+    private static final URL JAXB_CONFIG_SCHEMA = JavaProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/java/java.xsd" );
 
     private static final String CONFIG_NS = "http://www.deegree.org/processes/java";
 

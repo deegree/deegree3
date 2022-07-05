@@ -45,7 +45,7 @@ import org.deegree.workspace.ResourceMetadata;
 
 public class ServiceConfig extends Config {
 
-    private static final URL METADATA_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/metadata/3.4.0/example.xml" );
+    private static final URL METADATA_EXAMPLE_URL = ServicesBean.class.getResource( "/META-INF/schemas/services/metadata/example.xml" );
 
     public ServiceConfig( ResourceMetadata<?> metadata, ResourceManager<?> resourceManager ) {
         super( metadata, resourceManager, "/console/webservices/index", true );

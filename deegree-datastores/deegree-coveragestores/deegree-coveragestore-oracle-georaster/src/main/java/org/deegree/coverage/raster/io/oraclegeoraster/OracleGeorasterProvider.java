@@ -45,7 +45,7 @@ import org.deegree.workspace.Workspace;
  */
 public class OracleGeorasterProvider extends CoverageProvider {
 
-    private static final URL CONFIG_SCHEMA = OracleGeorasterProvider.class.getResource( "/META-INF/schemas/datasource/coverage/oraclegeoraster/3.4.0/oraclegeoraster.xsd" );
+    private static final URL CONFIG_SCHEMA = OracleGeorasterProvider.class.getResource( "/META-INF/schemas/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd" );
 
     @Override
     public String getNamespace() {

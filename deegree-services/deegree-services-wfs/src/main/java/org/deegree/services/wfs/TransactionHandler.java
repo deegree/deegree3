@@ -126,7 +126,6 @@ import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.reference.FeatureReference;
-import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
 import org.deegree.protocol.wfs.transaction.ReleaseAction;
 import org.deegree.protocol.wfs.transaction.Transaction;
 import org.deegree.protocol.wfs.transaction.TransactionAction;
@@ -399,6 +398,7 @@ class TransactionHandler {
         try {
             XMLStreamReader xmlStream = insert.getFeatures();
             FeatureCollection fc = parseFeaturesOrCollection( xmlStream, inputFormat, defaultCRS );
+            evaluateValidDomainOfGeometriesInFeature( fc, insert.getHandle() );
             FeatureStore fs = service.getStores()[0];
             FeatureStoreTransaction ta = acquireTransaction( fs );
             IDGenMode mode = insert.getIdGen();
@@ -946,6 +946,49 @@ class TransactionHandler {
             }
         }
         return null;
+    }
+
+    private void evaluateValidDomainOfGeometriesInFeature( FeatureCollection fc, String handle )
+                    throws OWSException {
+        if ( this.master.isTransactionCheckAreaOfUse() ) {
+            for ( Feature feature : fc )
+                evaluateValidDomainOfGeometriesInFeature( feature, handle );
+        }
+    }
+
+    private void evaluateValidDomainOfGeometriesInFeature( Feature feature, String handle )
+                    throws OWSException {
+        Set<Geometry> geometries = new LinkedHashSet<>();
+        findFeaturesAndGeometries( feature, geometries, new LinkedHashSet<>(), new LinkedHashSet<>(),
+                                   new LinkedHashSet<>() );
+        for ( Geometry geometry : geometries ) {
+            ICRS crs = geometry.getCoordinateSystem();
+            evaluateValidDomain( feature, crs, geometry, handle );
+        }
+    }
+
+    private void evaluateValidDomain( Feature feature, ICRS crs, Geometry geometry, String handle )
+                    throws OWSException {
+        if ( crs == null ) {
+            LOG.warn( "CRS of geometry of fetaure with id {} is not available. Check if geometry is inside the valid "
+                      + "domain not possible. The check is skipped and insert processed.", feature.getId() );
+            return;
+        }
+        double[] validDomain = crs.getValidDomain();
+        if ( validDomain == null ) {
+            LOG.warn( "Valid domain of crs {} is not available (concerns feature with id {}). Check if geometry is inside the valid "
+                      + "domain not possible. The check is skipped and insert processed.", crs.getAlias(),
+                      feature.getId() );
+            return;
+        }
+        Envelope validDomainBbox = GEOM_FACTORY.createEnvelope( validDomain[0], validDomain[1], validDomain[2],
+                                                                validDomain[3], crs );
+        if ( !geometry.isWithin( validDomainBbox ) ) {
+            String message = "At least one geometry is not in the valid domain of the srs.";
+            if ( handle == null || "".equals( handle ) )
+                handle = "Transaction";
+            throw new OWSException( message, OWSException.OPERATION_PROCESSING_FAILED, handle );
+        }
     }
 
 }

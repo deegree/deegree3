@@ -35,24 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
-import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.junit.Assert.assertThat;
-import static org.xmlmatchers.XmlMatchers.isSimilarTo;
-import static org.xmlmatchers.transform.XmlConverters.the;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.apache.commons.io.IOUtils;
 import org.deegree.commons.xml.stax.IndentingXMLStreamWriter;
 import org.deegree.filter.Filter;
@@ -60,6 +42,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.xmlunit.matchers.CompareMatcher;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.io.IOUtils.toInputStream;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -78,7 +77,7 @@ public class Filter200XMLEncoderParameterizedTest {
 
     @Parameters
     public static List<Object[]> data()
-                            throws IOException {
+                    throws IOException {
         List<Object[]> filterTests = new ArrayList<Object[]>();
         filterTests.add( new Object[] { "testfilter1.xml", asString( "v200/testfilter1.xml" ) } );
         filterTests.add( new Object[] { "testfilter3.xml", asString( "v200/testfilter3.xml" ) } );
@@ -110,7 +109,7 @@ public class Filter200XMLEncoderParameterizedTest {
 
     @Test
     public void testExport()
-                            throws Exception {
+                    throws Exception {
         Filter filter = parseFilter( filterUnderTest );
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -119,18 +118,20 @@ public class Filter200XMLEncoderParameterizedTest {
         Filter200XMLEncoder.export( filter, writer );
         out.close();
 
-        assertThat( "Failed test: " + testName, the( bos.toString() ), isSimilarTo( the( filterUnderTest ) ) );
+        assertThat( "Failed test: " + testName, bos.toString(),
+                    CompareMatcher.isSimilarTo( filterUnderTest ).ignoreWhitespace() );
     }
 
     private static String asString( String filterResource )
-                            throws IOException {
+                    throws IOException {
         InputStream resourceAsStream = Filter200XMLEncoderParameterizedTest.class.getResourceAsStream( filterResource );
-        return IOUtils.toString( resourceAsStream );
+        return IOUtils.toString( resourceAsStream, UTF_8 );
     }
 
     private Filter parseFilter( String filterAsString )
-                            throws XMLStreamException, FactoryConfigurationError {
-        XMLStreamReader in = XMLInputFactory.newInstance().createXMLStreamReader( toInputStream( filterAsString ) );
+                    throws XMLStreamException, FactoryConfigurationError {
+        XMLStreamReader in = XMLInputFactory.newInstance().createXMLStreamReader(
+                        toInputStream( filterAsString, UTF_8 ) );
         in.nextTag();
         return Filter200XMLDecoder.parse( in );
     }

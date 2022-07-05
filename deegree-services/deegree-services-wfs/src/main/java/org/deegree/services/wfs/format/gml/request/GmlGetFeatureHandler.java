@@ -584,8 +584,10 @@ public class GmlGetFeatureHandler extends AbstractGmlRequestHandler {
                             featuresAdded++;
                         }
                     } else {
-                        allFeatures.add( feature );
-                        fids.add( feature.getId() );
+                        if ( !fids.contains( feature.getId() ) ) {
+                            allFeatures.add( feature );
+                            fids.add( feature.getId() );
+                        }
                     }
                 }
             } finally {

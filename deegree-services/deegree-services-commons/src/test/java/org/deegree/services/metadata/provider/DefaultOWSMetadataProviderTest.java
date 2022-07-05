@@ -44,7 +44,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.ExtendedDescription;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
@@ -111,8 +113,9 @@ public class DefaultOWSMetadataProviderTest {
         for ( String url : urls ) {
             metadataUrls.add( new MetadataUrl( url, "ISO19115:2003", "application/xml" ) );
         }
+        List<ExtendedDescription> extendedDescriptions = new ArrayList<>();
         return new DatasetMetadata( new QName( name ), titles, abstracts, keywords, metadataUrls, externalIds,
-                                    dataUrls, featureListUrls, attribution );
+                                    dataUrls, featureListUrls, attribution, extendedDescriptions );
     }
 
 }
