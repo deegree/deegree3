@@ -22,7 +22,7 @@ NOTE: Newer Java SE versions such as the LTS versions 17 are currently not suppo
 === Downloading
 
 deegree webservices downloads are available on the
-http://www.deegree.org[deegree home page]. You have the choice between:
+http://www.deegree.org/download[deegree home page]. You have the choice between:
 
 * _Docker_ : Docker Image with deegree webservices on OpenJDK and Apache
 Tomcat footnote:[Requires an installation of Docker Community or
@@ -39,7 +39,14 @@ they only differ in packaging.
 
 === Starting and stopping
 
-In order to run the WAR version, move it into the local deployment directory of your Java Servlet container. For Apache Tomcat this is the directory `$CATALINA_HOME/webapps`. Afterwards, start the Java Servlet container. To start Apache Tomcat open a terminal and change to the directory `$CATALINA_HOME/bin`` and fire up the included start script for your operating system `startup.sh` for Linux or `startup.bat` for Windows.
+In order to run the WAR version, move it into the local deployment directory of your Java Servlet container. For Apache Tomcat this is the directory _$CATALINA_HOME/webapps_. Afterwards, start the Java Servlet container. To start Apache Tomcat open a terminal and change to the directory _$CATALINA_HOME/bin_ and fire up the included start script for your operating system _startup.sh_ for Linux or _startup.bat_ for Windows.
+
+TIP: If you deploy the WAR into
+a web container, you most probably will have to use a different URL for
+accessing the deegree console and webservices, e.g.
+http://localhost:8080/deegree-webservices-${project.version}. The port
+number and webapp name depend on your installation and deployment setup.
+In the following the base URL http://localhost:8080/deegree-webservices without the version number will be used. You may rename the WAR file from _deegree-webservices-${project.version}.war_ to _deegree-webservices.war_ before deploying it.
 
 You should now see a terminal window on your screen with a lot of log
 messages:
@@ -47,15 +54,15 @@ messages:
 .deegree webservices starting up
 image::terminal.png[deegree webservices starting up,scaledwidth=50.0%]
 
-TIP: If you don't the application starting, make sure that the _java_
+TIP: If the application isn't starting, make sure that the _java_
 command is on the system path. You can verify this by entering
 _java -version_ at the command prompt. Also ensure that _JAVA_HOME_
 system environment variable points to the correct installation directory
 of a compatible JDK.
 
-You may minimize this window, but don't close it as long as you want to
+You may minimize the terminal window, but don't close it as long as you want to
 be able to use the deegree webservices. In order to check if the
-services are actually running, open http://localhost:8080 in your
+services are actually running, open http://localhost:8080/deegree-webservices in your
 browser. You should see the following page:
 
 .deegree webservices administration console

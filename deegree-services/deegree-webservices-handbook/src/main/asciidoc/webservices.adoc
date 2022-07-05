@@ -783,9 +783,9 @@ ad:Address feature type from INSPIRE Annex I. It defines the stored
 query _urn:x-inspire:storedQuery:GetAddressesForStreet_ for retrieving
 ad:Address features that are located in the specified street. The street
 name is passed using parameter _streetName_. If your WFS instance can
-be reached at _http://localhost:8080/services_, you could use the
+be reached at _http://localhost:8080/deegree-webservices/services_, you could use the
 request
-_http://localhost:8080/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat_
+_http://localhost:8080/deegree-webservices/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat_
 to fetch the ad:Address features in street Madame Curiestraat.
 
 The attribute returnFeatureTypes of QueryExpressionText can be left
