@@ -105,14 +105,10 @@ public class JTSPoints implements Points {
     @Override
     public Iterator<Point> iterator() {
 
-        return new Iterator<Point>() {
+        return new Iterator<>() {
 
             private int idx = 0;
 
-            private double[] pointCoordinates = new double[getDimension()];
-
-            @SuppressWarnings("synthetic-access")
-            private DefaultPoint point = new DefaultPoint( null, crs, null, pointCoordinates );
 
             @Override
             public boolean hasNext() {
@@ -124,11 +120,12 @@ public class JTSPoints implements Points {
                 if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
+                double[] pointCoordinates = new double[getDimension()];
                 for ( int i = 0; i < getDimension(); i++ ) {
                     pointCoordinates[i] = getOrdinate( idx, i );
                 }
                 idx++;
-                return point;
+                return new DefaultPoint( null, crs, null, pointCoordinates );
             }
 
             @Override
