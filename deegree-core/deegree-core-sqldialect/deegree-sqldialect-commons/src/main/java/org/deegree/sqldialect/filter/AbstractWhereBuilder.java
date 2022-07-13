@@ -77,6 +77,7 @@ import org.deegree.filter.logical.Not;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.SQLDialect;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
@@ -313,6 +314,9 @@ public abstract class AbstractWhereBuilder {
             sql = toProtoSQL( (SpatialOperator) op );
             break;
         }
+        case TEMPORAL: {
+            sql = toProtoSQL( (TemporalOperator) op );
+        }
         }
         return sql;
     }
@@ -487,7 +491,7 @@ public abstract class AbstractWhereBuilder {
         return sqlOper;
     }
 
-    private void inferType( SQLExpression expr1, SQLExpression expr2 ) {
+    protected void inferType( SQLExpression expr1, SQLExpression expr2 ) {
         PrimitiveType pt1 = expr1.getPrimitiveType();
         PrimitiveType pt2 = expr2.getPrimitiveType();
         if ( pt1 == null && pt2 != null ) {
@@ -501,7 +505,7 @@ public abstract class AbstractWhereBuilder {
         }
     }
 
-    private void inferType( SQLExpression expr1, SQLExpression expr2, SQLExpression expr3 ) {
+    protected void inferType( SQLExpression expr1, SQLExpression expr2, SQLExpression expr3 ) {
         PrimitiveType pt1 = expr1.getPrimitiveType();
         PrimitiveType pt2 = expr2.getPrimitiveType();
         PrimitiveType pt3 = expr3.getPrimitiveType();
@@ -535,6 +539,10 @@ public abstract class AbstractWhereBuilder {
         Literal<PrimitiveValue> escapedLiteral = new Literal<PrimitiveValue>( new PrimitiveValue( s ), null );
         return new PropertyIsLike( (ValueReference) propName, escapedLiteral, wildCard, singleChar, escapeChar,
                                    matchCase, null );
+    }
+
+    protected void addExpression( SQLOperationBuilder builder, SQLExpression expr ) {
+        addExpression( builder, expr, true );
     }
 
     protected void addExpression( SQLOperationBuilder builder, SQLExpression expr, Boolean matchCase ) {
@@ -657,6 +665,23 @@ public abstract class AbstractWhereBuilder {
      */
     protected abstract SQLOperation toProtoSQL( SpatialOperator op )
                             throws UnmappableException, FilterEvaluationException;
+
+    /**
+     * Translates the given {@link TemporalOperator} into an {@link SQLOperation}.
+     * 
+     * @param op
+     *            temporal operator to be translated, must not be <code>null</code>
+     * @return corresponding SQL expression, may be <code>null</code>
+     * @throws UnmappableException
+     *             if translation is not possible (usually due to unmappable property names)
+     * @throws FilterEvaluationException
+     *             if the filter contains invalid {@link ValueReference}s
+     */
+    protected SQLOperation toProtoSQL( TemporalOperator op )
+                            throws UnmappableException, FilterEvaluationException {
+        LOG.warn( "Mapping of temporal operators to SQL is not implemented (and probably not possible)." );
+        return null;
+    }
 
     /**
      * Translates the given {@link Expression} into an {@link SQLExpression}.
@@ -837,7 +862,8 @@ public abstract class AbstractWhereBuilder {
                 throw new UnmappableException( "Only primitive valued literals are currently supported." );
             }
         }
-        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null, false );
+        PrimitiveParticleConverter converter = new DefaultPrimitiveConverter( new PrimitiveType( STRING ), null,
+                                                                              false );
         return new SQLArgument( null, converter );
     }
 

@@ -1,0 +1,147 @@
+[[anchor-configuration-restapi]]
+== deegree REST interface
+
+deegree offers a REST like web interface to access and configure the
+deegree workspace. You can use it to alter configuration, restart
+workspaces or resources and start a different workspace.
+
+=== Setting up the interface
+
+The servlet that handles the REST interface is already running if you
+use the standard _web.xml_ deployment descriptor. For security reasons
+the REST API is only accessible after successful authentication against
+the servlet container. When using Apache Tomcat you'll need to add a
+user with the role _deegree_ to your Tomcat configuration
+_conf/tomcat-users.xml_ file.
+
+Once you did that, you can get an overview of available 'commands' by
+requesting _http://localhost:8080/deegree-webservices/config_. You'll
+need to provide the username/password credentials you configured for
+every request within the HTTP header (HTTP BASIC authentication).
+
+Here's an example output:
+
+....
+No action specified.
+
+Available actions:
+GET /config/download[/path]                                  - download currently running workspace or file in workspace
+GET /config/download/wsname[/path]                           - download workspace with name <wsname> or file in workspace
+GET /config/restart                                          - restart currently running workspace
+GET /config/restart[/path]                                   - restarts all resources connected to the specified one
+GET /config/restart/wsname                                   - restart with workspace <wsname>
+GET /config/update                                           - update currently running workspace, rescan config files and update resources
+GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources
+GET /config/listworkspaces                                   - list available workspace names
+GET /config/list[/path]                                      - list currently running workspace or directory in workspace
+GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace
+GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set
+GET /config/crs/list                                         - list available CRS definitions
+POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)
+GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false
+PUT /config/upload/wsname.zip                                - upload workspace <wsname>
+PUT /config/upload/path/file                                 - upload file into current workspace
+PUT /config/upload/wsname/path/file                          - upload file into workspace with name <wsname>
+DELETE /config/delete[/path]                                 - delete currently running workspace or file in workspace
+DELETE /config/delete/wsname[/path]                          - delete workspace with name <wsname> or file in workspace
+
+HTTP response codes used:
+200 - ok
+403 - if you tried something you shouldn't have
+404 - if a file or directory needed to fulfill a request was not found
+500 - if something seriously went wrong on the server side
+....
+
+=== Detailed explanation
+
+Let's see how the commands work in detail. In general, you can specify a
+path relative to the workspace almost anywhere. With no path given, you
+act on the workspace, with a path given, you act on that part of the
+workspace.
+
+==== Downloading
+
+In order to download the complete workspace, you request
+_http://localhost:8080/deegree-webservices/config/download_. Since the
+workspace is made up of many files, you get a _.zip_ file. If you just
+want to download the featurestore configuration named _inspire_, you
+request
+_http://localhost:8080/deegree-webservices/config/download/datasources/feature/inspire.xml_.
+
+To use a different workspace instead of the currently running one, use
+_http://localhost:8080/deegree-webservices/config/download/otherworkspace_
+(you may also specify a file within that workspace).
+
+==== Restarting
+
+You can restart the currently running workspace using
+_http://localhost:8080/deegree-webservices/config/restart_, or start
+another workspace using
+_http://localhost:8080/deegree-webservices/config/restart/anotherworkspace_.
+To restart all resources connected a specific one use eg.
+_http://localhost:8080/deegree-webservices/config/restart/datasources/feature/inspire_.
+
+==== Updating
+
+You can update the currently running workspace using
+`http://localhost:8080/deegree-webservices/config/update`,
+or by name `http://localhost:8080/deegree-webservices/config/update/thisworkspace`.
+Updating a workspace means that all resource changed since the last update or restart are restarted.
+
+==== Listing
+
+You can see what workspaces are available to the deegree installation by
+running
+_http://localhost:8080/deegree-webservices/config/listworkspaces_.
+
+You can also browse through a workspace's files by requesting eg.
+_http://localhost:8080/deegree-webservices/config/list/datasources/_,
+or to see the files in a workspace other than the one currently running
+_http://localhost:8080/deegree-webservices/config/list/someworkspace/services/_.
+
+==== Storing
+
+You can update or add files in a workspace, or upload a completely new
+workspace by sending a HTTP PUT request.
+
+To upload a new workspace, send a _.zip_ file with the workspace
+contents to
+_http://localhost:8080/deegree-webservices/config/upload/someworkspace.zip_.
+This will extract the workspace as _someworkspace_. Note that there
+should not be a parent directory in the _.zip_, it should contain
+folders like _datasources_ or _service_ directly.
+
+To upload individual files send requests against
+_http://localhost:8080/deegree-webservices/config/upload/path/to/file.xml_,
+or with a workspace name prefix as usual
+(_http://localhost:8080/deegree-webservices/config/upload/someworkspace/and/the/path/file.xml_).
+
+==== Deleting
+
+Deletion works just like storing, except you send HTTP DELETE requests
+and instead of the _upload_ path component you use _delete_. You can
+also delete whole directories with content by specifying just the path
+to the directory. Deleting workspaces is also possible, just specify the
+workspace name (without a _.zip_ suffix).
+
+==== Invalidating tile store caches
+
+This is a special operation only possible for _CachingTileStore_
+resources. You can invalidate the whole cache, or just a part of it by
+requesting
+_http://localhost:8080/deegree-webservices/config/invalidate/datasources/tile/configname/matrixsetname_.
+You can specify a bounding box by appending it in the form
+_?bbox=minx,miny,maxx,maxy_ (just like in WMS requests).
+
+==== CRS queries
+
+You can get a list of all available CRS definitions by requesting
+_http://localhost:8080/deegree-webservices/config/crs/list_. Check if
+a specific CRS is configured in deegree by requesting
+_http://localhost:8080/deegree-webservices/config/crs/EPSG:12345_. The
+response will be the text _true_ or _false_, depending whether the
+CRS is defined or not. If you have a WKT CRS definition, you can POST
+against
+_http://localhost:8080/deegree-webservices/config/crs/getcodes_ to get
+a list of corresponding identifiers (experimental). Use the _wkt_
+parameter when posting to send the WKT definition.

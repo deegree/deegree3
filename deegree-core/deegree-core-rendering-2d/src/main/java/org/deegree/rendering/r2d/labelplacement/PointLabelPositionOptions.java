@@ -45,8 +45,8 @@ import org.deegree.style.styling.TextStyling;
 import org.deegree.style.utils.UomCalculator;
 import org.slf4j.Logger;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 
 
 /**
@@ -64,7 +64,7 @@ public class PointLabelPositionOptions {
 
     
     private static final Logger LOG = getLogger( PointLabelPositionOptions.class );
-    protected final static com.vividsolutions.jts.geom.GeometryFactory jtsFactory = new com.vividsolutions.jts.geom.GeometryFactory();
+    protected final static org.locationtech.jts.geom.GeometryFactory jtsFactory = new org.locationtech.jts.geom.GeometryFactory();
     
     /**
      * Some constants, describing the 8 possible positions of the label and their qualities.

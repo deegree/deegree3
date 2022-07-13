@@ -481,6 +481,22 @@ public class WKTWriterTest extends TestCase {
                       writer.toString() );
 
     }
+    
+    @Test
+    public void test_MultiLineString()
+                            throws XMLParsingException, XMLStreamException, FactoryConfigurationError, IOException,
+                            UnknownCRSException {
+
+        Set<WKTFlag> flag = new HashSet<WKTFlag>();
+        Writer writer = new StringWriter();
+        WKTWriter WKTwriter = new WKTWriter( flag, decimalFormatter );
+        Geometry geom = parseGeometry( "MultiLineString.gml" );
+        WKTwriter.writeGeometry( geom, writer );
+        // System.out.print( writer.toString() + "\n" );
+        assertEquals( "MULTILINESTRING ((7.1 50.7,10.0 53.5,13.4 52.5),(7.1 50.7,10.0 53.5,13.4 52.5))", writer.toString() );
+
+    }
+    
 
     // ############################## PARSING THE GEOMETRY-FILE
     private Geometry parseGeometry( String fileName )

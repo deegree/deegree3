@@ -70,12 +70,11 @@ Our issue tracking system is:
 - TMC `tmc AT SPAMFREE deegree DOT org` (Who is the [TechnicalManagementCommittee](#technical-management-committee) and what do they do?)
 
 ### IRC Channel
-Channel #deegree on freenode.net (irc://freenode.net). Choose an IRC client for your platform or use the webclient for connecting:
+Channel #deegree on libera.chat (irc://irc.libera.chat/deegree). Choose an IRC client for your platform or use the webclient for connecting:
 
-Open the freenode web client or enter `/network freenode` in your chat client:
+Open the web client at https://web.libera.chat/#deegree
 - Choose a nickname
 - Enter channel #deegree or type `/join #deegree` in your chat client
-- Solve captcha
 - Connect
 
 ### Social Media
@@ -184,6 +183,31 @@ code. For the committer themselves understanding about the license is hopefully 
 committer should verify the understanding unless the committer is very comfortable that the contributor understands the 
 license (for instance frequent contributors).
 
-All committers are responsible for having read, and understood this document. And please confirm acceptance to these 
+If the contribution was developed on behalf of an employer (on work time, as part of a work project, etc) then it is 
+important that an appropriate representative of the employer understand that the code will be contributed under the 
+LGPL license. The arrangement should be cleared with an authorized supervisor, manager, or director.
+
+The code should be developed by the contributor, or the code should be from a source which can be rightfully contributed
+such as from the public domain, or from an open source project under a compatible license. All unusual situations need 
+to be discussed with the committee members and documented.
+
+Committers should adhere to the following guidelines, and may be personally legally liable for improperly contributing 
+code to the source repository:
+
+- Make sure the contributor (and possibly employer) is aware of the contribution terms.
+- Code coming from a source other than the contributor (such as adapted from another project) should be clearly marked 
+as to the original source, copyright holders, license terms and so forth. This information can be in the file headers, 
+but should also be added to the project licensing file if not exactly matching normal project licensing (LICENSE.txt).
+- Existing copyright headers and license text should never be stripped from a file. If a copyright holder wishes to give
+ up copyright they must do so in writing to the committees before copyright messages are removed. If license terms are 
+ changed it has to be by agreement (written in email is ok) of the copyright holders.
+- Code with licenses requiring credit, or disclosure to users should be added to LICENSE.TXT.
+- When substantial contributions are added to a file (such as substantial patches) the author/contributor should be added
+ to the list of copyright holders for the file.
+- If there is uncertainty about whether a change it proper to contribute to the code base, please seek more information 
+from the project steering committee, or the OSGeo foundation legal counsel.
+
+All committers are responsible for having read, and understood this document. And confirm acceptance to these 
 guidelines by sending an email to the mailing list with subject `Committer guidelines acceptance` and body 
 `I hereby accept the deegree committer guidelines. <Date> <Your Full Name>`.
+

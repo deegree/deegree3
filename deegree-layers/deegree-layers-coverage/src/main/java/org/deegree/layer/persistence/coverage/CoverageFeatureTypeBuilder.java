@@ -41,18 +41,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.coverage;
 
-import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.InputStream;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.xml.GenericLSInput;
+import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.GenericAppSchema;
-import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.gml.schema.GMLAppSchemaReader;
+import org.slf4j.Logger;
+import org.w3c.dom.ls.LSInput;
 
 /**
  * Builds the standard coverage feature type for feature info.
@@ -64,15 +64,20 @@ import org.deegree.feature.types.property.SimplePropertyType;
  */
 class CoverageFeatureTypeBuilder {
 
+    private static final Logger LOG = getLogger( CoverageFeatureTypeBuilder.class );
+
     static FeatureType buildFeatureType() {
-        List<PropertyType> pts = new LinkedList<PropertyType>();
-        pts.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "value", "app" ), 0, -1, DECIMAL,
-                                         null, null ) );
-        FeatureType featureType = new GenericFeatureType( new QName( "http://www.deegree.org/app", "data", "app" ),
-                                                          pts, false );
-        // needed to get the back reference to the schema into the featureType (it's a strange mechanism indeed)
-        new GenericAppSchema( new FeatureType[] { featureType }, null, null, null, null, null );
-        return featureType;
+        try {
+            LSInput input = new GenericLSInput();
+            InputStream schema = CoverageFeatureTypeBuilder.class.getResourceAsStream( "gfiSchema.xsd" );
+            input.setByteStream( schema );
+            GMLAppSchemaReader decoder = new GMLAppSchemaReader( null, null, input );
+            AppSchema extractAppSchema = decoder.extractAppSchema();
+            return extractAppSchema.getFeatureType( new QName( "http://www.deegree.org/app", "data", "app" ) );
+        } catch ( Exception e ) {
+            LOG.error( "Could not read schema for GFI response on CoverageFeatureType", e );
+            return null;
+        }
     }
 
 }

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<GetPropertyValue version="2.0.0" service="WFS" valueReference="ad:component/ad:ThoroughfareName/ad:beginLifespanVersion"
-  xmlns="http://www.opengis.net/wfs/2.0" xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0" xmlns:base="urn:x-inspire:specification:gmlas:BaseTypes:3.2"
-  xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.opengis.net/wfs/2.0
-http://schemas.opengis.net/wfs/2.0/wfs.xsd">
-  <Query typeNames="ad:Address" />
-</GetPropertyValue>

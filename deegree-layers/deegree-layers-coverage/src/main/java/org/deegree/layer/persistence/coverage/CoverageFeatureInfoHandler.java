@@ -46,10 +46,15 @@ import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
 import org.deegree.commons.tom.primitive.BaseType;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -66,6 +71,7 @@ import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
+import org.deegree.layer.dims.Dimension;
 import org.slf4j.Logger;
 
 /**
@@ -80,6 +86,8 @@ class CoverageFeatureInfoHandler {
 
     private static final Logger LOG = getLogger( CoverageFeatureInfoHandler.class );
 
+    private static final QName VALUE_PROP = new QName( "http://www.deegree.org/app", "value", "app" );
+
     private AbstractRaster raster;
 
     private Envelope bbox;
@@ -88,17 +96,21 @@ class CoverageFeatureInfoHandler {
 
     private InterpolationType interpol;
 
+    private CoverageDimensionHandler dimensionHandler;
+
     CoverageFeatureInfoHandler( AbstractRaster raster, Envelope bbox, FeatureType featureType,
-                                InterpolationType interpol ) {
+                                InterpolationType interpol, CoverageDimensionHandler dimensionHandler ) {
         this.raster = raster;
         this.bbox = bbox;
         this.featureType = featureType;
         this.interpol = interpol;
+        this.dimensionHandler = dimensionHandler;
     }
 
     FeatureCollection handleFeatureInfo() {
         try {
-            SimpleRaster res = transform( raster, bbox, Grid.fromSize( 1, 1, MAX_VALUE, bbox ), interpol.toString() ).getAsSimpleRaster();
+            SimpleRaster res = transform( raster, bbox, Grid.fromSize( 1, 1, MAX_VALUE, bbox ),
+                                          interpol.toString() ).getAsSimpleRaster();
             RasterData data = res.getRasterData();
             GenericFeatureCollection col = new GenericFeatureCollection();
             List<Property> props = new LinkedList<Property>();
@@ -108,7 +120,7 @@ class CoverageFeatureInfoHandler {
             case USHORT: {
                 PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ),
                                                          new PrimitiveType( BaseType.DECIMAL ) );
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
+                props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
                 break;
             }
             case BYTE: {
@@ -116,7 +128,7 @@ class CoverageFeatureInfoHandler {
                 for ( int i = 0; i < data.getBands(); ++i ) {
                     PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ),
                                                              new PrimitiveType( BaseType.DECIMAL ) );
-                    props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
+                    props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
                 }
                 break;
             }
@@ -125,12 +137,12 @@ class CoverageFeatureInfoHandler {
             case UNDEFINED:
                 LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
             case FLOAT:
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
+                props.add( new GenericProperty( findValueProperty(), null,
                                                 new PrimitiveValue( new BigDecimal( data.getFloatSample( 0, 0, 0 ) ),
-                                                                    new PrimitiveType( BaseType.DECIMAL ) ) ) );
+                                                                    new PrimitiveType( BaseType.DECIMAL ) ),
+                                                createAttributeList() ) );
                 break;
             }
-
             Feature f = new GenericFeature( featureType, null, props, null );
             col.add( f );
             return col;
@@ -139,6 +151,35 @@ class CoverageFeatureInfoHandler {
             LOG.error( "Unable to create raster feature info: {}", e.getLocalizedMessage() );
         }
         return null;
+    }
+
+    private PropertyType findValueProperty() {
+        List<PropertyType> propertyDeclarations = featureType.getPropertyDeclarations();
+        for ( PropertyType propertyType : propertyDeclarations ) {
+            if ( VALUE_PROP.equals( propertyType.getName() ) ) {
+                return propertyType;
+            }
+        }
+        LOG.warn( "Could not find property with name 'value', use the first property." );
+        return propertyDeclarations.get( 0 );
+    }
+
+    private Map<QName, PrimitiveValue> createAttributeList() {
+        Map<QName, PrimitiveValue> attrs = new HashMap<QName, PrimitiveValue>();
+        if ( dimensionHandler != null && dimensionHandler.getDimension() != null ) {
+            Dimension<?> dimension = dimensionHandler.getDimension();
+            String uom = createUom( dimension );
+            if ( uom != null )
+                attrs.put( new QName( "uom" ), new PrimitiveValue( uom ) );
+        }
+        return attrs;
+    }
+
+    private String createUom( Dimension<?> dimension ) {
+        String unitSymbol = dimension.getUnitSymbol();
+        if ( unitSymbol != null && unitSymbol.length() > 0 )
+            return unitSymbol;
+        return dimension.getUnits();
     }
 
 }

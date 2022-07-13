@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
-  <version>3.4.4-SNAPSHOT</version>
+  <version>3.4.27-SNAPSHOT</version>
   <name>deegree</name>
   <description>Framework for OGC Web Service implementations and geospatial applications</description>
   <url>http://www.deegree.org/</url>
@@ -19,7 +19,7 @@
   <repositories>
     <repository>
       <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <url>https://repo.deegree.org/content/groups/public/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -32,11 +32,11 @@
   <distributionManagement>
     <repository>
       <id>deegree-releases</id>
-      <url>http://repo.deegree.org/content/repositories/releases/</url>
+      <url>https://repo.deegree.org/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
       <id>deegree-snapshots</id>
-      <url>http://repo.deegree.org/content/repositories/snapshots/</url>
+      <url>https://repo.deegree.org/content/repositories/snapshots/</url>
     </snapshotRepository>
     <site>
       <id>apidoc.deegree.org</id>
@@ -50,7 +50,7 @@
   <pluginRepositories>
     <pluginRepository>
       <id>deegree-plugin-repo</id>
-      <url>http://repo.deegree.org/content/groups/public/</url>
+      <url>https://repo.deegree.org/content/groups/public/</url>
       <releases>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
@@ -107,11 +107,6 @@
           </dependencies>
         </plugin>
         <plugin>
-          <groupId>org.deegree</groupId>
-          <artifactId>deegree-maven-plugin</artifactId>
-          <version>${deegree-maven-plugin.version}</version>
-        </plugin>
-        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.7</version>
@@ -135,11 +130,6 @@
           <version>1.1</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.2</version>
-        </plugin>
-        <plugin>
           <groupId>org.antlr</groupId>
           <artifactId>antlr3-maven-plugin</artifactId>
           <version>3.4</version>
@@ -147,16 +137,20 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.16</version>
+          <version>2.22.2</version>
           <configuration>
             <!-- Travis build workaround -->
-            <argLine>-Xms1024m -Xmx2048m</argLine>
+            <argLine>-Djava.awt.headless=true -Xms1024m -Xmx2048m</argLine>
+            <forkCount>1</forkCount>
+            <reuseForks>true</reuseForks>
+            <skip>${skip.unit.tests}</skip>
+            <trimStackTrace>true</trimStackTrace>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.16</version>
+          <version>2.22.2</version>
         </plugin>
         <!-- reporting and site -->
         <plugin>
@@ -195,7 +189,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.3</version>
+          <version>3.8.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -231,6 +225,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-plugin</artifactId>
           <version>1.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.asciidoctor</groupId>
+          <artifactId>asciidoctor-maven-plugin</artifactId>
+          <version>2.2.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -300,6 +299,9 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
             <!-- extend default manifest with deegree build information -->
             <manifestEntries>
               <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
@@ -320,13 +322,14 @@
             <goals>
               <goal>enforce</goal>
             </goals>
+            <phase>initialize</phase>
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.0.5</version>
+                  <version>[3.6.0,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>1.8</version>
+                  <version>[1.8,1.9)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -360,7 +363,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>4.13.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -396,12 +399,12 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.4</version>
+        <version>2.7</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.9.3</version>
+        <version>1.9.4</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -413,6 +416,11 @@
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.3</version>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -427,12 +435,12 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.3.3</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.3.6</version>
+        <version>4.5.13</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -506,42 +514,38 @@
       <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-server</artifactId>
-        <version>1.17.1</version>
+        <version>1.19.4</version>
       </dependency>
       <!-- logging -->
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.17</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.jdmk</groupId>
-            <artifactId>jmxtools</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.jmx</groupId>
-            <artifactId>jmxri</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.13</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.13</version>
+        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.13</version>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
       <!-- 3d -->
       <dependency>
@@ -654,19 +658,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.11.0</version>
-      </dependency>
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>xalan</artifactId>
-        <version>2.7.2</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>serializer</artifactId>
-        <version>2.7.2</version>
-        <scope>runtime</scope>
+        <version>2.12.2</version>
       </dependency>
       <dependency>
         <groupId>de.odysseus.staxon</groupId>
@@ -683,43 +675,82 @@
         <artifactId>netty</artifactId>
         <version>3.2.10.Final</version>
       </dependency>
+      <dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>Saxon-HE</artifactId>
+        <version>9.9.1-4</version>
+      </dependency>
       <!-- JAI -->
       <dependency>
-        <groupId>jai</groupId>
+        <groupId>javax.media</groupId>
         <artifactId>jai-core</artifactId>
         <version>1.1.3</version>
       </dependency>
       <dependency>
-        <groupId>jai</groupId>
+        <groupId>com.sun.media</groupId>
         <artifactId>jai-codec</artifactId>
         <version>1.1.3</version>
       </dependency>
       <dependency>
-        <groupId>jai</groupId>
-        <artifactId>jai-imageio</artifactId>
-        <version>1.1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>jai</groupId>
-        <artifactId>jai-mlibwrapper</artifactId>
-        <version>1.1.3</version>
+        <groupId>com.sun.media</groupId>
+        <artifactId>jai_imageio</artifactId>
+        <version>1.1</version>
       </dependency>
       <!-- PostgreSQL -->
       <dependency>
         <groupId>net.postgis</groupId>
         <artifactId>postgis-jdbc</artifactId>
-        <version>2.2.1</version>
+        <version>2.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.5</version>
+        <version>42.3.3</version>
       </dependency>
-      <!-- Oracle -->
+      <!-- Oracle (Offical provided driver from repo1.maven.org) -->
       <dependency>
-        <groupId>com.oracle</groupId>
+        <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
+        <exclusions>
+          <!-- exclude Java Connection Pool (UCP) -->
+          <exclusion>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ucp</artifactId>
+          </exclusion>
+          <!-- exclude Oracle Wallets and/or the Notification System-->
+          <exclusion>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>oraclepki</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>osdt_cert</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>osdt_core</artifactId>
+          </exclusion>
+          <!-- exclude FAN events with UCP and/or the JDBC driver -->
+          <exclusion>
+            <groupId>com.oracle.database.ha</groupId>
+            <artifactId>simplefan</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.oracle.database.ha</groupId>
+            <artifactId>ons</artifactId>
+          </exclusion>
+          <!-- exclude Internationalization -->
+          <exclusion>
+            <groupId>com.oracle.database.nls</groupId>
+            <artifactId>orai18n</artifactId>
+          </exclusion>
+          <!-- exclude XMLType (xmlparserv2) -->
+          <exclusion>
+            <groupId>com.oracle.database.xml</groupId>
+            <artifactId>xmlparserv2</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Oracle GeoRaster -->
       <dependency>
@@ -744,60 +775,60 @@
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
-        <artifactId>xdb6</artifactId>
-        <version>12.2.0.1</version>
+        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.oracle</groupId>
-        <artifactId>xmlparserv2_sans_jaxp_services</artifactId>
-        <version>12.2.0.1</version>
+        <groupId>com.oracle.database.xml</groupId>
+        <artifactId>xdb</artifactId>
+        <version>${oracle.version}</version>
       </dependency>
       <!-- SQLite -->
       <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
-        <version>3.7.2</version>
+        <version>3.36.0.3</version>
       </dependency>
       <!-- Batik -->
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-bridge</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-anim</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-gvt</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-svg-dom</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-awt-util</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-css</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-ext</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -808,12 +839,12 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-parser</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-transcoder</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -824,12 +855,12 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-script</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -840,12 +871,12 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-codec</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
         </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-xml</artifactId>
-        <version>1.7</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>
@@ -939,9 +970,9 @@
       </dependency>
       <!-- other -->
       <dependency>
-        <groupId>com.vividsolutions</groupId>
-        <artifactId>jts</artifactId>
-        <version>1.13</version>
+        <groupId>org.locationtech.jts</groupId>
+        <artifactId>jts-core</artifactId>
+        <version>1.18.2</version>
       </dependency>
       <dependency>
         <groupId>jgridshift</groupId>
@@ -972,12 +1003,7 @@
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
         <artifactId>imageio-ext-utilities</artifactId>
-        <version>1.1.9</version>
-      </dependency>
-      <dependency>
-        <groupId>it.geosolutions.imageio-ext</groupId>
-        <artifactId>imageio-ext-tiff</artifactId>
-        <version>1.1.9</version>
+        <version>1.1.29</version>
         <exclusions>
           <exclusion>
             <groupId>javax.media</groupId>
@@ -995,13 +1021,32 @@
       </dependency>
       <dependency>
         <groupId>it.geosolutions.imageio-ext</groupId>
-        <artifactId>imageio-ext-gdal-bindings</artifactId>
-        <version>1.10.1</version>
+        <artifactId>imageio-ext-tiff</artifactId>
+        <version>1.1.29</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.media</groupId>
+            <artifactId>jai_core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.media</groupId>
+            <artifactId>jai_codec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.media</groupId>
+            <artifactId>jai_imageio</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.gdal</groupId>
+        <artifactId>gdal</artifactId>
+        <version>2.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.10</version>
+        <version>0.9.11</version>
         <exclusions>
           <exclusion>
             <groupId>ch.qos.logback</groupId>
@@ -1025,7 +1070,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20120804</version>
+        <version>20191108</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
@@ -1059,6 +1104,19 @@
         <artifactId>junidecode</artifactId>
         <version>0.2</version>
       </dependency>
+      <dependency>
+        <groupId>com.google.auto.service</groupId>
+        <artifactId>auto-service</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+        <!-- Import dependency management from Spring Boot -->
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1067,7 +1125,13 @@
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <java.version>1.8</java.version>
     <site.dir>${user.home}/Sites</site.dir>
-    <deegree-maven-plugin.version>2.0.2</deegree-maven-plugin.version>
+    <oracle.version>19.3.0.0</oracle.version>
+    <spring-boot.version>2.4.13</spring-boot.version>
+    <spring-batch.version>4.3.3</spring-batch.version>
+    <spring-framework.version>5.3.12</spring-framework.version>
+    <log4j.version>2.17.1</log4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
+    <batik.version>1.14</batik.version>
   </properties>
 
   <modules>
@@ -1075,13 +1139,11 @@
     <module>deegree-core</module>
     <module>deegree-datastores</module>
     <module>deegree-layers</module>
-    <module>deegree-misc</module>
     <module>deegree-processproviders</module>
     <module>deegree-services</module>
     <module>deegree-themes</module>
     <module>deegree-tools</module>
     <module>deegree-workspaces</module>
-    <module>deegree-spring</module>
   </modules>
 
   <profiles>
@@ -1092,43 +1154,22 @@
       </modules>
     </profile>
     <profile>
-      <id>deegree-maven-plugin</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>jaxbcatalog</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>generate-jaxb-catalog</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>site-all-reports</id>
       <reporting>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
-            <version>2.5.2</version>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>4.1.3</version>
             <configuration>
               <xmlOutput>true</xmlOutput>
-              <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-              <findbugsXmlOutput>true</findbugsXmlOutput>
+              <spotbugsXmlOutput>true</spotbugsXmlOutput>
             </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>2.7.1</version>
+            <version>3.14.0</version>
             <configuration>
               <linkXref>true</linkXref>
               <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>

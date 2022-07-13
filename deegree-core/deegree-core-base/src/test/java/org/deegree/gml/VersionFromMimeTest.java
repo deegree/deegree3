@@ -110,6 +110,11 @@ public class VersionFromMimeTest {
     }
 
     @Test
+    public void gml3_2_2() {
+        assertEquals( GMLVersion.GML_32, fromMimeType( "text/xml; subtype=gml/3.2.2", null ) );
+    }
+
+    @Test
     public void noGML() {
         assertEquals( null, fromMimeType( "text/xml", null ) );
     }

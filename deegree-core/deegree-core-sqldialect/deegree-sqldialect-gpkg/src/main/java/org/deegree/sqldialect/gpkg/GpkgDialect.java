@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
 public class GpkgDialect implements SQLDialect {
 
     private static Logger LOG = LoggerFactory.getLogger( GpkgDialect.class );
+    private char defaultEscapeChar = Character.UNASSIGNED;
 
     @Override
     public int getMaxColumnNameLength() {
@@ -164,5 +165,20 @@ public class GpkgDialect implements SQLDialect {
     @Override
     public String getSelectSequenceNextVal( String sequence ) {
         return null;
+    }
+    @Override
+    public boolean isRowLimitingCapable() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+    @Override
+    public char getTailingEscapeChar() {
+        // TODO Auto-generated method stub
+        return defaultEscapeChar;
+    }
+    @Override
+    public char getLeadingEscapeChar() {
+        // TODO Auto-generated method stub
+        return defaultEscapeChar;
     }
 }

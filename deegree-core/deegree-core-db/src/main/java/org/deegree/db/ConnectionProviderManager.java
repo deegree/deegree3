@@ -69,14 +69,13 @@ public class ConnectionProviderManager extends DefaultResourceManager<Connection
 
     @Override
     public void startup( Workspace workspace ) {
-        this.workspace = workspace;
-        try {
-            for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
-                registerDriver( new DriverWrapper( d ) );
-                LOG.info( "Found and loaded {}", d.getClass().getName() );
-            }
-        } catch ( SQLException e ) {
-            LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
+        // try {
+        //     for ( Driver d : ServiceLoader.load( Driver.class, workspace.getModuleClassLoader() ) ) {
+        //         registerDriver( new DriverWrapper( d ) );
+        //         LOG.info( "Found and loaded {}", d.getClass().getName() );
+        //     }
+        // } catch ( SQLException e ) {
+        //     LOG.debug( "Unable to load driver: {}", e.getLocalizedMessage() );
         // Check for legacy JDBC drivers and warn if some are found in modules directory
         ClassLoader moduleClassLoader = workspace.getModuleClassLoader();
         for ( Driver d : ServiceLoader.load( Driver.class, moduleClassLoader ) ) {

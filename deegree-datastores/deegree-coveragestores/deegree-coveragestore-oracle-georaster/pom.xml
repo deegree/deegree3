@@ -12,21 +12,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-coveragestores</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.4.27-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
@@ -44,7 +31,7 @@
         <repository>
           <id>deegree-restricted</id>
           <name>deegree-restricted</name>
-          <url>http://repo.deegree.org/content/repositories/private3rdparty</url>
+          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
         </repository>
       </repositories>
     </profile>
@@ -77,7 +64,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.oracle</groupId>
+      <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>
     </dependency>
     <dependency>
@@ -97,8 +84,8 @@
       <artifactId>sdoutl</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>xdb6</artifactId>
+      <groupId>com.oracle.database.xml</groupId>
+      <artifactId>xdb</artifactId>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
@@ -107,4 +94,3 @@
   </dependencies>
 
 </project>
-

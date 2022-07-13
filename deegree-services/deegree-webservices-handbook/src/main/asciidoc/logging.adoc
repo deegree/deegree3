@@ -1,0 +1,72 @@
+[[anchor-logging-configuration]]
+=== Logging configuration
+
+The deegree webservices do use the https://logging.apache.org/log4j/2.x[Apache Log4j 2 framework] for logging. The configuration of the logging submodule can be stored in XML, YAML, JSON, or properties format.
+The web application contains a default configuration file _/WEB-INF/classes/log4j2.properties_ with two appenders, one logging to the console Stdout (`System.out`) and the other writes the log messages into a file _logs/deegree.log_.
+
+The configuration in a nutshell:
+
+The console appender is configured with:
+
+[source,properties]
+----
+appender.console.type = Console <1>
+appender.console.name = STDOUT
+appender.console.layout.type = PatternLayout
+appender.console.layout.pattern = %d %p %C{1.} [%t] %m%n <2>
+appender.console.filter.threshold.type = ThresholdFilter
+appender.console.filter.threshold.level = info <3>
+----
+<1> defines the type of the appender
+<2> defines the pattern for formatting the log message
+<3> defines the threshold for this appender
+
+The file appender is configured with:
+
+[source,properties]
+----
+appender.rolling.type = RollingFile <1>
+appender.rolling.name = RollingFile
+appender.rolling.fileName = ${logpath}/${filename} <2>
+appender.rolling.filePattern = ${logpath}/deegree-%d{MM-dd-yyyy}-%i.log.gz <3>
+appender.rolling.layout.type = PatternLayout
+appender.rolling.layout.pattern = %d %p %C{1.} [%t] %m%n <4>
+appender.rolling.policies.type = Policies <5>
+appender.rolling.policies.time.type = TimeBasedTriggeringPolicy
+appender.rolling.policies.time.interval = 1
+appender.rolling.policies.time.modulate = true
+appender.rolling.policies.size.type = SizeBasedTriggeringPolicy
+appender.rolling.policies.size.size=100MB
+appender.rolling.strategy.type = DefaultRolloverStrategy
+appender.rolling.strategy.max = 10
+----
+<1> defines the type of the appender
+<2> defines the file name
+<3> defines the format of the archived file names, when the policies are applied
+<4> defines the pattern for formatting the log message
+<5> defines the policies when rolling over the files, triggered by size (>100MB) and time (> 1 day)
+
+The log file name is defined by the following settings:
+
+[source,properties]
+----
+property.filename = deegree.log
+property.logpath = ${sys:log.dir:-logs} <1>
+----
+<1> defines the log directory, default is _logs/_ and can be defined by an environment variable `log.dir`
+
+To turn off or on a specific logger use the logger definition as in the following example for `org.deegree`:
+
+[source,properties]
+----
+logger.org.deegree.name = org.deegree <1>
+logger.org.deegree.level = info <2>
+logger.org.deegree.additivity = false
+logger.org.deegree.appenderRef.rolling.ref = RollingFile <3>
+logger.org.deegree.appenderRef.stdout.ref = STDOUT <3>
+----
+<1> defines the logger name, here all logger with names starting with `org.deegree` are affected
+<2> defines the threshold for this logger
+<3> defines the appender used by this logger
+
+You will find more information about Apache Log4j configuration in the https://logging.apache.org/log4j/2.x/manual/[Log4j 2 manual].

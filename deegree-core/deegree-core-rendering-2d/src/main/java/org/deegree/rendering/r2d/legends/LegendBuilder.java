@@ -124,6 +124,11 @@ class LegendBuilder {
             res.first = max( res.first, item.getMaxWidth( opts ) );
         }
 
+        if ( res.second == 0 ) {
+            // prevent >0 * 0 sized images
+            res.second = 2 * opts.spacing + opts.baseWidth;
+        }
+
         return res;
     }
 

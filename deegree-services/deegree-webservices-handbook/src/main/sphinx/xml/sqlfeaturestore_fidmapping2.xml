@@ -1,8 +1,0 @@
-...
-<FeatureTypeMapping table="country">
-  <FIDMapping prefix="C_">
-    <Column name="key1" />
-    <Column name="key2" />
-  </FIDMapping>
-</FeatureTypeMapping>
-...

@@ -87,6 +87,8 @@ public class MemoryFeatureStore implements FeatureStore {
 
     private MemoryFeatureStoreMetadata metadata;
 
+    private boolean strict;
+
     /**
      * Creates a new {@link MemoryFeatureStore} instance for the given {@link AppSchema}.
      * 
@@ -120,6 +122,11 @@ public class MemoryFeatureStore implements FeatureStore {
     @Override
     public boolean isMapped( QName ftName ) {
         return schema.getFeatureType( ftName ) != null;
+    }
+
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
     }
 
     @Override

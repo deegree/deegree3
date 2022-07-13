@@ -46,6 +46,7 @@ import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,5 +79,10 @@ public class GpkgTileDataLevel implements TileDataLevel {
         k.setSecond( y );
         byte[] byteArr = tileMap.get( k );
         return new GpkgTile( tm, byteArr );
+    }
+    @Override
+    public List<String> getStyles() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
