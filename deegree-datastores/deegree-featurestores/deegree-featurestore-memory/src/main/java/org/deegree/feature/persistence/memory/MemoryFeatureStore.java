@@ -300,7 +300,8 @@ public class MemoryFeatureStore implements FeatureStore {
      * 
      * @return the CRS used for storing the geometries, can be <code>null</code> (keeps original CRS)
      */
-    public ICRS getStorageCRS() {
+    @Override
+    public ICRS getStorageCrs() {
         return storageCRS;
     }
 
