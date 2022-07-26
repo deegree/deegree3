@@ -109,7 +109,7 @@ In order to enable Oracle connectivity for these resources, you need to
 add two JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC driver (e.g.
-_ojdbc8.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
+_ojdbc11.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 (registration required)]
 * Module
 deegree-sqldialect-oraclefootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar]
@@ -124,7 +124,7 @@ add the following JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC-driverfootnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 (registration required)]
-** ojdbc8.jar
+** ojdbc11.jar
 * The Oracle Spatial and GeoRaster libraries and their dependencies
 ** sdoapi.jar
 ** sdogr.jar

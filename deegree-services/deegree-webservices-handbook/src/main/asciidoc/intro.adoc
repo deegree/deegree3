@@ -30,9 +30,7 @@ http://www.opengeospatial.org/standards/wfs[OGC Web Feature Service
 specification]. Notable features:
 
 * Official OGC reference implementation for WFS 1.1.0 and WFS 2.0.0
-Simple
-* Implements WFS standards 1.0.0, 1.1.0 and 2.0.0footnote:[Passes OGC
-WFS CITE test suites (including all optional tests)]
+* Implements WFS standards 1.0.0, 1.1.0 and 2.0.0footnote:[Passes OGC CITE test suites for WFS 1.1.0 Basic and Transactional, and WFS 2.0.0 Basic]
 * Fully transactional (even for rich data models)
 * Supports KVP, XML and SOAP requests
 * GML 2/3.0/3.1/3.2 output/input
