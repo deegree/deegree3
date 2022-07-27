@@ -1100,7 +1100,7 @@
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
-        <version>10.9.1.0</version>
+        <version>10.14.2.0</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
@@ -1182,7 +1182,7 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-ogcschemas</artifactId>
-        <version>20191108</version>
+        <version>20210817</version>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>

@@ -1006,11 +1006,11 @@ the WFS version, the GML version and the name of the feature type. Here
 are some examples:
 
 * WFS 1.0.0 (GML 2):
-http://localhost:8080/services?service=WFS&version=1.0.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
+http://localhost:8080/deegree-webservices/services?service=WFS&version=1.0.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
 * WFS 1.1.0 (GML 3.1):
-http://localhost:8080/services?service=WFS&version=1.1.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
+http://localhost:8080/deegree-webservices/services?service=WFS&version=1.1.0&request=GetFeature&typeName=ad:Address&maxFeatures=1
 * WFS 2.0.0 (GML 3.2):
-http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
+http://localhost:8080/deegree-webservices/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
 
 In order to successfully create a mapping for a feature type from a GML
 application schema, you have to know the structure and the data types of
@@ -1103,7 +1103,7 @@ _<FIDMapping>_.
 TIP: If this configuration matches your database and you have a working WFS
 resource, you should be able to query the feature type (although no
 properties will be returned):
-http://localhost:8080/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
+http://localhost:8080/deegree-webservices/services?service=WFS&version=2.0.0&request=GetFeature&typeName=ad:Address&count=1
 
 Mapping rich feature types works by associating XML nodes of a feature
 instance with rows and columns in the database. The table context (the
