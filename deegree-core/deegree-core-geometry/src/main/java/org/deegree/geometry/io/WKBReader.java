@@ -37,21 +37,22 @@ package org.deegree.geometry.io;
 
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.locationtech.jts.io.InputStreamInStream;
 import org.locationtech.jts.io.ParseException;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.deegree.geometry.utils.GeometryUtils.createFromJTS;
+
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Binary (WKB).
- * 
+ *
  * TODO re-implement without delegating to JTS TODO add support for non-SFS geometries (e.g. non-linear curves)
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class WKBReader {
@@ -60,7 +61,7 @@ public class WKBReader {
                             throws ParseException {
         // org.locationtech.jts.io.WKBReader() is not thread safe
         org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read( wkb );
-        return new GeometryFactory().createFromJTS( jtsGeom, crs );
+        return createFromJTS( jtsGeom, crs );
     }
 
     public static Geometry read( InputStream is, ICRS crs )
@@ -68,6 +69,6 @@ public class WKBReader {
         // org.locationtech.jts.io.WKBReader() is not thread safe
         org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKBReader().read(
                         new InputStreamInStream( is ) );
-        return new GeometryFactory().createFromJTS( jtsGeom, crs );
+        return createFromJTS( jtsGeom, crs );
     }
 }

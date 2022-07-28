@@ -37,10 +37,9 @@ package org.deegree.geometry.standard;
 
 import static java.util.Collections.emptyList;
 
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.gml.GMLObjectType;
 import org.deegree.commons.tom.gml.property.Property;
@@ -49,7 +48,6 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.io.WKTWriter;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
@@ -57,6 +55,7 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.utils.GeometryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -321,6 +320,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     /**
+     * Deprecated: Use {@link GeometryUtils#createFromJTS(org.locationtech.jts.geom.Geometry, ICRS)}!
+     *
      * Helper methods for creating {@link AbstractDefaultGeometry} from JTS geometries that have been derived from this
      * geometry by JTS spatial analysis methods.
      *
@@ -330,8 +331,9 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      *         geometry, or null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public AbstractDefaultGeometry createFromJTS( org.locationtech.jts.geom.Geometry jtsGeom, ICRS crs ) {
-        return new GeometryFactory().createFromJTS( jtsGeom, crs );
+        return GeometryUtils.createFromJTS( jtsGeom, crs );
     }
 
     protected static AbstractDefaultGeometry getAsDefaultGeometry( Geometry geometry ) {

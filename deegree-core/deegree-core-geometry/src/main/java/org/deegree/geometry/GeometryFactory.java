@@ -36,7 +36,6 @@
 
 package org.deegree.geometry;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,12 +53,10 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
-import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Solid;
@@ -91,7 +88,6 @@ import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.Knot;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.primitive.segments.OffsetCurve;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.composite.DefaultCompositeCurve;
 import org.deegree.geometry.standard.composite.DefaultCompositeGeometry;
 import org.deegree.geometry.standard.composite.DefaultCompositeSolid;
@@ -113,20 +109,12 @@ import org.deegree.geometry.standard.curvesegments.DefaultGeodesicString;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultOffsetCurve;
 import org.deegree.geometry.standard.multi.DefaultMultiCurve;
-import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
-import org.deegree.geometry.standard.multi.DefaultMultiLineString;
-import org.deegree.geometry.standard.multi.DefaultMultiPoint;
-import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
 import org.deegree.geometry.standard.multi.DefaultMultiSolid;
 import org.deegree.geometry.standard.multi.DefaultMultiSurface;
-import org.deegree.geometry.standard.points.JTSPoints;
 import org.deegree.geometry.standard.primitive.DefaultCurve;
-import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultOrientableCurve;
 import org.deegree.geometry.standard.primitive.DefaultOrientableSurface;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.geometry.standard.primitive.DefaultPolyhedralSurface;
 import org.deegree.geometry.standard.primitive.DefaultRing;
 import org.deegree.geometry.standard.primitive.DefaultSolid;
@@ -140,7 +128,6 @@ import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultRectangle;
 import org.deegree.geometry.standard.surfacepatches.DefaultSphere;
 import org.deegree.geometry.standard.surfacepatches.DefaultTriangle;
-import org.locationtech.jts.geom.CoordinateSequence;
 
 /**
  * Augments the {@link SimpleGeometryFactory} with additional methods for building complex {@link Geometry} and
@@ -753,94 +740,6 @@ public class GeometryFactory extends SimpleGeometryFactory {
      */
     public GriddedSurfacePatch createGriddedSurfacePatch( List<Points> grid ) {
         return new DefaultGriddedSurfacePatch( grid );
-    }
-
-
-    /**
-     * Helper methods for creating {@link AbstractDefaultGeometry} from JTS geometries that have been derived from this
-     * geometry by JTS spatial analysis methods.
-     *
-     * @param jtsGeom
-     * @param crs
-     * @return geometry with precision model and CoordinateSystem information that are identical to the ones of this
-     *         geometry, or null if the given geometry is an empty collection
-     */
-    @SuppressWarnings("unchecked")
-    public AbstractDefaultGeometry createFromJTS( org.locationtech.jts.geom.Geometry jtsGeom, ICRS crs ) {
-        AbstractDefaultGeometry geom = null;
-        if ( jtsGeom.isEmpty() ) {
-            return null;
-        }
-        if ( jtsGeom instanceof org.locationtech.jts.geom.Point ) {
-            org.locationtech.jts.geom.Point jtsPoint = (org.locationtech.jts.geom.Point) jtsGeom;
-            if ( Double.isNaN( jtsPoint.getCoordinate().z ) ) {
-                geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY() } );
-            } else {
-                geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY(),
-                                                                       jtsPoint.getCoordinate().z } );
-            }
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.LinearRing ) {
-            org.locationtech.jts.geom.LinearRing jtsLinearRing = (org.locationtech.jts.geom.LinearRing) jtsGeom;
-            geom = new DefaultLinearRing( null, crs, pm, getAsPoints( jtsLinearRing.getCoordinateSequence(), crs ) );
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.LineString ) {
-            org.locationtech.jts.geom.LineString jtsLineString = (org.locationtech.jts.geom.LineString) jtsGeom;
-            geom = new DefaultLineString( null, crs, pm, getAsPoints( jtsLineString.getCoordinateSequence(), crs ) );
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.Polygon ) {
-            org.locationtech.jts.geom.Polygon jtsPolygon = (org.locationtech.jts.geom.Polygon) jtsGeom;
-            Points exteriorPoints = getAsPoints( jtsPolygon.getExteriorRing().getCoordinateSequence(), crs );
-            LinearRing exteriorRing = new DefaultLinearRing( null, crs, pm, exteriorPoints );
-            List<Ring> interiorRings = new ArrayList<Ring>( jtsPolygon.getNumInteriorRing() );
-            for ( int i = 0; i < jtsPolygon.getNumInteriorRing(); i++ ) {
-                Points interiorPoints = getAsPoints( jtsPolygon.getInteriorRingN( i ).getCoordinateSequence(), crs );
-                interiorRings.add( new DefaultLinearRing( null, crs, pm, interiorPoints ) );
-            }
-            geom = new DefaultPolygon( null, crs, pm, exteriorRing, interiorRings );
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.MultiPoint ) {
-            org.locationtech.jts.geom.MultiPoint jtsMultiPoint = (org.locationtech.jts.geom.MultiPoint) jtsGeom;
-            if ( jtsMultiPoint.getNumGeometries() > 0 ) {
-                List<Point> members = new ArrayList<Point>( jtsMultiPoint.getNumGeometries() );
-                for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
-                    members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ), crs ) );
-                }
-                geom = new DefaultMultiPoint( null, crs, pm, members );
-            }
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.MultiLineString ) {
-            org.locationtech.jts.geom.MultiLineString jtsMultiLineString = (org.locationtech.jts.geom.MultiLineString) jtsGeom;
-            if ( jtsMultiLineString.getNumGeometries() > 0 ) {
-                List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
-                for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
-                    Curve curve = (Curve) createFromJTS( jtsMultiLineString.getGeometryN( i ), crs );
-                    members.add( curve.getAsLineString() );
-                }
-                geom = new DefaultMultiLineString( null, crs, pm, members );
-            }
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.MultiPolygon ) {
-            org.locationtech.jts.geom.MultiPolygon jtsMultiPolygon = (org.locationtech.jts.geom.MultiPolygon) jtsGeom;
-            if ( jtsMultiPolygon.getNumGeometries() > 0 ) {
-                List<Polygon> members = new ArrayList<Polygon>( jtsMultiPolygon.getNumGeometries() );
-                for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
-                    members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ), crs ) );
-                }
-                geom = new DefaultMultiPolygon( null, crs, pm, members );
-            }
-        } else if ( jtsGeom instanceof org.locationtech.jts.geom.GeometryCollection ) {
-            org.locationtech.jts.geom.GeometryCollection jtsGeometryCollection = (org.locationtech.jts.geom.GeometryCollection) jtsGeom;
-            if ( jtsGeometryCollection.getNumGeometries() > 0 ) {
-                List<Geometry> members = new ArrayList<Geometry>( jtsGeometryCollection.getNumGeometries() );
-                for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {
-                    members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ), crs ) );
-                }
-                geom = new DefaultMultiGeometry( null, crs, pm, members );
-            }
-        } else {
-            throw new RuntimeException( "Internal error. Encountered unhandled JTS geometry type '"
-                                        + jtsGeom.getClass().getName() + "'." );
-        }
-        return geom;
-    }
-
-    private Points getAsPoints( CoordinateSequence seq, ICRS crs ) {
-        return new JTSPoints( crs, seq );
     }
 
 }

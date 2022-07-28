@@ -38,11 +38,12 @@ package org.deegree.geometry.io;
 import org.apache.commons.io.IOUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 
 import java.io.IOException;
 import java.io.Reader;
+
+import static org.deegree.geometry.utils.GeometryUtils.createFromJTS;
 
 /**
  * Reads {@link Geometry} objects encoded as Well-Known Text (WKT).
@@ -75,7 +76,7 @@ public class WKTReader {
     public Geometry read( String wkt )
                             throws ParseException {
         org.locationtech.jts.geom.Geometry jtsGeom = new org.locationtech.jts.io.WKTReader().read( wkt );
-        return new GeometryFactory().createFromJTS( jtsGeom, crs );
+        return createFromJTS( jtsGeom, crs );
     }
 
 }
