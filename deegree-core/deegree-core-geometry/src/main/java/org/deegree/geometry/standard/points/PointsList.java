@@ -206,7 +206,7 @@ public class PointsList implements Points {
 
     @Override
     public Object clone() {
-        return new PointsList( new ArrayList<Point>( points ) );
+        return copy();
     }
 
     @Override

@@ -211,7 +211,7 @@ public class JTSPoints implements Points {
 
     @Override
     public Object clone() {
-        throw new UnsupportedOperationException();
+        return copy();
     }
 
     @Override
