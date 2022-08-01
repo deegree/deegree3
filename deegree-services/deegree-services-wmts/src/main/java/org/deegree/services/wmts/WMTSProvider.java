@@ -64,7 +64,6 @@ public class WMTSProvider extends OWSProvider {
             supportedVersions = new Version[] { Version.parseVersion( "1.0.0" ) };
             handledNamespaces = new String[] { "http://www.opengis.net/wmts/1.0" };
             handledRequests = WMTSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.2.0" ) };
             serviceName = new String[] { "WMTS" };
         }
     };
