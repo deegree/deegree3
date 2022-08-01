@@ -1,4 +1,4 @@
 name=GeoTIFF Pyramid
 example1_name=example
 example1_description=Raster based on a single GeoTIFF file.
-example1_location=/META-INF/schemas/datasource/coverage/raster/3.4.0/example.xml
+example1_location=/META-INF/schemas/datasource/coverage/raster/example.xml
