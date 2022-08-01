@@ -129,7 +129,6 @@ public class SQLFeatureStoreConfigWriter {
                             throws XMLStreamException {
 
         writer.writeStartElement( "SQLFeatureStore" );
-        writer.writeAttribute( "configVersion", "3.4.0" );
         writer.writeNamespace( DEFAULT_NS_PREFIX, CONFIG_NS );
         writer.writeNamespace( "xsi", XSINS );
         writer.writeAttribute( XSINS, "schemaLocation", SCHEMA_LOCATION );
