@@ -1,4 +1,4 @@
-<deegreeWFS configVersion="3.4.0"
+<deegreeWFS
   xmlns="http://www.deegree.org/services/wfs"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/services/wfs

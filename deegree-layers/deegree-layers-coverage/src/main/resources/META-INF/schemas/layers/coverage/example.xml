@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial" xsi:schemaLocation="http://www.deegree.org/layers/coverage http://schemas.deegree.org/3.5/layers/coverage/coverage.xsd"
-  configVersion="3.4.0">
+ >
   <CoverageStoreId>inspire</CoverageStoreId>
   <CoverageLayer>
     <l:Name>example</l:Name>

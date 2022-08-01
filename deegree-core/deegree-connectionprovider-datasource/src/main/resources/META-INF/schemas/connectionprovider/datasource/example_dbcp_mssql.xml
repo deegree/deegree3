@@ -1,4 +1,4 @@
-<DataSourceConnectionProvider configVersion="3.4.0"
+<DataSourceConnectionProvider
   xmlns="http://www.deegree.org/connectionprovider/datasource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/connectionprovider/datasource http://schemas.deegree.org/jdbc/datasource/3.4.0/datasource.xsd">
 

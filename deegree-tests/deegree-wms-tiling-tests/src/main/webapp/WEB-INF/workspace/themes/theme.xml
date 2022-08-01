@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Themes configVersion="3.4.0" xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<Themes xmlns="http://www.deegree.org/themes/standard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/themes/standard themes.xsd" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial">
 
   <LayerStoreId>pyramid</LayerStoreId>
