@@ -37,10 +37,12 @@ package org.deegree.protocol.wfs.storedquery.xml;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.deegree.protocol.wfs.storedquery.QueryExpressionText;
 import org.deegree.protocol.wfs.storedquery.StoredQueryDefinition;
 import org.junit.Test;
 import org.xmlunit.matchers.CompareMatcher;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
@@ -81,6 +83,26 @@ public class StoredQueryDefinition200EncoderTest {
         assertThat( actual, CompareMatcher.isSimilarTo(
                         IOUtils.toString( getClass().getResourceAsStream( storedQueryResource ),
                                           UTF_8 ) ).ignoreWhitespace() );
+    }
+
+    @Test
+    public void testExport_ServedFeatureTypes()
+                    throws Exception {
+        String storedQueryResource = "storedQuery.xml";
+        StoredQueryDefinition queryDefinition = parseStoredQueryDefinition( storedQueryResource );
+        QueryExpressionText queryExpressionText = queryDefinition.getQueryExpressionTextEls().get( 0 );
+        queryExpressionText.getReturnFeatureTypes().clear();
+        queryExpressionText.getReturnFeatureTypes().add( new QName( "${deegreewfs:ServedFeatureTypes}" ) );
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        XMLStreamWriter writer = XMLOutputFactory.newInstance().createXMLStreamWriter( stream );
+        StoredQueryDefinition200Encoder.export( queryDefinition, writer );
+        writer.close();
+
+        String actual = stream.toString( UTF_8 );
+        assertThat( actual,
+                    hasXPath(
+                                    "/wfs:StoredQueryDefinition/wfs:QueryExpressionText/@returnFeatureTypes",
+                                    is( "${deegreewfs:ServedFeatureTypes}" ) ).withNamespaceContext( nsContext() ) );
     }
 
     private StoredQueryDefinition parseStoredQueryDefinition( String resource )
