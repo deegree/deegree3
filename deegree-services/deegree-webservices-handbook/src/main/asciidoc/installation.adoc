@@ -128,5 +128,5 @@ you must not operate the Java Servlet container as root user!
 Furthermore, you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java
 applications we recommend to follow the
-https://docs.oracle.com/javase/11/docs/technotes/guides/security/index.html[Java Security Guidelines] and for
+https://docs.oracle.com/en/java/javase/11/security/index.html[Java Security Guidelines] and for
 http://tomcat.apache.org/tomcat-9.0-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]
