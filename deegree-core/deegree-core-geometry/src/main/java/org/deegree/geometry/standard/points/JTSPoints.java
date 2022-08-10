@@ -208,11 +208,11 @@ public class JTSPoints implements Points {
 
     @Override
     public Object clone() {
-        throw new UnsupportedOperationException();
+        return copy();
     }
 
     @Override
     public CoordinateSequence copy() {
-        throw new UnsupportedOperationException();
+        return new JTSPoints( crs, seq.copy() );
     }
 }
