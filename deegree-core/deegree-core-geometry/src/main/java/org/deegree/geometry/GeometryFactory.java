@@ -741,4 +741,5 @@ public class GeometryFactory extends SimpleGeometryFactory {
     public GriddedSurfacePatch createGriddedSurfacePatch( List<Points> grid ) {
         return new DefaultGriddedSurfacePatch( grid );
     }
+
 }
