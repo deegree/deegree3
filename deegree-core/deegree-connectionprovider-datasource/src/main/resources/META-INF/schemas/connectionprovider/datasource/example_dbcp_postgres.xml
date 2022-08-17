@@ -11,7 +11,7 @@
   <Property name="username" value="kelvin" />
   <Property name="password" value="s3cr3t" />
   <Property name="poolPreparedStatements" value="true" />
-  <Property name="maxActive" value="10" />
+  <Property name="maxTotal" value="10" />
   <Property name="maxIdle" value="10" />
 
 </DataSourceConnectionProvider>
