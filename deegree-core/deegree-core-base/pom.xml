@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4.27-SNAPSHOT</version>
+    <version>3.4.32</version>
   </parent>
 
   <dependencies>
@@ -36,10 +36,14 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
-      <groupId>org.xmlmatchers</groupId>
-      <artifactId>xml-matchers</artifactId>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-matchers</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -52,3 +52,5 @@ include::cli-utility.adoc[]
 include::javamodules.adoc[]
 
 include::gdal.adoc[]
+
+include::appendix.adoc[]

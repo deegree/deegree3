@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-featurestores</artifactId>
-    <version>3.4.27-SNAPSHOT</version>
+    <version>3.4.32</version>
   </parent>
 
   <build>
@@ -61,8 +61,12 @@
       <artifactId>mockito-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.xmlmatchers</groupId>
-      <artifactId>xml-matchers</artifactId>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-matchers</artifactId>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>

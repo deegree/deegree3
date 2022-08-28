@@ -8,12 +8,12 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.27-SNAPSHOT</version>
+    <version>3.4.32</version>
   </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <tomcat-version>8.5.75</tomcat-version>
+    <tomcat-version>8.5.78</tomcat-version>
   </properties>
 
   <dependencies>

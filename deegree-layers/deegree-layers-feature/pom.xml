@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-layers</artifactId>
-    <version>3.4.27-SNAPSHOT</version>
+    <version>3.4.32</version>
   </parent>
 
   <build>
@@ -41,6 +41,14 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-featurestore-commons</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
     </dependency>
   </dependencies>
 

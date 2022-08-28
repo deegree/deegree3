@@ -22,7 +22,7 @@
           </con:assertion>
           <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
             <con:configuration>
-              <token>Restart complete.</token>
+              <token>Restart of workspace deegree-workspace-utah completed.</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
             </con:configuration>
@@ -464,7 +464,7 @@
           </con:assertion>
           <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
             <con:configuration>
-              <token>Restart complete.</token>
+              <token>Restart of workspace deegree-workspace-utah completed.</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
             </con:configuration>
@@ -497,7 +497,7 @@
           </con:assertion>
           <con:assertion type="Simple Contains" id="e8364af9-35cf-4a81-94d9-2e193147608e" name="Contains - Restart complete.">
             <con:configuration>
-              <token>Restart complete.</token>
+              <token>Restart of workspace deegree-workspace-utah completed.</token>
               <ignoreCase>false</ignoreCase>
               <useRegEx>false</useRegEx>
             </con:configuration>

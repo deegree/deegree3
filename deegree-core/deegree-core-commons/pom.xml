@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4.27-SNAPSHOT</version>
+    <version>3.4.32</version>
   </parent>
 
   <build>
@@ -109,6 +109,14 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-matchers</artifactId>
     </dependency>
   </dependencies>
 </project>
