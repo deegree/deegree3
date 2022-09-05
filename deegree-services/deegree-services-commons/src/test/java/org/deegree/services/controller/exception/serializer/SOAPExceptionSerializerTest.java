@@ -42,8 +42,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.soap.SOAPFactory;
-import org.apache.axiom.soap.impl.common.SOAP11Factory;
-import org.apache.axiom.soap.impl.common.SOAP12Factory;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
