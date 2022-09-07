@@ -1,5 +1,5 @@
 <EbrimEOMDStore xmlns="http://www.deegree.org/datasource/metadata/ebrimEO" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  configVersion="3.4.0"
+
   xsi:schemaLocation="http://www.deegree.org/datasource/metadata/ebrimEO http://schemas.deegree.org/3.5/datasource/metadata/ebrimEO/ebrimEO.xsd">
 
   <!-- [1] Identifier of JDBC connection -->

@@ -1,11 +1,11 @@
 name=DataSource (preferred)
 example1_name=PostgreSQL (minimal)
-example1_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_dbcp_postgres.xml
+example1_location=/META-INF/schemas/connectionprovider/datasource/example_dbcp_postgres.xml
 example2_name=Oracle (minimal)
-example2_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_dbcp_oracle.xml
+example2_location=/META-INF/schemas/connectionprovider/datasource/example_dbcp_oracle.xml
 example3_name=MySQL (minimal)
-example3_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_dbcp_mssql.xml
+example3_location=/META-INF/schemas/connectionprovider/datasource/example_dbcp_mssql.xml
 example4_name=JNDI
-example4_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_jndi.xml
+example4_location=/META-INF/schemas/connectionprovider/datasource/example_jndi.xml
 example5_name=UCP
-example5_location=/META-INF/schemas/connectionprovider/datasource/3.4.0/example_ucp.xml
+example5_location=/META-INF/schemas/connectionprovider/datasource/example_ucp.xml
