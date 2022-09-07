@@ -67,7 +67,7 @@ public class TunableParameter {
     private static final Map<String, String> CONFIG_STR = new HashMap<>();
 
     private static final Map<String, Number> CONFIG_NUM = new HashMap<>();
-    
+
     private static final Map<String, Boolean> CONFIG_BOOL = new HashMap<>();
 
     public static String get( String key, String defaultValue ) {
@@ -90,7 +90,7 @@ public class TunableParameter {
             return val;
         }
     }
-    
+
     public static boolean get( String key, boolean defaultValue ) {
         return get( key, Boolean.valueOf( defaultValue ) ).booleanValue();
     }
@@ -115,7 +115,7 @@ public class TunableParameter {
             return val;
         }
     }
-    
+
     public static double get( String key, double defaultValue ) {
         return get( key, Double.valueOf( defaultValue ) ).doubleValue();
     }
@@ -173,7 +173,7 @@ public class TunableParameter {
         }
         return null;
     }
-    
+
     private static Boolean getBooleanFromSystem( String key ) {
         try {
             String str = System.getProperty( key );

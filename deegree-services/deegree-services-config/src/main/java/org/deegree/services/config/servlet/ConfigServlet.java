@@ -42,6 +42,7 @@ import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.Invalidate.invalidate;
 import static org.deegree.services.config.actions.List.list;
+import static org.deegree.services.config.actions.ListFonts.listFonts;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
 import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
@@ -93,6 +94,7 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/update                                           - rescan config files and update resources\n" );
             data.append( "GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n" );
             data.append( "GET /config/listworkspaces                                   - list available workspace names\n" );
+            data.append( "GET /config/listfonts                                        - list currently available fonts on the server\n" );
             data.append( "GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n" );
             data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
             data.append( "GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n" );
@@ -148,6 +150,8 @@ public class ConfigServlet extends HttpServlet {
 
         if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {
             listWorkspaces( resp );
+        } else if ( path.toLowerCase().startsWith( "/listfonts" ) ) {
+            listFonts( resp );
         } else if ( path.toLowerCase().startsWith( "/list" ) ) {
             list( path.substring( 5 ), resp );
         }

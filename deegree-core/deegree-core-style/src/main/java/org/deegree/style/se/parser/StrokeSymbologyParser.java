@@ -263,6 +263,14 @@ class StrokeSymbologyParser {
                     }
                 }, contn ).second;
                 in.require( END_ELEMENT, null, "PositionPercentage" );
+            } else if ( in.getLocalName().equals( "AnchoredSymbol" ) ) {
+                contn = context.parser.updateOrContinue( in, "AnchoredSymbol", base, new Updater<Stroke>() {
+                    @Override
+                    public void update( Stroke obj, String val ) {
+                        obj.anchoredSymbol = Integer.parseInt( val );
+                    }
+                }, contn ).second;
+                in.require( END_ELEMENT, null, "AnchoredSymbol" );
             } else if ( in.isStartElement() ) {
                 Location loc = in.getLocation();
                 LOG.error( "Found unknown element '{}' at line {}, column {}, skipping.",

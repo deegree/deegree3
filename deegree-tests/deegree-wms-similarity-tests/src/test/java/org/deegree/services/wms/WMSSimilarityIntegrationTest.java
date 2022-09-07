@@ -187,7 +187,7 @@ public class WMSSimilarityIntegrationTest {
         sb.append( "/" );
         sb.append( System.getProperty( "deegree-wms-similarity-webapp", "deegree-wms-similarity-tests" ) );
         sb.append( "/services" );
-        if ( !request.startsWith( "?" ) )
+        if ( !request.contains( "?" ) )
             sb.append( "?" );
         sb.append( request );
         return sb.toString();

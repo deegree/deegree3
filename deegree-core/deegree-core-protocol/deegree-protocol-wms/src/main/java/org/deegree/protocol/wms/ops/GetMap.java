@@ -60,7 +60,6 @@ import static org.deegree.rendering.r2d.context.MapOptions.Quality.NORMAL;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,7 +86,6 @@ import org.deegree.layer.LayerRef;
 import org.deegree.layer.dims.DimensionsLexer;
 import org.deegree.layer.dims.DimensionsParser;
 import org.deegree.protocol.wms.Utils;
-import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.rendering.r2d.RenderHelper;
 import org.deegree.rendering.r2d.context.MapOptions.Antialias;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
@@ -230,9 +228,10 @@ public class GetMap extends RequestBase {
     
     public GetMap( List<LayerRef> layers, List<StyleRef> styles, int width, int height, Envelope envelope, ICRS crs,
                    String format, boolean transparent, Color bgcolor, Map<String, String> parameterMap,
-                   Map<String, List<?>> dimensions, Map<String, String> kvp ) {
+                   Map<String, List<?>> dimensions, Map<String, String> kvp, MapOptionsMaps defaults ) {
         this( layers, styles, width, height, envelope, crs, format, transparent, bgcolor, parameterMap, dimensions );
         handlePixelSize( parameterMap );
+        handleVSPs( parameterMap, defaults );
     }
 
     public GetMap( List<String> layers, List<String> styles, int width, int height, Envelope envelope, ICRS crs,
@@ -419,15 +418,6 @@ public class GetMap extends RequestBase {
 
         dimensions = parseDimensionValues( map );
 
-        String q = map.get( "QUERYBOXSIZE" );
-        if ( q != null ) {
-            try {
-                queryBoxSize = Double.parseDouble( q );
-            } catch ( NumberFormatException e ) {
-                LOG.warn( "The QUERYBOXSIZE parameter could not be parsed." );
-            }
-        }
-
         handleVSPs( map, exts );
     }
 
@@ -481,6 +471,15 @@ public class GetMap extends RequestBase {
                         extensions.setMaxFeatures( cur.getName(), def == null ? 10000 : def );
                     }
                 }
+            }
+        }
+        
+        String q = map.get( "QUERYBOXSIZE" );
+        if ( q != null ) {
+            try {
+                queryBoxSize = Double.parseDouble( q );
+            } catch ( NumberFormatException e ) {
+                LOG.warn( "The QUERYBOXSIZE parameter could not be parsed." );
             }
         }
     }

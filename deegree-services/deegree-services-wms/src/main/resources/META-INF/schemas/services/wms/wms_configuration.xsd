@@ -63,6 +63,7 @@
         <element name="LayerLimit" minOccurs="0" type="positiveInteger" />
         <element name="MaxWidth" minOccurs="0" type="positiveInteger" />
         <element name="MaxHeight" minOccurs="0" type="positiveInteger" />
+        <element name="KeyValueRewrite" minOccurs="0" maxOccurs="unbounded" type="wms:KeyValueRewriteType" />
         <element name="CrsCheckStrict" minOccurs="0" type="boolean" default="false" />
         <element name="Strict" minOccurs="0" type="boolean" default="false"/>
       </sequence>
@@ -216,6 +217,69 @@
     </sequence>
   </complexType>
 
+  <complexType name="KeyValueRewriteType">
+    <choice minOccurs="0" maxOccurs="unbounded">
+		<element name="Remove">
+			<complexType>
+				<attribute name="key" type="string" use="required"/>
+			</complexType>
+		</element>
+		<element name="RemoveMatch">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+						<attribute name="match" type="string" use="required"/>
+						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="Default">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="HeaderMatch">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+						<attribute name="replacement" type="string" use="required"/>
+						<attribute name="header" type="string" use="required"/>
+						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="ParameterMatch">
+			<complexType>
+				<simpleContent>
+					<extension base="string">
+						<attribute name="key" type="string" use="required"/>
+						<attribute name="replacement" type="string" use="required"/>
+						<attribute name="match" type="string" use="required"/>
+						<attribute name="regex" type="boolean" default="false" />
+						<attribute name="ignoreCase" type="boolean" default="true" />
+					</extension>
+				</simpleContent>
+			</complexType>
+		</element>
+		<element name="Custom">
+			<complexType>
+				<attribute name="javaClass" type="string" use="required"/>
+			</complexType>
+		</element>
+    </choice>
+    <attribute name="type" type="wms:RewriteRequestType" use="required" />
+  </complexType>
+
   <simpleType name="Encodings">
     <list>
       <simpleType>
@@ -264,4 +328,19 @@
     </restriction>
   </simpleType>
 
+  <simpleType name="RewriteRequestType">
+    <restriction base="string">
+      <enumeration value="DescribeLayer" />
+      <enumeration value="GetCapabilities" />
+      <enumeration value="capabilities" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="GetMap" />
+      <enumeration value="map" />
+      <enumeration value="GetFeatureInfoSchema" />
+      <enumeration value="GetLegendGraphic" />
+      <enumeration value="DTD" />
+      <enumeration value="GetStyles" />
+      <enumeration value="PutStyles" />
+    </restriction>
+  </simpleType>
 </schema>

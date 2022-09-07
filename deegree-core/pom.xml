@@ -30,8 +30,9 @@
     <module>deegree-core-schema</module>
     <module>deegree-core-sqldialect</module>
     <module>deegree-core-style</module>
+	<module>deegree-core-style-ext</module>
     <module>deegree-core-theme</module>
-    <module>deegree-core-tile</module>    
+    <module>deegree-core-tile</module>
     <module>deegree-core-protocol</module>
     <module>deegree-core-workspace</module>
     <module>deegree-connectionprovider-datasource</module>

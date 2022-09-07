@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2018 by:
    Department of Geography, University of Bonn
  and
    lat/lon GmbH
@@ -65,9 +65,7 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class ShapeStroke implements Stroke {
     private Shape shapes[];
@@ -84,22 +82,16 @@ public class ShapeStroke implements Stroke {
 
     private static final float FLATNESS = 1;
 
-    /**
-     * @param shapes
-     * @param advance
-     * @param positionPercentage
-     * @param initialGap
-     */
     public ShapeStroke( Shape shapes, double advance, double positionPercentage, double initialGap ) {
         this( new Shape[] { shapes }, advance, positionPercentage, initialGap );
     }
+    
+    public ShapeStroke( Shape shapes, double advance, double positionPercentage, double initialGap, double anchorPointX,
+                        double anchorPointY, double displacementX, double displacementY ) {
+        this( new Shape[] { shapes }, advance, positionPercentage, initialGap, anchorPointX, anchorPointY,
+              displacementX, displacementY );
+    }
 
-    /**
-     * @param shapes
-     * @param advance
-     * @param positionPercentage
-     * @param initialGap
-     */
     public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap ) {
         this.advance = advance;
         this.shapes = new Shape[shapes.length];
@@ -110,6 +102,23 @@ public class ShapeStroke implements Stroke {
         for ( int i = 0; i < this.shapes.length; i++ ) {
             Rectangle2D bounds = shapes[i].getBounds2D();
             t.setToTranslation( -bounds.getCenterX(), -bounds.getCenterY() );
+            this.shapes[i] = t.createTransformedShape( shapes[i] );
+        }
+    }
+    
+    public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap,
+                        double anchorPointX, double anchorPointY, double displacementX, double displacementY ) {
+        this.advance = advance;
+        this.shapes = new Shape[shapes.length];
+        this.positionPercentage = positionPercentage;
+        this.repeat = positionPercentage < 0;
+        this.initialGap = initialGap;
+
+        for ( int i = 0; i < this.shapes.length; i++ ) {
+            Rectangle2D bounds = shapes[i].getBounds2D();
+            double translateX = bounds.getX() + bounds.getWidth() * anchorPointX + displacementX;
+            double translateY = bounds.getY() + bounds.getHeight() * anchorPointY + displacementY;
+            t.setToTranslation( -translateX, -translateY );
             this.shapes[i] = t.createTransformedShape( shapes[i] );
         }
     }

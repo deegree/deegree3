@@ -41,7 +41,6 @@
 
 package org.deegree.rendering.r2d;
 
-import static javax.media.jai.JAI.create;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
 import static org.apache.commons.io.IOUtils.closeQuietly;
@@ -57,13 +56,14 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.deegree.commons.utils.ComparablePair;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.style.styling.components.Graphic;
 import org.slf4j.Logger;
 
@@ -81,26 +81,30 @@ class SvgRenderer {
 
     private static final Logger LOG = getLogger( SvgRenderer.class );
 
-    final LinkedHashMap<ComparablePair<String, Integer>, BufferedImage> svgCache = new LinkedHashMap<ComparablePair<String, Integer>, BufferedImage>(
-                                                                                                                                                      256 ) {
+    private final int cacheSize = TunableParameter.get( "deegree.cache.svgrenderer", 256 );
+
+    final LinkedHashMap<String, BufferedImage> svgCache = new LinkedHashMap<String, BufferedImage>( cacheSize ) {
         private static final long serialVersionUID = -6847956873232942891L;
 
         @Override
-        protected boolean removeEldestEntry( Map.Entry<ComparablePair<String, Integer>, BufferedImage> eldest ) {
-            return size() > 256; // yeah, hardcoded max size... TODO
+        protected boolean removeEldestEntry( Map.Entry<String, BufferedImage> eldest ) {
+            return size() > cacheSize;
         }
     };
 
     BufferedImage prepareSvg( Rectangle2D.Double rect, Graphic g ) {
         BufferedImage img = null;
-        ComparablePair<String, Integer> cp = new ComparablePair<String, Integer>( g.imageURL, round( g.size ) );
-        if ( svgCache.containsKey( cp ) ) {
-            img = svgCache.get( cp );
+        String cacheKey = createCacheKey( g.imageURL, rect.width, rect.height );
+        if ( svgCache.containsKey( cacheKey ) ) {
+            img = svgCache.get( cacheKey );
         } else {
             PNGTranscoder t = new PNGTranscoder();
-
-            t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
-            t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
+            if ( rect.width > 0.0d ) {
+                t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
+            }
+            if ( rect.height > 0.0d ) {
+                t.addTranscodingHint( KEY_HEIGHT, new Float( rect.height ) );
+            }
 
             TranscoderInput input = new TranscoderInput( g.imageURL );
 
@@ -110,15 +114,14 @@ class SvgRenderer {
             TranscoderOutput output = new TranscoderOutput( out );
             InputStream in = null;
 
-            // TODO cache images
             try {
                 t.transcode( input, output );
                 out.flush();
                 in = new ByteArrayInputStream( out.toByteArray() );
                 MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
-                RenderedOp rop = create( "stream", mcss );
+                RenderedOp rop = JAI.create( "stream", mcss );
                 img = rop.getAsBufferedImage();
-                svgCache.put( cp, img );
+                svgCache.put( cacheKey, img );
             } catch ( TranscoderException e ) {
                 LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
             } catch ( IOException e ) {
@@ -131,4 +134,7 @@ class SvgRenderer {
         return img;
     }
 
+    String createCacheKey( String url, double width, double height ) {
+        return String.format( "%s_%d_%d", url, round( width ), round( height ) );
+    }
 }
