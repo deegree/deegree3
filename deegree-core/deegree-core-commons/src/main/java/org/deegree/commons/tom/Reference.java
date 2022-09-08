@@ -79,6 +79,15 @@ public class Reference<T extends Object> implements Object {
     }
 
     /**
+     * Returns the resolver.
+     *
+     * @return the resolver, never <code>null</code>
+     */
+    public ReferenceResolver getResolver() {
+        return resolver;
+    }
+
+    /**
      * Returns the URI of the object.
      *
      * @return the URI of the object, never <code>null</code>

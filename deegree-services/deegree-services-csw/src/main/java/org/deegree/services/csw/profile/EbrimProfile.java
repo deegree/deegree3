@@ -102,7 +102,6 @@ public class EbrimProfile implements ServiceProfile {
             supportedVersions = new Version[] { VERSION_100, VERSION_202 };
             handledNamespaces = new String[] { CSW_202_NS, "http://www.opengis.net/cat/csw" };
             handledRequests = CSWRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.1.0" ) };
             serviceName = new String[] { SERVICENAME_CSW, SERVICENAME_CSW_EBRIM, SERVICENAME_WRS };
         }
     };

@@ -63,7 +63,6 @@ public class WPSProvider extends OWSProvider {
             supportedVersions = new Version[] { VERSION_100 };
             handledNamespaces = new String[] { WPS_100_NS };
             handledRequests = WPSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ) };
             serviceName = new String[] { "WPS" };
         }
     };
@@ -75,7 +74,7 @@ public class WPSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/3.4.0/wps_configuration.xsd" );
+        return WPSProvider.class.getResource( "/META-INF/schemas/services/wps/wps_configuration.xsd" );
     }
 
     @Override

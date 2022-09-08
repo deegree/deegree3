@@ -57,6 +57,7 @@ import java.util.List;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -79,7 +80,7 @@ public class WmtsGetFeatureInfoSimilarityIT extends AbstractWmtsSimilarityIT {
         super( resourceName, "/getFeatureInfo" );
         this.expected = IOUtils.toString(
                         WmtsGetFeatureInfoSimilarityIT.class.getResourceAsStream(
-                                        "/getFeatureInfo/" + resourceName + ".html" ) );
+                                        "/getFeatureInfo/" + resourceName + ".html" ) ).trim();
     }
 
     @Parameters
@@ -97,6 +98,9 @@ public class WmtsGetFeatureInfoSimilarityIT extends AbstractWmtsSimilarityIT {
         InputStream in = retrieve( STREAM, request );
         LOG.info( "Requesting {}", request );
         String actual = IOUtils.toString( in );
+        assertNotNull("GetFeatureResponse should never be null", actual);
+        //TRICKY prevent end line issues
+        actual = actual.trim();
         assertEquals( "GetFeatureResponse does not match expected response " + resourceName + ", request: " + request
                       + ".", expected, actual );
     }

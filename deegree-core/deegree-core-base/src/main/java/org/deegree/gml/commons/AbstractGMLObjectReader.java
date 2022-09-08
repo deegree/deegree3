@@ -152,6 +152,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
 
+	protected static final QName XSI_TYPE = new QName(XSINS, "type", "xsi");
+
     private final GMLReferenceResolver internalResolver;
 
     // TODO should be final, but is currently modified by GMLFeatureReader
@@ -808,6 +810,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
                     throw new XMLParsingException( xmlStream, msg );
                 }
                 attrs.put( XSI_NIL, new PrimitiveValue( value, new PrimitiveType( BOOLEAN ) ) );
+            } else if (XSI_TYPE.equals(name)) {
+				LOG.warn("xsi:type attributes are not supported yet. @xsi:type=\"{}\" is ignored", value);
             } else if ( attrDecls != null ) {
                 XSAttributeDeclaration attrDecl = attrDecls.get( name );
                 if ( attrDecl == null ) {

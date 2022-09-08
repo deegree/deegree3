@@ -56,7 +56,7 @@ import org.deegree.workspace.Workspace;
  */
 public class StandardThemeProvider extends ThemeProvider {
 
-    private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/3.4.0/themes.xsd" );
+    private static final URL SCHEMA_URL = StandardThemeProvider.class.getResource( "/META-INF/schemas/themes/themes.xsd" );
 
     @Override
     public String getNamespace() {

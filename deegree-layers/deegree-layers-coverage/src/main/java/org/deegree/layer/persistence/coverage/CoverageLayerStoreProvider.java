@@ -44,7 +44,7 @@ import org.deegree.workspace.Workspace;
  */
 public class CoverageLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL CONFIG_SCHEMA = CoverageLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/coverage/3.4.0/coverage.xsd" );
+    private static final URL CONFIG_SCHEMA = CoverageLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/coverage/coverage.xsd" );
 
     @Override
     public String getNamespace() {

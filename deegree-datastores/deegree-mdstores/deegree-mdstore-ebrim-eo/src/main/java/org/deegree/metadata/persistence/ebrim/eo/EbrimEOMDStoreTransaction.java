@@ -177,7 +177,7 @@ public class EbrimEOMDStoreTransaction implements MetadataStoreTransaction {
             }
             AbstractWhereBuilder wb = new PostGISWhereBuilder( null, new EOPropertyNameMapper( typeNames,
                                                                                                useLegacyPredicates ),
-                                                               (OperatorFilter) constraint, null, false,
+                                                               (OperatorFilter) constraint, null, null, false,
                                                                useLegacyPredicates );
 
             AliasedRIMType returnType = propMapper.getReturnType( typeNames );
