@@ -288,7 +288,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private int performDeleteBlob( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
         checkIfFeaturesAreNotLocked( filter, lock );
-        
+
         int deleted = 0;
         PreparedStatement stmt = null;
         try {
@@ -318,7 +318,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private int performDeleteRelational( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
         checkIfFeaturesAreNotLocked( filter, lock );
-        
+
         int deleted = 0;
         for ( ResourceId id : filter.getSelectedIds() ) {
             LOG.debug( "Analyzing id: " + id.getRid() );
@@ -626,9 +626,17 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
                 sql.append( blobMapping.getDataColumn() );
                 sql.append( "," );
                 sql.append( blobMapping.getBBoxColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanInternalIdColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanIdColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanNameColumn() );
+                sql.append( "," );
+                sql.append( blobMapping.getXPlanRechtsstandColumn() );
                 sql.append( ") VALUES(?,?,?," );
                 sql.append( blobGeomConverter.getSetSnippet( null ) );
-                sql.append( ")" );
+                sql.append( ",?,?,?,?)" );
                 LOG.debug( "Inserting: {}", sql );
                 blobInsertStmt = conn.prepareStatement( sql.toString() );
                 for ( Feature feature : features ) {
@@ -715,6 +723,13 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         LOG.debug( "Feature blob size: " + bytes.length );
         Geometry bboxGeom = getFeatureEnvelopeAsGeometry( feature );
         blobGeomConverter.setParticle( stmt, bboxGeom, 4 );
+
+        stmt.setString( 5, determineXPlanPropertyValue( feature, "internalId" ) );
+        stmt.setString( 6, determineXPlanPropertyValue( feature, "nummer" ) );
+        stmt.setString( 7, determineXPlanPropertyValue( feature, "name" ) );
+        stmt.setString( 8, determineXPlanPropertyValue( feature, "rechtsstand" ) );
+
+        // stmt.addBatch();
         stmt.execute();
         int internalId = -1;
         // ResultSet rs = null;
@@ -729,6 +744,14 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
         // }
         // }
         return internalId;
+    }
+
+    private String determineXPlanPropertyValue( Feature feature, String propertyName ) {
+        String xplanNamespaceUri = feature.getName().getNamespaceURI();
+        List<Property> properties = feature.getProperties( new QName( xplanNamespaceUri, propertyName ) );
+        if ( properties.size() > 0 && properties.get( 0 ).getValue() instanceof PrimitiveValue )
+            return ( (PrimitiveValue) properties.get( 0 ).getValue() ).getAsText();
+        return null;
     }
 
     @Override
@@ -1065,7 +1088,7 @@ public class SQLFeatureStoreTransaction implements FeatureStoreTransaction {
     private void checkIfFeaturesAreNotLocked( IdFilter filter, Lock lock )
                             throws FeatureStoreException {
         String lockId = lock != null ? lock.getId() : null;
-    
+
         // check if all features can be deleted
         for ( ResourceId id : filter.getSelectedIds() ) {
             if ( !fs.getLockManager().isFeatureModifiable( id.getRid(), lockId ) ) {

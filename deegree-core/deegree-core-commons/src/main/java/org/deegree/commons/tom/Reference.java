@@ -36,6 +36,8 @@
 
 package org.deegree.commons.tom;
 
+import org.deegree.commons.i18n.Messages;
+
 /**
  * Represents a lazy reference to an {@link Object}.
  *
@@ -169,8 +171,8 @@ public class Reference<T extends Object> implements Object {
                 throw exception = e;
             }
             if ( object == null ) {
-                String msg = "Unable to resolve reference to '" + uri + "'.";
-                throw exception = new ReferenceResolvingException( msg );
+                String mgs = Messages.get( "RESOLVING_FAILED", uri );
+                throw exception = new ReferenceResolvingException( mgs );
             }
         }
         return object;

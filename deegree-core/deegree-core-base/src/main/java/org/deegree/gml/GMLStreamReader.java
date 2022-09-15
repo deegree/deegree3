@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.gml;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.GMLReference;
 import org.deegree.commons.tom.gml.GMLReferenceResolver;
@@ -55,6 +50,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.gml.dictionary.Dictionary;
 import org.deegree.gml.dictionary.GMLDictionaryReader;
+import org.deegree.gml.feature.FeatureInspector;
 import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.gml.feature.StreamFeatureCollection;
 import org.deegree.gml.geometry.GML2GeometryReader;
@@ -62,6 +58,13 @@ import org.deegree.gml.geometry.GML3GeometryReader;
 import org.deegree.gml.geometry.GMLGeometryReader;
 import org.deegree.gml.reference.GmlDocumentIdContext;
 import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stream-based reader for GML instance documents or GML document fragments. Currently supports GML 2/3.0/3.1/3.2.
@@ -116,10 +119,10 @@ import org.deegree.gml.reference.matcher.ReferencePatternMatcher;
  * 
  * @see GMLObject
  * @see GMLInputFactory
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GMLStreamReader {
@@ -128,7 +131,7 @@ public class GMLStreamReader {
 
     private final GMLVersion version;
 
-    private final GmlDocumentIdContext idContext;
+    private GmlDocumentIdContext idContext;
 
     private GMLReferenceResolver resolver;
 
@@ -150,9 +153,13 @@ public class GMLStreamReader {
 
     private GMLReferenceResolver internalResolver;
 
+    private boolean skipBrokenGeometries;
+
+    private final List<FeatureInspector> inspectors = new ArrayList<>();
+
     /**
      * Creates a new {@link GMLStreamReader} instance.
-     * 
+     *
      * @param version
      *            GML version of the input, must not be <code>null</code>
      * @param xmlStream
@@ -167,7 +174,7 @@ public class GMLStreamReader {
 
     /**
      * Returns the version of the GML input.
-     * 
+     *
      * @return the version of the GML input, never <code>null</code>
      */
     public GMLVersion getVersion() {
@@ -180,7 +187,7 @@ public class GMLStreamReader {
 
     /**
      * Controls the application schema that is assumed when features or feature collections are parsed.
-     * 
+     *
      * @param schema
      *            application schema, can be <code>null</code> (use xsi:schemaLocation attribute to build the
      *            application schema)
@@ -215,7 +222,7 @@ public class GMLStreamReader {
     /**
      * Controls the default CRS that is assumed when GML objects (especially geometries) without SRS information are
      * parsed.
-     * 
+     *
      * @param defaultCRS
      *            default CRS, can be <code>null</code>
      */
@@ -229,7 +236,7 @@ public class GMLStreamReader {
 
     /**
      * Controls the {@link GeometryFactory} instance to be used for creating geometries.
-     * 
+     *
      * @param geomFac
      *            geometry factory, can be <code>null</code> (use a default factory)
      */
@@ -257,7 +264,7 @@ public class GMLStreamReader {
 
     /**
      * Sets the {@link GMLReferenceResolver} that the generated {@link GMLReference}s will use for resolving themselves.
-     * 
+     *
      * @param resolver
      */
     public void setResolver( GMLReferenceResolver resolver ) {
@@ -272,9 +279,13 @@ public class GMLStreamReader {
         return internalResolver;
     }
 
+	public void setIdContext(GmlDocumentIdContext idContext) {
+		this.idContext = idContext;
+	}
+
     /**
      * Enables or disables lax parsing (disable syntactical checks).
-     * 
+     *
      * @param laxMode
      *            <code>true</code>, if syntacical issues shall be ignored, <code>false</code> otherwise
      */
@@ -284,7 +295,7 @@ public class GMLStreamReader {
 
     /**
      * Returns the state of lax parsing.
-     * 
+     *
      * @return <code>true</code>, if syntacical issues shall be ignored, <code>false</code> otherwise
      */
     public boolean getLaxMode() {
@@ -294,7 +305,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML object element event that the cursor of the underlying xml
      * stream points to.
-     * 
+     *
      * @return deegree model representation for the current GML object element, never <code>null</code>
      * @throws XMLStreamException
      * @throws UnknownCRSException
@@ -317,7 +328,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML feature element event that the cursor of the underlying xml
      * stream points to.
-     * 
+     *
      * @return deegree model representation for the current GML feature element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -335,7 +346,7 @@ public class GMLStreamReader {
      * Please note that {@link #readFeatureCollectionStream()} should be preferred (especially for large feature
      * collections), because it does not build and store all features in memory at once.
      * </p>
-     * 
+     *
      * @return deegree model representation for the current GML feature collection element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -353,7 +364,7 @@ public class GMLStreamReader {
      * This method does not automatically consume all events from the underlying XML stream. Instead, it allows the
      * caller to control the consumption by iterating over the features in the returned collection.
      * </p>
-     * 
+     *
      * @return deegree model representation for the current GML feature collection element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -367,7 +378,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML geometry element event that the cursor of the underlying xml
      * stream points to.
-     * 
+     *
      * @return deegree model representation for the current GML geometry element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -381,7 +392,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML geometry element event that the cursor of the underlying xml
      * stream points to.
-     * 
+     *
      * @return deegree model representation for the current GML geometry element, never <code>null</code>
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -395,7 +406,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML dictionary element event that the cursor of the underlying
      * xml stream points to.
-     * 
+     *
      * @return deegree model representation for the current GML dictionary element, never <code>null</code>
      * @throws XMLStreamException
      */
@@ -407,7 +418,7 @@ public class GMLStreamReader {
     /**
      * Returns the deegree model representation for the GML crs element event that the cursor of the underlying xml
      * stream points to.
-     * 
+     *
      * @return deegree model representation for the current GML crs element, never <code>null</code>
      * @throws XMLStreamException
      */
@@ -418,7 +429,7 @@ public class GMLStreamReader {
 
     /**
      * Returns the {@link GmlDocumentIdContext} that keeps track of objects, identifiers and references.
-     * 
+     *
      * @return the {@link GmlDocumentIdContext}, never <code>null</code>
      */
     public GmlDocumentIdContext getIdContext() {
@@ -427,7 +438,7 @@ public class GMLStreamReader {
 
     /**
      * Returns the underlying {@link XMLStreamReader}.
-     * 
+     *
      * @return the underlying {@link XMLStreamReader}, never <code>null</code>
      */
     public XMLStreamReader getXMLReader() {
@@ -436,7 +447,7 @@ public class GMLStreamReader {
 
     /**
      * Closes the underlying XML stream.
-     * 
+     *
      * @throws XMLStreamException
      */
     public void close()
@@ -446,7 +457,7 @@ public class GMLStreamReader {
 
     /**
      * Returns a configured {@link GMLFeatureReader} instance for calling specific feature parsing methods.
-     * 
+     *
      * @return a configured {@link GMLFeatureReader} instance, never <code>null</code>
      */
     public GMLFeatureReader getFeatureReader() {
@@ -458,7 +469,7 @@ public class GMLStreamReader {
 
     /**
      * Returns a configured {@link GMLGeometryReader} instance for calling specific geometry parsing methods.
-     * 
+     *
      * @return a configured {@link GMLGeometryReader} instance, never <code>null</code>
      */
     public GMLGeometryReader getGeometryReader() {
@@ -481,7 +492,7 @@ public class GMLStreamReader {
 
     /**
      * Returns a configured {@link GMLDictionaryReader} instance for calling specific dictionary parsing methods.
-     * 
+     *
      * @return a configured {@link GMLDictionaryReader} instance, never <code>null</code>
      */
     public GMLDictionaryReader getDictionaryReader() {
@@ -490,4 +501,31 @@ public class GMLStreamReader {
         }
         return dictReader;
     }
+
+    public List<String> getSkippedBrokenGeometryErrors() {
+        return featureReader.getSkippedBrokenGeometryErrors();
+    }
+
+    /**
+     * Adds the given {@link FeatureInspector} which will be invoked for every {@link Feature} instance created by the underlying {@link GMLFeatureReader}.
+     *
+     * @param inspector
+     *                         inspector to be added, must not be <code>null</code>
+     */
+    public void addInspector( FeatureInspector inspector ) {
+        inspectors.add( inspector );
+    }
+
+    public List<FeatureInspector> getInspectors() {
+        return inspectors;
+    }
+
+    public boolean isSkipBrokenGeometries() {
+        return skipBrokenGeometries;
+    }
+
+    public void setSkipBrokenGeometries( boolean skipBrokenGeometries ) {
+        this.skipBrokenGeometries = skipBrokenGeometries;
+    }
+
 }
