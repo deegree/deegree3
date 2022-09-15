@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.deegree</groupId>
+  <groupId>de.latlon</groupId>
   <artifactId>deegree</artifactId>
   <packaging>pom</packaging>
   <version>3.5.0-SNAPSHOT</version>
@@ -10,16 +10,16 @@
   <url>http://www.deegree.org/</url>
 
   <scm>
-    <connection>scm:git:git@github.com:deegree/deegree3.git</connection>
-    <developerConnection>scm:git:git@github.com:deegree/deegree3.git</developerConnection>
-    <url>https://github.com/deegree/deegree3</url>
+    <connection>scm:git:git@github.com:lat-lon/deegree3.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree3.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree3</url>
     <tag>HEAD</tag>
   </scm>
 
   <repositories>
     <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public/</url>
+      <id>latlon</id>
+      <url>https://repo.lat-lon.de/repository/maven-public/</url>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
@@ -31,33 +31,19 @@
 
   <distributionManagement>
     <repository>
-      <id>deegree-releases</id>
-      <url>https://repo.deegree.org/content/repositories/releases/</url>
+      <id>latlon-deploy</id>
+      <url>https://repo.lat-lon.de/repository/xplanbox-releases/</url>
     </repository>
     <snapshotRepository>
-      <id>deegree-snapshots</id>
-      <url>https://repo.deegree.org/content/repositories/snapshots/</url>
+      <id>latlon-deploy</id>
+      <url>https://repo.lat-lon.de/repository/xplanbox-snapshots/</url>
     </snapshotRepository>
-    <site>
-      <id>apidoc.deegree.org</id>
-<!--
-      <url>scp://apidoc.deegree.org/var/www/apidoc.deegree.org/${project.version}/</url>
--->
-      <url>file:///${site.dir}/${project.version}/</url>
-    </site>
   </distributionManagement>
 
   <pluginRepositories>
     <pluginRepository>
-      <id>deegree-plugin-repo</id>
-      <url>https://repo.deegree.org/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
+      <id>latlon</id>
+      <url>https://repo.lat-lon.de/repository/maven-public/</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -1214,7 +1200,7 @@
         <version>${antlr.version}</version>
       </dependency>
       <dependency>
-        <groupId>${project.groupId}</groupId>
+        <groupId>org.deegree</groupId>
         <artifactId>junidecode</artifactId>
         <version>0.2</version>
       </dependency>

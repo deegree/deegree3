@@ -11,24 +11,24 @@
   </properties>
 
   <parent>
-    <groupId>org.deegree</groupId>
+    <groupId>de.latlon</groupId>
     <artifactId>deegree-tools</artifactId>
     <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-core-commons</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-services-wms</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deegree</groupId>
+      <groupId>de.latlon</groupId>
       <artifactId>deegree-layers-feature</artifactId>
       <version>${project.version}</version>
     </dependency>
