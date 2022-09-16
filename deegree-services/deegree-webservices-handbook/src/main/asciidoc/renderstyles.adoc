@@ -671,9 +671,14 @@ _Mark_ element:
 </Mark>
 ----
 
-To find out what index you need to access, have a look at this
-http://osgeo-org.1560.n6.nabble.com/SE-Styling-MarkIndex-glyph-index-tt5022210.html#a5026571[post]
-on the mailinglist which explains it very well.
+In order to determine the correct index value of the used vector symbol in your TrueType font file, there are several options available: 
+
+* The most comfortable way would be by using a JavaScript parser like opentype.js, check https://opentype.js.org/glyph-inspector.html for an usable live-demo.
+
+* Otherwise you can check the index value by using Microsoft Word, as explained in https://support.esri.com/en/technical-article/000004293.
+
+* At last, you could determine the index value by manually reading the cmap table of your TrueType font file. If you are interested in this approach, take a look into a https://sourceforge.net/p/deegree/mailman/deegree-users/thread/20130110115808.GB3576%40theologicum.occamlabs.local/#msg30331881[post] from the deegree mailing list.
+
 
 ===== Label AutoPlacement
 
