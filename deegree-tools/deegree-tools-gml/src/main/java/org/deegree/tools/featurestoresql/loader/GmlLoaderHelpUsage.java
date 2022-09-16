@@ -42,7 +42,7 @@ public class GmlLoaderHelpUsage {
         System.out.println( "options:" );
         System.out.println( " -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default" );
         System.out.println( " -chunkSize=<features_per_chunk>, number of features processed per chunk");
-        System.out.println( " -dryRun=true, skip writeing features (only check if reading is possible)");
+        System.out.println( " -dryRun=true, enable dry run where writing is skipped (checks only if all data can be read), disabled by default");
         System.out.println();
         System.out.println( "Example:" );
         System.out.println( " java -jar deegree-tools-gml.jar GmlLoader -pathToFile=/path/to/cadastralparcels.gml -workspaceName=inspire -sqlFeatureStoreId=cadastralparcels" );
