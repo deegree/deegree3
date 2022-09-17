@@ -44,7 +44,7 @@
         <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
           <webApp>
-            <contextPath>/deegree-acceptance-tests</contextPath>
+            <contextPath>/deegree-integration-tests</contextPath>
           </webApp>
           <systemProperties>
             <systemProperty>
