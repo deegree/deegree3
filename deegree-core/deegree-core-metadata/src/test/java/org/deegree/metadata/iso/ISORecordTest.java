@@ -99,7 +99,7 @@ public class ISORecordTest {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
         String actual = writeOut( filterEl, null );
-        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "full_expected.xml" ), UTF_8.name() );
+        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "full_expected.xml" ), UTF_8 );
         assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
@@ -110,7 +110,7 @@ public class ISORecordTest {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
         String actual = writeOut( filterEl, ISORecord.briefFilterElementsXPath );
-        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "brief.xml" ), UTF_8.name() );
+        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "brief.xml" ), UTF_8 );
         assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
@@ -121,7 +121,7 @@ public class ISORecordTest {
         XMLAdapter xml = new XMLAdapter( DATASET );
         OMElement filterEl = xml.getRootElement();
         String actual = writeOut( filterEl, ISORecord.summaryFilterElementsXPath );
-        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "summary.xml" ), UTF_8.name() );
+        String expected = IOUtils.toString( ISORecordTest.class.getResourceAsStream( "summary.xml" ), UTF_8 );
         assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 

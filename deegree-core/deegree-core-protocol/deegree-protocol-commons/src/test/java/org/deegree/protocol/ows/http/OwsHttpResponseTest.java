@@ -120,10 +120,10 @@ public class OwsHttpResponseTest {
     public void testGetAsBinaryStreamScenario1()
                             throws IOException {
         InputStream is = scenario1.getAsBinaryStream();
-        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8.name() );
+        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8 );
         String expected = org.apache.commons.io.IOUtils.toString(
                         OwsHttpResponseTest.class.getResourceAsStream( "scenario1.xml" ),
-                        UTF_8.name() );
+                        UTF_8 );
         assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
@@ -134,10 +134,10 @@ public class OwsHttpResponseTest {
     public void testGetAsBinaryStreamScenario2()
                             throws IOException {
         InputStream is = scenario2.getAsBinaryStream();
-        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8.name() );
+        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8 );
         String expected = org.apache.commons.io.IOUtils.toString(
                         OwsHttpResponseTest.class.getResourceAsStream( "scenario2.xml" ),
-                        UTF_8.name() );
+                        UTF_8 );
         assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 

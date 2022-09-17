@@ -437,7 +437,7 @@ public class GML3GeometryWriterTest {
 
         String expected = IOUtils.toString( GML3GeometryWriterTest.class.getResourceAsStream( "../aixm/geometry/"
                                                                                               + expectedFileName ),
-                                            UTF_8.name() );
+                                            UTF_8 );
         String actual = memoryWriter.toString();
         assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
