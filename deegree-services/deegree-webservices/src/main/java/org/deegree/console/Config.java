@@ -108,7 +108,7 @@ public class Config implements Comparable<Config>, Serializable {
             getWorkspace().add( metadata.getLocation() );
             WorkspaceUtils.reinitializeChain( getWorkspace(), metadata.getIdentifier() );
         } catch ( Exception t ) {
-            t.printStackTrace();
+            LOG.error( t.getMessage(), t );
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;

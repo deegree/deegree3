@@ -34,25 +34,48 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.4.46.v20220331</version>
         <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
+          <webApp>
+            <contextPath>/${project.artifactId}</contextPath>
+            <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+            <webInfIncludeJarPattern>.*/deegree-jsf-core-.*.jar</webInfIncludeJarPattern>
+            <!--
+            <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+            -->
+          </webApp>
+          <systemProperties>
+            <systemProperty>
+              <name>catalina.base</name>
+              <value>${project.basedir}/target</value>
+            </systemProperty>
+            <systemProperty>
+              <name>jetty.home</name>
+              <value>${project.basedir}/src/main/resources</value>
+            </systemProperty>
+            <systemProperty>
+              <name>javax.xml.transform.TransformerFactory</name>
+              <value>net.sf.saxon.TransformerFactoryImpl</value>
+            </systemProperty>
+          </systemProperties>
+          <loginServices>
+            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+              <name>deegree web configuration API</name>
+              <config>${project.basedir}/src/main/resources/realm.properties</config>
+            </loginService>
+          </loginServices>
+          <webAppSourceDirectory>target/${project.artifactId}-${project.version}</webAppSourceDirectory>
+          <stopPort>8079</stopPort>
+          <stopKey>stopit</stopKey>
+          <stopWait>10</stopWait>
+          <httpConnector>
+            <port>8080</port>
+            <idleTimeout>60000</idleTimeout>
+          </httpConnector>
+          <jvmArgs>--illegal-access=warn --add-opens java.base/java.lang=ALL-UNNAMED</jvmArgs>
         </configuration>
-        <executions>
-          <execution>
-            <id>assemble-tomcat</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
