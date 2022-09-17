@@ -10,15 +10,25 @@
     <param-value>Development</param-value>
   </context-param>
 
+  <context-param>
+    <param-name>primefaces.THEME</param-name>
+    <param-value>nova-light</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>primefaces.UPLOADER</param-name>
+    <param-value>native</param-value>
+  </context-param>
+<!--
   <filter>
     <filter-name>Upload Filter</filter-name>
-    <filter-class>org.deegree.client.core.filter.InputFileFilter</filter-class>
+    <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>Upload Filter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <servlet-name>Faces Servlet</servlet-name>
   </filter-mapping>
-
+-->
   <listener>
     <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
   </listener>

@@ -132,7 +132,7 @@ public class XmlEditorBean implements Serializable {
                     setSchemaUrl( ( (AbstractResourceProvider) md.getProvider() ).getSchema().toExternalForm() );
                 }
             } catch ( Exception e ) {
-                // ignore
+                LOG.trace(e.getLocalizedMessage());
             }
         }
         return schemaUrl;
@@ -144,7 +144,7 @@ public class XmlEditorBean implements Serializable {
             try {
                 schemaAsText = IOUtils.toString( new URL( schemaUrl ).openStream(), "UTF-8" );
             } catch ( IOException e ) {
-                e.printStackTrace();
+                LOG.error("Error while setting schema file: ", e.getLocalizedMessage());
             }
         }
     }
