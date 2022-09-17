@@ -56,6 +56,10 @@
               <value>${project.basedir}/src/main/resources</value>
             </systemProperty>
             <systemProperty>
+              <name>log.dir</name>
+              <value>${project.basedir}/target</value>
+            </systemProperty>
+            <systemProperty>
               <name>javax.xml.transform.TransformerFactory</name>
               <value>net.sf.saxon.TransformerFactoryImpl</value>
             </systemProperty>
