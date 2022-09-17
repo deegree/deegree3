@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<CachingTileStore xmlns="http://www.deegree.org/datasource/tile/cache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache http://schemas.deegree.org/3.5/datasource/tile/cache/cache.xsd"
+ >
+
+  <TileStoreId>tilestore1</TileStoreId>
+  <CacheConfiguration>/tmp/ehcache.xml</CacheConfiguration>
+  <CacheName>tilestorecache</CacheName>
+
+</CachingTileStore>

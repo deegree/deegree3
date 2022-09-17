@@ -36,7 +36,7 @@
 package org.deegree.rendering.r2d.context;
 
 /**
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
@@ -53,6 +53,15 @@ public class MapOptions {
     private int featureInfoRadius;
 
     private boolean opaque;
+
+    /**
+     * Instantiates {@link MapOptions} with default values (quality = null, interpol = null, antialias = null,
+     * maxFeatures = -1, featureInfoRadius = -1)
+     *
+     */
+    public MapOptions() {
+        this( null, null, null, -1, -1 );
+    }
 
     public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
                        int featureInfoRadius ) {
@@ -161,48 +170,56 @@ public class MapOptions {
 
     /**
      * <code>Quality</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author: aschmitz $
-     * 
+     *
      * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
      */
     public static enum Quality {
         /***/
-        LOW, /***/
-        NORMAL, /***/
+        LOW,
+        /***/
+        NORMAL,
+        /***/
         HIGH
     }
 
     /**
      * <code>Interpolation</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author: aschmitz $
-     * 
+     *
      * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
      */
     public static enum Interpolation {
         /***/
-        NEARESTNEIGHBOR, /***/
-        NEARESTNEIGHBOUR, /***/
-        BILINEAR, /***/
+        NEARESTNEIGHBOR,
+        /***/
+        NEARESTNEIGHBOUR,
+        /***/
+        BILINEAR,
+        /***/
         BICUBIC
     }
 
     /**
      * <code>Antialias</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author: aschmitz $
-     * 
+     *
      * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
      */
     public static enum Antialias {
         /***/
-        IMAGE, /***/
-        TEXT, /***/
-        BOTH, /***/
+        IMAGE,
+        /***/
+        TEXT,
+        /***/
+        BOTH,
+        /***/
         NONE
     }
 
@@ -267,4 +284,68 @@ public class MapOptions {
             }
         };
     }
+
+    public static class Builder {
+
+        private Quality quality;
+
+        private Interpolation interpolation;
+
+        private Antialias antialias;
+
+        private int maxFeatures = -1;
+
+        private int featureInfoRadius = -1;
+
+        /**
+         * @param quality
+         *            the quality to set
+         */
+        public Builder quality( Quality quality ) {
+            this.quality = quality;
+            return this;
+        }
+
+        /**
+         * @param interpolation
+         *            the interpolation to set
+         */
+        public Builder interpolation( Interpolation interpolation ) {
+            this.interpolation = interpolation;
+            return this;
+        }
+
+        /**
+         * @param antialias
+         *            the antialias to set
+         */
+        public Builder antialias( Antialias antialias ) {
+            this.antialias = antialias;
+            return this;
+        }
+
+        /**
+         * @param maxFeatures
+         *            the maxFeatures to set
+         */
+        public Builder maxFeatures( int maxFeatures ) {
+            this.maxFeatures = maxFeatures;
+            return this;
+        }
+
+        /**
+         * @param featureInfoRadius
+         *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
+         */
+        public Builder featureInfoRadius( int featureInfoRadius ) {
+            this.featureInfoRadius = featureInfoRadius;
+            return this;
+        }
+
+        public MapOptions build() {
+            return new MapOptions( quality, interpolation, antialias, maxFeatures, featureInfoRadius );
+        }
+
+    }
+
 }

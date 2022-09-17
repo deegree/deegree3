@@ -80,12 +80,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.apache.axiom.soap.impl.llom.soap11.SOAP11Factory;
-import org.apache.axiom.soap.impl.llom.soap12.SOAP12Factory;
+import org.apache.axiom.soap.impl.common.SOAP11Factory;
+import org.apache.axiom.soap.impl.common.SOAP12Factory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -919,9 +920,9 @@ public class OGCFrontController extends HttpServlet {
         SOAPFactory factory = null;
         String ns = root.getNamespace().getNamespaceURI();
         if ( "http://schemas.xmlsoap.org/soap/envelope/".equals( ns ) ) {
-            factory = new SOAP11Factory();
+            factory = OMAbstractFactory.getSOAP11Factory();
         } else {
-            factory = new SOAP12Factory();
+            factory = OMAbstractFactory.getSOAP12Factory();
         }
 
         StAXSOAPModelBuilder soap = new StAXSOAPModelBuilder( root.getXMLStreamReaderWithoutCaching(), factory,

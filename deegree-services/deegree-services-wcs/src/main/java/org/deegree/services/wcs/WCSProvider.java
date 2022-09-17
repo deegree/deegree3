@@ -64,7 +64,6 @@ public class WCSProvider extends OWSProvider {
             supportedVersions = new Version[] { VERSION_100, VERSION_110 };
             handledNamespaces = new String[] { WCS_100_NS };
             handledRequests = WCSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
             serviceName = new String[] { "WCS" };
         }
     };
@@ -76,7 +75,7 @@ public class WCSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WCSProvider.class.getResource( "/META-INF/schemas/services/wcs/3.4.0/wcs_configuration.xsd" );
+        return WCSProvider.class.getResource( "/META-INF/schemas/services/wcs/wcs_configuration.xsd" );
     }
 
     @Override

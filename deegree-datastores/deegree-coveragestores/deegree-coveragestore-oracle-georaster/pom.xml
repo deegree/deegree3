@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-coveragestores</artifactId>
-    <version>3.4.24-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -64,7 +64,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.oracle</groupId>
+      <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>
     </dependency>
     <dependency>
@@ -84,8 +84,8 @@
       <artifactId>sdoutl</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>xdb6</artifactId>
+      <groupId>com.oracle.database.xml</groupId>
+      <artifactId>xdb</artifactId>
     </dependency>
     <dependency>
       <groupId>com.oracle</groupId>
@@ -94,4 +94,3 @@
   </dependencies>
 
 </project>
-

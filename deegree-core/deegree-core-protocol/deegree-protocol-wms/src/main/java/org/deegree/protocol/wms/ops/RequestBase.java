@@ -36,6 +36,8 @@
 package org.deegree.protocol.wms.ops;
 
 import static org.deegree.commons.utils.CollectionUtils.unzip;
+import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
+import static org.deegree.commons.utils.StringUtils.splitEscaped;
 import static org.deegree.protocol.wms.ops.SLDParser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -47,10 +49,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 
 import org.deegree.commons.ows.exception.OWSException;
+import org.deegree.commons.utils.StringUtils;
 import org.deegree.commons.utils.Triple;
 import org.deegree.filter.OperatorFilter;
 import org.deegree.layer.LayerRef;
@@ -76,6 +80,8 @@ public abstract class RequestBase {
     protected LinkedList<StyleRef> styles = new LinkedList<StyleRef>();
 
     protected HashMap<String, List<?>> dimensions = new HashMap<String, List<?>>();
+
+    protected double pixelSize = DEFAULT_PIXEL_SIZE;
 
     public abstract double getScale();
 
@@ -193,4 +199,50 @@ public abstract class RequestBase {
         dimensions.put( name, values );
     }
 
+    protected void handlePixelSize( Map<String, String> map ) {
+        String psize = map.get( "PIXELSIZE" );
+        if ( psize != null ) {
+            try {
+                pixelSize = Double.parseDouble( psize ) / 1000;
+            } catch ( NumberFormatException e ) {
+                LOG.warn( "The value of PIXELSIZE could not be parsed as a number." );
+                LOG.trace( "Stack trace:", e );
+            }
+        } else {
+            String key = "RES";
+            String pdpi = map.get( key );
+
+            if ( pdpi == null ) {
+                key = "DPI";
+                pdpi = map.get( key );
+            }
+            if ( pdpi == null ) {
+                key = "MAP_RESOLUTION";
+                pdpi = map.get( key );
+            }
+            if ( pdpi == null ) {
+                for ( String word : splitEscaped( map.get( "FORMAT_OPTIONS" ), ';', 0 ) ) {
+                    List<String> keyValue = StringUtils.splitEscaped( word, ':', 2 );
+
+                    if ( "dpi".equalsIgnoreCase( keyValue.get( 0 ) ) ) {
+                        key = "FORMAT_OPTIONS=dpi";
+                        pdpi = keyValue.size() == 1 ? null : StringUtils.unescape( keyValue.get( 1 ) );
+                        break;
+                    }
+                }
+            }
+            if ( pdpi == null ) {
+                key = "X-DPI";
+                pdpi = map.get( key );
+            }
+            if ( pdpi != null ) {
+                try {
+                    pixelSize = 0.0254d / Double.parseDouble( pdpi );
+                } catch ( Exception e ) {
+                    LOG.warn( "The value of {} could not be parsed as a number.", key );
+                    LOG.trace( "Stack trace:", e );
+                }
+            }
+        }
+    }
 }

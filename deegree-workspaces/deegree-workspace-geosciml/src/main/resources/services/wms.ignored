@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWMS xmlns="http://www.deegree.org/services/wms" configVersion="3.4.0"
+<deegreeWMS xmlns="http://www.deegree.org/services/wms"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/services/wms/3.0.0/wms_configuration.xsd">
   <ServiceConfiguration>
 

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.24-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -23,15 +23,6 @@
       </resource>
     </resources>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- run and perform integration tests but ignore failure
-          <testFailureIgnore>true</testFailureIgnore>
-          -->
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -54,7 +45,6 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.4.43.v20210629</version>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <stopPort>${jetty.stop.port}</stopPort>
@@ -106,6 +96,14 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- run and perform integration tests but ignore failure -->
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -115,6 +113,14 @@
       <artifactId>deegree-testservice</artifactId>
       <version>${project.version}</version>
       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

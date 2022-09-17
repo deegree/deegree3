@@ -82,6 +82,8 @@ public class GetFeatureInfo extends RequestBase {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
+    private ICRS requestCrs;
+
     private ICRS crs;
 
     private Envelope bbox;
@@ -118,8 +120,9 @@ public class GetFeatureInfo extends RequestBase {
         if ( version.equals( VERSION_130 ) ) {
             parse130( map );
         }
+        handlePixelSize( map );
         parameterMap.putAll( map );
-        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
     }
 
     public GetFeatureInfo( List<String> layers, int width, int height, int x, int y, Envelope envelope, ICRS crs,
@@ -130,9 +133,10 @@ public class GetFeatureInfo extends RequestBase {
         this.x = x;
         this.y = y;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.featureCount = featureCount;
-        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+        scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
     }
 
     public GetFeatureInfo( List<LayerRef> layers, List<StyleRef> styles, List<String> queryLayers, int width,
@@ -146,12 +150,14 @@ public class GetFeatureInfo extends RequestBase {
         this.x = x;
         this.y = y;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.featureCount = featureCount;
         this.infoFormat = infoFormat;
         this.dimensions.putAll( dimensions );
         this.parameterMap.putAll( parameterMap );
-        this.scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, DEFAULT_PIXEL_SIZE );
+        handlePixelSize( parameterMap );
+        this.scale = RenderHelper.calcScaleWMS130( width, height, bbox, crs, pixelSize );
     }
 
     private void parse111( Map<String, String> map )
@@ -162,8 +168,8 @@ public class GetFeatureInfo extends RequestBase {
         if ( c == null || c.trim().isEmpty() ) {
             throw new OWSException( "The SRS parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
+        requestCrs = CRSManager.getCRSRef( c );
         crs = GetMap.getCRS111( c );
-
         bbox = fac.createEnvelope( new double[] { vals[0], vals[1] }, new double[] { vals[2], vals[3] }, crs );
 
         String xs = map.get( "X" );
@@ -196,6 +202,7 @@ public class GetFeatureInfo extends RequestBase {
             throw new OWSException( "The CRS parameter is missing.", MISSING_PARAMETER_VALUE );
         }
 
+        requestCrs = CRSManager.getCRSRef( requestedCrs );
         bbox = GetMap.getCRSAndEnvelope130( requestedCrs, vals );
         crs = bbox.getCoordinateSystem();
 
@@ -376,6 +383,13 @@ public class GetFeatureInfo extends RequestBase {
     }
 
     /**
+     * @return the requested coordinate system
+     */
+    public ICRS getRequestCoordinateSystem() {
+        return requestCrs;
+    }
+
+    /**
      * @param crs
      */
     public void setCoordinateSystem( ICRS crs ) {
@@ -469,4 +483,10 @@ public class GetFeatureInfo extends RequestBase {
         return false;
     }
 
+    /**
+     * @return the value of the pixel size parameter (default is 0.00028 m).
+     */
+    public double getPixelSize() {
+        return pixelSize;
+    }
 }

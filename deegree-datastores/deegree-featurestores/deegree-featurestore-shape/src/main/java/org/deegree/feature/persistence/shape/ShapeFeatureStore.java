@@ -51,6 +51,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -135,7 +136,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private String shpName;
 
-    private ICRS crs;
+    private ICRS storageCrs;
 
     private Charset encoding;
 
@@ -168,7 +169,7 @@ public class ShapeFeatureStore implements FeatureStore {
      * 
      * @param shpName
      *            name of the shape file to be loaded, may omit the ".shp" extension, must not be <code>null</code
-     * @param crs
+     * @param storageCrs
      *            crs used by the shape file, must not be <code>null</code>
      * @param encoding
      *            encoding used in the dbf file, can be <code>null</code> (encoding guess mode)
@@ -184,11 +185,11 @@ public class ShapeFeatureStore implements FeatureStore {
      * @param mappings
      *            may be null, in which case the original DBF names and 'geometry' will be used
      */
-    public ShapeFeatureStore( String shpName, ICRS crs, Charset encoding, String ftNamespace, String localFtName,
+    public ShapeFeatureStore( String shpName, ICRS storageCrs, Charset encoding, String ftNamespace, String localFtName,
                               String ftPrefix, boolean generateAlphanumericIndexes, FeatureStoreCache cache,
                               List<Mapping> mappings, ResourceMetadata<FeatureStore> metadata ) {
         this.shpName = shpName;
-        this.crs = crs;
+        this.storageCrs = storageCrs;
         this.encoding = encoding;
         this.mappings = mappings;
         this.metadata = metadata;
@@ -222,14 +223,14 @@ public class ShapeFeatureStore implements FeatureStore {
             in = new BufferedReader( new FileReader( prj ) );
             String c = in.readLine().trim();
             try {
-                crs = CRSManager.lookup( c );
-                LOG.debug( ".prj contained EPSG code '{}'", crs.getAlias() );
+                storageCrs = CRSManager.lookup( c );
+                LOG.debug( ".prj contained EPSG code '{}'", storageCrs.getAlias() );
             } catch ( UnknownCRSException e2 ) {
                 LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", shpName,
                           e2.getLocalizedMessage() );
                 LOG.warn( "The file also does not contain a valid EPSG code, assuming CRS:84 (WGS84 with x/y axis order)." );
                 LOG.trace( "Stack trace of failed WKT parsing:", e2 );
-                crs = CRSManager.lookup( "CRS:84" );
+                storageCrs = CRSManager.lookup( "CRS:84" );
             }
         } catch ( IOException e1 ) {
             LOG.debug( "Stack trace:", e1 );
@@ -256,7 +257,7 @@ public class ShapeFeatureStore implements FeatureStore {
             try {
                 LOG.debug( "Loading RTree from disk." );
                 RTree<Long> rtree = RTree.loadFromDisk( shpName + ".rti" );
-                shp = new SHPReader( raf, crs, rtree, rtree.getExtraFlag() );
+                shp = new SHPReader( raf, storageCrs, rtree, rtree.getExtraFlag() );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
                 LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
@@ -266,13 +267,13 @@ public class ShapeFeatureStore implements FeatureStore {
             }
         }
 
-        shp = new SHPReader( raf, crs, null, false );
+        shp = new SHPReader( raf, storageCrs, null, false );
 
         LOG.debug( "Building rtree index in memory for '{}'", new File( shpName ).getName() );
 
         Pair<RTree<Long>, Boolean> p = createIndex( shp );
         LOG.debug( "done building index." );
-        shp = new SHPReader( raf, crs, p.first, p.second );
+        shp = new SHPReader( raf, storageCrs, p.first, p.second );
         p.first.writeTreeToDisk( shpName + ".rti" );
         return shp;
     }
@@ -532,6 +533,18 @@ public class ShapeFeatureStore implements FeatureStore {
     }
 
     @Override
+    public Pair<Date, Date> getTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
+    @Override
+    public Pair<Date, Date> calcTemporalExtent( QName ftName, QName datetimeProperty )
+                    throws FeatureStoreException {
+        return null;
+    }
+
+    @Override
     public void destroy() {
         cache.clear();
         try {
@@ -590,13 +603,19 @@ public class ShapeFeatureStore implements FeatureStore {
         return schema.getFeatureType( ftName ) != null;
     }
 
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
+    }
+
     /**
      * Returns the CRS used by the shape file.
      * 
      * @return the CRS used by the shape file, never <code>null</code>
      */
-    public ICRS getStorageCRS() {
-        return crs;
+    @Override
+    public ICRS getStorageCrs() {
+        return storageCrs;
     }
 
     private class FeatureIterator implements CloseableIterator<Feature> {
@@ -661,7 +680,7 @@ public class ShapeFeatureStore implements FeatureStore {
 
         LOG.debug( "Loading shape file '{}'", shpName );
 
-        if ( crs == null ) {
+        if ( storageCrs == null ) {
             File prj = new File( shpName + ".PRJ" );
             if ( !prj.exists() ) {
                 prj = new File( shpName + ".prj" );
@@ -669,31 +688,31 @@ public class ShapeFeatureStore implements FeatureStore {
             if ( prj.exists() ) {
                 try {
                     try {
-                        crs = new WKTParser( prj ).parseCoordinateSystem();
+                        storageCrs = new WKTParser( prj ).parseCoordinateSystem();
                     } catch ( IOException e ) {
                         String msg = "The shape datastore for '" + shpName
                                      + "' could not be initialized, because no CRS was defined.";
                         throw new ResourceInitException( msg );
                     } catch ( Exception e1 ) {
                         getCRSFromFile( prj );
-                        if ( crs == null ) {
+                        if ( storageCrs == null ) {
                             return;
                         }
                     }
                 } catch ( WKTParsingException e ) {
                     getCRSFromFile( prj );
-                    if ( crs == null ) {
+                    if ( storageCrs == null ) {
                         return;
                     }
                 }
             } else {
                 LOG.debug( "No crs configured, and no .prj found, assuming CRS:84 (WGS84 in x/y axis order)." );
-                crs = CRSManager.getCRSRef( "CRS:84" );
+                storageCrs = CRSManager.getCRSRef( "CRS:84" );
             }
         }
 
         try {
-            transformer = new GeometryTransformer( crs );
+            transformer = new GeometryTransformer( storageCrs );
         } catch ( IllegalArgumentException e ) {
             LOG.error( "Unknown error", e );
             // } catch ( UnknownCRSException e ) {

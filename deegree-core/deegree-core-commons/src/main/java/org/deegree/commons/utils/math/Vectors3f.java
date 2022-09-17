@@ -163,7 +163,7 @@ public class Vectors3f {
      * store the result in a new allocated array with length 3.
      * 
      * @param a
-     *            array with length > index + 9
+     *            array with <code>length &gt; index + 9</code>
      * @param index
      *            index of the first vector
      * @return a newly allocated array with length 3 containing the normal vector.
@@ -240,13 +240,12 @@ public class Vectors3f {
      * store the result in given array with length 3.
      * 
      * @param a
-     *            an array containing the ordinates of the vectors with length > index + 9
+     *            an array containing the ordinates of the vectors with length &gt; index + 9
      * @param index
      *            index of the first vector
      * @param result
      *            array with length 3
-     * @throws IndexOutOfBoundsException
-     *             if a.length < index +9
+     * @throws IndexOutOfBoundsException if <code>a.length &lt; index + 9</code>
      */
     public final static void normal( float[] a, int index, float[] result ) {
         normal( a, index, index + 3, index + 6, result );
@@ -259,7 +258,7 @@ public class Vectors3f {
      * vector will be returned .
      * 
      * @param a
-     *            array containing the ordinates of the vectors with length > index + 9
+     *            array containing the ordinates of the vectors with <code>length &gt; index + 9</code>
      * @param index
      *            index of the first vector
      * @return a new allocated array with length 3 containing the normalized normal vector.
@@ -296,7 +295,7 @@ public class Vectors3f {
      * the (unnormalized) vector will be returned .
      * 
      * @param a
-     *            array containing the ordinates of the vectors with length > index + 9
+     *            array containing the ordinates of the vectors with <code>length &gt; index + 9</code>
      * @param index
      *            index of the first vector
      * @param result

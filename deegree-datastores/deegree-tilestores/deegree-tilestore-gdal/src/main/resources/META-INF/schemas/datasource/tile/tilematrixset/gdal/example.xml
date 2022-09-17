@@ -1,0 +1,9 @@
+<GDALTileMatrixSet
+	xmlns="http://www.deegree.org/datasource/tile/tilematrixset/gdal"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/gdal gdal.xsd">
+
+	<StorageCRS>EPSG:26912</StorageCRS>
+	<File>../../../data/utah.tif</File>
+
+</GDALTileMatrixSet>

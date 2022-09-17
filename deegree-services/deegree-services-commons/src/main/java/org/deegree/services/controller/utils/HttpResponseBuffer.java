@@ -313,9 +313,12 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
             }
         }
         if ( buffer != null ) {
-            buffer.flush();
-            buffer.writeTo( super.getOutputStream() );
-            buffer.reset();
+            try {
+                buffer.flush();
+                buffer.writeTo( super.getOutputStream() );
+            } finally {
+                buffer.reset();
+            }
         }
         super.flushBuffer();
     }

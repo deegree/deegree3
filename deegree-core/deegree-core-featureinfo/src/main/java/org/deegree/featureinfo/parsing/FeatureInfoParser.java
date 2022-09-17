@@ -1,12 +1,10 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2012 by:
+ Copyright (C) 2001-2015 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
- and
- - Occam Labs UG (haftungsbeschränkt) -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -33,209 +31,34 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
- Occam Labs UG (haftungsbeschränkt)
- Godesberger Allee 139, 53175 Bonn
- Germany
-
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 package org.deegree.featureinfo.parsing;
 
-import static org.deegree.commons.tom.primitive.BaseType.STRING;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.nextElement;
-import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
-import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
-import static org.deegree.gml.GMLVersion.GML_2;
-import static org.slf4j.LoggerFactory.getLogger;
+import java.io.InputStream;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.tom.gml.property.Property;
-import org.deegree.commons.tom.gml.property.PropertyType;
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamUtils;
-import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeature;
-import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.property.SimpleProperty;
-import org.deegree.feature.types.DynamicAppSchema;
-import org.deegree.feature.types.GenericFeatureType;
-import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.gml.GMLStreamReader;
-import org.slf4j.Logger;
 
 /**
- * Responsible for parsing 'feature collections', even if they are broken (eg. ESRI or UMN mapserver feature info
- * responses). Used by the WMS and WMTS clients. Currently, ESRI, UMN mapserver, mywms and normal GML2 feature
- * collections are supported.
+ * Responsible for parsing 'feature collections'.
  * 
- * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  */
-public class FeatureInfoParser {
-
-    private static final Logger LOG = getLogger( FeatureInfoParser.class );
+public interface FeatureInfoParser {
 
     /**
-     * @param xmlReader
-     *            input XML stream
+     * @param featureInfoToParse
+     *            the feature info to parse, never <code>null</code>
      * @param csvLayerNames
-     *            a comma separated list of layer names
-     * @return all features that could be reconstructed or synthesized
+     *            a comma separated list of layer names, should not be <code>null</code>
+     * @return a feature collection containingall features that could be reconstructed or synthesized, never
+     *         <code>null</code>
      * @throws XMLStreamException
      *             if the content could not be parsed as feature collection
      */
-    public static FeatureCollection parseAsFeatureCollection( XMLStreamReader xmlReader, String csvLayerNames )
-                            throws XMLStreamException {
-        try {
-            // yes, some versions use a namespace, some do not
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() || xmlReader.getNamespaceURI().equals( "http://www.esri.com/wms" ) )
-                 && xmlReader.getLocalName().equals( "FeatureInfoResponse" ) ) {
-                return readESRICollection( xmlReader, csvLayerNames );
-            }
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
-                 && xmlReader.getLocalName().equals( "featureInfo" ) ) {
-                return readMyWMSCollection( xmlReader );
-            }
-            if ( ( xmlReader.getNamespaceURI() == null || xmlReader.getNamespaceURI().isEmpty() )
-                 && xmlReader.getLocalName().equals( "msGMLOutput" ) ) {
-                return readUMNCollection( xmlReader );
-            }
-            return readGml2FeatureCollection( xmlReader );
-        } catch ( Exception e ) {
-            String msg = "Unable to parse WMS GetFeatureInfo response as feature collection: " + e.getMessage();
-            throw new XMLStreamException( msg, e );
-        }
-    }
-
-    private static FeatureCollection readGml2FeatureCollection( XMLStreamReader xmlReader )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        GMLStreamReader reader = createGMLStreamReader( GML_2, xmlReader );
-        reader.setApplicationSchema( new DynamicAppSchema() );
-        return reader.readFeatureCollection();
-    }
-
-    private static FeatureCollection readESRICollection( XMLStreamReader reader, String idPrefix )
-                            throws XMLStreamException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-
-        int count = 0;
-        nextElement( reader );
-        while ( reader.isStartElement() && reader.getLocalName().equals( "FIELDS" ) ) {
-            List<PropertyType> props = new ArrayList<PropertyType>( reader.getAttributeCount() );
-            List<Property> propValues = new ArrayList<Property>( reader.getAttributeCount() );
-            for ( int i = 0; i < reader.getAttributeCount(); ++i ) {
-                String name = reader.getAttributeLocalName( i );
-                name = name.substring( name.lastIndexOf( "." ) + 1 );
-                String value = reader.getAttributeValue( i );
-                SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                propValues.add( new SimpleProperty( tp, value ) );
-                props.add( tp );
-            }
-            GenericFeatureType ft = new GenericFeatureType( new QName( "feature" ), props, false );
-            col.add( new GenericFeature( ft, idPrefix + "_esri_" + ++count, propValues, null ) );
-            skipElement( reader );
-            nextElement( reader );
-        }
-        LOG.debug( "Found {} features.", col.size() );
-        return col;
-    }
-
-    private static FeatureCollection readMyWMSCollection( XMLStreamReader reader )
-                            throws XMLStreamException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-
-        nextElement( reader );
-        while ( reader.isStartElement() && reader.getLocalName().equals( "query_layer" ) ) {
-
-            String ftName = reader.getAttributeValue( null, "name" );
-            int count = 0;
-
-            nextElement( reader );
-            while ( reader.isStartElement() && reader.getLocalName().equals( "object" ) ) {
-
-                List<PropertyType> props = new ArrayList<PropertyType>();
-                List<Property> propValues = new ArrayList<Property>();
-
-                nextElement( reader );
-                while ( !( reader.isEndElement() && reader.getLocalName().equals( "object" ) ) ) {
-                    String name = reader.getLocalName();
-                    String value = reader.getElementText();
-                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                    propValues.add( new SimpleProperty( tp, value ) );
-                    props.add( tp );
-                    nextElement( reader );
-                }
-
-                GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
-                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, null ) );
-                nextElement( reader );
-            }
-            nextElement( reader );
-        }
-        return col;
-    }
-
-    private static FeatureCollection readUMNCollection( XMLStreamReader reader )
-                            throws XMLStreamException {
-        GenericFeatureCollection col = new GenericFeatureCollection();
-        nextElement( reader );
-
-        String ftName = reader.getLocalName();
-        String singleFeatureTagName = ftName.split( "_" )[0] + "_feature";
-
-        while ( reader.isStartElement() && reader.getLocalName().equals( ftName ) ) {
-
-            int count = 0;
-            nextElement( reader );
-
-            // gml:name seems to be an optional element
-            if ( reader.getLocalName().equals( "name" ) ) {
-                skipElement( reader );
-                reader.nextTag();
-            }
-
-            while ( reader.isStartElement() && reader.getLocalName().equals( singleFeatureTagName ) ) {
-                List<PropertyType> props = new ArrayList<PropertyType>();
-                List<Property> propValues = new ArrayList<Property>();
-
-                nextElement( reader );
-                while ( !( reader.isEndElement() && reader.getLocalName().equals( singleFeatureTagName ) ) ) {
-
-                    // Skip boundedBy
-                    if ( reader.isStartElement() && reader.getLocalName().equals( "boundedBy" ) ) {
-                        XMLStreamUtils.skipElement( reader );
-                        nextElement( reader );
-                    }
-
-                    // skip geometry
-                    if ( reader.isStartElement() && reader.getLocalName().equals( "geometry" ) ) {
-                        XMLStreamUtils.skipElement( reader );
-                        nextElement( reader );
-                    }
-
-                    String name = reader.getLocalName();
-                    String value = reader.getElementText();
-                    SimplePropertyType tp = new SimplePropertyType( new QName( name ), 0, 1, STRING, null, null );
-                    propValues.add( new SimpleProperty( tp, value ) );
-                    props.add( tp );
-                    nextElement( reader );
-                }
-                GenericFeatureType ft = new GenericFeatureType( new QName( ftName ), props, false );
-                col.add( new GenericFeature( ft, "ftName_" + ++count, propValues, null ) );
-                nextElement( reader );
-            }
-            nextElement( reader );
-        }
-        return col;
-    }
+    FeatureCollection parseAsFeatureCollection( InputStream featureInfoToParse, String csvLayerNames )
+                            throws XMLStreamException;
 
 }

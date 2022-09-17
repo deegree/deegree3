@@ -61,7 +61,7 @@ public class GdalTileStoreProvider extends TileStoreProvider {
 
     private static final String SCHEMA_NAMESPACE = "http://www.deegree.org/datasource/tile/gdal";
 
-    private static final URL SCHEMA_URL = GdalTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/gdal/3.4.0/gdal.xsd" );
+    private static final URL SCHEMA_URL = GdalTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/gdal/gdal.xsd" );
 
     @Override
     public String getNamespace() {

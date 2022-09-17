@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.deegree.rendering.r2d.Copyright;
 import org.deegree.rendering.r2d.LabelRenderer;
 import org.deegree.rendering.r2d.RasterRenderer;
 import org.deegree.rendering.r2d.Renderer;
@@ -96,6 +97,13 @@ public class LazyImageRenderContext implements RenderContext {
         } else {
             renderContext.paintImage( img );
         }
+    }
+
+    @Override
+    public void paintCopyright( Copyright copyright, int mapHeight ) {
+        LOG.trace( "Paint copyright" );
+        
+        getRenderContext().paintCopyright( copyright, mapHeight );
     }
 
     @Override
