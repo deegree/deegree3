@@ -47,15 +47,13 @@ import static java.util.Collections.singletonList;
 import static javax.xml.stream.XMLOutputFactory.newInstance;
 import static org.deegree.commons.xml.CommonNamespaces.WMSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.services.wms.controller.capabilities.theme.XMLAssert.assertValidity;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -65,8 +63,10 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
 import org.deegree.commons.ows.metadata.Description;
+import org.deegree.commons.ows.metadata.ExtendedDescription;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.layer.Attribution;
 import org.deegree.commons.ows.metadata.layer.ExternalIdentifier;
@@ -87,7 +87,6 @@ import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.services.metadata.OWSMetadataProvider;
 import org.deegree.theme.Theme;
 import org.deegree.theme.persistence.standard.StandardTheme;
-import org.h2.util.IOUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -122,11 +121,12 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeEndElement();
         writer.flush();
         bos.close();
-        String actual = bos.toString();
-        String expected = org.apache.commons.io.IOUtils.toString(
+
+        String expected = IOUtils.toString(
                         WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_minimal.xml" ),
-                        UTF_8.name() );
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
+                        UTF_8 );
+        String actual = bos.toString();
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
     }
 
     @Test
@@ -146,11 +146,11 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeEndElement();
         writer.flush();
         bos.close();
+
+        String expected = IOUtils.toString(
+                        WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" ), UTF_8 );
         String actual = bos.toString();
-        String expected = org.apache.commons.io.IOUtils.toString(
-                        WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_full.xml" ),
-                        UTF_8.name() );
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
     }
 
     @Test
@@ -179,11 +179,11 @@ public class WmsCapabilities130ThemeWriterTest {
         writer.writeEndElement();
         writer.flush();
         bos.close();
+
+        String expected = IOUtils.toString( WmsCapabilities130ThemeWriterTest.class.getResourceAsStream(
+                        "wms130_layer_multipleMetadataUrls.xml" ), UTF_8 );
         String actual = bos.toString();
-        String expected = org.apache.commons.io.IOUtils.toString(
-                        WmsCapabilities130ThemeWriterTest.class.getResourceAsStream( "wms130_layer_multipleMetadataUrls.xml" ),
-                        UTF_8.name() );
-        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace().ignoreElementContentWhitespace() );
     }
 
     private DatasetMetadata createDatasetMetadataMinimal() {
@@ -196,8 +196,9 @@ public class WmsCapabilities130ThemeWriterTest {
         final List<UrlWithFormat> dataUrls = null;
         final List<UrlWithFormat> featureListUrls = null;
         final Attribution attribution = null;
+        final List<ExtendedDescription> extendedDescriptions = null;
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution );
+                                    featureListUrls, attribution, extendedDescriptions );
     }
 
     private DatasetMetadata createDatasetMetadataFull() {
@@ -227,8 +228,9 @@ public class WmsCapabilities130ThemeWriterTest {
         featureListUrls.add( new UrlWithFormat( "http://featurelist2.url", "text/plain" ) );
         final LogoUrl logoUrl = new LogoUrl( "http://logo.url", "image/png", 64, 32 );
         final Attribution attribution = new Attribution( "AttributionTitle", "http://attribution.url", logoUrl );
+        final List<ExtendedDescription> extendedDescriptions = Collections.emptyList();
         return new DatasetMetadata( name, titles, abstracts, keywords, metadataUrls, externalIds, dataUrls,
-                                    featureListUrls, attribution );
+                                    featureListUrls, attribution, extendedDescriptions );
     }
 
     private Map<String, String> createAuthorityNameToUrlMap() {
@@ -273,8 +275,9 @@ public class WmsCapabilities130ThemeWriterTest {
         for ( String url : urls ) {
             metadataUrls.add( new MetadataUrl( url, "ISO19115:2003", "application/xml" ) );
         }
+        List<ExtendedDescription> extendedDescriptions = null;
         return new DatasetMetadata( new QName( "provider" ), titles, abstracts, keywords, metadataUrls, externalIds,
-                                    dataUrls, featureListUrls, attribution );
+                                    dataUrls, featureListUrls, attribution, extendedDescriptions );
     }
 
 }

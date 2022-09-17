@@ -1,5 +1,0 @@
-<mer:MergingTileStore configVersion="3.4.0" xmlns:mer="http://www.deegree.org/datasource/tile/merge">
-  <mer:TileMatrixSetId>string</mer:TileMatrixSetId>
-  <!--1 or more repetitions:-->
-  <mer:TileStoreId>string</mer:TileStoreId>
-</mer:MergingTileStore>

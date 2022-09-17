@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/remoteows/wfs"
+  xmlns:wfs="http://www.deegree.org/datasource/remoteows/wfs" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.remoteows.wfs.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="RemoteWFS">
+    <complexType>
+      <sequence>
+        <element name="CapabilitiesDocumentLocation">
+          <complexType>
+            <attribute name="location" type="string" use="required" />
+          </complexType>
+        </element>
+        <!-- timeouts are in seconds -->
+        <element name="ConnectionTimeout" type="int" minOccurs="0" default="5" />
+        <element name="RequestTimeout" type="int" minOccurs="0" default="60" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+</schema>

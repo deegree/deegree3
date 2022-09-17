@@ -45,6 +45,8 @@ import org.deegree.geometry.standard.DefaultEnvelope;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import java.util.Arrays;
+
 /**
  * Default implementation of {@link Point}.
  * 
@@ -113,6 +115,11 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
             return coordinates[2];
         }
         return Double.NaN;
+    }
+
+    @Override
+    public Point copy() {
+        return new DefaultPoint( id, crs, pm,  Arrays.copyOf( coordinates, coordinates.length ) );
     }
 
     @Override

@@ -20,16 +20,10 @@ workspace can be active.
 The service console is a web-based administration interface for
 configuring your deegree webservices installation. If deegree
 webservices are running on your machine, you can usually access the
-console from your browser via http://localhost:8080
+console from your browser via http://localhost:8080/deegree-webservices
 
 .deegree webservices administration console
 image::console_start.png[deegree webservices administration console,scaledwidth=50.0%]
-
-TIP: If you're not running the ZIP version, but deployed the WAR version into
-a web container, you most probably will have to use a different URL for
-accessing the console, e.g.
-http://localhost:8080/deegree-webservices-${project.version}. The port
-number and webapp name depend on your installation/deployment details.
 
 TIP: You can access the service console from other machines on your network
 by exchanging _localhost_ with the name or IP address of the machine
@@ -221,13 +215,13 @@ specification].
 
 TIP: Instead of using the built-in layer preview or the generic OGC client,
 you may use any compliant OGC client for accessing the WMS and WFS.
-Successfully tested desktop clients include Quantum GIS (install WFS
-plugin for accessing WFS), uDig, OpenJUMP and deegree iGeoDesktop. The
+Successfully tested desktop clients include QGIS (install WFS
+plugin for accessing WFS), uDig and OpenJUMP. The
 service address to enter in your client is:
-http://localhost:8080/services.
+http://localhost:8080/deegree-webservices/services.
 
-.Quantum GIS displaying a WMS layer from the Utah workspace
-image::qgis_workspace_utah.png[Quantum GIS displaying a WMS layer from the Utah workspace,scaledwidth=50.0%]
+.QGIS displaying a WMS layer from the Utah workspace
+image::qgis_workspace_utah.png[QGIS displaying a WMS layer from the Utah workspace,scaledwidth=50.0%]
 
 [[anchor-workspace-csw]]
 === Example workspace 3: An ISO Catalogue Service setup

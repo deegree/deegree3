@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 
@@ -74,12 +75,14 @@ import org.deegree.feature.persistence.sql.jaxb.AbstractIDGeneratorType;
 import org.deegree.feature.persistence.sql.jaxb.AutoIdGenerator;
 import org.deegree.feature.persistence.sql.jaxb.FeatureTypeMappingJAXB;
 import org.deegree.feature.persistence.sql.jaxb.Join.AutoKeyColumn;
+import org.deegree.feature.persistence.sql.jaxb.OrderByJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.BLOBMapping;
 import org.deegree.feature.persistence.sql.jaxb.SQLFeatureStoreJAXB.NamespaceHint;
 import org.deegree.feature.persistence.sql.jaxb.StorageCRS;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.MappingExpression;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
@@ -231,6 +234,17 @@ public abstract class AbstractMappedSchemaBuilder {
             return Collections.singletonList( tj );
         }
         return null;
+    }
+
+    protected List<SortCriterion> createSortCriteria( FeatureTypeMappingJAXB ftDecl ) {
+        if ( ftDecl.getOrderBy() != null ) {
+            List<OrderByJAXB.Column> columns = ftDecl.getOrderBy().getColumn();
+            List<SortCriterion> sortCriteria = columns.stream().map(
+                                    o -> new SortCriterion( o.getName(), "ASC".equals( o.getSortOrder() ) ) ).collect(
+                                    Collectors.toList() );
+            return sortCriteria;
+        }
+        return Collections.emptyList();
     }
 
 }

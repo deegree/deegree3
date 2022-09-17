@@ -1,7 +1,7 @@
 name=rasterfile
 example1_name=singlefile
 example1_description=Raster based on a single raster (image) file.
-example1_location=/META-INF/schemas/datasource/coverage/raster/3.4.0/single.xml
+example1_location=/META-INF/schemas/datasource/coverage/raster/single.xml
 example2_name=singlefile
 example2_description=Raster based on a directory of raster (image) files.
-example2_location=/META-INF/schemas/datasource/coverage/raster/3.4.0/directory.xml
+example2_location=/META-INF/schemas/datasource/coverage/raster/directory.xml

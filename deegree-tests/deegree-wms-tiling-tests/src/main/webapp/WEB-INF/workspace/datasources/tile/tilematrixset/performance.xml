@@ -1,6 +1,6 @@
 <GeoTIFFTileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset/geotiff"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset/geotiff geotiff.xsd"
-  configVersion="3.4.0">
+ >
 
   <File>/gdal/merged.tif</File>
 

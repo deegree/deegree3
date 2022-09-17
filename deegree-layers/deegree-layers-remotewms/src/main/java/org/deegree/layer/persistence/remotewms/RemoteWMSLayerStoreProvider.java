@@ -44,7 +44,7 @@ import org.deegree.workspace.Workspace;
  */
 public class RemoteWMSLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/3.4.0/remotewms.xsd" );
+    private static final URL SCHEMA_URL = RemoteWMSLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/remotewms/remotewms.xsd" );
 
     @Override
     public String getNamespace() {

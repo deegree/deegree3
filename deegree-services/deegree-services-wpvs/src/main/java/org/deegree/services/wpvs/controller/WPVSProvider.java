@@ -63,7 +63,6 @@ public class WPVSProvider extends OWSProvider {
             supportedVersions = new Version[] { VERSION_040 };
             handledNamespaces = new String[] { WPVS_NS };
             handledRequests = WPVSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
             serviceName = new String[] { "WPVS" };
         }
     };
@@ -75,7 +74,7 @@ public class WPVSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WPVSProvider.class.getResource( "/META-INF/schemas/services/wpvs/3.4.0/wpvs_configuration.xsd" );
+        return WPVSProvider.class.getResource( "/META-INF/schemas/services/wpvs/wpvs_configuration.xsd" );
     }
 
     @Override

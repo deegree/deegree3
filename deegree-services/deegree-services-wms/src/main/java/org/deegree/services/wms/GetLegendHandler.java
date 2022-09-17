@@ -148,7 +148,7 @@ class GetLegendHandler {
 
     private BufferedImage buildLegend( GetLegendGraphic req, Legends renderer, Style style, boolean originalSize,
                                        HashMap<String, BufferedImage> legendMap ) {
-        BufferedImage img = MapService.prepareImage( req );
+        BufferedImage img = service.prepareImage( req );
         Graphics2D g = img.createGraphics();
         g.setRenderingHint( KEY_ANTIALIASING, VALUE_ANTIALIAS_ON );
         g.setRenderingHint( KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON );

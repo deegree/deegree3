@@ -67,6 +67,8 @@ public class TunableParameter {
     private static final Map<String, String> CONFIG_STR = new HashMap<>();
 
     private static final Map<String, Number> CONFIG_NUM = new HashMap<>();
+    
+    private static final Map<String, Boolean> CONFIG_BOOL = new HashMap<>();
 
     public static String get( String key, String defaultValue ) {
         boolean has = CONFIG_STR.containsKey( key );
@@ -88,7 +90,32 @@ public class TunableParameter {
             return val;
         }
     }
+    
+    public static boolean get( String key, boolean defaultValue ) {
+        return get( key, Boolean.valueOf( defaultValue ) ).booleanValue();
+    }
 
+    public static Boolean get( String key, Boolean defaultValue ) {
+        boolean has = CONFIG_BOOL.containsKey( key );
+        Boolean val = CONFIG_BOOL.get( key );
+
+        if ( !has ) {
+            val = getFromJndi( key );
+
+            if ( val == null ) {
+                val = getBooleanFromSystem( key );
+            }
+
+            CONFIG_BOOL.put( key, val );
+        }
+
+        if ( val == null ) {
+            return defaultValue;
+        } else {
+            return val;
+        }
+    }
+    
     public static double get( String key, double defaultValue ) {
         return get( key, Double.valueOf( defaultValue ) ).doubleValue();
     }
@@ -142,6 +169,19 @@ public class TunableParameter {
             }
         } catch ( Exception ex ) {
             LOG.warn( "Could not parse tuneable '{}' as double: {}", key, ex.getMessage() );
+            LOG.trace( "Exception", ex );
+        }
+        return null;
+    }
+    
+    private static Boolean getBooleanFromSystem( String key ) {
+        try {
+            String str = System.getProperty( key );
+            if ( str != null ) {
+                return Boolean.valueOf( str );
+            }
+        } catch ( Exception ex ) {
+            LOG.warn( "Could not parse tuneable '{}' as boolean: {}", key, ex.getMessage() );
             LOG.trace( "Exception", ex );
         }
         return null;

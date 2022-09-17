@@ -46,6 +46,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XLINK_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 import static org.deegree.commons.xml.CommonNamespaces.XSI_PREFIX;
+import static org.deegree.commons.xml.stax.XMLStreamUtils.copy;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
@@ -85,6 +86,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.ows.metadata.DatasetMetadata;
+import org.deegree.commons.ows.metadata.ExtendedDescription;
 import org.deegree.commons.ows.metadata.MetadataUrl;
 import org.deegree.commons.ows.metadata.OperationsMetadata;
 import org.deegree.commons.ows.metadata.domain.Domain;
@@ -1078,6 +1080,31 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                         }
                     }
                 }
+				if ( ftMd != null && ftMd.getExtendedDescriptions() != null ) {
+					List<ExtendedDescription> extendedDescriptions = ftMd.getExtendedDescriptions();
+					for ( ExtendedDescription extendedDescription : extendedDescriptions ) {
+						writer.writeStartElement( WFS_200_NS, "ExtendedDescription" );
+                        writer.writeStartElement( WFS_200_NS, "Element" );
+                        writer.writeAttribute( "name", extendedDescription.getName() );
+                        String type = extendedDescription.getType().getLocalPart();;
+                        if( extendedDescription.getType().getNamespaceURI() != null  ) {
+                            String typePrefix = extendedDescription.getType().getPrefix();
+                            if( prefix != null && !prefix.isEmpty() ) {
+                                type = typePrefix + ':' + extendedDescription.getType().getLocalPart();
+                            }
+                            writer.writeNamespace( prefix, extendedDescription.getType().getNamespaceURI() );
+                        }
+                        writer.writeAttribute( "type", type );
+                        writeElement( writer, OWS110_NS, "Metadata", extendedDescription.getMetadata() );
+                        writer.writeStartElement( WFS_200_NS, "ValueList" );
+                        for ( String value : extendedDescription.getValues() ) {
+							writeElement( writer, WFS_200_NS, "Value", value );
+						}
+                        writer.writeEndElement();
+                        writer.writeEndElement();
+                        writer.writeEndElement();
+					}
+				}
 
                 writer.writeEndElement();
             }
