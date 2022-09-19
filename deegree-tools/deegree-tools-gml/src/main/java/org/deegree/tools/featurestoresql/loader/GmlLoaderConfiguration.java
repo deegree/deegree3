@@ -79,8 +79,9 @@ public class GmlLoaderConfiguration {
     }
 
     @Bean
-    public ReportWriter reportWriter( Summary summary ) {
-        Path outputFile = Paths.get( "GmlLoader.log" );
+    public ReportWriter reportWriter( Summary summary,
+                                      @Value("#{jobParameters['reportFile'] ?: 'GmlLoader.log'}") String fileName ) {
+        Path outputFile = Paths.get( fileName );
         return new ReportWriter( summary, outputFile );
     }
 

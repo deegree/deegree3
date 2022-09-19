@@ -41,6 +41,7 @@ public class GmlLoaderHelpUsage {
         System.out.println();
         System.out.println( "options:" );
         System.out.println( " -reportWriteStatistics=true, create a summary of all written feature types, disabled by default");
+        System.out.println( " -reportFile=GmlLoader.log, the name and optionally path to the report file, defaults to GmlLoader.log");
         System.out.println( " -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default" );
         System.out.println();
         System.out.println( "Example:" );
