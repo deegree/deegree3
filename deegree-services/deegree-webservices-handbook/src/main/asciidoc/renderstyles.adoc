@@ -673,7 +673,7 @@ _Mark_ element:
 
 In order to determine the correct index value of the used vector symbol in your TrueType font file, there are several options available: 
 
-* The most comfortable way would be by using a JavaScript parser like opentype.js, check https://opentype.js.org/glyph-inspector.html for an usable live-demo.
+* The most comfortable way would be by using a JavaScript parser like opentype.js, check https://opentype.js.org/glyph-inspector.html for a usable live-demo.
 
 * Otherwise you can check the index value by using Microsoft Word, as explained in https://support.esri.com/en/technical-article/000004293.
 
