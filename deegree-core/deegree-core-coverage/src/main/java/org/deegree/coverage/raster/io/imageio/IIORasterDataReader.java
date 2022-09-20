@@ -54,6 +54,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.coverage.raster.cache.ByteBufferPool;
 import org.deegree.coverage.raster.cache.RasterCache;
 import org.deegree.coverage.raster.data.container.BufferResult;
@@ -83,7 +84,7 @@ public class IIORasterDataReader implements RasterDataReader {
     private static final boolean CACHE_DISABLED;
 
     static {
-        CACHE_DISABLED = "false".equalsIgnoreCase( System.getProperty( "deegree.raster.cache.iioreader", "true" ));
+        CACHE_DISABLED = !TunableParameter.get( "deegree.raster.cache.iioreader", true );
         if ( !CACHE_DISABLED ) {
             LoggerFactory.getLogger( IIORasterDataReader.class ).info( "IIORaster cache is disabled for file based resources via system property!" );
         }
