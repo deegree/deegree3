@@ -261,7 +261,7 @@ public final class ConfigUtils {
                                antialias( alias ).
                                maxFeatures( maxFeats ).
                                featureInfoRadius( rad ).
-                               featureInfoDecimalsPlaces( decimalPlaces ).
+                               featureInfoDecimalPlaces( decimalPlaces ).
                                build();
     }
 
