@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.commons.utils.StringUtils;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
@@ -125,7 +126,7 @@ public class RasterCache {
      */
     private static void evaluateProperties() {
         synchronized ( MEM_LOCK ) {
-            String cacheSize = System.getProperty( DEF_RASTER_CACHE_MEM_SIZE );
+            String cacheSize = TunableParameter.get( DEF_RASTER_CACHE_MEM_SIZE, (String)null );
             long mm = StringUtils.parseByteSize( cacheSize );
             if ( mm == 0 ) {
                 if ( StringUtils.isSet( cacheSize ) ) {
@@ -143,11 +144,11 @@ public class RasterCache {
                           ( mm / ( 1024 * 1024 ) ) + "Mb", DEF_RASTER_CACHE_MEM_SIZE );
             }
             maxCacheMem = mm;
-            String t = System.getProperty( DEF_RASTER_CACHE_DISK_SIZE );
+            String t = TunableParameter.get( DEF_RASTER_CACHE_DISK_SIZE, (String)null );
             mm = StringUtils.parseByteSize( t );
             if ( mm == 0 ) {
                 if ( StringUtils.isSet( t ) ) {
-                    LOG.warn( "Ignoring supplied property: {} because it could not be parsed. Using 20G of disk space for raster caching.",
+                    LOG.warn( "Ignoring supplied property: {} because it could not be parsed. Using 20GiB of disk space for raster caching.",
                               DEF_RASTER_CACHE_MEM_SIZE );
                 }
                 mm = 20 * ( 1024l * 1024 * 1024 );
