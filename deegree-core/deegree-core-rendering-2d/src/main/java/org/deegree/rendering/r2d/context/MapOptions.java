@@ -56,36 +56,6 @@ public class MapOptions {
 
     private Integer featureInfoDecimalPlaces;
 
-    /**
-     * Instantiates {@link MapOptions} with default values (quality = null, interpol = null, antialias = null,
-     * maxFeatures = -1, featureInfoRadius = -1, opaque = false, featureInfoDecimalPlaces = null)
-     *
-     * @deprecated Use {@link MapOptions.Builder} instead.
-     */
-    public MapOptions() {
-        this( null, null, null, -1, -1, false, null );
-    }
-
-    /**
-     * Instantiates {@link MapOptions}
-     *
-     * @deprecated Use {@link MapOptions.Builder} instead.
-     */
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                       int featureInfoRadius ) {
-        this( quality, interpol, antialias, maxFeatures, featureInfoRadius, false, null );
-    }
-
-    /**
-     * Instantiates {@link MapOptions}
-     *
-     * @deprecated Use {@link MapOptions.Builder} instead.
-     */
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                       int featureInfoRadius, boolean opaque ) {
-        this( quality, interpol, antialias, maxFeatures, featureInfoRadius, opaque, null );
-    }
-
     private MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
                         int featureInfoRadius, boolean opaque, Integer featureInfoDecimalPlaces ) {
         this.quality = quality;
