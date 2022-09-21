@@ -46,6 +46,7 @@ import static org.deegree.coverage.raster.utils.CoverageTransform.transform;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,13 +102,17 @@ class CoverageFeatureInfoHandler {
 
     private CoverageDimensionHandler dimensionHandler;
 
+    private Integer decimalPlaces;
+
     CoverageFeatureInfoHandler( AbstractRaster raster, Envelope bbox, FeatureType featureType,
-                                InterpolationType interpol, CoverageDimensionHandler dimensionHandler ) {
+                                InterpolationType interpol, CoverageDimensionHandler dimensionHandler,
+                                Integer decimalPlaces ) {
         this.raster = raster;
         this.bbox = bbox;
         this.featureType = featureType;
         this.interpol = interpol;
         this.dimensionHandler = dimensionHandler;
+        this.decimalPlaces = decimalPlaces;
     }
 
     FeatureCollection handleFeatureInfoPoint( int x, int y, int width, int height ) {
@@ -144,17 +149,13 @@ class CoverageFeatureInfoHandler {
             switch ( dataType ) {
             case SHORT:
             case USHORT: {
-                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( x, y, 0 ) ),
-                                                         new PrimitiveType( BaseType.DECIMAL ) );
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
+                addValueToProps( props, new BigDecimal( 0xffff & data.getShortSample( x, y, 0 ) ) );
                 break;
             }
             case BYTE: {
                 // TODO unknown why this always yields 0 values for eg. satellite images/RGB/ARGB
                 for ( int i = 0; i < data.getBands(); ++i ) {
-                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( x, y, i ) ),
-                                                             new PrimitiveType( BaseType.DECIMAL ) );
-                    props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ), val ) );
+                    addValueToProps( props, new BigDecimal( 0xff & data.getByteSample( x, y, i ) ) );
                 }
                 break;
             }
@@ -163,9 +164,7 @@ class CoverageFeatureInfoHandler {
             case UNDEFINED:
                 LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
             case FLOAT:
-                props.add( new GenericProperty( featureType.getPropertyDeclarations().get( 0 ),
-                                                new PrimitiveValue( new BigDecimal( data.getFloatSample( x, y, 0 ) ),
-                                                                    new PrimitiveType( BaseType.DECIMAL ) ) ) );
+                addValueToProps( props, new BigDecimal( data.getFloatSample( x, y, 0 ) ) );
                 break;
             }
             Feature f = new GenericFeature( featureType, null, props, null );
@@ -193,17 +192,13 @@ class CoverageFeatureInfoHandler {
             switch ( dataType ) {
             case SHORT:
             case USHORT: {
-                PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ),
-                                                         new PrimitiveType( BaseType.DECIMAL ) );
-                props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
+                addValueToProps( props, new BigDecimal( 0xffff & data.getShortSample( 0, 0, 0 ) ) );
                 break;
             }
             case BYTE: {
                 // TODO unknown why this always yields 0 values for eg. satellite images/RGB/ARGB
                 for ( int i = 0; i < data.getBands(); ++i ) {
-                    PrimitiveValue val = new PrimitiveValue( new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ),
-                                                             new PrimitiveType( BaseType.DECIMAL ) );
-                    props.add( new GenericProperty( findValueProperty(), null, val, createAttributeList() ) );
+                    addValueToProps( props, new BigDecimal( 0xff & data.getByteSample( 0, 0, i ) ) );
                 }
                 break;
             }
@@ -212,10 +207,7 @@ class CoverageFeatureInfoHandler {
             case UNDEFINED:
                 LOG.warn( "The raster is of type '{}', this is handled as float currently.", dataType );
             case FLOAT:
-                props.add( new GenericProperty( findValueProperty(), null,
-                                                new PrimitiveValue( new BigDecimal( data.getFloatSample( 0, 0, 0 ) ),
-                                                                    new PrimitiveType( BaseType.DECIMAL ) ),
-                                                createAttributeList() ) );
+                addValueToProps( props, new BigDecimal( data.getFloatSample( 0, 0, 0 ) ) );
                 break;
             }
             Feature f = new GenericFeature( featureType, null, props, null );
@@ -257,4 +249,12 @@ class CoverageFeatureInfoHandler {
         return dimension.getUnits();
     }
 
+    private void addValueToProps( List<Property> props, BigDecimal result ) {
+        PrimitiveValue val = new PrimitiveValue( roundValue( result ), new PrimitiveType( BaseType.DECIMAL ) );
+        props.add( new GenericProperty( findValueProperty(), val ) );
+    }
+
+    private BigDecimal roundValue( BigDecimal value ) {
+        return decimalPlaces != null ? value.setScale( decimalPlaces, RoundingMode.HALF_UP ) : value;
+    }
 }
