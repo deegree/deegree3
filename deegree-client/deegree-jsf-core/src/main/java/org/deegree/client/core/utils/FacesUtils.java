@@ -53,7 +53,7 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FacesUtils {
+public final class FacesUtils {
 
     private static final Logger LOG = getLogger( FacesUtils.class );
 
