@@ -165,13 +165,13 @@ public class LayerMetadataMergerTest {
 
     @Test
     public void mergeThemeWithTwoSubthemesWithTwoLayersWithOpaqueAndWithoutOpaque() {
-        final MapOptions mapOptionsWithOpaque = new MapOptions( null, null, null, -1, -1, true );
+        final MapOptions mapOptionsWithOpaque = new MapOptions.Builder().opaque( true ).build();
         final Layer layerWithOpaque = createLayer( "LayerWithOpaque", -180.0, -90.0, 180.0, 90, mapOptionsWithOpaque );
         final List<Layer> layersWithOpaque = Collections.singletonList( layerWithOpaque );
         final Theme subThemeWithOpaque = createTheme( "SubthemeWithOpaque", -180.0, -90.0, 180.0, 90, layersWithOpaque,
                                                       null, null );
 
-        final MapOptions mapOptionsWithoutOpaque = new MapOptions( null, null, null, -1, -1, false );
+        final MapOptions mapOptionsWithoutOpaque = new MapOptions.Builder().opaque( false ).build();
         final Layer layerWithoutOpaque = createLayer( "LayerWithoutOpaque", -180.0, -90.0, 180.0, 90,
                                                       mapOptionsWithoutOpaque );
         final List<Layer> layersWithoutOpaque = Collections.singletonList( layerWithoutOpaque );
