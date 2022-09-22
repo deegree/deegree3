@@ -1103,3 +1103,37 @@ public void setSucceededMessage( String message );
 TIP: Depending on the type of computation that a Processlet performs, it may
 or may not be trivial to provide correct progress information via
 _setPercentCompleted(...)_.
+
+=== FME process provider
+
+The FME process provider connects to an instance of FME server
+and offers the configured workspaces as WPS processes. 
+Only FME Server with enabled REST API Version 3 are supported.
+
+==== Minimal configuration example
+
+A very minimal valid configuration example looks like this:
+
+*FME process provider: Minimal example (resource configuration)*
+
+[source,xml]
+----
+<FMEServer xmlns="http://www.deegree.org/processes/fme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.deegree.org/processes/fme http://schemas.deegree.org/3.5/processes/fme/fme.xsd">
+  <Address>http://fmeserver.example.com/</Address>
+  <Username>guest</Username>
+  <Password>guest</Password>
+  <!--
+  <Repository>wps</Repository>
+  -->
+</FMEServer>
+----
+
+[width="100%",cols="17%,11%,8%,64%",options="header",]
+|===
+|Option |Cardinality |Value |Description
+|Address |1 |String |Base address of the FME server
+|Username |1 |String |Username, required
+|Password |1 |String |Password, required
+|Repository |0..n |String |Repository to search for processes. If not specified, `wps` will be used
+|===
