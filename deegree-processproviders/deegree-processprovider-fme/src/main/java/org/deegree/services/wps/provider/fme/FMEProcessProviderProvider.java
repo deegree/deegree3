@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2022 by:
@@ -66,7 +65,7 @@ public class FMEProcessProviderProvider extends ProcessProviderProvider {
     */
     @Override
     public URL getSchema() {
-        return FMEProcessProviderProvider.class.getResource( "/META-INF/schemas/fme/3.4.0/fme.xsd" );
+        return FMEProcessProviderProvider.class.getResource( "/META-INF/schemas/processes/fme/fme.xsd" );
     }
 
     @Override
