@@ -43,7 +43,9 @@ import static org.deegree.services.controller.OGCFrontController.getHttpGetURL;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ import org.apache.commons.io.FileUtils;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.tom.ows.Version;
+import org.deegree.commons.utils.RequestUtils;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -200,6 +203,7 @@ public class WPService extends AbstractOWS {
 
         LOG.trace( "doKVP invoked, version: " + kvpParamsUC.get( "VERSION" ) );
 
+        RequestUtils.getCurrentThreadRequestParameters().set( kvpParamsUC );
         try {
             String requestName = KVPUtils.getRequired( kvpParamsUC, "REQUEST" );
             WPSRequestType requestType = getRequestTypeByName( requestName );
@@ -235,9 +239,11 @@ public class WPService extends AbstractOWS {
         } catch ( OWSException e ) {
             sendServiceException( e, response );
         } catch ( XMLStreamException e ) {
-            LOG.debug( e.getMessage() );
+            LOG.debug( e.getMessage(), e );
         } catch ( UnknownCRSException e ) {
-            LOG.debug( e.getMessage() );
+            LOG.debug( e.getMessage(), e );
+        } finally {
+            RequestUtils.getCurrentThreadRequestParameters().remove();
         }
     }
 
@@ -248,6 +254,7 @@ public class WPService extends AbstractOWS {
 
         LOG.trace( "doXML invoked" );
 
+        RequestUtils.getCurrentThreadRequestParameters().set( getVendorSpecificParameters( request ) );
         try {
             WPSRequestType requestType = getRequestTypeByName( xmlStream.getLocalName() );
 
@@ -286,9 +293,11 @@ public class WPService extends AbstractOWS {
         } catch ( OWSException e ) {
             sendServiceException( e, response );
         } catch ( XMLStreamException e ) {
-            LOG.debug( e.getMessage() );
+            LOG.debug( e.getMessage(), e );
         } catch ( UnknownCRSException e ) {
             LOG.debug( e.getMessage() );
+        } finally {
+            RequestUtils.getCurrentThreadRequestParameters().remove();
         }
     }
 
@@ -298,6 +307,7 @@ public class WPService extends AbstractOWS {
                             throws ServletException, IOException {
 
         LOG.trace( "doSOAP invoked" );
+        RequestUtils.getCurrentThreadRequestParameters().set( getVendorSpecificParameters( request ) );
         OMElement requestElement = soapDoc.getBody().getFirstElement();
         try {
             WPSRequestType requestType = getRequestTypeByName( requestElement.getLocalName() );
@@ -355,6 +365,8 @@ public class WPService extends AbstractOWS {
             LOG.debug( e.getMessage(), e );
         } catch ( UnknownCRSException e ) {
             LOG.debug( e.getMessage(), e );
+        } finally {
+            RequestUtils.getCurrentThreadRequestParameters().remove();
         }
     }
 
@@ -544,4 +556,18 @@ public class WPService extends AbstractOWS {
         sendException( null, new OWS110ExceptionReportSerializer( VERSION_100 ), ex, response );
     }
 
+    private Map<String, String> getVendorSpecificParameters( HttpServletRequest request ) {
+        final String queryString = request.getQueryString();
+        final String encoding = request.getCharacterEncoding() != null ? request.getCharacterEncoding() : "UTF-8";
+        if ( queryString == null ) {
+            return Collections.emptyMap();
+        }
+
+        try {
+            return KVPUtils.getNormalizedKVPMap(queryString, encoding);
+        } catch ( UnsupportedEncodingException uee ) {
+            LOG.warn("Request parameter encoding '{}' not supported: {}", encoding, uee.getMessage() );
+            return Collections.emptyMap();
+        }
+    }
 }

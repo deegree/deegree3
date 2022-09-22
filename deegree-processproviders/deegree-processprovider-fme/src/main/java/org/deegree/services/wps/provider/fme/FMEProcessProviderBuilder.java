@@ -46,26 +46,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
-
-import org.deegree.services.wps.provider.fme.jaxb.FMEServer;
-import org.apache.axiom.om.OMElement;
 import org.apache.http.HttpResponse;
 import org.deegree.commons.json.JSONAdapter;
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.net.HttpUtils;
-import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XPath;
-import org.deegree.process.jaxb.java.ComplexFormatType;
-import org.deegree.process.jaxb.java.ComplexOutputDefinition;
 import org.deegree.process.jaxb.java.LanguageStringType;
 import org.deegree.process.jaxb.java.LiteralInputDefinition;
 import org.deegree.process.jaxb.java.ProcessDefinition;
 import org.deegree.services.wps.provider.ProcessProvider;
+import org.deegree.services.wps.provider.fme.jaxb.FMEServer;
 import org.deegree.workspace.ResourceBuilder;
 import org.deegree.workspace.ResourceInitException;
 import org.deegree.workspace.ResourceLocation;
@@ -252,88 +244,6 @@ public class FMEProcessProviderBuilder implements ResourceBuilder<ProcessProvide
         return new FMEJobSubmitterInvocationStrategy();
     }
 
-    @SuppressWarnings("unused")
-    private ComplexOutputDefinition getComplexOutputDefinition( ProcessDefinition.OutputParameters outputs,
-                                                                OMElement writerEl, String format ) {
-        if ( "GML".equals( format ) || "GML2".equals( format ) ) {
-            return getGmlOutputDefinition( outputs );
-        } else if ( "TEXTLINE".equals( format ) ) {
-            return getTextlineOutputDefinition( writerEl );
-        } else {
-            return getDefaultOutputDefinition();
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private ComplexOutputDefinition getTextlineOutputDefinition( OMElement writerEl ) {
-        XMLAdapter adapter = new XMLAdapter( writerEl );
-        ComplexOutputDefinition response = new ComplexOutputDefinition();
-        org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( "FMEResponse" );
-        LanguageStringType title = new LanguageStringType();
-        title.setValue( "Response from FME (Streaming Service)" );
-        response.setTitle( title );
-        ComplexFormatType fmtType = new ComplexFormatType();
-        XPath xpath = new XPath( "properties/property[category='METAFILE_PARAMETER' and name='MIME_TYPE']/value" );
-        String mimeType = adapter.getNodeAsString( writerEl, xpath, null );
-        if ( mimeType == null ) {
-            LOG.warn( "Unable to determine mime type from FME workspace description. Defaulting to 'application/octet-stream'." );
-            mimeType = "application/octet-stream";
-        }
-        if ( !mimeType.startsWith( "text" ) ) {
-            fmtType.setEncoding( "base64" );
-        }
-        fmtType.setMimeType( mimeType );
-        response.setDefaultFormat( fmtType );
-        response.setIdentifier( id );
-        return response;
-    }
-
-    @SuppressWarnings("unused")
-    private ComplexOutputDefinition getDefaultOutputDefinition() {
-        ComplexOutputDefinition response;
-        response = new ComplexOutputDefinition();
-        org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( "FMEResponse" );
-        LanguageStringType title = new LanguageStringType();
-        title.setValue( "Response from FME (Streaming Service)" );
-        response.setTitle( title );
-        ComplexFormatType fmtType = new ComplexFormatType();
-        fmtType.setEncoding( "base64" );
-        fmtType.setMimeType( "application/octet-stream" );
-        response.setDefaultFormat( fmtType );
-        response.setIdentifier( id );
-        return response;
-    }
-
-    @SuppressWarnings("unused")
-    private ComplexOutputDefinition getGmlOutputDefinition( ProcessDefinition.OutputParameters outputs ) {
-        ComplexOutputDefinition response = new ComplexOutputDefinition();
-        org.deegree.process.jaxb.java.CodeType id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( "GML" );
-        LanguageStringType title = new LanguageStringType();
-        title.setValue( "GML response from FME Server" );
-        response.setTitle( title );
-        ComplexFormatType fmtType = new ComplexFormatType();
-        fmtType.setMimeType( "application/xml" );
-        response.setDefaultFormat( fmtType );
-        response.setIdentifier( id );
-        outputs.getProcessOutput().add( new JAXBElement<ComplexOutputDefinition>( new QName( "" ),
-                                                                                  ComplexOutputDefinition.class,
-                                                                                  response ) );
-        response = new ComplexOutputDefinition();
-        id = new org.deegree.process.jaxb.java.CodeType();
-        id.setValue( "APPSCHEMA" );
-        title = new LanguageStringType();
-        title.setValue( "GML schema response from FME Server" );
-        response.setTitle( title );
-        fmtType = new ComplexFormatType();
-        fmtType.setMimeType( "application/xml" );
-        response.setDefaultFormat( fmtType );
-        response.setIdentifier( id );
-        return response;
-    }
-
     private static JSONAdapter logAdapter( JSONAdapter adapter ) {
         if ( LOG.isDebugEnabled() ) {
             try {
@@ -355,5 +265,4 @@ public class FMEProcessProviderBuilder implements ResourceBuilder<ProcessProvide
         InputStream retrieve = HttpUtils.retrieve( HttpUtils.STREAM, url );
         return new JSONAdapter( retrieve );
     }
-
 }

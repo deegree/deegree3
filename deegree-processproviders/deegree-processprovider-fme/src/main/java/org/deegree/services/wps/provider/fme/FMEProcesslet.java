@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.RequestUtils;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
@@ -84,22 +85,21 @@ public class FMEProcesslet implements Processlet {
         try {
             Map<String, String> kvpMap = buildInputMap(in);
 
-            processViaDatastreaming( out, kvpMap, ( in != null ? in.getQueryMap() : null ) );
+            processViaDatastreaming( out, kvpMap );
         } catch (Exception e) {
             LOG.error( "Exception", e );
             throw new ProcessletException(e.getMessage());
         }
     }
 
-    private void processViaDatastreaming( ProcessletOutputs out, Map<String, String> kvpMap,
-                                          Map<String, String> kvpQueryMap )
+    private void processViaDatastreaming( ProcessletOutputs out, Map<String, String> kvpMap )
                             throws MalformedURLException,
                             IOException,
                             XMLStreamException {
         String url = this.fmeBaseUrl + "/fmeserver/streaming/fmedatastreaming/" + fmeRepo + "/"
                      + encodeReportedFmeUrisHack( fmeWorkspace );
-        if ( kvpQueryMap != null && kvpQueryMap.size() > 0 ) {
-            url = url + "?" + kvpQueryMap.entrySet().stream() //
+        if ( getVendorSpecificParameters().size() > 0 ) {
+            url = url + "?" + getVendorSpecificParameters().entrySet().stream() //
                                          .map( e -> e.getKey() + "=" + e.getValue() ) //
                                          .collect( Collectors.joining( "&" ) );
         }
@@ -167,5 +167,17 @@ public class FMEProcesslet implements Processlet {
     private String encodeReportedFmeUrisHack(String uri) {
         // cannot use URLEncoder here, as this would encode slashes as well...
         return uri.replace(" ", "+");
+    }
+
+    private Map<String, String> getVendorSpecificParameters() {
+        Map<String, String> kvpParams = RequestUtils.getCurrentThreadRequestParameters().get();
+        Map<String, String> result = new HashMap<>();
+        if ( kvpParams.containsKey( "TM_TAG" ) )
+            result.put( "tm_tag", kvpParams.get( "TM_TAG" ) );
+        if ( kvpParams.containsKey( "TM_TTL" ) )
+            result.put( "tm_ttl", kvpParams.get( "TM_TTL" ) );
+        if ( kvpParams.containsKey( "TM_TTC" ) )
+            result.put( "tm_ttc", kvpParams.get( "TM_TTC" ) );
+        return result;
     }
 }
