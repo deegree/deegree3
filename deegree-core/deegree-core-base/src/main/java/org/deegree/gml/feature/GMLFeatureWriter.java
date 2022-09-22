@@ -414,10 +414,11 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
                 for ( Entry<QName, PrimitiveValue> attr : attributes.entrySet() ) {
                     QName attrKey = attr.getKey();
                     PrimitiveValue attrValue = attr.getValue();
-                    if ( XSI_NIL.equals( attrKey ) )
+                    if ( attrKey.getNamespaceURI() != null ) {
                         writeAttributeWithNS( attrKey.getNamespaceURI(), attrKey.getLocalPart(), attrValue.getAsText() );
-                    else
+                    } else {
                         writeAttribute( writer, attrKey, attrValue.getAsText() );
+                    }
                 }
             }
             if ( property.getChildren() != null ) {
@@ -456,10 +457,10 @@ public class GMLFeatureWriter extends AbstractGMLObjectWriter {
 
     private void writeNilAttributes( Map<QName, PrimitiveValue> attributes )
                             throws XMLStreamException {
-        writeAttribute( writer, XSI_NIL, "true" );
+        writeAttributeWithNS( XSI_NIL.getNamespaceURI(), XSI_NIL.getLocalPart(), "true" );
         PrimitiveValue value = attributes.get( NIL_REASON );
         if ( value != null )
-            writeAttribute( writer, NIL_REASON, value.getAsText() );
+            writeAttributeWithNS( NIL_REASON.getNamespaceURI(), NIL_REASON.getLocalPart(), "true" );
     }
 
     

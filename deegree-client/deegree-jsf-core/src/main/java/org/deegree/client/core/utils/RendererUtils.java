@@ -49,7 +49,7 @@ import javax.faces.context.ResponseWriter;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RendererUtils {
+public final class RendererUtils {
 
     public static void writeClickImage( FacesContext context, ResponseWriter writer, String className, String library,
                                         String resourceName, String js )

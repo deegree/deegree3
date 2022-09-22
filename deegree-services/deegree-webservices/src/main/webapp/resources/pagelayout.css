@@ -73,14 +73,13 @@ body {
 	right: 20px;
 }
 
-#logo {
+logo {
 	position: absolute;
 	top: 0;
 }
 
 #status {
 	position: absolute;
-	bottom: 25px;
 }
 
 #xmleditor {
@@ -114,6 +113,7 @@ body {
 
 .error {
 	color: red;
+	font-weight: bold;
 }
 
 .attention {

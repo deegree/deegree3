@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xsi:schemaLocation="http://www.deegree.org/layers/feature http://schemas.deegree.org/3.5/layers/feature/feature.xsd"
-  configVersion="3.4.0">
+ >
   <FeatureStoreId>inspire</FeatureStoreId>
   <FeatureLayer>
     <Filter>

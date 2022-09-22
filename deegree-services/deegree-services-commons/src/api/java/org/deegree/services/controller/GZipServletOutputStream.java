@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 /**
  * {@link ServletOutputStream} used by {@link GZipHttpServletResponse}.
@@ -102,5 +103,15 @@ public class GZipServletOutputStream extends ServletOutputStream {
     public void write( int b )
                             throws IOException {
         gos.write( b );
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
+    @Override
+    public void setWriteListener(WriteListener writeListener) {
+
     }
 }

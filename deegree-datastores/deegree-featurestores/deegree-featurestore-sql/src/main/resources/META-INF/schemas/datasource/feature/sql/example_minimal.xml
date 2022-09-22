@@ -1,4 +1,4 @@
-<SQLFeatureStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<SQLFeatureStore xmlns="http://www.deegree.org/datasource/feature/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/feature/sql
   http://schemas.deegree.org/3.5/datasource/feature/sql/sql.xsd">
   <JDBCConnId>myconn</JDBCConnId>

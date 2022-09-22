@@ -1,9 +1,11 @@
-<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
     <h:panelGroup>
-      <h:outputText styleClass="welcomeText" value="#{labels.welcome}" />
+      <h:outputText styleClass="titel" value="#{labels.welcome}" />
+      <br />
+      <h:outputText styleClass="titel" value=" deegree webservices version: " />
+      <h:outputText styleClass="titel" value="#{workspace.version}" />
       <br />
       <br />
       <h:panelGroup styleClass="welcomeText">
@@ -12,10 +14,8 @@
         <ul>
           <li>workspaces: Download and activate example configurations</li>
           <li>proxy: Configure proxy settings</li>
-          <li>password: Set a password to restrict access to the deegree service console <b style="color:Red;">(IMPORTANT!)</b></li>
+          <li>password: Set a password to restrict access to the deegree service console. <h:outputText value="(IMPORTANT! Set password now!)" styleClass="attention" rendered="#{!logBean.passwordSet}"/></li>
           <li>module info: Display loaded deegree modules</li>
-          <li>send requests: Send raw XML requests</li>
-          <li>see layers: Display WMS layers</li>
         </ul>
         <h:outputText value="The lower menu on the left configures the active workspace:" />
         <ul>

@@ -63,7 +63,6 @@ public class WPVSProvider extends OWSProvider {
             supportedVersions = new Version[] { VERSION_040 };
             handledNamespaces = new String[] { WPVS_NS };
             handledRequests = WPVSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
             serviceName = new String[] { "WPVS" };
         }
     };

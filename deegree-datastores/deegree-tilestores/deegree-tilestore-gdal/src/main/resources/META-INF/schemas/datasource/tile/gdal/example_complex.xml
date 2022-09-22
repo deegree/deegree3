@@ -1,4 +1,4 @@
-<GDALTileStore configVersion="3.4.0"
+<GDALTileStore
   xmlns="http://www.deegree.org/datasource/tile/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd">  
   <TileDataSet>

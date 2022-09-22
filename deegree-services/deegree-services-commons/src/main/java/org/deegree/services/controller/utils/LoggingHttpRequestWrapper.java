@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.deegree.services.controller.RequestLogger;
 import org.slf4j.Logger;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -174,6 +175,21 @@ public class LoggingHttpRequestWrapper extends HttpServletRequestWrapper {
                         throws IOException {
             super.close();
             this.sourceStream.close();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setReadListener(ReadListener listener) throws IllegalStateException {
+            throw new UnsupportedOperationException();
         }
     }
 
