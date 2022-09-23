@@ -1,9 +1,0 @@
-<deegreeWMTS xmlns="http://www.deegree.org/services/wmts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" configVersion="3.4.0" xsi:schemaLocation="http://www.deegree.org/services/wmts wmts.xsd">
-
-  <MetadataURLTemplate>http://some.service/services?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=${metadataSetId}</MetadataURLTemplate>
-
-  <ServiceConfiguration>
-    <ThemeId>theme_wmts</ThemeId>
-  </ServiceConfiguration>
-
-</deegreeWMTS>

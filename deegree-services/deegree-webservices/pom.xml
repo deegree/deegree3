@@ -10,75 +10,98 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-services</artifactId>
-    <version>3.4.17-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>http://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.deegree</groupId>
-        <artifactId>deegree-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate-buildinfo</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+          <attachClasses>true</attachClasses>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <deegree-build-artifactId>${project.artifactId}</deegree-build-artifactId>
+              <deegree-build-by>${user.name}</deegree-build-by>
+              <deegree-build-date>${buildTimestamp}</deegree-build-date>
+              <deegree-build-rev>${buildNumber}</deegree-build-rev>
+            </manifestEntries>
+          </archive>
+        </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>assemble-tomcat</id>
-            <phase>package</phase>
+            <id>copy-resources</id>
+            <phase>generate-sources</phase>
             <goals>
-              <goal>single</goal>
+              <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>**/log4j2.properties</include>
+                  </includes>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
-      </plugin>    
+      </plugin>
       <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
-          <path>/</path>
+          <webApp>
+            <contextPath>/${project.artifactId}</contextPath>
+            <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+            <webInfIncludeJarPattern>.*/deegree-jsf-core-.*.jar</webInfIncludeJarPattern>
+          </webApp>
+          <systemProperties>
+            <systemProperty>
+              <name>catalina.base</name>
+              <value>${project.basedir}/target</value>
+            </systemProperty>
+            <systemProperty>
+              <name>jetty.home</name>
+              <value>${project.basedir}/src/main/resources</value>
+            </systemProperty>
+            <systemProperty>
+              <name>log.dir</name>
+              <value>${project.basedir}/target</value>
+            </systemProperty>
+            <systemProperty>
+              <name>javax.xml.transform.TransformerFactory</name>
+              <value>net.sf.saxon.TransformerFactoryImpl</value>
+            </systemProperty>
+          </systemProperties>
+          <loginServices>
+            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+              <name>deegree web configuration API</name>
+              <config>${project.basedir}/src/main/resources/realm.properties</config>
+            </loginService>
+          </loginServices>
+          <webAppSourceDirectory>target/${project.artifactId}-${project.version}</webAppSourceDirectory>
+          <stopPort>8079</stopPort>
+          <stopKey>stopit</stopKey>
+          <stopWait>10</stopWait>
+          <httpConnector>
+            <port>8080</port>
+            <idleTimeout>60000</idleTimeout>
+          </httpConnector>
+          <jvmArgs>--illegal-access=warn --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED</jvmArgs>
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <configuration>
-            <additionalProjectFacets>
-              <jst.jsf>2.1</jst.jsf>
-            </additionalProjectFacets>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
   <profiles>
@@ -126,8 +149,8 @@
       <id>jsf-provided</id>
       <dependencies>
         <dependency>
-          <groupId>com.sun.faces</groupId>
-          <artifactId>jsf-api</artifactId>
+          <groupId>javax.faces</groupId>
+          <artifactId>javax.faces-api</artifactId>
         </dependency>
         <dependency>
           <groupId>com.sun.faces</groupId>
@@ -309,16 +332,37 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>4.0</version>
+      <version>11.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.primefaces.extensions</groupId>
+      <artifactId>primefaces-extensions</artifactId>
+      <version>11.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
@@ -327,6 +371,10 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 </project>

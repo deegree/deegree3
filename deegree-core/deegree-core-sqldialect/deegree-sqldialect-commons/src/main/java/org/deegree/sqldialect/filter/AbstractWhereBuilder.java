@@ -80,6 +80,7 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.expression.SQLArgument;
 import org.deegree.sqldialect.filter.expression.SQLColumn;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
@@ -140,6 +141,8 @@ public abstract class AbstractWhereBuilder {
 
     protected SortProperty[] postSortCrit;
 
+    private List<SortCriterion> defaultSortCriteria;
+
     /**
      * Creates a new {@link AbstractWhereBuilder} instance.
      * 
@@ -151,15 +154,18 @@ public abstract class AbstractWhereBuilder {
      *            Filter to use for generating the WHERE clause, can be <code>null</code>
      * @param sortCrit
      *            criteria to use for generating the ORDER-BY clause, can be <code>null</code>
+     * @param defaultSortCriteria
+     *             criteria to use for generating the ORDER-BY clause if the sort order is not specified by the query, may be <code>null</code>
      * @throws FilterEvaluationException
      *             if the filter contains invalid {@link ValueReference}s
      */
     protected AbstractWhereBuilder( SQLDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                                    SortProperty[] sortCrit ) throws FilterEvaluationException {
+                                    SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria ) throws FilterEvaluationException {
         this.dialect = dialect;
         this.mapper = mapper;
         this.filter = filter;
         this.sortCrit = sortCrit;
+        this.defaultSortCriteria = defaultSortCriteria;
     }
 
     /**
@@ -220,6 +226,8 @@ public abstract class AbstractWhereBuilder {
                 LOG.error( e.getMessage(), e );
                 throw e;
             }
+        } else if ( defaultSortCriteria != null && !defaultSortCriteria.isEmpty() ) {
+            orderByClause = toProtoSQL( defaultSortCriteria );
         }
     }
 
@@ -870,7 +878,7 @@ public abstract class AbstractWhereBuilder {
     /**
      * Translates the given {@link ValueReference} into an {@link SQLExpression}.
      * 
-     * @param expr
+     * @param propName
      *            expression to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
@@ -904,7 +912,7 @@ public abstract class AbstractWhereBuilder {
     /**
      * Translates the given spatial {@link ValueReference} into an {@link SQLExpression}.
      * 
-     * @param expr
+     * @param propName
      *            expression to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
      * @throws UnmappableException
@@ -965,6 +973,26 @@ public abstract class AbstractWhereBuilder {
         return builder.toOperation();
     }
 
+    protected SQLExpression toProtoSQL( List<SortCriterion> sortCriteria )
+                            throws UnmappableException, FilterEvaluationException {
+
+        SQLOperationBuilder builder = new SQLOperationBuilder();
+        for ( SortCriterion sortCriterion : sortCriteria ) {
+            if ( sortCriteria.indexOf( sortCriterion ) > 0 ) {
+                builder.add( "," );
+            }
+            String rootTableAlias = aliasManager.getRootTableAlias();
+            String columnName = sortCriterion.getColumneName();
+            builder.add( rootTableAlias == null ? columnName : ( rootTableAlias + "." + columnName ) );
+            if ( sortCriterion.isSortAscending() ) {
+                builder.add( " ASC" );
+            } else {
+                builder.add( " DESC" );
+            }
+        }
+        return builder.toOperation();
+    }
+
     /**
      * Ensures that the given {@link SQLExpression} is not an {@link SQLExpression} that is multi-valued.
      * 
@@ -978,5 +1006,19 @@ public abstract class AbstractWhereBuilder {
             String msg = "Cannot apply filter as it refers to a column that stores multiple values in concatenated form.'";
             throw new UnmappableException( msg );
         }
+    }
+
+    protected String getStringValueFromFunction( Expression pattern )
+                            throws UnmappableException, FilterEvaluationException {
+        Function function = (Function) pattern;
+        List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
+        appendParamsFromFunction( function, params );
+        TypedObjectNode value = evaluateFunction( function, params );
+        if ( !( value instanceof PrimitiveValue ) ) {
+            final String msg = "SQL IsLike request with a function evaluating to a non-primitive value is not supported!";
+            throw new UnsupportedOperationException( msg );
+        }
+        String valueAsString = ( (PrimitiveValue) value ).getAsText();
+        return valueAsString;
     }
 }

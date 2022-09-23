@@ -59,7 +59,7 @@ public class RemoteWFSFeatureStoreProvider extends FeatureStoreProvider {
 
     // private static final String CONFIG_JAXB_PACKAGE = "org.deegree.feature.persistence.remotewfs.jaxb";
 
-    private static final URL CONFIG_SCHEMA = RemoteWFSFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/remotewfs/3.4.0/remotewfs.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWFSFeatureStoreProvider.class.getResource( "/META-INF/schemas/datasource/feature/remotewfs/remotewfs.xsd" );
 
     // // @Override
     // public RemoteWFSFeatureStore create( URL configURL )

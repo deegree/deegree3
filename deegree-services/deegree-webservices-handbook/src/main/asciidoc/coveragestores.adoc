@@ -27,7 +27,7 @@ configuration:
 
 [source,xml]
 ----
-<Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.4.0" originLocation="outer">
+<Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/3.5/datasource/coverage/raster/raster.xsd" originLocation="outer">
   <StorageCRS>EPSG:26912</StorageCRS>
   <RasterFile>../../../data/utah/raster/dem.tiff</RasterFile>
 </Raster>
@@ -35,7 +35,7 @@ configuration:
 
 [source,xml]
 ----
-<Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.4.0" originLocation="outer">
+<Raster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/3.5/datasource/coverage/raster/raster.xsd" originLocation="outer">
   <StorageCRS>EPSG:26912</StorageCRS>
   <RasterDirectory>../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
 </Raster>
@@ -44,7 +44,8 @@ configuration:
 A Raster can have several attributes:
 
 * The originLocation attribute can have the values center or outer to
-declare the pixel origin of the coverage.
+declare the pixel origin of the coverage. If omitted, center is used
+as origin location.
 * The nodata attribute can be optionally used to declare a nodata value.
 * The readWorldFiles parameter can have the values true or false to
 indicate if worlfiles will be read. Default value is true.
@@ -72,16 +73,16 @@ Here is an example for a MultiResolutionRaster:
 
 [source,xml]
 ----
-<MultiResolutionRaster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/datasource/coverage/raster/3.0.0/raster.xsd" configVersion="3.4.0" originLocation="outer">
+<MultiResolutionRaster xmlns="http://www.deegree.org/datasource/coverage/raster" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/3.5/datasource/coverage/raster/raster.xsd" originLocation="outer">
   <StorageCRS>EPSG:26912</StorageCRS>
   <Resolution>
-    <Raster configVersion="3.4.0" originLocation="outer" res="1.0">
+    <Raster originLocation="outer" res="1.0">
       <StorageCRS>EPSG:26912</StorageCRS>
       <RasterFile>../../../data/utah/raster/dem.tiff</RasterFile>
     </Raster>
   </Resolution>
   <Resolution>
-    <Raster configVersion="3.4.0" res="2.0">
+    <Raster res="2.0">
       <StorageCRS>EPSG:26912</StorageCRS>
       <RasterDirectory>../../../data/utah/raster/Satellite_Provo/</RasterDirectory>
     </Raster>
@@ -117,7 +118,7 @@ The following example shows, how to configure a coverage pyramid:
 
 [source,xml]
 ----
-<Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid http://schemas.deegree.org/datasource/coverage/raster/3.1.0/pyramid.xsd" configVersion="3.4.0">
+<Pyramid xmlns="http://www.deegree.org/datasource/coverage/pyramid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/coverage/pyramid http://schemas.deegree.org/3.5/datasource/coverage/raster/pyramid.xsd">
   <PyramidFile>data/example.tif</PyramidFile>
   <CRS>EPSG:4326</CRS>
 </Pyramid>
@@ -129,6 +130,10 @@ pyramid as its value.
 pyramid as EPSG code.
 * As in Raster, the nodata attribute can be optionally used to declare a
 nodata value.
+* As in Raster, the originLocation attribute can have the values center
+or outer to declare the pixel origin of the coverage. If omitted, center
+is used as origin location.
+
 
 === Oracle GeoRaster
 
@@ -143,10 +148,10 @@ The following example shows, how to configure a GeoRaster coverage
 
 [source,xml]
 ----
-<OracleGeoraster configVersion="3.4.0"
+<OracleGeoraster
 xmlns="http://www.deegree.org/datasource/coverage/oraclegeoraster"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/datasource/coverage/oraclegeoraster/3.4.0/oraclegeoraster.xsd">]
+xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/3.5/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd">]
   <JDBCConnId>oracle</JDBCConnId>
   <StorageCRS>EPSG:25832</StorageCRS>
   <Raster id="17" />
@@ -159,10 +164,10 @@ store.
 
 [source,xml]
 ----
-<OracleGeoraster configVersion="3.4.0"
+<OracleGeoraster
   xmlns="http://www.deegree.org/datasource/coverage/oraclegeoraster"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/datasource/coverage/oraclegeoraster/3.4.0/oraclegeoraster.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/oraclegeoraster http://schemas.deegree.org/3.5/datasource/coverage/oraclegeoraster/oraclegeoraster.xsd">
 
   <JDBCConnId>oracle</JDBCConnId>
   <StorageCRS>EPSG:31468</StorageCRS>

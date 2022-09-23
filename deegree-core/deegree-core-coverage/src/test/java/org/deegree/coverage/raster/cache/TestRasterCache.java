@@ -49,6 +49,7 @@ import java.util.UUID;
 import junit.framework.Assert;
 
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
@@ -127,14 +128,15 @@ public class TestRasterCache {
     }
 
     private static void setRasterCache() {
+        TunableParameter.resetCache();
         System.setProperty( RasterCache.DEF_RASTER_CACHE_MEM_SIZE, "4m" );
         System.setProperty( RasterCache.DEF_RASTER_CACHE_DISK_SIZE, "5m" );
         RasterCache.reset( true );
-
     }
 
     private static void resetCache() {
         System.out.println( "class is going down" );
+        TunableParameter.resetCache();
         System.setProperty( RasterCache.DEF_RASTER_CACHE_MEM_SIZE, "" );
         System.setProperty( RasterCache.DEF_RASTER_CACHE_DISK_SIZE, "" );
         RasterCache.reset( true );

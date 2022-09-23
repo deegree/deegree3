@@ -1,0 +1,6 @@
+<ISOMemoryMetadataStore xmlns="http://www.deegree.org/datasource/metadata/iso19139/memory"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/datasource/metadata/iso19139/memory memory.xsd"
+ >
+  <!-- [1...n] directory to be used -->
+  <ISORecordDirectory>../../metadata/</ISORecordDirectory>
+</ISOMemoryMetadataStore>

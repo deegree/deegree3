@@ -28,6 +28,10 @@
 package org.deegree.console.proxy;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -46,10 +50,13 @@ import org.deegree.commons.proxy.ProxySettings;
 @RequestScoped
 public class ProxyBean {
 
-    public ProxyConfig getProxyConfig() {
-        File file = new File( DeegreeWorkspace.getWorkspaceRoot() );
-        file = new File( file, "proxy.xml" );
-        return new ProxyConfig( file.getAbsolutePath() );
+    public ProxyConfig getProxyConfig() throws IOException {
+        Path workspaceDir = Paths.get( DeegreeWorkspace.getWorkspaceRoot() );
+        File proxyFile = new File( workspaceDir.toFile(), "proxy.xml" );
+        if (!proxyFile.exists()) {
+            proxyFile.createNewFile();
+        }
+        return new ProxyConfig( proxyFile.getAbsolutePath() );
     }
 
     public String getNonftpProxyHosts() {

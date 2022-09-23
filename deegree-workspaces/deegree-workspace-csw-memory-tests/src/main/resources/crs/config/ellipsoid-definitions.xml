@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<crs:EllipsoidDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/crsdefinition.xsd">
+    <crs:Ellipsoid>
+      <crs:Id>epsg:7030</crs:Id>
+      <crs:Name>WGS84_Ellipsoid</crs:Name>
+      <crs:Units>metre</crs:Units>
+      <crs:SemiMajorAxis>6378137.0</crs:SemiMajorAxis>
+      <crs:InverseFlattening>298.257223563</crs:InverseFlattening>
+    </crs:Ellipsoid> 
+  </crs:EllipsoidDefinitions>

@@ -1,5 +1,5 @@
 name=GDALTileStore
 example1_name=minimal
-example1_location=/META-INF/schemas/datasource/tile/gdal/3.4.0/example_minimal.xml
+example1_location=/META-INF/schemas/datasource/tile/gdal/example_minimal.xml
 example2_name=complex
-example2_location=/META-INF/schemas/datasource/tile/gdal/3.4.0/example_complex.xml
+example2_location=/META-INF/schemas/datasource/tile/gdal/example_complex.xml

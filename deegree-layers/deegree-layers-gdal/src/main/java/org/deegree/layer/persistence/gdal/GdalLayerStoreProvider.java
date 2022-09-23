@@ -44,7 +44,7 @@ import org.deegree.workspace.Workspace;
  */
 public class GdalLayerStoreProvider extends LayerStoreProvider {
 
-    private static final URL CONFIG_SCHEMA = GdalLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/gdal/3.4.0/gdal.xsd" );
+    private static final URL CONFIG_SCHEMA = GdalLayerStoreProvider.class.getResource( "/META-INF/schemas/layers/gdal/gdal.xsd" );
 
     @Override
     public String getNamespace() {

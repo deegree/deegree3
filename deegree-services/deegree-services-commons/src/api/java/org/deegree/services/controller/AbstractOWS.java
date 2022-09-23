@@ -291,34 +291,6 @@ public abstract class AbstractOWS implements OWS {
     }
 
     /**
-     * @param confFileURL
-     * @param configVersionString
-     * @throws ResourceInitException
-     */
-    protected void checkConfigVersion( String confFileURL, String configVersionString )
-                            throws ResourceInitException {
-
-        Version configVersion = Version.parseVersion( configVersionString );
-        if ( !( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getSupportedConfigVersions().contains( configVersion ) ) {
-            LOG.error( "" );
-            LOG.error( "*** Configuration version mismatch ***", confFileURL );
-            LOG.error( "" );
-            StringBuilder msg = new StringBuilder( "File uses config version " ).append( configVersion );
-            msg.append( ", but this deegree build only supports version(s): " );
-            boolean separatorNeeded = false;
-            for ( Version supportedVersion : ( (OWSProvider) metadata.getProvider() ).getImplementationMetadata().getSupportedConfigVersions() ) {
-                msg.append( supportedVersion );
-                if ( separatorNeeded ) {
-                    msg.append( "," );
-                }
-                separatorNeeded = true;
-            }
-            msg.append( " for this file type. Information on resolving this issue can be found at 'http://wiki.deegree.org/deegreeWiki/deegree3/ConfigurationVersions'. " );
-            throw new ResourceInitException( msg.toString() );
-        }
-    }
-
-    /**
      * Generic version negotiation algorithm for {@link GetCapabilities} requests according to OWS Common Specification
      * 1.1.0 (OGC 06-121r3), section 7.3.2 and D.11.
      * 
@@ -449,7 +421,6 @@ public abstract class AbstractOWS implements OWS {
                 LOG.error( "An error occurred while trying to send an exception: " + e.getLocalizedMessage(), e );
                 throw new ServletException( e );
             }
-            response.setExceptionSent();
         }
 
         if ( userAgent != null && userAgent.toLowerCase().contains( "mozilla" ) ) {

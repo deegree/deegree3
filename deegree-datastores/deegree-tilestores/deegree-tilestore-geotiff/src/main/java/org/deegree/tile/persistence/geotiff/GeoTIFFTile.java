@@ -51,7 +51,7 @@ import java.util.Hashtable;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
@@ -76,9 +76,9 @@ public class GeoTIFFTile implements Tile {
 
     private final int sizeX, sizeY;
 
-    private final GenericObjectPool readerPool;
+    private final GenericObjectPool<ImageReader> readerPool;
 
-    public GeoTIFFTile( GenericObjectPool readerPool, int imageIndex, int x, int y, Envelope envelope, int sizeX,
+    public GeoTIFFTile( GenericObjectPool<ImageReader> readerPool, int imageIndex, int x, int y, Envelope envelope, int sizeX,
                         int sizeY ) {
         this.readerPool = readerPool;
         this.imageIndex = imageIndex;
@@ -94,7 +94,7 @@ public class GeoTIFFTile implements Tile {
                             throws TileIOException {
         ImageReader reader = null;
         try {
-            reader = (ImageReader) readerPool.borrowObject();
+            reader = readerPool.borrowObject();
             BufferedImage img = reader.readTile( imageIndex, x, y );
             if ( img.getWidth() != sizeX || img.getHeight() != sizeY ) {
                 Hashtable<Object, Object> table = new Hashtable<Object, Object>();

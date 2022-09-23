@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/layers/remotewms http://schemas.deegree.org/datasource/remoteows/wms/3.4.0/remotewms.xsd"
-  configVersion="3.4.0">
+  xsi:schemaLocation="http://www.deegree.org/layers/remotewms http://schemas.deegree.org/3.5/datasource/remoteows/wms/remotewms.xsd"
+ >
   <RemoteWMSId>timeout</RemoteWMSId>
 </RemoteWMSLayers>

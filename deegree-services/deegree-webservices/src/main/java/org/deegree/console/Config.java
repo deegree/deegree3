@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
@@ -56,6 +58,8 @@ import org.slf4j.Logger;
  * 
  * @since 3.4
  */
+@ManagedBean
+@RequestScoped
 public class Config implements Comparable<Config>, Serializable {
 
     private static final long serialVersionUID = -175529275940063759L;
@@ -104,7 +108,7 @@ public class Config implements Comparable<Config>, Serializable {
             getWorkspace().add( metadata.getLocation() );
             WorkspaceUtils.reinitializeChain( getWorkspace(), metadata.getIdentifier() );
         } catch ( Exception t ) {
-            t.printStackTrace();
+            LOG.error( t.getMessage(), t );
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Unable to activate resource: " + t.getMessage(), null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return;

@@ -1,4 +1,4 @@
 name=Raster
 example1_name=example
 example1_description=Raster based on a single image file.
-example1_location=/META-INF/schemas/datasource/coverage/raster/3.4.0/single.xml
+example1_location=/META-INF/schemas/datasource/coverage/raster/single.xml

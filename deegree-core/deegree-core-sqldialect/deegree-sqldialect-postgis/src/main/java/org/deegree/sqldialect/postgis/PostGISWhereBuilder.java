@@ -39,11 +39,9 @@ import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
@@ -73,6 +71,7 @@ import org.deegree.filter.spatial.Touches;
 import org.deegree.filter.spatial.Within;
 import org.deegree.filter.temporal.TemporalOperator;
 import org.deegree.geometry.Geometry;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -114,15 +113,18 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * @param useLegacyPredicates
      *            if true, legacy-style PostGIS spatial predicates are used (e.g. <code>Intersects</code> instead of
      *            <code>ST_Intersects</code>)
+     * @param defaultSortCriterion
+     *             criteria to use for generating the ORDER-BY clause if the sort order is not specified by the query, may be <code>null</code>
      * @throws FilterEvaluationException
      *             if the expression contains invalid {@link ValueReference}s
      * @throws UnmappableException
      *             if allowPartialMappings is false and an expression could not be mapped to the db
      */
     public PostGISWhereBuilder( PostGISDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                                SortProperty[] sortCrit, boolean allowPartialMappings, boolean useLegacyPredicates )
-                                                        throws FilterEvaluationException, UnmappableException {
-        super( dialect, mapper, filter, sortCrit );
+                                SortProperty[] sortCrit, List<SortCriterion> defaultSortCriterion,
+                                boolean allowPartialMappings, boolean useLegacyPredicates )
+                            throws FilterEvaluationException, UnmappableException {
+        super( dialect, mapper, filter, sortCrit, defaultSortCriterion );
         this.useLegacyPredicates = useLegacyPredicates;
         build( allowPartialMappings );
     }
@@ -133,7 +135,7 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
      * NOTE: This method appends the generated argument inline, i.e. not using a <code>?</code>. This is because of a
      * problem that has been observed with PostgreSQL 8.0; the execution of the inline version is *much* faster.
      * </p>
-     * 
+     *
      * @param op
      *            comparison operator to be translated, must not be <code>null</code>
      * @return corresponding SQL expression, never <code>null</code>
@@ -156,19 +158,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         String msg = "Mapping of PropertyIsLike with non-literal or non-function comparisons to SQL is not implemented yet.";
         throw new UnsupportedOperationException( msg );
-    }
-
-    protected String getStringValueFromFunction( Expression pattern )
-                            throws UnmappableException, FilterEvaluationException {
-        Function function = (Function) pattern;
-        List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
-        appendParamsFromFunction( function, params );
-        TypedObjectNode value = evaluateFunction( function, params );
-        if ( !( value instanceof PrimitiveValue ) ) {
-            throw new UnsupportedOperationException( "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
-        }
-        String valueAsString = ( (PrimitiveValue) value ).getAsText();
-        return valueAsString;
     }
 
     private SQLOperation toProtoSql( PropertyIsLike op, String literal )

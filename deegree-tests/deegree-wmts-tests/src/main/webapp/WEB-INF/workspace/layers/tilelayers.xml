@@ -1,4 +1,4 @@
-<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd" configVersion="3.4.0">
+<TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/tile tile.xsd">
   <TileLayer>
     <l:Name>pyramid</l:Name>
     <d:Title>IT tile layer uncached</d:Title>

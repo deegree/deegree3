@@ -35,10 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-import java.util.List;
-
-import org.deegree.commons.tom.gml.property.Property;
-
 /**
  * 0-dimensional primitive.
  * 
@@ -52,35 +48,35 @@ public interface Point extends GeometricPrimitive {
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Point}.
-     * 
+     *
      * @return {@link GeometricPrimitive.PrimitiveType#Point}
      */
     public PrimitiveType getPrimitiveType();
 
     /**
      * Returns the value of the first ordinate.
-     * 
+     *
      * @return value of the first ordinate
      */
     public double get0();
 
     /**
      * Returns the value of the second ordinate.
-     * 
+     *
      * @return value of the second ordinate, or <code>Double.NAN</code> if the point only has one dimension
      */
     public double get1();
 
     /**
      * Returns the value of the third ordinate.
-     * 
+     *
      * @return value of the third ordinate, or <code>Double.NAN</code> if the point only has one or two dimensions
      */
     public double get2();
 
     /**
      * Returns the value of the specified ordinate.
-     * 
+     *
      * @param dimension
      *            ordinate to be returned (first dimension=0)
      * @return ordinate value of the passed dimension, or <code>Double.NAN</code> if <code>dimension</code> is greater
@@ -90,8 +86,13 @@ public interface Point extends GeometricPrimitive {
 
     /**
      * Returns all ordinates.
-     * 
+     *
      * @return all ordinates, the length of the array is equal to the number of dimensions
      */
     public double[] getAsArray();
+
+    /**
+     * @return a copy of the point
+     */
+    Point copy();
 }

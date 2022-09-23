@@ -1,1 +1,7 @@
-<Layer><Title>Container</Title><Layer queryable="0" cascaded="0" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0"><Name>SimpleTheme</Name><Title>SimpleTheme</Title></Layer></Layer>
+<Layer>
+  <Title>Container</Title>
+  <Layer queryable="0" cascaded="0" opaque="0" noSubsets="0" fixedWidth="0" fixedHeight="0">
+    <Name>SimpleTheme</Name>
+    <Title>SimpleTheme</Title>
+  </Layer>
+</Layer>

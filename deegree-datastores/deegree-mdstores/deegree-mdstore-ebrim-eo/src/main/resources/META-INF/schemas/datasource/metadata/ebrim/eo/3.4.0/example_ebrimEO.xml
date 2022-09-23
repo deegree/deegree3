@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<EbrimEOMDStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/metadata/ebrim/eo"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/metadata/ebrim/eo http://schemas.deegree.org/datasource/metadata/ebrim/eo/3.4.0/ebrim-eo.xsd">
-  <!-- [1] Identifier of JDBC connection -->
-  <JDBCConnId>conn1</JDBCConnId>
-  <ExtensionPackage>../path/to/ebrim-profile.xml</ExtensionPackage>
-  <AdhocQueriesDirectory>/path/to/Adhoc-queries-directory</AdhocQueriesDirectory>
-</EbrimEOMDStore>
