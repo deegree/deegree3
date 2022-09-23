@@ -39,6 +39,7 @@
 package org.deegree.sqldialect.oracle.sdo;
 
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 
 import java.sql.SQLException;
@@ -106,12 +107,8 @@ import oracle.sql.STRUCT;
 public class SDOGeometryConverter {
     static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
 
-    private static final boolean DEFAULT_EXPORT_ORIENTED_POINT;
+    private static final boolean DEFAULT_EXPORT_ORIENTED_POINT = get("deegree.sqldialect.oracle.export_oriented_point", false);
 
-    static {
-        DEFAULT_EXPORT_ORIENTED_POINT = "true".equalsIgnoreCase( System.getProperty( "deegree.oracle.export.oriented_point", "false" ));
-    }
-    
     private final SDOInspector inspector;
 
     public SDOGeometryConverter() {
