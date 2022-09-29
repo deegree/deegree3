@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/RenderHelper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -65,6 +64,7 @@ import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
+import org.apache.xerces.parsers.SAXParser;
 import org.deegree.style.styling.components.Mark;
 import org.slf4j.Logger;
 import org.w3c.dom.svg.SVGDocument;
@@ -263,7 +263,7 @@ public class ShapeHelper {
      */
     public static Shape getShapeFromSvg( InputStream in, String url ) {
         try {
-            SAXSVGDocumentFactory fac = new SAXSVGDocumentFactory( "org.apache.xerces.parsers.SAXParser" );
+            SAXSVGDocumentFactory fac = new SAXSVGDocumentFactory( SAXParser.class.getName() );
             SVGDocument doc = fac.createSVGDocument( url, in );
             GVTBuilder builder = new GVTBuilder();
             UserAgent userAgent = new UserAgentAdapter();
