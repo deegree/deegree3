@@ -33,6 +33,7 @@ GET /config/restart/wsname                                   - restart with work
 GET /config/update                                           - update currently running workspace, rescan config files and update resources
 GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources
 GET /config/listworkspaces                                   - list available workspace names
+GET /config/listfonts                                        - list currently available fonts on the server
 GET /config/list[/path]                                      - list currently running workspace or directory in workspace
 GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace
 GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set
