@@ -906,7 +906,7 @@ The first parameter is the hatching angle, the second is the line spacing in the
 </PolygonSymbolizer>
 ----
 TIP: For of the shelf hates, which will create nice results, use the mark symbol `shape://slash`, `shape://backslash`
-or `shape://times` for  45Â°, `shape://horline` for 0Â° and `shape://vertline` for 90Â° hatches.
+or `shape://times` for  45°, `shape://horline` for 0° and `shape://vertline` for 90° hatches.
 For hatching with user-defined angles it is recommended to use `shape://vertline`.
 
 TIP: With user-defined distances or angles that are not divisible by 45, rounding inaccuracies may occur and become
@@ -1008,6 +1008,33 @@ support ogc:Expressions as child elements. Example:
   </OnlineResource>
   <Format>image/svg</Format>
 </ExternalGraphic> 
+----
+
+===== Text with rectangular Halo
+
+For the cartographic design of text, it is possible to place a rectangular box behind the text instead of a halo effect.
+To enable the rectangular box behind a text use an negative value for the `Radius` of `Halo` in the `TextSymbolizer`.
+
+.Example of regular `Halo` (`Radius` of `3.0`) on the left and rectangular `Halo` (`Radius` of `-3.0`) on the right.
+image::renderstyles_halo_regular_and_boxed.png.png[]
+
+.Symbolizer used in previous example
+[source,xml]
+----
+<TextSymbolizer>
+	<!-- Label omitted -->
+	<Font>
+		<SvgParameter name="font-family">Sans-Serif</SvgParameter>
+		<SvgParameter name="font-size">30</SvgParameter>
+	</Font>
+	<Halo>
+		<Radius>-3.0</Radius>
+		<Fill>
+			<SvgParameter name="fill">#FF0000</SvgParameter>
+			<SvgParameter name="fill-opacity">0.4</SvgParameter>
+		</Fill>
+	</Halo>
+</TextSymbolizer>
 ----
 
 ===== GraphicStroke extensions
