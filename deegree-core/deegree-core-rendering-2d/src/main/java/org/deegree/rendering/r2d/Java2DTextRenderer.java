@@ -193,12 +193,32 @@ public class Java2DTextRenderer implements TextRenderer {
         if ( styling.halo != null ) {
             renderer.rendererContext.fillRenderer.applyFill( styling.halo.fill, styling.uom );
 
-            BasicStroke stroke = new BasicStroke(
-                                                  round( 2 * renderer.rendererContext.uomCalculator.considerUOM( styling.halo.radius,
-                                                                                                                 styling.uom ) ),
-                                                  CAP_BUTT, JOIN_ROUND );
-            renderer.graphics.setStroke( stroke );
-            renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
+            int haloSize = round( 2 * renderer.rendererContext.uomCalculator.considerUOM( styling.halo.radius,
+                                                                                          styling.uom ) );
+            if ( haloSize < 0 ) {
+                // render box styled halo (deegree2 like)
+                int wi = Math.abs( haloSize );
+                // prevent useless halo of sub-pixel-size
+                if ( wi < 1 ) {
+                    wi = 1;
+                }
+
+                int w = (int) ( width + 0.5d );
+                int h = (int) ( height + 0.5d );
+                int bx = (int) px;
+                int by = (int) py;
+
+                renderer.graphics.fillRect( bx - wi, by - h - wi, w + wi + wi, h + wi + wi );
+            } else {
+                // prevent useless halo of sub-pixel-size
+                if ( haloSize < 1 ) {
+                    haloSize = 1;
+                }
+
+                BasicStroke stroke = new BasicStroke( haloSize, CAP_BUTT, JOIN_ROUND );
+                renderer.graphics.setStroke( stroke );
+                renderer.graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
+            }
         }
 
         renderer.graphics.setStroke( new BasicStroke() );
