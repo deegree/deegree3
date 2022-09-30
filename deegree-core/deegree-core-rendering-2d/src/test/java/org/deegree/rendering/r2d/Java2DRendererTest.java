@@ -684,6 +684,78 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
         validateImage( img, time2 - time, "textstyling2" );
     }
 
+    @Test
+    public void testTextStylingHalo()
+                            throws
+                            Exception {
+        BufferedImage img = new BufferedImage( 200, 200, TYPE_INT_ARGB );
+
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r2d = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                                 geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                         new double[] { 200d, 200d }, mapcs ) );
+        Java2DTextRenderer r = new Java2DTextRenderer( r2d );
+
+        LinkedList<Point> points = new LinkedList<Point>();
+        points.add( geomFac.createPoint( null, new double[] { 100 ,50}, mapcs ) );
+        points.add( geomFac.createPoint( null, new double[] { 100 ,150}, mapcs ) );
+
+        String text = "A b C - X Y Z";
+        TextStyling styling = new TextStyling();
+        styling.font.fontSize = 20;
+        styling.halo = new Halo();
+        styling.halo.radius = 10;
+        styling.halo.fill = new Fill();
+        styling.halo.fill.color = Color.RED;
+        r.render( styling, text, points.poll() );
+        styling.halo.radius = -10;
+        r.render( styling, text, points.poll() );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        validateImage( img, time2 - time, "textstylinghalo" );
+    }
+
+    @Test
+    public void testTextStylingLabelHalo()
+                            throws
+                            Exception {
+        BufferedImage img = new BufferedImage( 200, 200, TYPE_INT_ARGB );
+
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = new GeometryFactory();
+        Java2DRenderer r2d = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                                 geomFac.createEnvelope( new double[] { 0, 0 },
+                                                                         new double[] { 200d, 200d }, mapcs ) );
+        Java2DTextRenderer tr = new Java2DTextRenderer( r2d );
+        Java2DLabelRenderer r = new Java2DLabelRenderer( r2d, tr );
+
+        LinkedList<Point> points = new LinkedList<Point>();
+        points.add( geomFac.createPoint( null, new double[] { 100 ,50}, mapcs ) );
+        points.add( geomFac.createPoint( null, new double[] { 100 ,150}, mapcs ) );
+
+        String text = "A b C - X Y Z";
+        TextStyling styling = new TextStyling();
+        styling.font.fontSize = 20;
+        styling.halo = new Halo();
+        styling.halo.radius = 10;
+        styling.halo.fill = new Fill();
+        styling.halo.fill.color = Color.RED;
+
+        r.createLabel( styling, text, points.poll() );
+        styling = styling.copy();
+        styling.halo.radius = -10;
+        r.createLabel( styling, text, points.poll() );
+        r.render(r.getLabels());
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        validateImage( img, time2 - time, "textstylinghalo" );
+    }
+
     @Test(timeout = 2500)
     public void testPolygonStylingSmallClipping()
                             throws Exception {

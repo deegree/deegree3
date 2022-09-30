@@ -45,7 +45,6 @@ import static java.awt.BasicStroke.CAP_BUTT;
 import static java.awt.BasicStroke.JOIN_ROUND;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
 import static java.lang.Math.toRadians;
-import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -55,19 +54,19 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.geom.Path2D.Double;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.primitive.*;
-import org.deegree.rendering.r2d.strokes.OffsetStroke;
-import org.deegree.rendering.r2d.strokes.TextStroke;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Surface;
 import org.deegree.style.styling.TextStyling;
 import org.slf4j.Logger;
 
@@ -204,13 +203,36 @@ public class Java2DLabelRenderer implements LabelRenderer {
         if ( pLabel.getStyling().halo != null ) {
             context.fillRenderer.applyFill( pLabel.getStyling().halo.fill, pLabel.getStyling().uom );
 
-            BasicStroke stroke = new BasicStroke(
-                                    round( 2 * context.uomCalculator.considerUOM( pLabel.getStyling().halo.radius,
-                                                                                  pLabel.getStyling().uom ) ),
-                                    CAP_BUTT, JOIN_ROUND );
-            renderer.graphics.setStroke( stroke );
-            renderer.graphics.draw( pLabel.getLayout().getOutline(
-                                    getTranslateInstance( pLabel.getDrawPosition().x, pLabel.getDrawPosition().y ) ) );
+            int haloSize = round( 2 * context.uomCalculator.considerUOM( pLabel.getStyling().halo.radius,
+                                                                         pLabel.getStyling().uom ) );
+
+            if ( haloSize < 0 ) {
+                // render box styled halo (deegree2 like)
+                int wi = Math.abs( haloSize );
+                // prevent useless halo of sub-pixel-size
+                if ( wi < 1 ) {
+                    wi = 1;
+                }
+
+                int w = (int) ( pLabel.getLayout().getBounds().getWidth() + Math.abs(
+                                        pLabel.getDrawPosition().x % 1 ) + 0.5d );
+                int h = (int) ( pLabel.getLayout().getBounds().getHeight() + Math.abs(
+                                        pLabel.getDrawPosition().y % 1 ) + 0.5d );
+                int bx = (int) pLabel.getDrawPosition().x;
+                int by = (int) pLabel.getDrawPosition().y;
+
+                renderer.graphics.fillRect( bx - wi, by - h - wi, w + wi + wi, h + wi + wi );
+            } else {
+                // prevent useless halo of sub-pixel-size
+                if ( haloSize < 1 ) {
+                    haloSize = 1;
+                }
+
+                BasicStroke stroke = new BasicStroke( haloSize, CAP_BUTT, JOIN_ROUND );
+                renderer.graphics.setStroke( stroke );
+                renderer.graphics.draw( pLabel.getLayout().getOutline( getTranslateInstance( pLabel.getDrawPosition().x,
+                                                                                             pLabel.getDrawPosition().y ) ) );
+            }
         }
 
         //LOG.debug("LabelRender w:" + pLabel.getLayout().getBounds().getWidth() + "   h: "+pLabel.getLayout().getBounds().getHeight()+"   x: "+pLabel.getDrawPosition().x + "   y: "+pLabel.getDrawPosition().y);
