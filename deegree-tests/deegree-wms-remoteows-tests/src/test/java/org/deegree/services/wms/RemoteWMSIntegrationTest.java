@@ -42,7 +42,6 @@
 package org.deegree.services.wms;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,16 +53,15 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.junit.Assert.assertEquals;
+import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
+import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -116,30 +114,14 @@ public class RemoteWMSIntegrationTest {
 
     @Test
     public void testSimilarity()
-                    throws IOException {
+                            throws
+                            Exception {
         String request = createRequest();
         LOG.info( "Requesting {}", request );
         BufferedImage actual = retrieve( IMAGE, request );
-        double sim = determineSimilarity( actual, expected );
-        if ( Math.abs( 1.0 - sim ) > 0.01 ) {
-            System.out.println( "Trying to store request/response for " + resourceName
-                                + " in " + System.getProperty( "java.io.tmpdir" ) + ": remoteows_expected_"
-                                + ++numFailed
-                                + "_" + ".png/remoteows_response_" + numFailed + ".png" );
-            try {
-                ImageIO.write( actual, "png", new FileOutputStream( System.getProperty( "java.io.tmpdir" )
-                                                                    + "/remoteows_expected_" + numFailed + "_"
-                                                                    + ".png" ) );
-                ImageIO.write( expected, "png", new FileOutputStream( System.getProperty( "java.io.tmpdir" )
-                                                                      + "/remoteows_response_" + numFailed + ".png" ) );
 
-                System.out.println(
-                                "Result returned for " + resourceName + " (base64 -d encoded.dat > failed-test.zip)" );
-                System.out.println( IntegrationTestUtils.toBase64Zip( parseAsBytes( actual ), resourceName + ".png" ) );
-            } catch ( Throwable t ) {
-            }
-            assertEquals( "Images are not similar enough for " + resourceName + " (" + request + ").", 1.0, sim, 0.01 );
-        }
+        assertTrue( "Image for " + resourceName + "are not similar enough",
+                           isImageSimilar( expected, actual, 0.01, getClass().getName() + resourceName ) );
     }
 
     private String createRequest() {
