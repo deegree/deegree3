@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="deegree-integration-tests" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" id="55cd9e63-a1b4-4a8e-a5ef-17d6ffc1196e" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project activeEnvironment="Default" name="deegree-integration-tests" resourceRoot="" soapui-version="5.7.0" abortOnError="false" runType="SEQUENTIAL" id="55cd9e63-a1b4-4a8e-a5ef-17d6ffc1196e" xmlns:con="http://eviware.com/soapui/config">
   <con:settings/>
   <con:testSuite id="a430548e-09bd-4b08-82dc-dfa9e93ba51f" name="REST API">
     <con:settings/>
@@ -1296,7 +1296,7 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
     </con:property>
     <con:property>
       <con:name>BaseUrl</con:name>
-      <con:value>http://localhost:${#Project#port}/deegree-acceptance-tests</con:value>
+      <con:value>http://localhost:${#Project#port}/deegree-integration-tests</con:value>
     </con:property>
   </con:properties>
   <con:wssContainer/>

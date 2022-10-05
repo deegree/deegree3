@@ -55,14 +55,8 @@
             <idleTimeout>60000</idleTimeout>
           </httpConnector>
           <systemProperties>
-            <systemProperty>
-              <name>jetty.home</name>
-              <value>${project.basedir}/src/main/resources</value>
-            </systemProperty>
-            <systemProperty>
-              <name>javax.xml.transform.TransformerFactory</name>
-              <value>net.sf.saxon.TransformerFactoryImpl</value>
-            </systemProperty>
+            <jetty.home>${project.basedir}/src/main/resources</jetty.home>
+            <javax.xml.transform.TransformerFactory>net.sf.saxon.TransformerFactoryImpl</javax.xml.transform.TransformerFactory>
           </systemProperties>
           <loginServices>
             <loginService implementation="org.eclipse.jetty.security.HashLoginService">
