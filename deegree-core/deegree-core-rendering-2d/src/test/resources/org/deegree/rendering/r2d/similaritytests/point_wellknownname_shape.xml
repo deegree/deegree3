@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se"
+                  xmlns:ogc="http://www.opengis.net/ogc"
+                  xmlns:app="http://www.deegree.org/app"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+
+  <Rule>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://backslash</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+        <Displacement><DisplacementX>0</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://carrow</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>100</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://ccarrow</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>200</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://coarrow</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>300</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://dot</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>400</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://horline</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>500</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://oarrow</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>600</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://plus</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>700</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://slash</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>800</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://times</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>900</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>shape://vertline</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>1000</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

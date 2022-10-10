@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se"
+                  xmlns:ogc="http://www.opengis.net/ogc"
+                  xmlns:app="http://www.deegree.org/app"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd">
+
+  <Rule>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://arrow</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+        <Displacement><DisplacementX>0</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://arrowhead</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>100</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://circle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>200</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://cross</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>300</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://cross2</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>400</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://crossfill</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>500</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://diagonalhalfsquare</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>600</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://diamond</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>700</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://equilateral_triangle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>800</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://filled_arrowhead</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>900</DisplacementX><DisplacementY>0</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://halfsquare</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>0</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://hexagon</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>100</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://lefthalftriangle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>200</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://line</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>300</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://pentagon</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>400</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://quartercircle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>500</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://quartersquare</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>600</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://rectangle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>700</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://regular_star</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>800</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://righthalftriangle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>900</DisplacementX><DisplacementY>100</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://semicircle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>0</DisplacementX><DisplacementY>200</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://star</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>100</DisplacementX><DisplacementY>200</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://thirdcircle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>200</DisplacementX><DisplacementY>200</DisplacementY></Displacement></Graphic></PointSymbolizer>
+    <PointSymbolizer><Graphic><Mark><WellKnownName>qgis://triangle</WellKnownName><Fill><SvgParameter name="fill">#FF0000</SvgParameter><SvgParameter name="fill-opacity">0.4</SvgParameter></Fill><Stroke><SvgParameter name="stroke">#000000</SvgParameter><SvgParameter name="stroke-width">1</SvgParameter></Stroke></Mark><Size>40</Size>
+      <Displacement><DisplacementX>300</DisplacementX><DisplacementY>200</DisplacementY></Displacement></Graphic></PointSymbolizer>
+  </Rule>
+</FeatureTypeStyle>
