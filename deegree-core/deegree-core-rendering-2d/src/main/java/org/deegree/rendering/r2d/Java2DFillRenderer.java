@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -54,16 +53,13 @@ import java.awt.image.BufferedImage;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.rendering.r2d.RenderHelper.renderMark;
-
+import static org.deegree.rendering.r2d.RenderHelper.renderMarkForFill;
 
 /**
  * Responsible for applying fill stylings to a graphics 2d.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 class Java2DFillRenderer {
 
@@ -82,16 +78,18 @@ class Java2DFillRenderer {
 
         if ( graphic.image == null ) {
             int size = round( uomCalculator.considerUOM( graphic.size, uom ) );
-            img = new BufferedImage( size, size, TYPE_INT_ARGB );
-            Graphics2D g = img.createGraphics();
-            Java2DRenderer renderer = new Java2DRenderer( g );
+
             if ( graphic.imageURL == null ) {
-                renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer.rendererContext, 0, 0,
-                            graphic.rotation );
+                img = renderMarkForFill( graphic.mark, graphic.size < 0 ? 6 : size, uom, graphic.rotation,
+                                         graphics != null ? graphics.getRenderingHints() : null );
+                graphicBounds = getImageBounds( img, graphic, 0, 0, uom );
             } else {
+                img = new BufferedImage( size, size, TYPE_INT_ARGB );
+                Graphics2D g = img.createGraphics();
+                Java2DRenderer renderer = new Java2DRenderer( g );
                 img = renderer.rendererContext.svgRenderer.prepareSvg( graphicBounds, graphic );
+                g.dispose();
             }
-            g.dispose();
         } else {
             img = graphic.image;
         }
@@ -109,6 +107,16 @@ class Java2DFillRenderer {
         } else {
             applyGraphicFill( fill.graphic, uom );
         }
+    }
+
+    Rectangle2D.Double getImageBounds( BufferedImage image, Graphic graphic, double x, double y, UOM uom ) {
+        double width, height;
+        width = image.getWidth();
+        height = image.getHeight();
+        double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
+        double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
+
+        return new Rectangle2D.Double( x0, y0, width, height );
     }
 
     Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {
