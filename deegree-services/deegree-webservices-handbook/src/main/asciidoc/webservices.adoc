@@ -127,8 +127,8 @@ A more complex configuration example looks like this:
 
 The deegree WFS config file format is defined by schema file
 http://schemas.deegree.org/3.5/services/wfs/wfs_configuration.xsd. The
-root element is <deegreeWFS> and the config attribute must be
-_3.4.0_. The following table lists all available configuration options
+root element is <deegreeWFS> and the optional
+attribute `config` can be set to _3.5.0_. The following table lists all available configuration options
 (complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
 
@@ -783,9 +783,9 @@ ad:Address feature type from INSPIRE Annex I. It defines the stored
 query _urn:x-inspire:storedQuery:GetAddressesForStreet_ for retrieving
 ad:Address features that are located in the specified street. The street
 name is passed using parameter _streetName_. If your WFS instance can
-be reached at _http://localhost:8080/services_, you could use the
+be reached at _http://localhost:8080/deegree-webservices/services_, you could use the
 request
-_http://localhost:8080/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat_
+_http://localhost:8080/deegree-webservices/services?request=GetFeature&storedquery_id=urn:x-inspire:storedQuery:GetAddressesForStreet&streetName=Madame%20Curiestraat_
 to fetch the ad:Address features in street Madame Curiestraat.
 
 The attribute returnFeatureTypes of QueryExpressionText can be left
@@ -1992,7 +1992,7 @@ like this:
 
 The deegree WMTS config file format is defined by schema file
 http://schemas.deegree.org/3.5/services/wmts/wmts.xsd. The root
-element is _deegreeWMTS_ and the config attribute must be _3.4.0_.
+element is _deegreeWMTS_ and the optional attribute `config` can be set to _3.5.0_.
 
 The following table lists all available configuration options. When
 specifying them, their order must be respected.
@@ -2198,8 +2198,7 @@ example looks like this:
 
 The deegree CSW config file format is defined by schema file
 http://schemas.deegree.org/3.5/services/csw/csw_configuration.xsd. The
-root element is _deegreeCSW_ and the config attribute must be
-_3.4.0_.
+root element is _deegreeCSW_ and the optional attribute `config` can be set to _3.5.0_.
 
 The following table lists all available configuration options. When
 specifiying them, their order must be respected.
@@ -2460,8 +2459,8 @@ configuration works for all types of service alike.
 
 The metadata config file format is defined by schema file
 http://schemas.deegree.org/3.5/services/metadata/metadata.xsd. The
-root element is _deegreeServicesMetadata_ and the config attribute
-must be _3.4.0_. The following table lists all available configuration
+root element is _deegreeServicesMetadata_ and the optional
+attribute `config` can be set to _3.5.0_. The following table lists all available configuration
 options (complex ones contain nested options themselves). When
 specifiying them, their order must be respected.
 

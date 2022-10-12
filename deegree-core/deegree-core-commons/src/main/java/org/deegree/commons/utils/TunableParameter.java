@@ -140,6 +140,12 @@ public class TunableParameter {
         return get( key, Byte.valueOf( defaultValue ) ).byteValue();
     }
 
+    public static void resetCache() {
+        CONFIG_BOOL.clear();
+        CONFIG_NUM.clear();
+        CONFIG_STR.clear();
+    }
+
     private static Number get( String key, Number defaultValue ) {
         boolean has = CONFIG_NUM.containsKey( key );
         Number val = CONFIG_NUM.get( key );

@@ -1,7 +1,6 @@
-<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  xmlns:dg="http://deegree.org/jsf" xmlns:dgc="http://java.sun.com/jsf/composite/deegree">
+<ui:composition template="/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:p="http://primefaces.org/ui">
   <ui:define name="center">
     <h:panelGroup>
       <h:outputText value="Import GML feature collections into feature store '#{fsConfig.id}'" />
@@ -25,6 +24,7 @@
             requiredMessage="#{labels.fsLoader_url_req}" />
           <h:commandButton styleClass="buttonCreateNew" value="#{labels.fsLoader_import}"
             action="#{fsLoader.importData}" onclick="show();" />
+          <p:progressBar id="progressBarIndeterminate" style="height:6px" mode="indeterminate"/>
         </div>
       </h:form>
       <br />

@@ -4,53 +4,49 @@
 [[system-requirements]]
 === System requirements
 
-deegree webservices work on any platform with a compatible Java SE 8
+deegree webservices work on any platform with a compatible Java SE 11
 installation, including:
 
 * Microsoft Windows
 * Linux
 * MacOS
 
-Supported Java SE 8 versions are
-http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle JDK 8]
-footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and http://openjdk.java.net[OpenJDK 8]
+Supported Java SE 11 versions are
+http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle JDK 11]
+footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and http://openjdk.java.net[OpenJDK 11]
 footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/zulu/[Azul Systems]
 or https://adoptopenjdk.net[AdoptOpenJDK].].
 
-NOTE: Newer Java SE versions such as the LTS versions 11 and 16 are currently not supported by deegree 3.4. Please check out our wiki page https://github.com/deegree/deegree3/wiki/Java-SE-11-Support[Java 11 support] for further information.
+NOTE: Newer Java SE versions such as the LTS versions 17 are currently not supported by deegree 3.5. Please check out our wiki page https://github.com/deegree/deegree3/wiki/Java-SE-11-Support[Java 11 support] for further information.
 
 === Downloading
 
 deegree webservices downloads are available on the
-http://www.deegree.org[deegree home page]. You have the choice between:
+http://www.deegree.org/download[deegree home page]. You have the choice between:
 
 * _Docker_ : Docker Image with deegree webservices on OpenJDK and Apache
 Tomcat footnote:[Requires an installation of Docker Community or
 Enterprise Edition, download Docker from
 https://www.docker.com/[www.docker.com].]
 * _WAR_: Generic Java Web Archive for deployment in an existing Java
-Servlet container footnote:[A Java Servlet 2.5 compliant container is
+Servlet container footnote:[A Java Servlet 3.1 compliant container is
 required. We recommend using the latest http://tomcat.apache.org/[Apache
-Tomcat 8] release.]
-* _ZIP_: Distribution bundle with Apache Tomcat footnote:[As of deegree
-3.4.0 the ZIP distribution bundle is deprecated and the download links
-have been removed from the website. Download the ZIP from the
-https://repo.deegree.org/#browse/search=attributes.maven2.artifactId%3Ddeegree-webservices-tomcat-bundle[Nexus repository]
-instead.]
+Tomcat 9] release.]
 
 TIP: If you are confused by the options and unsure which version to pick,
-use the ZIP. All variants contain exactly the same deegree webservices webapp,
+use the WAR. All variants contain exactly the same deegree webservices webapp,
 they only differ in packaging.
 
 === Starting and stopping
 
-In order to run the ZIP version, extract it into a local directory of your
-choice. Afterwards, change to the directory ``deegree-webservices-tomcat-bundle-3.4.x/apache-tomcat-8.x.y/bin`` and
-fire up the included start script for your operating system:
+In order to run the WAR version, move it into the local deployment directory of your Java Servlet container. For Apache Tomcat this is the directory _$CATALINA_HOME/webapps_. Afterwards, start the Java Servlet container. To start Apache Tomcat open a terminal and change to the directory _$CATALINA_HOME/bin_ and fire up the included start script for your operating system _startup.sh_ for Linux or _startup.bat_ for Windows.
 
-* Windows: _startup.bat_
-* Linux/MacOS: _startup.sh_ (when starting via a Desktop Environment, choose "Run in terminal",  and you may need to grant
-permission to execute the scripts with ``chmod a+x *.sh`` before)
+TIP: If you deploy the WAR into
+a web container, you most probably will have to use a different URL for
+accessing the deegree console and webservices, e.g.
+http://localhost:8080/deegree-webservices-${project.version}. The port
+number and webapp name depend on your installation and deployment setup.
+In the following the base URL http://localhost:8080/deegree-webservices without the version number will be used. You may rename the WAR file from _deegree-webservices-${project.version}.war_ to _deegree-webservices.war_ before deploying it.
 
 You should now see a terminal window on your screen with a lot of log
 messages:
@@ -58,29 +54,26 @@ messages:
 .deegree webservices starting up
 image::terminal.png[deegree webservices starting up,scaledwidth=50.0%]
 
-TIP: If you don't see this terminal window, make sure that the _java_
+TIP: If the application isn't starting, make sure that the _java_
 command is on the system path. You can verify this by entering
 _java -version_ at the command prompt. Also ensure that _JAVA_HOME_
 system environment variable points to the correct installation directory
 of a compatible JDK.
 
-You may minimize this window, but don't close it as long as you want to
+You may minimize the terminal window, but don't close it as long as you want to
 be able to use the deegree webservices. In order to check if the
-services are actually running, open http://localhost:8080 in your
+services are actually running, open http://localhost:8080/deegree-webservices in your
 browser. You should see the following page:
 
 .deegree webservices administration console
 image::console_start.png[deegree webservices administration console,scaledwidth=50.0%]
 
 To shut deegree webservices down, switch back to the terminal window and
-press _CTRL+C_ or simply close it.
+press _CTRL+c_ or simply close it.
 
 TIP: If you want to run deegree webservices on system startup automatically,
-consider installing http://tomcat.apache.org[Apache Tomcat 8] as a
-system service. Afterwards, download the WAR version of deegree
-webservices and deploy it into your Tomcat installation (e.g. by copying
-the WAR file into the _webapps_ folder). Consult the
-https://tomcat.apache.org/tomcat-8.5-doc/index.html[Tomcat documentation]
+consider installing http://tomcat.apache.org[Apache Tomcat 9] as a
+system service. Consult the https://tomcat.apache.org/tomcat-9.0-doc/index.html[Tomcat documentation]
 for more information and options.
 
 === Securing deegree
@@ -105,7 +98,7 @@ releases of software:
 
 TIP: If you are running Apache Tomcat we recommend that you read and apply
 all recommendations as documented in
-https://tomcat.apache.org/tomcat-8.5-doc/security-howto.html[Apache Tomcat Security Considerations].
+https://tomcat.apache.org/tomcat-9.0-doc/security-howto.html[Apache Tomcat Security Considerations].
 
 ==== Encryption
 
@@ -114,11 +107,11 @@ or TLS. Either enable HTTPS on your Java Servlet Container or operate it
 behind a web server such as Apache httpd oder NGINX.
 
 TIP: If you are running Apache Tomcat read the
-http://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html[SSL HowTo].
+http://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html[SSL HowTo].
 
 ==== Securing deegree console and REST API
 
-It is as a huge security problem to operate the deegree web app without
+It is as a huge security problem to operate the deegree web application without
 setting a password for the deegree console. How to set the password for
 the deegree console is described in <<anchor-configuration-basics>>. The
 same applies to the deegree REST API. Since both transfer the
@@ -130,10 +123,10 @@ limit the access to both resources. Apply a filter by IP or hostname to
 only allow a subset of machines to connect and access the deegree
 console and REST API.
 
-WARNING: The deegree console provides access to the server file system. Therefore
+WARNING: The deegree console provides access to the server file system. Therefore,
 you must not operate the Java Servlet container as root user!
-Furthermore you should consider to enable the Java Security Manager and
+Furthermore, you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java
 applications we recommend to follow the
-https://docs.oracle.com/javase/8/docs/technotes/guides/security/index.html[Java Security Guidelines] and for
-http://tomcat.apache.org/tomcat-8.5-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]
+https://docs.oracle.com/en/java/javase/11/security/index.html[Java Security Guidelines] and for
+http://tomcat.apache.org/tomcat-9.0-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]

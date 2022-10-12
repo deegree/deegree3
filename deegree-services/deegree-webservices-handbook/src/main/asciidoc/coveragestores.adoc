@@ -44,7 +44,8 @@ configuration:
 A Raster can have several attributes:
 
 * The originLocation attribute can have the values center or outer to
-declare the pixel origin of the coverage.
+declare the pixel origin of the coverage. If omitted, center is used
+as origin location.
 * The nodata attribute can be optionally used to declare a nodata value.
 * The readWorldFiles parameter can have the values true or false to
 indicate if worlfiles will be read. Default value is true.
@@ -129,6 +130,10 @@ pyramid as its value.
 pyramid as EPSG code.
 * As in Raster, the nodata attribute can be optionally used to declare a
 nodata value.
+* As in Raster, the originLocation attribute can have the values center
+or outer to declare the pixel origin of the coverage. If omitted, center
+is used as origin location.
+
 
 === Oracle GeoRaster
 

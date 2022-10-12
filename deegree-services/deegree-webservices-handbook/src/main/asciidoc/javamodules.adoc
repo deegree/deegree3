@@ -52,9 +52,7 @@ the web application or the web application container to make the new
 code available to deegree webservices.
 
 NOTE: All Java libraries shipped with deegree webservices are located in the
-_WEB-INF/lib_ directory of the deegree webservices webapp. If you
-downloaded the ZIP version, this directory is located in
-_webapps/ROOT/WEB-INF/lib_.
+_WEB-INF/lib_ directory of the deegree webservices webapp.
 
 ==== Workspace classpath
 
@@ -73,7 +71,7 @@ classpath. This is usually not required.
 WARNING: Since deegree 3.4 jdbc drivers are not longer loaded from workspace
 classpath. Instead deegree follows the commonly used method to only use
 jdbc drivers which are available either by the system (shared or server
-libraries) or by the application (WEB-INF/lib).
+libraries) or by the application (_WEB-INF/lib_).
 
 === Checking available JARs
 
@@ -111,7 +109,7 @@ In order to enable Oracle connectivity for these resources, you need to
 add two JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC driver (e.g.
-_ojdbc8.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
+_ojdbc11.jar_)footnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 (registration required)]
 * Module
 deegree-sqldialect-oraclefootnote:[https://repo.deegree.org/content/repositories/public/org/deegree/deegree-sqldialect-oracle/${project.version}/deegree-sqldialect-oracle-${project.version}.jar]
@@ -126,7 +124,7 @@ add the following JAR files (see <<anchor-adding-jars>>):
 
 * A compatible Oracle JDBC-driverfootnote:[http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html
 (registration required)]
-** ojdbc8.jar
+** ojdbc11.jar
 * The Oracle Spatial and GeoRaster libraries and their dependencies
 ** sdoapi.jar
 ** sdogr.jar

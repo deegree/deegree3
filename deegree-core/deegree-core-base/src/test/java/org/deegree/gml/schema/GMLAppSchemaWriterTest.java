@@ -388,8 +388,6 @@ public class GMLAppSchemaWriterTest {
                                                              null, schema.getNamespaceBindings() );
         encoder.export( writer, gmlSchemaInfoSet, "http://cite.opengeospatial.org/gmlsf", uri -> uri );
         writer.close();
-
-        System.out.println( os.toString() );
     }
 
     private Map<String, String> nsContext() {

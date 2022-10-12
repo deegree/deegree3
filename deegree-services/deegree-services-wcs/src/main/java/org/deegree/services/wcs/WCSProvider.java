@@ -64,7 +64,6 @@ public class WCSProvider extends OWSProvider {
             supportedVersions = new Version[] { VERSION_100, VERSION_110 };
             handledNamespaces = new String[] { WCS_100_NS };
             handledRequests = WCSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ) };
             serviceName = new String[] { "WCS" };
         }
     };

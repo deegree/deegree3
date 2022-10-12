@@ -335,8 +335,7 @@ public class MapService {
         List<LayerData> list = new ArrayList<LayerData>();
 
         double scale = calcScaleWMS130( gfi.getWidth(), gfi.getHeight(), gfi.getEnvelope(), gfi.getCoordinateSystem(),
-                                        DEFAULT_PIXEL_SIZE );
-
+                                        gfi.getPixelSize() );
         ListIterator<LayerQuery> queryIter = queries.listIterator();
         for ( LayerRef n : gfi.getQueryLayers() ) {
             LayerQuery query = queryIter.next();

@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <CachingTileStore xmlns="http://www.deegree.org/datasource/tile/cache"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache cache.xsd"
-	configVersion="3.4.0">
+	xsi:schemaLocation="http://www.deegree.org/datasource/tile/cache cache.xsd">
 
 	<TileStoreId>pyramid</TileStoreId>
   <CacheConfiguration>../../ehcache.xml</CacheConfiguration>
