@@ -41,8 +41,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.rendering.r2d.RenderHelper.renderMarkForFill;
+import org.deegree.style.styling.components.Fill;
+import org.deegree.style.styling.components.Graphic;
+import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.UomCalculator;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -50,10 +52,9 @@ import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.UOM;
-import org.deegree.style.utils.UomCalculator;
+import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.rendering.r2d.RenderHelper.renderMarkForFill;
+
 
 /**
  * Responsible for applying fill stylings to a graphics 2d.
@@ -75,6 +76,7 @@ class Java2DFillRenderer {
     }
 
     void applyGraphicFill( Graphic graphic, UOM uom ) {
+        Rectangle2D.Double graphicBounds = getGraphicBounds( graphic, 0, 0, uom );
         BufferedImage img;
 
         if ( graphic.image == null ) {

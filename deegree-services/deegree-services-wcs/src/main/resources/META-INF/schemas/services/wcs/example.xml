@@ -1,5 +1,5 @@
 <!-- auto generated from schema-->
-<wcs:deegreeWCS configVersion="3.4.0" xmlns:wcs="http://www.deegree.org/services/wcs">
+<wcs:deegreeWCS xmlns:wcs="http://www.deegree.org/services/wcs">
     <wcs:ServiceConfiguration version="string">
         <wcs:SupportOptions extend="false">
             <!--Zero or more repetitions:-->

@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -376,6 +377,16 @@ public class HttpResponseBuffer extends HttpServletResponseWrapper {
         public void write( int b )
                                 throws IOException {
             buffer.write( b );
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+
         }
     }
 }

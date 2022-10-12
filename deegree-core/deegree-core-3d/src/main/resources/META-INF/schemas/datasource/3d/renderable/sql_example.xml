@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RenderableSQLStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/3d/renderable/sql"
+<RenderableSQLStore xmlns="http://www.deegree.org/datasource/3d/renderable/sql"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/3d/renderable/sql http://schemas.deegree.org/3.5/datasource/3d/renderable/sql.xsd">
   <JDBCConnId>conn1</JDBCConnId>

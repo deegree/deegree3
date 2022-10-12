@@ -55,10 +55,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.junit.Assert.assertEquals;
+import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
+import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -107,13 +107,15 @@ public class WmtsGetTileSimilarityIT extends AbstractWmtsSimilarityIT {
 
     @Test
     public void testSimilarity()
-                    throws IOException {
+                            throws
+                            Exception {
         String request = createRequest();
         InputStream in = retrieve( STREAM, request );
         LOG.info( "Requesting {}", request );
-        double sim = determineSimilarity( ImageIO.read( in ), expected );
-        assertEquals( "Images are not similar enough for " + resourceName + ", request: " + request + ".", 1.0, sim,
-                      0.01 );
+        BufferedImage actual = ImageIO.read( in );
+
+        assertTrue( "Image for " + resourceName + "are not similar enough",
+                    isImageSimilar( expected, actual, 0.01, getClass().getName() + "_" + resourceName ) );
     }
 
 }

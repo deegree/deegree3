@@ -45,7 +45,7 @@ import java.util.Map;
  * 
  * @version $Revision: $, $Date: $
  */
-public class JavaScriptUtils {
+public final class JavaScriptUtils {
 
     public static String getAjaxRequest( Map<String, String> options, String srcId ) {
         if ( options != null && options.size() > 0 ) {

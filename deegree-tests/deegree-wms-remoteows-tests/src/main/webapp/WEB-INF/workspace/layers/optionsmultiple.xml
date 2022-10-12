@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <RemoteWMSLayers xmlns="http://www.deegree.org/layers/remotewms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/layers/remotewms remotewms.xsd" configVersion="3.4.0">
+  xsi:schemaLocation="http://www.deegree.org/layers/remotewms remotewms.xsd">
   <RemoteWMSId>deegree3</RemoteWMSId>
   <RequestOptions>
     <DefaultCRS useAlways="true">EPSG:4326</DefaultCRS>

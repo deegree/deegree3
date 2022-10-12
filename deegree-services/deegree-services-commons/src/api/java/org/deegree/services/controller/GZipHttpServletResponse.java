@@ -37,6 +37,7 @@ package org.deegree.services.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -238,6 +239,11 @@ public class GZipHttpServletResponse implements HttpServletResponse {
         LOG.warn( "setContentLength() is not supported for gzipped responses" );
     }
 
+    @Override
+    public void setContentLengthLong(long l) {
+
+    }
+
     /**
      * @param type
      * @see javax.servlet.ServletResponse#setContentType(java.lang.String)
@@ -297,6 +303,26 @@ public class GZipHttpServletResponse implements HttpServletResponse {
      */
     public void setStatus( int sc, String sm ) {
         response.setStatus( sc, sm );
+    }
+
+    @Override
+    public int getStatus() {
+        return 0;
+    }
+
+    @Override
+    public String getHeader(String s) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaders(String s) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaderNames() {
+        return null;
     }
 
     /**

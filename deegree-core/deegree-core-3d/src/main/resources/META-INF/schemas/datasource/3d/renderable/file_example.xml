@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RenderableFileStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/3d/renderable/file"
+<RenderableFileStore xmlns="http://www.deegree.org/datasource/3d/renderable/file"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/3d/renderable/file http://schemas.deegree.org/3.5/datasource/3d/renderable/file.xsd">
   <EntityFile>../../../data/renderable/buildings/objects</EntityFile>

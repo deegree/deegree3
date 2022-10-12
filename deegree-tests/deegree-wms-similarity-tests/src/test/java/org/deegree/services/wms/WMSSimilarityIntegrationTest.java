@@ -42,7 +42,6 @@
 package org.deegree.services.wms;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -52,16 +51,15 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 import static org.deegree.commons.utils.net.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.junit.Assert.assertEquals;
+import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <code>WMSSimilarityIntegrationTest</code>
@@ -155,29 +153,18 @@ public class WMSSimilarityIntegrationTest {
         return requests;
     }
 
+    private String testName() {
+        return getClass().getName() + "_" + resourceName.replaceAll( "/", "_" );
+    }
+
     @Test
     public void testSimilarity()
-                    throws IOException {
+                            throws Exception {
         String base = createRequest();
         BufferedImage actual = retrieve( IMAGE, base );
-        double sim = determineSimilarity( actual, expected );
-        if ( Math.abs( 1.0 - sim ) > tolerance ) {
-            String tmpdir = System.getProperty( "java.io.tmpdir" );
-            System.out.println( "Trying to store expected and actual response for " + resourceName + " in " + tmpdir
-                                + ": expected_" + ++numFailed + "." + format + "/actual_" + numFailed + "." + format );
-            try {
-                ImageIO.write( expected, format,
-                               new FileOutputStream( tmpdir + "/expected_" + numFailed + "." + format ) );
-                ImageIO.write( actual, format, new FileOutputStream( tmpdir + "/actual_" + numFailed + "." + format ) );
 
-                System.out.println(
-                                "Result returned for " + resourceName + " (base64 -di encoded.dat > failed-test.zip)" );
-                System.out.println( IntegrationTestUtils.toBase64Zip( parseAsBytes( actual ),
-                                                                      resourceName + "." + format ) );
-            } catch ( Throwable t ) {
-            }
-        }
-        assertEquals( "Images are not similar enough for " + resourceName + ". Request: " + request, 1.0, sim, tolerance );
+        assertTrue( "Image for " + resourceName + "are not similar enough",
+                    isImageSimilar( expected, actual, tolerance, testName() ) );
     }
 
     private String createRequest() {

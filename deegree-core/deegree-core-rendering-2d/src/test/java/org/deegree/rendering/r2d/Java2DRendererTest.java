@@ -43,6 +43,7 @@ import static java.awt.Color.white;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.System.currentTimeMillis;
 import static javax.imageio.ImageIO.read;
+import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
 import static org.deegree.geometry.utils.GeometryUtils.move;
 import static org.deegree.style.styling.components.Font.Style.ITALIC;
 import static org.deegree.style.styling.components.Font.Style.NORMAL;

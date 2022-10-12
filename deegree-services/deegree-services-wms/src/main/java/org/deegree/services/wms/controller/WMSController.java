@@ -913,18 +913,9 @@ public class WMSController extends AbstractOWS {
         boolean geometries = fi.returnGeometries();
         List<String> queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
 
-        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
-                                                fi.getEnvelope(), 0.28, map );
         String format = fi.getInfoFormat();
-        info.setFormat( format );
-        info.setFeatureCount( fi.getFeatureCount() );
-        info.setX( fi.getX() );
-        info.setY( fi.getY() );
         LinkedList<String> headers = new LinkedList<String>();
-        Pair<FeatureCollection, LinkedList<String>> pair = new Pair<FeatureCollection, LinkedList<String>>(
-                                                                                                            service.getFeatures( fi,
-                                                                                                                                 headers ),
-                                                                                                            headers );
+        Pair<FeatureCollection, LinkedList<String>> pair = new Pair<>( service.getFeatures( fi, headers ), headers );
 
         FeatureCollection col = pair.first;
         addHeaders( response, pair.second );
