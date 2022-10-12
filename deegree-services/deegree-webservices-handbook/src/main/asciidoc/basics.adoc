@@ -93,7 +93,7 @@ location of this directory depends on your operating system.
 On UNIX-like systems (Linux/Solaris/MacOS X), deegree's configuration
 files are located in folder _<$HOME/.deegree/_. Note that _$HOME_ is
 determined by the user that started the web application container that
-runs deegree. If you started the ZIP version of deegree as user
+runs deegree. If you started the Java Servlet container as user
 "kelvin", then the directory will be something like
 _/home/kelvin/.deegree_.
 
@@ -107,7 +107,7 @@ read/write access to this directory.
 On Windows, deegree's configuration files are located in folder
 _%USERPROFILE%/.deegree/_. Note that _%USERPROFILE%_ is determined
 by the user that started the web application container that runs
-deegree. If you started the ZIP version of deegree as user "kelvin",
+deegree. If you started the Java Servlet container as user "kelvin",
 then the directory will be something like _C:\Users\kelvin\.deegree_
 or _C:\Dokumente und Einstellungen\kelvin\.deegree_.
 
@@ -599,17 +599,15 @@ resource to see the error message. After fixing the error, click on
 "Reload" to re-initialize the workspace. If your fix was successful, the
 exclamation mark will be gone.
 
-Additional information can be found in the deegree log. If you're
-running the ZIP version, switch to the terminal window. When
+Additional information can be found in the log output of the Java Servlet container. When
 initializing workspace resources, information on every resource will be
 logged, along with error messages.
 
-.Log messages in the deegree log
+.Log messages in the log output of the Java Servlet container, here an example taken from Apache Tomcat
 image::terminal.png[Log messages in the deegree log,scaledwidth=50.0%]
 
-TIP: If you deployed the WAR file, the location of the deegree log depends
-on your web application container. For Tomcat, you will find it in file
-_catalina.out_ in the _logs/_ directory.
+TIP: The location of the file _deegree.log_ depends
+on the configuration of the logging framework. For Tomcat, you will find it in the _logs/_ directory.
 
 TIP: More logging can be activated by adjusting file _log4j2.properties_ in
 the _/WEB-INF/classes/_ directory of the deegree web application. See chapter <<anchor-logging-configuration>> for more information how to configure the logging framework.

@@ -39,17 +39,14 @@ import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DATE_TIME;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.datetime.ISO8601Converter;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.tom.sql.DefaultPrimitiveConverter;
 import org.deegree.commons.tom.sql.PrimitiveParticleConverter;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
@@ -160,19 +157,6 @@ public class PostGISWhereBuilder extends AbstractWhereBuilder {
         }
         String msg = "Mapping of PropertyIsLike with non-literal or non-function comparisons to SQL is not implemented yet.";
         throw new UnsupportedOperationException( msg );
-    }
-
-    protected String getStringValueFromFunction( Expression pattern )
-                            throws UnmappableException, FilterEvaluationException {
-        Function function = (Function) pattern;
-        List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
-        appendParamsFromFunction( function, params );
-        TypedObjectNode value = evaluateFunction( function, params );
-        if ( !( value instanceof PrimitiveValue ) ) {
-            throw new UnsupportedOperationException( "SQL IsLike request with a function evaluating to a non-primitive value is not supported!" );
-        }
-        String valueAsString = ( (PrimitiveValue) value ).getAsText();
-        return valueAsString;
     }
 
     private SQLOperation toProtoSql( PropertyIsLike op, String literal )

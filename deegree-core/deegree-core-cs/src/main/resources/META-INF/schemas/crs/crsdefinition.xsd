@@ -5,14 +5,7 @@
     <xs:annotation>
       <xs:documentation>The abstract root is used for the sole definition of the configuration version attribute.</xs:documentation>
     </xs:annotation>
-    <xs:attribute name="configVersion"><!-- TRICKY in 3.0.0 this was not required, should it be use="required" -->
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="3.4.0" />
-          <xs:enumeration value="3.0.0" />
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="configVersion" type="xs:string" use="optional"/>
   </xs:complexType>
   <xs:element name="CRSConfiguration">
     <xs:annotation>

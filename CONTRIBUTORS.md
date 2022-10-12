@@ -50,3 +50,4 @@ The following list shows in alphabetical order individuals who have contributed 
 - Jeronimo Wanhoff
 - Juergen Weichand
 - Johannes Wilden
+- Julian Zilz

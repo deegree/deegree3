@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<deegreeWPVS configVersion="3.4.0" xmlns="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
+<deegreeWPVS xmlns="http://www.deegree.org/services/wpvs" xmlns:md="http://www.deegree.org/webservices"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/wpvs http://schemas.deegree.org/3.5/services/wpvs/wpvs_configuration.xsd">
   <ServiceConfiguration>
     <!-- Configures the number of textures stored in GPU (Graphic Processing Unit) memory, i.e. ready for rendering. -->

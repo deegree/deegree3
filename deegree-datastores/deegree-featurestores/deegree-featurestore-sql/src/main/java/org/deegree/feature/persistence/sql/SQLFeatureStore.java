@@ -77,6 +77,8 @@ import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.cs.persistence.CRSManager;
+import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.Feature;
@@ -565,6 +567,15 @@ public class SQLFeatureStore implements FeatureStore {
 
     BBoxCache getBBoxCache() {
         return bboxCache;
+    }
+
+    @Override
+    public ICRS getStorageCrs() {
+        if ( this.config.getStorageCRS() != null && this.config.getStorageCRS().getValue() != null ) {
+            String storageCrs = this.config.getStorageCRS().getValue();
+            return CRSManager.getCRSRef( storageCrs );
+        }
+        return null;
     }
 
     @Override

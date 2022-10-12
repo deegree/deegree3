@@ -1,3 +1,3 @@
 name=Shapefile
-example1_location=/META-INF/schemas/datasource/feature/shape/3.4.0/simple.xml
-example2_location=/META-INF/schemas/datasource/feature/shape/3.4.0/mapped.xml
+example1_location=/META-INF/schemas/datasource/feature/shape/simple.xml
+example2_location=/META-INF/schemas/datasource/feature/shape/mapped.xml

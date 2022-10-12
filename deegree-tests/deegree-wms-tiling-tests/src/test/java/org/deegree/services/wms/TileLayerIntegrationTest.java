@@ -52,10 +52,10 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 import static org.deegree.commons.utils.net.HttpUtils.STREAM;
 import static org.deegree.commons.utils.net.HttpUtils.retrieve;
-import static org.junit.Assert.assertEquals;
+import static org.deegree.commons.utils.test.IntegrationTestUtils.isImageSimilar;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <code>TileLayerIT</code>
@@ -96,12 +96,13 @@ public class TileLayerIntegrationTest {
 
     @Test
     public void testSimilarity()
-                    throws IOException {
+                            throws
+                            Exception {
         String base = createRequest();
         InputStream in = retrieve( STREAM, base );
-        double sim = determineSimilarity( ImageIO.read( in ), expected );
-        assertEquals( "Images are not similar enough for " + resourceName + ", request: " + request + ".", 1.0, sim,
-                      0.001 );
+        BufferedImage actual = ImageIO.read( in );
+        assertTrue( "Image for " + resourceName + "are not similar enough",
+                    isImageSimilar( expected, actual, 0.001, getClass().getName() + "_" + resourceName ) );
     }
 
     private String createRequest() {

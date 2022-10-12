@@ -94,8 +94,6 @@ public class CommonCSWProfile implements ServiceProfile {
             supportedVersions = new Version[] { VERSION_202 };
             handledNamespaces = new String[] { CSW_202_NS };
             handledRequests = CSWRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ),
-                                                     Version.parseVersion( "3.2.0" ) };
             serviceName = new String[] { "CSW" };
         }
     };

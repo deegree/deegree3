@@ -49,6 +49,7 @@ import org.apache.commons.fileupload.FileItem;
  * 
  * @version $Revision: $, $Date: $
  */
+@Deprecated
 public class UploadedFile implements Serializable {
 
     private static final long serialVersionUID = -8302793775220721969L;
