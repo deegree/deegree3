@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <GeoTIFFTileStore xmlns="http://www.deegree.org/datasource/tile/geotiff" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.deegree.org/datasource/tile/geotiff http://schemas.deegree.org/3.5/datasource/tile/geotiff/geotiff.xsd"
-  configVersion="3.4.0">
+ >
 
   <TileDataSet>
     <!-- [0..1]: the identifier for the tile data set. Default is the base name of the GeoTIFF file -->

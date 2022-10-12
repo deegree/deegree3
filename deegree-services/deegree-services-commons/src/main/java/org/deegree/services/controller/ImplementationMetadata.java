@@ -69,11 +69,6 @@ public abstract class ImplementationMetadata<T extends Enum<T>> {
     protected Version[] supportedVersions;
 
     /**
-     * The supportedConfigVersions of this service implementation.
-     */
-    protected Version[] supportedConfigVersions;
-
-    /**
      * The namespaces of this service.
      */
     protected String[] handledNamespaces;
@@ -99,8 +94,6 @@ public abstract class ImplementationMetadata<T extends Enum<T>> {
     private final Set<String> handledNamespacesSet = new HashSet<String>();
 
     private final Set<Version> implementedVersionsSet = new HashSet<Version>();
-
-    private final Set<Version> supportedConfigVersionsSet = new HashSet<Version>();
 
     private String[] retrieveRequestNames() {
         T[] enums = handledRequests.getEnumConstants();
@@ -151,20 +144,6 @@ public abstract class ImplementationMetadata<T extends Enum<T>> {
             }
         }
         return implementedVersionsSet;
-    }
-
-    /**
-     * Returns the configuration file versions supported by the associated controller implementation.
-     * 
-     * @return the supported configuration file versions
-     */
-    public Set<Version> getSupportedConfigVersions() {
-        if ( supportedConfigVersionsSet.size() == 0 && this.supportedConfigVersions != null ) {
-            for ( Version version : this.supportedConfigVersions ) {
-                this.supportedConfigVersionsSet.add( version );
-            }
-        }
-        return supportedConfigVersionsSet;
     }
 
     /**

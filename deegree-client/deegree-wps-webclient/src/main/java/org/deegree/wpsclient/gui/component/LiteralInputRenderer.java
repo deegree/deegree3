@@ -47,6 +47,7 @@ import javax.faces.convert.ConverterException;
 import javax.faces.model.SelectItem;
 import javax.faces.render.FacesRenderer;
 
+import com.sun.faces.renderkit.SelectItemsIterator;
 import org.deegree.commons.utils.StringPair;
 
 import com.sun.faces.renderkit.RenderKitUtils;
@@ -116,7 +117,7 @@ public class LiteralInputRenderer extends MenuRenderer {
             writer.writeAttribute( "id", clientId + ":" + UOM_SUFFIX, "id" );
             writer.writeAttribute( "name", clientId + ":" + UOM_SUFFIX, "id" );
 
-            Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, inputComponent );
+            SelectItemsIterator<SelectItem> items = RenderKitUtils.getSelectItems( context, inputComponent );
             renderOptions( context, inputComponent, items );
             writer.endElement( "select" );
         }

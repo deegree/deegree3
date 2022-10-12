@@ -45,7 +45,6 @@
     <module>deegree-services-wps</module>
     <module>deegree-services-wpvs</module>
     <module>deegree-webservices</module>
-    <module>deegree-webservices-tomcat-bundle</module>
   </modules>
 
 </project>

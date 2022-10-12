@@ -174,7 +174,7 @@ public class RenderHelper {
             throw new RuntimeException( "Invalid null crs." );
         }
 
-        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
+        if ( isMetric( crs ) ) {
             /*
              * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
              * maps having a projected reference system. Direct calculation of scale avoids uncertainties
@@ -229,7 +229,7 @@ public class RenderHelper {
             throw new IllegalArgumentException( "Null crs when trying to calculate scale." );
         }
 
-        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
+        if ( isMetric( crs ) ) {
             /*
              * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
              * maps having a projected reference system. Direct calculation of scale avoids uncertainties
@@ -302,14 +302,11 @@ public class RenderHelper {
         return new Pair<Envelope, DoublePair>( bbox, new DoublePair( scalex, scaley ) );
     }
 
-    private static boolean isXyOrdered( final ICRS crs ) {
-        return crs == null || crs.getAlias().equals( "CRS:1" ) || crs.getAxis()[0].getOrientation() == AO_EAST;
-    }
-
     static double calculateResolution( final Envelope bbox, int width ) {
         double res;
         try {
-            if ( isXyOrdered( bbox.getCoordinateSystem() ) ) {
+            ICRS crs = bbox.getCoordinateSystem();
+            if ( crs == null || ( isMetric( crs ) && isXyOrdered( crs ) ) ) {
                 res = bbox.getSpan0() / width; // use x for resolution
             } else {
                 // heuristics more or less copied from d2, TODO is use the proper UTM conversion
@@ -336,6 +333,14 @@ public class RenderHelper {
             res = bbox.getSpan0() / width; // use x for resolution
         }
         return res;
+    }
+
+    private static boolean isXyOrdered( final ICRS crs ) {
+        return crs == null || crs.getAlias().equals( "CRS:1" ) || crs.getAxis()[0].getOrientation() == AO_EAST;
+    }
+
+    private static boolean isMetric( ICRS crs ) {
+        return "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() );
     }
 
 }

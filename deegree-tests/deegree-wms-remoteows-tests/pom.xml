@@ -44,10 +44,7 @@
             <contextPath>/deegree-wms-remoteows-tests</contextPath>
           </webApp>
           <systemProperties>
-            <systemProperty>
-              <name>DEEGREE_WORKSPACE_ROOT</name>
-              <value>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</value>
-            </systemProperty>
+            <DEEGREE_WORKSPACE_ROOT>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</DEEGREE_WORKSPACE_ROOT>
           </systemProperties>
         </configuration>
       </plugin>

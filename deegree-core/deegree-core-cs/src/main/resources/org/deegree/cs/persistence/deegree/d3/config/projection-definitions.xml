@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<crs:ProjectionDefinitions configVersion="3.4.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/crsdefinition.xsd">
+<crs:ProjectionDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/crsdefinition.xsd">
 	<crs:LambertAzimuthalEqualArea>
 		<crs:Id>epsg:19986</crs:Id>
 		<crs:Name>Europe Equal Area 2001</crs:Name>

@@ -35,10 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.http;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -68,10 +71,10 @@ import org.mockito.Mockito;
  * <li>Scenario 4: status 500 / empty payload</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class OwsHttpResponseTest {
@@ -117,8 +120,11 @@ public class OwsHttpResponseTest {
     public void testGetAsBinaryStreamScenario1()
                             throws IOException {
         InputStream is = scenario1.getAsBinaryStream();
-        byte[] readBytesAndClose = IOUtils.readBytesAndClose( is, -1 );
-        assertEquals( 122720, readBytesAndClose.length );
+        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8 );
+        String expected = org.apache.commons.io.IOUtils.toString(
+                        OwsHttpResponseTest.class.getResourceAsStream( "scenario1.xml" ),
+                        UTF_8 );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
     /**
@@ -128,8 +134,11 @@ public class OwsHttpResponseTest {
     public void testGetAsBinaryStreamScenario2()
                             throws IOException {
         InputStream is = scenario2.getAsBinaryStream();
-        byte[] readBytesAndClose = IOUtils.readBytesAndClose( is, -1 );
-        assertEquals( 486, readBytesAndClose.length );
+        String actual = org.apache.commons.io.IOUtils.toString( is, UTF_8 );
+        String expected = org.apache.commons.io.IOUtils.toString(
+                        OwsHttpResponseTest.class.getResourceAsStream( "scenario2.xml" ),
+                        UTF_8 );
+        assertThat( actual, isSimilarTo( expected ).ignoreWhitespace() );
     }
 
     /**
