@@ -230,13 +230,17 @@ public class CurveLinearizer {
         LineStringSegment lineSegment = null;
 
         if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
+            // non-standard special case full circle defined by diameter (p0 - p1, p0 == p2)
+            if ( arc.getPoint1().equals( arc.getPoint3() ) ) {
+                return linearizeArcString( arc, crit );
+            }
+
             // if the points are already on a line we don't need to (and must not) apply any linearization algorithm
             Points points = null;
             if ( arc instanceof Circle ) {
-                points = new PointsList(
-                                         Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ) );
+                points = new PointsList( Arrays.asList( arc.getPoint1(), arc.getPoint2(), arc.getPoint1() ) );
             } else {
-                points = new PointsList( Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ) );
+                points = new PointsList( Arrays.asList( arc.getPoint1(), arc.getPoint3() ) );
             }
             lineSegment = geomFac.createLineStringSegment( points );
 
@@ -254,7 +258,7 @@ public class CurveLinearizer {
             if ( maxNumPoints > 0 && maxNumPoints < numPoints ) {
                 numPoints = maxNumPoints;
             }
-            LOG.debug( "Using " + numPoints + " for segment linearization." );
+            LOG.debug( "Using {} for segment linearization.", numPoints );
             lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
                                                                         arc.getPoint3(), numPoints,
                                                                         arc instanceof Circle ) );
@@ -296,7 +300,20 @@ public class CurveLinearizer {
             a = srcpnts.get( i );
             b = srcpnts.get( i + 1 );
             c = srcpnts.get( i + 2 );
-            if ( areCollinear( a, b, c ) ) {
+            if ( j == 1 && a.equals( c ) ) {
+                // non-standard special case full circle defined by diameter (p0 - p1, p0 == p2)
+                int numPoints;
+                if ( crit instanceof NumPointsCriterion ) {
+                    numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+                } else if (crit instanceof MaxErrorCriterion) {
+                    double error = ( (MaxErrorCriterion) crit ).getMaxError();
+                    numPoints = calcNumPointsForCircleByDiameter( a, b, error );
+                } else {
+                    String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
+                    throw new IllegalArgumentException( msg );
+                }
+                pnts = interpolateCircleByDiameter( a, b, numPoints );
+            } else if ( areCollinear( a, b, c ) ) {
                 pnts = new PointsArray( a, b, c );
             } else if ( crit instanceof NumPointsCriterion ) {
                 int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
@@ -308,7 +325,7 @@ public class CurveLinearizer {
                 if ( maxNumPoints > 0 && maxNumPoints < numPoints ) {
                     numPoints = maxNumPoints;
                 }
-                LOG.debug( "Using " + numPoints + " for segment linearization." );
+                LOG.debug( "Using {} for segment linearization.", numPoints );
                 pnts = interpolate( a, b, c, numPoints, false );
             } else {
                 String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
@@ -568,6 +585,35 @@ public class CurveLinearizer {
         return angleStep;
     }
 
+    /**
+     * interpolate a circle where the points p0 and p1 define the diameter
+     */
+    private Points interpolateCircleByDiameter( Point p0, Point p1, int numPoints ){
+        // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
+        double minOrd0 = findShiftOrd0( p0, p1, p1 );
+        double minOrd1 = findShiftOrd1( p0, p1, p1 );
+
+        // if the points are already shifted, this does no harm!
+        Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
+                                            new double[] { p0.get0() - minOrd0, p0.get1() - minOrd1 } );
+        Point p1Shifted = new DefaultPoint( null, p1.getCoordinateSystem(), p1.getPrecision(),
+                                            new double[] { p1.get0() - minOrd0, p1.get1() - minOrd1 } );
+
+        double centerX = ( p0Shifted.get0() + p1Shifted.get0() ) / 2;
+        double centerY = ( p0Shifted.get1() + p1Shifted.get1() ) / 2;
+
+        double dx = p0Shifted.get0() - centerX;
+        double dy = p0Shifted.get1() - centerY;
+
+        double startAngle = Math.atan2( dy, dx );
+        double endAngle = startAngle;
+        double radius = Math.sqrt( dx * dx + dy * dy );
+
+        double angleStep = createAngleStep( startAngle, endAngle, numPoints, true );
+
+        return interpolatePoints( startAngle, angleStep, radius, numPoints, centerX, centerY, minOrd0, minOrd1, p0Shifted, p0Shifted );
+    }
+
     private Points interpolate( Point p0, Point p1, Point p2, int numPoints, boolean isCircle ) {
 
         // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
@@ -582,7 +628,6 @@ public class CurveLinearizer {
         Point p2Shifted = new DefaultPoint( null, p2.getCoordinateSystem(), p2.getPrecision(),
                                             new double[] { p2.get0() - minOrd0, p2.get1() - minOrd1 } );
 
-        List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
         Point center = calcCircleCenter( p0Shifted, p1Shifted, p2Shifted );
 
         double centerX = center.get0();
@@ -599,9 +644,19 @@ public class CurveLinearizer {
 
         double angleStep = createAngleStep( startAngle, endAngle, numPoints,
                                             isClockwise( p0Shifted, p1Shifted, p2Shifted ) );
-        ICRS crs = p0Shifted.getCoordinateSystem();
+
+        return interpolatePoints( startAngle, angleStep, radius, numPoints, centerX, centerY, minOrd0, minOrd1,
+                                  p0Shifted, isCircle ? p0Shifted : p2Shifted);
+    }
+
+    private Points interpolatePoints( double startAngle, double angleStep, double radius, int numPoints,
+                                      double centerX, double centerY, double minOrd0, double minOrd1,
+                                      Point startPointShifted, Point endPointShifted ) {
+        List<Point> interpolationPoints = new ArrayList<>( numPoints );
+
+        ICRS crs = startPointShifted.getCoordinateSystem();
         // ensure numerical stability for start point (= use original circle start point)
-        interpolationPoints.add( p0Shifted );
+        interpolationPoints.add( startPointShifted );
 
         // calculate intermediate (=interpolated) points on arc
         for ( int i = 1; i < numPoints - 1; i++ ) {
@@ -611,16 +666,42 @@ public class CurveLinearizer {
             interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, crs ) );
         }
         // ensure numerical stability for end point (= use original circle start point)
-        interpolationPoints.add( isCircle ? p0Shifted : p2Shifted );
+        interpolationPoints.add( endPointShifted );
 
         // shift the points back up
-        List<Point> realPoints = new ArrayList<Point>( interpolationPoints.size() );
+        List<Point> realPoints = new ArrayList<>( interpolationPoints.size() );
         for ( Point p : interpolationPoints ) {
             realPoints.add( new DefaultPoint( null, p.getCoordinateSystem(), p.getPrecision(),
                                               new double[] { p.get0() + minOrd0, p.get1() + minOrd1 } ) );
         }
 
         return new PointsList( realPoints );
+    }
+
+    /**
+     * calculate the required number of point for a circle where the points p0 and p1 define the diameter
+     */
+    private int calcNumPointsForCircleByDiameter(Point p0, Point p1, double error) {
+        double minOrd0 = CurveLinearizer.findShiftOrd0( p0, p1, p1 );
+        double minOrd1 = CurveLinearizer.findShiftOrd1( p0, p1, p1 );
+
+        // if the points are already shifted, this does no harm!
+        Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
+                                            new double[] { p0.get0() - minOrd0, p0.get1() - minOrd1 } );
+        Point p1Shifted = new DefaultPoint( null, p1.getCoordinateSystem(), p1.getPrecision(),
+                                            new double[] { p1.get0() - minOrd0, p1.get1() - minOrd1 } );
+
+        double centerX = ( p0Shifted.get0() + p1Shifted.get0() ) / 2;
+        double centerY = ( p0Shifted.get1() + p1Shifted.get1() ) / 2;
+
+        double dx = p0Shifted.get0() - centerX;
+        double dy = p0Shifted.get1() - centerY;
+
+        double radius = Math.sqrt( dx * dx + dy * dy );
+
+        double angleStep = 2 * Math.acos( 1 - error / radius );
+        int numPoints = (int) Math.ceil( 2 * Math.PI / angleStep ) + 2;
+        return numPoints;
     }
 
     private int calcNumPoints( Point p0, Point p1, Point p2, boolean isCircle, double error ) {
