@@ -47,4 +47,5 @@ f
 
 |deegree.cache.svgrenderer |java.lang.Integer |256 |Maximum number of rendered SVG images to be cached for speed
 
+|deegree.rendering.svg-to-shape.previous |java.lang.Boolean |false |Enables the behavior of previously used versions when scaling SVG graphics for the rendering of strokes
 |===
