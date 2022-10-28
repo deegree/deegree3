@@ -96,7 +96,7 @@ public class WorkspaceFonts implements Initializable {
         final String fileKey = fontFile.getAbsolutePath();
         if ( PROCESSED_FILES.contains( fileKey ) ) {
             // do not re-register fonts, as fonts can not be deregistered in GraphicsEnvironment
-            LOG.info( "Skip file '{}' because it was already processed." );
+            LOG.info( "Skip file '{}' because it was already processed.", fontFile.getName() );
             return;
         }
         PROCESSED_FILES.add( fileKey );
