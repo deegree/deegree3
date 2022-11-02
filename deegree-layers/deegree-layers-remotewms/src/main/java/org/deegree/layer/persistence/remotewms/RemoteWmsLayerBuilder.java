@@ -75,10 +75,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Builds remote wms layers from jaxb beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 class RemoteWmsLayerBuilder {
@@ -132,23 +131,38 @@ class RemoteWmsLayerBuilder {
         return map;
     }
 
-    private static void mergeStyleAndLegendStyles( LayerMetadata md, LayerMetadata confMd ) {
+    private static void mergeStyleAndLegendStyles( LayerMetadata remoteServiceMd, LayerMetadata confMd ) {
         Map<String, Style> configuredLegendStyles = confMd.getLegendStyles();
-        Map<String, Style> remoteServiceLegendStyles = md.getLegendStyles();
-        Map<String, Style> remoteServiceStyles = md.getStyles();
-        for ( String styleName : configuredLegendStyles.keySet() ) {
-            Style configuredLegendStyle = configuredLegendStyles.get( styleName );
-            Style remoteServiceStyle = remoteServiceStyles.get( styleName );
-            if ( remoteServiceStyle != null ) {
-                setLegendUrlAndFile( remoteServiceStyle, configuredLegendStyle );
+        Map<String, Style> remoteServiceLegendStyles = remoteServiceMd.getLegendStyles();
+        Map<String, Style> remoteServiceStyles = remoteServiceMd.getStyles();
+        if ( !configuredLegendStyles.isEmpty() ) {
+            for ( String styleName : configuredLegendStyles.keySet() ) {
+                Style configuredLegendStyle = configuredLegendStyles.get( styleName );
+                Style remoteServiceStyle = remoteServiceStyles.get( styleName );
+                if ( remoteServiceStyle != null ) {
+                    setLegendUrlAndFile( remoteServiceStyle, configuredLegendStyle );
+                }
+                Style remoteServiceLegendStyle = remoteServiceLegendStyles.get( styleName );
+                if ( remoteServiceLegendStyle != null ) {
+                    setLegendUrlAndFile( remoteServiceLegendStyle, configuredLegendStyle );
+                }
             }
-            Style remoteServiceLegendStyle = remoteServiceLegendStyles.get( styleName );
-            if ( remoteServiceLegendStyle != null ) {
-                setLegendUrlAndFile( remoteServiceLegendStyle, configuredLegendStyle );
-            }
+            removeUnconfiguredStyles( configuredLegendStyles, remoteServiceLegendStyles, remoteServiceStyles );
         }
         confMd.setLegendStyles( remoteServiceLegendStyles );
         confMd.setStyles( remoteServiceStyles );
+    }
+
+    private static void removeUnconfiguredStyles( Map<String, Style> configuredLegendStyles,
+                                                  Map<String, Style> remoteServiceLegendStyles,
+                                                  Map<String, Style> remoteServiceStyles ) {
+        for ( String remoteServiceStyleName : remoteServiceStyles.keySet() ) {
+            if ( !"default".equalsIgnoreCase( remoteServiceStyleName )
+                 && !configuredLegendStyles.containsKey( remoteServiceStyleName ) ) {
+                remoteServiceStyles.remove( remoteServiceStyleName );
+                remoteServiceLegendStyles.remove( remoteServiceStyleName );
+            }
+        }
     }
 
     private static void setLegendUrlAndFile( Style targetStyle, Style sourceStyle ) {
