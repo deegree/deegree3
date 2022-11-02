@@ -40,7 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.LinkedHashSet;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -61,7 +60,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs information about how texture tiles are managed")
 public class TextureTileManager {
     private static final Logger LOG = getLogger( TextureTileManager.class );
 

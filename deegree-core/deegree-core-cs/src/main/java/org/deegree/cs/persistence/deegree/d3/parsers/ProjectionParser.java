@@ -53,7 +53,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -81,7 +80,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed projections, as well as a stack trace if something went wrong.")
 public class ProjectionParser extends DefinitionParser {
 
     private static final Logger LOG = getLogger( ProjectionParser.class );

@@ -60,7 +60,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -85,7 +84,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs when the fallback value is used or values cannot be parsed properly for the given type")
 public class Interpolate extends AbstractCustomExpression {
 
     private static final QName ELEMENT_NAME = new QName( SENS, "Interpolate" );

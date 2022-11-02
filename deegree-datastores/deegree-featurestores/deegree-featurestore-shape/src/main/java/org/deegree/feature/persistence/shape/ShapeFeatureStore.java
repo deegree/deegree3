@@ -62,7 +62,6 @@ import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.IOUtils;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.tom.gml.GMLObject;
 import org.deegree.commons.tom.gml.property.Property;
@@ -121,7 +120,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(trace = "logs stack traces", debug = "logs information about reading the files, which srs etc.", warn = "logs reasons for not setting up the store", error = "logs grave errors that were not forseen to happen")
 public class ShapeFeatureStore implements FeatureStore {
 
     private static final Logger LOG = getLogger( ShapeFeatureStore.class );

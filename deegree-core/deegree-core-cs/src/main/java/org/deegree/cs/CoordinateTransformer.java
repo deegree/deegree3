@@ -41,7 +41,6 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
@@ -59,7 +58,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the transformation of a list of ordinates.")
 public class CoordinateTransformer extends Transformer {
 
     private static Logger LOG_TRANSFORM = LoggerFactory.getLogger( CoordinateTransformer.class.getCanonicalName()

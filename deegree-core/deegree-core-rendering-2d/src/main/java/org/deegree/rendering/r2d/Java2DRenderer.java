@@ -46,7 +46,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D.Double;
 import java.util.Collection;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
@@ -70,7 +69,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(warn = "log info about problems with the renderer setup, or broken geometries coming in, or problematic usage of the renderer", debug = "log what's funny about rendering, eg. when null geometries are rendered, general info about the renderer, also log stack traces, use for debugging/improving your styles")
 public class Java2DRenderer implements Renderer {
 
     private static final Logger LOG = getLogger( Java2DRenderer.class );

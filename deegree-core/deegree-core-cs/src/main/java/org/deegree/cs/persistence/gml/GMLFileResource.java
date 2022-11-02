@@ -50,7 +50,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -81,7 +80,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about the currently parsed transformations.")
 public class GMLFileResource extends XMLFileResource implements GMLResource {
 
     private static final long serialVersionUID = -4389365894942107300L;

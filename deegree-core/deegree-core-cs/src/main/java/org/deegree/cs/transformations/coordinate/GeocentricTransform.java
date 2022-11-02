@@ -44,7 +44,6 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -69,7 +68,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about the incoming ordinates of a geocentric transformation.")
 public class GeocentricTransform extends Transformation {
 
     private static Logger LOG = LoggerFactory.getLogger( GeocentricTransform.class );

@@ -47,7 +47,6 @@ import org.apache.commons.dbcp2.PoolableConnection;
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.slf4j.Logger;
 
 /**
@@ -57,7 +56,6 @@ import org.slf4j.Logger;
  * @author last edited by: $Author: schneider $
  * @version $Revision: $, $Date: $
  */
-@LoggingNotes(debug = "logs information about pool usage")
 public class ConnectionPool {
 
     private static final Logger LOG = getLogger( ConnectionPool.class );

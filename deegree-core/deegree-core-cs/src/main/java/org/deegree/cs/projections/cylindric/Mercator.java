@@ -41,7 +41,6 @@ import static org.deegree.cs.utilities.ProjectionUtils.preCalcedThetaSeries;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
@@ -74,7 +73,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  * 
  */
-@LoggingNotes(debug = "Get information about incoming ordinates.")
 public class Mercator extends CylindricalProjection implements IMercator {
 
     private static Logger LOG = LoggerFactory.getLogger( Mercator.class );

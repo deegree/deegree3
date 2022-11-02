@@ -55,7 +55,6 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.IAxis;
@@ -83,7 +82,6 @@ import au.com.objectix.jgridshift.SubGrid;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get stack traces if an error occurred while loading / transforming (on) a gridshift file.")
 public class NTv2Transformation extends Transformation {
 
     private static final Logger LOG = getLogger( NTv2Transformation.class );

@@ -60,7 +60,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.db.ConnectionProvider;
@@ -91,7 +90,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision: 30481 $, $Date: 2011-04-18 16:10:34 +0200 (Mon, 18 Apr 2011) $
  */
-@LoggingNotes(trace = "logs stack traces", info = "logs connection problems with the DB")
 public class PostgreSQLWriter {
 
     private static final Logger LOG = getLogger( PostgreSQLWriter.class );

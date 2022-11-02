@@ -39,7 +39,6 @@ package org.deegree.services.wms;
 import static java.util.Collections.singletonList;
 import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
 import static org.deegree.theme.Themes.getAllLayers;
@@ -60,7 +59,6 @@ import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
 import org.deegree.cs.coordinatesystems.ICRS;
@@ -104,7 +102,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(error = "logs errors when querying feature stores/evaluating filter encoding expressions", trace = "logs stack traces", warn = "logs problems when loading layers, also invalid values for vendor specific parameters such as ANTIALIAS, QUALITY etc.", debug = "logs if layers are skipped because of scale constraints, and info about feature store queries")
 public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
