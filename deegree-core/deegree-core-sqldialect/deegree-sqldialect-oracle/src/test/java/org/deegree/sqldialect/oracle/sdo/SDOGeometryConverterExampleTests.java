@@ -103,14 +103,14 @@ public class SDOGeometryConverterExampleTests {
     @Test
     public void testConvertSdoGeometryAndBack()
                             throws Exception {
-        GeomHolder sdo = loadFromFile( sdoFile );
+        SDOGeometry sdo = loadFromFile( sdoFile );
         // inspector.reset();
         Geometry geom = readGMLGeometry( gmlFile );
 
         // Test SDO -> Geom -> SDO
         // inspector.reset();
         Geometry sdoGeom = converter.toGeometry( sdo, null );
-        GeomHolder sdoGeomSdo = converter.fromGeometry( sdo.srid, sdoGeom, false );
+        SDOGeometry sdoGeomSdo = converter.fromGeometry( sdo.srid, sdoGeom, false );
 
         String sdoGeomString = writeGMLGeometry( sdoGeom );
         String sdoString = toString( sdo );
@@ -122,7 +122,7 @@ public class SDOGeometryConverterExampleTests {
         }
 
         // Test Geom -> SDO -> Geom
-        GeomHolder geomSdo = converter.fromGeometry( sdo.srid, geom, false );
+        SDOGeometry geomSdo = converter.fromGeometry( sdo.srid, geom, false );
         // inspector.reset();
         Geometry geomSdoGeom = converter.toGeometry( geomSdo, null );
 
@@ -173,7 +173,7 @@ public class SDOGeometryConverterExampleTests {
         return replaceGmlIDs( memoryWriter.toString() );
     }
 
-    private GeomHolder loadFromFile( File f )
+    private SDOGeometry loadFromFile( File f )
                             throws IOException {
         @SuppressWarnings("resource")
         String output = new Scanner( f ).useDelimiter( "\\Z" ).next().replaceAll( "[\r\n]+", " " );
@@ -225,12 +225,12 @@ public class SDOGeometryConverterExampleTests {
                     ordinates[i] = lst.get( i );
                 }
             }
-            return new GeomHolder( gtype, srid, point, elem_info, ordinates, null );
+            return new SDOGeometry( gtype, srid, point, elem_info, ordinates );
         }
         return null;
     }
 
-    private String toString( GeomHolder h ) {
+    private String toString( SDOGeometry h ) {
         StringBuilder sb = new StringBuilder();
         sb.append( "MDSYS.SDO_GEOMETRY( " );
         sb.append( h.gtype ).append( ", " );

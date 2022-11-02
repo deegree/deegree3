@@ -117,11 +117,11 @@ public class OracleObjectTools {
         return fromDoubleArray( struct.getOracleAttributes(), defaultValue );
     }
 
-    protected static STRUCT toSDOGeometry( GeomHolder h, OracleConnection conn ) 
+    protected static STRUCT toSDOGeometry( SDOGeometry h, OracleConnection conn ) 
                             throws SQLException {
         return toSDOGeometry( h.gtype, h.srid, h.elem_info, h.ordinates, conn);
     }
-    
+
     /**
      * Convert SDO_Geometry informations into Oracle JDBC STRUCT element
      */
