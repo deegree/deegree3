@@ -302,7 +302,7 @@ class GraphicSymbologyParser {
                                 break sym;
                             }
 
-                            if ( font != null && base.markIndex >= font.getNumGlyphs() - 1 ) {
+                            if ( font != null && base.markIndex >= font.getNumGlyphs() ) {
                                 LOG.warn( "The font only contains {} glyphs, but the index given was {}.",
                                           font.getNumGlyphs(), base.markIndex );
                                 break sym;
