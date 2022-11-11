@@ -113,32 +113,45 @@ class Java2DStrokeRenderer {
 
     private boolean applyGraphicStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset,
                                         PerpendicularOffsetType type ) {
+        double strokeSizeUOM = stroke.stroke.size <= 0 ? 6 : uomCalculator.considerUOM( stroke.stroke.size, uom );
+        double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
+        Shape transed = object;
+        if ( !isZero( poff ) ) {
+            transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
+        }
+
         if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
-            Shape shape = getShapeFromSvg( stroke.stroke.imageURL,
-                                           uomCalculator.considerUOM( stroke.stroke.size, uom ), stroke.stroke.rotation );
-            graphics.setStroke( new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap
-                                                                                   + stroke.stroke.size, uom ),
-                                                 stroke.positionPercentage, stroke.strokeInitialGap ) );
+            Shape shape = getShapeFromSvg( stroke.stroke.imageURL, uomCalculator.considerUOM( stroke.stroke.size, uom ),
+                                           stroke.stroke.rotation );
+
+            graphics.setStroke( new ShapeStroke( shape,
+                                                 uomCalculator.considerUOM( stroke.strokeGap, uom ) + strokeSizeUOM,
+                                                 stroke.positionPercentage,
+                                                 uomCalculator.considerUOM( stroke.strokeInitialGap, uom ),
+                                                 stroke.stroke.anchorPointX, stroke.stroke.anchorPointY,
+                                                 uomCalculator.considerUOM( stroke.stroke.displacementX, uom ),
+                                                 uomCalculator.considerUOM( stroke.stroke.displacementY, uom ),
+                                                 stroke.positionRotation ) );
+
+            graphics.draw( transed );
+            return true;
         } else if ( stroke.stroke.mark != null ) {
-            double poff = uomCalculator.considerUOM( perpendicularOffset, uom );
-            Shape transed = object;
-            if ( !isZero( poff ) ) {
-                transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
-            }
-            double sz = stroke.stroke.size;
-            Shape shape = getShapeFromMark( stroke.stroke.mark, sz <= 0 ? 6 : uomCalculator.considerUOM( sz, uom ),
-                                            stroke.stroke.rotation );
-            if ( sz <= 0 ) {
-                sz = 6;
-            }
-            ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap + sz, uom ),
-                                             stroke.positionPercentage, stroke.strokeInitialGap );
+            Shape shape = getShapeFromMark( stroke.stroke.mark, strokeSizeUOM, stroke.stroke.rotation );
+
+            ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap, uom ) + strokeSizeUOM,
+                                             stroke.positionPercentage,
+                                             uomCalculator.considerUOM( stroke.strokeInitialGap, uom ),
+                                             stroke.stroke.anchorPointX, stroke.stroke.anchorPointY,
+                                             uomCalculator.considerUOM( stroke.stroke.displacementX, uom ),
+                                             uomCalculator.considerUOM( stroke.stroke.displacementY, uom ),
+                                             stroke.positionRotation );
+
             transed = s.createStrokedShape( transed );
-            if ( stroke.stroke.mark.fill != null ) {
+            if ( stroke.stroke.mark.fill != null && !stroke.stroke.mark.fill.isInvisible() ) {
                 fillRenderer.applyFill( stroke.stroke.mark.fill, uom );
                 graphics.fill( transed );
             }
-            if ( stroke.stroke.mark.stroke != null ) {
+            if ( stroke.stroke.mark.stroke != null && !stroke.stroke.mark.stroke.isInvisible()) {
                 applyStroke( stroke.stroke.mark.stroke, uom, transed, 0, null );
                 graphics.draw( transed );
             }

@@ -76,6 +76,8 @@ public class ShapeStroke implements Stroke {
 
     private boolean repeat = true;
 
+    private boolean rotate = true;
+
     private AffineTransform t = new AffineTransform();
 
     private double positionPercentage;
@@ -101,15 +103,29 @@ public class ShapeStroke implements Stroke {
      * @param initialGap
      */
     public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap ) {
+        this( shapes, advance, positionPercentage, initialGap, 0.5, 0.5, 0, 0, false );
+    }
+
+    public ShapeStroke( Shape shapes, double advance, double positionPercentage, double initialGap, double anchorPointX,
+                        double anchorPointY, double displacementX, double displacementY, boolean rotate ) {
+        this( new Shape[] { shapes }, advance, positionPercentage, initialGap, anchorPointX, anchorPointY,
+              displacementX, displacementY, rotate );
+    }
+
+    public ShapeStroke( Shape shapes[], double advance, double positionPercentage, double initialGap,
+                        double anchorPointX, double anchorPointY, double displacementX, double displacementY, boolean rotate ) {
         this.advance = advance;
         this.shapes = new Shape[shapes.length];
         this.positionPercentage = positionPercentage;
         this.repeat = positionPercentage < 0;
         this.initialGap = initialGap;
+        this.rotate = rotate;
 
         for ( int i = 0; i < this.shapes.length; i++ ) {
             Rectangle2D bounds = shapes[i].getBounds2D();
-            t.setToTranslation( -bounds.getCenterX(), -bounds.getCenterY() );
+            double translateX = bounds.getX() + bounds.getWidth() * anchorPointX + displacementX;
+            double translateY = bounds.getY() + bounds.getHeight() * anchorPointY + displacementY;
+            t.setToTranslation( -translateX, -translateY );
             this.shapes[i] = t.createTransformedShape( shapes[i] );
         }
     }
@@ -177,7 +193,9 @@ public class ShapeStroke implements Stroke {
                         float x = lastX + next * dx * r;
                         float y = lastY + next * dy * r;
                         t.setToTranslation( x, y );
-                        t.rotate( angle );
+                        if ( rotate ) {
+                            t.rotate( angle );
+                        }
                         result.append( t.createTransformedShape( shapes[currentShape] ), false );
                         next += advance;
                         currentShape++;
