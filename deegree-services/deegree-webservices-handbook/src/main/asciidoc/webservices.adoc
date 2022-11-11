@@ -2691,7 +2691,7 @@ requests). By default, deegree derives these URLs from the incoming
 request, so you don't have to think about this, even when your server
 has multiple network interfaces or hostnames. However, sometimes it is
 required to override these URLs, for example when using deegree behind a
-proxy or load balancer.
+proxy or load balancer. Those URLs are displayed in the DCP HTTP element of the service capabilites.
 
 TIP: If you don't have a proxy setup that requires it, don't configure the
 reported URLs. In standard setups, the default behaviour works best.
@@ -2702,20 +2702,20 @@ the _main.xml_:
 [source,xml]
 ----
 <ReportedUrls>
-  <Services>http://www.mygeoportal.com/ows</Services>
-  <Resources>http://www.mygeoportal.com/ows-resources</Resources>
+  <Services>http://www.mygeoportal.com/ows</Services> <1>
+  <Resources>http://www.mygeoportal.com/ows-resources</Resources> <2>
 </ReportedUrls>
 ----
 
-For this example, deegree would report
+1.  By configurating the URL in _Services_, deegree would report
 _http://www.mygeoportal.com/ows_ as service endpoint URL in
-capabilities responses, regardless of the real connection details of the
+the capabilities responses, regardless of the real connection details of the
 deegree server. If a specific service is contacted on the deegree
 server, for example via a request to
 _http://realnameofdeegreemachine:8080/deegree-webservices/services/inspire-wfs-ad_,
 deegree would report _http://www.mygeoportal.com/ows/inspire-wfs-ad_.
 
-The URL configured by _Resources_ relates to the reported URL of the
+2. The URL configured by _Resources_ relates to the reported URL of the
 _resources_ servlet, which allows to access parts of the active
 deegree workspace via HTTP. Currently, this is only used in WFS
 DescribeFeatureType responses that access GML application schema
