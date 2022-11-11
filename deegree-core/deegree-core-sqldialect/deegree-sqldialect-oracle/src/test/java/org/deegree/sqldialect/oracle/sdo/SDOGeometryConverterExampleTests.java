@@ -173,7 +173,7 @@ public class SDOGeometryConverterExampleTests {
         return replaceGmlIDs( memoryWriter.toString() );
     }
 
-    private SDOGeometry loadFromFile( File f )
+    static SDOGeometry loadFromFile( File f )
                             throws IOException {
         @SuppressWarnings("resource")
         String output = new Scanner( f ).useDelimiter( "\\Z" ).next().replaceAll( "[\r\n]+", " " );

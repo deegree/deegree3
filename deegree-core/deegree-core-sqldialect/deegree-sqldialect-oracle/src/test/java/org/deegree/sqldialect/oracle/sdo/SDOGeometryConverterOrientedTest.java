@@ -7,9 +7,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.Scanner;
-
 import org.deegree.geometry.Geometry;
-import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter.GeomHolder;
 import org.junit.Test;
 
 public class SDOGeometryConverterOrientedTest {
@@ -24,7 +22,7 @@ public class SDOGeometryConverterOrientedTest {
         SDOGeometryConverter converter = new SDOGeometryConverter();
         converter.setExportOrientedPointAsExtra( true );
 
-        GeomHolder sdo = loadFromFile( sampleSdo );
+        SDOGeometry sdo = loadFromFile( sampleSdo );
 
         @SuppressWarnings("resource")
         String geomString = new Scanner( sampleGml ).useDelimiter( "\\Z" ).next().replace( "\r", "" ).trim();

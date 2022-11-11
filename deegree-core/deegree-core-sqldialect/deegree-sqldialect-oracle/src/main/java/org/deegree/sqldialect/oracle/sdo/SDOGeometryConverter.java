@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2011 by:
@@ -51,9 +50,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.namespace.QName;
-
+import oracle.jdbc.OracleConnection;
+import oracle.sql.ARRAY;
+import oracle.sql.Datum;
+import oracle.sql.STRUCT;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.gml.property.Property;
 import org.deegree.commons.tom.gml.property.PropertyType;
@@ -91,18 +92,11 @@ import org.deegree.geometry.standard.points.PointsArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import oracle.jdbc.OracleConnection;
-import oracle.sql.ARRAY;
-import oracle.sql.Datum;
-import oracle.sql.STRUCT;
-
 /**
  * Convert between Oracle JDBC STRUCT and deegree Geometry
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * 
- * @version $Revision$, $Date$
  */
 public class SDOGeometryConverter {
     static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
@@ -111,21 +105,20 @@ public class SDOGeometryConverter {
 
     private final SDOInspector inspector;
 
+    private boolean exportOrientedPointAsExtra;
+
+    private GeometryFactory _gf = new GeometryFactory();
+
     public SDOGeometryConverter() {
         this.inspector = null;
+        this.exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
     }
 
     public SDOGeometryConverter(SDOInspector inspector)
     {
         this.inspector = inspector;
+        this.exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
     }
-    private boolean exportOrientedPointAsExtra;
-
-    public SDOGeometryConverter() {
-        exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
-    }
-    
-    private GeometryFactory _gf = new GeometryFactory();
 
     enum GeomHolderTyp {
         GEOMETRY, POINT, CURVE, POLYGON
