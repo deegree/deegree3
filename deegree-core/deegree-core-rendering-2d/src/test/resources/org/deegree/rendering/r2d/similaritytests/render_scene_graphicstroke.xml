@@ -737,7 +737,7 @@
 			</Stroke>
 		</LineSymbolizer>
 	</Rule>
-	<!-- Mar without Fill -->
+	<!-- Mark without Fill -->
 	<Rule>
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
@@ -796,6 +796,175 @@
 			</Stroke>
 		</LineSymbolizer>
 	</Rule>
+	<!-- SVG as Mark  offset +25 position-percentage 0,50,100 rotation default (-90,0,+90) -->
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>2</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<LineSymbolizer>
+			<Stroke>
+				<SvgParameter name="stroke">#eb34b4</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>25</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg"/>
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill-opacity">0.0</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke">#eb34b4</SvgParameter>
+								<SvgParameter name="stroke-width">2</SvgParameter>
+								<SvgParameter name="stroke-linecap">butt</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+						<Rotation>-90</Rotation>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>25</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg"/>
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill-opacity">0.0</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke">#eb34b4</SvgParameter>
+								<SvgParameter name="stroke-width">2</SvgParameter>
+								<SvgParameter name="stroke-linecap">butt</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>25</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg"/>
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill-opacity">0.0</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke">#eb34b4</SvgParameter>
+								<SvgParameter name="stroke-width">2</SvgParameter>
+								<SvgParameter name="stroke-linecap">butt</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+						<Rotation>90</Rotation>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">100</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>25</PerpendicularOffset>
+		</LineSymbolizer>
+	</Rule>
+	<!-- SVG as Mark  offset -25 position-percentage 0,50,100 rotation 0 -->
+		<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>2</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<LineSymbolizer>
+			<Stroke>
+				<SvgParameter name="stroke">#eb34b4</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-25</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg"/>
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill">#eb34b4</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke-opacity">0.0</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">0</SvgParameter>
+				<SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-25</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg"/>
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill">#eb34b4</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke-opacity">0.0</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+				<SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-25</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg"/>
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill">#eb34b4</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke-opacity">0.0</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">100</SvgParameter>
+				<SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-25</PerpendicularOffset>
+		</LineSymbolizer>
+	</Rule>
 	<!-- Mark without Stroke -->
 	<Rule>
 		<ogc:Filter>
@@ -851,6 +1020,133 @@
 				</GraphicStroke>
 				<SvgParameter name="deegree-graphicstroke-position-percentage">100</SvgParameter>
 			</Stroke>
+		</LineSymbolizer>
+	</Rule>
+	<!-- Image offset +30 position-percentage 0,50,100 rotation default, facing forward/regular/backwards -->
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>3</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<LineSymbolizer>
+			<Stroke>
+				<SvgParameter name="stroke">#eb34b4</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>30</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png"/>
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+						<Rotation>-90</Rotation>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>30</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png"/>
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>30</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png"/>
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+						<Rotation>90</Rotation>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">100</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>30</PerpendicularOffset>
+		</LineSymbolizer>
+	</Rule>
+	<!-- Image offset -30 position-percentage 0,50,100 rotation 0 -->
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>3</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<LineSymbolizer>
+			<Stroke>
+				<SvgParameter name="stroke">#eb34b4</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-30</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png"/>
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">0</SvgParameter>
+				<SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-30</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png"/>
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+				<SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-30</PerpendicularOffset>
+		</LineSymbolizer>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png"/>
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+				<SvgParameter name="deegree-graphicstroke-position-percentage">100</SvgParameter>
+				<SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+			</Stroke>
+			<PerpendicularOffset>-30</PerpendicularOffset>
 		</LineSymbolizer>
 	</Rule>
 </FeatureTypeStyle>
