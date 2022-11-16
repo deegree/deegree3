@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se"
+	xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:app="http://deegree.org/app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/se https://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.opengis.net/ogc https://schemas.opengis.net/filter/1.1.0/filter.xsd">
+
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>1</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PolygonSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel"
+			xmlns="http://www.opengis.net/se">
+			<Fill>
+				<GraphicFill>
+					<Graphic>
+						<Mark>
+							<WellKnownName>circle</WellKnownName>
+							<Fill>
+								<SvgParameter name="fill">#4382f0</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke">#000000</SvgParameter>
+								<SvgParameter name="stroke-width">1</SvgParameter>
+								<SvgParameter name="stroke-linecap">butt</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicFill>
+			</Fill>
+			<Stroke>
+				<SvgParameter name="stroke">#0000FF</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+				<SvgParameter name="stroke-linecap">butt</SvgParameter>
+			</Stroke>
+		</PolygonSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>2</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PolygonSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel"
+			xmlns="http://www.opengis.net/se">
+			<Fill>
+				<GraphicFill>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./sample_wo_border.svg" />
+							<Format>image/svg</Format>
+						</ExternalGraphic>
+						<Size>50</Size>
+					</Graphic>
+				</GraphicFill>
+			</Fill>
+			<Stroke>
+				<SvgParameter name="stroke">#0000FF</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+				<SvgParameter name="stroke-linecap">butt</SvgParameter>
+			</Stroke>
+		</PolygonSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>3</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PolygonSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel"
+			xmlns="http://www.opengis.net/se">
+			<Fill>
+				<GraphicFill>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./sample_w_border.svg" />
+							<Format>image/svg</Format>
+						</ExternalGraphic>
+						<Size>50</Size>
+					</Graphic>
+				</GraphicFill>
+			</Fill>
+			<Stroke>
+				<SvgParameter name="stroke">#0000FF</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+				<SvgParameter name="stroke-linecap">butt</SvgParameter>
+			</Stroke>
+		</PolygonSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>4</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PolygonSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel"
+			xmlns="http://www.opengis.net/se">
+			<Fill>
+				<GraphicFill>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./elipse.svg" />
+							<Format>image/svg</Format>
+						</ExternalGraphic>
+						<Size>50</Size>
+					</Graphic>
+				</GraphicFill>
+			</Fill>
+			<Stroke>
+				<SvgParameter name="stroke">#0000FF</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+				<SvgParameter name="stroke-linecap">butt</SvgParameter>
+			</Stroke>
+		</PolygonSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>5</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<PolygonSymbolizer
+			uom="http://www.opengeospatial.org/se/units/pixel"
+			xmlns="http://www.opengis.net/se">
+			<Fill>
+				<GraphicFill>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png" />
+							<Format>image/png</Format>
+						</ExternalGraphic>
+						<Size>50</Size>
+					</Graphic>
+				</GraphicFill>
+			</Fill>
+			<Stroke>
+				<SvgParameter name="stroke">#0000FF</SvgParameter>
+				<SvgParameter name="stroke-width">1</SvgParameter>
+				<SvgParameter name="stroke-linecap">butt</SvgParameter>
+			</Stroke>
+		</PolygonSymbolizer>
+	</Rule>
+</FeatureTypeStyle>
