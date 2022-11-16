@@ -47,6 +47,7 @@ import static java.awt.BasicStroke.CAP_SQUARE;
 import static java.awt.BasicStroke.JOIN_BEVEL;
 import static java.awt.BasicStroke.JOIN_MITER;
 import static java.awt.BasicStroke.JOIN_ROUND;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromSvg;
@@ -56,8 +57,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-
-import org.deegree.commons.utils.TunableParameter;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.ShapeStroke;
 import org.deegree.style.styling.components.PerpendicularOffsetType;
@@ -78,16 +79,21 @@ class Java2DStrokeRenderer {
 
     private static final Logger LOG = getLogger( Java2DStrokeRenderer.class );
 
+    private static final boolean SVG_AS_MARK = get( "deegree.rendering.graphicstroke.svg-as-mark", false );
+
     private Graphics2D graphics;
 
     private UomCalculator uomCalculator;
 
     private Java2DFillRenderer fillRenderer;
 
-    Java2DStrokeRenderer( Graphics2D graphics, UomCalculator uomCalculator, Java2DFillRenderer fillRenderer ) {
+    private RendererContext rendererContext;
+
+    Java2DStrokeRenderer( Graphics2D graphics, UomCalculator uomCalculator, Java2DFillRenderer fillRenderer, RendererContext rendererContext ) {
         this.graphics = graphics;
         this.uomCalculator = uomCalculator;
         this.fillRenderer = fillRenderer;
+        this.rendererContext = rendererContext;
     }
 
     void applyStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset, PerpendicularOffsetType type ) {
@@ -120,32 +126,51 @@ class Java2DStrokeRenderer {
             transed = new OffsetStroke( poff, null, type ).createStrokedShape( transed );
         }
 
-        if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
+        Rectangle2D.Double rect = fillRenderer.getGraphicBounds( stroke.stroke, 0,0, uom );
+        BufferedImage img = null;
+        Shape[] shapes;
+        if ( stroke.stroke.image != null ) {
+            shapes = new Shape[0];
+            img = stroke.stroke.image;
+        } else if ( stroke.stroke.imageURL != null && SVG_AS_MARK ) {
+            // Render SVG like mark
             Shape shape = getShapeFromSvg( stroke.stroke.imageURL, uomCalculator.considerUOM( stroke.stroke.size, uom ),
                                            stroke.stroke.rotation );
+            shapes = new Shape[]{ shape };
+        } else if ( stroke.stroke.imageURL != null ) {
+            // render SVG like image
+            img = rendererContext.svgRenderer.prepareSvg( rect, stroke.stroke );
+            if ( img == null ) {
+                // fallback to regular rendering if no image can be produced
+                return false;
+            }
+            shapes = new Shape[0];
+        } else if ( stroke.stroke.mark != null ) {
+            Shape shape = getShapeFromMark( stroke.stroke.mark, strokeSizeUOM, stroke.stroke.rotation );
+            shapes = new Shape[]{ shape };
+        } else {
+            LOG.warn("Only images, SVGs and Mark are currently supported as GraphicStroke.");
+            return true;
+        }
 
-            graphics.setStroke( new ShapeStroke( shape,
-                                                 uomCalculator.considerUOM( stroke.strokeGap, uom ) + strokeSizeUOM,
-                                                 stroke.positionPercentage,
-                                                 uomCalculator.considerUOM( stroke.strokeInitialGap, uom ),
-                                                 stroke.stroke.anchorPointX, stroke.stroke.anchorPointY,
-                                                 uomCalculator.considerUOM( stroke.stroke.displacementX, uom ),
-                                                 uomCalculator.considerUOM( stroke.stroke.displacementY, uom ),
-                                                 stroke.positionRotation ) );
+        ShapeStroke s = new ShapeStroke( shapes,
+                                        uomCalculator.considerUOM( stroke.strokeGap, uom ) + strokeSizeUOM,
+                                        stroke.positionPercentage,
+                                        uomCalculator.considerUOM( stroke.strokeInitialGap, uom ),
+                                        stroke.stroke.anchorPointX, stroke.stroke.anchorPointY,
+                                        uomCalculator.considerUOM( stroke.stroke.displacementX, uom ),
+                                        uomCalculator.considerUOM( stroke.stroke.displacementY, uom ),
+                                        stroke.positionRotation );
 
+
+        if ( img != null ) {
+            s.renderStroke( transed, graphics, img, stroke.stroke, rect );
+            return true;
+        } else if ( stroke.stroke.image == null && stroke.stroke.imageURL != null ) {
+            graphics.setStroke( s );
             graphics.draw( transed );
             return true;
         } else if ( stroke.stroke.mark != null ) {
-            Shape shape = getShapeFromMark( stroke.stroke.mark, strokeSizeUOM, stroke.stroke.rotation );
-
-            ShapeStroke s = new ShapeStroke( shape, uomCalculator.considerUOM( stroke.strokeGap, uom ) + strokeSizeUOM,
-                                             stroke.positionPercentage,
-                                             uomCalculator.considerUOM( stroke.strokeInitialGap, uom ),
-                                             stroke.stroke.anchorPointX, stroke.stroke.anchorPointY,
-                                             uomCalculator.considerUOM( stroke.stroke.displacementX, uom ),
-                                             uomCalculator.considerUOM( stroke.stroke.displacementY, uom ),
-                                             stroke.positionRotation );
-
             transed = s.createStrokedShape( transed );
             if ( stroke.stroke.mark.fill != null && !stroke.stroke.mark.fill.isInvisible() ) {
                 fillRenderer.applyFill( stroke.stroke.mark.fill, uom );
@@ -156,8 +181,6 @@ class Java2DStrokeRenderer {
                 graphics.draw( transed );
             }
             return true;
-        } else {
-            LOG.warn( "Rendering of raster images along lines is not supported yet." );
         }
         return false;
     }
@@ -165,7 +188,7 @@ class Java2DStrokeRenderer {
     private void applyNormalStroke( Stroke stroke, UOM uom, Shape object, double perpendicularOffset,
                                     PerpendicularOffsetType type ) {
         int linecap = getLinecap( stroke );
-        float miterLimit = TunableParameter.get( "deegree.rendering.stroke.miterlimit", 10f );
+        float miterLimit = get( "deegree.rendering.stroke.miterlimit", 10f );
         int linejoin = getLinejoin( stroke );
         float dashoffset = (float) uomCalculator.considerUOM( stroke.dashoffset, uom );
         float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
