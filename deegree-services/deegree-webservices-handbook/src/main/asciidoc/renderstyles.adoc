@@ -739,6 +739,109 @@ support ogc:Expressions as child elements. Example:
 </ExternalGraphic> 
 ----
 
+===== GraphicStroke extensions
+
+By default, a _GraphicStroke_ is drawn repeatedly, but it can also be
+only drawn once if the parameter `deegree-graphicstroke-position-percentage`
+is defined as a percentage of the line length.
+The parameter `deegree-graphicstroke-rotation` controls whether the
+_Graphic_ is rotated to follow the angle of the current line segment
+or not, values larger than zero enables this. If not specified the
+_Graphic_ will follow the angle of the line.
+
+*Rendering of Mark along a geometry*
+
+When deegree renders strokes with _Mark_ it will use the _Fill_ and
+_Stroke_ which are defined as sub elements of _Mark_ instead of the
+parameter for `color`, `line-width` and `opacity` of _Stroke_.
+For _Mark_ whose _Fill_ or _Stroke_ should be omitted, this can be
+realized by setting `...-opacity` to zero. Example:
+
+[source,xml]
+----
+<Stroke>
+  <GraphicStroke>
+    <Graphic>
+      <Mark>
+        <WellKnownName>triangle</WellKnownName>
+        <Fill>
+          <SvgParameter name="fill-opacity">0</SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke-opacity">0</SvgParameter>
+        </Stroke>
+      </Mark>
+      <Size>20</Size>
+    </Graphic>
+  </GraphicStroke>
+  <SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+  <SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+</Stroke>
+----
+
+NOTE: A typical usage is to draw an arrowhead on a line. This can be
+achieved by using a filled `triangle` _Mark_ which is rotated 90 degrees
+to the left (`-90`) with an anchor point of `0.75` / `0.5` and
+`deegree-graphicstroke-position-percentage` of `0` for the beginning
+of a line. To draw it at the end of a line, the _Mark_ has to be rotated
+90 degrees to the right (`90`) with an anchor point of `0.25` / `0.5`
+and `deegree-graphicstroke-position-percentage` of `100`.
+
+*Rendering of images or SVGs along a geometry*
+
+Both images and SVG can be drawn along a geometry, but it should be
+noted that these are best suited for signatures that are drawn only
+once or with some gap.
+Example of a single SVG at the middle of the line:
+
+[source,xml]
+----
+<Stroke>
+  <GraphicStroke>
+    <Graphic>
+      <ExternalGraphic>
+        <OnlineResource xlink:href="./sample.svg" />
+        <Format>svg</Format>
+      </ExternalGraphic>
+      <Size>20</Size>
+    </Graphic>
+  </GraphicStroke>
+  <SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+</Stroke>
+----
+
+*Rendering of SVGs as Mark*
+
+To draw only the outline or fill of an SVG with a single color, an SVG
+can be used as a `Mark`. Example:
+
+[source,xml]
+----
+<Stroke>
+  <GraphicStroke>
+    <Graphic>
+      <Mark>
+        <OnlineResource xlink:href="./sample.svg" />
+        <Format>svg</Format>
+        <Fill>
+          <SvgParameter name="fill">#FF0000</SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke-opacity">0.0</SvgParameter>
+        </Stroke>
+      </Mark>
+      <Size>20</Size>
+    </Graphic>
+  </GraphicStroke>
+</Stroke>
+----
+
+NOTE: Previous versions would have rendered SVG defined  in an
+`Graphic`/`ExternalGraphic`/`OnlineResource` like the `Mark` example above.
+These have either their configuration converted to
+`Graphic`/`Mark`/`OnlineResource` or the option to not render SVGs like
+images has to be set for the instance, see <<anchor-appendix>> for details.
+
 ==== SE & FE Functions
 
 There are a couple of deegree specific functions which can be expressed

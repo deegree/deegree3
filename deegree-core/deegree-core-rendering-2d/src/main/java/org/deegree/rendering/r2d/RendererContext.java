@@ -86,7 +86,7 @@ public class RendererContext {
         }
         uomCalculator = new UomCalculator( pixelSize, res );
         fillRenderer = new Java2DFillRenderer( uomCalculator, graphics );
-        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer );
+        strokeRenderer = new Java2DStrokeRenderer( graphics, uomCalculator, fillRenderer, this );
         svgRenderer = new SvgRenderer();
         polygonRenderer = new PolygonRenderer( geomHelper, fillRenderer, strokeRenderer, graphics, renderer );
         curveRenderer = new CurveRenderer( renderer );

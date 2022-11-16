@@ -63,8 +63,6 @@
 			</Stroke>
 		</LineSymbolizer>
 	</Rule>
-	<!-- DISABLED SCALING ISSUE -->
-	<!--
 	<Rule>
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
@@ -88,14 +86,61 @@
 			</Stroke>
 		</LineSymbolizer>
 	</Rule>
-	-->
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>4</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<Mark>
+							<OnlineResource xlink:href="./sample_wo_border.svg" />
+							<Format>svg</Format>
+							<Fill>
+								<SvgParameter name="fill">#FF0000</SvgParameter>
+							</Fill>
+							<Stroke>
+								<SvgParameter name="stroke-opacity">0.0</SvgParameter>
+							</Stroke>
+						</Mark>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+			</Stroke>
+		</LineSymbolizer>
+	</Rule>
+	<Rule>
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:PropertyName>app:id</ogc:PropertyName>
+				<ogc:Literal>5</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+		<LineSymbolizer>
+			<Stroke>
+				<GraphicStroke>
+					<Graphic>
+						<ExternalGraphic>
+							<OnlineResource xlink:href="./randombg.png" />
+							<Format>png</Format>
+						</ExternalGraphic>
+						<Size>20</Size>
+					</Graphic>
+				</GraphicStroke>
+			</Stroke>
+		</LineSymbolizer>
+	</Rule>
 	<!-- DISABLED FONT INDEX ISSUE -->
 	<!--
 	<Rule>
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
 				<ogc:PropertyName>app:id</ogc:PropertyName>
-				<ogc:Literal>4</ogc:Literal>
+				<ogc:Literal>6</ogc:Literal>
 			</ogc:PropertyIsEqualTo>
 		</ogc:Filter>
 		<LineSymbolizer>

@@ -48,4 +48,6 @@ f
 |deegree.cache.svgrenderer |java.lang.Integer |256 |Maximum number of rendered SVG images to be cached for speed
 
 |deegree.rendering.svg-to-shape.previous |java.lang.Boolean |false |Enables the behavior of previously used versions when scaling SVG graphics for the rendering of strokes
+
+|deegree.rendering.graphicstroke.svg-as-mark |java.lang.Boolean |false |Enables the previous behavior of rendering SVG graphics in `GraphicStroke`/`OnlineResource` like a Mark with the color of the `Stroke` instead of a rendered graphic.
 |===
