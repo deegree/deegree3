@@ -45,4 +45,7 @@ f
 
 |deegree.sqldialect.oracle.optimized_point_storage |java.lang.Boolean |true |Use optimized point storage for 2D points in oracle database.
 
+|deegree.cache.svgrenderer |java.lang.Integer |256 |Maximum number of rendered SVG images to be cached for speed
+
+|deegree.rendering.svg-to-shape.previous |java.lang.Boolean |false |Enables the behavior of previously used versions when scaling SVG graphics for the rendering of strokes
 |===

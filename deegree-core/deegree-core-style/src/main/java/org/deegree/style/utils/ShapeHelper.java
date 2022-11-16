@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@deegree.wald.intevation.de/deegree/deegree3/trunk/deegree-core/deegree-core-rendering-2d/src/main/java/org/deegree/rendering/r2d/RenderHelper.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -40,6 +39,7 @@ import static java.awt.geom.AffineTransform.getScaleInstance;
 import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.toRadians;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
@@ -55,16 +55,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
-
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GVTTreeWalker;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
+import org.apache.xerces.parsers.SAXParser;
 import org.deegree.style.styling.components.Mark;
 import org.slf4j.Logger;
 import org.w3c.dom.svg.SVGDocument;
@@ -78,6 +78,8 @@ import org.w3c.dom.svg.SVGDocument;
  * @version $Revision: 29875 $, $Date: 2011-03-04 14:27:10 +0100 (Fri, 04 Mar 2011) $
  */
 public class ShapeHelper {
+
+    protected static boolean SVG_TO_SHAPE_FALLBACK = get( "deegree.rendering.svg-to-shape.previous", false );
 
     private static final Logger LOG = getLogger( ShapeHelper.class );
 
@@ -263,7 +265,7 @@ public class ShapeHelper {
      */
     public static Shape getShapeFromSvg( InputStream in, String url ) {
         try {
-            SAXSVGDocumentFactory fac = new SAXSVGDocumentFactory( "org.apache.xerces.parsers.SAXParser" );
+            SAXSVGDocumentFactory fac = new SAXSVGDocumentFactory( SAXParser.class.getName() );
             SVGDocument doc = fac.createSVGDocument( url, in );
             GVTBuilder builder = new GVTBuilder();
             UserAgent userAgent = new UserAgentAdapter();
@@ -278,22 +280,30 @@ public class ShapeHelper {
             t.scale( 1 / max, 1 / max );
             t.translate( -rect.getX(), -rect.getY() );
 
-            root.setTransform( t );
+            if ( SVG_TO_SHAPE_FALLBACK ) {
+                // TRICKY setting transform on elements interferes with the svg coordinate system / viewbox
+                // use only as fallback if all styles are already adapted to previous scaling
+                // NOTE if the walk-through is needed or dead code is unclear
 
-            GVTTreeWalker walker = new GVTTreeWalker( root );
-            GraphicsNode node = root;
-            // should not include root's shape in the path as it doesn't always work properly
-            GeneralPath shape = new GeneralPath();
-            while ( ( node = walker.nextGraphicsNode() ) != null ) {
-                AffineTransform t2 = (AffineTransform) t.clone();
-                if ( node.getTransform() != null ) {
-                    t2.concatenate( node.getTransform() );
+                root.setTransform( t );
+                GVTTreeWalker walker = new GVTTreeWalker( root );
+                GraphicsNode node = root;
+                // should not include root's shape in the path as it doesn't always work properly
+                GeneralPath shape = new GeneralPath();
+                while ( ( node = walker.nextGraphicsNode() ) != null ) {
+                    AffineTransform t2 = (AffineTransform) t.clone();
+                    if ( node.getTransform() != null ) {
+                        t2.concatenate( node.getTransform() );
+                    }
+                    node.setTransform( t2 );
+                    shape.append( node.getOutline(), false );
                 }
-                node.setTransform( t2 );
-                shape.append( node.getOutline(), false );
-            }
 
-            return root.getOutline();
+                return root.getOutline();
+            } else {
+                Shape sizeOneShape = t.createTransformedShape( root.getOutline() );
+                return sizeOneShape;
+            }
         } catch ( IOException e ) {
             LOG.warn( "The svg image at '{}' could not be read: {}", url, e.getLocalizedMessage() );
             LOG.debug( "Stack trace", e );
