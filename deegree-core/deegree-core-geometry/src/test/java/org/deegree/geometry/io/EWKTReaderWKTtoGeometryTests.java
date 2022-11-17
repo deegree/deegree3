@@ -22,21 +22,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiCurve;
+import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Curve.CurveType;
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.segments.ArcString;
 import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
 
@@ -159,5 +166,53 @@ public class EWKTReaderWKTtoGeometryTests {
         assertEquals( null, ms.get( 0 ) );
         assertEquals( SurfaceType.Polygon, ms.get( 1 ).getSurfaceType() );
         assertEquals( SurfaceType.Polygon, ms.get( 2 ).getSurfaceType() );
+    }
+
+    @Test
+    public void testEmptyPoint() throws Exception {
+        // TRICKY deegree does not have Geometry.isEmpty() so, read should return null
+        String wkt = "POINT EMPTY";
+        Geometry geom = read( wkt );
+        assertNull( geom );
+        wkt = "MULTIPOINT EMPTY";
+        geom = read(wkt);
+        assertNotNull(geom);
+        assertThat( ( ( MultiGeometry) geom ).size(), is( 0 ) );
+        wkt = "MULTIPOINT (EMPTY)";
+        geom = read(wkt);
+        assertNotNull(geom);
+        assertThat( ( ( MultiGeometry) geom ).size(), is( 1 ) );
+    }
+
+    @Test
+    public void testEmptyLineString() throws Exception {
+
+        String wkt = "LINESTRING EMPTY";
+        Geometry geom = read( wkt );
+        assertNull(geom);
+        wkt = "MULTILINESTRING EMPTY";
+        geom = read(wkt);
+        assertNotNull(geom);
+        assertThat( ( ( MultiGeometry) geom ).size(), is( 0 ) );
+        wkt = "MULTILINESTRING (EMPTY)";
+        geom = read(wkt);
+        assertNotNull(geom);
+        assertThat( ( ( MultiGeometry) geom ).size(), is( 1 ) );
+    }
+
+    @Test
+    public void testEmptyPolygon() throws Exception {
+        // TRICKY deegree does not have Geometry.isEmpty() so, read should return null
+        String wkt = "POLYGON EMPTY";
+        Geometry geom = read(wkt);
+        assertNull(geom);
+        wkt = "MULTIPOLYGON EMPTY";
+        geom = read(wkt);
+        assertNotNull(geom);
+        assertThat( ( ( MultiGeometry) geom ).size(), is( 0 ) );
+        wkt = "MULTIPOLYGON (EMPTY)";
+        geom = read(wkt);
+        assertNotNull(geom);
+        assertThat( ( ( MultiGeometry) geom ).size(), is( 1 ) );
     }
 }

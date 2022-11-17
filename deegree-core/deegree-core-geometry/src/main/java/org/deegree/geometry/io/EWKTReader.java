@@ -31,6 +31,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.io;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import java.io.IOException;
@@ -107,13 +108,9 @@ public class EWKTReader {
      * @throws ParseException
      *             if a parsing problem occurs
      */
-    public Geometry read( String wellKnownText )
-                            throws ParseException {
-        StringReader reader = new StringReader( wellKnownText );
-        try {
+    public Geometry read(String wellKnownText) throws ParseException {
+        try (StringReader reader = new StringReader(wellKnownText)) {
             return read( reader );
-        } finally {
-            reader.close();
         }
     }
 
@@ -199,6 +196,11 @@ public class EWKTReader {
     private Point getPreciseCoordinate()
                             throws IOException,
                             ParseException {
+        if (isEmptyNext()) {
+            // eat the EMPTY
+            tokenizer.nextToken();
+            return null;
+        }
         double x, y, z;
         x = getNextNumber();
         y = getNextNumber();
@@ -208,6 +210,16 @@ public class EWKTReader {
         }
 
         return geometryFactory.createPoint( null, x, y, null );
+    }
+
+    private boolean isEmptyNext() throws IOException {
+        tokenizer.nextToken();
+        boolean ret = false;
+        if (tokenizer.sval.equalsIgnoreCase("EMPTY")) {
+            ret = true;
+        }
+        tokenizer.pushBack();
+        return ret;
     }
 
     private boolean isNumberNext()
@@ -403,7 +415,8 @@ public class EWKTReader {
         if ( type.equalsIgnoreCase( "POINT" ) ) {
             return readPointText();
         } else if ( type.equalsIgnoreCase( "LINESTRING" ) ) {
-            return readLineStringText();
+            LineString line = readLineStringText();
+            return line.getControlPoints().size() == 0 ? null : line ;
         } else if ( type.equalsIgnoreCase( "LINEARRING" ) ) {
             return readLinearRingText();
         } else if ( type.equalsIgnoreCase( "POLYGON" ) ) {
@@ -419,7 +432,8 @@ public class EWKTReader {
         } else if ( type.equalsIgnoreCase( "GEOMETRYCOLLECTION" ) ) {
             return readGeometryCollectionText();
         } else if ( type.equalsIgnoreCase( "CIRCULARSTRING" ) ) {
-            return geometryFactory.createCurve( null, null, readCircularStringText() );
+            ArcString arcString = readCircularStringText();
+            return arcString == null ? null : geometryFactory.createCurve( null, null, arcString );
         } else if ( type.equalsIgnoreCase( "COMPOUNDCURVE" ) ) {
             return readCompoundCurveText();
         } else if ( type.equalsIgnoreCase( "CURVEPOLYGON" ) ) {
@@ -601,7 +615,7 @@ public class EWKTReader {
                             throws IOException,
                             ParseException {
         return geometryFactory.createMultiPoint( null, null, getCoordinatesForMultiPoint() );
-    }
+        }
 
     /**
      * Get a Coordinate array for a MultiPoint. Specifically handle both WKT styles: MULTIPOINT (111 -47, 110 -46.5) and
@@ -618,7 +632,7 @@ public class EWKTReader {
                             ParseException {
         String nextToken = getNextEmptyOrOpener();
         if ( nextToken.equals( EMPTY ) ) {
-            return null;
+            return emptyList();
         }
 
         // Check for inner parens
@@ -709,7 +723,7 @@ public class EWKTReader {
                             ParseException {
         String nextToken = getNextEmptyOrOpener();
         if ( nextToken.equals( EMPTY ) ) {
-            return null;
+            throw null;
         }
         if ( !nextToken.equals( L_PAREN ) ) {
             parseError( "Ring expected" );
@@ -739,7 +753,7 @@ public class EWKTReader {
                             ParseException {
         String nextToken = getNextEmptyOrOpener();
         if ( nextToken.equals( EMPTY ) ) {
-            return null;
+            return geometryFactory.createMultiLineString( null, null, emptyList() );
         }
         ArrayList<LineString> lineStrings = new ArrayList<>();
         LineString lineString = readLineStringText();
@@ -768,7 +782,7 @@ public class EWKTReader {
                             ParseException {
         String nextToken = getNextEmptyOrOpener();
         if ( nextToken.equals( EMPTY ) ) {
-            return null;
+            return geometryFactory.createMultiPolygon( null, null, emptyList() );
         }
         ArrayList<Polygon> polygons = new ArrayList<>();
         Polygon polygon = readPolygonText();
@@ -797,7 +811,7 @@ public class EWKTReader {
                             ParseException {
         String nextToken = getNextEmptyOrOpener();
         if ( nextToken.equals( EMPTY ) ) {
-            return null;
+            return geometryFactory.createMultiSurface( null, null, emptyList() );
         }
         ArrayList<Surface> polygons = new ArrayList<>();
         // must be an opener!
@@ -834,7 +848,7 @@ public class EWKTReader {
                             ParseException {
         String nextToken = getNextEmptyOrOpener();
         if ( nextToken.equals( EMPTY ) ) {
-            return null;
+            return geometryFactory.createMultiGeometry( null, null, emptyList() );
         }
         ArrayList<Geometry> geometries = new ArrayList<>();
         Geometry geometry = readGeometryTaggedText();
