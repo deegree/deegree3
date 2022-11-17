@@ -794,6 +794,38 @@ a| `ttf://../fontawesome-webfont.ttf#0xf13d`
 TIP: The character code for fonts installed at System level can be looked up
 via the system Character Map application.
 
+====== Custom Symbol from Well Known Text wkt://
+
+It is furthermore possible to specify your own symbols as Well Known Text (WKT).
+
+The following geometry types are currently supported:
+
+* LINESTRING
+* LINEARRING
+* POLYGON
+* MULTIPOINT
+* MULTILINESTRING
+* MULTICURVE
+* MULTIPOLYGON
+* GEOMETRYCOLLECTION
+* CIRCULARSTRING
+* COMPOUNDCURVE
+* CURVEPOLYGON
+
+More information about WKT can be found https://en.wikipedia.org/wiki/Well-known_text[here].
+
+.Example of `wkt://` symbols
+[cols="10,30,10,50"]
+|===
+a|image::se_wkn_example/wkt_rhombus.png[]
+a|`wkt://POLYGON( (-1 0,0 -1.5,1 0,0 1.5,-1 0) )`
+a|image::se_wkn_example/wkt_custom_form.png[]
+a|`wkt://COMPOUNDCURVE( (-7.73 -4.59, -7.65 6.02, 0.26 6.07, -1.72 4.89, 0.72 4.54, -1.91 3.51, 0.67 3.05, -1.75 2.14, 0.70 1.68, -1.74 1.28), CIRCULARSTRING (-1.74 1.28, -3.56 2.74, -5.48 1.43) )`
+|===
+
+TIP: If unexpected display problems occur with complex symbols (e.g. arcs) a linearized display can be used instead.
+To switch to the linearized display please change the prefix from `wkt://` to `wktlin://`.
+
 ====== Spacing around the symbol
 
 For each symbol except the symbols `circle`,
