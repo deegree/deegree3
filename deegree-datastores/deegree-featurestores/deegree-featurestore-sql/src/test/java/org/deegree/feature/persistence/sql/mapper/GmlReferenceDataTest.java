@@ -10,7 +10,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -197,6 +197,60 @@ public class GmlReferenceDataTest {
 
         boolean hasMaxOnePosSpec = gmlReferenceData.hasZeroOrOneProperty( AdressFeatureTypeName, posSpec );
         assertThat( hasMaxOnePosSpec, is( true ) );
+    }
+
+    @Test
+    public void test_Inspire_hasProperty()
+                    throws Exception {
+        URL resource = getClass().getResource( "data/Inspire-Adress.xml" );
+        GmlReferenceData gmlReferenceData = new GmlReferenceData( resource );
+
+        QName AdressFeatureTypeName = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad" );
+        QName inspireId = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "inspireId", "ad" );
+
+        List<QName> posSpec = new ArrayList<>();
+        posSpec.add( inspireId );
+        posSpec.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad" ) );
+        posSpec.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "localId", "ad" ) );
+
+        boolean hasProperty = gmlReferenceData.hasProperty( AdressFeatureTypeName,
+                                                            Collections.singletonList( inspireId ) );
+        assertThat( hasProperty, is( true ) );
+
+        boolean hasPropertyPosSpec = gmlReferenceData.hasZeroOrOneProperty( AdressFeatureTypeName, posSpec );
+        assertThat( hasPropertyPosSpec, is( true ) );
+
+        QName unknown = new QName( "http://test.de/schema", "unknown", "te" );
+        boolean hasPropertyUnknown = gmlReferenceData.hasProperty( AdressFeatureTypeName,
+                                                                   Collections.singletonList( unknown ) );
+        assertThat( hasPropertyUnknown, is( false ) );
+    }
+
+    @Test
+    public void test_Inspire_isPropertyNilled()
+                    throws Exception {
+        URL resource = getClass().getResource( "data/Inspire-Adress.xml" );
+        GmlReferenceData gmlReferenceData = new GmlReferenceData( resource );
+
+        QName adressFeatureTypeName = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "Address", "ad" );
+        QName inspireId = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "inspireId", "ad" );
+
+        List<QName> versionId = new ArrayList<>();
+        versionId.add( inspireId );
+        versionId.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "Identifier", "ad" ) );
+        versionId.add( new QName( "http://inspire.ec.europa.eu/schemas/base/3.3", "versionId", "ad" ) );
+
+        boolean propertyIsNilled = gmlReferenceData.isPropertyNilled( adressFeatureTypeName,
+                                                                      Collections.singletonList( inspireId ) );
+        assertThat( propertyIsNilled, is( false ) );
+
+        boolean propertyIsNilledVersionId = gmlReferenceData.isPropertyNilled( adressFeatureTypeName, versionId );
+        assertThat( propertyIsNilledVersionId, is( true ) );
+
+        QName status = new QName( "http://inspire.ec.europa.eu/schemas/ad/4.0", "status", "ad" );
+        boolean propertyIsNilledStatus = gmlReferenceData.isPropertyNilled( adressFeatureTypeName,
+                                                                            Collections.singletonList( status ) );
+        assertThat( propertyIsNilledStatus, is( true ) );
     }
 
 }

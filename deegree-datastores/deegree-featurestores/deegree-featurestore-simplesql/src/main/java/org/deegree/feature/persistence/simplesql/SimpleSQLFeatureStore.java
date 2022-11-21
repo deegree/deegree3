@@ -272,6 +272,11 @@ public class SimpleSQLFeatureStore implements FeatureStore {
         return available;
     }
 
+    @Override
+    public boolean isMaxFeaturesAndStartIndexApplicable( Query[] queries ) {
+        return false;
+    }
+
     public FeatureInputStream query( Query query )
                             throws FeatureStoreException, FilterEvaluationException {
         return query( new Query[] { query } );

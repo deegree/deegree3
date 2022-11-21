@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tilestores</artifactId>
-    <version>3.4.24-SNAPSHOT</version>
+    <version>3.4.32-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -36,16 +36,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
+      <groupId>com.sun.media</groupId>
       <artifactId>jai-codec</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-imageio</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-mlibwrapper</artifactId>
+      <groupId>com.sun.media</groupId>
+      <artifactId>jai_imageio</artifactId>
     </dependency>
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>

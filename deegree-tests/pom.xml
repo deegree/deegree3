@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.24-SNAPSHOT</version>
+    <version>3.4.32-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -136,6 +136,43 @@
     <module>deegree-wms-remoteows-tests</module>
     <module>deegree-wmts-tests</module>
     <module>deegree-resource-deps-tests</module>
+    <module>deegree-integration-tests</module>
   </modules>
+
+  <!-- Workaround for dependency plugin issue (http://jira.codehaus.org/browse/MDEP-259) -->
+  <profiles>
+    <profile>
+      <id>activate-dependency-plugin</id>
+      <activation>
+        <property>
+          <name>!deactivateDependencyPlugin</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>prepare-testservice</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <classifier>webapp-template</classifier>
+                  <type>zip</type>
+                  <includeGroupIds>org.deegree</includeGroupIds>
+                  <includeArtifactIds>deegree-testservice</includeArtifactIds>
+                  <outputDirectory>src/main/webapp</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

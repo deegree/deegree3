@@ -349,7 +349,7 @@ public class SDOGeometryConverter {
             case SDOEType.POLYGON_RING_INTERIOR: // see above NOTE 1
             case SDOEType.POLYGON_RING_EXTERIOR:
             case SDOEType.POLYGON_RING_UNKNOWN:
-                Ring rng = handleSimpleRing( sdo );
+                Ring rng = handleSimpleRing( sdo, etype );
                 switch ( etype ) {
                 case SDOEType.POLYGON_RING_INTERIOR:
                     ringi.add( rng );
@@ -642,7 +642,7 @@ public class SDOGeometryConverter {
      * <li>4) circle; three distinct points on the circle</li>
      * </ol>
      */
-    private Ring handleSimpleRing( GeomHolder sdo )
+    private Ring handleSimpleRing( GeomHolder sdo, int etype )
                             throws SQLException {
         int intpr = sdo.elem_info[sdo.elemoff + 2];
         int off = sdo.elem_info[sdo.elemoff];
@@ -672,13 +672,14 @@ public class SDOGeometryConverter {
             Point b = _gf.createPoint( null, ll.get0(), ur.get1(), sdo.crs );
             Point c = _gf.createPoint( null, ur.get0(), ur.get1(), sdo.crs );
             Point d = _gf.createPoint( null, ur.get0(), ll.get1(), sdo.crs );
-            Points rngp = null;
-            if ( ll.get0() < ur.get0() || ll.get1() < ur.get1() ) {
-                rngp = new PointsArray( a, b, c, d, a );
-            } else {
-                rngp = new PointsArray( a, d, c, b, a );
+            rng = _gf.createLinearRing( null, sdo.crs, new PointsArray( a, b, c, d, a ) );
+            
+            // enforce orientations if type of ring is known
+            if ( etype == SDOEType.POLYGON_RING_INTERIOR ) {
+                rng = forceOrientation( rng, false );
+            } else if ( etype == SDOEType.POLYGON_RING_EXTERIOR ) {
+                rng = forceOrientation( rng, true );
             }
-            rng = _gf.createLinearRing( null, sdo.crs, rngp );
         }
 
         if ( rng == null ) {
@@ -729,9 +730,7 @@ public class SDOGeometryConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback )
-                            throws SQLException {
-
+    protected GeomHolder fromGeometry( int srid, Geometry geometry, boolean allowJTSfallback ) {
         List<Triplet> info = new LinkedList<Triplet>();
         List<Point> pnts = new LinkedList<Point>();
         int gtypett = SDOGTypeTT.UNKNOWN;
@@ -780,7 +779,23 @@ public class SDOGeometryConverter {
             int[] elemInfo = buildResultElemeInfo( dim, info );
 
             int gtyp = ( 1000 * dim ) + gtypett;
-            return OracleObjectTools.toSDOGeometry( gtyp, srid, elemInfo, ordinates, conn );
+            LOG.trace( "fromGeometry: MDSYS.SDO_GEOMETRY( {}, {}, NULL, MDSYS.SDO_ELEM_INFO_ARRAY{}, MDSYS.SDO_ORDINATE_ARRAY{} )",
+                       gtyp, srid, elemInfo, ordinates );
+            
+            return new GeomHolder( gtyp, srid, null, elemInfo, ordinates, null );
+        }
+        
+        // no parse able geometry found
+        return null;
+    }
+
+    
+    public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback )
+                            throws SQLException {
+        
+        GeomHolder holder = fromGeometry( srid, geometry, allowJTSfallback );
+        if ( holder != null ) {
+            return OracleObjectTools.toSDOGeometry( holder, conn );
         } else {
             // create error message
         }
@@ -1040,7 +1055,7 @@ public class SDOGeometryConverter {
                 if ( isSimple ) {
                     buildCurveSegmentSimple( info, pnts, iseg.get( 0 ), false );
                 } else {
-                    info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_POLYGON_RING_INTERIOR, eseg.size() ) );
+                    info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_POLYGON_RING_INTERIOR, iseg.size() ) );
                     for ( int i = 0, j = iseg.size(); i < j; i++ ) {
                         buildCurveSegment( info, pnts, iseg.get( i ), i > 0 );
                     }
@@ -1049,6 +1064,21 @@ public class SDOGeometryConverter {
         }
     }
 
+    /**
+     * Add points to internal point list
+     * 
+     * <p>
+     * <strong>Note:</strong>if the first points equals the lasts point and the geometry should be continued the first
+     * point will be skipped. This is reduces duplicate points for example with AAA / ALKIS geometries.
+     * </p>
+     * 
+     * @param pnts
+     *            current list of points
+     * @param add
+     *            points to add
+     * @param continueGeom
+     *            skipp first point if it equals last point in list
+     */
     private void addPnts( List<Point> pnts, Points add, boolean continueGeom ) {
         int off = 0;
 

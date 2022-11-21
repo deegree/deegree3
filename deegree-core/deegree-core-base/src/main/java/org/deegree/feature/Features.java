@@ -1,10 +1,11 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2022 by:
  Department of Geography, University of Bonn
  and
  lat/lon GmbH
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -30,6 +31,11 @@
  Postfach 1147, 53001 Bonn
  Germany
  http://www.geographie.uni-bonn.de/deegree/
+
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
@@ -64,9 +70,8 @@ import org.slf4j.LoggerFactory;
  * Provides utility methods for common tasks that involve {@link Feature} and {@link FeatureCollection} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * 
- * @version $Revision$, $Date$
  */
 public class Features {
 
@@ -227,7 +232,7 @@ public class Features {
                         else
                             return;
                     } catch ( ReferenceResolvingException e ) {
-                        LOG.warn( "Unable to resolve external reference '" + ref.getURI() + ". Ignoring." );
+                        LOG.warn( "Unable to resolve external reference '{}'. Ignoring.", ref.getURI() );
                         return;
                     }
                 }

@@ -654,18 +654,18 @@ public class CurveLinearizer {
         double angleStep = 2 * Math.acos( 1 - error / radius );
         int numPoints;
         if ( isCircle ) {
-            numPoints = (int) Math.ceil( 2 * Math.PI / angleStep ) + 1;
+            numPoints = (int) Math.ceil( 2 * Math.PI / angleStep ) + 2;
         } else {
             if ( !isClockwise( p0Shifted, p1Shifted, p2Shifted ) ) {
                 if ( endAngle < startAngle ) {
                     endAngle += 2 * Math.PI;
                 }
-                numPoints = (int) Math.ceil( ( endAngle - startAngle ) / angleStep ) + 1;
+                numPoints = (int) Math.ceil( ( endAngle - startAngle ) / angleStep ) + 2;
             } else {
                 if ( startAngle < endAngle ) {
                     startAngle += 2 * Math.PI;
                 }
-                numPoints = (int) Math.ceil( ( startAngle - endAngle ) / angleStep ) + 1;
+                numPoints = (int) Math.ceil( ( startAngle - endAngle ) / angleStep ) + 2;
             }
         }
         return numPoints;

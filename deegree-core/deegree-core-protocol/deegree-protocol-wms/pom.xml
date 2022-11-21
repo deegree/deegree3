@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core-protocol</artifactId>
-    <version>3.4.24-SNAPSHOT</version>
+    <version>3.4.32-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -34,6 +34,11 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-core-layer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-layers-feature</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
