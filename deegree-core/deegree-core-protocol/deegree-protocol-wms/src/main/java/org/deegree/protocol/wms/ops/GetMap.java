@@ -115,6 +115,8 @@ public class GetMap extends RequestBase {
 
     private ICRS crs;
 
+    private ICRS requestCrs;
+
     private Envelope bbox;
 
     private String format;
@@ -126,8 +128,6 @@ public class GetMap extends RequestBase {
     private Color bgcolor = white;
 
     private double scale;
-
-    private double pixelSize = 0.00028;
 
     private double resolution;
 
@@ -181,6 +181,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = boundingBox;
+        this.requestCrs = boundingBox.getCoordinateSystem();
         this.crs = boundingBox.getCoordinateSystem();
         this.bgcolor = white;
         format = "image/png";
@@ -204,6 +205,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
@@ -217,6 +219,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = envelope;
+        this.requestCrs = crs;
         this.crs = crs;
         this.format = format;
         this.transparent = transparent;
@@ -248,6 +251,7 @@ public class GetMap extends RequestBase {
         this.width = width;
         this.height = height;
         this.bbox = boundingBox;
+        this.requestCrs = boundingBox.getCoordinateSystem();
         this.crs = boundingBox.getCoordinateSystem();
         this.bgcolor = white;
         this.format = format;
@@ -270,6 +274,7 @@ public class GetMap extends RequestBase {
         if ( c == null || c.trim().isEmpty() ) {
             throw new OWSException( "The SRS parameter is missing.", OWSException.MISSING_PARAMETER_VALUE );
         }
+        requestCrs = CRSManager.getCRSRef( c );
         crs = getCRS111( c );
 
         String box = map.get( "BBOX" );
@@ -337,53 +342,6 @@ public class GetMap extends RequestBase {
         }
 
         return styles;
-    }
-
-    private void handlePixelSize( Map<String, String> map ) {
-        String psize = map.get( "PIXELSIZE" );
-        if ( psize != null ) {
-            try {
-                pixelSize = Double.parseDouble( psize ) / 1000;
-            } catch ( NumberFormatException e ) {
-                LOG.warn( "The value of PIXELSIZE could not be parsed as a number." );
-                LOG.trace( "Stack trace:", e );
-            }
-        } else {
-            String key = "RES";
-            String pdpi = map.get( key );
-
-            if ( pdpi == null ) {
-                key = "DPI";
-                pdpi = map.get( key );
-            }
-            if ( pdpi == null ) {
-                key = "MAP_RESOLUTION";
-                pdpi = map.get( key );
-            }
-            if ( pdpi == null ) {
-                for ( String word : splitEscaped( map.get( "FORMAT_OPTIONS" ), ';', 0 ) ) {
-                    List<String> keyValue = StringUtils.splitEscaped( word, ':', 2 );
-
-                    if ( "dpi".equalsIgnoreCase( keyValue.get( 0 ) ) ) {
-                        key = "FORMAT_OPTIONS=dpi";
-                        pdpi = keyValue.size() == 1 ? null : StringUtils.unescape( keyValue.get( 1 ) );
-                        break;
-                    }
-                }
-            }
-            if ( pdpi == null ) {
-                key = "X-DPI";
-                pdpi = map.get( key );
-            }
-            if ( pdpi != null ) {
-                try {
-                    pixelSize = 0.0254d / Double.parseDouble( pdpi );
-                } catch ( Exception e ) {
-                    LOG.warn( "The value of {} could not be parsed as a number.", key );
-                    LOG.trace( "Stack trace:", e );
-                }
-            }
-        }
     }
     
     private void handleCommon( Map<String, String> map, MapOptionsMaps exts, boolean parseStrict )
@@ -644,7 +602,7 @@ public class GetMap extends RequestBase {
             throw new OWSException( "The maxy component of the BBOX was smaller that the miny component.",
                                     OWSException.INVALID_PARAMETER_VALUE );
         }
-
+        requestCrs = CRSManager.getCRSRef( c );
         bbox = getCRSAndEnvelope130( c, vals );
         crs = bbox.getCoordinateSystem();
 
@@ -656,6 +614,13 @@ public class GetMap extends RequestBase {
      */
     public ICRS getCoordinateSystem() {
         return crs;
+    }
+
+    /**
+     * @return the requested coordinate system
+     */
+    public ICRS getRequestCoordinateSystem() {
+        return requestCrs;
     }
 
     /**

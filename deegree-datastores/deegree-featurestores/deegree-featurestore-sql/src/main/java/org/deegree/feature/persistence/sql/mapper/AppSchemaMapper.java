@@ -321,7 +321,7 @@ public class AppSchemaMapper {
             cycleAnalyser.stop();
         }
 
-        return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings );
+        return new FeatureTypeMapping( ft.getName(), table, fidMapping, mappings, Collections.emptyList() );
     }
 
     private FIDMapping generateFidMapping( FeatureType ft ) {

@@ -1,0 +1,64 @@
+<!-- auto generated from schema-->
+<wcs:deegreeWCS xmlns:wcs="http://www.deegree.org/services/wcs">
+    <wcs:ServiceConfiguration version="string">
+        <wcs:SupportOptions extend="false">
+            <!--Zero or more repetitions:-->
+            <wcs:OutputFormat>string</wcs:OutputFormat>
+            <!--Zero or more repetitions:-->
+            <wcs:Interpolation>Nearest-Neighbor</wcs:Interpolation>
+            <!--Zero or more repetitions:-->
+            <wcs:SupportedCRS>string</wcs:SupportedCRS>
+        </wcs:SupportOptions>
+        <!--1 or more repetitions:-->
+        <wcs:Coverage nativeFormat="string">
+            <wcs:Name>string</wcs:Name>
+            <wcs:Label>string</wcs:Label>
+            <!--Optional:-->
+            <wcs:Abstract>string</wcs:Abstract>
+            <wcs:CoverageStoreId>string</wcs:CoverageStoreId>
+            <!--Optional:-->
+            <wcs:RangeSet>
+                <wcs:Name>string</wcs:Name>
+                <!--Optional:-->
+                <wcs:Label>string</wcs:Label>
+                <!--1 or more repetitions:-->
+                <wcs:AxisDescription name="string" label="string">
+                    <wcs:AxisValue>
+                        <!--You have a CHOICE of the next 2 items at this level-->
+                        <!--1 or more repetitions:-->
+                        <wcs:SingleValue type="string">string</wcs:SingleValue>
+                        <!--1 or more repetitions:-->
+                        <wcs:Interval wcs:closure="closed">
+                            <wcs:min type="string">string</wcs:min>
+                            <wcs:max type="string">string</wcs:max>
+                            <wcs:type>string</wcs:type>
+                        </wcs:Interval>
+                    </wcs:AxisValue>
+                </wcs:AxisDescription>
+                <!--Optional:-->
+                <wcs:NullValue type="string">string</wcs:NullValue>
+            </wcs:RangeSet>
+            <!--Optional:-->
+            <wcs:SupportOptions extend="false">
+                <!--Zero or more repetitions:-->
+                <wcs:OutputFormat>string</wcs:OutputFormat>
+                <!--Zero or more repetitions:-->
+                <wcs:Interpolation>Bilinear</wcs:Interpolation>
+                <!--Zero or more repetitions:-->
+                <wcs:SupportedCRS>string</wcs:SupportedCRS>
+            </wcs:SupportOptions>
+        </wcs:Coverage>
+    </wcs:ServiceConfiguration>
+    <wcs:PublishedInformation>
+        <wcs:SupportedVersions>
+            <!--1 to 2 repetitions:-->
+            <wcs:Version>string</wcs:Version>
+        </wcs:SupportedVersions>
+        <!--Optional:-->
+        <wcs:AllowedOperations>
+            <wcs:GetCapabilities/>
+            <wcs:DescribeCoverage/>
+            <wcs:GetCoverage/>
+        </wcs:AllowedOperations>
+    </wcs:PublishedInformation>
+</wcs:deegreeWCS>

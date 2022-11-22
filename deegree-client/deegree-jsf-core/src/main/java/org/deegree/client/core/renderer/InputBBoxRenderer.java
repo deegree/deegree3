@@ -51,6 +51,7 @@ import javax.faces.convert.ConverterException;
 import javax.faces.model.SelectItem;
 import javax.faces.render.FacesRenderer;
 
+import com.sun.faces.renderkit.SelectItemsIterator;
 import org.deegree.client.core.component.HtmlInputBBox;
 import org.deegree.client.core.model.BBox;
 import org.slf4j.Logger;
@@ -179,7 +180,7 @@ public class InputBBoxRenderer extends MenuRenderer {
             writer.writeAttribute( "size", bbox.getCrsSize(), "crsSize" );
         }
 
-        Iterator<SelectItem> items = RenderKitUtils.getSelectItems( context, bbox );
+        SelectItemsIterator<SelectItem> items = RenderKitUtils.getSelectItems( context, bbox );
         renderOptions( context, bbox, items );
         writer.endElement( "select" );
         writer.endElement( "td" );

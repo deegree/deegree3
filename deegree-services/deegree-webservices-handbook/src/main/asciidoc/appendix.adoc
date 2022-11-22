@@ -25,7 +25,7 @@ When using JNDI environment, more complex configurations are possible. For examp
              description="deegree Rendering - Miter Limit Factor"/>
 ----
 More details on the datails of configuration can be found inside the documentation of the used Java Servlet containter 
-like https://tomcat.apache.org/tomcat-8.5-doc/config/context.html#Environment_Entries[Apache Tomcat].
+like https://tomcat.apache.org/tomcat-9.0-doc/config/context.html#Environment_Entries[Apache Tomcat].
 
 .List of current available parameters
 
@@ -33,6 +33,16 @@ like https://tomcat.apache.org/tomcat-8.5-doc/config/context.html#Environment_En
 |===
 |Option |Type |Default Value |Description
 
+|deegree.raster.cache.memsize |java.lang.String | |Size of memory that can be used to cache raster data in memory. By default, half of the memory available for the Java Process running deegree is used. 
+
+|deegree.raster.cache.disksize |java.lang.String |20GiB |Defines the maximum amount of disk space that can be used for caching raster data on disk.
+f
+|deegree.raster.cache.iioreader |java.lang.Boolean |true |Enable caching of raster data at the reader level, enabled by default.
+
+|deegree.protocol.wms.client.fallback |java.lang.Boolean |false |Fall back to the previously used `URLConnection` for requests to remote WMS servers, disabled by default.
+
 |deegree.rendering.stroke.miterlimit |java.lang.Float |10 |When the configured factor is exceeded portrayal changes from JOIN_MITER to JOIN_BEVEL (see https://docs.oracle.com/javase/tutorial/2d/geometry/strokeandfill.html).
+
+|deegree.sqldialect.oracle.optimized_point_storage |java.lang.Boolean |true |Use optimized point storage for 2D points in oracle database.
 
 |===

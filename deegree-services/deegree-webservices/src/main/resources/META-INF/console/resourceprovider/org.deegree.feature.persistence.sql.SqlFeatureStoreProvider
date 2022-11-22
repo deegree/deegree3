@@ -1,6 +1,6 @@
 name=SQL
 wizard=/console/featurestore/sql/wizard
 example1_name=minimal
-example1_location=/META-INF/schemas/datasource/feature/sql/3.4.0/example_minimal.xml
+example1_location=/META-INF/schemas/datasource/feature/sql/example_minimal.xml
 example2_name=complex
-example2_location=/META-INF/schemas/datasource/feature/sql/3.4.0/example_complex.xml
+example2_location=/META-INF/schemas/datasource/feature/sql/example_complex.xml

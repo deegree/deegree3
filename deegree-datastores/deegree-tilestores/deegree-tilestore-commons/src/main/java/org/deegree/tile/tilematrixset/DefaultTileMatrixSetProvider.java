@@ -73,7 +73,7 @@ public class DefaultTileMatrixSetProvider extends TileMatrixSetProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/tilematrixset";
 
-    private static final URL SCHEMA_URL = DefaultTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/3.4.0/tilematrixset.xsd" );
+    private static final URL SCHEMA_URL = DefaultTileMatrixSetProvider.class.getResource( "/META-INF/schemas/datasource/tile/tilematrixset/tilematrixset.xsd" );
 
     @Override
     public String getNamespace() {

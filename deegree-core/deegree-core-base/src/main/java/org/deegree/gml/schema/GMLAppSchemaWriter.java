@@ -65,6 +65,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.gml.GMLVersion;
 import org.slf4j.Logger;
@@ -631,6 +632,8 @@ public class GMLAppSchemaWriter {
                 export( writer, (MeasurePropertyType) pt );
             } else if ( pt instanceof CustomPropertyType ) {
                 export( writer, (CustomPropertyType) pt );
+            } else if ( pt instanceof ObjectPropertyType ) {
+                export( writer, (ObjectPropertyType) pt );
             } else {
                 throw new RuntimeException( "Unhandled property type '" + pt.getClass() + "'" );
             }
@@ -835,15 +838,34 @@ public class GMLAppSchemaWriter {
         if ( xsTypeDef == null ) {
             LOG.warn( "Type definition null inside " + pt.getName() + " property type." );
         } else {
-            if ( !xsTypeDef.getAnonymous() ) {
-                QName qName = new QName( xsTypeDef.getNamespace(), xsTypeDef.getName() );
-                writer.writeAttribute( "type", getPrefixedName( qName ) );
-            } else {
-                LOG.debug( "Exporting anonymous type " + xsTypeDef );
-                exportType( writer, xsTypeDef );
-            }
+            export( writer, xsTypeDef );
         }
     }
+
+    private void export( XMLStreamWriter writer, ObjectPropertyType pt )
+                            throws XMLStreamException {
+
+        XSElementDeclaration xsElDecl = pt.getElementDecl();
+        XSTypeDefinition xsTypeDef = xsElDecl != null ? xsElDecl.getTypeDefinition() : null;
+
+        if ( xsTypeDef == null ) {
+            LOG.warn( "Type definition null inside " + pt.getName() + " property type." );
+        } else {
+            export( writer, xsTypeDef );
+        }
+    }
+
+    private void export( XMLStreamWriter writer, XSTypeDefinition xsTypeDef )
+                            throws XMLStreamException {
+        if ( !xsTypeDef.getAnonymous() ) {
+            QName qName = new QName( xsTypeDef.getNamespace(), xsTypeDef.getName() );
+            writer.writeAttribute( "type", getPrefixedName( qName ) );
+        } else {
+            LOG.debug( "Exporting anonymous type " + xsTypeDef );
+            exportType( writer, xsTypeDef );
+        }
+    }
+
 
     private void export( XMLStreamWriter writer, CodePropertyType pt )
                             throws XMLStreamException {

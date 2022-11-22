@@ -58,7 +58,7 @@ import org.deegree.workspace.Workspace;
  */
 public class DefaultCoverageProvider extends CoverageProvider {
 
-    private static final URL CONFIG_SCHEMA = DefaultCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.4.0/raster.xsd" );
+    private static final URL CONFIG_SCHEMA = DefaultCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/raster.xsd" );
 
     @Override
     public String getNamespace() {

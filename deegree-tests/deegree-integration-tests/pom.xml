@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.32-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -44,20 +44,24 @@
         <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
           <webApp>
-            <contextPath>/deegree-acceptance-tests</contextPath>
+            <contextPath>/deegree-integration-tests</contextPath>
           </webApp>
           <systemProperties>
-            <systemProperty>
-              <name>DEEGREE_WORKSPACE_ROOT</name>
-              <value>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</value>
-            </systemProperty>
+            <DEEGREE_WORKSPACE_ROOT>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</DEEGREE_WORKSPACE_ROOT>
           </systemProperties>
         </configuration>
       </plugin>
       <plugin>
         <groupId>com.smartbear.soapui</groupId>
         <artifactId>soapui-maven-plugin</artifactId>
-        <version>5.1.1</version>
+        <version>5.7.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>forms</artifactId>
+            <version>1.2.1</version>
+          </dependency>
+        </dependencies>
         <configuration>
           <projectFile>${project.basedir}/src/test/resources/deegree-acceptance-tests-soapui-project.xml</projectFile>
           <projectProperties>
@@ -74,18 +78,6 @@
             </goals>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.9-RC1</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.17</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -111,4 +103,11 @@
       <url>https://www.soapui.org/repository/maven2/</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+  </dependencies>
 </project>

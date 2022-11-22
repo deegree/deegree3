@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sqlfs="http://www.deegree.org/datasource/feature/sql"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/feature/sql"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.feature.persistence.sql.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="SQLFeatureStore">
+    <annotation>
+      <documentation>FeatureStore that is backed by an SQL database with spatial extension (e.g. PostGIS, Oracle
+        Spatial or MS SQL Server)
+      </documentation>
+      <appinfo>
+        <jaxb:class name="SQLFeatureStoreJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="JDBCConnId">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="fetchSize" type="nonNegativeInteger" default="1000" />
+                <attribute name="readAutoCommit" type="boolean" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="DisablePostFiltering" minOccurs="0">
+          <complexType />
+        </element>
+        <element name="JoinTableDeletePropagation" minOccurs="0">
+          <simpleType>
+            <restriction base="string">
+              <enumeration value="db" />
+              <enumeration value="manual" />
+            </restriction>
+          </simpleType>
+        </element>
+        <element ref="sqlfs:StorageCRS" minOccurs="0" />
+        <element name="GMLSchema" type="string" minOccurs="0" maxOccurs="unbounded" />
+        <element name="NullEscalation" minOccurs="0" type="boolean" default="true" />        
+        <element name="CustomReferenceResolver" minOccurs="0" maxOccurs="unbounded" type="string" />
+        <element name="NamespaceHint" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="prefix" type="string" use="required" />
+            <attribute name="namespaceURI" type="string" use="required" />
+          </complexType>
+        </element>
+        <element name="BLOBMapping" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element name="BlobTable" type="string" minOccurs="0" default="gml_objects" />
+              <element name="FeatureTypeTable" type="string" minOccurs="0" default="feature_types" />
+            </sequence>
+          </complexType>
+        </element>
+        <choice>
+          <element ref="sqlfs:FeatureType" minOccurs="0" maxOccurs="unbounded" />
+          <element ref="sqlfs:FeatureTypeMapping" minOccurs="0" maxOccurs="unbounded" />
+        </choice>
+        <element name="Inspectors" minOccurs="0">
+          <complexType>
+            <choice maxOccurs="unbounded">
+              <element ref="sqlfs:CustomInspector" />
+            </choice>
+          </complexType>
+        </element>
+        <element name="FeatureCache" minOccurs="0">
+          <!-- Placeholder element for feature cache implementations/options (currently, the presence of the element just 
+            turns the cache on). In the future, this may be extended. -->
+          <complexType />
+        </element>
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+  <!-- === Feature id mapping and id generators === -->
+  <element name="FIDMapping">
+    <annotation>
+      <documentation>Defines the mapping of the feature id</documentation>
+      <appinfo>
+        <jaxb:class name="FIDMappingJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Column" maxOccurs="unbounded">
+          <complexType>
+            <annotation>
+              <appinfo>
+                <jaxb:class name="ColumnJAXB" />
+              </appinfo>
+            </annotation>
+            <attribute name="name" type="string" use="required" />
+            <attribute name="type" type="sqlfs:PrimitiveType" />
+          </complexType>
+        </element>
+        <element ref="sqlfs:AbstractIDGenerator" minOccurs="0" />
+      </sequence>
+      <attribute name="prefix" type="string" use="optional" />
+    </complexType>
+  </element>
+  <!-- === Order By === -->
+  <element name="OrderBy" >
+    <annotation>
+      <documentation>Defines the default sort order of features</documentation>
+      <appinfo>
+        <jaxb:class name="OrderByJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="Column" maxOccurs="unbounded">
+          <complexType>
+            <attribute name="name" type="string" use="required" />
+            <attribute name="sortOrder" default="ASC">
+              <simpleType>
+                <restriction base="string">
+                  <enumeration value="ASC" />
+                  <enumeration value="DESC" />
+                </restriction>
+              </simpleType>
+            </attribute>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="AbstractIDGenerator" abstract="true" type="sqlfs:AbstractIDGeneratorType" />
+  <complexType name="AbstractIDGeneratorType" abstract="true">
+    <sequence />
+  </complexType>
+  <element name="AutoIdGenerator" substitutionGroup="sqlfs:AbstractIDGenerator">
+    <complexType>
+      <complexContent>
+        <extension base="sqlfs:AbstractIDGeneratorType" />
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="UUIDGenerator" substitutionGroup="sqlfs:AbstractIDGenerator">
+    <complexType>
+      <complexContent>
+        <extension base="sqlfs:AbstractIDGeneratorType" />
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="SequenceIDGenerator" substitutionGroup="sqlfs:AbstractIDGenerator">
+    <complexType>
+      <complexContent>
+        <extension base="sqlfs:AbstractIDGeneratorType">
+          <attribute name="sequence" type="string" use="required" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="FeatureTypeMapping">
+    <annotation>
+      <documentation>Defines the mapping of a feature type</documentation>
+      <appinfo>
+        <jaxb:class name="FeatureTypeMappingJAXB" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="sqlfs:FIDMapping" minOccurs="0" />
+        <element ref="sqlfs:OrderBy" minOccurs="0" />
+        <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="table" type="string" use="required">
+        <annotation>
+          <documentation>(Root) table that the feature type is mapped to</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="name" type="QName" use="optional">
+        <annotation>
+          <documentation>Qualified name of the feature type (if omitted, it is derived from table name)</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="AbstractParticle" abstract="true" type="sqlfs:AbstractParticleType" />
+  <complexType name="AbstractParticleType">
+    <annotation>
+      <documentation>Defines the mapping for a particle of a feature type.</documentation>
+      <appinfo>
+        <jaxb:class name="AbstractParticleJAXB" />
+      </appinfo>
+    </annotation>
+    <sequence>
+      <element ref="sqlfs:Join" minOccurs="0" />
+      <element ref="sqlfs:CustomConverter" minOccurs="0" />
+    </sequence>
+    <attribute name="path" type="string">
+      <annotation>
+        <documentation>(Relative) XPath targeted by this mapping.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="nullEscalation" type="sqlfs:NullEscalationType">
+      <annotation>
+        <documentation>Defines whether NULL values for this particle lead to voiding of the parent particle.</documentation>
+      </annotation>
+    </attribute>    
+  </complexType>
+  <simpleType name="NullEscalationType">
+    <restriction base="string">
+      <enumeration value="true" />
+      <enumeration value="false" />
+      <enumeration value="auto" />
+  </restriction>
+  </simpleType>  
+  <element name="Primitive" substitutionGroup="sqlfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a primitive-valued particle.</documentation>
+        <appinfo>
+          <jaxb:class name="PrimitiveParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractParticleType">
+          <attribute name="mapping" type="string">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="type" type="sqlfs:PrimitiveType">
+            <annotation>
+              <documentation>Type information (only for table-driven mode)</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Geometry" substitutionGroup="sqlfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a geometry particle.</documentation>
+        <appinfo>
+          <jaxb:class name="GeometryParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractParticleType">
+          <sequence>
+            <element ref="sqlfs:StorageCRS" minOccurs="0" />
+          </sequence>
+          <attribute name="mapping" type="string">
+            <annotation>
+              <documentation>Mapping expression.</documentation>
+            </annotation>
+          </attribute>
+          <attribute name="type" type="sqlfs:GeometryType">
+            <annotation>
+              <documentation>Type information (only for table-driven mode)</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Feature" substitutionGroup="sqlfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a feature-valued particle</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractParticleType">
+          <sequence>
+            <element ref="sqlfs:Href" minOccurs="0" />
+            <element name="FeatureTypeJoin" minOccurs="0">
+              <complexType>
+                <attribute name="fkColumns" type="sqlfs:columnList" use="required">
+                  <annotation>
+                    <documentation>Join columns (current table) for the FIDMapping of target feature type(s)
+                    </documentation>
+                  </annotation>
+                </attribute>
+                <attribute name="ftName" type="QName" use="optional">
+                  <annotation>
+                    <documentation>Name of target feature type (used for narrowing if multiple types are allowed by
+                      schema)
+                    </documentation>
+                  </annotation>
+                </attribute>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Complex" substitutionGroup="sqlfs:AbstractParticle">
+    <complexType>
+      <annotation>
+        <documentation>Defines the mapping for a complex particle</documentation>
+        <appinfo>
+          <jaxb:class name="ComplexParticleJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractParticleType">
+          <sequence>
+            <element ref="sqlfs:AbstractParticle" minOccurs="0" maxOccurs="unbounded" />
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="Href">
+    <complexType>
+      <annotation>
+        <documentation>Defines the storage for URIs that reference internal or external objects (e.g. '#FEATURE_1' or
+          'http://www.deegree.org/features#FEATURE_1')
+        </documentation>
+      </annotation>
+      <attribute name="mapping" type="string" use="required">
+        <annotation>
+          <documentation>Column that stores URIs</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="Join">
+    <complexType>
+      <annotation>
+        <documentation>Defines a change in the table context.</documentation>
+      </annotation>
+      <sequence>
+        <element name="AutoKeyColumn" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Columns in the join table that store autogenerated keys (only required for transactions).
+            </documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element ref="sqlfs:AbstractIDGenerator" />
+            </sequence>
+            <attribute name="name" type="string" use="required">
+              <annotation>
+                <documentation>Name of the column.</documentation>
+              </annotation>
+            </attribute>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="table" type="string" use="required">
+        <annotation>
+          <documentation>Name of the table to change to.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="fromColumns" type="sqlfs:columnList" use="required">
+        <annotation>
+          <documentation>Join columns (current table).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="toColumns" type="sqlfs:columnList" use="required">
+        <annotation>
+          <documentation>Join columns (target table).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="orderColumns" type="sqlfs:columnList" use="optional">
+        <annotation>
+          <documentation>Columns in the target table used for sorting.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="numbered" type="boolean" use="optional">
+        <annotation>
+          <documentation>Set to true, if orderColumns references a single column that contains natural numbers
+            [1,2,3,...].
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="CustomConverter">
+    <complexType>
+      <annotation>
+        <documentation>Plugs-in a specialized DB-to-ObjectModel converter implementation</documentation>
+        <appinfo>
+          <jaxb:class name="CustomConverterJAXB" />
+        </appinfo>
+      </annotation>
+      <sequence>
+        <element name="Param" minOccurs="0" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="name" type="string" use="required" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>Qualified name of the Java class</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!-- === Inspectors for feature instances to be inserted === -->
+  <element name="CustomInspector">
+    <complexType>
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>Qualified name of the Java class</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="StorageCRS">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="srid" type="string" use="required" />
+          <attribute name="dim" use="optional">
+            <annotation>
+              <documentation>Dimensionality of geometry coordinates
+              </documentation>
+            </annotation>
+            <simpleType>
+              <restriction base="NMTOKENS">
+                <enumeration value="2D" />
+                <enumeration value="3D" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+  <simpleType name="PrimitiveType">
+    <restriction base="string">
+      <enumeration value="string">
+        <annotation>
+          <documentation>String-valued property (=xs:string)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="boolean">
+        <annotation>
+          <documentation>Boolean-valued property (=xs:boolean)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="decimal">
+        <annotation>
+          <documentation>Decimal-valued property (=xs:decimal)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="double">
+        <annotation>
+          <documentation>Double-valued property (=xs:double)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="integer">
+        <annotation>
+          <documentation>Integer-valued property (=xs:integer)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="date">
+        <annotation>
+          <documentation>Date-valued property (=xs:date)</documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="dateTime">
+        <annotation>
+          <documentation>Date-valued property (=xs:dateTime)
+          </documentation>
+        </annotation>
+      </enumeration>
+      <enumeration value="time">
+        <annotation>
+          <documentation>Time-valued property (=xs:time)</documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+  <simpleType name="GeometryType">
+    <restriction base="string">
+      <enumeration value="Geometry" />
+      <enumeration value="PrimitiveGeometry" />
+      <enumeration value="CompositeGeometry" />
+      <!-- Primitive types (0D) -->
+      <enumeration value="Point" />
+      <!-- Primitive types (1D) -->
+      <enumeration value="Curve" />
+      <enumeration value="LineString" />
+      <enumeration value="Ring" />
+      <enumeration value="LinearRing" />
+      <enumeration value="OrientableCurve" />
+      <enumeration value="CompositeCurve" />
+      <!-- Primitive types (2D) -->
+      <enumeration value="Surface" />
+      <enumeration value="PolyhedralSurface" />
+      <enumeration value="TriangulatedSurface" />
+      <enumeration value="Tin" />
+      <enumeration value="Polygon" />
+      <enumeration value="OrientableSurface" />
+      <enumeration value="CompositeSurface" />
+      <!-- Primitive types (3D) -->
+      <enumeration value="Solid" />
+      <enumeration value="CompositeSolid" />
+      <!-- Aggregate types -->
+      <enumeration value="MultiGeometry" />
+      <enumeration value="MultiPoint" />
+      <enumeration value="MultiCurve" />
+      <enumeration value="MultiLineString" />
+      <enumeration value="MultiSurface" />
+      <enumeration value="MultiPolygon" />
+      <enumeration value="MultiSolid" />
+    </restriction>
+  </simpleType>
+  <simpleType name="columnList">
+    <list itemType="string" />
+  </simpleType>
+
+  <!-- === Elements for old-style table-driven mode configuration === -->
+  <element name="FeatureType">
+    <complexType>
+      <annotation>
+        <documentation>Declaration of a feature type</documentation>
+        <appinfo>
+          <jaxb:class name="FeatureTypeJAXB" />
+        </appinfo>
+      </annotation>
+      <sequence>
+        <element ref="sqlfs:FIDMapping" minOccurs="0" />
+        <element ref="sqlfs:AbstractProperty" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="QName">
+        <annotation>
+          <documentation>Qualified name of the feature type (if omitted, it is derived from the table name)
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="table" type="string" use="required">
+        <annotation>
+          <documentation>Table that the feature type is mapped to</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <!-- === Abstract property definition === -->
+  <element name="AbstractProperty" type="sqlfs:AbstractPropertyType" abstract="true" />
+  <complexType name="AbstractPropertyType" abstract="true">
+    <annotation>
+      <documentation>Declaration of a property of a feature type.
+      </documentation>
+      <appinfo>
+        <jaxb:class name="AbstractPropertyJAXB" />
+      </appinfo>
+    </annotation>
+    <sequence>
+      <element ref="sqlfs:Join" minOccurs="0" />
+    </sequence>
+    <attribute name="name" type="QName">
+      <annotation>
+        <documentation>Qualified name of the property (if omitted, it is derived from the mapping column)
+        </documentation>
+      </annotation>
+    </attribute>
+    <attribute name="mapping" type="string" use="optional">
+      <annotation>
+        <documentation>Mapping of the property (currently, this can only be the name of a column)
+        </documentation>
+      </annotation>
+    </attribute>
+  </complexType>
+  <!-- === Simple property declaration / mapping === -->
+  <element name="SimpleProperty" substitutionGroup="sqlfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Declaration of a simple property of a feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="SimplePropertyJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractPropertyType">
+          <attribute name="type" type="sqlfs:PrimitiveType">
+            <annotation>
+              <documentation>Primitive type of the property (if omitted, it is automatically determined from column)
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <!-- === Geometry property declaration / mapping === -->
+  <element name="GeometryProperty" substitutionGroup="sqlfs:AbstractProperty">
+    <complexType>
+      <annotation>
+        <documentation>Definition of a geometry-valued property of a feature type</documentation>
+        <appinfo>
+          <jaxb:class name="GeometryPropertyJAXB" />
+        </appinfo>
+      </annotation>
+      <complexContent>
+        <extension base="sqlfs:AbstractPropertyType">
+          <attribute name="type" type="sqlfs:GeometryType">
+            <annotation>
+              <documentation>Geometry type (if omitted, it is automatically determined from table geometry_columns)
+              </documentation>
+            </annotation>
+          </attribute>
+          <attribute name="crs" type="string">
+            <annotation>
+              <documentation>deegree CRS identifier used for the geometry property, e.g. 'EPSG:4326' (if omitted, it is
+                automatically derived from the database srid)
+              </documentation>
+            </annotation>
+          </attribute>
+          <attribute name="srid" type="integer">
+            <annotation>
+              <documentation>Database SRID of the column (if omitted, it is automatically determined from table
+                geometry_columns)
+              </documentation>
+            </annotation>
+          </attribute>
+          <attribute name="dim">
+            <annotation>
+              <documentation>Dimensionality of the geometry coordinates (if omitted, it is automatically determined from
+                table geometry_columns)
+              </documentation>
+            </annotation>
+            <simpleType>
+              <restriction base="NMTOKENS">
+                <enumeration value="2D" />
+                <enumeration value="3D" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+</schema>

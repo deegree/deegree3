@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RenderableSQLStore configVersion="3.4.0" xmlns="http://www.deegree.org/datasource/3d/renderable/sql"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/3d/renderable/sql http://schemas.deegree.org/datasource/3d/renderable/3.4.0/sql.xsd">
-  <JDBCConnId>conn1</JDBCConnId>
-  <EntityTable>table</EntityTable>
-</RenderableSQLStore>

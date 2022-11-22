@@ -54,7 +54,7 @@ import org.deegree.workspace.Workspace;
  */
 public class RemoteWMSProvider extends RemoteOWSProvider {
 
-    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/remoteows/wms/3.4.0/remotewms.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWMSProvider.class.getResource( "/META-INF/schemas/remoteows/wms/remotewms.xsd" );
 
     @Override
     public String getNamespace() {

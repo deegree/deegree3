@@ -58,6 +58,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.AbstractSQLDialect;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
@@ -173,9 +174,9 @@ public class PostGISDialect extends AbstractSQLDialect implements SQLDialect {
 
     @Override
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, boolean allowPartialMappings )
+                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new PostGISWhereBuilder( this, mapper, filter, sortCrit, allowPartialMappings, useLegacyPredicates );
+        return new PostGISWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings, useLegacyPredicates );
     }
 
     @Override

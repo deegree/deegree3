@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.32-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -45,7 +45,6 @@
     <module>deegree-services-wps</module>
     <module>deegree-services-wpvs</module>
     <module>deegree-webservices</module>
-    <module>deegree-webservices-tomcat-bundle</module>
   </modules>
 
 </project>

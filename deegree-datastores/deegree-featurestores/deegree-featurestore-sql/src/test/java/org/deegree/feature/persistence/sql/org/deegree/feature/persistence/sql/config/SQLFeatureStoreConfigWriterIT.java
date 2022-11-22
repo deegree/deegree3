@@ -47,10 +47,8 @@ public class SQLFeatureStoreConfigWriterIT {
         MappedAppSchema mappedSchema = mapApplicationSchema( appSchema );
         String config = writeConfig( mappedSchema, schemaUrls );
 
-        assertThat( config, hasXPath( "/fsc:SQLFeatureStore/@configVersion",
-                                      is( "3.4.0" ) ).withNamespaceContext( nsContext() ) );
         assertThat( config, valid( Input.fromStream( getClass().getResourceAsStream(
-                        "/META-INF/schemas/datasource/feature/sql/3.4.0/sql.xsd" ) ) ) );
+                        "/META-INF/schemas/datasource/feature/sql/sql.xsd" ) ) ) );
     }
 
     private static AppSchema readApplicationSchema( URL schemaUrl )

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree</artifactId>
-    <version>3.4.32-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -23,15 +23,6 @@
       </resource>
     </resources>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- run and perform integration tests but ignore failure
-          <testFailureIgnore>true</testFailureIgnore>
-          -->
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -54,7 +45,6 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.4.43.v20210629</version>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <stopPort>${jetty.stop.port}</stopPort>
@@ -65,14 +55,8 @@
             <idleTimeout>60000</idleTimeout>
           </httpConnector>
           <systemProperties>
-            <systemProperty>
-              <name>jetty.home</name>
-              <value>${project.basedir}/src/main/resources</value>
-            </systemProperty>
-            <systemProperty>
-              <name>javax.xml.transform.TransformerFactory</name>
-              <value>net.sf.saxon.TransformerFactoryImpl</value>
-            </systemProperty>
+            <jetty.home>${project.basedir}/src/main/resources</jetty.home>
+            <javax.xml.transform.TransformerFactory>net.sf.saxon.TransformerFactoryImpl</javax.xml.transform.TransformerFactory>
           </systemProperties>
           <loginServices>
             <loginService implementation="org.eclipse.jetty.security.HashLoginService">
@@ -106,6 +90,14 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- run and perform integration tests but ignore failure -->
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -117,12 +109,20 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
     </dependency>
   </dependencies>
 

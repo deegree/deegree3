@@ -51,7 +51,7 @@ import javax.faces.context.FacesContext;
  * 
  * @version $Revision: $, $Date: $
  */
-public class MessageUtils {
+public final class MessageUtils {
 
     private static final String DEEGREE_RESOURCE_BUNDLE = "org.deegree.client.core.i18n.messages";
 

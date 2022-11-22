@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/themes/remotewms" xmlns:l="http://www.deegree.org/themes/remotewms"
+  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:md="http://www.deegree.org/metadata/description"
+  jaxb:version="2.1">
+
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../commons/spatialmetadata/spatialmetadata.xsd" />
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.theme.persistence.remotewms.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="RemoteWMSThemes">
+    <complexType>
+      <sequence>
+        <element name="RemoteWMSId" type="string" />
+        <element name="LayerStoreId" type="string" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+</schema>

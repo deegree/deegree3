@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/layers/tile" xmlns:t="http://www.deegree.org/layers/tile" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1" xmlns:l="http://www.deegree.org/layers/base">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.layer.persistence.tile.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/layers/base" schemaLocation="../../layers/base/base.xsd" />
+
+  <complexType name="TileLayerType">
+    <sequence>
+      <group ref="l:LayerInfo" />
+      <element name="TileDataSet" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="tileStoreId" type="string" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <element name="TileLayers">
+    <complexType>
+      <sequence>
+        <element name="TileLayer" type="t:TileLayerType" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+</schema>

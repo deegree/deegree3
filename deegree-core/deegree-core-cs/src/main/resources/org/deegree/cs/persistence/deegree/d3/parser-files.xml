@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<crs:CRSConfiguration configVersion="3.4.0" xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.4.0/crsdefinition.xsd">
+<crs:CRSConfiguration xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/crsdefinition.xsd">
   <crs:ProjectionsFile>config/projection-definitions.xml</crs:ProjectionsFile>
   <crs:TransformationsFile>config/transformation-definitions.xml</crs:TransformationsFile>
   <crs:PrimeMeridiansFile>config/pm-definitions.xml</crs:PrimeMeridiansFile>
