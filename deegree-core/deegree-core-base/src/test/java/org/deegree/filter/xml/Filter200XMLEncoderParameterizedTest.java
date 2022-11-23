@@ -93,6 +93,17 @@ public class Filter200XMLEncoderParameterizedTest {
                                         asString( "v200/aixm_custom_geometry_property.xml" ) } );
         filterTests.add( new Object[] { "aixm_timeinstant_begin.xml", asString( "v200/aixm_timeinstant_begin.xml" ) } );
         filterTests.add( new Object[] { "temporal/tequals.xml", asString( "v200/temporal/tequals.xml" ) } );
+        filterTests.add( new Object[] { "bboxWithSpatialJoin.xml", asString( "v200/bboxWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "beyondWithSpatialJoin.xml", asString( "v200/beyondWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "containsWithSpatialJoin.xml", asString( "v200/containsWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "crossesWithSpatialJoin.xml", asString( "v200/crossesWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "disjointWithSpatialJoin.xml", asString( "v200/disjointWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "dwithinWithSpatialJoin.xml", asString( "v200/dwithinWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "equalsWithSpatialJoin.xml", asString( "v200/equalsWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "intersectsWithSpatialJoin.xml", asString( "v200/intersectsWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "overlapsWithSpatialJoin.xml", asString( "v200/overlapsWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "touchesWithSpatialJoin.xml", asString( "v200/touchesWithSpatialJoin.xml" ) } );
+        filterTests.add( new Object[] { "withinWithSpatialJoin.xml", asString( "v200/withinWithSpatialJoin.xml" ) } );
         return filterTests;
     }
 

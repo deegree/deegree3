@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.filter;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.deegree.commons.jdbc.TableName;
 import org.deegree.filter.expression.ValueReference;
 
 /**
@@ -49,6 +53,8 @@ import org.deegree.filter.expression.ValueReference;
  */
 public class TableAliasManager {
 
+    private final Map<TableName, String> aliases = new HashMap<TableName, String>();
+
     private final String rootTableAlias;
 
     private int currentIdx = 1;
@@ -61,12 +67,28 @@ public class TableAliasManager {
     }
 
     /**
+     * Deprecated: Use #getTableAlias(TableName) instead.
+     * 
      * Returns the table alias for the root table.
      * 
      * @return the table alias for the root table, never <code>null</code>
      */
+    @Deprecated
     public String getRootTableAlias() {
         return rootTableAlias;
+    }
+
+    /**
+     * Returns the table alias for the passed {@link TableName}.
+     * 
+     * @param tableName
+     *            to retrieve the alias for, never <code>null</code>
+     * @return the table alias of the passed {@link TableName}, never <code>null</code>
+     */
+    public String getTableAlias( TableName tableName ) {
+        if ( !aliases.containsKey( tableName ) )
+            aliases.put( tableName, generateNew() );
+        return aliases.get( tableName );
     }
 
     /**
