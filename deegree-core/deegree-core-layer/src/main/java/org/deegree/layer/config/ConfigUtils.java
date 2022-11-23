@@ -38,11 +38,13 @@ package org.deegree.layer.config;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.layer.dims.Dimension;
@@ -219,6 +221,7 @@ public final class ConfigUtils {
         int maxFeats = -1;
         int rad = -1;
         boolean opaque = false;
+        Integer decimalPlaces = null;
         try {
             alias = Antialias.valueOf( cfg.getAntiAliasing() );
         } catch ( Throwable e ) {
@@ -240,6 +243,9 @@ public final class ConfigUtils {
         if ( cfg.getFeatureInfo() != null ) {
             if ( cfg.getFeatureInfo().isEnabled() ) {
                 rad = Math.max( 0, cfg.getFeatureInfo().getPixelRadius().intValue() );
+                decimalPlaces = Optional.ofNullable(cfg.getFeatureInfo().getDecimalPlaces())
+                        .map(BigInteger::intValue)
+                        .orElse(null);
             } else {
                 rad = 0;
             }
@@ -254,7 +260,9 @@ public final class ConfigUtils {
                                interpolation( interpol ).
                                antialias( alias ).
                                maxFeatures( maxFeats ).
-                               featureInfoRadius( rad ).build();
+                               featureInfoRadius( rad ).
+                               featureInfoDecimalPlaces( decimalPlaces ).
+                               build();
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {

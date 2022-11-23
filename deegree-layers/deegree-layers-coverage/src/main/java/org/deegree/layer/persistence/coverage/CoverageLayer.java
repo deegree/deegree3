@@ -40,6 +40,7 @@ import static org.deegree.coverage.raster.interpolation.InterpolationType.NEARES
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.coverage.rangeset.RangeSet;
@@ -50,6 +51,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.layer.AbstractLayer;
 import org.deegree.layer.LayerQuery;
 import org.deegree.layer.metadata.LayerMetadata;
+import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.rendering.r2d.context.MapOptions.Interpolation;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
@@ -161,7 +163,7 @@ public class CoverageLayer extends AbstractLayer {
             return new CoverageLayerData( raster, bbox, query.getWidth(), query.getHeight(),
                                           InterpolationType.NEAREST_NEIGHBOR, filter, style,
                                           getMetadata().getFeatureTypes().get( 0 ), dimensionHandler, featureInfoMode,
-                                          query.getX(), query.getY() );
+                                          query.getX(), query.getY(), getFeatureInfoDecimalPlaces() );
 
         } catch ( OWSException e ) {
             throw e;
@@ -172,4 +174,10 @@ public class CoverageLayer extends AbstractLayer {
         return null;
     }
 
+    private Integer getFeatureInfoDecimalPlaces() {
+        return Optional.of( getMetadata() ) //
+                .map( LayerMetadata::getMapOptions ) //
+                .map( MapOptions::getFeatureInfoDecimalPlaces ) //
+                .orElse( null );
+    }
 }
