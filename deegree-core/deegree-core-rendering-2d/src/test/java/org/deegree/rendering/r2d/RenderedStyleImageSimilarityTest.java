@@ -74,6 +74,7 @@ import org.deegree.gml.feature.GMLFeatureReader;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.styling.Styling;
+import org.deegree.style.styling.mark.WellKnownNameManager;
 import org.deegree.workspace.Destroyable;
 import org.deegree.workspace.Workspace;
 import org.deegree.workspace.standard.DefaultWorkspace;
@@ -112,7 +113,7 @@ public class RenderedStyleImageSimilarityTest extends AbstractSimilarityTest {
 
     @BeforeClass
     public static void runBefore() {
-        //new WellKnownNameManager().init( ws );
+        new WellKnownNameManager().init( ws );
         FunctionManager fm = new FunctionManager();
         fm.init( ws );
         destroyableResources.add( fm );

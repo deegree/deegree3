@@ -65,6 +65,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import java.util.function.Function;
 import javax.imageio.ImageIO;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
@@ -82,6 +83,7 @@ import org.deegree.style.styling.components.Graphic;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.Mark.SimpleMark;
 import org.deegree.style.styling.components.Stroke;
+import org.deegree.style.styling.mark.WellKnownNameManager;
 import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
@@ -243,9 +245,21 @@ class GraphicSymbologyParser {
 
             if ( in.getLocalName().equals( "WellKnownName" ) ) {
                 String wkn = in.getElementText();
-                try {
-                    base.wellKnown = SimpleMark.valueOf( wkn.toUpperCase() );
-                } catch ( IllegalArgumentException e ) {
+                Function<String, URL> resolver = ( str ) -> {
+                    if ( context.location != null ) {
+                        return context.location.resolveToUrl( str );
+                    } else {
+                        try {
+                            return resolve( str, in );
+                        } catch ( MalformedURLException e ) {
+                            LOG.warn("Failed to resolve external WellKnownName resource {}: {} ", str, e.getMessage());
+                            LOG.trace( "Exception", e );
+                            return null;
+                        }
+                    }
+                };
+
+                if ( !WellKnownNameManager.load( base, wkn, resolver ) ) {
                     LOG.warn( "Specified unsupported WellKnownName of '{}', using square instead.", wkn );
                     base.wellKnown = SimpleMark.SQUARE;
                 }
