@@ -35,24 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.container;
 
-import java.util.UUID;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.io.RasterDataReader;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheManagerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 /**
  * This class implements a cached RasterDataContainer.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
@@ -63,17 +61,17 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     private String identifier;
 
-    private static Cache cache;
+    private static Cache<String, RasterData> cache;
 
     private final static String CACHENAME = "CachedRasterDataContainer";
 
     static {
         try {
-            CacheManager manager = CacheManager.create();
-            manager.addCache( CACHENAME );
             // TODO: make cachename configurable
             // see ehcache.xml for CachedRasterDataContainer configuration
-            cache = manager.getCache( CACHENAME );
+            CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
+            cacheManager.init();
+            cache = cacheManager.getCache( CACHENAME, String.class, RasterData.class );
         } catch ( Throwable e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }
@@ -89,9 +87,9 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /**
      * Creates a RasterDataContainer that loads the data on first access.
-     * 
+     *
      * @param reader
-     *            RasterReader for the raster source
+     *                 RasterReader for the raster source
      */
     public CachedRasterDataContainer( RasterDataReader reader ) {
         setRasterDataReader( reader );
@@ -106,25 +104,22 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
     @Override
     public synchronized RasterData getRasterData() {
         // synchronized to prevent multiple reader.read()-calls when
-        RasterData raster;
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "accessing: " + this.toString() );
+            LOG.debug( "accessing: " + this );
         }
-        Element elem = cache.get( identifier );
-        if ( elem == null ) {
-            raster = reader.read();
-            elem = new Element( identifier, raster );
-            cache.put( elem );
+        if ( !cache.containsKey( identifier ) ) {
+            RasterData raster = reader.read();
+            cache.put( identifier, raster );
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "cache miss: " + this.toString() + "#mem: " + cache.getMemoryStoreSize() );
+                LOG.debug( "cache miss: " + this );// + "#mem: " + cache.getMemoryStoreSize() );
             }
+            return raster;
         } else {
-            raster = (RasterData) elem.getObjectValue();
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "cache hit: " + this.toString() );
+                LOG.debug( "cache hit: " + this );
             }
+            return cache.get( identifier );
         }
-        return raster;
     }
 
     @Override

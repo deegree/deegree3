@@ -40,16 +40,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.tile.persistence.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.DefaultTileDataSet;
 import org.deegree.tile.Tile;
@@ -60,13 +50,25 @@ import org.deegree.tile.persistence.TileStore;
 import org.deegree.tile.persistence.TileStoreTransaction;
 import org.deegree.workspace.Resource;
 import org.deegree.workspace.ResourceMetadata;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.Configuration;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link TileStore} that acts as a caching proxy to another {@link TileStore}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class CachingTileStore implements TileStore {
@@ -75,27 +77,29 @@ public class CachingTileStore implements TileStore {
 
     private final CacheManager cacheManager;
 
-    private final Cache cache;
+    private final Cache<String, byte[]> cache;
 
     private Map<String, TileDataSet> tileMatrixSets;
 
     private ResourceMetadata<TileStore> metadata;
 
-    public CachingTileStore( TileStore tileStore, CacheManager cacheManager, String cacheName,
+    public CachingTileStore( TileStore tileStore, String cacheName, URL cacheConfiguration,
                              ResourceMetadata<TileStore> metadata ) {
         this.tileStore = tileStore;
-        this.cacheManager = cacheManager;
         this.metadata = metadata;
-        this.cache = cacheManager.getCache( cacheName );
+        Configuration xmlConfig = new XmlConfiguration( cacheConfiguration );
+        this.cacheManager = CacheManagerBuilder.newCacheManager( xmlConfig );
+        cacheManager.init();
+        cache = this.cacheManager.getCache( cacheName, String.class, byte[].class );
     }
 
     @Override
     public void init() {
         Collection<String> ids = tileStore.getTileDataSetIds();
-        tileMatrixSets = new HashMap<String, TileDataSet>();
+        tileMatrixSets = new HashMap<>();
         for ( String id : ids ) {
             TileDataSet cachedDataset = tileStore.getTileDataSet( id );
-            List<TileDataLevel> list = new ArrayList<TileDataLevel>();
+            List<TileDataLevel> list = new ArrayList<>();
             for ( TileDataLevel tm : cachedDataset.getTileDataLevels() ) {
                 list.add( new CachingTileMatrix( tm, cache ) );
             }
@@ -112,7 +116,7 @@ public class CachingTileStore implements TileStore {
 
     @Override
     public void destroy() {
-        cacheManager.shutdown();
+        cacheManager.close();
     }
 
     @Override
@@ -136,16 +140,17 @@ public class CachingTileStore implements TileStore {
 
     /**
      * Removes matching objects from cache.
-     * 
+     *
      * @param tileMatrixSet
-     *            the id of the tile matrix set
+     *                 the id of the tile matrix set
      * @param envelope
-     *            may be null, in which case all objects will be removed from the cache
+     *                 may be null, in which case all objects will be removed from the cache
      */
     public long invalidateCache( String tileMatrixSet, Envelope envelope ) {
         if ( envelope == null ) {
-            int size = cache.getSize();
-            cache.removeAll();
+            //TODO:cache.getSize();
+            int size = 0;
+            cache.clear();
             return size;
         }
         long cnt = 0;
@@ -155,7 +160,9 @@ public class CachingTileStore implements TileStore {
                 String id = tm.getMetadata().getIdentifier();
                 for ( long x = ts[0]; x <= ts[2]; ++x ) {
                     for ( long y = ts[1]; y <= ts[3]; ++y ) {
-                        if ( cache.remove( id + "_" + x + "_" + y ) ) {
+                        String key = id + "_" + x + "_" + y;
+                        if ( cache.containsKey( key ) ) {
+                            cache.remove( key );
                             ++cnt;
                         }
                     }
