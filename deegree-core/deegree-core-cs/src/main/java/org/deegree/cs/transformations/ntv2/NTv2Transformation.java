@@ -148,21 +148,20 @@ public class NTv2Transformation extends Transformation {
         IEllipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
         IEllipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
 
-        // rb: patched the gridshift file for access to the axis
-        if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajor() ) > 0.001
-             || Math.abs( sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinor() ) > 0.001 ) {
+        if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajorAxis() ) > 0.001
+             || Math.abs( sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinorAxis() ) > 0.001 ) {
             LOG.warn( "The given source CRS' ellipsoid (" + sourceEl.getCode().getOriginal()
                       + ") does not match the 'from' ellipsoid (" + fromEllips + ")defined in the gridfile: " + gridURL );
         }
 
-        if ( Math.abs( targetEl.getSemiMajorAxis() - gsf.getToSemiMajor() ) > 0.001
-             || Math.abs( targetEl.getSemiMinorAxis() - gsf.getToSemiMinor() ) > 0.001 ) {
+        if ( Math.abs( targetEl.getSemiMajorAxis() - gsf.getToSemiMajorAxis() ) > 0.001
+             || Math.abs( targetEl.getSemiMinorAxis() - gsf.getToSemiMinorAxis() ) > 0.001 ) {
             LOG.warn( "The given target CRS' ellipsoid (" + targetEl.getCode().getOriginal()
                       + ") does not match the 'to' ellipsoid (" + toEllips + ") defined in the gridfile: " + gridURL );
         }
 
-        isIdentity = ( Math.abs( gsf.getFromSemiMajor() - gsf.getToSemiMajor() ) < 0.001 )
-                     && ( Math.abs( gsf.getFromSemiMinor() - gsf.getToSemiMinor() ) < 0.001 );
+        isIdentity = ( Math.abs( gsf.getFromSemiMajorAxis() - gsf.getToSemiMajorAxis() ) < 0.001 )
+                     && ( Math.abs( gsf.getFromSemiMinorAxis() - gsf.getToSemiMinorAxis() ) < 0.001 );
     }
 
     /**
@@ -181,21 +180,20 @@ public class NTv2Transformation extends Transformation {
         IEllipsoid sourceEl = sourceCRS.getGeodeticDatum().getEllipsoid();
         IEllipsoid targetEl = targetCRS.getGeodeticDatum().getEllipsoid();
 
-        // rb: patched the gridshift file for access to the axis
-        if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajor() ) > 0.001
-             || Math.abs( sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinor() ) > 0.001 ) {
+        if ( Math.abs( sourceEl.getSemiMajorAxis() - gsf.getFromSemiMajorAxis() ) > 0.001
+             || Math.abs( sourceEl.getSemiMinorAxis() - gsf.getFromSemiMinorAxis() ) > 0.001 ) {
             LOG.warn( "The given source CRS' ellipsoid (" + sourceEl.getCode().getOriginal()
                       + ") does not match the 'from' ellipsoid (" + fromEllips + ")defined in the gridfile: " + gridURL );
         }
 
-        if ( Math.abs( targetEl.getSemiMajorAxis() - gsf.getToSemiMajor() ) > 0.001
-             || Math.abs( targetEl.getSemiMinorAxis() - gsf.getToSemiMinor() ) > 0.001 ) {
+        if ( Math.abs( targetEl.getSemiMajorAxis() - gsf.getToSemiMajorAxis() ) > 0.001
+             || Math.abs( targetEl.getSemiMinorAxis() - gsf.getToSemiMinorAxis() ) > 0.001 ) {
             LOG.warn( "The given target CRS' ellipsoid (" + targetEl.getCode().getOriginal()
                       + ") does not match the 'to' ellipsoid (" + toEllips + ") defined in the gridfile: " + gridURL );
         }
 
-        isIdentity = ( Math.abs( gsf.getFromSemiMajor() - gsf.getToSemiMajor() ) < 0.001 )
-                     && ( Math.abs( gsf.getFromSemiMinor() - gsf.getToSemiMinor() ) < 0.001 );
+        isIdentity = ( Math.abs( gsf.getFromSemiMajorAxis() - gsf.getToSemiMajorAxis() ) < 0.001 )
+                     && ( Math.abs( gsf.getFromSemiMinorAxis() - gsf.getToSemiMinorAxis() ) < 0.001 );
     }
 
     /**

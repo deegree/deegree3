@@ -44,8 +44,8 @@
       <artifactId>vecmath</artifactId>
     </dependency>
     <dependency>
-      <groupId>jgridshift</groupId>
-      <artifactId>jgridshift</artifactId>
+      <groupId>it.geosolutions.jgridshift</groupId>
+      <artifactId>jgridshift-core</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
