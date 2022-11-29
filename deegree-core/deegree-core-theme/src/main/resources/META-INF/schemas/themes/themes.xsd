@@ -26,6 +26,7 @@
    </element>
    <group ref="d:Description" />
    <group ref="g:SpatialMetadata" />
+   <element name="LegendGraphic" type="string" minOccurs="0" />
    <element name="Layer" minOccurs="0" maxOccurs="unbounded">
     <complexType>
      <simpleContent>
