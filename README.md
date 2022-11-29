@@ -4,6 +4,13 @@
 # deegree webservices
 deegree is open source software for spatial data infrastructures and the geospatial web. deegree includes components for geospatial data management, including data access, visualization, discovery and security. Open standards are at the heart of deegree. The software is built on the standards of the Open Geospatial Consortium (OGC) and the ISO Technical Committee 211.
 
+## Repositories
+
+3 git repositories are involved here:
+- the upstream repository on github: https://github.com/deegree/deegree3/
+- lat-lon's fork on github: https://github.com/lat-lon/deegree3
+- the (partial) mirror of lat-lon's fork on OpenCoDE: see [OpenCoDE mirror](opencode.md)
+
 ## User documentation
 General project information and user documentation (e.g. "How to set up WMS and WFS?" or "How to get support?") can be found on the deegree homepage:
 
