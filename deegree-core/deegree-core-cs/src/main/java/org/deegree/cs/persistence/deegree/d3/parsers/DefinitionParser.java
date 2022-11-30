@@ -56,7 +56,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.proxy.ProxySettings;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
@@ -78,7 +77,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get stacktraces if something goes wrong.")
 public abstract class DefinitionParser {
 
     private static final Logger LOG = getLogger( DefinitionParser.class );

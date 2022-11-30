@@ -1007,4 +1007,18 @@ public abstract class AbstractWhereBuilder {
             throw new UnmappableException( msg );
         }
     }
+
+    protected String getStringValueFromFunction( Expression pattern )
+                            throws UnmappableException, FilterEvaluationException {
+        Function function = (Function) pattern;
+        List<SQLExpression> params = new ArrayList<SQLExpression>( function.getParameters().size() );
+        appendParamsFromFunction( function, params );
+        TypedObjectNode value = evaluateFunction( function, params );
+        if ( !( value instanceof PrimitiveValue ) ) {
+            final String msg = "SQL IsLike request with a function evaluating to a non-primitive value is not supported!";
+            throw new UnsupportedOperationException( msg );
+        }
+        String valueAsString = ( (PrimitiveValue) value ).getAsText();
+        return valueAsString;
+    }
 }

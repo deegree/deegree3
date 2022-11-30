@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se"
+                  xmlns:ogc="http://www.opengis.net/ogc"
+                  xmlns:app="http://deegree.org/app"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.opengis.net/se https://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.opengis.net/ogc https://schemas.opengis.net/filter/1.1.0/filter.xsd">
+
+  <Rule>
+    <PolygonSymbolizer uom="http://www.opengeospatial.org/se/units/pixel" xmlns="http://www.opengis.net/se">
+      <Fill>
+        <GraphicFill>
+          <Graphic>
+            <Mark>
+              <WellKnownName>shape://vertline</WellKnownName>
+              <!--<WellKnownName>shape://horline</WellKnownName>-->
+              <Stroke>
+                <SvgParameter name="stroke">#000000</SvgParameter>
+                <SvgParameter name="stroke-width">1</SvgParameter>
+                <SvgParameter name="stroke-linecap">butt</SvgParameter>
+              </Stroke>
+            </Mark>
+            <!--58-->
+            <Size>
+              <ogc:Function name="HatchingDistance">
+                <ogc:PropertyName>app:rotation</ogc:PropertyName>
+                <ogc:Literal>5</ogc:Literal>
+              </ogc:Function>
+            </Size>
+            <Rotation><ogc:PropertyName>app:rotation</ogc:PropertyName></Rotation>
+          </Graphic>
+        </GraphicFill>
+      </Fill>
+      <Stroke>
+        <SvgParameter name="stroke">#0000FF</SvgParameter>
+        <SvgParameter name="stroke-width">1</SvgParameter>
+        <SvgParameter name="stroke-linecap">butt</SvgParameter>
+      </Stroke>
+    </PolygonSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

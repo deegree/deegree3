@@ -42,7 +42,6 @@ import static org.deegree.cs.coordinatesystems.CRS.CRSType.PROJECTED;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSIdentifiable;
 import org.deegree.cs.CRSResource;
@@ -72,7 +71,6 @@ import org.slf4j.LoggerFactory;
  *            the type of object the parse method awaits.
  * 
  */
-@LoggingNotes(debug = "Get information about the initialization of the provider, as well as on requested objects.")
 public abstract class AbstractCRSStore implements CRSStore {
 
     public enum RESOURCETYPE {

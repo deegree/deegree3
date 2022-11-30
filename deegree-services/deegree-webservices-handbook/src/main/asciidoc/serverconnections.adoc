@@ -31,7 +31,7 @@ PostgreSQL/PostGIS, Oracle Spatial or Microsoft SQL Server.
 deegree currently supports the following backends:
 
 * PostgreSQL 9.4, 9.5, 9.6 with PostGIS extension 2.3, 2.4, 2.5
-* Oracle Spatial 12c
+* Oracle Spatial 19
 * Microsoft SQL Server 2012
 
 TIP: If you want to use Oracle Spatial or Microsoft SQL Server, you will need

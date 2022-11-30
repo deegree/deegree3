@@ -238,7 +238,7 @@
         <plugin>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-maven-plugin</artifactId>
-          <version>9.4.43.v20210629</version>
+          <version>10.0.12</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -359,7 +359,6 @@
                     <ignoreClass>com.sun.media.jai.*</ignoreClass>
                     <ignoreClass>com.sun.xml.*</ignoreClass>
                     <ignoreClass>org.w3c.dom.*</ignoreClass>
-                    <ignoreClass>oracle.xml.*</ignoreClass>
                   </ignoreClasses>
                   <scopes>
                     <scope>compile</scope>
@@ -495,7 +494,7 @@
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path-assert</artifactId>
-        <version>2.4.0</version>
+        <version>${jsonpath.version}</version>
         <scope>test</scope>
       </dependency>
       <!-- apache commons -->
@@ -580,14 +579,14 @@
       <!-- servlet, JSF -->
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>2.2</version>
+        <artifactId>javax.servlet.jsp-api</artifactId>
+        <version>2.3.3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -597,28 +596,20 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>com.sun.faces</groupId>
-        <artifactId>jsf-api</artifactId>
-        <version>2.1.19</version>
-        <scope>compile</scope>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>3.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.faces</groupId>
+        <artifactId>javax.faces-api</artifactId>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>com.sun.faces</groupId>
         <artifactId>jsf-impl</artifactId>
-        <version>2.1.19</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>el-api</artifactId>
-        <version>6.0.53</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>6.0.53</version>
-        <scope>provided</scope>
+        <version>2.2.20</version>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>
@@ -777,7 +768,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.3.8</version>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.netty</groupId>
@@ -788,6 +779,12 @@
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
         <version>9.9.1-8</version>
+      </dependency>
+      <!-- JSON -->
+      <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>${jsonpath.version}</version>
       </dependency>
       <!-- JAI -->
       <dependency>
@@ -821,66 +818,27 @@
         <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
         <version>${oracle.version}</version>
-        <exclusions>
-          <!-- exclude Java Connection Pool (UCP) -->
-          <exclusion>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ucp</artifactId>
-          </exclusion>
-          <!-- exclude Oracle Wallets and/or the Notification System-->
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>oraclepki</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>osdt_cert</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>osdt_core</artifactId>
-          </exclusion>
-          <!-- exclude FAN events with UCP and/or the JDBC driver -->
-          <exclusion>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>simplefan</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>ons</artifactId>
-          </exclusion>
-          <!-- exclude Internationalization -->
-          <exclusion>
-            <groupId>com.oracle.database.nls</groupId>
-            <artifactId>orai18n</artifactId>
-          </exclusion>
-          <!-- exclude XMLType (xmlparserv2) -->
-          <exclusion>
-            <groupId>com.oracle.database.xml</groupId>
-            <artifactId>xmlparserv2</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <!-- Oracle GeoRaster -->
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoapi</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdotype</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdogr</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoutl</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
@@ -1167,7 +1125,7 @@
           </exclusion>
           <exclusion>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1240,7 +1198,7 @@
     <site.dir>${user.home}/Sites</site.dir>
     <java.version>11</java.version>
     <antlr.version>3.5.2</antlr.version>
-    <oracle.version>19.3.0.0</oracle.version>
+    <oracle.version>19.9.0.0</oracle.version>
     <log4j.version>2.17.2</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
     <spring-boot.version>2.5.12</spring-boot.version>
@@ -1248,6 +1206,7 @@
     <spring-framework.version>5.3.18</spring-framework.version>
     <batik.version>1.14</batik.version>
     <axoim.version>1.2.22</axoim.version>
+    <jsonpath.version>2.4.0</jsonpath.version>
   </properties>
 
   <modules>

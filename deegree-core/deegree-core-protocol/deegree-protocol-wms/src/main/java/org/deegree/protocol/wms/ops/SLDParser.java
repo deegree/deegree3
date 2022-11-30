@@ -52,7 +52,6 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
@@ -88,7 +87,6 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  */
-@LoggingNotes(debug = "logs which named layers were extracted from SLD")
 public class SLDParser {
 
     private static final Logger LOG = getLogger( SLDParser.class );

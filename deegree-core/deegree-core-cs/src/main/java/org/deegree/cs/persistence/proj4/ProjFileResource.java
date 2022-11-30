@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.configuration.resources.CRSResource;
 import org.deegree.cs.coordinatesystems.GeographicCRS;
@@ -70,7 +69,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about errors while parsing the proj4 file.")
 public class ProjFileResource implements CRSResource<Map<String, String>> {
 
     private Map<CRSCodeType, Map<String, String>> idToParams = new HashMap<CRSCodeType, Map<String, String>>( 4000 );

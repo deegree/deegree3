@@ -360,7 +360,14 @@ public class GdalDataset implements KeyedResource {
             byte[] src = windowData[i];
             byte[] dst = bands[i];
             if ( i != 3 ) {
-                setWhite( dst );
+                // default to white / assume that white is -1
+                byte backgroundValue = -1;
+                Double[] noData = new Double[1];
+                dataset.GetRasterBand(i + 1).GetNoDataValue(noData);
+                if ( noData.length == 1 && noData[0] != null) {
+                    backgroundValue = noData[0].byteValue();
+                }
+                setDataToValue( dst, backgroundValue );
             }
             for ( int y = 0; y < windowSizeY; y++ ) {
                 for ( int x = 0; x < windowSizeX; x++ ) {
@@ -377,9 +384,9 @@ public class GdalDataset implements KeyedResource {
         return bands;
     }
 
-    private void setWhite( byte[] dst ) {
+    private void setDataToValue( byte[] dst, byte newValue ) {
         for ( int i = 0; i < dst.length; i++ ) {
-            dst[i] = -1;
+            dst[i] = newValue;
         }
     }
 

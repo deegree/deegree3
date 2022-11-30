@@ -58,26 +58,48 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
+          <webApp>
+            <contextPath>/${project.artifactId}</contextPath>
+            <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+            <webInfIncludeJarPattern>.*/deegree-jsf-core-.*.jar</webInfIncludeJarPattern>
+          </webApp>
+          <systemProperties>
+            <systemProperty>
+              <name>catalina.base</name>
+              <value>${project.basedir}/target</value>
+            </systemProperty>
+            <systemProperty>
+              <name>jetty.home</name>
+              <value>${project.basedir}/src/main/resources</value>
+            </systemProperty>
+            <systemProperty>
+              <name>log.dir</name>
+              <value>${project.basedir}/target</value>
+            </systemProperty>
+            <systemProperty>
+              <name>javax.xml.transform.TransformerFactory</name>
+              <value>net.sf.saxon.TransformerFactoryImpl</value>
+            </systemProperty>
+          </systemProperties>
+          <loginServices>
+            <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+              <name>deegree web configuration API</name>
+              <config>${project.basedir}/src/main/resources/realm.properties</config>
+            </loginService>
+          </loginServices>
+          <webAppSourceDirectory>target/${project.artifactId}-${project.version}</webAppSourceDirectory>
+          <stopPort>8079</stopPort>
+          <stopKey>stopit</stopKey>
+          <stopWait>10</stopWait>
+          <httpConnector>
+            <port>8080</port>
+            <idleTimeout>60000</idleTimeout>
+          </httpConnector>
+          <jvmArgs>--illegal-access=warn --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-exports java.desktop/sun.swing=ALL-UNNAMED --add-opens java.desktop/javax.imageio.spi=ALL-UNNAMED</jvmArgs>
         </configuration>
-        <executions>
-          <execution>
-            <id>assemble-tomcat</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -127,8 +149,8 @@
       <id>jsf-provided</id>
       <dependencies>
         <dependency>
-          <groupId>com.sun.faces</groupId>
-          <artifactId>jsf-api</artifactId>
+          <groupId>javax.faces</groupId>
+          <artifactId>javax.faces-api</artifactId>
         </dependency>
         <dependency>
           <groupId>com.sun.faces</groupId>
@@ -297,7 +319,12 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-connectionprovider-datasource</artifactId>
       <version>${project.version}</version>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-processprovider-fme</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-jsf-core</artifactId>
@@ -310,7 +337,12 @@
     <dependency>
       <groupId>org.primefaces</groupId>
       <artifactId>primefaces</artifactId>
-      <version>4.0</version>
+      <version>11.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.primefaces.extensions</groupId>
+      <artifactId>primefaces-extensions</artifactId>
+      <version>11.0.3</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -331,11 +363,11 @@
     <!-- Dependencies provided by servlet container -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>

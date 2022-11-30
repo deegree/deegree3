@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.index.QTree;
 import org.deegree.coverage.ResolutionInfo;
 import org.deegree.coverage.persistence.DefaultCoverageBuilder.QTreeInfo;
@@ -74,7 +73,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs when raster files could not be loaded", trace = "logs stack traces")
 public class DiskBasedTileContainer implements TileContainer {
 
     private static final Logger LOG = getLogger( DiskBasedTileContainer.class );

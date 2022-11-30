@@ -40,6 +40,7 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -52,21 +53,32 @@ import org.deegree.geometry.Geometry;
  */
 public class Beyond extends SpatialOperator {
 
-    private final Geometry geometry;
-
     private final Measure distance;
 
-    public Beyond( Expression propName, Geometry geometry, Measure distance ) {
-        super( propName );
-        this.geometry = geometry;
+    /**
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            geometry argument for testing, never <code>null</code>
+     * @param distance
+     *            distance, never <code>null</code>
+     */
+    public Beyond( Expression param1, Geometry param2, Measure distance ) {
+        super( param1, param2 );
         this.distance = distance;
     }
 
     /**
-     * @return the geometry
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            value reference argument for testing, never <code>null</code>
+     * @param distance
+     *            distance, never <code>null</code>
      */
-    public Geometry getGeometry() {
-        return geometry;
+    public Beyond( Expression param1, ValueReference param2, Measure distance ) {
+        super( param1, param2 );
+        this.distance = distance;
     }
 
     /**
@@ -79,10 +91,10 @@ public class Beyond extends SpatialOperator {
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode param1Value : propName.evaluate( obj, xpathEvaluator ) ) {
+        for ( TypedObjectNode param1Value : param1.evaluate( obj, xpathEvaluator ) ) {
             Geometry geom = checkGeometryOrNull( param1Value );
             if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
+                Geometry transformedLiteral = getCompatibleGeometry( geom, param2AsGeometry );
                 // TODO what about the units of the distance when transforming?
                 return geom.isBeyond( transformedLiteral, distance );
             }
@@ -92,14 +104,19 @@ public class Beyond extends SpatialOperator {
 
     public String toString( String indent ) {
         String s = indent + "-Beyond\n";
-        s += indent + propName + "\n";
-        s += indent + geometry + "\n";
+        s += indent + param1 + "\n";
+        if ( param2AsGeometry != null )
+            s += indent + param2AsGeometry + "\n";
+        if ( param2AsValueReference != null )
+            s += indent + param2AsValueReference + "\n";
         s += indent + distance;
         return s;
     }
 
     @Override
     public Object[] getParams() {
-        return new Object[] { propName, geometry };
+        if ( param2AsValueReference != null )
+            return new Object[] { param1, param2AsValueReference };
+        return new Object[] { param1, param2AsGeometry };
     }
 }

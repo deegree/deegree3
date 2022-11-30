@@ -3,6 +3,7 @@
  * deegree-cli-utility
  * %%
  * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * Copyright (C) 2022 grit graphische Informationstechnik Beratungsgesellschaft mbH
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,10 +24,14 @@ package org.deegree.tools.featurestoresql.loader;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.feature.Feature;
@@ -38,19 +43,25 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.item.file.MultiResourceItemReader;
+import org.springframework.batch.item.support.AbstractItemStreamItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration of the GMLLoader.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 @Configuration
 @EnableBatchProcessing
@@ -83,13 +94,35 @@ public class GmlLoaderConfiguration {
 
     @StepScope
     @Bean
-    public GmlReader gmlReader( SQLFeatureStore sqlFeatureStore,
+    public AbstractItemStreamItemReader<Feature> gmlReader( SQLFeatureStore sqlFeatureStore,
                                 @Value("#{jobParameters[pathToFile]}") String pathToFile,
+                                @Value("#{jobParameters[pathToList]}") String pathToList,
                                 @Value("#{jobParameters[disabledResources]}") String disabledResources ) {
         GmlReader gmlReader = new GmlReader( sqlFeatureStore );
-        gmlReader.setResource( new PathResource( pathToFile ) );
         gmlReader.setDisabledResources( parseDisabledResources( disabledResources ) );
-        return gmlReader;
+        if ( pathToFile != null && pathToList != null) {
+            // error
+            throw new IllegalArgumentException( "Specify file to read or file with list of files only!" );
+        } else if ( pathToFile != null ) {
+            gmlReader.setResource( new PathResource( pathToFile ) );
+            return gmlReader;
+        } else {
+            MultiResourceItemReader<Feature> reader = new MultiResourceItemReader<Feature>();
+            reader.setDelegate( gmlReader );
+            List<Resource> resources;
+            try {
+                resources = Files.lines( Paths.get( pathToList ) ) //
+                                 .filter( Objects::nonNull ) //
+                                 .filter( line -> !line.startsWith( "#" ) ) //
+                                 .map( PathResource::new ) //
+                                 .collect( Collectors.toList() );
+                
+                reader.setResources( resources.toArray( new Resource[resources.size()] ) );
+                return reader;
+            } catch ( IOException ex ) {
+                throw new IllegalArgumentException( "Could not read file list.", ex );
+            }
+        }
     }
 
     @StepScope
@@ -123,10 +156,22 @@ public class GmlLoaderConfiguration {
         return featureStore;
     }
 
+    @JobScope
     @Bean
-    public Step step( TransactionHandler transactionHandler, GmlReader gmlReader,
-                            FeatureReferencesParser featureReferencesParser, FeatureStoreWriter featureStoreWriter ) {
-        return stepBuilderFactory.get( "gmlLoaderStep" ).<Feature, Feature> chunk( 10 ).reader( gmlReader ).processor( featureReferencesParser ).writer( featureStoreWriter ).listener( transactionHandler ).build();
+    public Step step( TransactionHandler transactionHandler, AbstractItemStreamItemReader<Feature> gmlReader,
+                      FeatureReferencesParser featureReferencesParser, FeatureStoreWriter featureStoreWriter,
+                      @Value("#{jobParameters['chunkSize']}") Integer chunkSize,
+                      @Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun ) {
+        int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
+
+        SimpleStepBuilder<Feature, Feature> builder = stepBuilderFactory.get( "gmlLoaderStep" ).<Feature, Feature> chunk( chunk );
+        builder.reader( gmlReader ).processor( featureReferencesParser );
+
+        if ( dryRun ) {
+            return builder.build();
+        } else {
+            return builder.writer( featureStoreWriter ).listener( transactionHandler ).build();
+        }
     }
 
     @Bean

@@ -52,7 +52,6 @@ import javax.vecmath.Point2d;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceBindings;
@@ -120,7 +119,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about the currently parsed coordinate system components.")
 public class GMLCRSStore extends AbstractCRSStore {
 
     private static Logger LOG = LoggerFactory.getLogger( GMLCRSStore.class );

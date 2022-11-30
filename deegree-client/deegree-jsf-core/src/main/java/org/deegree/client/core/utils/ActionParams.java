@@ -38,6 +38,7 @@ package org.deegree.client.core.utils;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
+import java.io.Serializable;
 
 /**
  * Utility class to provide a workaround for the missing parameters for action expressions in JSF versions before 2.2.
@@ -49,7 +50,7 @@ import javax.faces.context.FacesContext;
  */
 @ManagedBean(name = "actionParams")
 @RequestScoped
-public class ActionParams {
+public class ActionParams implements Serializable {
 
     private Object param1;
 
