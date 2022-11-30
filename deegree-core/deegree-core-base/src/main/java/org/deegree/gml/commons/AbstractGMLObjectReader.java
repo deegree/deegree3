@@ -728,7 +728,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             }
         }
 
-        return new GenericXMLElement( xmlStream.getName(), null, attrs, children );
+        return new GenericXMLElement( xmlStream.getName(), attrs, children );
     }
 
     @Deprecated

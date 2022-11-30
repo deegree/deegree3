@@ -129,7 +129,7 @@ public class GetPropertyValueKVPAdapter extends QueryKVPAdapter {
             resolvePath = new ValueReference( resolvePathStr, nsContext );
         }
 
-        List<Query> queries = parseQueries200( kvpParams );
+        List<Query> queries = parseQueries200( kvpParams, resolveParams );
         if ( queries.size() > 1 ) {
             String msg = "Multiple queries for GetPropertyValue requests are not allowed.";
             throw new Exception( msg );

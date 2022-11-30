@@ -1,0 +1,71 @@
+<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml/3.2">
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_1">
+      <id>1</id>
+      <placeOfBirth><!--Inlined feature 'PLACE_2'-->
+        <Place gml:id="PLACE_2">
+          <name>Trier</name>
+          <country><!--Inlined feature 'COUNTRY_2'-->
+            <Country gml:id="COUNTRY_2">
+              <name>Germany</name>
+            </Country>
+          </country>
+        </Place>
+      </placeOfBirth>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_2">
+      <id>2</id>
+      <placeOfBirth><!--Inlined feature 'PLACE_3'-->
+        <Place gml:id="PLACE_3">
+          <name>Barmen</name>
+          <country xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#COUNTRY_2"/>
+        </Place>
+      </placeOfBirth>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_3">
+      <id>3</id>
+      <placeOfBirth><!--Inlined feature 'PLACE_4'-->
+        <Place gml:id="PLACE_4">
+          <name>Genf</name>
+          <country><!--Inlined feature 'COUNTRY_4'-->
+            <Country gml:id="COUNTRY_4">
+              <name>Switzerland</name>
+            </Country>
+          </country>
+        </Place>
+      </placeOfBirth>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_4">
+      <id>4</id>
+      <placeOfBirth xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#PLACE_6"/>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_5">
+      <id>5</id>
+      <placeOfBirth xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#PLACE_6"/>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_6">
+      <id>6</id>
+      <placeOfBirth xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#PLACE_6"/>
+    </Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <Philosopher xmlns="http://www.deegree.org/app" gml:id="PHILOSOPHER_7">
+      <id>7</id>
+      <placeOfBirth><!--Inlined feature 'PLACE_7'-->
+        <Place gml:id="PLACE_7">
+          <name>Mondovi</name>
+        </Place>
+      </placeOfBirth>
+    </Philosopher>
+  </gml:featureMember>
+</gml:FeatureCollection>

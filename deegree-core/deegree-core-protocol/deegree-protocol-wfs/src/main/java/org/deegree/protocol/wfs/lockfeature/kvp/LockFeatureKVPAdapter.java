@@ -232,7 +232,7 @@ public class LockFeatureKVPAdapter extends QueryKVPAdapter {
 
         String handle = null;
 
-        List<Query> queries = parseQueries200( kvpParams );
+        List<Query> queries = parseQueries200( kvpParams, null );
 
         // optional: EXPIRY
         String expiryStr = kvpParams.get( "EXPIRY" );

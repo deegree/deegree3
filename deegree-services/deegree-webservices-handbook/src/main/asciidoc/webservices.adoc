@@ -832,6 +832,31 @@ ignored, if a metadata configuration file (see chapter
 <<anchor-configuration-service-metadata>>) exists. Instead, the extended
 capabilities must be configured there.
 
+==== Special Features
+
+The GetFeature operation allows to specify the properties to be included in the response by the element PropertyName, e.g. (WFS 2.0.0):
+
+[source,xml]
+----
+...
+  <Query typeNames="gn:Endonym">
+    <PropertyName>app:title</PropertyName>
+    <PropertyName resolveDepth="*">app:country</PropertyName>
+...
+----
+
+As extension of the WFS 1.1.0 and 2.0.0 specification, deegree supports XPath expressions as value:
+[source,xml]
+----
+...
+  <Query typeNames="gn:Endonym">
+    <PropertyName>app:title</PropertyName>
+    <PropertyName resolveDepth="*">app:country/app:Country/app:name</PropertyName>
+...
+----
+
+This is limited to simple XPath expressions where each step is a qualified name.
+
 [[anchor-configuration-wms]]
 === Web Map Service (WMS)
 

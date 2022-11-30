@@ -64,11 +64,17 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTerm;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.commons.tom.genericxml.GenericXMLElement;
@@ -92,6 +98,7 @@ import org.deegree.feature.property.GenericProperty;
 import org.deegree.feature.types.AppSchema;
 import org.deegree.feature.types.AppSchemaGeometryHierarchy;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.CustomPropertyType;
 import org.deegree.feature.types.property.ObjectPropertyType;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
@@ -584,10 +591,11 @@ public class FeatureBuilderRelational implements FeatureBuilder {
                                 }
                             }
                         } else if ( step.getAxis() == Axis.CHILD ) {
+                            XSElementDeclaration elementDecl = ( (CompoundMapping) mapping ).getElementDecl();
+                            // TODO
+                            CustomPropertyType childType = createPropertyType( name, elementDecl );
                             for ( TypedObjectNode particleValue : particleValues ) {
                                 if ( particleValue instanceof PrimitiveValue ) {
-                                    // TODO
-                                    XSElementDeclaration childType = null;
                                     GenericXMLElement child = new GenericXMLElement( name, childType,
                                                                                      Collections.<QName, PrimitiveValue> emptyMap(),
                                                                                      Collections.singletonList( particleValue ) );
@@ -868,4 +876,28 @@ public class FeatureBuilderRelational implements FeatureBuilder {
         }
         return false;
     }
+
+    private CustomPropertyType createPropertyType( QName name, XSElementDeclaration elementDecl ) {
+        if ( elementDecl.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ) {
+            XSParticle xsParticle = ( (XSComplexTypeDefinition) elementDecl.getTypeDefinition() ).getParticle();
+            if ( xsParticle.getTerm() instanceof XSModelGroup ) {
+                XSModelGroup modelGroup = (XSModelGroup) xsParticle.getTerm();
+                XSObjectList particles = modelGroup.getParticles();
+                for ( int i = 0; i < particles.getLength(); i++ ) {
+                    XSParticle p = (XSParticle) particles.item( i );
+                    if ( p.getTerm() instanceof XSElementDeclaration ) {
+                        XSElementDeclaration elementDeclaration = (XSElementDeclaration) p.getTerm();
+                        String particleName = elementDeclaration.getName();
+                        String particleNamenameSpace = elementDeclaration.getNamespace();
+                        if ( new QName( particleNamenameSpace, particleName ).equals( name ) ) {
+                            return new CustomPropertyType( name, p.getMinOccurs(),
+                                                           p.getMaxOccurs(), elementDeclaration, null );
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 }
