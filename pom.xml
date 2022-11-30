@@ -359,7 +359,6 @@
                     <ignoreClass>com.sun.media.jai.*</ignoreClass>
                     <ignoreClass>com.sun.xml.*</ignoreClass>
                     <ignoreClass>org.w3c.dom.*</ignoreClass>
-                    <ignoreClass>oracle.xml.*</ignoreClass>
                   </ignoreClasses>
                   <scopes>
                     <scope>compile</scope>
@@ -819,66 +818,27 @@
         <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
         <version>${oracle.version}</version>
-        <exclusions>
-          <!-- exclude Java Connection Pool (UCP) -->
-          <exclusion>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ucp</artifactId>
-          </exclusion>
-          <!-- exclude Oracle Wallets and/or the Notification System-->
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>oraclepki</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>osdt_cert</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.security</groupId>
-            <artifactId>osdt_core</artifactId>
-          </exclusion>
-          <!-- exclude FAN events with UCP and/or the JDBC driver -->
-          <exclusion>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>simplefan</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.oracle.database.ha</groupId>
-            <artifactId>ons</artifactId>
-          </exclusion>
-          <!-- exclude Internationalization -->
-          <exclusion>
-            <groupId>com.oracle.database.nls</groupId>
-            <artifactId>orai18n</artifactId>
-          </exclusion>
-          <!-- exclude XMLType (xmlparserv2) -->
-          <exclusion>
-            <groupId>com.oracle.database.xml</groupId>
-            <artifactId>xmlparserv2</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <!-- Oracle GeoRaster -->
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoapi</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdotype</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdogr</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
         <artifactId>sdoutl</artifactId>
-        <version>12.2.0.1</version>
+        <version>${oracle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.oracle</groupId>
@@ -1238,7 +1198,7 @@
     <site.dir>${user.home}/Sites</site.dir>
     <java.version>11</java.version>
     <antlr.version>3.5.2</antlr.version>
-    <oracle.version>19.3.0.0</oracle.version>
+    <oracle.version>19.9.0.0</oracle.version>
     <log4j.version>2.17.2</log4j.version>
     <slf4j.version>1.7.36</slf4j.version>
     <spring-boot.version>2.5.12</spring-boot.version>

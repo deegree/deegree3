@@ -935,7 +935,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
             } else
                 constraints.add( new Domain( "ImplementsResultPaging", "FALSE" ) );
             constraints.add( new Domain( "ImplementsStandardJoins", "FALSE" ) );
-            constraints.add( new Domain( "ImplementsSpatialJoins", "FALSE" ) );
+            constraints.add( new Domain( "ImplementsSpatialJoins", "TRUE" ) );
             constraints.add( new Domain( "ImplementsTemporalJoins", "FALSE" ) );
             constraints.add( new Domain( "ImplementsFeatureVersioning", "FALSE" ) );
             if ( master.getStoredQueryHandler().isManagedStoredQuerySupported() ) {

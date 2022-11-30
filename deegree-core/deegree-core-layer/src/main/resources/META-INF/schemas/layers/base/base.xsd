@@ -101,6 +101,7 @@
           <complexType>
             <attribute name="enabled" type="boolean" default="true"/>
             <attribute name="pixelRadius" type="positiveInteger" default="1"/>
+            <attribute name="decimalPlaces" type="nonNegativeInteger"/>
           </complexType>
         </element>
         <element name="FeatureInfoRadius" type="int" />

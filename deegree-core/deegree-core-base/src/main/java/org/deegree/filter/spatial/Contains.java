@@ -39,6 +39,7 @@ import org.deegree.commons.tom.TypedObjectNode;
 import org.deegree.filter.Expression;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.XPathEvaluator;
+import org.deegree.filter.expression.ValueReference;
 import org.deegree.geometry.Geometry;
 
 /**
@@ -51,42 +52,53 @@ import org.deegree.geometry.Geometry;
  */
 public class Contains extends SpatialOperator {
 
-    private final Geometry geometry;
-
+    /**
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            geometry argument for testing, never <code>null</code>
+     */
     public Contains( Expression param1, Geometry param2 ) {
-        super( param1 );
-        this.geometry = param2;
+        super( param1, param2 );
+    }
+
+    /**
+     * @param param1
+     *            geometry to compare to, can be <code>null</code> (use default geometry)
+     * @param param2
+     *            value reference argument for testing, never <code>null</code>
+     */
+    public Contains( Expression param1, ValueReference param2 ) {
+        super( param1, param2 );
     }
 
     @Override
     public <T> boolean evaluate( T obj, XPathEvaluator<T> xpathEvaluator )
                             throws FilterEvaluationException {
-        for ( TypedObjectNode paramValue : propName.evaluate( obj, xpathEvaluator ) ) {
+        for ( TypedObjectNode paramValue : param1.evaluate( obj, xpathEvaluator ) ) {
             Geometry geom = checkGeometryOrNull( paramValue );
             if ( geom != null ) {
-                Geometry transformedLiteral = getCompatibleGeometry( geom, geometry );
+                Geometry transformedLiteral = getCompatibleGeometry( geom, param2AsGeometry );
                 return geom.contains( transformedLiteral );
             }
         }
         return false;
     }
 
-    /**
-     * @return the geometry
-     */
-    public Geometry getGeometry() {
-        return geometry;
-    }
-
     public String toString( String indent ) {
         String s = indent + "-Contains\n";
-        s += indent + propName + "\n";
-        s += indent + geometry;
+        s += indent + param1 + "\n";
+        if ( param2AsGeometry != null )
+            s += indent + param2AsGeometry;
+        if ( param2AsValueReference != null )
+            s += indent + param2AsValueReference;
         return s;
     }
 
     @Override
     public Object[] getParams() {
-        return new Object[] { propName, geometry };
+        if ( param2AsValueReference != null )
+            return new Object[] { param1, param2AsValueReference };
+        return new Object[] { param1, param2AsGeometry };
     }
 }

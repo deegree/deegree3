@@ -771,6 +771,18 @@ image::se_wkn_example/extshape_arrow_t_00_10.png[]
 <WellKnownName>extshape://arrow?t=0.2&amp;hr=2&amp;ab=0.5</WellKnownName>
 ----
 
+====== Custom Symbol from SVG path svgpath://
+
+It is also possible to define a symbol from a SVG path data.
+The syntax of SVG path data is described at https://www.w3.org/TR/SVG/paths.html#PathData
+
+.Example of custom symbol with \`svgpath://`
+[cols="10,90"]
+|===
+a|image::se_wkn_example/svgpath_example.png[]
+a|`svgpath://m 8,14 0,-6 h -4.5 c 0,0 0,-7.5 6.6,-7.5 6,0 6.5,7.5 6.6,7.5 l -4.5,0 0,6 z m -4,0 v -2 h 2 v 2 z`
+|===
+
 ====== Use Symbol from character code ttf://
 
 Also TrueType font files can be used as source for symbols.

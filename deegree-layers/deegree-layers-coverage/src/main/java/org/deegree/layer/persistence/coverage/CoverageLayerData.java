@@ -97,16 +97,18 @@ public class CoverageLayerData implements LayerData {
 
     private final int infoPosY;
 
+    private final Integer featureInfoDecimalPlaces;
+
     public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
                               RangeSet filter, Style style, FeatureType featureType,
                               CoverageFeatureInfoMode featureInfoMode ) {
-        this( raster, bbox, width, height, interpol, filter, style, featureType, null, featureInfoMode, -1, -1 );
+        this( raster, bbox, width, height, interpol, filter, style, featureType, null, featureInfoMode, -1, -1, null );
     }
 
     public CoverageLayerData( AbstractRaster raster, Envelope bbox, int width, int height, InterpolationType interpol,
                               RangeSet filter, Style style, FeatureType featureType,
                               CoverageDimensionHandler dimensionHandler, CoverageFeatureInfoMode featureInfoMode,
-                              int infoPosX, int infoPosY ) {
+                              int infoPosX, int infoPosY, Integer featureInfoDecimalPlaces ) {
         this.raster = raster;
         this.bbox = bbox;
         this.width = width;
@@ -119,6 +121,7 @@ public class CoverageLayerData implements LayerData {
         this.featureInfoMode = featureInfoMode;
         this.infoPosX = infoPosX;
         this.infoPosY = infoPosY;
+        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
     }
 
     @Override
@@ -176,7 +179,7 @@ public class CoverageLayerData implements LayerData {
     @Override
     public FeatureCollection info() {
         CoverageFeatureInfoHandler handler = new CoverageFeatureInfoHandler( raster, bbox, featureType, interpol,
-                                                                             dimensionHandler );
+                                                                             dimensionHandler, featureInfoDecimalPlaces );
         if ( featureInfoMode == CoverageFeatureInfoMode.POINT ) {
             return handler.handleFeatureInfoPoint( infoPosX, infoPosY, width, height );
         } else {

@@ -307,6 +307,11 @@ disabled (default is true)
 
 |FeatureInfo |0..1 |None |attribute _pixelRadius_: Number of pixels to
 consider when doing GetFeatureInfo, default is 1
+
+|FeatureInfo |0..1 |None |attribute _decimalPlaces_: Desired number of
+digits after the decimal point when returning numeric values in
+GetFeatureInfo, default is unbounded. Currently limited to 
+GetFeatureInfo for coverage (raster) data.
 |===
 
 Here is an example snippet:

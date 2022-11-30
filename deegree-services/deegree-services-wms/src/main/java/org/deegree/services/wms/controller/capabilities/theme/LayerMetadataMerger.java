@@ -156,7 +156,7 @@ class LayerMetadataMerger {
 
     private void adjustMapOptions( LayerMetadata themeMetadata, int queryable, boolean opaque, int cascaded ) {
         if ( themeMetadata.getMapOptions() == null ) {
-            themeMetadata.setMapOptions( new MapOptions() );
+            themeMetadata.setMapOptions( new MapOptions.Builder().build() );
         }
         if ( queryable == QUERYABLE_DISABLED_MASK ) {
             themeMetadata.getMapOptions().setFeatureInfoRadius( 0 );

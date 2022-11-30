@@ -66,10 +66,42 @@ public abstract class SpatialOperator implements Operator {
 
     private final Map<String, Geometry> srsNameToTransformedGeometry = new HashMap<String, Geometry>();
 
-    protected final Expression propName;
+    protected final Expression param1;
 
-    protected SpatialOperator( Expression param1 ) {
-        this.propName = param1;
+    protected final ValueReference param2AsValueReference;
+
+    protected final Geometry param2AsGeometry;
+
+    /**
+     * Instantiates a {@link SpatialOperator} without second parameter (may be stored in the implementation).
+     *
+     * @param param1
+     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
+     *            geometry props)
+     * @param geometry
+     *            second parameter, never <code>null</code>
+     */
+    protected SpatialOperator( Expression param1, Geometry geometry ) {
+        this( param1, geometry, null );
+    }
+
+    /**
+     * Instantiates a {@link Intersects} operator with value reference as second parameter.
+     *
+     * @param param1
+     *            may actually be <code>null</code> (deegree extension to cope with features that have only hidden
+     *            geometry props)
+     * @param valueReference
+     *            second parameter,never <code>null</code>
+     */
+    protected SpatialOperator( Expression param1, ValueReference valueReference ) {
+        this( param1, null, valueReference );
+    }
+
+    private SpatialOperator( Expression param1, Geometry geometry, ValueReference valueReference ) {
+        this.param1 = param1;
+        this.param2AsGeometry = geometry;
+        this.param2AsValueReference = valueReference;
     }
 
     /**
@@ -127,7 +159,21 @@ public abstract class SpatialOperator implements Operator {
      * @return the first spatial parameter, may be <code>null</code> (target default geometry property of object)
      */
     public Expression getParam1() {
-        return propName;
+        return param1;
+    }
+
+    /**
+     * @return the second parameter, <code>null</code> if it is a geometry
+     */
+    public ValueReference getValueReference() {
+        return param2AsValueReference;
+    }
+
+    /**
+     * @return the second parameter, <code>null</code> if it is a value reference
+     */
+    public Geometry getGeometry() {
+        return param2AsGeometry;
     }
 
     /**
@@ -137,7 +183,7 @@ public abstract class SpatialOperator implements Operator {
      * @deprecated use {@link #getParam1()} instead
      */
     public ValueReference getPropName() {
-        return (ValueReference) propName;
+        return (ValueReference) param1;
     }
 
     /**

@@ -54,28 +54,17 @@ public class MapOptions {
 
     private boolean opaque;
 
-    /**
-     * Instantiates {@link MapOptions} with default values (quality = null, interpol = null, antialias = null,
-     * maxFeatures = -1, featureInfoRadius = -1)
-     *
-     */
-    public MapOptions() {
-        this( null, null, null, -1, -1 );
-    }
+    private Integer featureInfoDecimalPlaces;
 
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                       int featureInfoRadius ) {
-        this( quality, interpol, antialias, maxFeatures, featureInfoRadius, false );
-    }
-
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                       int featureInfoRadius, boolean opaque ) {
+    private MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
+                        int featureInfoRadius, boolean opaque, Integer featureInfoDecimalPlaces ) {
         this.quality = quality;
         this.interpol = interpol;
         this.antialias = antialias;
         this.maxFeatures = maxFeatures;
         this.featureInfoRadius = featureInfoRadius;
         this.opaque = opaque;
+        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
     }
 
     /**
@@ -166,6 +155,23 @@ public class MapOptions {
      */
     public void setOpaque( boolean opaque ) {
         this.opaque = opaque;
+    }
+
+    /**
+     * @return featureInfoDecimalPlaces, a non <code>null</code> positive value defines the requested number of
+     *         digits after the decimal point to be used for numeric values, if this feature is available
+     */
+    public Integer getFeatureInfoDecimalPlaces() {
+        return featureInfoDecimalPlaces;
+    }
+
+    /**
+     * @param featureInfoDecimalPlaces
+     *            the featureInfoDecimalPlaces to set, a non <code>null</code> positive value defines the requested
+     *            number of digits after the decimal point to be used for numeric values, if this feature is available
+     */
+    public void setFeatureInfoDecimalPlaces( Integer featureInfoDecimalPlaces ) {
+        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
     }
 
     /**
@@ -297,6 +303,10 @@ public class MapOptions {
 
         private int featureInfoRadius = -1;
 
+        private boolean opaque;
+
+        private Integer featureInfoDecimalPlaces;
+
         /**
          * @param quality
          *            the quality to set
@@ -342,8 +352,30 @@ public class MapOptions {
             return this;
         }
 
+        /**
+         * @param opaque
+         *            set if layer is opaque
+         */
+        public Builder opaque( boolean opaque ) {
+            this.opaque = opaque;
+            return this;
+        }
+
+        /**
+         * @param featureInfoDecimalPlaces
+         *            the featureInfoDecimalPlaces to set, a non <code>null</code> positive value defines the requested
+         *            number of digits after the decimal point to be used for numeric values, if this feature is
+         *            available
+         */
+        public Builder featureInfoDecimalPlaces( Integer featureInfoDecimalPlaces ) {
+            this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
+            return this;
+        }
+
+
         public MapOptions build() {
-            return new MapOptions( quality, interpolation, antialias, maxFeatures, featureInfoRadius );
+            return new MapOptions( quality, interpolation, antialias, maxFeatures, featureInfoRadius, opaque,
+                                   featureInfoDecimalPlaces );
         }
 
     }
