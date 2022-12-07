@@ -65,8 +65,9 @@ public class UomCalculator {
         case Pixel:
             return in * 0.28 / pixelSize;
         case Foot:
-            // TODO properly convert the res to foot
-            return in / resolution;
+            // Note: Use 1 foot as 12 inches => 30,48 cm
+            // @see http://en.wikipedia.org/wiki/Foot_%28unit%29
+            return in * 0.3048d / resolution;
         case Metre:
             return in / resolution;
         case mm:
