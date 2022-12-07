@@ -180,6 +180,7 @@ arguments:
 
 options:
  -reportWriteStatistics=true, create a summary of all written feature types, disabled by default
+ -reportFile=GmlLoader.log, the name and optionally path to the report file, defaults to GmlLoader.log
  -disabledResources=<urlpatterns>, a comma separated list url patterns which should not be resolved, not set by default
  -chunkSize=<features_per_chunk>, number of features processed per chunk
  -dryRun=true, enable dry run where writing is skipped (checks only if all data can be read), disabled by default
