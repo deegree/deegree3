@@ -134,7 +134,7 @@ public class PostGISDDLCreator extends DDLCreator {
         StringBuffer indexSql = new StringBuffer( "CREATE INDEX " );
         String idxName = createIdxName( table.getTable(), column );
         indexSql.append( idxName );
-        indexSql.append( " ON " ).append( currentFtTable );
+        indexSql.append( " ON " ).append( table.getTable().toLowerCase() );
         indexSql.append( " USING GIST (" ). append( column ).append( " ); " );
         ddls.add( indexSql );
         return ddls;
