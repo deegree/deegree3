@@ -75,9 +75,16 @@ public class GmlLoaderConfiguration {
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
+    @JobScope
     @Bean
-    public Summary summary() {
-        return new Summary();
+    public Summary summary( @Value("#{jobParameters[reportWriteStatistics] ?: false}") boolean reportWriteStatistics ) {
+        Summary summary = new Summary();
+
+        if ( reportWriteStatistics ) {
+            summary.setStatistics( new FeatureStatistics() );
+        }
+
+        return summary;
     }
 
     @Bean
