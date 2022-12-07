@@ -40,34 +40,22 @@
 
 package org.deegree.rendering.r2d;
 
-import static javax.media.jai.JAI.create;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_HEIGHT;
 import static org.apache.batik.transcoder.SVGAbstractTranscoder.KEY_WIDTH;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.media.jai.RenderedOp;
-
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.deegree.commons.utils.ComparablePair;
 import org.deegree.commons.utils.TunableParameter;
 import org.deegree.style.styling.components.Graphic;
 import org.slf4j.Logger;
 
-import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 
 /**
  * Renders svg images onto buffered images.
@@ -95,7 +83,7 @@ class SvgRenderer {
         if ( svgCache.containsKey( cacheKey ) ) {
             img = svgCache.get( cacheKey );
         } else {
-            PNGTranscoder t = new PNGTranscoder();
+            SvgImageTranscoder t = new SvgImageTranscoder();
 
             if ( rect.width > 0.0d ) {
                 t.addTranscodingHint( KEY_WIDTH, new Float( rect.width ) );
@@ -105,28 +93,14 @@ class SvgRenderer {
             }
 
             TranscoderInput input = new TranscoderInput( g.imageURL );
-
-            // TODO improve performance by writing a custom transcoder output directly rendering on an image, or
-            // even on the target graphics
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            TranscoderOutput output = new TranscoderOutput( out );
-            InputStream in = null;
+            SvgImageTranscoder.SvgImageOutput output = t.createOutput();
 
             try {
                 t.transcode( input, output );
-                out.flush();
-                in = new ByteArrayInputStream( out.toByteArray() );
-                MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream( in );
-                RenderedOp rop = create( "stream", mcss );
-                img = rop.getAsBufferedImage();
+                img = output.getBufferedImage();
                 svgCache.put( cacheKey, img );
             } catch ( TranscoderException e ) {
                 LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not rasterize svg '{}': {}", g.imageURL, e.getLocalizedMessage() );
-            } finally {
-                closeQuietly( out );
-                closeQuietly( in );
             }
         }
         return img;
