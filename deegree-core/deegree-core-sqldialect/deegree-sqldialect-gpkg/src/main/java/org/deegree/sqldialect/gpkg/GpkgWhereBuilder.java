@@ -40,12 +40,15 @@ import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.deegree.sqldialect.filter.expression.SQLExpression;
 import org.deegree.sqldialect.filter.expression.SQLOperation;
 import org.deegree.sqldialect.filter.expression.SQLOperationBuilder;
+
+import java.util.List;
 
 /**
  * {@link AbstractWhereBuilder} implementation for GeoPackage databases.
@@ -58,19 +61,27 @@ public class GpkgWhereBuilder extends AbstractWhereBuilder {
     /**
      * Creates a new {@link GpkgWhereBuilder} instance.
      *
-     * @param dialect              SQL dialect
-     * @param mapper               provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
-     * @param filter               Filter to use for generating the WHERE clause, can be <code>null</code>
-     * @param sortCrit             criteria to use for generating the ORDER BY clause, can be <code>null</code>
-     * @param allowPartialMappings if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
-     * @throws FilterEvaluationException if the expression contains invalid {@link ValueReference}s
-     * @throws UnmappableException       if allowPartialMappings is false and an expression could not be mapped to the db
+     * @param dialect
+     *                 SQL dialect
+     * @param mapper
+     *                 provides the mapping from {@link ValueReference}s to DB columns, must not be <code>null</code>
+     * @param filter
+     *                 Filter to use for generating the WHERE clause, can be <code>null</code>
+     * @param sortCrit
+     *                 criteria to use for generating the ORDER BY clause, can be <code>null</code>
+     * @param defaultSortCriteria
+     * @param allowPartialMappings
+     *                 if false, any unmappable expression will cause an {@link UnmappableException} to be thrown
+     * @throws FilterEvaluationException
+     *                 if the expression contains invalid {@link ValueReference}s
+     * @throws UnmappableException
+     *                 if allowPartialMappings is false and an expression could not be mapped to the db
      */
     public GpkgWhereBuilder( GpkgDialect dialect, PropertyNameMapper mapper, OperatorFilter filter,
-                             SortProperty[] sortCrit, boolean allowPartialMappings )
+                             SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria, boolean allowPartialMappings )
                             throws FilterEvaluationException,
                             UnmappableException {
-        super( dialect, mapper, filter, sortCrit );
+        super( dialect, mapper, filter, sortCrit, defaultSortCriteria );
         build( allowPartialMappings );
     }
 

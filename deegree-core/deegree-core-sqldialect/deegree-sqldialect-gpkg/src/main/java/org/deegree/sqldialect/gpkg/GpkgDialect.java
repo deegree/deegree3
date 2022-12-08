@@ -34,12 +34,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.gpkg;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.PrimitiveType;
@@ -52,15 +46,22 @@ import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.SQLDialect;
+import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  * {@link SQLDialect} for GeoPackage databases.
- * 
+ *
  * @author <a href="mailto:migliavacca@lat-lon.de">Diego Migliavacca</a>
  * @author last edited by: $Author: dmigliavacca $
  */
@@ -102,9 +103,10 @@ public class GpkgDialect implements SQLDialect {
 
     @Override
     public AbstractWhereBuilder getWhereBuilder( PropertyNameMapper mapper, OperatorFilter filter,
-                                                 SortProperty[] sortCrit, boolean allowPartialMappings )
+                                                 SortProperty[] sortCrit, List<SortCriterion> defaultSortCriteria,
+                                                 boolean allowPartialMappings )
                             throws UnmappableException, FilterEvaluationException {
-        return new GpkgWhereBuilder( this, mapper, filter, sortCrit, allowPartialMappings );
+        return new GpkgWhereBuilder( this, mapper, filter, sortCrit, defaultSortCriteria, allowPartialMappings );
     }
 
     @Override
