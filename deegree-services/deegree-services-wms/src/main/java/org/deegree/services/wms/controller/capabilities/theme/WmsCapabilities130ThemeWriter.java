@@ -447,15 +447,19 @@ public class WmsCapabilities130ThemeWriter {
                             throws XMLStreamException {
         if ( styleWriter != null ) {
             for ( final Entry<String, Style> e : styles.entrySet() ) {
-                if ( e.getKey() == null || e.getKey().isEmpty() ) {
+                String styleName = e.getKey();
+                if ( styleName == null || styleName.isEmpty() ) {
                     continue;
                 }
-                Style ls = e.getValue();
-                if ( legends.get( e.getKey() ) != null ) {
-                    ls = legends.get( e.getKey() );
+                Style style = e.getValue();
+                Style ls = style;
+                if ( legends.get( styleName ) != null ) {
+                    ls = legends.get( styleName );
                 }
                 final Pair<Integer, Integer> p = new Legends().getLegendSize( ls );
-                styleWriter.writeStyle( writer, e.getKey(), e.getKey(), p, name, e.getValue() );
+                String styleTitle = style.getTitle();
+                String title = styleTitle != null && !"".equals( styleTitle ) ? styleTitle : styleName;
+                styleWriter.writeStyle( writer, styleName, title, p, name, style );
             }
         }
     }

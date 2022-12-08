@@ -64,7 +64,6 @@ import java.util.TreeSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
@@ -110,7 +109,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about the currently exported coordinate system.")
 public class CRSExporter extends CRSExporterBase {
 
     private static final Logger LOG = getLogger( CRSExporter.class );

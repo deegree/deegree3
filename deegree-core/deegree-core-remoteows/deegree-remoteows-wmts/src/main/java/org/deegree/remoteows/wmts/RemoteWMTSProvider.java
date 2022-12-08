@@ -53,7 +53,7 @@ import org.deegree.workspace.Workspace;
  */
 public class RemoteWMTSProvider extends RemoteOWSProvider {
 
-    private static final URL CONFIG_SCHEMA = RemoteWMTSProvider.class.getResource( "/META-INF/schemas/remoteows/wmts/3.4.0/remotewmts.xsd" );
+    private static final URL CONFIG_SCHEMA = RemoteWMTSProvider.class.getResource( "/META-INF/schemas/remoteows/wmts/remotewmts.xsd" );
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/remoteows/wmts";
 

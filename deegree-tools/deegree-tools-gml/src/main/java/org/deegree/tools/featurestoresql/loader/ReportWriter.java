@@ -3,6 +3,7 @@
  * deegree-cli-utility
  * %%
  * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * Copyright (C) 2022 grit graphische Informationstechnik Beratungsgesellschaft mbH
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -43,6 +44,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Job listener to write final report.
  *
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class ReportWriter extends JobExecutionListenerSupport {
 
@@ -72,6 +74,7 @@ public class ReportWriter extends JobExecutionListenerSupport {
         ExitStatus exitStatus = stepExecution.getExitStatus();
         try ( PrintWriter writer = new PrintWriter( outFile.toFile() ) ) {
             writer.println( "Start: " + getStartTime( stepExecution ) );
+            writer.println( "End:   " + getEndTime( stepExecution ) );
             writer.println( "Time needed: " + getTimeNeeded( stepExecution ) );
 
             if ( ExitStatus.FAILED.getExitCode().equals( exitStatus.getExitCode() ) ) {
@@ -87,6 +90,12 @@ public class ReportWriter extends JobExecutionListenerSupport {
                 writer.println( "Status: FAILED" );
             } else if ( ExitStatus.COMPLETED.getExitCode().equals( exitStatus.getExitCode() ) ) {
                 writer.println( "Number of processed features: " + summary.getNumberOfFeatures() );
+                if ( summary.getStatistics() != null ) {
+                    writer.println( "Written feature statistics:" );
+                    writer.println( "===========================");
+                    summary.getStatistics().summary( writer::println );
+                    writer.println();
+                }
                 writer.println( "Status: SUCCESS" );
             } else {
                 writer.println( "Status: " + exitStatus );
@@ -128,5 +137,4 @@ public class ReportWriter extends JobExecutionListenerSupport {
             return DATE_FORMAT.format( stepExecution.getEndTime() );
         return "UNKNOWN";
     }
-
 }

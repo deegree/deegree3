@@ -123,7 +123,8 @@ public class Filters {
      * <p>
      * The returned {@link Envelope} is determined by the following strategy:
      * <ul>
-     * <li>If the filter is an {@link OperatorFilter}, it is attempted to extract an {@link BBOX} constraint from it.</li>
+     * <li>If the filter is an {@link OperatorFilter}, it is attempted to extract an {@link BBOX} constraint from it.
+     * </li>
      * <li>If no {@link BBOX} constraint can be extracted from the filter (not presented or nested in <code>Or</code> or
      * <code>Not</code> expressions, <code>null</code> is returned.</li>
      * </ul>
@@ -190,25 +191,37 @@ public class Filters {
         SubType type = oper.getSubType();
         switch ( type ) {
         case BBOX:
-            return (BBOX) oper;
+            if ( ( (BBOX) oper ).getGeometry() != null )
+                return (BBOX) oper;
+            return null;
         case CONTAINS:
             // Oracle does not like zero-extent bboxes
-            if ( !( ( (Contains) oper ).getGeometry() instanceof Point ) )
+            if ( ( (Contains) oper ).getGeometry() != null && !( ( (Contains) oper ).getGeometry() instanceof Point ) )
                 return new BBOX( ( (Contains) oper ).getParam1(), ( (Contains) oper ).getGeometry().getEnvelope() );
             return null;
         case CROSSES:
-            return new BBOX( ( (Crosses) oper ).getParam1(), ( (Crosses) oper ).getGeometry().getEnvelope() );
+            if ( ( (Crosses) oper ).getGeometry() != null )
+                return new BBOX( ( (Crosses) oper ).getParam1(), ( (Crosses) oper ).getGeometry().getEnvelope() );
+            return null;
         case DWITHIN:
             // TOOD use enlarged bbox
             return null;
         case EQUALS:
-            return new BBOX( ( (Equals) oper ).getParam1(), ( (Equals) oper ).getGeometry().getEnvelope() );
+            if ( ( (Equals) oper ).getGeometry() != null )
+                return new BBOX( ( (Equals) oper ).getParam1(), ( (Equals) oper ).getGeometry().getEnvelope() );
+            return null;
         case INTERSECTS:
-            return new BBOX( ( (Intersects) oper ).getParam1(), ( (Intersects) oper ).getGeometry().getEnvelope() );
+            if ( ( (Intersects) oper ).getGeometry() != null )
+                return new BBOX( ( (Intersects) oper ).getParam1(), ( (Intersects) oper ).getGeometry().getEnvelope() );
+            return null;
         case OVERLAPS:
-            return new BBOX( ( (Overlaps) oper ).getParam1(), ( (Overlaps) oper ).getGeometry().getEnvelope() );
+            if ( ( (Overlaps) oper ).getGeometry() != null )
+                return new BBOX( ( (Overlaps) oper ).getParam1(), ( (Overlaps) oper ).getGeometry().getEnvelope() );
+            return null;
         case WITHIN:
-            return new BBOX( ( (Within) oper ).getParam1(), ( (Within) oper ).getGeometry().getEnvelope() );
+            if ( ( (Within) oper ).getGeometry() != null )
+                return new BBOX( ( (Within) oper ).getParam1(), ( (Within) oper ).getGeometry().getEnvelope() );
+            return null;
         default: {
             return null;
         }
@@ -450,33 +463,33 @@ public class Filters {
         switch ( e.getType() ) {
         case ADD:
             Add a = (Add) e;
-            return new Add( repair( a.getParameter1(), bindings, validNames ), repair( a.getParameter2(), bindings,
-                                                                                       validNames ) );
+            return new Add( repair( a.getParameter1(), bindings, validNames ),
+                            repair( a.getParameter2(), bindings, validNames ) );
         case CUSTOM:
             return e;
         case DIV:
             Div d = (Div) e;
-            return new Div( repair( d.getParameter1(), bindings, validNames ), repair( d.getParameter2(), bindings,
-                                                                                       validNames ) );
+            return new Div( repair( d.getParameter1(), bindings, validNames ),
+                            repair( d.getParameter2(), bindings, validNames ) );
         case FUNCTION:
             // workaround seems to produce errors, so function expressions are not fixed now
             return e;
-            // Function f = (Function) e;
-            // List<Expression> ps = new ArrayList<Expression>();
-            // for ( Expression ex : f.getParameters() ) {
-            // ps.add( repair( ex, bindings, validNames ) );
-            // }
-            // return new Function( f.getName(), ps );
+        // Function f = (Function) e;
+        // List<Expression> ps = new ArrayList<Expression>();
+        // for ( Expression ex : f.getParameters() ) {
+        // ps.add( repair( ex, bindings, validNames ) );
+        // }
+        // return new Function( f.getName(), ps );
         case LITERAL:
             return e;
         case MUL:
             Mul m = (Mul) e;
-            return new Mul( repair( m.getParameter1(), bindings, validNames ), repair( m.getParameter2(), bindings,
-                                                                                       validNames ) );
+            return new Mul( repair( m.getParameter1(), bindings, validNames ),
+                            repair( m.getParameter2(), bindings, validNames ) );
         case SUB:
             Sub s = (Sub) e;
-            return new Sub( repair( s.getParameter1(), bindings, validNames ), repair( s.getParameter2(), bindings,
-                                                                                       validNames ) );
+            return new Sub( repair( s.getParameter1(), bindings, validNames ),
+                            repair( s.getParameter2(), bindings, validNames ) );
         case VALUE_REFERENCE:
             ValueReference vr = (ValueReference) e;
             QName name = vr.getAsQName();
@@ -494,7 +507,8 @@ public class Filters {
         return e;
     }
 
-    private static ComparisonOperator repair( ComparisonOperator o, Map<String, QName> bindings, Set<QName> validNames ) {
+    private static ComparisonOperator repair( ComparisonOperator o, Map<String, QName> bindings,
+                                              Set<QName> validNames ) {
         Expression[] exs = o.getParams();
         for ( int i = 0; i < exs.length; ++i ) {
             exs[i] = repair( exs[i], bindings, validNames );

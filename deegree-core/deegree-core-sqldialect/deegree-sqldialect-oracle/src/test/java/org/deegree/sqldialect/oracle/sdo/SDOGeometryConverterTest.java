@@ -1,7 +1,6 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2013 by:
+ Copyright (C) 2013-2022 by:
 
  IDgis bv
 
@@ -805,8 +804,7 @@ public class SDOGeometryConverterTest {
     private void testMultiPolygon( int expectedPolygons, int[] expectedInteriorRings, int gtype, int srid,
                                    int[] elemInfo, double[] ordinates )
                             throws SQLException {
-        Geometry geometry = converter.toGeometry( new SDOGeometryConverter.GeomHolder( gtype, srid, null, elemInfo,
-                                                                                       ordinates, null ), null );
+        Geometry geometry = converter.toGeometry( new SDOGeometry( gtype, srid, null, elemInfo, ordinates ), null );
         assertNotNull( "null geometry", geometry );
         assertTrue( "not a multi polygon", geometry instanceof MultiPolygon );
 
@@ -822,8 +820,7 @@ public class SDOGeometryConverterTest {
 
     private void testPolygon( int expectedInteriorRings, int gtype, int srid, int[] elemInfo, double[] ordinates )
                             throws SQLException {
-        Geometry geometry = converter.toGeometry( new SDOGeometryConverter.GeomHolder( gtype, srid, null, elemInfo,
-                                                                                       ordinates, null ), null );
+        Geometry geometry = converter.toGeometry( new SDOGeometry( gtype, srid, null, elemInfo, ordinates ), null );
         assertNotNull( "null geometry", geometry );
         assertTrue( "not a polygon", geometry instanceof Polygon );
         Polygon polygon = (Polygon) geometry;

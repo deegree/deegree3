@@ -2,7 +2,7 @@
 <crs:CRSDefinitions xmlns:crs="http://www.deegree.org/crs"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     configVersion="3.0.0"
-                    xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/3.0.0/crsdefinition.xsd">
+                    xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/crsdefinition.xsd">
         <crs:GeographicCRS>
                 <crs:Id>epsg:4002</crs:Id>
                 <crs:Id>http://www.opengis.net/gml/srs/epsg.xml#4002</crs:Id>
@@ -1285,6 +1285,7 @@
                 <crs:Id>crs:84</crs:Id>
                 <crs:Id>urn:ogc:def:crs:ogc:1.3:crs84</crs:Id>
                 <crs:Id>wgs84(dd)</crs:Id>
+                <crs:Id>http://www.opengis.net/def/crs/OGC/1.3/CRS84</crs:Id>
                 <crs:Name>WGS 84</crs:Name>
                 <crs:Version>2008-1-16T9:49</crs:Version>
                 <crs:Description>WGS 84 again, but with *official* x,y axis order (from WMS 1.3.0 specification)</crs:Description>

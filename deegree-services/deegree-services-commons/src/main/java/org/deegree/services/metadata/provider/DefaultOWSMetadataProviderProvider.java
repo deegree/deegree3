@@ -57,7 +57,7 @@ import org.deegree.workspace.Workspace;
  */
 public class DefaultOWSMetadataProviderProvider extends OWSMetadataProviderProvider {
 
-    private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class.getResource( "/META-INF/schemas/services/metadata/3.4.0/metadata.xsd" );
+    private static final URL CONFIG_SCHEMA = DefaultOWSMetadataProviderProvider.class.getResource( "/META-INF/schemas/services/metadata/metadata.xsd" );
 
     @Override
     public String getNamespace() {

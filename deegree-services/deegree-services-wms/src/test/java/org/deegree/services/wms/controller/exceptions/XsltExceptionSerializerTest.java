@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.services.controller.exception.serializer.XMLExceptionSerializer;
@@ -134,6 +135,16 @@ public class XsltExceptionSerializerTest {
 
     private ServletOutputStream createServletStream( final ByteArrayOutputStream os ) {
         return new ServletOutputStream() {
+
+            @Override
+            public boolean isReady() {
+                return false;
+            }
+
+            @Override
+            public void setWriteListener(WriteListener writeListener) {
+
+            }
 
             @Override
             public void write( int b )

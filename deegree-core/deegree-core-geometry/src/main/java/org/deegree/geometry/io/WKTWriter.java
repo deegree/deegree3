@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -47,6 +46,7 @@ import java.util.Set;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
@@ -64,14 +64,17 @@ import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.patches.GriddedSurfacePatch;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
@@ -89,6 +92,7 @@ import org.deegree.geometry.primitive.segments.CircleByCenterPoint;
 import org.deegree.geometry.primitive.segments.Clothoid;
 import org.deegree.geometry.primitive.segments.CubicSpline;
 import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.primitive.segments.Geodesic;
 import org.deegree.geometry.primitive.segments.GeodesicString;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
@@ -103,9 +107,7 @@ import org.slf4j.Logger;
  * 
  * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class WKTWriter {
 
@@ -123,9 +125,6 @@ public class WKTWriter {
      * The flag is used to specify which geometric operations the database is capable of
      * 
      * @author <a href="mailto:thomas@lat-lon.de">Steffen Thomas</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
      */
     public enum WKTFlag {
         /** Export can use ENVELOPE */
@@ -210,6 +209,7 @@ public class WKTWriter {
      *            that is used
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     public void writeGeometry( Geometry geometry, Writer writer )
                             throws IOException {
 
@@ -465,12 +465,39 @@ public class WKTWriter {
      */
     public void writePolygon( Polygon geometry, Writer writer )
                             throws IOException {
-
-        writer.append( "POLYGON " );
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            if ( isCompoundPolyogn( geometry ) ) {
+                writeCurvePolygon( geometry, writer );
+                return;
+            } else {
+                writer.append( "POLYGON " );
+            }
+        } else {
+            writer.append( "POLYGON " );
+        }
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
         writePolygonWithoutPrefix( geometry, writer );
+    }
+
+    private void writeCurvePolygon( Polygon geometry, Writer writer )
+                            throws IOException {
+        writer.append( "CURVEPOLYGON " );
+        writer.append( "(" );
+        writeCurvePolygonWithoutPrefix( geometry, writer );
+        writer.append( ')' );
+    }
+
+    private void writeCurvePolygonWithoutPrefix( Polygon geometry, Writer writer )
+                            throws IOException {
+        writeCurveGeometry( geometry.getExteriorRing(), writer );
+
+        for ( Ring ring : geometry.getInteriorRings() ) {
+            writer.append( ',' );
+            writeCurveGeometry( ring, writer );
+
+        }
     }
 
     /**
@@ -573,8 +600,20 @@ public class WKTWriter {
         } else if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
             writer.append( "COMPOUNDCURVE " );
             writer.append( '(' );
-            // TODO implementation here; no values commited
-
+            int counter = 0;
+            for ( Curve c : geometry ) {
+                counter++;
+                if ( c.getCurveType() == CurveType.LineString ) {
+                    writer.append( '(' );
+                    writeLineStringWithoutPrefix( (LineString) c, writer );
+                    writer.append( ')' );
+                } else {
+                    writeCurve( c, writer );
+                }
+                if ( counter != geometry.size() ) {
+                    writer.append( ',' );
+                }
+            }
         } else {
 
             List<Curve> l = geometry.subList( 0, geometry.size() );
@@ -608,12 +647,16 @@ public class WKTWriter {
             writeCurveSegments( geometry, writer );
             writer.append( ')' );
         } else if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
-
-            // s.append( "COMPOUNDCURVE(" );
-            throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
-
+            int segments = geometry.getCurveSegments().size();
+            if ( segments > 1 ) {
+                writer.write( "COMPOUNDCURVE (" );
+            }
+            writeCurveSegments( geometry, writer );
+            if ( segments > 1 ) {
+                writer.write( ')' );
+            }
         } else {
-            CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
+            CurveLinearizer cl = linearizer != null ? linearizer : new CurveLinearizer( new GeometryFactory() );
             LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
             Curve c = cl.linearize( geometry, crit );
 
@@ -635,7 +678,15 @@ public class WKTWriter {
                             throws IOException {
 
         if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
-            throw new UnsupportedOperationException( "Handling curves within 'SQL-MM Part 3' is not implemented yet." );
+            int segments = geometry.getCurveSegments().size();
+            if ( segments > 1 ) {
+                writer.write( "COMPOUNDCURVE (" );
+            }
+            writeCurveSegments( geometry, writer );
+            if ( segments > 1 ) {
+                writer.write( ')' );
+            }
+            return;
         }
         CurveLinearizer cl = new CurveLinearizer( new GeometryFactory() );
         LinearizationCriterion crit = new NumPointsCriterion( linearizedControlPoints );
@@ -852,7 +903,11 @@ public class WKTWriter {
      */
     private void writeArcString( ArcString curve, Writer writer )
                             throws IOException {
-        writer.append( "ARCSTRING " );
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            writer.append( "CIRCULARSTRING " );
+        } else {
+            writer.append( "ARCSTRING " );
+        }
         // if(flags.contains( WKTFlag.USE_DKT )){
         // appendObjectProps( writer, (Geometry) arcString );
         // }
@@ -897,7 +952,11 @@ public class WKTWriter {
      */
     private void writeLineStringSegment( LineStringSegment curve, Writer writer )
                             throws IOException {
-        writer.append( "LINESTRINGSEGMENT " );
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            // write nothing
+        } else {
+            writer.append( "LINESTRINGSEGMENT " );
+        }
         // if(flags.contains( WKTFlag.USE_DKT )){
         // appendObjectProps( writer, (Geometry) createLineStringSegment );
         // }
@@ -922,7 +981,12 @@ public class WKTWriter {
      */
     private void writeArc( Arc curve, Writer writer )
                             throws IOException {
-        writer.append( "ARC " );
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            writer.append( "CIRCULARSTRING " );
+        } else {
+            writer.append( "ARC " );
+        }
+
         // if(flags.contains( WKTFlag.USE_DKT )){
         // appendObjectProps( writer, (Geometry) createArc );
         // }
@@ -1046,6 +1110,7 @@ public class WKTWriter {
      * @param writer
      * @throws IOException
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void writeMultiGeometry( MultiGeometry<? extends Geometry> geometry, Writer writer )
                             throws IOException {
 
@@ -1096,7 +1161,31 @@ public class WKTWriter {
      */
     public void writeMultiSurface( MultiSurface<Surface> geometry, Writer writer )
                             throws IOException {
-        writer.append( "MULTIPOLYGON " );
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            writer.append( "MULTISURFACE " );
+            writer.write( '(' );
+            int counter = 0;
+            for ( Surface surface : geometry ) {
+                counter++;
+                if ( surface.getSurfaceType() == SurfaceType.Polygon ) {
+                    if ( isCompoundPolyogn( (Polygon) surface ) ) {
+                        writeCurvePolygon( (Polygon) surface, writer );
+                    } else {
+                        writer.write( '(' );
+                        writeCurvePolygonWithoutPrefix( (Polygon) surface, writer );
+                        writer.write( ')' );
+                    }
+                } else {
+                    writeSurface( surface, writer );
+                }
+                if ( counter < geometry.size() )
+                    writer.write( ',' );
+            }
+            writer.write( ')' );
+            return;
+        } else {
+            writer.append( "MULTIPOLYGON " );
+        }
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
@@ -1121,7 +1210,11 @@ public class WKTWriter {
     public void writeMultiCurve( MultiCurve<Curve> geometry, Writer writer )
                             throws IOException {
 
-        writer.append( "MULTILINESTRING " );
+        if ( flags.contains( WKTFlag.USE_SQL_MM ) ) {
+            writer.append( "MULTICURVE " );
+        } else {
+            writer.append( "MULTILINESTRING " );
+        }
         if ( flags.contains( WKTFlag.USE_DKT ) ) {
             appendObjectProps( writer, geometry );
         }
@@ -1315,6 +1408,7 @@ public class WKTWriter {
      * @return a wkt String representation of the given geometry, of the emtpy string if the geometry is
      *         <code>null</code>
      */
+    @SuppressWarnings("unchecked")
     public static String write( Geometry geom ) {
         if ( geom == null ) {
             return "";
@@ -1353,11 +1447,15 @@ public class WKTWriter {
             throw new NullPointerException( "The writer may not be null." );
         }
         Set<WKTFlag> flags = new HashSet<WKTFlag>();
-        int dim =geom.getCoordinateDimension();
-        if (dim == 3){
-            flags.add( WKTWriter.WKTFlag.USE_3D );
-        }
-        else{
+        try {
+            int dim = geom.getCoordinateDimension();
+            if ( dim == 3 ) {
+                flags.add( WKTWriter.WKTFlag.USE_3D );
+            } else {
+                flags = null;
+            }
+        } catch ( GeometryException gex ) {
+            // ignore dimension on empty geometries
             flags = null;
         }
         WKTWriter wktW = new WKTWriter( flags, null );
@@ -1386,5 +1484,68 @@ public class WKTWriter {
             writer.append( "" );
         writer.append( '\'' );
         writer.append( ']' );
+    }
+
+    /**
+     * Test if Polygon is made from compound rings
+     * 
+     * @return true if the polygon is constructed from non-linear rings, rings which are non-linear or rings with
+     *         contains more than one segment
+     */
+    private boolean isCompoundPolyogn( Polygon geometry ) {
+        if ( isCompoundRing( geometry.getExteriorRing() ) ) {
+            return true;
+        }
+        for ( Ring ring : geometry.getInteriorRings() ) {
+            if ( isCompoundRing( ring ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Test if Ring is compound (non-linear or made from more than one segment)
+     * 
+     * @return true if the ring is non-linear or the ring is made from more than one segment
+     */
+    private boolean isCompoundRing( Ring geometry ) {
+        if ( geometry.getRingType() == RingType.LinearRing ) {
+            return false;
+        } else {
+            if ( geometry.getMembers().size() > 1 )
+                return true;
+
+            for ( Curve c : geometry.getMembers() ) {
+                if ( isCompoundCurve( c ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Test if Curve is compound (non-linear or made from more than one segment)
+     * 
+     * @return true if the curve is non-linear or the curve is made from more than one segment
+     */
+    private boolean isCompoundCurve( Curve geometry ) {
+        if ( geometry.getCurveType() == CurveType.LineString ) {
+            return false;
+        } else if ( geometry.getCurveType() == CurveType.Ring ) {
+            return isCompoundRing( (Ring) geometry );
+        } else if ( geometry.getCurveType() == CurveType.Curve ) {
+            List<CurveSegment> segments = geometry.getCurveSegments();
+            if ( segments.size() > 1 )
+                return true;
+
+            for ( CurveSegment seg : segments ) {
+                if ( seg.getSegmentType() != CurveSegmentType.LINE_STRING_SEGMENT ) {
+                    return true;
+                }
+            }
+        }
+        return true;
     }
 }

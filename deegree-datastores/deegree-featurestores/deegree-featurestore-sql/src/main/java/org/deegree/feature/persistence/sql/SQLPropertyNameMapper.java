@@ -35,6 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.utils.QNameUtils;
+import org.deegree.feature.persistence.sql.xpath.MappableNameStep;
+import org.deegree.feature.persistence.sql.xpath.MappableStep;
 import org.deegree.feature.persistence.sql.xpath.MappedXPath;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.expression.ValueReference;
@@ -57,23 +66,86 @@ public class SQLPropertyNameMapper implements PropertyNameMapper {
 
     private final FeatureTypeMapping ftMapping;
 
+    private final Collection<FeatureTypeMapping> ftMappings;
+
     private final boolean handleStrict;
 
     public SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping, boolean handleStrict ) {
+        this( fs, ftMapping, null, handleStrict );
+    }
+
+    /**
+     * @param fs
+     *            the associated feature {@link SQLFeatureStore}, never <code>null</code>
+     * @param ftMappings
+     *            a list of the {@link FeatureTypeMapping}s, never <code>null</code> or empty
+     */
+    public SQLPropertyNameMapper( SQLFeatureStore fs, Collection<FeatureTypeMapping> ftMappings, boolean handleStrict ) {
+        this( fs, null, ftMappings, handleStrict );
+    }
+
+    private SQLPropertyNameMapper( SQLFeatureStore fs, FeatureTypeMapping ftMapping,
+                                   Collection<FeatureTypeMapping> ftMappings, boolean handleStrict ) {
         this.fs = fs;
-        this.ftMapping = ftMapping;
         this.handleStrict = handleStrict;
+        if ( ftMapping != null && ( ftMappings == null || ftMappings.isEmpty() ) ) {
+            this.ftMapping = ftMapping;
+            this.ftMappings = null;
+        } else if ( ftMapping == null && ( ftMappings != null && ftMappings.size() == 1 ) ) {
+            this.ftMapping = ftMappings.iterator().next();
+            this.ftMappings = null;
+        } else if ( ftMapping == null && ( ftMappings != null && ftMappings.size() > 1 ) ) {
+            this.ftMapping = null;
+            this.ftMappings = ftMappings;
+        } else {
+            throw new IllegalArgumentException( "At least one feature type mapping is required." );
+        }
     }
 
     @Override
     public PropertyNameMapping getMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
-        return new MappedXPath( fs, ftMapping, propName, aliasManager, false, handleStrict ).getPropertyNameMapping();
+        if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
+            return new MappedXPath( fs, ftMapping, propName, aliasManager, false, handleStrict ).getPropertyNameMapping();
+        FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
+        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, false, handleStrict ).getPropertyNameMapping();
+
     }
 
     @Override
     public PropertyNameMapping getSpatialMapping( ValueReference propName, TableAliasManager aliasManager )
                             throws FilterEvaluationException, UnmappableException {
-        return new MappedXPath( fs, ftMapping, propName, aliasManager, true, handleStrict ).getPropertyNameMapping();
+
+        if ( ftMapping != null || propName == null || propName.getAsText().isEmpty() )
+            return new MappedXPath( fs, ftMapping, propName, aliasManager, true, handleStrict ).getPropertyNameMapping();
+        FeatureTypeMapping correspondingFtMapping = findCorrespondingMapping( propName );
+        return new MappedXPath( fs, correspondingFtMapping, propName, aliasManager, true, handleStrict ).getPropertyNameMapping();
     }
+
+    private FeatureTypeMapping findCorrespondingMapping( ValueReference propName )
+                            throws UnmappableException {
+        List<MappableStep> steps = MappableStep.extractSteps( propName );
+        if ( steps.size() > 1 && steps.get( 0 ) instanceof MappableNameStep ) {
+            QName nodeName = ( (MappableNameStep) steps.get( 0 ) ).getNodeName();
+            FeatureTypeMapping ftMapping = findBestMatchingFtMapping( nodeName );
+            if ( ftMapping != null )
+                return ftMapping;
+        }
+        throw new UnmappableException( "Could not parse mapping " + propName );
+    }
+
+    private FeatureTypeMapping findBestMatchingFtMapping( QName nodeName ) {
+        List<QName> ftNames = new ArrayList<QName>();
+        for ( FeatureTypeMapping ftMapping : ftMappings ) {
+            ftNames.add( ftMapping.getFeatureType() );
+        }
+
+        QName bestMatch = QNameUtils.findBestMatch( nodeName, ftNames );
+        for ( FeatureTypeMapping ftMapping : ftMappings ) {
+            if ( ftMapping.getFeatureType().equals( bestMatch ) )
+                return ftMapping;
+        }
+        return null;
+    }
+
 }

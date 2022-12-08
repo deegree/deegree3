@@ -1,6 +1,6 @@
 <TileMatrixSet xmlns="http://www.deegree.org/datasource/tile/tilematrixset"
   xmlns:md="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset tilematrixset.xsd" configVersion="3.4.0">
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/tilematrixset tilematrixset.xsd">
 
   <CRS>urn:opengis:def:crs:epsg::26912</CRS>
 

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
+<schema xmlns:ds="http://www.deegree.org/datasource/metadata/iso19115" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/metadata/iso19115" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.metadata.persistence.iso19115.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+  <element name="ISOMetadataStore">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="ISOMetadataStoreConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="JDBCConnId" type="string" />
+        <element name="Inspectors" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element ref="ds:FileIdentifierInspector" minOccurs="0" />
+              <element ref="ds:InspireInspector" minOccurs="0" />
+              <element ref="ds:CoupledResourceInspector" minOccurs="0" />
+              <element ref="ds:SchemaValidator" minOccurs="0" />
+              <element ref="ds:NamespaceNormalizer" minOccurs="0" />              
+            </sequence>
+          </complexType>
+        </element>
+        <element name="AnyText" minOccurs="0">
+          <annotation>
+            <documentation> If AnyText is specified there is a choice between storing all text found in the record, or
+              just the core queryable properties or store a custom set of properties into the anyText-queryable
+              property, otherwise the core queryable properties will be stored in in the backend.</documentation>
+          </annotation>
+          <complexType>
+            <choice>
+              <element name="All" />
+              <element name="Core" />
+              <element name="Custom">
+                <complexType>
+                  <sequence>
+                    <element name="XPath" minOccurs="0" maxOccurs="unbounded" type="string" />
+                  </sequence>
+                </complexType>
+              </element>
+            </choice>
+          </complexType>
+        </element>
+        <element name="QueryableProperties" minOccurs="0">
+          <complexType>
+            <sequence>
+              <element ref="ds:QueryableProperty" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+  <element name="AbstractInspector" type="ds:AbstractInspectorType" abstract="true" />
+  <complexType name="AbstractInspectorType" abstract="true">
+    <annotation>
+      <documentation>The AbstractInspector is the base class of providing a check of the metadata while writing it to
+        the metadataStore (this will affect the transaction operation by inserting or updating the metadata).
+      </documentation>
+      <appinfo>
+        <jaxb:class name="AbstractInspector" />
+      </appinfo>
+    </annotation>
+  </complexType>
+  <element name="SchemaValidator" substitutionGroup="ds:AbstractInspector">
+    <annotation>
+      <documentation>If provided, this element turns on the schema-validation of the metadata.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractInspectorType">
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="FileIdentifierInspector" substitutionGroup="ds:AbstractInspector">
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractInspectorType">
+          <attribute name="rejectEmpty" type="boolean" use="required">
+            <annotation>
+              <documentation>True, if the metadata should be rejected if there is no fileIdentifier available, otherwise
+                there is no rejection.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="InspireInspector" substitutionGroup="ds:AbstractInspector">
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractInspectorType">
+          <attribute name="generateMissingResourceIdentifier" type="boolean" use="required">
+            <annotation>
+              <documentation>True, if the metadataStore should generate the resourceIdentifier automatically while there
+                is no one provided by the metadata, otherwise there is no automatic generating.</documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="NamespaceNormalizer" substitutionGroup="ds:AbstractInspector">
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractInspectorType">
+          <sequence>
+            <element name="NamespaceBinding" maxOccurs="unbounded">
+              <complexType>                
+                <attribute name="prefix" use="required"/>
+                <attribute name="namespaceURI" use="required"/>
+              </complexType>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="CoupledResourceInspector" substitutionGroup="ds:AbstractInspector">
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractInspectorType">
+          <attribute name="throwConsistencyError" type="boolean" use="required">
+            <annotation>
+              <documentation>True, if there should be thrown an exception and the metadata should not be inserted.
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="QueryableProperty">
+    <complexType>
+      <sequence>
+        <!-- Use gmd, srv, gml, gco as namespace prefices as long as individual bindings are not allowed! -->
+        <element name="xpath" type="string" />
+        <element name="name" maxOccurs="unbounded">
+          <complexType>
+            <simpleContent>
+              <extension base="string">
+                <attribute name="namespace" type="string" />
+              </extension>
+            </simpleContent>
+          </complexType>
+        </element>
+        <element name="column" type="string" />
+        <element name="converterClass" type="string" minOccurs="0" />
+      </sequence>
+      <attribute name="isMultiple" type="boolean" default="false" />
+    </complexType>
+  </element>
+</schema>

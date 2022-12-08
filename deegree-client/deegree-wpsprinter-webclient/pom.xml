@@ -27,8 +27,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>el-api</artifactId>
+      <groupId>javax.el</groupId>
+      <artifactId>javax.el-api</artifactId>
     </dependency>
   </dependencies>
 </project>

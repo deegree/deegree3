@@ -47,7 +47,7 @@ public class MergingTileStoreProvider extends TileStoreProvider {
 
     private static final String CONFIG_NAMESPACE = "http://www.deegree.org/datasource/tile/merge";
 
-    private static final URL SCHEMA = MergingTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/merge/3.4.0/merge.xsd" );
+    private static final URL SCHEMA = MergingTileStoreProvider.class.getResource( "/META-INF/schemas/datasource/tile/merge/merge.xsd" );
 
     @Override
     public String getNamespace() {

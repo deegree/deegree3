@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <FeatureLayers xmlns="http://www.deegree.org/layers/feature" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base"
-  xsi:schemaLocation="http://www.deegree.org/layers/feature http://schemas.deegree.org/layers/feature/3.4.0/feature.xsd"
-  xmlns:g="http://www.deegree.org/metadata/spatial" configVersion="3.4.0">
+  xsi:schemaLocation="http://www.deegree.org/layers/feature http://schemas.deegree.org/3.5/layers/feature/feature.xsd"
+  xmlns:g="http://www.deegree.org/metadata/spatial">
   <FeatureStoreId>contours</FeatureStoreId>
   <FeatureLayer>
     <l:Name>contours</l:Name>

@@ -73,7 +73,7 @@ public class WCS100ServiceExceptionReportSerializer extends XMLExceptionSerializ
         if ( ex.getLocator().length() > 0 ) {
             writer.writeAttribute( "locator", ex.getLocator() );
         }
-        writer.writeCharacters( ex.getMessage() );
+        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
         writer.writeEndElement(); // ServiceException
         writer.writeEndElement(); // ServiceExceptionReport
     }

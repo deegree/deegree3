@@ -14,6 +14,7 @@
   <modules>
     <module>deegree-processprovider-example</module>
     <module>deegree-processprovider-style</module>
+    <module>deegree-processprovider-fme</module>
   </modules>
 
 </project>

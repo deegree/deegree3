@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource/remoteows/wms"
+  xmlns:wms="http://www.deegree.org/datasource/remoteows/wms" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.remoteows.wms.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="Authentication" type="wms:AuthenticationType" />
+
+  <element name="RemoteWMSStore">
+    <complexType>
+      <sequence>
+        <element name="CapabilitiesDocumentLocation">
+          <complexType>
+            <attribute name="location" type="string" use="required" />
+          </complexType>
+        </element>
+        <!-- timeouts are in seconds -->
+        <element name="ConnectionTimeout" type="int" minOccurs="0" default="5" />
+        <element name="RequestTimeout" type="int" minOccurs="0" default="60" />
+        <element ref="wms:Authentication" minOccurs="0" />
+        <element name="DefaultRequestOptions" type="wms:RequestOptionsType" minOccurs="0" />
+        <element name="RequestedLayer" type="wms:RequestedLayerType" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <complexType name="AuthenticationType" abstract="true" />
+
+  <complexType name="HTTPBasicAuthenticationType">
+    <complexContent>
+      <extension base="wms:AuthenticationType">
+        <sequence>
+          <element name="Username" type="string" />
+          <element name="Password" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="HTTPBasicAuthentication" type="wms:HTTPBasicAuthenticationType" substitutionGroup="wms:Authentication" />
+
+  <complexType name="RequestedLayerType">
+    <sequence>
+      <element name="Name" type="string" />
+      <element name="RequestOptions" type="wms:RequestOptionsType" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <complexType name="RequestOptionsType">
+    <sequence>
+      <element name="ImageFormat" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="transparent" type="boolean" default="true" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="DefaultCRS" minOccurs="0">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="useAlways" type="boolean" default="false" use="optional" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="name" type="string" use="required" />
+              <attribute name="use" type="wms:ParameterUseType" use="optional" default="allowOverride" />
+              <attribute name="scope" type="wms:ParameterScopeType" use="optional" default="All" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="ParameterUseType">
+    <restriction base="string">
+      <enumeration value="allowOverride" />
+      <enumeration value="fixed" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ParameterScopeType">
+    <restriction base="string">
+      <enumeration value="GetMap" />
+      <enumeration value="GetFeatureInfo" />
+      <enumeration value="All" />
+    </restriction>
+  </simpleType>
+
+</schema>

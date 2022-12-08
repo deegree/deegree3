@@ -160,14 +160,20 @@ public class StoredQueryDefinition200Encoder {
         for ( QName returnFeatureType : queryExpressionText.getReturnFeatureTypes() ) {
             if ( !isFirst )
                 returnFeatureTypes.append( ' ' );
-            boolean prefixBound = ( writer.getPrefix( returnFeatureType.getNamespaceURI() ) != null ) ? true : false;
-            if ( prefixBound ) {
-                returnFeatureTypes.append( writer.getPrefix( returnFeatureType.getNamespaceURI() ) );
+            if( returnFeatureType.getNamespaceURI()  != null && !returnFeatureType.getNamespaceURI().isBlank() ) {
+                boolean prefixBound = ( writer.getPrefix( returnFeatureType.getNamespaceURI() ) != null ) ?
+                                      true :
+                                      false;
+                if ( prefixBound ) {
+                    returnFeatureTypes.append( writer.getPrefix( returnFeatureType.getNamespaceURI() ) );
+                } else {
+                    writer.writeNamespace( returnFeatureType.getPrefix(), returnFeatureType.getNamespaceURI() );
+                    returnFeatureTypes.append( returnFeatureType.getPrefix() );
+                }
+                returnFeatureTypes.append( ':' ).append( returnFeatureType.getLocalPart() );
             } else {
-                writer.writeNamespace( returnFeatureType.getPrefix(), returnFeatureType.getNamespaceURI() );
-                returnFeatureTypes.append( returnFeatureType.getPrefix() );
+                returnFeatureTypes.append( returnFeatureType.getLocalPart() );
             }
-            returnFeatureTypes.append( ':' ).append( returnFeatureType.getLocalPart() );
             isFirst = false;
         }
         writer.writeAttribute( "returnFeatureTypes", returnFeatureTypes.toString() );

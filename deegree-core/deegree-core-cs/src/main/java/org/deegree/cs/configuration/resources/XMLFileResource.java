@@ -41,7 +41,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.cs.persistence.AbstractCRSStore;
 import org.slf4j.Logger;
@@ -57,7 +56,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about initializing the xml file.")
 public abstract class XMLFileResource extends XMLAdapter implements XMLResource {
 
     private static Logger LOG = LoggerFactory.getLogger( XMLFileResource.class );

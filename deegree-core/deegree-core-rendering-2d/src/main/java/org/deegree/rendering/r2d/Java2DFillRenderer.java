@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2012 by:
@@ -41,9 +40,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.rendering.r2d;
 
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static org.deegree.commons.utils.math.MathUtils.round;
-import static org.deegree.rendering.r2d.RenderHelper.renderMark;
+import org.deegree.style.styling.components.Fill;
+import org.deegree.style.styling.components.Graphic;
+import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.UomCalculator;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -51,18 +51,15 @@ import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import org.deegree.style.styling.components.Fill;
-import org.deegree.style.styling.components.Graphic;
-import org.deegree.style.styling.components.UOM;
-import org.deegree.style.utils.UomCalculator;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static org.deegree.commons.utils.math.MathUtils.round;
+import static org.deegree.rendering.r2d.RenderHelper.renderMarkForFill;
 
 /**
  * Responsible for applying fill stylings to a graphics 2d.
  * 
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
- * @author last edited by: $Author: stranger $
- * 
- * @version $Revision: $, $Date: $
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 class Java2DFillRenderer {
 
@@ -76,21 +73,27 @@ class Java2DFillRenderer {
     }
 
     void applyGraphicFill( Graphic graphic, UOM uom ) {
+        Rectangle2D.Double graphicBounds = getGraphicBounds( graphic, 0, 0, uom );
         BufferedImage img;
 
         if ( graphic.image == null ) {
             int size = round( uomCalculator.considerUOM( graphic.size, uom ) );
-            img = new BufferedImage( size, size, TYPE_INT_ARGB );
-            Graphics2D g = img.createGraphics();
-            Java2DRenderer renderer = new Java2DRenderer( g );
-            renderMark( graphic.mark, graphic.size < 0 ? 6 : size, uom, renderer.rendererContext, 0, 0,
-                        graphic.rotation );
-            g.dispose();
+
+            if ( graphic.imageURL == null ) {
+                img = renderMarkForFill( graphic.mark, graphic.size < 0 ? 6 : size, uom, graphic.rotation,
+                                         graphics != null ? graphics.getRenderingHints() : null );
+                graphicBounds = getImageBounds( img, graphic, 0, 0, uom );
+            } else {
+                img = new BufferedImage( size, size, TYPE_INT_ARGB );
+                Graphics2D g = img.createGraphics();
+                Java2DRenderer renderer = new Java2DRenderer( g );
+                img = renderer.rendererContext.svgRenderer.prepareSvg( graphicBounds, graphic );
+                g.dispose();
+            }
         } else {
             img = graphic.image;
         }
-
-        graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0, uom ) ) );
+        graphics.setPaint( new TexturePaint( img, graphicBounds ) );
     }
 
     void applyFill( Fill fill, UOM uom ) {
@@ -104,6 +107,16 @@ class Java2DFillRenderer {
         } else {
             applyGraphicFill( fill.graphic, uom );
         }
+    }
+
+    Rectangle2D.Double getImageBounds( BufferedImage image, Graphic graphic, double x, double y, UOM uom ) {
+        double width, height;
+        width = image.getWidth();
+        height = image.getHeight();
+        double x0 = x - width * graphic.anchorPointX + uomCalculator.considerUOM( graphic.displacementX, uom );
+        double y0 = y - height * graphic.anchorPointY + uomCalculator.considerUOM( graphic.displacementY, uom );
+
+        return new Rectangle2D.Double( x0, y0, width, height );
     }
 
     Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y, UOM uom ) {

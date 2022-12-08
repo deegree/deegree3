@@ -41,7 +41,6 @@ import static org.deegree.commons.utils.ArrayUtils.contains;
 import java.util.Arrays;
 import java.util.List;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.cs.i18n.Messages;
 import org.slf4j.Logger;
@@ -55,7 +54,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about metadata of Coordinate System components.")
 public class CRSIdentifiable implements CRSResource {
 
     private static final Logger LOG = LoggerFactory.getLogger( CRSIdentifiable.class );

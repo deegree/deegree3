@@ -1,0 +1,61 @@
+<aixm:RouteSegment xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:gml="http://www.opengis.net/gml/3.2"
+                   gml:id="rts206">
+  <gml:identifier codeSpace="http://www.aixm.aero/schema/5.1/example">cc9c7cc4-e000-4741-854d-b7d93973e099
+  </gml:identifier>
+  <aixm:timeSlice>
+    <aixm:RouteSegmentTimeSlice gml:id="rsts207">
+      <gml:validTime>
+        <gml:TimePeriod gml:id="vt21179">
+          <gml:beginPosition>2010-01-01T00:00:00.000</gml:beginPosition>
+          <gml:endPosition indeterminatePosition="unknown"/>
+        </gml:TimePeriod>
+      </gml:validTime>
+      <aixm:interpretation>BASELINE</aixm:interpretation>
+      <aixm:sequenceNumber>1</aixm:sequenceNumber>
+      <aixm:featureLifetime>
+        <gml:TimePeriod gml:id="lt21179">
+          <gml:beginPosition>2009-01-01T00:00:00.000</gml:beginPosition>
+          <gml:endPosition indeterminatePosition="unknown"/>
+        </gml:TimePeriod>
+      </aixm:featureLifetime>
+      <aixm:level>UPPER</aixm:level>
+      <aixm:upperLimit uom="FL">450.0</aixm:upperLimit>
+      <aixm:upperLimitReference>MSL</aixm:upperLimitReference>
+      <aixm:lowerLimit uom="FL">195.0</aixm:lowerLimit>
+      <aixm:lowerLimitReference>MSL</aixm:lowerLimitReference>
+      <aixm:pathType>GDS</aixm:pathType>
+      <aixm:length uom="KM">69.30000305175781</aixm:length>
+      <aixm:start>
+        <aixm:EnRouteSegmentPoint gml:id="E-c5f43ddd">
+          <aixm:pointChoice_position>
+            <!--Inlined geometry 'pnt2112'-->
+            <aixm:ElevatedPoint gml:id="pnt2112">
+              <gml:pos>-37.001667 42.501667</gml:pos>
+            </aixm:ElevatedPoint>
+          </aixm:pointChoice_position>
+        </aixm:EnRouteSegmentPoint>
+      </aixm:start>
+      <aixm:routeFormed xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="urn:uuid:null"/>
+      <aixm:curveExtent>
+        <!--Inlined geometry 'crv2111'-->
+        <aixm:Curve gml:id="crv2111">
+          <gml:segments>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>-37.001667 42.501667 -36.173333 42.675000</gml:posList>
+            </gml:LineStringSegment>
+          </gml:segments>
+        </aixm:Curve>
+      </aixm:curveExtent>
+      <aixm:end>
+        <aixm:EnRouteSegmentPoint gml:id="E-c2a12283">
+          <aixm:pointChoice_position>
+            <!--Inlined geometry 'pnt2113'-->
+            <aixm:ElevatedPoint gml:id="pnt2113">
+              <gml:pos>-36.173333 42.675000</gml:pos>
+            </aixm:ElevatedPoint>
+          </aixm:pointChoice_position>
+        </aixm:EnRouteSegmentPoint>
+      </aixm:end>
+    </aixm:RouteSegmentTimeSlice>
+  </aixm:timeSlice>
+</aixm:RouteSegment>

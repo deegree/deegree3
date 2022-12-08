@@ -65,7 +65,7 @@ public class CSWProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return CSWProvider.class.getResource( "/META-INF/schemas/services/csw/3.4.0/csw_configuration.xsd" );
+        return CSWProvider.class.getResource( "/META-INF/schemas/services/csw/csw_configuration.xsd" );
     }
 
     @Override

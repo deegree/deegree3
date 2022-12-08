@@ -172,9 +172,8 @@ public class AdhocQueryAnalyzer {
     private AdhocQuery getStoredQuery( String id, MetadataStore<RegistryObject> queryStore )
                             throws MetadataStoreException {
         MetadataResultSet<RegistryObject> recordById;
-        recordById = queryStore.getRecordById( Collections.singletonList( id ), new QName[] { new QName( RIM_NS,
-                                                                                                         "AdhocQuery",
-                                                                                                         "rim" ) } );
+        recordById = queryStore.getRecordById( Collections.singletonList( id ),
+                                               new QName[] { new QName( RIM_NS, "AdhocQuery", "rim" ) } );
         recordById.next();
         Object storedQuery = recordById.getRecord();
         if ( storedQuery == null || !( storedQuery instanceof AdhocQuery ) ) {
@@ -280,40 +279,64 @@ public class AdhocQueryAnalyzer {
             switch ( ( (SpatialOperator) op ).getSubType() ) {
             case BBOX:
                 BBOX bbox = (BBOX) op;
+                if ( bbox.getValueReference() != null )
+                    return new BBOX( copy( bbox.getParam1() ), bbox.getValueReference() );
                 Envelope env = bbox.getBoundingBox();
                 Envelope newEnv = gf.createEnvelope( env.getMin().get0(), env.getMin().get1(), env.getMax().get0(),
                                                      env.getMax().get0(), env.getCoordinateSystem() );
-                return new BBOX( copy( bbox.getPropName() ), newEnv );
+                return new BBOX( copy( bbox.getParam1() ), newEnv );
             case BEYOND:
                 Beyond beyond = (Beyond) op;
-                return new Beyond( copy( beyond.getPropName() ), beyond.getGeometry(), copy( beyond.getDistance() ) );
+                if ( beyond.getValueReference() != null )
+                    return new Beyond( copy( beyond.getParam1() ), beyond.getValueReference(),
+                                       copy( beyond.getDistance() ) );
+                return new Beyond( copy( beyond.getParam1() ), beyond.getGeometry(), copy( beyond.getDistance() ) );
             case CONTAINS:
                 Contains contains = (Contains) op;
-                return new Contains( copy( contains.getPropName() ), contains.getGeometry() );
+                if ( contains.getValueReference() != null )
+                    return new Contains( copy( contains.getParam1() ), contains.getValueReference() );
+                return new Contains( copy( contains.getParam1() ), contains.getGeometry() );
             case CROSSES:
                 Crosses crosses = (Crosses) op;
-                return new Crosses( copy( crosses.getPropName() ), crosses.getGeometry() );
+                if ( crosses.getValueReference() != null )
+                    return new Crosses( copy( crosses.getParam1() ), crosses.getValueReference() );
+                return new Crosses( copy( crosses.getParam1() ), crosses.getGeometry() );
             case DISJOINT:
                 Disjoint disjoint = (Disjoint) op;
-                return new Disjoint( copy( disjoint.getPropName() ), disjoint.getGeometry() );
+                if ( disjoint.getValueReference() != null )
+                    return new Disjoint( copy( disjoint.getParam1() ), disjoint.getValueReference() );
+                return new Disjoint( copy( disjoint.getParam1() ), disjoint.getGeometry() );
             case DWITHIN:
                 DWithin dwithin = (DWithin) op;
-                return new DWithin( copy( dwithin.getPropName() ), dwithin.getGeometry(), copy( dwithin.getDistance() ) );
+                if ( dwithin.getValueReference() != null )
+                    return new DWithin( copy( dwithin.getParam1() ), dwithin.getValueReference(),
+                                        copy( dwithin.getDistance() ) );
+                return new DWithin( copy( dwithin.getParam1() ), dwithin.getGeometry(), copy( dwithin.getDistance() ) );
             case EQUALS:
                 Equals equals = (Equals) op;
-                return new Equals( copy( equals.getPropName() ), equals.getGeometry() );
+                if ( equals.getValueReference() != null )
+                    return new Equals( copy( equals.getParam1() ), equals.getValueReference() );
+                return new Equals( copy( equals.getParam1() ), equals.getGeometry() );
             case INTERSECTS:
                 Intersects intersects = (Intersects) op;
-                return new Intersects( copy( intersects.getPropName() ), intersects.getGeometry() );
+                if ( intersects.getValueReference() != null )
+                    return new Intersects( copy( intersects.getParam1() ), intersects.getValueReference() );
+                return new Intersects( copy( intersects.getParam1() ), intersects.getGeometry() );
             case OVERLAPS:
                 Overlaps overlaps = (Overlaps) op;
-                return new Overlaps( copy( overlaps.getPropName() ), overlaps.getGeometry() );
+                if ( overlaps.getValueReference() != null )
+                    return new Overlaps( copy( overlaps.getParam1() ), overlaps.getValueReference() );
+                return new Overlaps( copy( overlaps.getParam1() ), overlaps.getGeometry() );
             case TOUCHES:
                 Touches touches = (Touches) op;
-                return new Touches( copy( touches.getPropName() ), touches.getGeometry() );
+                if ( touches.getValueReference() != null )
+                    return new Touches( copy( touches.getParam1() ), touches.getValueReference() );
+                return new Touches( copy( touches.getParam1() ), touches.getGeometry() );
             case WITHIN:
                 Within within = (Within) op;
-                return new Within( copy( within.getPropName() ), within.getGeometry() );
+                if ( within.getValueReference() != null )
+                    return new Within( copy( within.getParam1() ), within.getValueReference() );
+                return new Within( copy( within.getParam1() ), within.getGeometry() );
             }
             break;
         }
@@ -327,8 +350,8 @@ public class AdhocQueryAnalyzer {
             String text = pv.getAsText();
             if ( pv.getType().getBaseType().equals( BaseType.STRING ) && text.startsWith( "$" ) ) {
                 String newValue = values.get( text.substring( 1 ) );
-                return new Literal<PrimitiveValue>(
-                                                    new PrimitiveValue( newValue, new PrimitiveType( BaseType.STRING ) ),
+                return new Literal<PrimitiveValue>( new PrimitiveValue( newValue,
+                                                                        new PrimitiveType( BaseType.STRING ) ),
                                                     null );
             }
         }
@@ -340,10 +363,12 @@ public class AdhocQueryAnalyzer {
         switch ( expr.getType() ) {
         case ADD:
             Add add = (Add) expr;
-            return new Add( copyExpression( add.getParameter1(), values ), copyExpression( add.getParameter2(), values ) );
+            return new Add( copyExpression( add.getParameter1(), values ),
+                            copyExpression( add.getParameter2(), values ) );
         case DIV:
             Div div = (Div) expr;
-            return new Div( copyExpression( div.getParameter1(), values ), copyExpression( div.getParameter2(), values ) );
+            return new Div( copyExpression( div.getParameter1(), values ),
+                            copyExpression( div.getParameter2(), values ) );
         case CUSTOM:
             // TODO
             break;
@@ -358,12 +383,14 @@ public class AdhocQueryAnalyzer {
             return copy( (Literal<?>) expr, values );
         case MUL:
             Mul mul = (Mul) expr;
-            return new Mul( copyExpression( mul.getParameter1(), values ), copyExpression( mul.getParameter2(), values ) );
+            return new Mul( copyExpression( mul.getParameter1(), values ),
+                            copyExpression( mul.getParameter2(), values ) );
         case VALUE_REFERENCE:
             return copy( (ValueReference) expr );
         case SUB:
             Sub sub = (Sub) expr;
-            return new Sub( copyExpression( sub.getParameter1(), values ), copyExpression( sub.getParameter2(), values ) );
+            return new Sub( copyExpression( sub.getParameter1(), values ),
+                            copyExpression( sub.getParameter2(), values ) );
         }
         return newExpr;
     }

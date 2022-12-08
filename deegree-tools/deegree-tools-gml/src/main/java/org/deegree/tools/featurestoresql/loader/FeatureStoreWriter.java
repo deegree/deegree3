@@ -3,6 +3,7 @@
  * deegree-cli-utility
  * %%
  * Copyright (C) 2016 - 2021 lat/lon GmbH
+ * Copyright (C) 2022 grit graphische Informationstechnik Beratungsgesellschaft mbH
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -63,20 +64,20 @@ public class FeatureStoreWriter implements ItemWriter<Feature> {
     }
 
     @Override
-    public void write( List features )
+    public void write( List<? extends Feature> features )
                             throws Exception {
 
         FeatureCollection featureCollection = new GenericFeatureCollection();
-        for ( Object feature : features ) {
-            Feature featureToAdd = (Feature) feature;
-            LOG.info( "Adding feature with GML ID '"+featureToAdd.getId()+"' of type '"+featureToAdd.getType().getName()+"' to chunk" );
+        for ( Feature featureToAdd : features ) {
+            LOG.debug( "Adding feature with GML ID '{}' of type '{}' to chunk", featureToAdd.getId(),
+                       featureToAdd.getType().getName() );
             featureCollection.add( featureToAdd );
+            summary.increaseNumberOfFeatures( featureToAdd.getType().getName() );
         }
-        LOG.info( "Trying to write " + featureCollection.size() + " features" );
+        LOG.info( "Trying to write {} features", featureCollection.size() );
         SQLFeatureStoreTransaction transaction = (SQLFeatureStoreTransaction) sqlFeatureStore.getTransaction();
         transaction.performInsert( featureCollection, USE_EXISTING.withSkipResolveReferences( true ) );
         LOG.info( "Insert performed." );
-        summary.increaseNumberOfFeatures( featureCollection.size() );
     }
 
 }

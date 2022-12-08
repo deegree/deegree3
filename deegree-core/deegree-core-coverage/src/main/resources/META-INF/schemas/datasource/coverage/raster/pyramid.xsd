@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:raster="http://www.deegree.org/datasource/coverage/pyramid" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/coverage/pyramid" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.coverage.persistence.pyramid.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="Pyramid">
+    <complexType>
+      <sequence>
+        <element name="PyramidFile" type="string" />
+        <!-- overrides the one in the geotiff -->
+        <element name="CRS" type="string" minOccurs="0" />
+      </sequence>
+      <!-- value assigned to the no data pixels (e.g the background) -->
+      <attribute name="originLocation" default="center" type="raster:OriginLocation" />
+      <attribute name="nodata" type="decimal" />
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <simpleType name="OriginLocation">
+    <restriction base="string">
+      <enumeration value="center" />
+      <enumeration value="outer" />
+    </restriction>
+  </simpleType>
+
+</schema>
