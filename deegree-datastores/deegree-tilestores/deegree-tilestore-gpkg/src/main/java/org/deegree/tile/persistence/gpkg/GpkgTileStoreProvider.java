@@ -58,7 +58,7 @@ import java.net.URL;
 public class GpkgTileStoreProvider extends TileStoreProvider {
 
     private static final URL SCHEMA = GpkgTileStoreProvider.class.getResource(
-                            "/META-INF/schemas/datasource/tile/gpkg/3.2.0/geopackage.xsd" );
+                            "/META-INF/schemas/datasource/tile/gpkg/geopackage.xsd" );
 
     @Override
     public String getNamespace() {
