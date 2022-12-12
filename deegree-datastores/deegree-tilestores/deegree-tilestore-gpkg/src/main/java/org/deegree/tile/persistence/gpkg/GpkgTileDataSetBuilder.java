@@ -56,7 +56,7 @@ import java.util.*;
  * Builds tile data sets from jaxb config beans.
  *
  * @author <a href="mailto:migliavacca@lat-lon.de">Diego Migliavacca</a>
- * @author last edited by: $Author: dmigliavacca $
+ * @since 3.5
  */
 class GpkgTileDataSetBuilder {
 

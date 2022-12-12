@@ -54,10 +54,10 @@ import java.util.Map;
 import static java.util.Collections.singletonList;
 
 /**
- * This class is responsible for building geotiff tile stores.
+ * This class is responsible for building GeoPackage tile stores.
  *
  * @author <a href="mailto:migliavacca@lat-lon.de">Diego Migliavacca</a>
- * @author last edited by: $Author: dmigliavacca $
+ * @since 3.5
  */
 public class GpkgTileStoreBuilder implements ResourceBuilder<TileStore> {
 
