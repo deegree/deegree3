@@ -127,7 +127,8 @@ public class Java2DRendererTest extends AbstractSimilarityTest {
 
         // Load Fonts
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        for ( String fontName : List.of("/LiberationMono-Regular.ttf", "/LiberationSans-Regular.ttf")) {
+        for ( String fontName : List.of("/com/mpobjects/jasperreports/fonts/liberation/LiberationMono-Regular.ttf",
+                                        "/com/mpobjects/jasperreports/fonts/liberation/LiberationSans-Regular.ttf")) {
             try (InputStream is = Java2DRendererTest.class.getResourceAsStream( fontName )) {
                 Font f = Font.createFont( Font.TRUETYPE_FONT, is );
                 LOG.info("Loaded font with Name {} Font Name: {} Family Name: {}", f.getName(), f.getFontName(), f.getFontName() );
