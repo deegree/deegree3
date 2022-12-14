@@ -194,6 +194,8 @@ public class OGCFrontController extends HttpServlet {
 
     private transient String version;
 
+    private boolean isReportDeegreeVersion = false;
+
     /**
      * Returns the only instance of this class.
      * 
@@ -295,11 +297,13 @@ public class OGCFrontController extends HttpServlet {
         return getInstance().modulesInfo;
     }
 
-    private static void addHeaders( HttpServletResponse response ) {
+    private void addHeaders( HttpServletResponse response ) {
         // add cache control headers
         response.addHeader( "Cache-Control", "no-cache, no-store" );
         // add deegree header
-        response.addHeader( "deegree-version", getInstance().version );
+        if ( isReportDeegreeVersion ) {
+            response.addHeader( "deegree-version", getInstance().version );
+        }
     }
 
     /**
@@ -1110,6 +1114,9 @@ public class OGCFrontController extends HttpServlet {
         serviceConfiguration = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         mainConfig = loader.getMainConfig();
+        if ( mainConfig != null && mainConfig.isReportDeegreeVersion() != null ) {
+            this.isReportDeegreeVersion = mainConfig.isReportDeegreeVersion();
+        }
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
         }
