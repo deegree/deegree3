@@ -906,7 +906,7 @@ The first parameter is the hatching angle, the second is the line spacing in the
 </PolygonSymbolizer>
 ----
 TIP: For of the shelf hates, which will create nice results, use the mark symbol `shape://slash`, `shape://backslash`
-or `shape://times` for  45°, `shape://horline` for 0° and `shape://vertline` for 90° hatches.
+or `shape://times` for  45Â°, `shape://horline` for 0Â° and `shape://vertline` for 90Â° hatches.
 For hatching with user-defined angles it is recommended to use `shape://vertline`.
 
 TIP: With user-defined distances or angles that are not divisible by 45, rounding inaccuracies may occur and become
