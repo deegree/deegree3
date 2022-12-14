@@ -67,8 +67,6 @@
 			</Graphic>
 		</PointSymbolizer>
 	</Rule>
-	<!-- DISABLED FONT INDEX ISSUE -->
-	<!--
 	<Rule>
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
@@ -95,7 +93,6 @@
 			</Graphic>
 		</PointSymbolizer>
 	</Rule>
-	-->
 	<Rule>
 		<ogc:Filter>
 			<ogc:PropertyIsEqualTo>
