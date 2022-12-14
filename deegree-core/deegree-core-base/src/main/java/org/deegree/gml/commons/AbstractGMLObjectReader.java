@@ -85,6 +85,7 @@ import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -139,6 +140,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectReader.class );
+
+    private static final boolean PROPERTY_SIMPLE_TRIM = TunableParameter.get("deegree.gml.property.simple.trim", true);
 
     protected final String gmlNs;
 
@@ -275,7 +278,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             // TODO need to check that element is indeed empty?
             XMLStreamUtils.nextElement( xmlStream );
         } else {
-            property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
+            String value = PROPERTY_SIMPLE_TRIM ? xmlStream.getElementText().trim() : xmlStream.getElementText();
+            property = createSimpleProperty( xmlStream, propDecl, value );
         }
         return property;
     }
