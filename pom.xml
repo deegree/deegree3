@@ -497,6 +497,12 @@
         <version>${jsonpath.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>com.mpobjects.jasperreports.font</groupId>
+        <artifactId>jasperreports-fonts-liberation</artifactId>
+        <version>2.1.2</version>
+        <scope>test</scope>
+      </dependency>
       <!-- apache commons -->
       <dependency>
         <groupId>commons-io</groupId>
