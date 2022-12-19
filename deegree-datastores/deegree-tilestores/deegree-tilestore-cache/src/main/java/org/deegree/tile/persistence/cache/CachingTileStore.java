@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 /**
  * {@link TileStore} that acts as a caching proxy to another {@link TileStore}.
@@ -81,7 +82,7 @@ public class CachingTileStore implements TileStore {
 
     private Map<String, TileDataSet> tileMatrixSets;
 
-    private ResourceMetadata<TileStore> metadata;
+    private final ResourceMetadata<TileStore> metadata;
 
     public CachingTileStore( TileStore tileStore, String cacheName, URL cacheConfiguration,
                              ResourceMetadata<TileStore> metadata ) {
@@ -89,8 +90,8 @@ public class CachingTileStore implements TileStore {
         this.metadata = metadata;
         Configuration xmlConfig = new XmlConfiguration( cacheConfiguration );
         this.cacheManager = CacheManagerBuilder.newCacheManager( xmlConfig );
-        cacheManager.init();
-        cache = this.cacheManager.getCache( cacheName, String.class, byte[].class );
+        this.cacheManager.init();
+        this.cache = this.cacheManager.getCache( cacheName, String.class, byte[].class );
     }
 
     @Override
@@ -148,10 +149,9 @@ public class CachingTileStore implements TileStore {
      */
     public long invalidateCache( String tileMatrixSet, Envelope envelope ) {
         if ( envelope == null ) {
-            //TODO:cache.getSize();
-            int size = 0;
+            long count = StreamSupport.stream( cache.spliterator(), false ).count();
             cache.clear();
-            return size;
+            return count;
         }
         long cnt = 0;
         for ( TileDataLevel tm : tileMatrixSets.get( tileMatrixSet ).getTileDataLevels() ) {
