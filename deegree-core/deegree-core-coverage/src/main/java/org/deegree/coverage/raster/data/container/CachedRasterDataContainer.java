@@ -40,7 +40,10 @@ import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.Loa
 import org.deegree.coverage.raster.io.RasterDataReader;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.config.units.MemoryUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,13 +68,21 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     private final static String CACHENAME = "CachedRasterDataContainer";
 
+    private static final StatisticsRetrieval statsRetrievalService = new StatisticsRetrieval();
+
     static {
         try {
             // TODO: make cachename configurable
             // see ehcache.xml for CachedRasterDataContainer configuration
-            CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build();
+            CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder().using(
+                            statsRetrievalService ).build();
             cacheManager.init();
-            cache = cacheManager.getCache( CACHENAME, String.class, RasterData.class );
+            cache = cacheManager.createCache( CACHENAME, CacheConfigurationBuilder.newCacheConfigurationBuilder(
+                            String.class,
+                            RasterData.class,
+                            ResourcePoolsBuilder.newResourcePoolsBuilder().offheap(
+                                            1,
+                                            MemoryUnit.GB ) ) );
         } catch ( Throwable e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }
@@ -111,7 +122,9 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
             RasterData raster = reader.read();
             cache.put( identifier, raster );
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "cache miss: " + this );// + "#mem: " + cache.getMemoryStoreSize() );
+                long occupiedByteSize = statsRetrievalService.getStatisticsService().getCacheStatistics(
+                                CACHENAME ).getTierStatistics().get( "OffHeap" ).getOccupiedByteSize();
+                LOG.debug( "cache miss: " + this + " #mem: " + occupiedByteSize );
             }
             return raster;
         } else {
