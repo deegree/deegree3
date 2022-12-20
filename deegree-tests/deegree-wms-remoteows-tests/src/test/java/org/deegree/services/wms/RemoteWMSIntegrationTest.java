@@ -42,7 +42,6 @@
 package org.deegree.services.wms;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -51,8 +50,6 @@ import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,12 +70,9 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 
 @RunWith(Parameterized.class)
-@Ignore
 public class RemoteWMSIntegrationTest {
 
     private static final Logger LOG = getLogger( RemoteWMSIntegrationTest.class );
-
-    private static int numFailed = 0;
 
     private final String resourceName;
 
@@ -135,14 +129,5 @@ public class RemoteWMSIntegrationTest {
             sb.append( "?" );
         sb.append( request );
         return sb.toString();
-    }
-
-    private byte[] parseAsBytes( RenderedImage actual )
-                    throws IOException {
-        ByteArrayOutputStream bosActual = new ByteArrayOutputStream();
-        ImageIO.write( actual, "png", bosActual );
-        bosActual.flush();
-        bosActual.close();
-        return bosActual.toByteArray();
     }
 }
