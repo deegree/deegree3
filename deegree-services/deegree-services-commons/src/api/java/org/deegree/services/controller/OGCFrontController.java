@@ -85,8 +85,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.apache.axiom.soap.impl.common.SOAP11Factory;
-import org.apache.axiom.soap.impl.common.SOAP12Factory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -194,7 +192,7 @@ public class OGCFrontController extends HttpServlet {
 
     private transient String version;
 
-    private boolean isReportDeegreeVersion = false;
+    private boolean addDeegreeVersionToHeader = false;
 
     /**
      * Returns the only instance of this class.
@@ -301,7 +299,7 @@ public class OGCFrontController extends HttpServlet {
         // add cache control headers
         response.addHeader( "Cache-Control", "no-cache, no-store" );
         // add deegree header
-        if ( isReportDeegreeVersion ) {
+        if ( addDeegreeVersionToHeader ) {
             response.addHeader( "deegree-version", getInstance().version );
         }
     }
@@ -1114,8 +1112,8 @@ public class OGCFrontController extends HttpServlet {
         serviceConfiguration = workspace.getNewWorkspace().getResourceManager( OwsManager.class );
         OwsGlobalConfigLoader loader = workspace.getNewWorkspace().getInitializable( OwsGlobalConfigLoader.class );
         mainConfig = loader.getMainConfig();
-        if ( mainConfig != null && mainConfig.isReportDeegreeVersion() != null ) {
-            this.isReportDeegreeVersion = mainConfig.isReportDeegreeVersion();
+        if ( mainConfig != null && mainConfig.isAddDeegreeVersionToHeader() != null ) {
+            this.addDeegreeVersionToHeader = mainConfig.isAddDeegreeVersionToHeader();
         }
         if ( mainConfig != null ) {
             initHardcodedUrls( mainConfig );
