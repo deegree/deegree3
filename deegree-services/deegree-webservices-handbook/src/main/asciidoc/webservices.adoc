@@ -2153,7 +2153,7 @@ NOTE: Further information of the configuration of the cache can be found in http
    <TileStoreId>wmts_acrit</TileStoreId>
    <!-- The related ehcache configuration file in the root directory of the deegree workspace -->
    <CacheConfiguration>../../ehcache_wmts_acrit.xml</CacheConfiguration>
-   <!-- The name of the cache in the ehcache configuration file /ehcache/cache/@name -->
+   <!-- The name of the cache in the ehcache configuration file /config/cache/@alias -->
    <CacheName>map_cache</CacheName>
 </CachingTileStore>
 
