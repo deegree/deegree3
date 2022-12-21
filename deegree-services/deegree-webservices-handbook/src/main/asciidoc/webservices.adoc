@@ -2696,6 +2696,8 @@ specifiying them, their order must be respected.
 |ReportedUrls |0..1 |Complex |Hardcode reported URLs in service
 responses
 
+|AddDeegreeVersionToHeader |0..1 |Boolean |Add header "deegree-version" to each response, default: false
+
 |PreventClassloaderLeaks |0..1 |Boolean |TODO
 
 |RequestLogging |0..1 |Complex |TODO
