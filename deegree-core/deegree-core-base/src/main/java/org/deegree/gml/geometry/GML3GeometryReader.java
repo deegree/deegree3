@@ -821,6 +821,10 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
                 curve = parseCurve( xmlStream, defaultCRS );
                 break;
             }
+            case LinearRing: {
+                curve = parseLinearRing( xmlStream, defaultCRS );
+                break;
+            }
             case LineString: {
                 curve = parseLineString( xmlStream, defaultCRS );
                 break;
@@ -831,6 +835,10 @@ public class GML3GeometryReader extends GML3GeometryBaseReader implements GMLGeo
             }
             case OrientableCurve: {
                 curve = parseOrientableCurve( xmlStream, defaultCRS );
+                break;
+            }
+            case Ring: {
+                curve = parseRing( xmlStream, defaultCRS );
                 break;
             }
             default:
