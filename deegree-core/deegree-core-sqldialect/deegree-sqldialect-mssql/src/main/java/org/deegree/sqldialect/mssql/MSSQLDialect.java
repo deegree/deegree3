@@ -61,14 +61,12 @@ import org.deegree.sqldialect.SortCriterion;
 import org.deegree.sqldialect.filter.AbstractWhereBuilder;
 import org.deegree.sqldialect.filter.PropertyNameMapper;
 import org.deegree.sqldialect.filter.UnmappableException;
-import org.deegree.sqldialect.filter.mssql.MSSQLGeometryConverter;
-import org.deegree.sqldialect.filter.mssql.MSSQLWhereBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.deegree.sqldialect.AbstractSQLDialect;
 
 /**
- * {@link SQLDialect} for Microsoft SQL databases.
+ * {@link SQLDialect} for Microsoft SQL Server databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
