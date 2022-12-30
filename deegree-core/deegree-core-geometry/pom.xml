@@ -45,7 +45,6 @@
     <dependency>
       <groupId>net.postgis</groupId>
       <artifactId>postgis-geometry</artifactId>
-      <version>2.5.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
