@@ -66,6 +66,8 @@ public interface Curve extends GeometricPrimitive {
     public enum CurveType {
         /** Generic curve that consists of an arbitrary number of segments. */
         Curve,
+        /** A LinearRing consists of four or more coordinate tuples with linear interpolation. */
+        LinearRing,
         /** Curve that consists of a single segment with linear interpolation. */
         LineString,
         /** Curve that wraps a base curve with additional orientation flag. */
