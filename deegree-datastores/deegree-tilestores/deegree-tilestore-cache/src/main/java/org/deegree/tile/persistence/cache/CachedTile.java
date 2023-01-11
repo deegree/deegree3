@@ -41,32 +41,28 @@
 
 package org.deegree.tile.persistence.cache;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
-
 import org.apache.commons.io.IOUtils;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.geometry.Envelope;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileIOException;
+import org.ehcache.Cache;
 import org.slf4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * A {@link Tile} that is backed by a {@link CachingTileStore}.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 public class CachedTile implements Tile {
@@ -75,13 +71,13 @@ public class CachedTile implements Tile {
 
     private final Tile tile;
 
-    private final Cache cache;
+    private final Cache<String, byte[]> cache;
 
     private final String key;
 
     private byte[] data;
 
-    public CachedTile( Tile tile, Cache cache, String key ) {
+    public CachedTile( Tile tile, Cache<String, byte[]> cache, String key ) {
         this.tile = tile;
         this.cache = cache;
         this.key = key;
@@ -89,7 +85,7 @@ public class CachedTile implements Tile {
 
     @Override
     public BufferedImage getAsImage()
-                            throws TileIOException {
+                    throws TileIOException {
         try {
             return ImageIO.read( new ByteArrayInputStream( getData() ) );
         } catch ( IOException e ) {
@@ -111,14 +107,13 @@ public class CachedTile implements Tile {
 
     @Override
     public FeatureCollection getFeatures( int i, int j, int limit )
-                            throws UnsupportedOperationException {
+                    throws UnsupportedOperationException {
         return tile.getFeatures( i, j, limit );
     }
 
     private synchronized byte[] getData() {
         if ( data == null ) {
-            Element elem = cache.get( key );
-            if ( elem == null ) {
+            if ( !cache.containsKey( key ) ) {
                 try {
                     InputStream is = tile.getAsStream();
                     if ( is == null ) {
@@ -126,13 +121,13 @@ public class CachedTile implements Tile {
                     } else {
                         data = IOUtils.toByteArray( is );
                     }
-                    cache.put( new Element( key, data ) );
+                    cache.put( key, data );
                 } catch ( IOException e ) {
                     LOG.trace( e.getMessage(), e );
                     throw new TileIOException( e.getMessage(), e );
                 }
             } else {
-                data = (byte[]) elem.getValue();
+                data = cache.get( key );
             }
         }
         return data;

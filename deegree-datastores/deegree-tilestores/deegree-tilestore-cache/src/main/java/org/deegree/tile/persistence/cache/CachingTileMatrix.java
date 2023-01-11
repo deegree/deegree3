@@ -41,20 +41,18 @@
 
 package org.deegree.tile.persistence.cache;
 
-import java.util.List;
-
-import net.sf.ehcache.Cache;
-
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.TileMatrix;
+import org.ehcache.Cache;
+
+import java.util.List;
 
 /**
  * <code>CachingTileMatrix</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
@@ -62,11 +60,11 @@ public class CachingTileMatrix implements TileDataLevel {
 
     private final TileDataLevel tileMatrix;
 
-    private final Cache cache;
+    private final Cache<String, byte[]> cache;
 
     private final String identifier;
 
-    public CachingTileMatrix( TileDataLevel tileMatrix, Cache cache ) {
+    public CachingTileMatrix( TileDataLevel tileMatrix, Cache<String, byte[]> cache ) {
         this.tileMatrix = tileMatrix;
         this.cache = cache;
         this.identifier = tileMatrix.getMetadata().getIdentifier();
@@ -80,7 +78,7 @@ public class CachingTileMatrix implements TileDataLevel {
     @Override
     public Tile getTile( long x, long y ) {
         Tile tile = tileMatrix.getTile( x, y );
-        if (tile == null) {
+        if ( tile == null ) {
             return null;
         }
         String key = identifier + "_" + x + "_" + y;
