@@ -140,7 +140,7 @@
           <version>3.0.0-M7</version>
           <configuration>
             <!-- Travis build workaround -->
-            <argLine>-Djava.awt.headless=true -Xms1024m -Xmx2048m --illegal-access=permit
+            <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m --illegal-access=permit
               --add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.net=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED
