@@ -80,10 +80,10 @@ import org.slf4j.Logger;
 
 /**
  * Builds a {@link StandardTheme} from jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class StandardThemeBuilder implements ResourceBuilder<Theme> {
@@ -176,9 +176,8 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
         if ( current.getLegendGraphic() != null && current.getLegendGraphic().getValue() != null
              && !current.getLegendGraphic().getValue().isEmpty() ) {
             Map<String, Style> configuredLegendStyles = new HashMap<>();
-            Style style = parseConfiguredStyles( current.getLegendGraphic() );
+            Style style = parseConfiguredStyle( current.getLegendGraphic() );
             configuredLegendStyles.put( style.getName(), style );
-            md.setStyles( configuredLegendStyles );
             md.setLegendStyles( configuredLegendStyles );
         } else {
             md.setStyles( styles );
@@ -187,7 +186,7 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
         return new StandardTheme( md, thms, lays, metadata );
     }
 
-    private Style parseConfiguredStyles( ThemeType.LegendGraphic configuredLegendGraphic ) {
+    private Style parseConfiguredStyle( ThemeType.LegendGraphic configuredLegendGraphic ) {
         Style style = new Style();
         style.setName( "default" );
         URL url = null;
