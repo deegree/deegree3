@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/themes/remotewms" xmlns:l="http://www.deegree.org/themes/remotewms"
-  elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:md="http://www.deegree.org/metadata/description"
-  jaxb:version="2.1">
+  elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" xmlns:md="http://www.deegree.org/metadata/description"
+  jaxb:version="3.0">
 
   <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../commons/spatialmetadata/spatialmetadata.xsd" />
 

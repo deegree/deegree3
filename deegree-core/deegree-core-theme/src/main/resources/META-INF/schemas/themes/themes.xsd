@@ -1,6 +1,6 @@
 <schema xmlns:t="http://www.deegree.org/themes/standard" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema"
- targetNamespace="http://www.deegree.org/themes/standard" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
- jaxb:version="2.1" xmlns:d="http://www.deegree.org/metadata/description" xmlns:g="http://www.deegree.org/metadata/spatial">
+ targetNamespace="http://www.deegree.org/themes/standard" elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+ jaxb:version="3.0" xmlns:d="http://www.deegree.org/metadata/description" xmlns:g="http://www.deegree.org/metadata/spatial">
 
  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="../commons/description/description.xsd" />
  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../commons/spatialmetadata/spatialmetadata.xsd" />

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/spring/layer"
-	elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
 	xmlns:g="http://www.deegree.org/spring/generic"
-	jaxb:version="2.1">
+	jaxb:version="3.0">
 	
 	<import namespace="http://www.deegree.org/spring/generic" schemaLocation="./generic.xsd"/>
 	

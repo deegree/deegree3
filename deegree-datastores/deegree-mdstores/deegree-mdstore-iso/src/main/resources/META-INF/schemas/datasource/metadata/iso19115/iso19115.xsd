@@ -2,7 +2,7 @@
 <!-- This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license. -->
 <schema xmlns:ds="http://www.deegree.org/datasource/metadata/iso19115" xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://www.deegree.org/datasource/metadata/iso19115" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
