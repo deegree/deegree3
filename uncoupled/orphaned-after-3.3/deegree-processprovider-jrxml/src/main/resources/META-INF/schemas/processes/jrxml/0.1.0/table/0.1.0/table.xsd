@@ -3,8 +3,8 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.deegree.org/processprovider/table"
 	xmlns:tbl="http://www.deegree.org/processprovider/table"
-	elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	jaxb:version="2.1">
+	elementFormDefault="qualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 	<xs:annotation>
 		<xs:appinfo>
 			<jaxb:schemaBindings>

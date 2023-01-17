@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wps="http://www.deegree.org/processes/java" targetNamespace="http://www.deegree.org/processes/java"
-  elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-  jaxb:version="2.1">
+  elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+  jaxb:version="3.0">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>

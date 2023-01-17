@@ -1,7 +1,7 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
   xmlns:sql="http://www.deegree.org/datasource/observation/simplesql"
   targetNamespace="http://www.deegree.org/datasource/observation/simplesql" elementFormDefault="qualified"
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
   <annotation>
     <appinfo>
       <jaxb:schemaBindings>
