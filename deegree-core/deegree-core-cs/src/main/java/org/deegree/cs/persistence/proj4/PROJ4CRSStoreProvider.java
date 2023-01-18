@@ -41,7 +41,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.deegree.commons.utils.net.DURL;
 import org.deegree.commons.xml.XMLAdapter;

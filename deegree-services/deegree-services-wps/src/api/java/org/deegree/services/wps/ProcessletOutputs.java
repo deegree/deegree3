@@ -42,7 +42,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.deegree.commons.tom.ows.CodeType;
 import org.deegree.process.jaxb.java.BoundingBoxOutputDefinition;

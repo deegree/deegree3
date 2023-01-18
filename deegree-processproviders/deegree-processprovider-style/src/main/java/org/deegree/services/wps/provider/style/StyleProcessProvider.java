@@ -40,7 +40,7 @@ import static java.math.BigInteger.ONE;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.tom.ows.CodeType;

@@ -45,7 +45,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * Converts between <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> encodings and deegree's temporal

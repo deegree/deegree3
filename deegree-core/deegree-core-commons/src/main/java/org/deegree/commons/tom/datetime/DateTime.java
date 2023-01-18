@@ -36,7 +36,7 @@
 package org.deegree.commons.tom.datetime;
 
 import static java.util.Calendar.getInstance;
-import static javax.xml.bind.DatatypeConverter.printDateTime;
+import static jakarta.xml.bind.DatatypeConverter.printDateTime;
 
 import java.util.Calendar;
 import java.util.TimeZone;

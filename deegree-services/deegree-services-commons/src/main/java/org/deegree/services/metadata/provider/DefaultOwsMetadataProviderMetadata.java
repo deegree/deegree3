@@ -29,7 +29,7 @@ package org.deegree.services.metadata.provider;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.deegree.services.jaxb.metadata.DeegreeServicesMetadataType;
 import org.deegree.services.metadata.OWSMetadataProvider;
