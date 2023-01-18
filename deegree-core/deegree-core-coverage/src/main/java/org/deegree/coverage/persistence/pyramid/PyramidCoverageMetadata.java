@@ -42,7 +42,7 @@ package org.deegree.coverage.persistence.pyramid;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.deegree.coverage.Coverage;
 import org.deegree.coverage.persistence.pyramid.jaxb.Pyramid;

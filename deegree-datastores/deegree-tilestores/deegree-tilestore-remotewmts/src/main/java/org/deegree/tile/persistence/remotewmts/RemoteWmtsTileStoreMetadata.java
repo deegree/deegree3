@@ -29,7 +29,7 @@ package org.deegree.tile.persistence.remotewmts;
 
 import static org.deegree.commons.xml.jaxb.JAXBUtils.unmarshall;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.deegree.remoteows.RemoteOWS;
 import org.deegree.remoteows.RemoteOWSProvider;
