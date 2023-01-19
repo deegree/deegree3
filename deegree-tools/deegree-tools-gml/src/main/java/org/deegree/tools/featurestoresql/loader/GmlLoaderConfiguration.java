@@ -122,11 +122,25 @@ public class GmlLoaderConfiguration {
                 resources = Files.lines( Paths.get( pathToList ) ) //
                                  .filter( Objects::nonNull ) //
                                  .filter( line -> !line.startsWith( "#" ) ) //
+                                 .filter( line -> !line.trim().isEmpty() ) //
                                  .map( PathResource::new ) //
+                                 .peek( pr -> {
+                                     if ( !pr.exists() ) {
+                                         final String msg = "The file " + pr.getDescription() + " in the list '"
+                                                                 + pathToList + "' does not exist!";
+                                         throw new IllegalArgumentException( msg );
+                                     } else if ( !pr.isReadable() ) {
+                                         final String msg = "The file " + pr.getDescription() + " in the list '"
+                                                                 + pathToList + "' is not readable!";
+                                         throw new IllegalArgumentException( msg );
+                                     }
+                                 } )
                                  .collect( Collectors.toList() );
                 
                 reader.setResources( resources.toArray( new Resource[resources.size()] ) );
                 return reader;
+            } catch ( IllegalArgumentException iex ) {
+                throw iex;
             } catch ( IOException ex ) {
                 throw new IllegalArgumentException( "Could not read file list.", ex );
             }
@@ -169,10 +183,17 @@ public class GmlLoaderConfiguration {
     public Step step( TransactionHandler transactionHandler, AbstractItemStreamItemReader<Feature> gmlReader,
                       FeatureReferencesParser featureReferencesParser, FeatureStoreWriter featureStoreWriter,
                       @Value("#{jobParameters['chunkSize']}") Integer chunkSize,
-                      @Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun ) {
+                      @Value("#{jobParameters['dryRun'] ?: false}") boolean dryRun,
+                      @Value("#{jobParameters['skipReferenceCheck'] ?: false}") boolean skipReferenceCheck ) {
         int chunk = chunkSize != null && chunkSize.intValue() > 10 ? chunkSize.intValue() : 10;
 
         SimpleStepBuilder<Feature, Feature> builder = stepBuilderFactory.get( "gmlLoaderStep" ).<Feature, Feature> chunk( chunk );
+        builder.reader( gmlReader );
+        if ( skipReferenceCheck ) {
+            LOG.warn( "The feature reference check will be skipped." );
+        } else {
+            builder.processor( featureReferencesParser );
+        }
         builder.reader( gmlReader ).processor( featureReferencesParser );
 
         if ( dryRun ) {
