@@ -962,6 +962,64 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
       </con:testStep>
       <con:properties/>
     </con:testCase>
+    <con:testCase id="ce45434d-251e-44b3-b28f-577f893fe159" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetFeature" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="GET" id="ff201fcd-971f-4e3b-8ee1-0b784c258f29">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="14fa8f6c-3f04-4ab2-952b-bbce5ebb7803" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="2246d1cd-2db5-4e6f-a96e-422a37d2dfc6" name="Valid deegree-version Response Header">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.response.responseHeaders
+def actualHeader = headers['deegree-version']
+assert actualHeader == null</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>service</con:name>
+              <con:value>WFS</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>request</con:name>
+              <con:value>GetFeature</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>version</con:name>
+              <con:value>2.0.0</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>typenames</con:name>
+              <con:value>app:Airports</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>count</con:name>
+              <con:value>10</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
     <con:properties/>
   </con:testSuite>
   <con:testSuite id="a4b79f25-4e21-4198-9dd4-a0fa53414659" name="WMS 1.1.1">
