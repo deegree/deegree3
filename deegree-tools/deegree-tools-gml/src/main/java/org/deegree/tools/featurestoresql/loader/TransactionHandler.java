@@ -21,6 +21,7 @@
  */
 package org.deegree.tools.featurestoresql.loader;
 
+import static java.util.Collections.emptySet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.batch.core.ExitStatus.COMPLETED;
 import static org.springframework.batch.core.ExitStatus.FAILED;
@@ -97,6 +98,10 @@ public class TransactionHandler implements StepExecutionListener {
     private FeatureReferenceCheckResult checkReferences( StepExecution stepExecution ) {
         List<String> featureIds = (List<String>) stepExecution.getExecutionContext().get( FeatureReferencesParser.FEATURE_IDS );
         List<String> referenceIds = (List<String>) stepExecution.getExecutionContext().get( FeatureReferencesParser.REFERENCE_IDS );
+        if (featureIds == null || referenceIds == null) {
+            LOG.warn( "The reference check is skipped during this operation" );
+            return new FeatureReferenceCheckResult( emptySet() );
+        }
         FeatureReferenceChecker featureReferenceChecker = new FeatureReferenceChecker();
         return featureReferenceChecker.checkReferences( featureIds, referenceIds );
     }
