@@ -194,7 +194,6 @@ public class GmlLoaderConfiguration {
         } else {
             builder.processor( featureReferencesParser );
         }
-        builder.reader( gmlReader ).processor( featureReferencesParser );
 
         if ( dryRun ) {
             return builder.build();
