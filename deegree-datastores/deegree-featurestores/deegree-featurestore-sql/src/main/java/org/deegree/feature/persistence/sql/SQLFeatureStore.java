@@ -77,7 +77,6 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
-import org.deegree.cs.refs.coordinatesystem.CRSRef;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
 import org.deegree.feature.Feature;
@@ -1011,10 +1010,10 @@ public class SQLFeatureStore implements FeatureStore {
             }
         }
 
-        if ( wmsStyleQuery ) {
-            return queryMultipleFts( queries, env );
-        }
         boolean isMaxFeaturesAndStartIndexApplicable = isMaxFeaturesAndStartIndexApplicable( queries );
+        if ( wmsStyleQuery ) {
+            return queryMultipleFtsFromBlob( queries, env, isMaxFeaturesAndStartIndexApplicable );
+        }
         Iterator<FeatureInputStream> rsIter = new Iterator<FeatureInputStream>() {
             int i = 0;
 
@@ -1534,7 +1533,8 @@ public class SQLFeatureStore implements FeatureStore {
         return result;
     }
 
-    private FeatureInputStream queryMultipleFts( Query[] queries, Envelope looseBBox )
+    private FeatureInputStream queryMultipleFtsFromBlob( Query[] queries, Envelope looseBBox,
+                                                         boolean isMaxFeaturesAndStartIndexApplicable )
                             throws FeatureStoreException {
         FeatureInputStream result = null;
         Connection conn = null;
@@ -1547,14 +1547,20 @@ public class SQLFeatureStore implements FeatureStore {
                 blobWb = getWhereBuilderBlob( bboxFilter, conn );
             }
             conn = getConnection();
-            final short[] ftId = getQueriedFeatureTypeIds( queries );
+            final List<Short> ftIds = new ArrayList<>();
             final StringBuilder sql = new StringBuilder();
-            for ( int i = 0; i < ftId.length; i++ ) {
+            for ( int i = 0; i < queries.length; i++ ) {
+                Query query = queries[i];
+                if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
+                    String msg = "Join queries between multiple feature types are currently not supported.";
+                    throw new UnsupportedOperationException( msg );
+                }
+                short ftId = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
                 if ( i > 0 ) {
                     sql.append( " UNION " );
                 }
                 sql.append( "SELECT gml_id,binary_object" );
-                if ( ftId.length > 1 ) {
+                if ( queries.length > 1 ) {
                     sql.append( "," );
                     sql.append( i );
                     sql.append( " AS QUERY_POS" );
@@ -1565,14 +1571,18 @@ public class SQLFeatureStore implements FeatureStore {
                 if ( looseBBox != null ) {
                     sql.append( " AND gml_bounded_by && ?" );
                 }
+                if (isMaxFeaturesAndStartIndexApplicable) {
+                    appendOffsetAndFetch(sql, query.getMaxFeatures(), query.getStartIndex());
+                }
+                ftIds.add( ftId );
             }
-            if ( ftId.length > 1 ) {
+            if ( queries.length > 1 ) {
                 sql.append( " ORDER BY QUERY_POS" );
             }
             stmt = conn.prepareStatement( sql.toString() );
             stmt.setFetchSize( fetchSize );
             int argIdx = 1;
-            for ( final short ftId2 : ftId ) {
+            for ( final short ftId2 : ftIds ) {
                 stmt.setShort( argIdx++, ftId2 );
                 if ( blobWb != null && blobWb.getWhere() != null ) {
                     for ( SQLArgument o : blobWb.getWhere().getArguments() ) {
@@ -1593,19 +1603,6 @@ public class SQLFeatureStore implements FeatureStore {
             throw new FeatureStoreException( msg, e );
         }
         return result;
-    }
-
-    private short[] getQueriedFeatureTypeIds( Query[] queries ) {
-        short[] ftId = new short[queries.length];
-        for ( int i = 0; i < ftId.length; i++ ) {
-            Query query = queries[i];
-            if ( query.getTypeNames() == null || query.getTypeNames().length > 1 ) {
-                String msg = "Join queries between multiple feature types are currently not supported.";
-                throw new UnsupportedOperationException( msg );
-            }
-            ftId[i] = getFtId( query.getTypeNames()[0].getFeatureTypeName() );
-        }
-        return ftId;
     }
 
     private AbstractWhereBuilder getWhereBuilder( Collection<FeatureTypeMapping> ftMappings, OperatorFilter filter, SortProperty[] sortCrit,
