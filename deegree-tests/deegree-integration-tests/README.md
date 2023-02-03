@@ -17,6 +17,7 @@ Contains a SoapUI Project "deegree-integration-tests" with following tests:
 ### WFS 2.0.0
 * GetCapabilities
 * DescribeFeatureType
+* GetFeature
 
 ### WMS 1.1.1
 * GetMap

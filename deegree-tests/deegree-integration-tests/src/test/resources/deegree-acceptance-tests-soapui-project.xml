@@ -964,9 +964,9 @@ exists( //wfs:FeatureTypeList/wfs:FeatureType/wfs:OtherCRS[text() = 'EPSG:4326']
     </con:testCase>
     <con:testCase id="ce45434d-251e-44b3-b28f-577f893fe159" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetFeature" searchProperties="true">
       <con:settings/>
-      <con:testStep type="httprequest" name="GET" id="ff201fcd-971f-4e3b-8ee1-0b784c258f29">
+      <con:testStep type="httprequest" name="GET responseHeader" id="ff201fcd-971f-4e3b-8ee1-0b784c258f29">
         <con:settings/>
-        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET responseHeader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
@@ -1013,6 +1013,207 @@ assert actualHeader == null</scriptText>
             <con:parameter>
               <con:name>count</con:name>
               <con:value>10</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="GET count" id="6c5c5455-b703-4c73-bd00-39b849053d6b">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET count" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="14fa8f6c-3f04-4ab2-952b-bbce5ebb7803" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="7e8d354f-c2aa-4506-8a2d-a598bfb0282c" name="Valid count">
+            <con:configuration>
+              <path>count(//*:FeatureCollection/*:member)</path>
+              <content>5</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>service</con:name>
+              <con:value>WFS</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>request</con:name>
+              <con:value>GetFeature</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>version</con:name>
+              <con:value>2.0.0</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>typenames</con:name>
+              <con:value>app:Airports</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>count</con:name>
+              <con:value>5</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="GET startindex" id="550493c8-0b51-42d8-a036-c87c1b87ab3e">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET startindex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="14fa8f6c-3f04-4ab2-952b-bbce5ebb7803" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="7e8d354f-c2aa-4506-8a2d-a598bfb0282c" name="Valid startindex">
+            <con:configuration>
+              <path>count(//*:FeatureCollection/*:member)</path>
+              <content>459</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>service</con:name>
+              <con:value>WFS</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>request</con:name>
+              <con:value>GetFeature</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>version</con:name>
+              <con:value>2.0.0</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>typenames</con:name>
+              <con:value>app:Airports</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>startindex</con:name>
+              <con:value>10</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="GET startindexAndCount" id="88fe69b4-980e-4fd9-9914-b1aeeafe7ea6">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="e64cf17b-adb2-48ca-9ed2-0cd8e691c9bc" name="GET startindexAndCount" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:description>The total feature count of FeatureType app:Airports is 469. By setting startindex=468 and count=2 with typenames=app:Airports,app:DominantVegetation, the output are two features. One feature is the last of app:Airports and the other the first of app:Vegetation.</con:description>
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#BaseUrl}/services/wfs</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="14fa8f6c-3f04-4ab2-952b-bbce5ebb7803" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="7e8d354f-c2aa-4506-8a2d-a598bfb0282c" name="Valid count">
+            <con:configuration>
+              <path>count(//*:FeatureCollection/*:member)</path>
+              <content>2</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="7e8d354f-c2aa-4506-8a2d-a598bfb0282c" name="Valid count Airports">
+            <con:configuration>
+              <path>count(//*:FeatureCollection/*:member/*:Airports)</path>
+              <content>1</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="7e8d354f-c2aa-4506-8a2d-a598bfb0282c" name="Valid count DominantVegetation">
+            <con:configuration>
+              <path>count(//*:FeatureCollection/*:member/*:DominantVegetation)</path>
+              <content>1</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="7e8d354f-c2aa-4506-8a2d-a598bfb0282c" name="Valid exist DominantVegetation">
+            <con:configuration>
+              <path>exists(//*:FeatureCollection/*:member/*:DominantVegetation)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>service</con:name>
+              <con:value>WFS</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>request</con:name>
+              <con:value>GetFeature</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>version</con:name>
+              <con:value>2.0.0</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>typenames</con:name>
+              <con:value>app:Airports,app:DominantVegetation</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>startindex</con:name>
+              <con:value>468</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+            <con:parameter>
+              <con:name>count</con:name>
+              <con:value>2</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
