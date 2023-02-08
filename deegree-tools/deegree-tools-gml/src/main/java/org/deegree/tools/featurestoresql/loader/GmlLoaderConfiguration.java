@@ -87,6 +87,7 @@ public class GmlLoaderConfiguration {
         return summary;
     }
 
+    @JobScope
     @Bean
     public ReportWriter reportWriter( Summary summary,
                                       @Value("#{jobParameters['reportFile'] ?: 'GmlLoader.log'}") String fileName ) {
