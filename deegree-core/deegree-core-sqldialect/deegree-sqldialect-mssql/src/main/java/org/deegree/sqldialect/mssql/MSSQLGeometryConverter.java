@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.sqldialect.filter.mssql;
+package org.deegree.sqldialect.mssql;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -52,7 +52,7 @@ import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.slf4j.Logger;
 
 /**
- * {@link GeometryParticleConverter} for PostGIS databases.
+ * {@link GeometryParticleConverter} for Microsoft SQL Server databases.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $

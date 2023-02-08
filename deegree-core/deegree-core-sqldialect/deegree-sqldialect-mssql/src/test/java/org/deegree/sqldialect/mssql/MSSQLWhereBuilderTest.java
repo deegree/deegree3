@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.sqldialect.filter.mssql;
+package org.deegree.sqldialect.mssql;
 
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.xml.CommonNamespaces;

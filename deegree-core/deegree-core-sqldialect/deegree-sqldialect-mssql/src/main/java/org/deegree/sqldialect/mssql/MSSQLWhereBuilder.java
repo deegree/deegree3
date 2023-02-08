@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.sqldialect.filter.mssql;
+package org.deegree.sqldialect.mssql;
 
 import static java.sql.Types.BOOLEAN;
 import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
