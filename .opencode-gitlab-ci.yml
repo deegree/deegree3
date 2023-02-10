@@ -23,7 +23,7 @@ update-repo-from-github-latlon-deegree3:
     - git log
     - echo "Pushing..."
     - git remote set-url origin git@gitlab.opencode.de:diplanung/diplancockpit/xplan-backend/xplan-deegree.git
-    - git push --set-upstream origin xplanbox-deegree3.5
+    - git push --force --set-upstream origin xplanbox-deegree3.5
     - echo "Handling tags..."
     - git fetch upstream tag xplanbox-deegree* --no-tags
     - git push origin --tags
