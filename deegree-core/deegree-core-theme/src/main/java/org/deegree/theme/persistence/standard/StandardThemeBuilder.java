@@ -178,6 +178,7 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
             Map<String, Style> configuredLegendStyles = new HashMap<>();
             Style style = parseConfiguredStyle( current.getLegendGraphic() );
             configuredLegendStyles.put( style.getName(), style );
+            md.setStyles( configuredLegendStyles );
             md.setLegendStyles( configuredLegendStyles );
         } else {
             md.setStyles( styles );
