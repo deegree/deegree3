@@ -1354,23 +1354,6 @@ public class SQLFeatureStore implements FeatureStore {
 				sql.append(" AND ");
 				sql.append(wb.getWhere().getSQL());
 			}
-			String rechtsstandColumnWithAlias = alias + "." + blobMapping.getXPlanRechtsstandColumn();
-			sql.append(" AND ").append(rechtsstandColumnWithAlias);
-			sql.append(" = (SELECT NULLIF(MAX(").append(rechtsstandColumnWithAlias).append("), ").append("'5000')");
-			sql.append(" FROM ");
-			sql.append(blobMapping.getTable());
-			sql.append(' ');
-			sql.append(alias);
-			sql.append(" WHERE ");
-			sql.append(alias);
-			sql.append(".");
-			sql.append(blobMapping.getTypeColumn());
-			sql.append("=?");
-			if (wb != null) {
-				sql.append(" AND ");
-				sql.append(wb.getWhere().getSQL());
-			}
-			sql.append(")");
 
 			// if ( wb != null && wb.getWhere() != null ) {
 			// if ( blobMapping != null ) {
@@ -1395,12 +1378,6 @@ public class SQLFeatureStore implements FeatureStore {
 
 			int i = 1;
 			// if ( blobMapping != null ) {
-			stmt.setShort(i++, getSchema().getFtId(ftName));
-			if (wb != null) {
-				for (SQLArgument o : wb.getWhere().getArguments()) {
-					o.setArgument(stmt, i++);
-				}
-			}
 			stmt.setShort(i++, getSchema().getFtId(ftName));
 			if (wb != null) {
 				for (SQLArgument o : wb.getWhere().getArguments()) {
