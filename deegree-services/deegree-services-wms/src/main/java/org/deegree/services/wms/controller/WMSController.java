@@ -63,6 +63,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -223,7 +224,9 @@ public class WMSController extends AbstractOWS {
 		capabilitiesManager = new CapabilitiesManager(isAddCapabilitiesDefaultFormatsEnabled(jaxbConfig));
 		featureInfoManager = new FeatureInfoManager(isAddFeatureInfoDefaultFormatsEnabled(jaxbConfig));
 		exceptionsManager = new ExceptionsManager(isAddExceptionsDefaultFormatsEnabled(jaxbConfig), this);
-		ouputFormatProvider = new DefaultOutputFormatProvider();
+        ouputFormatProvider = ServiceLoader.load( OutputFormatProvider.class ) //
+                                           .findFirst() //
+                                           .orElseGet( DefaultOutputFormatProvider::new );
 		initOfferedVersions(jaxbConfig.getSupportedVersions());
 	}
 

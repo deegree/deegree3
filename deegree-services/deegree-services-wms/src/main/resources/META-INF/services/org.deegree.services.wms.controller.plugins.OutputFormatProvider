@@ -1,1 +1,1 @@
-org.deegree.services.wms.controller.plugins.DefaultOutputFormatProvider
+# This has to be filled by the extension module that provides the non-default implementation
