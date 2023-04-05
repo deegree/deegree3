@@ -25,7 +25,7 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.JobLauncherCommandLineRunner;
+import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -47,8 +47,8 @@ public class CommonConfiguration {
     private JobRepository jobRepository;
 
     @Bean
-    public JobLauncherCommandLineRunner runner() {
-        return new JobLauncherCommandLineRunner( jobLauncher, jobExplorer, jobRepository );
+    public JobLauncherApplicationRunner runner() {
+        return new JobLauncherApplicationRunner( jobLauncher, jobExplorer, jobRepository );
     }
 
 }
