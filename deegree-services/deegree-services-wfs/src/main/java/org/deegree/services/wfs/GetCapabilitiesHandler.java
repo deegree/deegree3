@@ -654,7 +654,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 if ( ftMd != null && ftMd.getTitle( null ) != null ) {
                     writer.writeCharacters( ftMd.getTitle( null ).getString() );
                 } else {
-                    writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
+                    writer.writeCharacters( ftName.getLocalPart() );
                 }
                 writer.writeEndElement();
 
@@ -995,7 +995,7 @@ class GetCapabilitiesHandler extends OWSCapabilitiesXMLAdapter {
                 if ( ftMd != null && ftMd.getTitle( null ) != null ) {
                     writer.writeCharacters( ftMd.getTitle( null ).getString() );
                 } else {
-                    writer.writeCharacters( prefix + ":" + ftName.getLocalPart() );
+                    writer.writeCharacters( ftName.getLocalPart() );
                 }
                 writer.writeEndElement();
 
