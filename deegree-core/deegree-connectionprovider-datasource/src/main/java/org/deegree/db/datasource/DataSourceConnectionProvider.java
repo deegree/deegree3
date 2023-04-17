@@ -62,7 +62,7 @@ import org.slf4j.Logger;
  *
  * @since 3.4
  */
-class DataSourceConnectionProvider implements ConnectionProvider {
+public class DataSourceConnectionProvider implements ConnectionProvider {
 
     private static final Logger LOG = getLogger( DataSourceConnectionProvider.class );
 
@@ -139,5 +139,9 @@ class DataSourceConnectionProvider implements ConnectionProvider {
     public void invalidate( Connection conn ) {
         // nothing to do
     }
+
+	public DataSource getDataSource() {
+		return ds;
+	}
 
 }
