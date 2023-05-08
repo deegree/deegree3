@@ -64,77 +64,122 @@ import org.junit.Test;
 /**
  * Tests that check the expected generation of validation events by the
  * {@link GmlGeometryValidationEvent}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  */
 public class GmlGeometryValidatorTest {
 
-	private static final String BASE_DIR = "../misc/geometry/";
+    private static final String BASE_DIR = "../misc/geometry/";
 
-	@Test
-	public void validateCurve()
+    @Test
+    public void validateCurve()
 			throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException, UnknownCRSException {
-		TestEventHandler eventHandler = validate("Curve.gml");
-		assertEquals(0, eventHandler.getEvents().size());
-	}
+        TestEventHandler eventHandler = validate( "Curve.gml" );
+        assertEquals( 0, eventHandler.getEvents().size() );
+    }
 
-	@Test
-	public void validateCurveDiscontinuity()
+    @Test
+    public void validateCurveDiscontinuity()
 			throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException, UnknownCRSException {
-		TestEventHandler eventHandler = validate("invalid/Curve_discontinuity.gml");
-		assertEquals(1, eventHandler.getEvents().size());
-		GmlGeometryValidationEvent event = eventHandler.getEvents().get(0);
-		Assert.assertEquals(CurveDiscontinuity.class, event.getEvent().getClass());
+        TestEventHandler eventHandler = validate( "invalid/Curve_discontinuity.gml" );
+        assertEquals( 1, eventHandler.getEvents().size() );
+        GmlGeometryValidationEvent event = eventHandler.getEvents().get( 0 );
+        Assert.assertEquals( CurveDiscontinuity.class, event.getEvent().getClass() );
+    }
+
+    @Test
+    public void validateRingNotClosed()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+        TestEventHandler eventHandler = validate( "invalid/Ring_not_closed.gml" );
+        assertEquals( 1, eventHandler.getEvents().size() );
+        GmlGeometryValidationEvent event = eventHandler.getEvents().get( 0 );
+        Assert.assertEquals( RingNotClosed.class, event.getEvent().getClass() );
+    }
+
+    @Test
+    public void validatePolygonExteriorClockwise()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+        TestEventHandler eventHandler = validate( "invalid/Polygon_exterior_clockwise.gml" );
+        assertEquals( 3, eventHandler.getEvents().size() );
+        Assert.assertTrue( ( (ExteriorRingOrientation) ( eventHandler.getEvents().get( 0 ).getEvent() ) ).isClockwise() );
+        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler.getEvents().get( 1 ).getEvent() ) ).isClockwise() );
+        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler.getEvents().get( 2 ).getEvent() ) ).isClockwise() );
+    }
+    
+        @Test
+    public void validateLeftHandRightHandClockwiseOrientation()
+                            throws XMLStreamException, UnknownCRSException, FactoryConfigurationError, IOException {
+        TestEventHandler eventHandler = validate( "invalid/LeftHanded_exterior_clockwise_interior_clockwise.gml" );
+        assertEquals( 2, eventHandler.getEvents().size() );
+        Assert.assertTrue( ( (ExteriorRingOrientation) ( eventHandler.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertFalse( ( (InteriorRingOrientation) ( eventHandler.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+        TestEventHandler eventHandler2 = validate( "invalid/LeftHanded_exterior_clockwise_interior_anticlockwise.gml" );
+        assertEquals( 2, eventHandler2.getEvents().size() );
+        Assert.assertTrue( ( (ExteriorRingOrientation) ( eventHandler2.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler2.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+	TestEventHandler eventHandler3 = validate( "invalid/LeftHanded_exterior_anticlockwise_interior_clockwise.gml" );
+        assertEquals( 2, eventHandler3.getEvents().size() );
+        Assert.assertFalse( ( (ExteriorRingOrientation) ( eventHandler3.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertFalse( ( (InteriorRingOrientation) ( eventHandler3.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+	TestEventHandler eventHandler4 = validate( "invalid/LeftHanded_exterior_anticlockwise_interior_anticlockwise.gml" );
+        assertEquals( 2, eventHandler4.getEvents().size() );
+        Assert.assertFalse( ( (ExteriorRingOrientation) ( eventHandler4.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler4.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+        TestEventHandler eventHandler5 = validate( "invalid/RightHanded_exterior_clockwise_interior_clockwise.gml" );
+        assertEquals( 2, eventHandler5.getEvents().size() );
+        Assert.assertFalse( ( (ExteriorRingOrientation) ( eventHandler5.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler5.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+        TestEventHandler eventHandler6 = validate( "invalid/RightHanded_exterior_clockwise_interior_anticlockwise.gml" );
+        assertEquals( 2, eventHandler6.getEvents().size() );
+        Assert.assertFalse( ( (ExteriorRingOrientation) ( eventHandler6.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertFalse( ( (InteriorRingOrientation) ( eventHandler6.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+        TestEventHandler eventHandler7 = validate( "invalid/RightHanded_exterior_anticlockwise_interior_clockwise.gml" );
+        assertEquals( 2, eventHandler7.getEvents().size() );
+        Assert.assertTrue( ( (ExteriorRingOrientation) ( eventHandler7.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertTrue( ( (InteriorRingOrientation) ( eventHandler7.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+        
+        TestEventHandler eventHandler8 = validate( "invalid/RightHanded_exterior_anticlockwise_interior_anticlockwise.gml" );
+        assertEquals( 2, eventHandler8.getEvents().size() );
+        Assert.assertTrue( ( (ExteriorRingOrientation) ( eventHandler8.getEvents().get( 0 ).getEvent() ) ).isExterior() );
+        Assert.assertFalse( ( (InteriorRingOrientation) ( eventHandler8.getEvents().get( 1 ).getEvent() ) ).isInterior() );
+
 	}
 
-	@Test
-	public void validateRingNotClosed()
-			throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
-		TestEventHandler eventHandler = validate("invalid/Ring_not_closed.gml");
-		assertEquals(1, eventHandler.getEvents().size());
-		GmlGeometryValidationEvent event = eventHandler.getEvents().get(0);
-		Assert.assertEquals(RingNotClosed.class, event.getEvent().getClass());
-	}
-
-	@Test
-	public void validatePolygonExteriorClockwise()
-			throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
-		TestEventHandler eventHandler = validate("invalid/Polygon_exterior_clockwise.gml");
-		assertEquals(3, eventHandler.getEvents().size());
-		Assert.assertTrue(((ExteriorRingOrientation) (eventHandler.getEvents().get(0).getEvent())).isClockwise());
-		Assert.assertTrue(((InteriorRingOrientation) (eventHandler.getEvents().get(1).getEvent())).isClockwise());
-		Assert.assertTrue(((InteriorRingOrientation) (eventHandler.getEvents().get(2).getEvent())).isClockwise());
-	}
-
-	private TestEventHandler validate(String resourceName)
-			throws XMLStreamException, UnknownCRSException, FactoryConfigurationError, IOException {
-		TestEventHandler eventHandler = new TestEventHandler();
-		URL resourceUrl = GML3GeometryReaderTest.class.getResource(BASE_DIR + resourceName);
-		GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader(GML_31, resourceUrl);
-		GmlStreamGeometryValidator validator = new GmlStreamGeometryValidator(gmlStream, eventHandler);
-		validator.validateGeometries();
-		return eventHandler;
-	}
+    private TestEventHandler validate( String resourceName )
+                            throws XMLStreamException, UnknownCRSException, FactoryConfigurationError, IOException {
+        TestEventHandler eventHandler = new TestEventHandler();
+        URL resourceUrl = GML3GeometryReaderTest.class.getResource( BASE_DIR + resourceName );
+        GMLStreamReader gmlStream = GMLInputFactory.createGMLStreamReader( GML_31, resourceUrl );
+        GmlStreamGeometryValidator validator = new GmlStreamGeometryValidator( gmlStream, eventHandler );
+        validator.validateGeometries();
+        return eventHandler;
+    }
 
 }
 
 class TestEventHandler implements GmlGeometryValidationEventHandler {
 
-	private final List<GmlGeometryValidationEvent> events = new ArrayList<GmlGeometryValidationEvent>();
+    private final List<GmlGeometryValidationEvent> events = new ArrayList<GmlGeometryValidationEvent>();
 
-	@Override
-	public void parsingError(GmlElementIdentifier geometryElement, Exception e) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void parsingError( GmlElementIdentifier geometryElement, Exception e ) {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public boolean topologicalEvent(GmlGeometryValidationEvent event) {
-		events.add(event);
-		return false;
-	}
+    @Override
+    public boolean topologicalEvent( GmlGeometryValidationEvent event ) {
+        events.add( event );
+        return false;
+    }
 
-	List<GmlGeometryValidationEvent> getEvents() {
-		return events;
-	}
+    List<GmlGeometryValidationEvent> getEvents() {
+        return events;
+    }
 
 }
