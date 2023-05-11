@@ -26,7 +26,7 @@ data sets that conform to a pre-defined tile matrix set. In that case,
 one only has to provide the tile store configuration file.
 
 The term tile matrix set has been coined deliberately to coincide with
-the same term from the http://www.opengeospatial.org/standards/wmts[WMTS
+the same term from the https://www.ogc.org/standard/wmts/[WMTS
 specification] and refers to structure and spatial properties of the
 tile matrix. The tile matrix sets (or "quads") from WMTS 1.0.0 and
 INSPIRE ViewService 3.1 specifications are already predefined, but
