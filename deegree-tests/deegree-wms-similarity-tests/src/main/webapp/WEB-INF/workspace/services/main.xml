@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeServiceController xmlns="http://www.deegree.org/services/controller"
-  xsi:schemaLocation="http://www.deegree.org/webservices http://schemas.deegree.org/3.5/services/controller/controller.xsd"
+  xsi:schemaLocation="http://www.deegree.org/webservices http://schemas.deegree.org/core/3.5/services/controller/controller.xsd"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <!--   <DCP>-->
   <!--

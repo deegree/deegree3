@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <GMLCRSStore xmlns="http://www.deegree.org/crs/stores/gml"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/stores/gml/gml.xsd"
+	xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/core/3.5/crs/stores/gml/gml.xsd"
 	transformationType="NTV2">
 	<GMLFile>files/gmlDictionary1.xml</GMLFile>
 </GMLCRSStore>

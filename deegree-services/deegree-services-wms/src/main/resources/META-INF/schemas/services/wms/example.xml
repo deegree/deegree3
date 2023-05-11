@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wms:deegreeWMS xmlns:wms="http://www.deegree.org/services/wms" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dgws="http://www.deegree.org/webservices"
-  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/3.5/services/wms/wms_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wms http://schemas.deegree.org/core/3.5/services/wms/wms_configuration.xsd">
 
   <wms:ServiceConfiguration>
     <wms:ThemeId>theme</wms:ThemeId>

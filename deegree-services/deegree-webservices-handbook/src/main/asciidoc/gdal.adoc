@@ -98,7 +98,7 @@ configuration example looks like this:
 ----
 <GDALSettings
   xmlns="http://www.deegree.org/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/3.5/commons/gdal/gdal.xsd">
+  xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/core/3.5/commons/gdal/gdal.xsd">
   <OpenDatasets>5</OpenDatasets>
 </GDALSettings>
 ----
@@ -114,7 +114,7 @@ maximum of five GDAL datasets to be kept open for simultaneous access.
 ----
 <GDALSettings
   xmlns="http://www.deegree.org/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/3.5/commons/gdal/gdal.xsd" />
+  xsi:schemaLocation="http://www.deegree.org/gdal http://schemas.deegree.org/core/3.5/commons/gdal/gdal.xsd" />
   <OpenDatasets>10</OpenDatasets>
   <GDALOption name="GDAL_CACHEMAX">1000</GDALOption>
   <GDALOption name="ECW_CACHE_MAXMEM">419430400</GDALOption>
@@ -137,7 +137,7 @@ pages in the GDAL documentation.
 ==== Configuration options
 
 The configuration format for the GDAL settings file is defined by schema
-file http://schemas.deegree.org/3.5/commons/gdal/gdal.xsd. The
+file http://schemas.deegree.org/core/3.5/commons/gdal/gdal.xsd. The
 following table lists the two available configuration options. When
 specifiying them, their order must be respected.
 
@@ -213,7 +213,7 @@ A minimal valid configuration example looks like this:
 ----
 <GDALTileStore
   xmlns="http://www.deegree.org/datasource/tile/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/core/3.5/datasource/tile/gdal/gdal.xsd">
   <TileDataSet>
     <TileMatrixSetId>utah</TileMatrixSetId>
     <File>../../data/test.tif</File>
@@ -241,7 +241,7 @@ A more complex example that uses all available configuration options:
 ----
 <GDALTileStore
   xmlns="http://www.deegree.org/datasource/tile/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/core/3.5/datasource/tile/gdal/gdal.xsd">
   <TileDataSet>
     <Identifier>2010</Identifier>
     <TileMatrixSetId>NLDEPSG28992Scale</TileMatrixSetId>
@@ -270,7 +270,7 @@ following settings:
 ==== Configuration options
 
 The configuration format for the GDAL tile store is defined by schema
-file http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd.
+file http://schemas.deegree.org/core/3.5/datasource/tile/gdal/gdal.xsd.
 There's only a single configuration element, but it may occur several
 times:
 
