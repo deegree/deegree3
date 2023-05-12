@@ -206,7 +206,7 @@ file
 
 The configuration format for the deegree shape feature store is defined
 by schema file
-http://schemas.deegree.org/core/3.5/datasource/feature/shape/shape.xsd. The
+https://schemas.deegree.org/core/3.5/datasource/feature/shape/shape.xsd. The
 following table lists all available configuration options. When
 specifiying them, their order must be respected.
 
@@ -308,8 +308,7 @@ _urn:ogc:def:crs:EPSG::4258_.
 ==== Configuration options
 
 The configuration format for the deegree memory feature store is defined
-by schema file
-http://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd.
+by schema file https://schemas.deegree.org/core/3.5/datasource/feature/memory/memory.xsd.
 The following table lists all available configuration options (the
 complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
@@ -398,7 +397,7 @@ _BBoxStatement_. A minimal configuration example looks like this:
 ==== Configuration options
 
 The configuration format is defined by schema file
-http://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd.
+https://schemas.deegree.org/core/3.5/datasource/feature/simplesql/simplesql.xsd.
 The following table lists all available configuration options (the
 complex ones contain nested options themselves). When specifiying them,
 their order must be respected.
@@ -602,7 +601,7 @@ PostgreSQL)
 ==== Overview of configuration options
 
 The SQL feature store configuration format is defined by schema file
-http://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd. The
+https://schemas.deegree.org/core/3.5/datasource/feature/sql/sql.xsd. The
 following table lists all available configuration options (the complex
 ones contain nested options themselves). When specifying them, their
 order must be respected:
