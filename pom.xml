@@ -1172,9 +1172,9 @@
         <version>${antlr.version}</version>
       </dependency>
       <dependency>
-        <groupId>${project.groupId}</groupId>
+        <groupId>net.gcardone.junidecode</groupId>
         <artifactId>junidecode</artifactId>
-        <version>0.2</version>
+        <version>0.4.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.auto.service</groupId>
