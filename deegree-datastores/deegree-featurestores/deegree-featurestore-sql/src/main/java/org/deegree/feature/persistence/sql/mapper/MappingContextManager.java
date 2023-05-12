@@ -40,7 +40,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
-import gcardone.junidecode.Junidecode;
+import net.gcardone.junidecode.Junidecode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

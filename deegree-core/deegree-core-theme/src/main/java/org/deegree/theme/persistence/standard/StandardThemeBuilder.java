@@ -45,8 +45,11 @@ import static java.util.Collections.singletonList;
 import static org.deegree.theme.Themes.aggregateSpatialMetadata;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,10 +80,10 @@ import org.slf4j.Logger;
 
 /**
  * Builds a {@link StandardTheme} from jaxb config beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class StandardThemeBuilder implements ResourceBuilder<Theme> {
@@ -170,9 +173,44 @@ public class StandardThemeBuilder implements ResourceBuilder<Theme> {
             md.setRequestable( false );
         }
         md.setDimensions( dims );
-        md.setStyles( styles );
-        md.setLegendStyles( legendStyles );
+        if ( current.getLegendGraphic() != null && current.getLegendGraphic().getValue() != null
+             && !current.getLegendGraphic().getValue().isEmpty() ) {
+            Map<String, Style> configuredLegendStyles = new HashMap<>();
+            Style style = parseConfiguredStyle( current.getLegendGraphic() );
+            configuredLegendStyles.put( style.getName(), style );
+            md.setStyles( configuredLegendStyles );
+            md.setLegendStyles( configuredLegendStyles );
+        } else {
+            md.setStyles( styles );
+            md.setLegendStyles( legendStyles );
+        }
         return new StandardTheme( md, thms, lays, metadata );
+    }
+
+    private Style parseConfiguredStyle( ThemeType.LegendGraphic configuredLegendGraphic ) {
+        Style style = new Style();
+        style.setName( "default" );
+        URL url = null;
+        try {
+            url = new URL( configuredLegendGraphic.getValue() );
+            if ( url.toURI().isAbsolute() ) {
+                style.setLegendURL( url );
+            }
+            style.setPrefersGetLegendGraphicUrl( configuredLegendGraphic.isOutputGetLegendGraphicUrl() );
+        } catch ( Exception e ) {
+            LOG.debug( "LegendGraphic was not an absolute URL." );
+            LOG.trace( "Stack trace:", e );
+        }
+
+        if ( url == null ) {
+            File file = metadata.getLocation().resolveToFile( configuredLegendGraphic.getValue() );
+            if ( file.exists() ) {
+                style.setLegendFile( file );
+            } else {
+                LOG.warn( "LegendGraphic {} could not be resolved to a legend.", configuredLegendGraphic );
+            }
+        }
+        return style;
     }
 
     private Theme buildAutoTheme( Layer layer ) {

@@ -103,9 +103,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Generates {@link MappedAppSchema} instances (table-driven mode).
- * 
+ *
  * @author <a href="mailto:schneider@occamlabs.de">Markus Schneider</a>
- * 
+ *
  * @since 3.2
  */
 public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
@@ -129,7 +129,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
     /**
      * Creates a new {@link MappedSchemaBuilderTable} instance.
-     * 
+     *
      * @param jdbcConnId
      *            identifier of JDBC connection, must not be <code>null</code> (used to determine columns / types)
      * @param ftDecls
@@ -155,7 +155,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
 
     /**
      * Returns the {@link MappedAppSchema} derived from configuration / tables.
-     * 
+     *
      * @return mapped application schema, never <code>null</code>
      */
     @Override
@@ -198,7 +198,7 @@ public class MappedSchemaBuilderTable extends AbstractMappedSchemaBuilder {
         FIDMapping fidMapping = buildFIDMapping( table, ftName, ftDecl.getFIDMapping() );
 
         List<JAXBElement<? extends AbstractParticleJAXB>> propDecls = ftDecl.getAbstractParticle();
-        List<SortCriterion> sortCriteria = createSortCriteria( ftDecl );
+        List<SortCriterion> sortCriteria = createSortCriteria( ftDecl, table );
         if ( propDecls != null && !propDecls.isEmpty() ) {
             buildFeatureTypeAndMapping( table, ftName, fidMapping, propDecls, sortCriteria );
         } else {

@@ -331,7 +331,7 @@ public class MappedSchemaBuilderGML extends AbstractMappedSchemaBuilder {
             particleMappings.add( buildMapping( ftTable, new Pair<XSElementDeclaration, Boolean>( elDecl, TRUE ),
                                                 particle.getValue() ) );
         }
-        List<SortCriterion> sortCriteria = createSortCriteria( ftMappingConf );
+        List<SortCriterion> sortCriteria = createSortCriteria( ftMappingConf, ftTable );
         return new FeatureTypeMapping( ftName, ftTable, fidMapping, particleMappings, sortCriteria );
     }
 

@@ -57,7 +57,6 @@ import javax.xml.bind.JAXBElement;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -236,12 +235,13 @@ public abstract class AbstractMappedSchemaBuilder {
         return null;
     }
 
-    protected List<SortCriterion> createSortCriteria( FeatureTypeMappingJAXB ftDecl ) {
+    protected List<SortCriterion> createSortCriteria( FeatureTypeMappingJAXB ftDecl, TableName tableName ) {
         if ( ftDecl.getOrderBy() != null ) {
             List<OrderByJAXB.Column> columns = ftDecl.getOrderBy().getColumn();
             List<SortCriterion> sortCriteria = columns.stream().map(
-                                    o -> new SortCriterion( o.getName(), "ASC".equals( o.getSortOrder() ) ) ).collect(
-                                    Collectors.toList() );
+                            o -> new SortCriterion( o.getName(), tableName, "ASC".equals( o.getSortOrder() )
+                            ) ).collect(
+                            Collectors.toList() );
             return sortCriteria;
         }
         return Collections.emptyList();
