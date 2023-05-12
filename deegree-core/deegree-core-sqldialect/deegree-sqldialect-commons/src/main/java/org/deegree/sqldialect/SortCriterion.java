@@ -7,20 +7,20 @@ import org.deegree.commons.jdbc.TableName;
  */
 public class SortCriterion {
 
-    private final String columName;
+    private final String columnName;
 
     private final TableName tableName;
 
     private final boolean sortAscending;
 
-    public SortCriterion( String columName, TableName tableName, boolean sortAscending ) {
-        this.columName = columName;
+    public SortCriterion( String columnName, TableName tableName, boolean sortAscending ) {
+        this.columnName = columnName;
         this.sortAscending = sortAscending;
         this.tableName = tableName;
     }
 
-    public String getColumName() {
-        return columName;
+    public String getColumnName() {
+        return columnName;
     }
 
     public TableName getTableName() {
