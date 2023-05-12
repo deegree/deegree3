@@ -981,8 +981,8 @@ public abstract class AbstractWhereBuilder {
             if ( sortCriteria.indexOf( sortCriterion ) > 0 ) {
                 builder.add( "," );
             }
-            String rootTableAlias = aliasManager.getRootTableAlias();
-            String columnName = sortCriterion.getColumneName();
+            String rootTableAlias = aliasManager.getTableAlias( sortCriterion.getTableName() );
+            String columnName = sortCriterion.getColumName();
             builder.add( rootTableAlias == null ? columnName : ( rootTableAlias + "." + columnName ) );
             if ( sortCriterion.isSortAscending() ) {
                 builder.add( " ASC" );
