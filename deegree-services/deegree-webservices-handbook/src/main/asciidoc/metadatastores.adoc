@@ -22,7 +22,7 @@ The memory ISO metadata store implementation is transactional and works
 file based.
 
 The memory metadata store configuration is defined by schema file
-https://schemas.deegree.org/core/3.5/datasource/metadata/iso19139/memory.xsd
+https://schemas.deegree.org/core/3.5/datasource/metadata/iso19139/memory/memory.xsd
 
 *Memory ISO Metadatastore config (skeleton)*
 
