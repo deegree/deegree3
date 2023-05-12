@@ -26,6 +26,15 @@
    </element>
    <group ref="d:Description" />
    <group ref="g:SpatialMetadata" />
+   <element name="LegendGraphic" minOccurs="0" >
+    <complexType>
+     <simpleContent>
+      <extension base="string">
+       <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
+      </extension>
+     </simpleContent>
+    </complexType>
+   </element>
    <element name="Layer" minOccurs="0" maxOccurs="unbounded">
     <complexType>
      <simpleContent>
