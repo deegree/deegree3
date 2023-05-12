@@ -5,37 +5,38 @@
     General service information for all services. Used in the GetCapabilities
     responses.
   -->
+  
   <ServiceIdentification>
-    <Title>The deegree CSW</Title>
+    <Title>deegree CSW metadata</Title>
     <Abstract>A web service used for delivering Catalogue information</Abstract>
     <Keywords>
       <Keyword>No validating schemas</Keyword>
-      <Keyword>Using deegree3 Catalogue API</Keyword>
+      <Keyword>Using deegree Catalogue API</Keyword>
       <Keyword>Fast</Keyword>
     </Keywords>
-    <Fees>None, it is free</Fees>
-    <AccessConstraints>Open to all</AccessConstraints>
+    <Fees>None</Fees>
+    <AccessConstraints>None</AccessConstraints>
+    <AccessConstraints>24x7</AccessConstraints>
   </ServiceIdentification>
   <ServiceProvider>
-    <ProviderName>lat/lon GmbH</ProviderName>
-    <ProviderSite>http://www.lat-lon.de</ProviderSite>
+    <ProviderName>deegree</ProviderName>
+    <ProviderSite>deegree.org</ProviderSite>
     <ServiceContact>
-      <IndividualName>Steffen Thomas</IndividualName>
-      <PositionName>deegree core developer</PositionName>
-      <Phone>0228/18496-0</Phone>
-      <Facsimile>0228/18496-29</Facsimile>
-      <ElectronicMailAddress>info@lat-lon.de
-      </ElectronicMailAddress>
+      <IndividualName>Gerhard Mercator</IndividualName>
+      <PositionName>Geographer</PositionName>
+      <Phone>0123/123456</Phone>
+      <Facsimile>0123/123456</Facsimile>
+      <ElectronicMailAddress>info@deegree.org</ElectronicMailAddress>
       <Address>
-        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
-        <City>Bonn</City>
-        <AdministrativeArea>NRW</AdministrativeArea>
-        <PostalCode>53177</PostalCode>
-        <Country>Bonn</Country>
+        <DeliveryPoint>9450 SW Gemini Dr #42523</DeliveryPoint>
+        <City>Beaverton</City>
+        <AdministrativeArea>OR</AdministrativeArea>
+        <PostalCode>97008</PostalCode>
+        <Country>USA</Country>
       </Address>
       <OnlineResource>http://www.deegree.org</OnlineResource>
       <HoursOfService>24x7</HoursOfService>
-      <ContactInstructions>Do not hesitate to call</ContactInstructions>
+      <ContactInstructions>Don't hesitate to email</ContactInstructions>
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>
