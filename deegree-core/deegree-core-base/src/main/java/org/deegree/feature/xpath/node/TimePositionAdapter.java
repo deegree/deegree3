@@ -29,7 +29,7 @@ public class TimePositionAdapter {
         final PrimitiveValue value = new PrimitiveValue( timeInstant.getValue() );
         final List<TypedObjectNode> children = new ArrayList<TypedObjectNode>();
         children.add( value );
-        final GenericXMLElement xmlElement = new GenericXMLElement( name, null, attrs, children );
+        final GenericXMLElement xmlElement = new GenericXMLElement( name, attrs, children );
         return new GenericProperty( null, name, xmlElement, attrs, children );
     }
 

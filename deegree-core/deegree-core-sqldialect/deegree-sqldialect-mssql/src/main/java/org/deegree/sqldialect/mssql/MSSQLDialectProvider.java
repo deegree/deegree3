@@ -44,7 +44,7 @@ import org.deegree.sqldialect.SQLDialect;
 import org.slf4j.Logger;
 
 /**
- * {@link SqlDialectProvider} for Microsoft SQL databases.
+ * {@link SqlDialectProvider} for Microsoft SQL Server databases.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author: schneider $

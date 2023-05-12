@@ -46,7 +46,6 @@ import java.sql.Statement;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.JDBCUtils;
 import org.deegree.db.ConnectionProvider;
 import org.deegree.db.ConnectionProviderProvider;
@@ -54,7 +53,6 @@ import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@LoggingNotes(debug = "log the executed statements")
 public class SQLExecution implements Serializable {
 
     private static final long serialVersionUID = -5784976166723417648L;

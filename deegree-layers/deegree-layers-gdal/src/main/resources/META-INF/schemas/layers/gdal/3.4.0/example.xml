@@ -1,9 +1,0 @@
-<GDALLayers configVersion="3.4.0" xmlns="http://www.deegree.org/layers/gdal" xmlns:d="http://www.deegree.org/metadata/description"
-  xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial">
-  <GDALLayer>
-    <l:Name>luchtfoto_2010</l:Name>
-    <d:Title>Orthophoto layer served from an ECW file</d:Title>
-    <s:CRS>EPSG:28992 EPSG:25831 EPSG:25832 EPSG:31466 EPSG:31467 EPSG:4326 EPSG:3857 EPSG:3035 EPSG:3034 EPSG:4258 EPSG:3043 EPSG:3044</s:CRS>
-    <File>/geodata/ecw/2010/Luchtfoto2010_25cm.ecw</File>
-  </GDALLayer>
-</GDALLayers>

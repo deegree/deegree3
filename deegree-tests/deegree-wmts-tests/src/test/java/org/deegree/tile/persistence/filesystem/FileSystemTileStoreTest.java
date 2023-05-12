@@ -51,7 +51,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.deegree.commons.config.ResourceInitException;
 import org.deegree.tile.Tile;
 import org.deegree.tile.TileDataLevel;
 import org.deegree.tile.persistence.TileStore;
@@ -77,7 +76,7 @@ public class FileSystemTileStoreTest {
 
     @Before
     public void setup()
-                            throws URISyntaxException, IOException, ResourceInitException {
+                            throws URISyntaxException, IOException {
         URL u = FileSystemTileStoreTest.class.getResource( "FileSystemTileStoreTest.class" );
         File dir = new File( new File( u.toURI() ).getParentFile(),
                              "../../../../../../../src/main/webapp/WEB-INF/workspace" );
@@ -138,8 +137,7 @@ public class FileSystemTileStoreTest {
         }
 
         @Override
-        public Object call()
-                                throws Exception {
+        public Object call() {
             for ( int y = 0; y < maxy; ++y ) {
                 Tile t = src.getTile( x, y );
                 dest.put( destId, t, x, y );

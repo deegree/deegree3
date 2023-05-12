@@ -51,7 +51,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.Ellipsoid;
@@ -69,7 +68,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed ellipsoid, as well as a stack trace if something went wrong.")
 public class EllipsoidParser extends DefinitionParser {
 
     private static final Logger LOG = getLogger( EllipsoidParser.class );

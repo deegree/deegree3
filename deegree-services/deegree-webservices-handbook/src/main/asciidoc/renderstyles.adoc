@@ -69,7 +69,7 @@ It is constructed like this:
 
 [source,xml]
 ----
-<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:sed="http://www.deegree.org/se" xmlns:deegreeogc="http://www.deegree.org/ogc" xmlns:plan="http://www.deegree.org/plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
     <FeatureTypeName>plan:yourFeatureType</FeatureTypeName>
     <Rule>
         ...
@@ -453,7 +453,7 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
  <Name>Weatherstations</Name>
  <Rule>
     <Name>Weatherstations</Name>
@@ -496,7 +496,7 @@ xmlns:ogc="http://www.opengis.net/ogc"
 xmlns:sed="http://www.deegree.org/se"
 xmlns:deegreeogc="http://www.deegree.org/ogc"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
   <Name>Railroads</Name>
   <Rule>
     <Name>Railroads</Name>
@@ -538,7 +538,7 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
   <Name>LandslideAreas</Name>
   <Rule>
     <Name>LandslideAreas</Name>
@@ -571,7 +571,7 @@ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.
  xmlns:sed="http://www.deegree.org/se"
  xmlns:deegreeogc="http://www.deegree.org/ogc"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/se/1.1.0/Symbolizer-deegree.xsd">
+ xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd http://www.deegree.org/se http://schemas.deegree.org/3.5/se/Symbolizer-deegree.xsd">
   <Name>Municipalities</Name>
   <Rule>
     <Name>Municipalities</Name>
@@ -649,6 +649,272 @@ http://schemas.deegree.org/se[Schema].
 
 ==== SLD/SE extensions
 
+===== Use of alternative Symbols within the WellKnownName
+
+The SLD/SE specification defines a list of standard symbols, which are `circle`,
+`triangle`, `star`, `square` and `x`.
+In addition to these standard symbols, other predefined and freely configurable
+symbols are also available. These are described in the following chapters.
+
+For reference each symbol is shown with the following style.
+[source,xml]
+----
+<Fill>
+  <SvgParameter name="fill">#FF0000</SvgParameter>
+  <SvgParameter name="fill-opacity">0.4</SvgParameter>
+</Fill>
+<Stroke>
+  <SvgParameter name="stroke">#000000</SvgParameter>
+  <SvgParameter name="stroke-width">1</SvgParameter>
+</Stroke>
+----
+
+====== Predefined symbols
+
+[cols="3"]
+.Standard Symbold defined by SLD/SE specification
+|===
+a| image:se_wkn/circle.png[]   `circle`
+a| image:se_wkn/triangle.png[] `triangle`
+a| image:se_wkn/star.png[]     `star`
+a| image:se_wkn/square.png[]   `square`
+a| image:se_wkn/x.png[]        `x`
+|
+|===
+
+[cols="3"]
+.Extended Symbols `shape://`
+|===
+a| image:se_wkn/shape_backslash.png[] `shape://backslash`
+a| image:se_wkn/shape_carrow.png[] `shape://carrow`
+a| image:se_wkn/shape_ccarrow.png[] `shape://ccarrow`
+
+a| image:se_wkn/shape_coarrow.png[] `shape://coarrow`
+a| image:se_wkn/shape_dot.png[] `shape://dot`
+a| image:se_wkn/shape_horline.png[] `shape://horline`
+
+a| image:se_wkn/shape_oarrow.png[] `shape://oarrow`
+a| image:se_wkn/shape_plus.png[] `shape://plus`
+a| image:se_wkn/shape_slash.png[] `shape://slash`
+
+a| image:se_wkn/shape_times.png[] `shape://times`
+a| image:se_wkn/shape_vertline.png[] `shape://vertline`
+|
+|===
+
+[cols="30,30,40"]
+.Extended Symbols `extshape://`
+|===
+a| image:se_wkn/extshape_arrow.png[] `extshape://arrow`
+a| image:se_wkn/extshape_emicircle.png[] `extshape://emicircle`
+a| image:se_wkn/extshape_narrow.png[] `extshape://narrow`
+
+a| image:se_wkn/extshape_sarrow.png[] `extshape://sarrow`
+a| image:se_wkn/extshape_triangle.png[] `extshape://triangle`
+a| image:se_wkn/extshape_triangleemicircle.png[] `extshape://triangleemicircle`
+|===
+
+[cols="3"]
+.Extended Symbols `qgis://`
+|===
+a| image:se_wkn/qgis_arrow.png[] `qgis://arrow`
+a| image:se_wkn/qgis_arrowhead.png[] `qgis://arrowhead`
+a| image:se_wkn/qgis_circle.png[] `qgis://circle`
+
+a| image:se_wkn/qgis_cross.png[] `qgis://cross`
+a| image:se_wkn/qgis_cross2.png[] `qgis://cross2`
+a| image:se_wkn/qgis_crossfill.png[] `qgis://crossfill`
+
+a| image:se_wkn/qgis_diagonalhalfsquare.png[] `qgis://diagonalhalfsquare`
+a| image:se_wkn/qgis_diamond.png[] `qgis://diamond`
+a| image:se_wkn/qgis_equilateral_triangle.png[] `qgis://equilateral_triangle`
+
+a| image:se_wkn/qgis_filled_arrowhead.png[] `qgis://filled_arrowhead`
+a| image:se_wkn/qgis_halfsquare.png[] `qgis://halfsquare`
+a| image:se_wkn/qgis_hexagon.png[] `qgis://hexagon`
+
+a| image:se_wkn/qgis_lefthalftriangle.png[] `qgis://lefthalftriangle`
+a| image:se_wkn/qgis_line.png[] `qgis://line`
+a| image:se_wkn/qgis_pentagon.png[] `qgis://pentagon`
+
+a| image:se_wkn/qgis_quartercircle.png[] `qgis://quartercircle`
+a| image:se_wkn/qgis_quartersquare.png[] `qgis://quartersquare`
+a| image:se_wkn/qgis_rectangle.png[] `qgis://rectangle`
+
+a| image:se_wkn/qgis_regular_star.png[] `qgis://regular_star`
+a| image:se_wkn/qgis_righthalftriangle.png[] `qgis://righthalftriangle`
+a| image:se_wkn/qgis_semicircle.png[] `qgis://semicircle`
+
+a| image:se_wkn/qgis_star.png[] `qgis://star`
+a| image:se_wkn/qgis_thirdcircle.png[] `qgis://thirdcircle`
+a| image:se_wkn/qgis_triangle.png[] `qgis://triangle`
+|===
+
+====== Custom arrow with extshape://arrow
+
+The symbol `extshape://arrow` can be adapted to your own needs with three optional parameters which are:
+
+ * `t`: thickness of the arrow base, in a value range between 0 and 1 with a standard of 0.2
+ * `hr`: height over width ratio, in a value range between 0 and 1000 with a standard of 2
+ * `ab`: arrow head base ration, in a value range between 0 and 1 with a standard of 0.5
+
+.Example of  `extshape://arrow` which varies `ab` between `0.1` and `1.0`
+image::se_wkn_example/extshape_arrow_ab_01_10.png[]
+.Example of  `extshape://arrow` which varies `hr` between `0.2` and `2.0`
+image::se_wkn_example/extshape_arrow_hr_02_20.png[]
+.Example of  `extshape://arrow` which varies `t` between `0.1` and `1.0`
+image::se_wkn_example/extshape_arrow_t_00_10.png[]
+
+.Example
+[source,xml]
+----
+<WellKnownName>extshape://arrow?t=0.2&amp;hr=2&amp;ab=0.5</WellKnownName>
+----
+
+====== Custom Symbol from SVG path svgpath://
+
+It is also possible to define a symbol from a SVG path data.
+The syntax of SVG path data is described at https://www.w3.org/TR/SVG/paths.html#PathData
+
+.Example of custom symbol with \`svgpath://`
+[cols="10,90"]
+|===
+a|image::se_wkn_example/svgpath_example.png[]
+a|`svgpath://m 8,14 0,-6 h -4.5 c 0,0 0,-7.5 6.6,-7.5 6,0 6.5,7.5 6.6,7.5 l -4.5,0 0,6 z m -4,0 v -2 h 2 v 2 z`
+|===
+
+====== Use Symbol from character code ttf://
+
+Also TrueType font files can be used as source for symbols.
+For TrueType fonts installed at System or Java level the syntax is `ttf://Font Name#code`.
+If the font is not installed but available it can be sepcified
+absolute or relative as `ttf://font.ttf#code`.
+
+The character code has to be specified in hexadecimal notation prefixed with `0x`, `U+` or `\u`.
+
+.Example of `ttf://` symbols
+[cols="10,30,10,50"]
+|===
+a| image::se_wkn_example/ttf_lucida_sans.png[]
+a| `ttf://Lucida Sans#0x21BB` +
+`ttf://Lucida Sans#U+21BB` +
+`ttf://Lucida Sans#\u21bb`
+a| image::se_wkn_example/ttf_fontawesome_external.png[]
+a| `ttf://../fontawesome-webfont.ttf#0xf13d`
+|===
+
+TIP: The character code for fonts installed at System level can be looked up
+via the system Character Map application.
+
+====== Custom Symbol from Well Known Text wkt://
+
+It is furthermore possible to specify your own symbols as Well Known Text (WKT).
+
+The following geometry types are currently supported:
+
+* LINESTRING
+* LINEARRING
+* POLYGON
+* MULTIPOINT
+* MULTILINESTRING
+* MULTICURVE
+* MULTIPOLYGON
+* GEOMETRYCOLLECTION
+* CIRCULARSTRING
+* COMPOUNDCURVE
+* CURVEPOLYGON
+
+More information about WKT can be found https://en.wikipedia.org/wiki/Well-known_text[here].
+
+.Example of `wkt://` symbols
+[cols="10,30,10,50"]
+|===
+a|image::se_wkn_example/wkt_rhombus.png[]
+a|`wkt://POLYGON( (-1 0,0 -1.5,1 0,0 1.5,-1 0) )`
+a|image::se_wkn_example/wkt_custom_form.png[]
+a|`wkt://COMPOUNDCURVE( (-7.73 -4.59, -7.65 6.02, 0.26 6.07, -1.72 4.89, 0.72 4.54, -1.91 3.51, 0.67 3.05, -1.75 2.14, 0.70 1.68, -1.74 1.28), CIRCULARSTRING (-1.74 1.28, -3.56 2.74, -5.48 1.43) )`
+|===
+
+TIP: If unexpected display problems occur with complex symbols (e.g. arcs) a linearized display can be used instead.
+To switch to the linearized display please change the prefix from `wkt://` to `wktlin://`.
+
+====== Spacing around the symbol
+
+For each symbol except the symbols `circle`,
+`triangle`, `star`, `square` and `x` can be defined with an explicit bound.
+This is particularly useful if you want to display an area fill with a symbol.
+
+This explicit limit can be specified either as width and height or as the
+lower left and upper right corner.
+
+The syntax is: `wellknownname[width,height]` or `wellknownname[mix,miny,maxx,maxy]`
+
+[cols="10,40,10,40"]
+|===
+a| image:se_wkn_example/qgis_circle_hatch_default.png[]
+a| Regular symbol `qgis://circle`
+a| image:se_wkn_example/qgis_circle_hatch_bounded.png[]
+a| Symbol with explicit bounds `qgis://circle[-1,-1,3,2]`
+|===
+
+TIP: The width and height must be entered in the coordinate system of the symbol.
+Most symbols are defined around the zero point with a width of 1.0.
+Accordingly it is recommended to start with the values `[1,1]` or `[-0.5,-0.5,0.5,0.5]`.
+
+===== Simplified hatches
+
+To make hatching configuration easier, a new function `HatchingDistance` has been added,
+which allows the user to define the size by specifying hatching angle and desired line spacing.
+
+The first parameter is the hatching angle, the second is the line spacing in the unit of the symboliser.
+
+.Example hatches
+[cols="10a,15,25,10a,15,25",options="header"]
+|===
+|   | Rotation | WellKnownName |   | Rotation | WellKnownName
+| image:se_wkn_example/hatch_slash.png[]     | 0  | `shape://slash`
+| image:se_wkn_example/hatch_backslash.png[] | 0  | `shape://backslash`
+| image:se_wkn_example/hatch_times.png[]     | 0  | `shape://times`
+| image:se_wkn_example/hatch_10deg.png[]     | 10 | `shape://vertline`
+|===
+.Symbolizer used in previous example
+[source,xml]
+----
+<!-- PolygonSymbolizer for outline omitted -->
+<PolygonSymbolizer uom="http://www.opengeospatial.org/se/units/pixel" xmlns="http://www.opengis.net/se">
+ <Fill>
+  <GraphicFill>
+   <Graphic>
+    <Mark>
+     <WellKnownName>shape://slash</WellKnownName>
+     <Stroke>
+      <SvgParameter name="stroke">#000000</SvgParameter>
+      <SvgParameter name="stroke-width">1</SvgParameter>
+      <SvgParameter name="stroke-linecap">butt</SvgParameter>
+     </Stroke>
+    </Mark>
+    <Size>
+      <ogc:Function name="HatchingDistance">
+        <ogc:Literal>45</ogc:Literal>
+        <ogc:Literal>10</ogc:Literal>
+      </ogc:Function>
+    </Size>
+    <Rotation>0</Rotation>
+   </Graphic>
+  </GraphicFill>
+ </Fill>
+</PolygonSymbolizer>
+----
+TIP: For of the shelf hates, which will create nice results, use the mark symbol `shape://slash`, `shape://backslash`
+or `shape://times` for  45°, `shape://horline` for 0° and `shape://vertline` for 90° hatches.
+For hatching with user-defined angles it is recommended to use `shape://vertline`.
+
+TIP: With user-defined distances or angles that are not divisible by 45, rounding inaccuracies may occur and become
+visible in the results depending on the used styles.
+
+TIP: To get an even hatching we recommend to set the parameter `stroke-linecap` to `butt`.
+This is especially recommended for transparent hatches
+
 ===== Use of TTF files as Mark symbols
 
 You can use TrueType font files to use custom vector symbols in a
@@ -671,9 +937,14 @@ _Mark_ element:
 </Mark>
 ----
 
-To find out what index you need to access, have a look at this
-http://osgeo-org.1560.n6.nabble.com/SE-Styling-MarkIndex-glyph-index-tt5022210.html#a5026571[post]
-on the mailinglist which explains it very well.
+In order to determine the correct index value of the used vector symbol in your TrueType font file, there are several options available: 
+
+* The most convenient way would be by using a JavaScript parser like opentype.js, check https://opentype.js.org/glyph-inspector.html for a usable live-demo.
+
+* Otherwise you can check the index value by using Microsoft Word, as explained in https://support.esri.com/en/technical-article/000004293.
+
+* At last, you could determine the index value by manually reading the cmap table of your TrueType font file. If you are interested in this approach, take a look into a https://sourceforge.net/p/deegree/mailman/deegree-users/thread/20130110115808.GB3576%40theologicum.occamlabs.local/#msg30331881[post] from the deegree mailing list.
+
 
 ===== Label AutoPlacement
 
@@ -738,6 +1009,136 @@ support ogc:Expressions as child elements. Example:
   <Format>image/svg</Format>
 </ExternalGraphic> 
 ----
+
+===== Text with rectangular Halo
+
+For the cartographic design of text, it is possible to place a rectangular box behind the text instead of a halo effect.
+To enable the rectangular box behind a text use an negative value for the `Radius` of `Halo` in the `TextSymbolizer`.
+
+.Example of regular `Halo` (`Radius` of `3.0`) on the left and rectangular `Halo` (`Radius` of `-3.0`) on the right.
+image::renderstyles_halo_regular_and_boxed.png.png[]
+
+.Symbolizer used in previous example
+[source,xml]
+----
+<TextSymbolizer>
+	<!-- Label omitted -->
+	<Font>
+		<SvgParameter name="font-family">Sans-Serif</SvgParameter>
+		<SvgParameter name="font-size">30</SvgParameter>
+	</Font>
+	<Halo>
+		<Radius>-3.0</Radius>
+		<Fill>
+			<SvgParameter name="fill">#FF0000</SvgParameter>
+			<SvgParameter name="fill-opacity">0.4</SvgParameter>
+		</Fill>
+	</Halo>
+</TextSymbolizer>
+----
+
+===== GraphicStroke extensions
+
+By default, a _GraphicStroke_ is drawn repeatedly, but it can also be
+only drawn once if the parameter `deegree-graphicstroke-position-percentage`
+is defined as a percentage of the line length.
+The parameter `deegree-graphicstroke-rotation` controls whether the
+_Graphic_ is rotated to follow the angle of the current line segment
+or not, values larger than zero enables this. If not specified the
+_Graphic_ will follow the angle of the line.
+
+*Rendering of Mark along a geometry*
+
+When deegree renders strokes with _Mark_ it will use the _Fill_ and
+_Stroke_ which are defined as sub elements of _Mark_ instead of the
+parameter for `color`, `line-width` and `opacity` of _Stroke_.
+For _Mark_ whose _Fill_ or _Stroke_ should be omitted, this can be
+realized by setting `...-opacity` to zero. Example:
+
+[source,xml]
+----
+<Stroke>
+  <GraphicStroke>
+    <Graphic>
+      <Mark>
+        <WellKnownName>triangle</WellKnownName>
+        <Fill>
+          <SvgParameter name="fill-opacity">0</SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke-opacity">0</SvgParameter>
+        </Stroke>
+      </Mark>
+      <Size>20</Size>
+    </Graphic>
+  </GraphicStroke>
+  <SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+  <SvgParameter name="deegree-graphicstroke-rotation">0</SvgParameter>
+</Stroke>
+----
+
+NOTE: A typical usage is to draw an arrowhead on a line. This can be
+achieved by using a filled `triangle` _Mark_ which is rotated 90 degrees
+to the left (`-90`) with an anchor point of `0.75` / `0.5` and
+`deegree-graphicstroke-position-percentage` of `0` for the beginning
+of a line. To draw it at the end of a line, the _Mark_ has to be rotated
+90 degrees to the right (`90`) with an anchor point of `0.25` / `0.5`
+and `deegree-graphicstroke-position-percentage` of `100`.
+
+*Rendering of images or SVGs along a geometry*
+
+Both images and SVG can be drawn along a geometry, but it should be
+noted that these are best suited for signatures that are drawn only
+once or with some gap.
+Example of a single SVG at the middle of the line:
+
+[source,xml]
+----
+<Stroke>
+  <GraphicStroke>
+    <Graphic>
+      <ExternalGraphic>
+        <OnlineResource xlink:href="./sample.svg" />
+        <Format>svg</Format>
+      </ExternalGraphic>
+      <Size>20</Size>
+    </Graphic>
+  </GraphicStroke>
+  <SvgParameter name="deegree-graphicstroke-position-percentage">50</SvgParameter>
+</Stroke>
+----
+
+*Rendering of SVGs as Mark*
+
+To draw only the outline or fill of an SVG with a single color, an SVG
+can be used as a `Mark`. Example:
+
+[source,xml]
+----
+<Stroke>
+  <GraphicStroke>
+    <Graphic>
+      <Mark>
+        <OnlineResource xlink:href="./sample.svg" />
+        <Format>svg</Format>
+        <Fill>
+          <SvgParameter name="fill">#FF0000</SvgParameter>
+        </Fill>
+        <Stroke>
+          <SvgParameter name="stroke-opacity">0.0</SvgParameter>
+        </Stroke>
+      </Mark>
+      <Size>20</Size>
+    </Graphic>
+  </GraphicStroke>
+</Stroke>
+----
+
+NOTE: Previous versions would have rendered SVG defined  in an
+`Graphic`/`ExternalGraphic`/`OnlineResource` like the `Mark` example above.
+These have either their configuration converted to
+`Graphic`/`Mark`/`OnlineResource` or the option to not render SVGs like
+images has to be set for the instance, see <<anchor-appendix>> for details.
 
 ==== SE & FE Functions
 

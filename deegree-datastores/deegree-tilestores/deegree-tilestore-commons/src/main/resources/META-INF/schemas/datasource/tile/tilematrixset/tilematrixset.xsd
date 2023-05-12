@@ -1,0 +1,48 @@
+<schema xmlns:tms="http://www.deegree.org/datasource/tile/tilematrixset" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/datasource/tile/tilematrixset" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.tile.tilematrixset.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <element name="TileMatrixSet">
+    <annotation>
+      <appinfo>
+        <jaxb:class name="TileMatrixSetConfig" />
+      </appinfo>
+    </annotation>
+    <complexType>
+      <sequence>
+        <!-- only one CRS may be specified -->
+        <element name="CRS" type="string" />
+        <!-- if set, this TileMatrixSet definition refers to a well-known scale set -->
+        <element name="WellKnownScaleSet" type="string" minOccurs="0" />
+        <element name="TileMatrix" maxOccurs="unbounded">
+          <complexType>
+            <sequence>
+              <!-- default identifier is the scale -->
+              <element name="Identifier" type="string" minOccurs="0" />
+              <element name="ScaleDenominator" type="double" />
+              <element name="TopLeftCorner">
+                <simpleType>
+                  <list itemType="double" />
+                </simpleType>
+              </element>
+              <element name="TileWidth" type="positiveInteger" />
+              <element name="TileHeight" type="positiveInteger" />
+              <element name="MatrixWidth" type="positiveInteger" />
+              <element name="MatrixHeight" type="positiveInteger" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="configVersion" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+</schema>

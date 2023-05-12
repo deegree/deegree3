@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/fes/2.0 http://schemas.opengis.net/filter/2.0/filterAll.xsd
+   http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+  <fes:BBOX>
+    <fes:ValueReference>app:ft1/geometry</fes:ValueReference>
+    <fes:ValueReference>app:ft2/geometry</fes:ValueReference>
+  </fes:BBOX>
+</fes:Filter>

@@ -38,11 +38,13 @@ package org.deegree.layer.config;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.layer.dims.Dimension;
@@ -127,6 +129,7 @@ public final class ConfigUtils {
         for ( org.deegree.layer.persistence.base.jaxb.StyleRefType.Style s : srt.getStyle() ) {
             boolean isDefault = false;
             String name = s.getStyleName();
+            String title = s.getStyleTitle();
             String nameRef = s.getStyleNameRef();
             String layerRef = s.getLayerNameRef();
             Style st = store.getStyle( layerRef, nameRef );
@@ -141,6 +144,7 @@ public final class ConfigUtils {
             }
             st = st.copy();
             st.setName( name );
+            st.setTitle( title );
             styleMap.put( name, st );
             if ( isDefault && !styleMap.containsKey( "default" ) ) {
                 styleMap.put( "default", st );
@@ -217,6 +221,7 @@ public final class ConfigUtils {
         int maxFeats = -1;
         int rad = -1;
         boolean opaque = false;
+        Integer decimalPlaces = null;
         try {
             alias = Antialias.valueOf( cfg.getAntiAliasing() );
         } catch ( Throwable e ) {
@@ -238,6 +243,9 @@ public final class ConfigUtils {
         if ( cfg.getFeatureInfo() != null ) {
             if ( cfg.getFeatureInfo().isEnabled() ) {
                 rad = Math.max( 0, cfg.getFeatureInfo().getPixelRadius().intValue() );
+                decimalPlaces = Optional.ofNullable(cfg.getFeatureInfo().getDecimalPlaces())
+                        .map(BigInteger::intValue)
+                        .orElse(null);
             } else {
                 rad = 0;
             }
@@ -247,7 +255,14 @@ public final class ConfigUtils {
         if ( cfg.isOpaque() != null ) {
             opaque = cfg.isOpaque();
         }
-        return new MapOptions( quali, interpol, alias, maxFeats, rad, opaque );
+        return new MapOptions.Builder().
+                               quality( quali ).
+                               interpolation( interpol ).
+                               antialias( alias ).
+                               maxFeatures( maxFeats ).
+                               featureInfoRadius( rad ).
+                               featureInfoDecimalPlaces( decimalPlaces ).
+                               build();
     }
 
     public static Map<String, Dimension<?>> parseDimensions( String layerName, List<DimensionType> dimensions ) {

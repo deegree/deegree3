@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.persistence.sql.ddl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.jdbc.SQLIdentifier;
 import org.deegree.commons.jdbc.TableName;
 import org.deegree.commons.tom.primitive.BaseType;
@@ -56,12 +51,17 @@ import org.deegree.sqldialect.filter.MappingExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Creates PostGIS-DDL (DataDefinitionLanguage) scripts from {@link MappedAppSchema} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
- * 
+ *
  * @version $Revision: 31176 $, $Date: 2011-07-01 11:31:06 +0200 (Fr, 01. Jul 2011) $
  */
 public class PostGISDDLCreator extends DDLCreator {
@@ -70,9 +70,11 @@ public class PostGISDDLCreator extends DDLCreator {
 
     private final String undefinedSrid;
 
-    /**
+	private int spatialIndexIndex = 0;
+
+	/**
      * Creates a new {@link PostGISDDLCreator} instance for the given {@link MappedAppSchema}.
-     * 
+     *
      * @param schema
      *            mapped application schema, must not be <code>null</code>
      * @param dialect
@@ -129,6 +131,12 @@ public class PostGISDDLCreator extends DDLCreator {
                     + "','" + column + "','" + srid + "','" + geometryType + "', " + dim + ")" );
         ddls.add( sql );
 
+        StringBuffer indexSql = new StringBuffer( "CREATE INDEX " );
+        String idxName = createIdxName( table.getTable(), column );
+        indexSql.append( idxName );
+        indexSql.append( " ON " ).append( table.getTable().toLowerCase() );
+        indexSql.append( " USING GIST (" ). append( column ).append( " ); " );
+        ddls.add( indexSql );
         return ddls;
     }
 
@@ -239,5 +247,25 @@ public class PostGISDDLCreator extends DDLCreator {
         }
         return "text";
     }
+
+	private String createIdxName( String tableName, String columnName ) {
+		String id = "spidx_" + tableName.toLowerCase() + "_"+ columnName.toLowerCase();
+		int maxColumnNameLength = dialect.getMaxColumnNameLength();
+		if ( id.length() >= maxColumnNameLength ) {
+			String idAsString = Integer.toString( this.spatialIndexIndex++ );
+			String suffix = "_" + idAsString;
+			int delta = id.length() - maxColumnNameLength;
+			int substringUntilPos = id.length() - delta - suffix.length();
+			if ( substringUntilPos >= 0 ) {
+				String substring = id.substring( 0, substringUntilPos );
+				return substring + suffix;
+			} else if ( maxColumnNameLength == idAsString.length() ) {
+				return idAsString;
+			} else {
+				return UUID.randomUUID().toString().substring( 0, maxColumnNameLength );
+			}
+		}
+		return id;
+	}
 
 }

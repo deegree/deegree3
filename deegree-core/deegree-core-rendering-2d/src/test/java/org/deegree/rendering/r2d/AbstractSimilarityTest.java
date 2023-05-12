@@ -42,20 +42,7 @@
 package org.deegree.rendering.r2d;
 
 import static java.util.Arrays.asList;
-import static org.deegree.commons.utils.io.Utils.determineSimilarity;
 
-import java.awt.image.RenderedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.IOUtils;
-import org.deegree.commons.utils.test.IntegrationTestUtils;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.persistence.CRSManager;
 import org.deegree.geometry.GeometryFactory;
@@ -66,6 +53,7 @@ import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public abstract class AbstractSimilarityTest {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractSimilarityTest.class );
@@ -74,53 +62,11 @@ public abstract class AbstractSimilarityTest {
 
     private static final GeometryFactory fac = new GeometryFactory();
 
-    boolean isImageSimilar( RenderedImage expected, RenderedImage actual, double maximumDifference, String name )
-                            throws Exception {
-        byte[] expectedData;
-        byte[] actualData;
-
-        ByteArrayOutputStream bos;
-        bos = new ByteArrayOutputStream();
-        ImageIO.write( expected, "tif", bos );
-        bos.flush();
-        bos.close();
-        expectedData = bos.toByteArray();
-
-        bos = new ByteArrayOutputStream();
-        ImageIO.write( actual, "tif", bos );
-        bos.flush();
-        bos.close();
-        actualData = bos.toByteArray();
-
-        double sim;
-        sim = determineSimilarity( new ByteArrayInputStream( expectedData ), new ByteArrayInputStream( actualData ) );
-
-        if ( Math.abs( 1.0 - sim ) > maximumDifference ) {
-            LOG.error( "Images for test '{}' are not similar enough ({}>{})", name, sim, maximumDifference );
-
-            try {
-                LOG.error( "Trying to store rendering_{}_expected/rendering_{}_actual in java.io.tmpdir", name, name );
-                IOUtils.write( expectedData, new FileOutputStream( System.getProperty( "java.io.tmpdir" )
-                                                                   + "/rendering_" + name + "_expected.png" ) );
-                IOUtils.write( actualData, new FileOutputStream( System.getProperty( "java.io.tmpdir" ) + "/rendering_"
-                                                                 + name + "_actual.png" ) );
-
-                System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
-                System.out.println( IntegrationTestUtils.toBase64Zip( actualData, name + ".png" ) );
-            } catch ( Throwable t ) {
-            }
-
-            return false;
-        } else {
-            LOG.info( "Similarity test '{}' ok ({})", name, 1.0 - sim );
-            return true;
-        }
-    }
-
     /**
-     * @param max
      * @param offx
      * @param offy
+     * @param sizex
+     * @param sizey
      * @return a curve similar to the points of #randomQuad (but without the last)
      */
     static Curve testCurve( double offx, double offy, double sizex, double sizey ) {
@@ -132,9 +78,10 @@ public abstract class AbstractSimilarityTest {
     }
     
     /**
-     * @param max
      * @param offx
      * @param offy
+     * @param sizex
+     * @param sizey
      * @return a curve similar to the points of #randomQuad (but without the last)
      */
     static Polygon testPolygon( double offx, double offy, double sizex, double sizey ) {
@@ -147,9 +94,8 @@ public abstract class AbstractSimilarityTest {
                                   null );
     }
 
-    void writeTestImageTemp( RenderedImage img, List<String> expectedTexts, long ms )
-                            throws IOException {
-        File tmp = File.createTempFile( "rendering_", ".png" );
-        ImageIO.write( img, "png", tmp );
+    String prefixed( String name ) {
+        return getClass().getName() + "_" + name;
     }
+
 }

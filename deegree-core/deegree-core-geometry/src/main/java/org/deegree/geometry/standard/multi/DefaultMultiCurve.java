@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.multi;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
-
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 
@@ -82,11 +82,18 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
 
     @Override
     protected MultiLineString buildJTSGeometry() {
-        LineString[] jtsMembers = new LineString[size()];
-        int i = 0;
+        List<LineString> jtsMembers = new ArrayList<>( size() );
+
         for ( Curve geometry : members ) {
-            jtsMembers[i++] = (LineString) getAsDefaultGeometry( geometry ).getJTSGeometry();
+            Geometry jtsGeom = getAsDefaultGeometry( geometry ).getJTSGeometry();
+            if ( jtsGeom instanceof MultiLineString ) {
+                for ( int i = 0; i < jtsGeom.getNumGeometries(); i++ ) {
+                    jtsMembers.add( (LineString) jtsGeom.getGeometryN( i ) );
+                }
+            } else {
+                jtsMembers.add( (LineString) jtsGeom );
+            }
         }
-        return jtsFactory.createMultiLineString( jtsMembers );
+        return jtsFactory.createMultiLineString( jtsMembers.toArray( new LineString[0] ) );
     }
 }

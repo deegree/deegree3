@@ -93,7 +93,6 @@ import org.apache.axiom.soap.SOAP11Version;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.fileupload.FileItem;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.ows.metadata.ServiceIdentification;
 import org.deegree.commons.ows.metadata.ServiceProvider;
@@ -180,7 +179,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(trace = "logs stack traces", debug = "logs sent exception messages, security information", warn = "logs problems with custom serializer classes", error = "logs unknown errors, problems with GetFeatureInfo templates")
 public class WMSController extends AbstractOWS {
 
     private static final Logger LOG = getLogger( WMSController.class );
@@ -215,6 +213,8 @@ public class WMSController extends AbstractOWS {
     private OWSMetadataProvider metadataProvider;
 
     private DeegreeWMS conf;
+
+    private boolean isCrsCheckStrict = false;
 
     private final GetMapLimitChecker getMapLimitChecker = new GetMapLimitChecker();
 
@@ -282,6 +282,9 @@ public class WMSController extends AbstractOWS {
             }
         }
 
+        if ( conf.isCrsCheckStrict() != null )
+            isCrsCheckStrict = conf.isCrsCheckStrict();
+
         try {
             addSupportedCapabilitiesFormats( conf );
             addSupportedImageFormats( conf );
@@ -318,9 +321,10 @@ public class WMSController extends AbstractOWS {
                 highestVersion = iter.next();
             }
 
+            String getLegendGraphicBackgroundColor = conf.getGetLegendGraphicBackgroundColor();
             ServiceConfigurationType sc = conf.getServiceConfiguration();
             int capabilitiesVersion = conf.getUpdateSequence() != null ? conf.getUpdateSequence().intValue() : 0;
-            service = new MapService( sc, workspace, capabilitiesVersion );
+            service = new MapService( sc, workspace, metadata, capabilitiesVersion, getLegendGraphicBackgroundColor );
 
             // after the service knows what layers are available:
             handleMetadata( conf.getMetadataURLTemplate(), conf.getMetadataStoreId() );
@@ -341,8 +345,25 @@ public class WMSController extends AbstractOWS {
                        List<FileItem> multiParts )
                             throws ServletException, IOException {
         String v = getVersionValueFromRequest( map );
-        Version version = v == null ? highestVersion : Version.parseVersion( v );
+        Version version;
+        try {
+            version = v == null ? highestVersion : Version.parseVersion( v );
+        } catch ( InvalidParameterValueException e ) {
+            controllers.get( highestVersion ).sendException( new OWSException( get( "WMS.VERSION_UNSUPPORTED", v ),
+                                                                               OWSException.INVALID_PARAMETER_VALUE ),
+                                                             response, this );
+            return;
+        }
 
+        if ( isStrict ) {
+            String service = map.get( "SERVICE" );
+            if ( service != null && !"WMS".equalsIgnoreCase( service ) ) {
+                controllers.get( version ).sendException(
+                                        new OWSException( "The parameter SERVICE must be 'WMS', but is '" + service + "'",
+                                                          OWSException.INVALID_PARAMETER_VALUE ), response, this );
+                return;
+            }
+        }
         WMSRequestType req;
         String requestName = map.get( "REQUEST" );
         try {
@@ -521,7 +542,8 @@ public class WMSController extends AbstractOWS {
     protected void getMap( Map<String, String> map, HttpResponseBuffer response, Version version )
                             throws OWSException, IOException, MissingDimensionValue, InvalidDimensionValue {
         org.deegree.protocol.wms.ops.GetMap gm2 = new org.deegree.protocol.wms.ops.GetMap( map, version,
-                                                                                           service.getExtensions() );
+                                                                                           service.getExtensions(),
+                                                                                           isStrict );
 
         doGetMap( map, response, version, gm2 );
     }
@@ -536,6 +558,9 @@ public class WMSController extends AbstractOWS {
             if ( !service.hasTheme( lr.getName() ) ) {
                 throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
                                         "layers" );
+            }
+            if ( isCrsCheckStrict && !service.isCrsSupported( lr.getName(), gfi.getRequestCoordinateSystem() ) ) {
+                controllers.get( version ).throwSRSException( gfi.getRequestCoordinateSystem().getAlias() );
             }
         }
         for ( StyleRef sr : gfi.getStyles() ) {
@@ -566,6 +591,9 @@ public class WMSController extends AbstractOWS {
             if ( !service.hasTheme( lr.getName() ) ) {
                 throw new OWSException( "The layer with name " + lr.getName() + " is not defined.", "LayerNotDefined",
                                         "layers" );
+            }
+            if ( isCrsCheckStrict && !service.isCrsSupported( lr.getName(), gm.getRequestCoordinateSystem() ) ) {
+                controllers.get( version ).throwSRSException( gm.getRequestCoordinateSystem().getAlias() );
             }
         }
         for ( StyleRef sr : gm.getStyles() ) {
@@ -874,18 +902,9 @@ public class WMSController extends AbstractOWS {
         boolean geometries = fi.returnGeometries();
         List<String> queryLayers = map( fi.getQueryLayers(), CollectionUtils.<LayerRef> getToStringMapper() );
 
-        RenderingInfo info = new RenderingInfo( fi.getInfoFormat(), fi.getWidth(), fi.getHeight(), false, null,
-                                                fi.getEnvelope(), 0.28, map );
         String format = fi.getInfoFormat();
-        info.setFormat( format );
-        info.setFeatureCount( fi.getFeatureCount() );
-        info.setX( fi.getX() );
-        info.setY( fi.getY() );
         LinkedList<String> headers = new LinkedList<String>();
-        Pair<FeatureCollection, LinkedList<String>> pair = new Pair<FeatureCollection, LinkedList<String>>(
-                                                                                                            service.getFeatures( fi,
-                                                                                                                                 headers ),
-                                                                                                            headers );
+        Pair<FeatureCollection, LinkedList<String>> pair = new Pair<>( service.getFeatures( fi, headers ), headers );
 
         FeatureCollection col = pair.first;
         addHeaders( response, pair.second );

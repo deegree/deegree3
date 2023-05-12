@@ -8,21 +8,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-tests</artifactId>
-    <version>3.4.20-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
@@ -111,10 +98,7 @@
             <contextPath>/deegree-workspace-tests</contextPath>
           </webApp>
           <systemProperties>
-            <systemProperty>
-              <name>DEEGREE_WORKSPACE_ROOT</name>
-              <value>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</value>
-            </systemProperty>
+            <DEEGREE_WORKSPACE_ROOT>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/workspaces</DEEGREE_WORKSPACE_ROOT>
           </systemProperties>
         </configuration>
       </plugin>
@@ -135,6 +119,10 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
 

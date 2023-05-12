@@ -59,7 +59,7 @@ import org.deegree.workspace.Workspace;
  */
 public class PyramidCoverageProvider extends CoverageProvider {
 
-    private static final URL CONFIG_SCHEMA = PyramidCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/3.4.0/pyramid.xsd" );
+    private static final URL CONFIG_SCHEMA = PyramidCoverageProvider.class.getResource( "/META-INF/schemas/datasource/coverage/raster/pyramid.xsd" );
 
     @Override
     public String getNamespace() {

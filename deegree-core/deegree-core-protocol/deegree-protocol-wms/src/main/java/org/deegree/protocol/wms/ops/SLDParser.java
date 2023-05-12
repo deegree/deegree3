@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://aschmitz@wald.intevation.org/deegree/deegree3/trunk/deegree-services/deegree-services-wms/src/main/java/org/deegree/services/wms/controller/sld/SLDParser.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -39,6 +38,8 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.stax.XMLStreamUtils.skipElement;
+import static org.deegree.gml.GMLInputFactory.createGMLStreamReader;
+import static org.deegree.gml.GMLVersion.GML_31;
 import static org.deegree.layer.dims.Dimension.parseTyped;
 import static org.deegree.protocol.wms.ops.GetMap.parseDimensionValues;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -51,12 +52,15 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.commons.xml.NamespaceBindings;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.cs.exceptions.UnknownCRSException;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.DynamicAppSchema;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.MatchAction;
@@ -68,7 +72,9 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.ValueReference;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.gml.GMLStreamReader;
 import org.deegree.layer.LayerRef;
+import org.deegree.layer.persistence.inline.InlineFeatureLayer;
 import org.deegree.protocol.wms.sld.StyleContainer;
 import org.deegree.protocol.wms.sld.StylesContainer;
 import org.deegree.style.StyleRef;
@@ -80,11 +86,7 @@ import org.slf4j.Logger;
  * <code>SLDParser</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author: aschmitz $
- * 
- * @version $Revision: 31785 $, $Date: 2011-09-06 20:21:16 +0200 (Tue, 06 Sep 2011) $
  */
-@LoggingNotes(debug = "logs which named layers were extracted from SLD")
 public class SLDParser {
 
     private static final Logger LOG = getLogger( SLDParser.class );
@@ -162,71 +164,7 @@ public class SLDParser {
                 OperatorFilter operatorFilter = null;
                 if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
 
-                    while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
-                        in.nextTag();
-
-                        while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeConstraint" ) ) ) {
-                            in.nextTag();
-
-                            // skip feature type name, it is useless in this context (or is it?) TODO
-                            if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
-                                in.getElementText();
-                                in.nextTag();
-                            }
-
-                            if ( in.getLocalName().equals( "Filter" ) ) {
-                                Filter filter = Filter110XMLDecoder.parse( in );
-                                if ( filter instanceof OperatorFilter ) {
-                                    operatorFilter = (OperatorFilter) filter;
-                                } else if ( filter instanceof IdFilter ) {
-                                    IdFilter idFilter = (IdFilter) filter;
-                                    List<ResourceId> ids = idFilter.getSelectedIds();
-
-                                    NamespaceBindings nsContext = new NamespaceBindings();
-                                    nsContext.addNamespace( "gml", GMLNS );
-                                    ValueReference idReference = new ValueReference( "@gml:id", nsContext );
-
-                                    int idCount = ids.size(), i = 0;
-                                    Operator[] operators = new Operator[idCount];
-                                    for ( ResourceId id : ids ) {
-                                        operators[i++] = new PropertyIsEqualTo(
-                                                                                idReference,
-                                                                                new Literal<PrimitiveValue>(
-                                                                                                             id.getRid() ),
-                                                                                Boolean.TRUE, MatchAction.ONE );
-                                    }
-
-                                    if ( idCount == 1 ) {
-                                        operatorFilter = new OperatorFilter( operators[0] );
-                                    } else {
-                                        operatorFilter = new OperatorFilter( new Or( operators ) );
-                                    }
-                                }
-                            }
-
-                            if ( in.getLocalName().equals( "Extent" ) ) {
-                                in.nextTag();
-
-                                in.require( START_ELEMENT, null, "Name" );
-                                String name = in.getElementText().toUpperCase();
-                                in.nextTag();
-                                in.require( START_ELEMENT, null, "Value" );
-                                String value = in.getElementText();
-                                in.nextTag();
-                                in.require( END_ELEMENT, null, "Extent" );
-
-                                List<?> list = parseDimensionValues( value, name.toLowerCase() );
-                                if ( name.toUpperCase().equals( "TIME" ) ) {
-                                    stylesContainer.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
-                                } else {
-                                    List<?> values = (List<?>) parseTyped( list, false );
-                                    stylesContainer.addDimensionValue( name, values );
-                                }
-
-                            }
-                        }
-                        in.nextTag();
-                    }
+                    operatorFilter = parseLayerFeatureConstraints( in, stylesContainer );
 
                     in.nextTag();
                 }
@@ -290,12 +228,181 @@ public class SLDParser {
 
                 in.nextTag();
             } else {
-                throw new OWSException( "UserLayer requests are currently not supported.",
-                                        OWSException.NO_APPLICABLE_CODE );
+                // UserLayer
+                in.nextTag();
+                
+                in.require( START_ELEMENT, null, "Name" );
+                // TODO skipped
+                in.getElementText();
+
+                in.nextTag();
+                
+                // TODO skipped
+                if ( in.getLocalName().equals( "Description" ) ) {
+                    skipElement( in );
+                }
+                
+                FeatureCollection inlineFeatures = null;
+                DynamicAppSchema inlineAppSchema = null;
+                if ( in.getLocalName().equals( "InlineFeature" ) ) {
+                    in.nextTag();
+                    inlineAppSchema = new DynamicAppSchema();
+                    GMLStreamReader reader = createGMLStreamReader( GML_31, in );
+                    reader.setApplicationSchema( inlineAppSchema );
+                    try {
+                        inlineFeatures = reader.readFeatureCollection();
+                        LOG.debug( "Has read {} inline features", inlineFeatures.size() );
+                    } catch ( XMLParsingException | UnknownCRSException e ) {
+                        throw new OWSException( "Could not read inlined FeatureCollection", e,
+                                                OWSException.NO_APPLICABLE_CODE );
+                    }
+                    
+                    in.nextTag();
+                    in.nextTag();
+                }
+                
+                if ( in.getLocalName().equals( "RemoteOWS" ) ) {
+                    throw new OWSException( "Only UserLayer requests with InlineFeature are currently supported.",
+                                            OWSException.NO_APPLICABLE_CODE );
+                }
+                
+                OperatorFilter operatorFilter = null;
+                if ( in.getLocalName().equals( "LayerFeatureConstraints" ) ) {
+
+                    operatorFilter = parseLayerFeatureConstraints( in, stylesContainer );
+
+                    in.nextTag();
+                }
+                
+                if ( in.getLocalName().equals( "LayerCoverageConstraints" ) ) {
+                    throw new OWSException( "Only UserLayer requests with LayerFeatureConstraints are currently supported.",
+                                            OWSException.NO_APPLICABLE_CODE );
+                }
+                
+                if ( in.getLocalName().equals( "UserStyle" ) ) {
+
+                    while ( !( in.isEndElement() && in.getLocalName().equals( "UserStyle" ) ) ) {
+                        in.nextTag();
+
+                        // TODO skipped
+                        if ( in.getLocalName().equals( "Name" ) ) {
+                            in.getElementText();
+                        }
+
+                        // TODO skipped
+                        if ( in.getLocalName().equals( "Description" ) ) {
+                            skipElement( in );
+                        }
+
+                        // TODO skipped
+                        if ( in.getLocalName().equals( "Title" ) ) {
+                            in.getElementText();
+                        }
+
+                        // TODO skipped
+                        if ( in.getLocalName().equals( "Abstract" ) ) {
+                            in.getElementText();
+                        }
+
+                        // TODO skipped
+                        if ( in.getLocalName().equals( "IsDefault" ) ) {
+                            in.getElementText();
+                        }
+
+                        if ( in.getLocalName().equals( "FeatureTypeStyle" )
+                             || in.getLocalName().equals( "CoverageStyle" )
+                             || in.getLocalName().equals( "OnlineResource" ) ) {
+                            Style style = SymbologyParser.INSTANCE.parseFeatureTypeOrCoverageStyle( in );
+
+                            InlineFeatureLayer layer = new InlineFeatureLayer( inlineFeatures, inlineAppSchema, 10000, style );
+                            
+                            StyleContainer styleContainer = new StyleContainer( new LayerRef( layer ),
+                                                                                new StyleRef( style ), operatorFilter );
+                            stylesContainer.addStyle( styleContainer );
+                        }
+                    }
+
+                    in.nextTag();
+
+                }
+
+                in.nextTag();
             }
         }
 
         return stylesContainer;
+    }
+
+    private static OperatorFilter parseLayerFeatureConstraints(XMLStreamReader in, StylesContainer stylesContainer) throws XMLStreamException, OWSException, ParseException {
+        OperatorFilter operatorFilter = null;
+        
+        while ( !( in.isEndElement() && in.getLocalName().equals( "LayerFeatureConstraints" ) ) ) {
+            in.nextTag();
+
+            while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeConstraint" ) ) ) {
+                in.nextTag();
+
+                // skip feature type name, it is useless in this context (or is it?) TODO
+                if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
+                    in.getElementText();
+                    in.nextTag();
+                }
+
+                if ( in.getLocalName().equals( "Filter" ) ) {
+                    Filter filter = Filter110XMLDecoder.parse( in );
+                    if ( filter instanceof OperatorFilter ) {
+                        operatorFilter = (OperatorFilter) filter;
+                    } else if ( filter instanceof IdFilter ) {
+                        IdFilter idFilter = (IdFilter) filter;
+                        List<ResourceId> ids = idFilter.getSelectedIds();
+
+                        NamespaceBindings nsContext = new NamespaceBindings();
+                        nsContext.addNamespace( "gml", GMLNS );
+                        ValueReference idReference = new ValueReference( "@gml:id", nsContext );
+
+                        int idCount = ids.size(), i = 0;
+                        Operator[] operators = new Operator[idCount];
+                        for ( ResourceId id : ids ) {
+                            operators[i++] = new PropertyIsEqualTo(
+                                                                    idReference,
+                                                                    new Literal<PrimitiveValue>(
+                                                                                                 id.getRid() ),
+                                                                    Boolean.TRUE, MatchAction.ONE );
+                        }
+
+                        if ( idCount == 1 ) {
+                            operatorFilter = new OperatorFilter( operators[0] );
+                        } else {
+                            operatorFilter = new OperatorFilter( new Or( operators ) );
+                        }
+                    }
+                }
+
+                if ( in.getLocalName().equals( "Extent" ) ) {
+                    in.nextTag();
+
+                    in.require( START_ELEMENT, null, "Name" );
+                    String name = in.getElementText().toUpperCase();
+                    in.nextTag();
+                    in.require( START_ELEMENT, null, "Value" );
+                    String value = in.getElementText();
+                    in.nextTag();
+                    in.require( END_ELEMENT, null, "Extent" );
+
+                    List<?> list = parseDimensionValues( value, name.toLowerCase() );
+                    if ( name.toUpperCase().equals( "TIME" ) ) {
+                        stylesContainer.addDimensionValue( "time", (List<?>) parseTyped( list, true ) );
+                    } else {
+                        List<?> values = (List<?>) parseTyped( list, false );
+                        stylesContainer.addDimensionValue( name, values );
+                    }
+
+                }
+            }
+            in.nextTag();
+        }
+        
+        return operatorFilter;
     }
 
     /**

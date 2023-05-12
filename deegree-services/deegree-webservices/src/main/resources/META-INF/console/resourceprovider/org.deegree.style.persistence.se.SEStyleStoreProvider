@@ -1,13 +1,13 @@
 name=SE
-example1_location=/META-INF/schemas/se/3.4.0/point.xml
+example1_location=/META-INF/schemas/se/point.xml
 example1_name=point
 example1_description=Simple point style.
-example2_location=/META-INF/schemas/se/3.4.0/lines.xml
+example2_location=/META-INF/schemas/se/lines.xml
 example2_name=lines
 example2_description=Simple line style.
-example3_location=/META-INF/schemas/se/3.4.0/polygons.xml
+example3_location=/META-INF/schemas/se/polygons.xml
 example3_name=polygons
 example3_description=Simple polygon style.
-example4_location=/META-INF/schemas/se/3.4.0/text.xml
+example4_location=/META-INF/schemas/se/text.xml
 example4_name=text
 example4_description=Simple text style.

@@ -57,7 +57,7 @@ import org.jaxen.saxpath.Axis;
  * 
  * @version $Revision$, $Date$
  */
-abstract class MappableStep {
+public abstract class MappableStep {
 
     /**
      * Checks and extracts the steps from the given {@link ValueReference}.
@@ -68,7 +68,7 @@ abstract class MappableStep {
      * @throws UnmappableException
      *             if unsupported expressions / axes / predicates are encountered
      */
-    static List<MappableStep> extractSteps( ValueReference propName )
+    public static List<MappableStep> extractSteps( ValueReference propName )
                             throws UnmappableException {
 
         List<MappableStep> steps = new ArrayList<MappableStep>();

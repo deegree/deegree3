@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2010 by:
@@ -42,10 +41,13 @@ import static org.deegree.services.config.actions.Delete.delete;
 import static org.deegree.services.config.actions.Download.download;
 import static org.deegree.services.config.actions.Invalidate.invalidate;
 import static org.deegree.services.config.actions.List.list;
+import static org.deegree.services.config.actions.ListFonts.listFonts;
 import static org.deegree.services.config.actions.ListWorkspaces.listWorkspaces;
 import static org.deegree.services.config.actions.Restart.restart;
+import static org.deegree.services.config.actions.UpdateBboxCache.updateBboxCache;
 import static org.deegree.services.config.actions.Update.update;
 import static org.deegree.services.config.actions.Upload.upload;
+import static org.deegree.services.config.actions.Validate.validate;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -62,9 +64,6 @@ import org.slf4j.Logger;
 /**
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
  */
 public class ConfigServlet extends HttpServlet {
 
@@ -94,10 +93,15 @@ public class ConfigServlet extends HttpServlet {
             data.append( "GET /config/update                                           - rescan config files and update resources\n" );
             data.append( "GET /config/update/wsname                                    - update with workspace <wsname>, rescan config files and update resources\n" );
             data.append( "GET /config/listworkspaces                                   - list available workspace names\n" );
+            data.append( "GET /config/listfonts                                        - list currently available fonts on the server\n" );
             data.append( "GET /config/list[/path]                                      - list currently running workspace or directory in workspace\n" );
             data.append( "GET /config/list/wsname[/path]                               - list workspace with name <wsname> or directory in workspace\n" );
             data.append( "GET /config/invalidate/datasources/tile/id/matrixset[?bbox=] - invalidate part or all of a tile store cache's tile matrix set\n" );
             data.append( "GET /config/crs/list                                         - list available CRS definitions\n" );
+            data.append( "GET /config/validate[/path]                                  - validate currently running workspace or file in workspace\n" );
+            data.append( "GET /config/validate/wsname[/path]                           - validate workspace with name <wsname> or file in workspace\n" );
+            data.append( "GET /config/update/bboxcache[?featureStoreId=]               - recalculates the bounding boxes of all feature stores of the currently running workspace, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n" );
+            data.append( "GET /config/update/bboxcache/wsname[?featureStoreId=]        - recalculates the bounding boxes of all feature stores of the workspace with name <wsname>, with the parameter 'featureStoreId' a comma separated list of feature stores to update can be passed\n" );
             data.append( "POST /config/crs/getcodes with wkt=<wkt>                     - retrieves a list of CRS codes corresponding to the WKT (POSTed KVP)\n" );
             data.append( "GET /config/crs/<code>                                       - checks if a CRS definition is available, returns true/false\n" );
             data.append( "PUT /config/upload/wsname.zip                                - upload workspace <wsname>\n" );
@@ -138,11 +142,17 @@ public class ConfigServlet extends HttpServlet {
         }
 
         if ( path.toLowerCase().startsWith( "/update" ) ) {
-            update( path.substring( 7 ), resp );
+            if ( path.toLowerCase().startsWith( "/update/bboxcache" ) ) {
+                updateBboxCache( path.substring( 17 ), req.getQueryString(), resp );
+            } else {
+                update( path.substring( 7 ), resp );
+            }
         }
 
         if ( path.toLowerCase().startsWith( "/listworkspaces" ) ) {
             listWorkspaces( resp );
+        } else if ( path.toLowerCase().startsWith( "/listfonts" ) ) {
+            listFonts( resp );
         } else if ( path.toLowerCase().startsWith( "/list" ) ) {
             list( path.substring( 5 ), resp );
         }
@@ -161,6 +171,10 @@ public class ConfigServlet extends HttpServlet {
             getCodes( req, resp );
         } else if ( path.toLowerCase().startsWith( "/crs" ) ) {
             checkCrs( path.substring( 4 ), resp );
+        }
+
+        if ( path.toLowerCase().startsWith( "/validate" ) ) {
+            validate( path.substring( 9 ), resp );
         }
     }
 

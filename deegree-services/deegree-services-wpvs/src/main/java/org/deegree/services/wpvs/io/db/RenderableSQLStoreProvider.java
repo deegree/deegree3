@@ -55,7 +55,7 @@ public class RenderableSQLStoreProvider extends RenderableStoreProvider {
 
     private static final String CONFIG_NS = "http://www.deegree.org/datasource/renderable/sql";
 
-    private static final URL CONFIG_SCHEMA = RenderableSQLStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/3.4.0/sql.xsd" );
+    private static final URL CONFIG_SCHEMA = RenderableSQLStoreProvider.class.getResource( "/META-INF/schemas/datasource/3d/renderable/sql.xsd" );
 
     @Override
     public String getNamespace() {

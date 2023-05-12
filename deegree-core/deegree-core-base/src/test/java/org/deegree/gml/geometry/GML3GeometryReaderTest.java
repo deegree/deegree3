@@ -105,6 +105,10 @@ import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
+import org.deegree.geometry.standard.primitive.DefaultCurve;
+import org.deegree.geometry.standard.primitive.DefaultLinearRing;
+import org.deegree.geometry.standard.primitive.DefaultRing;
 import org.deegree.gml.GMLInputFactory;
 import org.deegree.gml.GMLStreamReader;
 import org.deegree.gml.GMLVersion;
@@ -116,10 +120,10 @@ import org.slf4j.Logger;
 
 /**
  * Tests that check the correct parsing of GML 3 geometry elements.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GML3GeometryReaderTest {
@@ -369,6 +373,48 @@ public class GML3GeometryReaderTest {
         Assert.assertTrue( ring.getMembers().get( 0 ).getCurveSegments().get( 1 ) instanceof Arc );
         Assert.assertEquals( 1, ring.getMembers().get( 1 ).getCurveSegments().size() );
         Assert.assertTrue( ring.getMembers().get( 1 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );
+    }
+
+    @Test
+    public void parseRingWithLinearRing()
+                    throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                    UnknownCRSException {
+        GMLStreamReader gmlReader = getParser( "RingWithLinearRing.gml" );
+        XMLStreamReader xmlReader = gmlReader.getXMLReader();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Ring" ), xmlReader.getName() );
+        Ring ring = (Ring) gmlReader.readGeometry();
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Ring" ), xmlReader.getName() );
+        Assert.assertEquals( 1, ring.getMembers().size() );
+        Assert.assertTrue( ring.getMembers().get( 0 ) instanceof DefaultLinearRing );
+        Assert.assertEquals( 1, ring.getMembers().get( 0 ).getCurveSegments().size() );
+        Assert.assertTrue( ring.getMembers().get( 0 ).getCurveSegments().get( 0 ) instanceof DefaultLineStringSegment );
+    }
+
+    @Test
+    public void parseRingWithRing()
+                    throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                    UnknownCRSException {
+        GMLStreamReader gmlReader = getParser( "RingWithRing.gml" );
+        XMLStreamReader xmlReader = gmlReader.getXMLReader();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Ring" ), xmlReader.getName() );
+        Ring ring = (Ring) gmlReader.readGeometry();
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Ring" ), xmlReader.getName() );
+        Assert.assertEquals( 1, ring.getMembers().size() );
+        Assert.assertTrue( ring.getMembers().get( 0 ) instanceof DefaultRing );
+
+        DefaultRing innerRing = (DefaultRing) ring.getMembers().get( 0 );
+        Assert.assertEquals( 2, innerRing.getMembers().size() );
+        Assert.assertTrue( innerRing.getMembers().get( 0 ) instanceof DefaultCurve );
+        Assert.assertEquals( 2, innerRing.getMembers().get( 0 ).getCurveSegments().size() );
+        Assert.assertTrue( innerRing.getMembers().get( 0 ).getCurveSegments().get( 0 ) instanceof Arc );
+        Assert.assertTrue( innerRing.getMembers().get( 0 ).getCurveSegments().get( 1 ) instanceof Arc );
+        Assert.assertTrue( innerRing.getMembers().get( 1 ) instanceof DefaultCurve );
+        Assert.assertEquals( 1, innerRing.getMembers().get( 1 ).getCurveSegments().size() );
+        Assert.assertTrue( innerRing.getMembers().get( 1 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );
     }
 
     @Test
@@ -1031,7 +1077,7 @@ public class GML3GeometryReaderTest {
         assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
         assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
         assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
-        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );        
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );
     }
 
     @Test
@@ -1106,7 +1152,7 @@ public class GML3GeometryReaderTest {
         assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
         assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
         assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
-        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );        
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );
     }
 
     @Test
@@ -1181,7 +1227,7 @@ public class GML3GeometryReaderTest {
         assertEquals( "M", getPrimitive( "aixm:geoidUndulation/@uom", geom ).getAsText() );
         assertEquals( "NAVD88", getPrimitive( "aixm:verticalDatum/text()", geom ).getAsText() );
         assertEquals( "2.0", getPrimitive( "aixm:verticalAccuracy/text()", geom ).getAsText() );
-        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );        
+        assertEquals( "M", getPrimitive( "aixm:verticalAccuracy/@uom", geom ).getAsText() );
     }
 
     private PrimitiveValue getPrimitive( String xpath, GMLObject object )

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/layers/base" xmlns:l="http://www.deegree.org/layers/base" elementFormDefault="qualified"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1" xmlns:d="http://www.deegree.org/metadata/description"
+  xmlns:s="http://www.deegree.org/metadata/spatial">
+
+  <annotation>
+    <appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.layer.persistence.base.jaxb" />
+      </jaxb:schemaBindings>
+    </appinfo>
+  </annotation>
+
+  <import namespace="http://www.deegree.org/metadata/description" schemaLocation="../../commons/description/description.xsd" />
+  <import namespace="http://www.deegree.org/metadata/spatial" schemaLocation="../../commons/spatialmetadata/spatialmetadata.xsd" />
+
+  <group name="LayerInfo">
+    <sequence>
+      <element name="Name" type="string" />
+      <group ref="d:Description" />
+      <group ref="s:SpatialMetadata" />
+      <element name="MetadataSetId" type="string" minOccurs="0" />
+      <element name="ScaleDenominators" type="l:ScaleDenominatorsType" minOccurs="0" />
+      <element name="Dimension" type="l:DimensionType" minOccurs="0" maxOccurs="unbounded" />
+      <element name="StyleRef" minOccurs="0" maxOccurs="unbounded" type="l:StyleRefType" />
+      <element name="LayerOptions" minOccurs="0" type="l:LayerOptionsType" />
+    </sequence>
+  </group>
+
+  <complexType name="StyleRefType">
+    <sequence>
+      <element name="StyleStoreId" type="string" />
+      <!-- either use all styles with proper layer name from style store, or select them manually below: -->
+      <element name="Style" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="StyleName" type="string" />
+            <element name="StyleTitle" type="string" minOccurs="0" />
+            <element name="LayerNameRef" type="string" />
+            <element name="StyleNameRef" type="string" />
+            <!-- either use same style for legend, or one of the following -->
+            <choice minOccurs="0">
+              <!-- generate legend from different style -->
+              <element name="LegendStyle">
+                <complexType>
+                  <sequence>
+                    <element name="LayerNameRef" type="string" />
+                    <element name="StyleNameRef" type="string" />
+                  </sequence>
+                </complexType>
+              </element>
+              <element name="LegendGraphic">
+                <complexType>
+                  <simpleContent>
+                    <extension base="string">
+                      <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" use="optional" />
+                    </extension>
+                  </simpleContent>
+                </complexType>
+              </element>
+            </choice>
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <!-- denominators are 0.28 mm standard SLD/SE scale denominators -->
+  <complexType name="ScaleDenominatorsType">
+    <attribute name="min" type="double" use="required" />
+    <attribute name="max" type="double" use="required" />
+    <attribute name="native" type="double" use="optional" />
+  </complexType>
+
+  <complexType name="DimensionType">
+    <sequence>
+      <element name="Name" type="string" minOccurs="0" />
+      <!-- For feature layers this will be a property qname -->
+      <element name="Source" type="QName" />
+      <element name="DefaultValue" type="string" minOccurs="0" />
+      <element name="MultipleValues" type="boolean" default="0" minOccurs="0" />
+      <element name="NearestValue" type="boolean" default="0" minOccurs="0" />
+      <element name="Current" type="boolean" default="0" minOccurs="0" />
+      <element name="Units" type="string" minOccurs="0" />
+      <element name="UnitSymbol" type="string" minOccurs="0" />
+      <element name="Extent" type="string" />
+    </sequence>
+    <attribute name="isTime" type="boolean" use="optional" default="false" />
+    <attribute name="isElevation" type="boolean" use="optional" default="false" />
+  </complexType>
+
+  <complexType name="LayerOptionsType">
+    <sequence>
+      <element name="AntiAliasing" type="string" minOccurs="0" />
+      <element name="RenderingQuality" type="string" minOccurs="0" />
+      <element name="Interpolation" type="string" minOccurs="0" />
+      <element name="MaxFeatures" type="int" minOccurs="0" />
+      <choice minOccurs="0">
+        <element name="FeatureInfo">
+          <complexType>
+            <attribute name="enabled" type="boolean" default="true"/>
+            <attribute name="pixelRadius" type="positiveInteger" default="1"/>
+            <attribute name="decimalPlaces" type="nonNegativeInteger"/>
+          </complexType>
+        </element>
+        <element name="FeatureInfoRadius" type="int" />
+      </choice>
+      <element name="Opaque" type="boolean" default="false" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+</schema>

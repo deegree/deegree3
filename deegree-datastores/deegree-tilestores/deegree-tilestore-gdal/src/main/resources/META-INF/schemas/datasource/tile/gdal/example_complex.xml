@@ -1,0 +1,16 @@
+<GDALTileStore
+  xmlns="http://www.deegree.org/datasource/tile/gdal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/datasource/tile/gdal http://schemas.deegree.org/3.5/datasource/tile/gdal/gdal.xsd">  
+  <TileDataSet>
+    <Identifier>2010</Identifier>
+    <TileMatrixSetId>NLDEPSG28992Scale</TileMatrixSetId>
+    <File>/geodata/ecw/2010/Luchtfoto2010_25cm.ecw</File>
+    <ImageFormat>image/jpeg</ImageFormat>    
+  </TileDataSet>
+  <TileDataSet>
+    <Identifier>2011</Identifier>
+    <TileMatrixSetId>NLDEPSG28992Scale</TileMatrixSetId>
+    <File>/geodata/ecw/2011/Mozaiek2011.ecw</File>
+    <ImageFormat>image/jpeg</ImageFormat>
+ </TileDataSet>    
+</GDALTileStore>

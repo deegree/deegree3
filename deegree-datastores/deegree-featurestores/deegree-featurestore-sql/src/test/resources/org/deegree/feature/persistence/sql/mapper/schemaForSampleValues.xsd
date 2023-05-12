@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:te="http://test.de/schema"
+        xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified"
+        targetNamespace="http://test.de/schema" version="4.0">
+
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+
+  <element name="FeatureA" substitutionGroup="gml:AbstractFeature" type="te:FeatureAType"/>
+  <complexType name="FeatureAType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="prop_A1" type="string" maxOccurs="unbounded"/>
+          <element name="prop_A2" type="int"/>
+          <element name="prop_A3" type="int" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="complex_A4" maxOccurs="unbounded">
+            <complexType>
+              <sequence>
+                <element name="prop_A4_1" type="string" maxOccurs="unbounded"/>
+                <element name="prop_A4_2" type="int"/>
+                <element name="prop_A4_3" type="int" minOccurs="0" maxOccurs="unbounded"/>
+              </sequence>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="FeatureB" substitutionGroup="gml:AbstractFeature" type="te:FeatureBType"/>
+  <complexType name="FeatureBType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element name="prop_B1" type="string" maxOccurs="unbounded"/>
+          <element name="prop_B2" type="int"/>
+          <element name="prop_B3" type="int" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="featureA" maxOccurs="unbounded">
+            <complexType>
+              <sequence>
+                <element ref="te:FeatureA"/>
+              </sequence>
+            </complexType>
+          </element>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+
+</schema>
+

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/coverage http://schemas.deegree.org/layers/coverage/3.4.0/coverage.xsd" configVersion="3.4.0">
+<CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:l="http://www.deegree.org/layers/base" xmlns:d="http://www.deegree.org/metadata/description" xmlns:s="http://www.deegree.org/metadata/spatial" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/layers/coverage http://schemas.deegree.org/3.5/layers/coverage/coverage.xsd">
   <CoverageStoreId>utah_geotiff_dem30</CoverageStoreId>
   <CoverageLayer>
     <l:Name>DEM30</l:Name>
