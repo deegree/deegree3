@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Raster xmlns="http://www.deegree.org/datasource/coverage/raster" originLocation="outer"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/3.5/datasource/coverage/raster/raster.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/coverage/raster http://schemas.deegree.org/core/3.5/datasource/coverage/raster/raster.xsd">
   <StorageCRS>EPSG:26912</StorageCRS>
   <!--
     This example shows the configuration of a RasterFile as datasource for deegree WMS. Please think about indicating

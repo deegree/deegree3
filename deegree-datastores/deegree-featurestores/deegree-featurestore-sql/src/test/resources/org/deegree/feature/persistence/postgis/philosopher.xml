@@ -1,6 +1,6 @@
 <PostGISFeatureStore xmlns="http://www.deegree.org/datasource/feature/postgis"
   xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/3.5/datasource/feature/postgis/postgis.xsd">
+  xsi:schemaLocation="http://www.deegree.org/datasource/feature/postgis http://schemas.deegree.org/core/3.5/datasource/feature/postgis/postgis.xsd">
   <StorageCRS>EPSG:4326</StorageCRS>
   <NamespaceHint prefix="app" namespaceURI="http://www.deegree.org/app" />  
   <JDBCConnId>philosopher-db</JDBCConnId>

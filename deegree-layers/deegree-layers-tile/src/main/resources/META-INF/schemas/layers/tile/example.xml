@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <TileLayers xmlns="http://www.deegree.org/layers/tile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/3.5/layers/tile/tile.xsd"
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/tile http://schemas.deegree.org/core/3.5/layers/tile/tile.xsd"
  >
   <TileLayer>
     <l:Name>example</l:Name>

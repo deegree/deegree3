@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <crs:DatumDefinitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/3.5/crs/crsdefinition.xsd">
+  xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/core/3.5/crs/crsdefinition.xsd">
   <crs:GeodeticDatum>
     <crs:Id>epsg:6200</crs:Id>
     <crs:Name>Pulkovo 1995</crs:Name>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeWFS xmlns="http://www.deegree.org/services/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/3.5/wfs/wfs_configuration.xsd">
+  xsi:schemaLocation="http://www.deegree.org/services/wfs http://schemas.deegree.org/core/3.5/wfs/wfs_configuration.xsd">
   <EnableTransactions>true</EnableTransactions>
   <QueryCRS>urn:ogc:def:crs:EPSG:4326</QueryCRS>
 </deegreeWFS>

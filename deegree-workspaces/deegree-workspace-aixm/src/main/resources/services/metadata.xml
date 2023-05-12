@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deegreeServicesMetadata xmlns="http://www.deegree.org/services/metadata"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/3.5/services/metadata/metadata.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/services/metadata http://schemas.deegree.org/core/3.5/services/metadata/metadata.xsd">
   <!-- General service information for all services. Used in the GetCapabilities responses. -->
   <ServiceIdentification>
     <Title>deegree 3 AIXM Service</Title>
