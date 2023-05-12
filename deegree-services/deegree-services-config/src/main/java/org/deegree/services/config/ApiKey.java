@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.deegree.commons.config.DeegreeWorkspace;
+import org.deegree.commons.utils.TunableParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,10 +142,12 @@ public class ApiKey {
         if ( token == null ) {
             token = new Token();
         } else if ( token.isAnyAllowed() ) {
-            LOG.warn( "{}The REST API is currently configured insecure. We strongly recommend to use a key value instead at '{}'.{}",
-                      ls + ls + marker + marker + marker + ls, //
-                      file, //
-                      ls + marker + marker + marker );
+            if ( TunableParameter.get( "deegree.config.apikey.warn-when-disabled", true ) ) {
+                LOG.warn( "{}The REST API is currently configured insecure. We strongly recommend to use a key value instead at '{}'.{}",
+                          ls + ls + marker + marker + marker + ls, //
+                          file, //
+                          ls + marker + marker + marker );
+            }
         } else {
             LOG.info( "***" );
             LOG.info( "*** NOTE: The REST API is secured, so that the key set in file '{}' is required to access it." );

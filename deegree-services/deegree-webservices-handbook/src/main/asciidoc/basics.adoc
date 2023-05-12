@@ -138,6 +138,7 @@ files exist:
 |console.pw |Password for services console
 |proxy.xml |Proxy settings
 |webapps.properties |Selects the active workspace
+|config.apikey |Contains the key to protect the REST API
 |===
 
 Note that only a single workspace can be active at a time. The
@@ -155,6 +156,10 @@ TIP: When multiple deegree webservices instances run on a single machine,
 every instance can use a different workspace. The file
 _webapps.properties_ stores the active workspace for every deegree
 webapp separately.
+
+TIP: If there is no _config.apikey_ file, one will be generated on startup
+with an random value. A value of `*` will turn it off but we strongly advise
+against doing this in productive environments.
 
 === Structure of the deegree workspace directory
 

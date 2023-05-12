@@ -57,4 +57,6 @@ f
 
 |deegree.gml.property.simple.trim |java.lang.Boolean |true |When deegree reads GML data, by default (`true`) simple property values get their leading and trailing whitespace characters removed.
 
+|deegree.config.apikey.warn-when-disabled |java.lang.Boolean |true |Log warning if security on REST api is disabled by specifying `*` in _config.apikey_.
+
 |===
