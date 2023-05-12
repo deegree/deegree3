@@ -444,6 +444,7 @@ public abstract class WMSCapabilitiesAdapter extends XMLAdapter implements OWSCa
         String url = getNodeAsString( styleEl, new XPath( getPrefix() + "LegendURL/" + getPrefix()
                                                           + "OnlineResource/@xlink:href", nsContext ), null );
         Style style = new Style();
+        style.setName( styleName );
         if ( url != null ) {
             style.setLegendURL( new URL( url ) );
         }
