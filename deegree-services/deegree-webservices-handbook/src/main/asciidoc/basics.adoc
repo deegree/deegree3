@@ -158,8 +158,9 @@ _webapps.properties_ stores the active workspace for every deegree
 webapp separately.
 
 TIP: If there is no _config.apikey_ file, one will be generated on startup
-with an random value. A value of `*` will turn it off but we strongly advise
-against doing this in productive environments.
+with an random value. Alternatively, a value of `*` in config.apikey will 
+turn off security for the REST API. We strongly advise against doing this
+in productive environments.
 
 === Structure of the deegree workspace directory
 
