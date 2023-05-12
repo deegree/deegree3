@@ -813,7 +813,7 @@
         <artifactId>postgresql</artifactId>
         <version>42.5.2</version>
       </dependency>
-      <!-- Oracle (Offical provided driver from repo1.maven.org) -->
+      <!-- Oracle (Official provided driver from repo1.maven.org) -->
       <dependency>
         <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc8</artifactId>
@@ -849,6 +849,12 @@
         <groupId>com.oracle.database.xml</groupId>
         <artifactId>xdb</artifactId>
         <version>${oracle.version}</version>
+      </dependency>
+      <!-- MSSQL (Official provided driver from repo1.maven.org) -->
+      <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>10.2.2.jre11</version>
       </dependency>
       <!-- Batik -->
       <dependency>
