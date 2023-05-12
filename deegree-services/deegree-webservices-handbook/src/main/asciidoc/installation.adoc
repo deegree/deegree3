@@ -12,17 +12,17 @@ installation, including:
 * MacOS
 
 Supported Java SE 11 versions are
-http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle JDK 11]
-footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and http://openjdk.java.net[OpenJDK 11]
-footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/zulu/[Azul Systems]
-or https://adoptopenjdk.net[AdoptOpenJDK].].
+https://www.oracle.com/java/technologies/downloads/#java11[Oracle JDK 11]
+footnote:[Oracle JDK 8 and later requires a subscription from Oracle for use in production environments. Read further in https://www.oracle.com/java/java-se-subscription/[Oracle Java SE subscription].] and https://openjdk.org/projects/jdk/11/[OpenJDK 11]
+footnote:[OpenJDK binaries are provided by https://www.azul.com/downloads/#zulu[Azul Systems]
+or https://adoptium.net/[Temurin].].
 
 NOTE: Newer Java SE versions such as the LTS versions 17 are currently not supported by deegree 3.5. Please check out our wiki page https://github.com/deegree/deegree3/wiki/Java-SE-11-Support[Java 11 support] for further information.
 
 === Downloading
 
 deegree webservices downloads are available on the
-http://www.deegree.org/download[deegree home page]. You have the choice between:
+https://www.deegree.org/download/[deegree home page]. You have the choice between:
 
 * _Docker_ : Docker Image with deegree webservices on OpenJDK and Apache
 Tomcat footnote:[Requires an installation of Docker Community or
@@ -30,7 +30,7 @@ Enterprise Edition, download Docker from
 https://www.docker.com/[www.docker.com].]
 * _WAR_: Generic Java Web Archive for deployment in an existing Java
 Servlet container footnote:[A Java Servlet 3.1 compliant container is
-required. We recommend using the latest http://tomcat.apache.org/[Apache
+required. We recommend using the latest https://tomcat.apache.org/[Apache
 Tomcat 9] release.]
 
 TIP: If you are confused by the options and unsure which version to pick,
@@ -72,7 +72,7 @@ To shut deegree webservices down, switch back to the terminal window and
 press _CTRL+c_ or simply close it.
 
 TIP: If you want to run deegree webservices on system startup automatically,
-consider installing http://tomcat.apache.org[Apache Tomcat 9] as a
+consider installing https://tomcat.apache.org[Apache Tomcat 9] as a
 system service. Consult the https://tomcat.apache.org/tomcat-9.0-doc/index.html[Tomcat documentation]
 for more information and options.
 
@@ -107,7 +107,7 @@ or TLS. Either enable HTTPS on your Java Servlet Container or operate it
 behind a web server such as Apache httpd oder NGINX.
 
 TIP: If you are running Apache Tomcat read the
-http://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html[SSL HowTo].
+https://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html[SSL HowTo].
 
 ==== Securing deegree console and REST API
 
@@ -129,4 +129,4 @@ Furthermore, you should consider to enable the Java Security Manager and
 define restrictive file permissions.footnote:[How to run securely Java
 applications we recommend to follow the
 https://docs.oracle.com/en/java/javase/11/security/index.html[Java Security Guidelines] and for
-http://tomcat.apache.org/tomcat-9.0-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]
+https://tomcat.apache.org/tomcat-9.0-doc/security-manager-howto.html[Apache Tomcat the Security Manager HowTo].]

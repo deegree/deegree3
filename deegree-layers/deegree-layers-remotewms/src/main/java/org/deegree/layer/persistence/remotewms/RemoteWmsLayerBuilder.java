@@ -41,11 +41,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.layer.persistence.remotewms;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.deegree.commons.ows.metadata.Description;
 import org.deegree.commons.ows.metadata.DescriptionConverter;
@@ -58,23 +61,23 @@ import org.deegree.layer.config.ConfigUtils;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.layer.metadata.XsltFile;
 import org.deegree.layer.persistence.LayerStore;
-import org.deegree.layer.persistence.remotewms.jaxb.GMLVersionType;
 import org.deegree.layer.persistence.base.jaxb.ScaleDenominatorsType;
 import org.deegree.layer.persistence.remotewms.jaxb.LayerType;
-import org.deegree.layer.persistence.remotewms.jaxb.LayerType.XSLTFile;
 import org.deegree.layer.persistence.remotewms.jaxb.RemoteWMSLayers;
 import org.deegree.layer.persistence.remotewms.jaxb.RequestOptionsType;
+import org.deegree.layer.persistence.remotewms.jaxb.StyleType;
+import org.deegree.layer.persistence.remotewms.jaxb.LayerType.XSLTFile;
 import org.deegree.protocol.wms.client.WMSClient;
+import org.deegree.style.se.unevaluated.Style;
 import org.deegree.workspace.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Builds remote wms layers from jaxb beans.
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: stranger $
- * 
  * @version $Revision: $, $Date: $
  */
 class RemoteWmsLayerBuilder {
@@ -101,8 +104,7 @@ class RemoteWmsLayerBuilder {
     }
 
     private Map<String, Layer> parseAllRemoteLayers() {
-        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
-
+        Map<String, Layer> map = new LinkedHashMap<>();
         RequestOptionsType opts = cfg.getRequestOptions();
         List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
         for ( LayerMetadata md : layers ) {
@@ -114,7 +116,7 @@ class RemoteWmsLayerBuilder {
     }
 
     private Map<String, Layer> collectConfiguredRemoteLayers( Map<String, LayerMetadata> configured ) {
-        Map<String, Layer> map = new LinkedHashMap<String, Layer>();
+        Map<String, Layer> map = new LinkedHashMap<>();
         RequestOptionsType opts = cfg.getRequestOptions();
         List<LayerMetadata> layers = client.getLayerTree().flattenDepthFirst();
         for ( LayerMetadata md : layers ) {
@@ -122,12 +124,56 @@ class RemoteWmsLayerBuilder {
             LayerMetadata confMd = configured.get( name );
             if ( confMd != null ) {
                 confMd.merge( md );
-                confMd.setStyles( md.getStyles() );
-                confMd.setLegendStyles( md.getLegendStyles() );
+                mergeStyleAndLegendStyles( md, confMd );
                 map.put( confMd.getName(), new RemoteWMSLayer( name, confMd, client, opts ) );
             }
         }
         return map;
+    }
+
+    private void mergeStyleAndLegendStyles( LayerMetadata remoteServiceMd, LayerMetadata confMd ) {
+        Map<String, Style> configuredLegendStyles = confMd.getLegendStyles();
+        Map<String, Style> remoteServiceLegendStyles = remoteServiceMd.getLegendStyles();
+        Map<String, Style> remoteServiceStyles = remoteServiceMd.getStyles();
+        if ( !configuredLegendStyles.isEmpty() ) {
+            for ( String styleName : configuredLegendStyles.keySet() ) {
+                Style configuredLegendStyle = configuredLegendStyles.get( styleName );
+                Style remoteServiceStyle = remoteServiceStyles.get( styleName );
+                if ( remoteServiceStyle != null ) {
+                    setLegendUrlAndFile( remoteServiceStyle, configuredLegendStyle );
+                }
+                Style remoteServiceLegendStyle = remoteServiceLegendStyles.get( styleName );
+                if ( remoteServiceLegendStyle != null ) {
+                    setLegendUrlAndFile( remoteServiceLegendStyle, configuredLegendStyle );
+                }
+            }
+            removeUnconfiguredStyles( configuredLegendStyles, remoteServiceLegendStyles, remoteServiceStyles );
+        }
+        confMd.setLegendStyles( remoteServiceLegendStyles );
+        confMd.setStyles( remoteServiceStyles );
+    }
+
+    private void removeUnconfiguredStyles( Map<String, Style> configuredLegendStyles,
+                                                  Map<String, Style> remoteServiceLegendStyles,
+                                                  Map<String, Style> remoteServiceStyles ) {
+        for ( String remoteServiceStyleName : remoteServiceStyles.keySet() ) {
+            if ( !"default".equalsIgnoreCase( remoteServiceStyleName )
+                 && !configuredLegendStyles.containsKey( remoteServiceStyleName ) ) {
+                remoteServiceStyles.remove( remoteServiceStyleName );
+                remoteServiceLegendStyles.remove( remoteServiceStyleName );
+            }
+        }
+    }
+
+    private void setLegendUrlAndFile( Style targetStyle, Style sourceStyle ) {
+        targetStyle.setPrefersGetLegendGraphicUrl( sourceStyle.prefersGetLegendGraphicUrl() );
+        if ( sourceStyle.getLegendURL() != null ) {
+            targetStyle.setLegendURL( sourceStyle.getLegendURL() );
+        }
+        if ( sourceStyle.getLegendFile() != null ) {
+            targetStyle.setLegendURL( null );
+            targetStyle.setLegendFile( sourceStyle.getLegendFile() );
+        }
     }
 
     private Map<String, LayerMetadata> collectConfiguredLayers() {
@@ -154,14 +200,45 @@ class RemoteWmsLayerBuilder {
                 }
                 md.setMapOptions( ConfigUtils.parseLayerOptions( l.getLayerOptions() ) );
                 md.setXsltFile( parseXsltFile( md, l.getXSLTFile() ) );
+                md.setLegendStyles( parseConfiguredStyles( l ) );
                 configured.put( l.getOriginalName(), md );
             }
         }
         return configured;
     }
 
+    private Map<String, Style> parseConfiguredStyles( LayerType l ) {
+        return l.getStyle().stream().map( configuredStyle -> {
+            Style style = new Style();
+            style.setName( configuredStyle.getOriginalName() );
+            StyleType.LegendGraphic g = configuredStyle.getLegendGraphic();
+
+            URL url = null;
+            try {
+                url = new URL( g.getValue() );
+                if ( url.toURI().isAbsolute() ) {
+                    style.setLegendURL( url );
+                }
+                style.setPrefersGetLegendGraphicUrl( g.isOutputGetLegendGraphicUrl() );
+            } catch ( Exception e ) {
+                LOG.debug( "LegendGraphic was not an absolute URL." );
+                LOG.trace( "Stack trace:", e );
+            }
+
+            if ( url == null ) {
+                File file = metadata.getLocation().resolveToFile( g.getValue() );
+                if ( file.exists() ) {
+                    style.setLegendFile( file );
+                } else {
+                    LOG.warn( "LegendGraphic {} could not be resolved to a legend.", g.getValue() );
+                }
+            }
+            return style;
+        } ).collect( Collectors.toMap( Style::getName, Function.identity() ) );
+    }
+
     private XsltFile parseXsltFile( LayerMetadata md, XSLTFile xsltFileConfig ) {
-        if(xsltFileConfig != null){
+        if ( xsltFileConfig != null ) {
             GMLVersion gmlVersion = GMLVersion.valueOf( xsltFileConfig.getTargetGmlVersion().value() );
             String xslFile = xsltFileConfig.getValue();
             URL xsltFileUrl = metadata.getLocation().resolveToUrl( xslFile );

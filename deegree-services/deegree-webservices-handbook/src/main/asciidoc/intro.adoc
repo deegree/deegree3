@@ -1,20 +1,20 @@
 == Introduction
 
 deegree webservices are implementations of the geospatial webservice
-specifications of the http://www.opengeospatial.org[Open Geospatial
-Consortium (OGC)] and the http://inspire.jrc.ec.europa.eu[INSPIRE
+specifications of the https://www.ogc.org/[Open Geospatial
+Consortium (OGC)] and the https://inspire.jrc.ec.europa.eu[INSPIRE
 Network Services]. deegree webservices 3.5 includes the following
 services:
 
-* http://www.opengeospatial.org/standards/wfs[Web Feature Service
+* https://www.ogc.org/standard/wfs/[Web Feature Service
 (WFS)]: Provides access to raw geospatial data objects
-* http://www.opengeospatial.org/standards/wms[Web Map Service (WMS)]:
+* https://www.ogc.org/standard/wms/[Web Map Service (WMS)]:
 Serves maps rendered from geospatial data
-* http://www.opengeospatial.org/standards/wmts[Web Map Tile Service
+* https://www.ogc.org/standard/wmts/[Web Map Tile Service
 (WMTS)]: Serves pre-rendered map tiles
-* http://www.opengeospatial.org/standards/cat[Catalogue Service for the
+* https://www.ogc.org/standard/cat/[Catalogue Service for the
 Web (CSW)]: Performs searches for geospatial datasets and services
-* http://www.opengeospatial.org/standards/wps[Web Processing Service
+* https://www.ogc.org/standard/wps/[Web Processing Service
 (WPS)]: Executes geospatial processes
 
 With a single deegree webservices installation, you can set up one of
@@ -26,7 +26,7 @@ learning the configuration of each service.
 === Characteristics of deegree WFS
 
 deegree WFS is an implementation of the
-http://www.opengeospatial.org/standards/wfs[OGC Web Feature Service
+https://www.ogc.org/standard/wfs/[OGC Web Feature Service
 specification]. Notable features:
 
 * Official OGC reference implementation for WFS 1.1.0 and WFS 2.0.0
@@ -56,7 +56,7 @@ Continue with <<anchor-configuration-basics>> and
 === Characteristics of deegree WMS
 
 deegree WMS is an implementation of the
-http://www.opengeospatial.org/standards/wms[OGC Web Map Service
+https://www.ogc.org/standard/wms/[OGC Web Map Service
 specification]. Notable features:
 
 * Official OGC reference implementation for WMS 1.1.1
@@ -90,7 +90,7 @@ Continue with <<anchor-configuration-basics>> and
 === Characteristics of deegree WMTS
 
 deegree WMTS is an implementation of the
-http://www.opengeospatial.org/standards/wmts[OGC Web Map Tile Service
+https://www.ogc.org/standard/wmts/[OGC Web Map Tile Service
 specification]. Notable features:
 
 * Implements Basic WMTS standard 1.0.0 (KVP)
@@ -108,7 +108,7 @@ first. Continue with <<anchor-configuration-basics>> and
 === Characteristics of deegree CSW
 
 deegree CSW is an implementation of the
-http://www.opengeospatial.org/standards/cat[OGC Catalogue Service
+https://www.ogc.org/standard/cat/[OGC Catalogue Service
 specification]. Notable features:
 
 * Implements CSW standard 2.0.2
@@ -135,7 +135,7 @@ configuration. Continue with <<anchor-configuration-basics>> and
 === Characteristics of deegree WPS
 
 deegree WPS is an implementation of the
-http://www.opengeospatial.org/standards/wps[OGC Processing Service
+https://www.ogc.org/standard/wps/[OGC Processing Service
 specification]. Notable features:
 
 * Implements WPS standard 1.0.0

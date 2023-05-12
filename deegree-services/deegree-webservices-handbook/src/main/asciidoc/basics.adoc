@@ -271,7 +271,7 @@ documented for each resource configuration format.
 ==== Proxy configuration
 
 The configuration format for the deegree proxy configuration is defined
-by schema file http://schemas.deegree.org/3.5/proxy/proxy.xsd. The
+by schema file https://schemas.deegree.org/core/3.5/proxy/proxy.xsd. The
 following table lists all available configuration options. When
 specifiying them, their order must be respected.
 
@@ -327,7 +327,7 @@ specifiying them, their order must be respected.
 <ProxyConfiguration
                     xmlns="http://www.deegree.org/proxy"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://www.deegree.org/proxy http://schemas.deegree.org/3.5/proxy/proxy.xsd"
+                    xsi:schemaLocation="http://www.deegree.org/proxy http://schemas.deegree.org/core/3.5/proxy/proxy.xsd"
                     overrideSystemSettings="true">
 
     <HttpProxyHost>proxy.example.com</HttpProxyHost>
@@ -581,7 +581,7 @@ any schema-aware editor should work.
 
 TIP: In case you are able to understand XML schema, you can also use the
 schema file to find out about the available config options. deegree's
-schema files are hosted at http://schemas.deegree.org.
+schema files are hosted at https://schemas.deegree.org.
 
 ==== Check the resource status and error messages
 

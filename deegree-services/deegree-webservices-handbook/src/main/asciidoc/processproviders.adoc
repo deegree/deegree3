@@ -41,7 +41,7 @@ A very minimal valid configuration example looks like this:
 [source,xml]
 ----
 <ProcessDefinition processVersion="1.0.0" xmlns="http://www.deegree.org/processes/java"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/3.5/processes/java/java.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/core/3.5/processes/java/java.xsd">
   <Identifier>Process42</Identifier>
   <JavaClass>Processlet42</JavaClass>
   <Title>Calculates the answer to life, the universe and everything</Title>
@@ -109,7 +109,7 @@ A more complex configuration example looks like this:
 ----
 <ProcessDefinition processVersion="1.0.0" storeSupported="true" statusSupported="false"
   xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/3.5/processes/java/java.xsd">
+  xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/core/3.5/processes/java/java.xsd">
   <Identifier>Addition</Identifier>
   <JavaClass>AdditionProcesslet</JavaClass>
   <Title>Process for adding two integer values.</Title>
@@ -192,7 +192,7 @@ public class AdditionProcesslet implements Processlet {
 ==== Configuration options
 
 The configuration format for the Java process provider is defined by
-schema file http://schemas.deegree.org/3.5/processes/java/java.xsd.
+schema file https://schemas.deegree.org/core/3.5/processes/java/java.xsd.
 The following table lists all available configuration options. When
 specifiying them, their order must be respected.
 
@@ -251,7 +251,7 @@ implementation of a process apply.
 * _WSDL_: URL of a WSDL document which describes this process
 
 NOTE: These options directly relate to metadata defined in the
-http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification].
+https://www.ogc.org/standard/wps/[WPS 1.0.0 specification].
 
 ==== The Processlet API
 
@@ -416,7 +416,7 @@ WPS server and invokes processes offered by the server to perform a
 computation. However, in some cases, you may just want to send raw WPS
 requests to a server and check the response yourself (e.g. for testing
 the behaviour of your processlet). The
-http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]
+https://www.ogc.org/standard/wps/[WPS 1.0.0 specification]
 defines KVP, XML and SOAP-encoded requests. All encodings are supported
 by the deegree WPS, so you can choose the most appropriate one for your
 use-case. For sending KVP-requests, you can simply use your web browser
@@ -435,7 +435,7 @@ Some simple KVP _Execute_ request examples for invoking processes:
 * _http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Process42_
 * _http://127.0.0.1:8080/services/wps?service=WPS&version=1.0.0&request=Execute&identifier=Addition&datainputs=SummandA=21;SummandB=21_
 
-TIP: The http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]
+TIP: The https://www.ogc.org/standard/wps/[WPS 1.0.0 specification]
 (and the deegree WPS) support many features with regard to process
 invocation, such as input parameter passing (inline or by reference),
 return parameters (inline or by reference), response variants and
@@ -448,7 +448,7 @@ Besides the process logic, the most crucial topic of WPS process
 implementation is the standard-compliant definition and handling of
 input and output parameters. The deegree WPS and the Java process
 provider support all parameter types that are defined by the
-http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]:
+https://www.ogc.org/standard/wps/[WPS 1.0.0 specification]:
 
 * _LiteralInput_/_LiteralOutput_: Literal values, e.g. "red", "42"
 or "highway 66"
@@ -763,9 +763,9 @@ value sets and ranges (only for inputs)
 These options basically define metadata that the WPS publishes to
 clients. For the sub-options of the _AllowedValues_ and
 _ValidValueReference_ options, please refer to the
-http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification] or
+https://www.ogc.org/standard/wps/[WPS 1.0.0 specification] or
 the XML schema for the Java process provider configuration format
-(http://schemas.deegree.org/3.5/processes/java/java.xsd).
+(http://schemas.deegree.org/core/3.5/processes/java/java.xsd).
 
 In order to work with a _LiteralInput_ parameter in the Processlet
 code, the corresponding Java type offers the following methods:
@@ -931,7 +931,7 @@ format
 
 A complex format (_DefaultFormat_/_OtherFormat_) is defined via
 three attributes (compare with the
-http://www.opengeospatial.org/standards/wps[WPS 1.0.0 specification]):
+https://www.ogc.org/standard/wps/[WPS 1.0.0 specification]):
 
 [width="100%",cols="18%,11%,8%,63%",options="header",]
 |===
@@ -1119,7 +1119,7 @@ A very minimal valid configuration example looks like this:
 [source,xml]
 ----
 <FMEServer xmlns="http://www.deegree.org/processes/fme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.deegree.org/processes/fme http://schemas.deegree.org/3.5/processes/fme/fme.xsd">
+           xsi:schemaLocation="http://www.deegree.org/processes/fme http://schemas.deegree.org/core/3.5/processes/fme/fme.xsd">
   <Address>http://fmeserver.example.com/</Address>
   <Username>guest</Username>
   <Password>guest</Password>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ProcessDefinition processVersion="1.0.0" storeSupported="true" statusSupported="false"
   xmlns="http://www.deegree.org/processes/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/3.5/processes/java/java.xsd">
+  xsi:schemaLocation="http://www.deegree.org/processes/java http://schemas.deegree.org/core/3.5/processes/java/java.xsd">
   <Identifier>Buffer</Identifier>
   <JavaClass>org.deegree.wps.jts.BufferProcesslet</JavaClass>
   <Title>Process for creating a buffer around a GML geometry.</Title>

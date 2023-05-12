@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PooledConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/3.5/jdbc/jdbc.xsd">
+  xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/core/3.5/jdbc/jdbc.xsd">
   <Url>jdbc:postgresql://hurricane:5432/inspire</Url>
   <User>postgres</User>
   <Password>postgres</Password>

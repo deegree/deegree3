@@ -43,12 +43,28 @@
       <!-- if not set, will be copied from source -->
       <group ref="s:SpatialMetadata" />
       <element name="ScaleDenominators" type="b:ScaleDenominatorsType" minOccurs="0" />
+      <element name="Style" type="l:StyleType" minOccurs="0" maxOccurs="unbounded" />
       <element name="LayerOptions" type="b:LayerOptionsType" minOccurs="0" />
       <element name="XSLTFile" minOccurs="0">
         <complexType>
           <simpleContent>
             <extension base="string">
               <attribute name="targetGmlVersion" type="l:GMLVersionType" use="required" />
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="StyleType">
+    <sequence>
+      <element name="OriginalName" type="string" />
+      <element name="LegendGraphic">
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="outputGetLegendGraphicUrl" type="boolean" default="true" />
             </extension>
           </simpleContent>
         </complexType>

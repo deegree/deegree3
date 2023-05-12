@@ -1,4 +1,4 @@
-<JDBCConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/3.5/jdbc/jdbc.xsd">
+<JDBCConnection xmlns="http://www.deegree.org/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/jdbc http://schemas.deegree.org/core/3.5/jdbc/jdbc.xsd">
   <Url>jdbc:postgresql://database:5432/cite</Url>
   <User>cite</User>
   <Password>cite</Password>
