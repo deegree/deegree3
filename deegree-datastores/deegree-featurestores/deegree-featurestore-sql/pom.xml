@@ -68,7 +68,7 @@
       <artifactId>antlr-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>net.gcardone.junidecode</groupId>
       <artifactId>junidecode</artifactId>
     </dependency>
   </dependencies>
