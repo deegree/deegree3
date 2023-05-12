@@ -1,6 +1,6 @@
 <mer:MergingTileStore xmlns:mer="http://www.deegree.org/datasource/tile/merge"
                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                      xsi:schemaLocation="http://www.deegree.org/datasource/tile/merge https://schemas.deegree.org/3.5/datasource/tile/merge/merge.xsd">
+                      xsi:schemaLocation="http://www.deegree.org/datasource/tile/merge https://schemas.deegree.org/core/3.5//datasource/tile/merge/merge.xsd">
   <mer:TileMatrixSetId>string</mer:TileMatrixSetId>
   <!--1 or more repetitions:-->
   <mer:TileStoreId>string</mer:TileStoreId>
