@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  * Handle access to an API key file containing a token
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
- * @see org.deegree.console.security.PasswordFile
  */
 public class ApiKey {
 
@@ -99,30 +98,57 @@ public class ApiKey {
                             throws SecurityException {
         Path file = getPasswordFile();
         Token token = null;
+        final String ls = System.lineSeparator();
+        final String marker = "*************************************************************" + ls;
 
         try {
             if ( Files.isReadable( file ) ) {
                 List<String> lines = Files.readAllLines( file );
                 if ( lines.size() != 1 ) {
-                    LOG.warn( "API Key file ({}) has incorrect format.", file );
-                    throw new IOException( "API Key file has incorrect format." );
+                    LOG.warn( "{}API Key file '{}' has an incorrect format (multiple lines). {} " + //
+                              "The REST API will not be accessible.  {}", //
+                              ls + ls + marker + marker + marker + ls, //
+                              file, ls, //
+                              ls + marker + marker + marker );
+                } else {
+                    token = new Token( lines.get( 0 ) );
                 }
-                token = new Token( lines.get( 0 ) );
             } else if ( !Files.exists( file ) ) {
                 // create new one, if no file exists
                 String apikey = generateRandomApiKey();
                 Files.write( file, Collections.singleton( apikey ) );
                 token = new Token( apikey );
-                LOG.warn( "Create API Key file ({}) with the generated value of \"{}\"", file, apikey );
+                LOG.warn( "{}An API Key file with an random key was generated at '{}'.{}", //
+                          ls + ls + marker + marker + marker + ls, //
+                          file, ls, //
+                          ls + marker + marker + marker  );
             } else {
-                LOG.info( "API Key file ({}) is not a regular file or not readable, access prohibited " );
+                LOG.warn( "{}API Key file '{}' is not a regular file or not readable. {} " + //
+                          "The REST API will not be accessible.{}", //
+                          ls + ls + marker + marker + marker + ls, //
+                          file, ls, //
+                          ls + marker + marker + marker );
             }
         } catch ( IOException ioe ) {
-            throw new SecurityException( "API key file could not be accessed", ioe );
+            LOG.warn( "{}API Key file '{}' could not be accessed. {} " + //
+                      "The REST API will not be accessible.{}", //
+                      ls + ls + marker + marker + marker + ls, //
+                      file, ls, //
+                      ls + marker + marker + marker );
+            LOG.debug("API key file could not be accessed", ioe);
         }
 
         if ( token == null ) {
             token = new Token();
+        } else if ( token.isAnyAllowed() ) {
+            LOG.warn( "{}The REST API is currently configured insecure. We strongly recommend to use a key value instead at '{}'.{}",
+                      ls + ls + marker + marker + marker + ls, //
+                      file, //
+                      ls + marker + marker + marker );
+        } else {
+            LOG.info( "***" );
+            LOG.info( "*** NOTE: The REST API is secured, so that the key set in file '{}' is required to access it." );
+            LOG.info( "***" );
         }
 
         return token;
