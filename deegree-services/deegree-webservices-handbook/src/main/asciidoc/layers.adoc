@@ -656,7 +656,7 @@ parameters fixed to the configured values.
 ==== Layer configuration
 
 The manual configuration allows you to pick out a layer, rename it, and
-optionally override the _common description, spatial metadata and legend graphic of the styles. What
+optionally override the common description, spatial metadata and legend graphic of the styles. What
 you don't override, will be copied from the source. Let's look at an
 example:
 

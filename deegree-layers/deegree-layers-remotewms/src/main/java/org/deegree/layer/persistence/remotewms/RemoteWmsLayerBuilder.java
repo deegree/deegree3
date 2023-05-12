@@ -131,7 +131,7 @@ class RemoteWmsLayerBuilder {
         return map;
     }
 
-    private static void mergeStyleAndLegendStyles( LayerMetadata remoteServiceMd, LayerMetadata confMd ) {
+    private void mergeStyleAndLegendStyles( LayerMetadata remoteServiceMd, LayerMetadata confMd ) {
         Map<String, Style> configuredLegendStyles = confMd.getLegendStyles();
         Map<String, Style> remoteServiceLegendStyles = remoteServiceMd.getLegendStyles();
         Map<String, Style> remoteServiceStyles = remoteServiceMd.getStyles();
@@ -153,7 +153,7 @@ class RemoteWmsLayerBuilder {
         confMd.setStyles( remoteServiceStyles );
     }
 
-    private static void removeUnconfiguredStyles( Map<String, Style> configuredLegendStyles,
+    private void removeUnconfiguredStyles( Map<String, Style> configuredLegendStyles,
                                                   Map<String, Style> remoteServiceLegendStyles,
                                                   Map<String, Style> remoteServiceStyles ) {
         for ( String remoteServiceStyleName : remoteServiceStyles.keySet() ) {
@@ -165,7 +165,7 @@ class RemoteWmsLayerBuilder {
         }
     }
 
-    private static void setLegendUrlAndFile( Style targetStyle, Style sourceStyle ) {
+    private void setLegendUrlAndFile( Style targetStyle, Style sourceStyle ) {
         targetStyle.setPrefersGetLegendGraphicUrl( sourceStyle.prefersGetLegendGraphicUrl() );
         if ( sourceStyle.getLegendURL() != null ) {
             targetStyle.setLegendURL( sourceStyle.getLegendURL() );
