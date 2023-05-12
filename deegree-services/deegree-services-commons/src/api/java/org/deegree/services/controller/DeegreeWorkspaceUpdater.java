@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -170,9 +171,10 @@ public class DeegreeWorkspaceUpdater {
         final String path = file.getAbsolutePath();
         if ( path.contains( "appschemas" ) )
             return true;
-        if ( "bbox_cache.properties".equals( file.getName() ) )
+        String fileName = file.getName();
+        if ( Pattern.matches( "bbox_cache.*\\.properties", fileName ) )
             return true;
-        if ( "main.xml".equals( file.getName() ) )
+        if ( "main.xml".equals( fileName ) )
             return true;
         return false;
     }

@@ -1770,9 +1770,10 @@ public class SQLFeatureStore implements FeatureStore {
         }
 
         // TODO make this configurable
+        String sqlFeatureStoreId = getMetadata().getIdentifier().getId();
         FeatureStoreManager fsMgr = this.workspace.getResourceManager( FeatureStoreManager.class );
         if ( fsMgr != null ) {
-            this.bboxCache = fsMgr.getBBoxCache();
+            this.bboxCache = fsMgr.getBBoxCache( sqlFeatureStoreId );
         } else {
             LOG.warn( "Unmanaged feature store." );
         }
