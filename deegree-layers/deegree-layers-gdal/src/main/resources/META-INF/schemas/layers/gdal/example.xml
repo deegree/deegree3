@@ -1,5 +1,7 @@
 <GDALLayers xmlns="http://www.deegree.org/layers/gdal" xmlns:d="http://www.deegree.org/metadata/description"
-  xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial">
+            xmlns:l="http://www.deegree.org/layers/base" xmlns:s="http://www.deegree.org/metadata/spatial"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.deegree.org/layers/gdal http://schemas.deegree.org/3.5/layers/gdal/gdal.xsd">
   <GDALLayer>
     <l:Name>luchtfoto_2010</l:Name>
     <d:Title>Orthophoto layer served from an ECW file</d:Title>
