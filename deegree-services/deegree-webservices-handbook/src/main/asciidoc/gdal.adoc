@@ -23,8 +23,15 @@ to be installed correctly and must be accessible by your deegree
 webservices installation. Please see http://www.gdal.org/ for general
 GDAL installation instructions.
 
-NOTE: Currently, GDAL library version 3.0 is supported. Other versions may
-work as well, but have not been tested.
+NOTE: Currently, GDAL library version 3 is supported.
+
+NOTE: deegree uses version 3.5 of the GDAL jar file.
+Most likely, this is compatible with any minor version of GDAL library 3.
+The deegree developer team tested several combinations without detecting any issues.
+However, if any problems occur, you might try to exchange the version of the GDAL jar file inside the webapp to the GDAL library version installed on your operating system.
+The gdal-VERSION.jar is located in deegree-webapp/WEB-INF/lib/.
+You can delete it from the exploded war archive (make sure that the deegree-webservices.war is removed from webapp folder after shutting down Tomcat).
+Afterward, copy the correct gdal-VERSION.jar into deegree-webapp/WEB-INF/lib/.
 
 In order to verify that deegree webservices can use the GDAL library,
 check the log file of the web container (e.g. _catalina.out_ for
