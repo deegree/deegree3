@@ -48,6 +48,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <artifactId>deegree-sqldialect-mssql</artifactId>
+      <groupId>org.deegree</groupId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
@@ -72,26 +78,5 @@
       <artifactId>junidecode</artifactId>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>mssql</id>
-      <repositories>
-        <repository>
-          <id>deegree-restricted</id>
-          <name>deegree-restricted</name>
-          <url>https://repo.deegree.org/content/repositories/private3rdparty</url>
-        </repository>
-      </repositories>
-      <dependencies>
-        <dependency>
-          <artifactId>deegree-sqldialect-mssql</artifactId>
-          <groupId>org.deegree</groupId>
-          <version>${project.version}</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 
 </project>
