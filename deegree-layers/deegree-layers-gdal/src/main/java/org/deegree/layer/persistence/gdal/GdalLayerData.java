@@ -29,6 +29,7 @@ package org.deegree.layer.persistence.gdal;
 
 import static java.awt.color.ColorSpace.CS_sRGB;
 import static java.awt.image.DataBuffer.TYPE_BYTE;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.deegree.cs.components.Axis.AO_EAST;
 import static org.deegree.cs.components.Axis.AO_WEST;
 import static org.gdal.gdalconst.gdalconstConstants.CE_None;
@@ -81,6 +82,8 @@ class GdalLayerData implements LayerData {
 
     private static final Logger LOG = getLogger( GdalLayerData.class );
 
+    private static final boolean DEFAULT_LIMIT_BANDS = get( "deegree.gdal.layer.limit_bands", false );
+
     private final List<File> datasets;
 
     private final Envelope bbox;
@@ -119,14 +122,12 @@ class GdalLayerData implements LayerData {
             return null;
         }
         byte[][] bytes = compose( regions );
-        return toImage( bytes, width, height, true );
+        return toImage( bytes, width, height, DEFAULT_LIMIT_BANDS );
     }
 
     private BufferedImage extractAndReprojectRegion( ICRS nativeCrs ) {
-        int requestEpsgCode = CRSUtils.getEpsgCode( bbox.getCoordinateSystem() );
-        int nativeEpsgCode = CRSUtils.getEpsgCode( nativeCrs );
-        SpatialReference requestSr = gdalSettings.getCrsAsWkt( requestEpsgCode );
-        SpatialReference nativeSr = gdalSettings.getCrsAsWkt( nativeEpsgCode );
+        SpatialReference requestSr = getSpatialReference( bbox.getCoordinateSystem() );
+        SpatialReference nativeSr = getSpatialReference( nativeCrs );
         Envelope nativeBbox = transform( bbox, requestSr, nativeSr );
         List<byte[][]> nativeRegions = getIntersectingRegionsFromAllDatasets( nativeBbox );
         if ( nativeRegions.isEmpty() ) {
@@ -137,7 +138,7 @@ class GdalLayerData implements LayerData {
         byte[][] rawImage = readBands( reprojectedRegion );
         nativeRegion.delete();
         reprojectedRegion.delete();
-        return toImage( rawImage, width, height, true );
+        return toImage( rawImage, width, height, DEFAULT_LIMIT_BANDS );
     }
 
     private Dataset reproject( Dataset src, String dstCrsWkt ) {
@@ -258,6 +259,18 @@ class GdalLayerData implements LayerData {
             band.ReadRaster( 0, 0, width, height, width, height, GDT_Byte, bandBytes, 0, 0 );
         }
         return bands;
+    }
+
+    private SpatialReference getSpatialReference( ICRS coordinateSystem ) {
+        try {
+            int requestEpsgCode = CRSUtils.getEpsgCode( coordinateSystem );
+            return gdalSettings.getCrsAsWkt( requestEpsgCode );
+        } catch ( IllegalArgumentException e ) {
+            boolean isCrs84 = coordinateSystem.hasId( "crs:84", true, true );
+            if ( isCrs84 )
+                return gdalSettings.getCrs84();
+            throw e;
+        }
     }
 
     private Envelope transform( Envelope bbox, SpatialReference requestSr, SpatialReference nativeSr ) {

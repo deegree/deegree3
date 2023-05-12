@@ -44,7 +44,6 @@ import java.util.Arrays;
 import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.components.Axis;
 import org.deegree.cs.components.IAxis;
 import org.deegree.cs.components.IUnit;
@@ -66,7 +65,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information about the swapping of axis and the creation of standardized values.")
 public class Matrix extends GMatrix {
 
     private static final Logger LOG = getLogger( Matrix.class );

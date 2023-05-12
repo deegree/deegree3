@@ -50,7 +50,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.slf4j.Logger;
 
 /**
@@ -61,7 +60,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "logs information about dynamically guessing the encoding of strings/files when such information is not present")
 public class EncodingGuesser {
 
     private static final Logger LOG = getLogger( EncodingGuesser.class );

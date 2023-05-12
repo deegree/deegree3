@@ -63,8 +63,6 @@ public class WMSProvider extends OWSProvider {
             supportedVersions = new Version[] { VERSION_111, VERSION_130 };
             handledNamespaces = new String[] { "" }; // WMS uses null namespace for SLD GetMap Post requests
             handledRequests = WMSRequestType.class;
-            supportedConfigVersions = new Version[] { Version.parseVersion( "3.0.0" ), Version.parseVersion( "3.1.0" ),
-                                                     Version.parseVersion( "3.2.0" ), Version.parseVersion( "3.4.0" ) };
             serviceName = new String[] { "WMS" };
         }
     };
@@ -76,7 +74,7 @@ public class WMSProvider extends OWSProvider {
 
     @Override
     public URL getSchema() {
-        return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/3.4.0/wms_configuration.xsd" );
+        return WMSProvider.class.getResource( "/META-INF/schemas/services/wms/wms_configuration.xsd" );
     }
 
     @Override

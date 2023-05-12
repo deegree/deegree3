@@ -12,21 +12,8 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-core</artifactId>
-    <version>3.4.20-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>deegree-repo</id>
-      <url>https://repo.deegree.org/content/groups/public</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
@@ -44,20 +31,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
+      <groupId>org.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
+      <groupId>com.sun.media</groupId>
       <artifactId>jai-codec</artifactId>
     </dependency>
     <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-imageio</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jai</groupId>
-      <artifactId>jai-mlibwrapper</artifactId>
+      <groupId>com.sun.media</groupId>
+      <artifactId>jai_imageio</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>

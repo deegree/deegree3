@@ -83,6 +83,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureTuple;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.query.Query;
@@ -150,7 +151,8 @@ abstract class AbstractGmlRequestHandler {
 
     protected void writeAdditionalObjects( GMLStreamWriter gmlStream, WfsXlinkStrategy additionalObjects,
                                            QName featureMemberEl, Version requestVersion )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
+                                                                   throws XMLStreamException, UnknownCRSException,
+                                                                   TransformationException, OWSException {
 
         Collection<GMLReference<?>> nextLevelObjects = additionalObjects.getAdditionalRefs();
         XMLStreamWriter xmlStream = gmlStream.getXMLStream();
@@ -166,7 +168,7 @@ abstract class AbstractGmlRequestHandler {
                         writeAdditionalObjectsStart( xmlStream, requestVersion );
                         wroteStartSection = true;
                     }
-                    writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl );
+                    writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
                 }
             }
             nextLevelObjects = additionalObjects.getAdditionalRefs();
@@ -208,9 +210,20 @@ abstract class AbstractGmlRequestHandler {
     }
 
     protected void writeMemberFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
-                                       GmlXlinkOptions resolveState, QName featureMemberEl )
-                            throws XMLStreamException, UnknownCRSException, TransformationException {
+                                       GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
+                                                               throws XMLStreamException, UnknownCRSException,
+                                                               TransformationException, OWSException {
+        if ( member instanceof FeatureTuple )
+            writeFeatureTuple( (FeatureTuple) member, gmlStream, xmlStream, resolveState, featureMemberEl,
+                               requestVersion );
+        else
+            writeFeature( member, gmlStream, xmlStream, resolveState, featureMemberEl );
+    }
 
+    private void writeFeature( Feature member, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
+                               GmlXlinkOptions resolveState, QName featureMemberEl )
+                                                       throws XMLStreamException, UnknownCRSException,
+                                                       TransformationException {
         if ( gmlStream.getReferenceResolveStrategy().isObjectExported( member.getId() ) ) {
             xmlStream.writeEmptyElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
             if ( xmlStream.getPrefix( XLNNS ) == null ) {
@@ -223,6 +236,20 @@ abstract class AbstractGmlRequestHandler {
             gmlStream.getFeatureWriter().export( member, resolveState );
             xmlStream.writeEndElement();
         }
+    }
+
+    protected void writeFeatureTuple( FeatureTuple featureTuple, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
+                                      GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
+                                                              throws XMLStreamException, UnknownCRSException,
+                                                              TransformationException, OWSException {
+        if ( VERSION_110.equals( requestVersion ) && GML_32.equals( gmlStream.getVersion() ) )
+            exportTupleWFS110_GML32( featureTuple, gmlStream, xmlStream, resolveState, featureMemberEl,
+                                     requestVersion );
+        else if ( VERSION_200.equals( requestVersion ) )
+            exportTupleWFS200( featureTuple, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+        else
+            throw new OWSException( "Export of tuples is not supported for WFS " + requestVersion + " / GML "
+                                    + gmlStream.getVersion(), NO_APPLICABLE_CODE );
     }
 
     /**
@@ -264,7 +291,8 @@ abstract class AbstractGmlRequestHandler {
                            + URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) + "&STOREDQUERY_ID="
                            + QUERY_ID_GET_FEATURE_BY_ID + "&ID={}#{}";
             } else {
-                throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED", version ) );
+                throw new UnsupportedOperationException( Messages.getMessage( "WFS_BACKREFERENCE_UNSUPPORTED",
+                                                                              version ) );
             }
         } catch ( UnsupportedEncodingException e ) {
             // should never happen (UTF-8 is known)
@@ -323,7 +351,8 @@ abstract class AbstractGmlRequestHandler {
         return schemaLocation + " " + getSchemaLocationPartForFeatureTypes( VERSION_200, gmlVersion, requestedFts );
     }
 
-    private String getCustomSchemaLocationForWfs100Or110( Version requestVersion, Collection<FeatureType> requestedFts ) {
+    private String getCustomSchemaLocationForWfs100Or110( Version requestVersion,
+                                                          Collection<FeatureType> requestedFts ) {
         String schemaLocation = "";
         if ( options.getSchemaLocation() != null ) {
             schemaLocation = options.getSchemaLocation();
@@ -454,8 +483,8 @@ abstract class AbstractGmlRequestHandler {
         try {
             if ( VERSION_100.equals( version ) && gmlVersion == GML_2 ) {
                 baseUrl.append( "XMLSCHEMA" );
-            } else if ( VERSION_200.equals( version ) && gmlVersion == GML_32 ) {
-                baseUrl.append( URLEncoder.encode( gmlVersion.getMimeType(), "UTF-8" ) );
+            } else if ( gmlVersion == GML_32 ) {
+                baseUrl.append( URLEncoder.encode( options.getMimeType(), "UTF-8" ) );
             } else {
                 baseUrl.append( URLEncoder.encode( gmlVersion.getMimeTypeOldStyle(), "UTF-8" ) );
             }
@@ -518,6 +547,34 @@ abstract class AbstractGmlRequestHandler {
         }
 
         return ns + " " + baseUrl.toString();
+    }
+
+    private void exportTupleWFS110_GML32( FeatureTuple featureTuple, GMLStreamWriter gmlStream,
+                                          XMLStreamWriter xmlStream, GmlXlinkOptions resolveState,
+                                          QName featureMemberEl, Version requestVersion )
+                                                                  throws XMLStreamException, UnknownCRSException,
+                                                                  TransformationException, OWSException {
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "featureMembers" );
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "FeatureCollection" );
+        xmlStream.writeAttribute( featureMemberEl.getNamespaceURI(), "id", featureTuple.getId() );
+        for ( Feature feature : featureTuple.getTupleFeatures() ) {
+            writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+        }
+        xmlStream.writeEndElement();
+        xmlStream.writeEndElement();
+    }
+
+    private void exportTupleWFS200( FeatureTuple featureTuple, GMLStreamWriter gmlStream, XMLStreamWriter xmlStream,
+                                    GmlXlinkOptions resolveState, QName featureMemberEl, Version requestVersion )
+                                                            throws XMLStreamException, UnknownCRSException,
+                                                            TransformationException, OWSException {
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), featureMemberEl.getLocalPart() );
+        xmlStream.writeStartElement( featureMemberEl.getNamespaceURI(), "Tuple" );
+        for ( Feature feature : featureTuple.getTupleFeatures() ) {
+            writeMemberFeature( feature, gmlStream, xmlStream, resolveState, featureMemberEl, requestVersion );
+        }
+        xmlStream.writeEndElement();
+        xmlStream.writeEndElement();
     }
 
 }

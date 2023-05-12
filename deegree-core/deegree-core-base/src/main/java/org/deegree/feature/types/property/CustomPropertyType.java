@@ -35,20 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.types.property;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.tom.gml.property.PropertyType;
 
+import javax.xml.namespace.QName;
+import java.util.List;
+
 /**
  * {@link PropertyType} that defines a property with a user-defined value type.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
  * @version $Revision: $, $Date: $
  */
 public class CustomPropertyType extends AbstractPropertyType {
@@ -58,7 +56,9 @@ public class CustomPropertyType extends AbstractPropertyType {
     public CustomPropertyType( QName name, int minOccurs, int maxOccurs, XSElementDeclaration elDecl,
                                List<PropertyType> substitutions ) {
         super( name, minOccurs, maxOccurs, elDecl, substitutions );
-        this.xsdType = elDecl != null ? (XSComplexTypeDefinition) elDecl.getTypeDefinition() : null;
+        this.xsdType = elDecl != null && elDecl.getTypeDefinition() instanceof XSComplexTypeDefinition ?
+                       (XSComplexTypeDefinition) elDecl.getTypeDefinition() :
+                       null;
     }
 
     public XSComplexTypeDefinition getXSDValueType() {

@@ -38,7 +38,6 @@ package org.deegree.layer;
 
 import java.util.Map;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.CollectionUtils.Mapper;
 import org.deegree.layer.metadata.LayerMetadata;
 import org.deegree.style.StyleRef;
@@ -52,7 +51,6 @@ import org.deegree.style.se.unevaluated.Style;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(warn = "logs information about dimension handling")
 public abstract class AbstractLayer implements Layer {
 
     private final LayerMetadata metadata;

@@ -85,6 +85,7 @@ import org.deegree.commons.tom.ows.StringOrRef;
 import org.deegree.commons.tom.primitive.PrimitiveType;
 import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.uom.Measure;
+import org.deegree.commons.utils.TunableParameter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -140,6 +141,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger( AbstractGMLObjectReader.class );
 
+    private static final boolean PROPERTY_SIMPLE_TRIM = TunableParameter.get("deegree.gml.property.simple.trim", true);
+
     protected final String gmlNs;
 
     protected final GMLVersion version;
@@ -151,6 +154,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
     protected final GmlDocumentIdContext idContext;
 
     protected static final QName XSI_NIL = new QName( XSINS, "nil", "xsi" );
+
+	protected static final QName XSI_TYPE = new QName(XSINS, "type", "xsi");
 
     private final GMLReferenceResolver internalResolver;
 
@@ -273,7 +278,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             // TODO need to check that element is indeed empty?
             XMLStreamUtils.nextElement( xmlStream );
         } else {
-            property = createSimpleProperty( xmlStream, propDecl, xmlStream.getElementText().trim() );
+            String value = PROPERTY_SIMPLE_TRIM ? xmlStream.getElementText().trim() : xmlStream.getElementText();
+            property = createSimpleProperty( xmlStream, propDecl, value );
         }
         return property;
     }
@@ -726,7 +732,7 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
             }
         }
 
-        return new GenericXMLElement( xmlStream.getName(), null, attrs, children );
+        return new GenericXMLElement( xmlStream.getName(), attrs, children );
     }
 
     @Deprecated
@@ -808,6 +814,8 @@ public abstract class AbstractGMLObjectReader extends XMLAdapter {
                     throw new XMLParsingException( xmlStream, msg );
                 }
                 attrs.put( XSI_NIL, new PrimitiveValue( value, new PrimitiveType( BOOLEAN ) ) );
+            } else if (XSI_TYPE.equals(name)) {
+				LOG.warn("xsi:type attributes are not supported yet. @xsi:type=\"{}\" is ignored", value);
             } else if ( attrDecls != null ) {
                 XSAttributeDeclaration attrDecl = attrDecls.get( name );
                 if ( attrDecl == null ) {

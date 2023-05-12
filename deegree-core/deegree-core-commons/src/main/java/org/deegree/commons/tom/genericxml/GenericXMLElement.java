@@ -35,27 +35,26 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.tom.genericxml;
 
-import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.tom.ElementNode;
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
+import org.deegree.commons.xml.CommonNamespaces;
 
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.commons.tom.ElementNode;
-import org.deegree.commons.tom.TypedObjectNode;
-import org.deegree.commons.tom.primitive.PrimitiveValue;
-import org.deegree.commons.xml.CommonNamespaces;
+import static org.deegree.commons.tom.primitive.BaseType.BOOLEAN;
 
 /**
  * {@link TypedObjectNode} that represents a generic XML element with associated XML schema type information.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  */
 public class GenericXMLElement implements ElementNode {
@@ -64,14 +63,31 @@ public class GenericXMLElement implements ElementNode {
 
     private final XSElementDeclaration xsType;
 
+    private final PropertyType propertyType;
+
     private Map<QName, PrimitiveValue> attrs;
 
     private List<TypedObjectNode> children;
+
+    public GenericXMLElement( QName name, Map<QName, PrimitiveValue> attrs,
+                              List<TypedObjectNode> children ) {
+        this( name, (PropertyType) null, attrs, children );
+    }
 
     public GenericXMLElement( QName name, XSElementDeclaration xsType, Map<QName, PrimitiveValue> attrs,
                               List<TypedObjectNode> children ) {
         this.name = name;
         this.xsType = xsType;
+        this.propertyType = null;
+        this.attrs = attrs;
+        this.children = children;
+    }
+
+    public GenericXMLElement( QName name, PropertyType propertyType, Map<QName, PrimitiveValue> attrs,
+                              List<TypedObjectNode> children ) {
+        this.name = name;
+        this.xsType = propertyType != null ? propertyType.getElementDecl() : null;
+        this.propertyType = propertyType;
         this.attrs = attrs;
         this.children = children;
     }
@@ -129,6 +145,13 @@ public class GenericXMLElement implements ElementNode {
 
     public void setChildren( List<TypedObjectNode> newChildren ) {
         this.children = newChildren;
+    }
+
+    /**
+     * @return the declaration of this {@link GenericXMLElement}, <code>null</code> if not known
+     */
+    public PropertyType getPropertyType() {
+        return propertyType;
     }
 
     @Override

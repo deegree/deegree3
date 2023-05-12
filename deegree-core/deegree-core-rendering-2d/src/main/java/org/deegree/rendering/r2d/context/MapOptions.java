@@ -36,7 +36,7 @@
 package org.deegree.rendering.r2d.context;
 
 /**
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
@@ -54,19 +54,17 @@ public class MapOptions {
 
     private boolean opaque;
 
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                       int featureInfoRadius ) {
-        this( quality, interpol, antialias, maxFeatures, featureInfoRadius, false );
-    }
+    private Integer featureInfoDecimalPlaces;
 
-    public MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
-                       int featureInfoRadius, boolean opaque ) {
+    private MapOptions( Quality quality, Interpolation interpol, Antialias antialias, int maxFeatures,
+                        int featureInfoRadius, boolean opaque, Integer featureInfoDecimalPlaces ) {
         this.quality = quality;
         this.interpol = interpol;
         this.antialias = antialias;
         this.maxFeatures = maxFeatures;
         this.featureInfoRadius = featureInfoRadius;
         this.opaque = opaque;
+        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
     }
 
     /**
@@ -160,49 +158,74 @@ public class MapOptions {
     }
 
     /**
+     * @return featureInfoDecimalPlaces, a non <code>null</code> positive value defines the requested number of
+     *         digits after the decimal point to be used for numeric values, if this feature is available
+     */
+    public Integer getFeatureInfoDecimalPlaces() {
+        return featureInfoDecimalPlaces;
+    }
+
+    /**
+     * @param featureInfoDecimalPlaces
+     *            the featureInfoDecimalPlaces to set, a non <code>null</code> positive value defines the requested
+     *            number of digits after the decimal point to be used for numeric values, if this feature is available
+     */
+    public void setFeatureInfoDecimalPlaces( Integer featureInfoDecimalPlaces ) {
+        this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
+    }
+
+    /**
      * <code>Quality</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author: aschmitz $
-     * 
+     *
      * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
      */
     public static enum Quality {
         /***/
-        LOW, /***/
-        NORMAL, /***/
+        LOW,
+        /***/
+        NORMAL,
+        /***/
         HIGH
     }
 
     /**
      * <code>Interpolation</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author: aschmitz $
-     * 
+     *
      * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
      */
     public static enum Interpolation {
         /***/
-        NEARESTNEIGHBOR, /***/
-        NEARESTNEIGHBOUR, /***/
-        BILINEAR, /***/
+        NEARESTNEIGHBOR,
+        /***/
+        NEARESTNEIGHBOUR,
+        /***/
+        BILINEAR,
+        /***/
         BICUBIC
     }
 
     /**
      * <code>Antialias</code>
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author: aschmitz $
-     * 
+     *
      * @version $Revision: 32136 $, $Date: 2011-10-12 15:21:52 +0200 (Wed, 12 Oct 2011) $
      */
     public static enum Antialias {
         /***/
-        IMAGE, /***/
-        TEXT, /***/
-        BOTH, /***/
+        IMAGE,
+        /***/
+        TEXT,
+        /***/
+        BOTH,
+        /***/
         NONE
     }
 
@@ -267,4 +290,94 @@ public class MapOptions {
             }
         };
     }
+
+    public static class Builder {
+
+        private Quality quality;
+
+        private Interpolation interpolation;
+
+        private Antialias antialias;
+
+        private int maxFeatures = -1;
+
+        private int featureInfoRadius = -1;
+
+        private boolean opaque;
+
+        private Integer featureInfoDecimalPlaces;
+
+        /**
+         * @param quality
+         *            the quality to set
+         */
+        public Builder quality( Quality quality ) {
+            this.quality = quality;
+            return this;
+        }
+
+        /**
+         * @param interpolation
+         *            the interpolation to set
+         */
+        public Builder interpolation( Interpolation interpolation ) {
+            this.interpolation = interpolation;
+            return this;
+        }
+
+        /**
+         * @param antialias
+         *            the antialias to set
+         */
+        public Builder antialias( Antialias antialias ) {
+            this.antialias = antialias;
+            return this;
+        }
+
+        /**
+         * @param maxFeatures
+         *            the maxFeatures to set
+         */
+        public Builder maxFeatures( int maxFeatures ) {
+            this.maxFeatures = maxFeatures;
+            return this;
+        }
+
+        /**
+         * @param featureInfoRadius
+         *            the featureInfoRadius to set, a value < 1 means default, 0 means disabled and > 0 for the radius
+         */
+        public Builder featureInfoRadius( int featureInfoRadius ) {
+            this.featureInfoRadius = featureInfoRadius;
+            return this;
+        }
+
+        /**
+         * @param opaque
+         *            set if layer is opaque
+         */
+        public Builder opaque( boolean opaque ) {
+            this.opaque = opaque;
+            return this;
+        }
+
+        /**
+         * @param featureInfoDecimalPlaces
+         *            the featureInfoDecimalPlaces to set, a non <code>null</code> positive value defines the requested
+         *            number of digits after the decimal point to be used for numeric values, if this feature is
+         *            available
+         */
+        public Builder featureInfoDecimalPlaces( Integer featureInfoDecimalPlaces ) {
+            this.featureInfoDecimalPlaces = featureInfoDecimalPlaces;
+            return this;
+        }
+
+
+        public MapOptions build() {
+            return new MapOptions( quality, interpolation, antialias, maxFeatures, featureInfoRadius, opaque,
+                                   featureInfoDecimalPlaces );
+        }
+
+    }
+
 }

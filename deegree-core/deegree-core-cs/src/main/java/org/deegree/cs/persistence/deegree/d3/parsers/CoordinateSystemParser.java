@@ -55,7 +55,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSCodeType;
@@ -91,7 +90,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed crs, as well as a stack trace if something went wrong.")
 public class CoordinateSystemParser extends DefinitionParser {
 
     private static Logger LOG = LoggerFactory.getLogger( CoordinateSystemParser.class );

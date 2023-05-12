@@ -91,11 +91,14 @@ public class MappedXPath {
 
     private final boolean handleStrict;
 
+    private final boolean useDefaultProperty;
+
     private String currentTable;
 
     private String currentTableAlias;
 
     private PropertyNameMapping propMapping;
+
 
     /**
      * @param fs
@@ -124,6 +127,7 @@ public class MappedXPath {
             LOG.debug( "Null / empty property name (=targets default geometry property)." );
             this.propName = new ValueReference( "geometry()", null );
             steps = Collections.emptyList();
+            this.useDefaultProperty = true;
         } else {
             this.propName = propName;
             steps = MappableStep.extractSteps( propName );
@@ -131,10 +135,11 @@ public class MappedXPath {
             if ( ftMapping.getFeatureType().equals( steps.get( 0 ) ) ) {
                 steps.subList( 1, steps.size() );
             }
+            this.useDefaultProperty = false;
         }
 
         currentTable = ftMapping.getFtTable().toString();
-        currentTableAlias = aliasManager.getRootTableAlias();
+        currentTableAlias = aliasManager.getTableAlias( ftMapping.getFtTable() );
         map( ftMapping.getMappings(), steps );
     }
 
@@ -187,7 +192,7 @@ public class MappedXPath {
         }
 
         if ( !matchFound && isSpatial ) {
-            if ( handleStrict ) {
+            if ( handleStrict && !useDefaultProperty ) {
                 String msg = "Cannot evaluate spatial operator. Targeted property name '" + propName.getAsText()
                              + "' is not mapped.";
                 throw new InvalidParameterValueException( msg );

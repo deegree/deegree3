@@ -41,78 +41,50 @@
 
 package org.deegree.commons.utils.test;
 
+import static org.deegree.commons.utils.io.Utils.determineSimilarity;
+
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
+import javax.imageio.ImageIO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>IntegrationTestUtils</code>
- * 
+ *
  * @author <a href="mailto:schmitz@occamlabs.de">Andreas Schmitz</a>
  * @author last edited by: $Author: mschneider $
- * 
  * @version $Revision: 31882 $, $Date: 2011-09-15 02:05:04 +0200 (Thu, 15 Sep 2011) $
  */
 
 public class IntegrationTestUtils {
 
-    private static void collect( List<Object[]> list, File dir, String prefix ) {
-        File[] fs = dir.listFiles();
-        if ( fs == null ) {
-            return;
-        }
-        for ( File f : fs ) {
-            String name = f.getName();
-            if ( name.endsWith( ".kvp" ) || name.endsWith( ".xml" ) ) {
-                File respFile = new File( f.getParentFile(), name.substring( 0, name.length() - 4 ) + ".response" );
-                Object[] o;
-                try {
-                    List<byte[]> responses = new ArrayList<byte[]>();
-                    int idx = 1;
-                    while ( respFile.exists() ) {
-                        responses.add( IOUtils.toByteArray( new FileInputStream( respFile ) ) );
-                        respFile = new File( f.getParentFile(), name.substring( 0, name.length() - 4 ) + ".response"
-                                                                + ++idx );
-                    }
-
-                    o = new Object[] { name.endsWith( ".xml" ), IOUtils.toString( new FileInputStream( f ) ), responses, prefix + name };
-                    list.add( o );
-                } catch ( FileNotFoundException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( IOException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            if ( f.isDirectory() ) {
-                collect( list, f, prefix  + f.getName() + "/" );
-            }
-        }
-    }
+    private static final Logger LOG = LoggerFactory.getLogger( IntegrationTestUtils.class );
 
     /**
-     * Scans the System.getProperty("requestdir") directories' contents for .kvp/.xml request files. Responses end in
-     * .response, alternative responses end in .response2 etc.
-     * 
-     * @return the .kvp/.xml and .response contents as triples (boolean wasXml, String and List<byte[]>)
+     * Converts rendered image into byte array
      */
-    public static Collection<Object[]> getTestRequests() {
-        File dir = new File( System.getProperty( "requestdir" ) );
-        List<Object[]> list = new ArrayList<Object[]>();
-        collect( list, dir, "" );
-        return list;
+    private static byte[] toBytes( RenderedImage image, String format )
+                            throws
+                            IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write( image, format, baos );
+        baos.flush();
+        baos.close();
+        return baos.toByteArray();
     }
 
     /**
@@ -125,12 +97,95 @@ public class IntegrationTestUtils {
             IOUtils.write( data, zip );
             zip.closeEntry();
             zip.flush();
+            zip.finish();
             baos.flush();
             byte[] gzipped = baos.toByteArray();
             return StringUtils.newStringUtf8( Base64.encodeBase64Chunked( gzipped ) );
         } catch ( IOException ex ) {
             ex.printStackTrace();
             return "Encoding failed with: " + ex.getMessage();
+        }
+    }
+
+    /**
+     * Stores the data on pastebin server
+     *
+     * If a server url for put request is configured with the environment vairable <code>PASTEBIN_PUT_URL</code>, the
+     * data is sent to that url an the result (file address is returned)
+     *
+     * @param data
+     * @return url on the server  or <code>null</code> if no server address is configured or an error
+     *                         occurred
+     */
+    public static String toPasteBin( byte[] data ) {
+        String pasteBinUrl = System.getenv( "PASTEBIN_PUT_URL" );
+        if ( pasteBinUrl == null || pasteBinUrl.isEmpty() )
+            return null;
+
+        HttpRequest request = HttpRequest.newBuilder() //
+                                         .timeout( Duration.ofMinutes( 2 ) ) //
+                                         .uri( URI.create( pasteBinUrl ) ) //
+                                         .PUT( HttpRequest.BodyPublishers.ofByteArray( data ) )//
+                                         .build();
+        return HttpClient.newHttpClient() //
+                         .sendAsync( request, HttpResponse.BodyHandlers.ofString() ) //
+                         .thenApply( response -> {
+                             if ( response.statusCode() == 200 ) {
+                                 return response.body();
+                             }
+                             LOG.warn( "Publishing data on pastebin failed with return code {}",
+                                       response.statusCode() );
+                             return null;
+                         } ) //
+                         .join();
+    }
+
+    /**
+     * Stores the expected and actual image of a comparsion into the temporary directory
+     *
+     * @param expected
+     *                         The expected image
+     * @param actual
+     *                         The actual image
+     * @param name
+     *                         Name of the Test
+     */
+    private static void toTempfile( RenderedImage expected, RenderedImage actual, String name ) {
+        try {
+            Path tempDir = Path.of( System.getProperty( "java.io.tmpdir" ) );
+
+            LOG.error( "Trying to store {}_expected/{}_actual in java.io.tmpdir", name, name );
+            Files.write( tempDir.resolve( name + "_actual.png" ), toBytes( actual, "png" ) );
+            Files.write( tempDir.resolve( name + "_expected.png" ), toBytes( expected, "png" ) );
+
+            System.out.println( "Result returned for " + name + " (base64 -di encoded.dat > failed-test.zip)" );
+            System.out.println( toBase64Zip( toBytes( actual, "png" ), name + ".png" ) );
+        } catch ( Throwable t ) {
+        }
+    }
+
+    /**
+     * Checks if two images are similar
+     */
+    public static boolean isImageSimilar( RenderedImage expected, RenderedImage actual, double maximumDifference,
+                                          String name )
+                            throws
+                            Exception {
+        double sim = determineSimilarity( expected, actual );
+
+        if ( Math.abs( 1.0 - sim ) > maximumDifference ) {
+            LOG.error( "Images for test '{}' are not similar enough ({}>{})", name, sim, maximumDifference );
+
+            String pasteBin = IntegrationTestUtils.toPasteBin( toBytes( actual, "png" ) );
+            if ( pasteBin != null ) {
+                System.out.println( "Actual returned image for " + name + " available at " + pasteBin );
+            }
+            toTempfile( expected, actual, name );
+
+            return false;
+        } else {
+            LOG.info( "Similarity test '{}' ok ({})", name, 1.0 - sim );
+            return true;
         }
     }
 }

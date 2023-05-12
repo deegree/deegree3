@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <CoverageLayers xmlns="http://www.deegree.org/layers/coverage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/coverage coverage.xsd" configVersion="3.4.0">
+  xmlns:d="http://www.deegree.org/metadata/description" xmlns:l="http://www.deegree.org/layers/base" xsi:schemaLocation="http://www.deegree.org/layers/coverage coverage.xsd">
   <CoverageStoreId>terrain</CoverageStoreId>
   <CoverageLayer>
     <l:Name>Terrain</l:Name>

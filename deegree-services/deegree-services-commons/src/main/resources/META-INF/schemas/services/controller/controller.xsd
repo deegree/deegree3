@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:controller="http://www.deegree.org/services/controller" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.deegree.org/services/controller" elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="org.deegree.services.jaxb.controller" />
+      </jaxb:schemaBindings>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="deegreeServiceController" type="controller:deegreeServiceControllerType" />
+  <xs:complexType name="deegreeServiceControllerType">
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element name="ReportedUrls" type="controller:ReportedUrlsType" minOccurs="0" />
+        <xs:element name="DCP" type="controller:DCPType" minOccurs="0" />
+      </xs:choice>
+      <xs:element name="AddDeegreeVersionToHeader" type="xs:boolean" minOccurs="0" default="false" />
+      <xs:element name="PreventClassloaderLeaks" type="xs:boolean" minOccurs="0" default="true" />
+      <xs:element name="RequestLogging" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>If included in the configuration, requests will be logged.</xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <!-- Default is the java temp directory -->
+            <xs:element name="OutputDirectory" type="xs:string" minOccurs="0" />
+            <!-- Default is true -->
+            <xs:element name="OnlySuccessful" type="xs:boolean" minOccurs="0" />
+            <!-- Default is the internal logger, logging only to the output directory and the $HOME/.deegree/requests.txt 
+              for kvp. -->
+            <xs:element name="RequestLogger" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Class" type="xs:string" />
+                  <xs:element name="Configuration" type="xs:anyType" minOccurs="0" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RequestTimeoutMilliseconds" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:positiveInteger">
+              <xs:attribute name="serviceId" type="xs:string" use="required" />
+              <xs:attribute name="request" type="xs:string" use="required" />
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ValidateResponses" type="xs:boolean" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="configVersion" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="ReportedUrlsType">
+    <xs:sequence>
+      <xs:element name="Services" type="xs:anyURI" />
+      <xs:element name="Resources" type="xs:anyURI" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- deprecated -->
+  <xs:complexType name="DCPType">
+    <xs:sequence>
+      <xs:element name="HTTPGet" type="xs:anyURI" minOccurs="0" />
+      <xs:element name="HTTPPost" type="xs:anyURI" minOccurs="0" />
+      <xs:element name="SOAP" type="xs:anyURI" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

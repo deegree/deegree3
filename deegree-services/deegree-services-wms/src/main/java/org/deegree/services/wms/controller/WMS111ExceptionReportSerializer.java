@@ -63,7 +63,7 @@ public class WMS111ExceptionReportSerializer extends XMLExceptionSerializer {
         if ( ex.getLocator() != null && !"".equals( ex.getLocator().trim() ) ) {
             writer.writeAttribute( "locator", ex.getLocator() );
         }
-        writer.writeCharacters( ex.getMessage() );
+        writer.writeCharacters( ex.getMessage() != null ? ex.getMessage() : "not available" );
         writer.writeEndElement(); // ServiceException
         writer.writeEndElement(); // ServiceExceptionReport
     }

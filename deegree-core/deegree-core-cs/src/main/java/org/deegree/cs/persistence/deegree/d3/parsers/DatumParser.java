@@ -49,7 +49,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.xml.stax.XMLStreamUtils;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.components.GeodeticDatum;
@@ -71,7 +70,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(debug = "Get information about the currently parsed datums, as well as a stack trace if something went wrong.")
 public class DatumParser extends DefinitionParser {
     private static final Logger LOG = getLogger( DatumParser.class );
 

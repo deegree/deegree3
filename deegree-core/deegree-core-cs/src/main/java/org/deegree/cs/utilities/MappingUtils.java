@@ -45,7 +45,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.cs.exceptions.TransformationException;
 import org.deegree.cs.transformations.Transformation;
@@ -64,7 +63,6 @@ import org.slf4j.Logger;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "Get information transformation substitution process.")
 public class MappingUtils {
     private static final Logger LOG = getLogger( MappingUtils.class );
 

@@ -46,7 +46,6 @@ import java.util.Set;
 
 import javax.vecmath.Point2d;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.cs.CRSCodeType;
 import org.deegree.cs.CRSResource;
 import org.deegree.cs.EPSGCode;
@@ -90,7 +89,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-@LoggingNotes(debug = "the proj4 format provider")
 public class PROJ4CRSStore extends AbstractCRSStore {
 
     private static Logger LOG = LoggerFactory.getLogger( PROJ4CRSStore.class );

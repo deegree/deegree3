@@ -36,9 +36,9 @@
 
 package org.deegree.services.wms;
 
+import static java.util.Collections.singletonList;
 import static org.deegree.commons.ows.exception.OWSException.LAYER_NOT_QUERYABLE;
 import static org.deegree.commons.ows.exception.OWSException.NO_APPLICABLE_CODE;
-import static org.deegree.commons.utils.MapUtils.DEFAULT_PIXEL_SIZE;
 import static org.deegree.rendering.r2d.RenderHelper.calcScaleWMS130;
 import static org.deegree.rendering.r2d.context.MapOptionsHelper.insertMissingOptions;
 import static org.deegree.theme.Themes.getAllLayers;
@@ -46,7 +46,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,9 +57,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.commons.annotations.LoggingNotes;
+import javax.imageio.ImageIO;
+
 import org.deegree.commons.ows.exception.OWSException;
 import org.deegree.commons.utils.Pair;
+import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Features;
@@ -72,16 +76,21 @@ import org.deegree.protocol.wms.filter.EnvFunction;
 import org.deegree.protocol.wms.filter.ScaleFunction;
 import org.deegree.protocol.wms.ops.GetFeatureInfoSchema;
 import org.deegree.protocol.wms.ops.GetLegendGraphic;
+import org.deegree.rendering.r2d.Copyright;
 import org.deegree.rendering.r2d.context.MapOptions;
 import org.deegree.rendering.r2d.context.MapOptionsMaps;
 import org.deegree.rendering.r2d.context.RenderContext;
+import org.deegree.services.OWS;
+import org.deegree.services.jaxb.wms.CopyrightType;
 import org.deegree.services.jaxb.wms.ServiceConfigurationType;
+import org.deegree.services.wms.visibility.RequestedLayerVisibilityInspector;
 import org.deegree.style.StyleRef;
 import org.deegree.style.se.unevaluated.Style;
 import org.deegree.style.utils.ImageUtils;
 import org.deegree.theme.Theme;
 import org.deegree.theme.Themes;
 import org.deegree.theme.persistence.ThemeProvider;
+import org.deegree.workspace.ResourceMetadata;
 import org.deegree.workspace.Workspace;
 import org.slf4j.Logger;
 
@@ -93,7 +102,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(error = "logs errors when querying feature stores/evaluating filter encoding expressions", trace = "logs stack traces", warn = "logs problems when loading layers, also invalid values for vendor specific parameters such as ANTIALIAS, QUALITY etc.", debug = "logs if layers are skipped because of scale constraints, and info about feature store queries")
 public class MapService {
 
     private static final Logger LOG = getLogger( MapService.class );
@@ -106,6 +114,8 @@ public class MapService {
 
     private int updateSequence; // TODO how to restore this after restart?
 
+    private final String getLegendGraphicBackgroundColor;
+
     private List<Theme> themes;
 
     private HashMap<String, org.deegree.layer.Layer> newLayers;
@@ -114,14 +124,22 @@ public class MapService {
 
     private final GetLegendHandler getLegendHandler;
 
+    private Copyright copyright;
+    
+    private final RequestedLayerVisibilityInspector visibilityInspector;
+
     /**
      * @param conf
-     * @param adapter
+     * @param workspace
+     * @param metadata
+     * @param updateSequence
+     * @param getLegendGraphicBackgroundColor
      * @throws MalformedURLException
      */
-    public MapService( ServiceConfigurationType conf, Workspace workspace, int updateSequence )
-                            throws MalformedURLException {
+    public MapService( ServiceConfigurationType conf, Workspace workspace, ResourceMetadata<OWS> metadata,
+                       int updateSequence, String getLegendGraphicBackgroundColor ) throws MalformedURLException {
         this.updateSequence = updateSequence;
+        this.getLegendGraphicBackgroundColor = getLegendGraphicBackgroundColor;
         this.registry = new StyleRegistry();
 
         MapServiceBuilder builder = new MapServiceBuilder( conf );
@@ -148,9 +166,14 @@ public class MapService {
                     }
                 }
             }
+            copyright = parseCopyright( metadata, conf.getCopyright() );
         }
         getLegendHandler = new GetLegendHandler( this );
+
+        visibilityInspector = new RequestedLayerVisibilityInspector( conf.getVisibilityInspector(), workspace );
     }
+
+
 
     /**
      * @return the list of themes if configuration is based on themes, else null
@@ -160,29 +183,34 @@ public class MapService {
     }
 
     /**
-     * @param req
-     *            should be a GetMap or GetLegendGraphic
+     * @param glg
+     *                 GetLegendGraphic, never <code>null</code>
      * @return an empty image conforming to the request parameters
      */
-    public static BufferedImage prepareImage( Object req ) {
-        String format = null;
-        int width = 0, height = 0;
+    public BufferedImage prepareImage( GetLegendGraphic glg ) {
         Color bgcolor = null;
-        boolean transparent = false;
-        if ( req instanceof GetLegendGraphic ) {
-            GetLegendGraphic glg = (GetLegendGraphic) req;
-            format = glg.getFormat();
-            width = glg.getWidth();
-            height = glg.getHeight();
-            transparent = true;
-        } else {
-            return null;
+        boolean transparent = true;
+        if ( getLegendGraphicBackgroundColor != null ) {
+            bgcolor = Color.decode( getLegendGraphicBackgroundColor );
+            transparent = false;
         }
+
+        String format = glg.getFormat();
+        int width = glg.getWidth();
+        int height = glg.getHeight();
         return ImageUtils.prepareImage( format, width, height, transparent, bgcolor );
     }
 
     public boolean hasTheme( String name ) {
         return themeMap.get( name ) != null;
+    }
+
+    public boolean isCrsSupported( String name, ICRS requestedCrs ) {
+        Theme theme = themeMap.get( name );
+        if ( theme == null )
+            return false;
+        List<ICRS> supportedCrs = theme.getLayerMetadata().getSpatialMetadata().getCoordinateSystems();
+        return supportedCrs.contains( requestedCrs );
     }
 
     public void getMap( org.deegree.protocol.wms.ops.GetMap gm, List<String> headers, RenderContext ctx )
@@ -203,7 +231,8 @@ public class MapService {
             OperatorFilter f = filterItr == null ? null : filterItr.next();
 
             LayerQuery query = buildQuery( sr, lr, options, mapOptions, f, gm );
-            queries.add( query );
+            if ( query != null )
+                queries.add( query );
         }
 
         ListIterator<LayerQuery> queryIter = queries.listIterator();
@@ -224,6 +253,9 @@ public class MapService {
                 }
             }
             ctx.optimizeAndDrawLabels();
+            if ( copyright != null ) {
+                ctx.paintCopyright( copyright, gm.getHeight() );
+            }
         } finally {
             ScaleFunction.getCurrentScaleValue().remove();
             EnvFunction.getCurrentEnvValue().remove();
@@ -237,11 +269,22 @@ public class MapService {
         List<LayerData> layerDataList = new ArrayList<LayerData>();
         for ( LayerRef lr : gm.getLayers() ) {
             LayerQuery query = queryIter.next();
-            List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
+            String layerName = lr.getName();
+            //List<Layer> layers = getAllLayers( themeMap.get( lr.getName() ) );
+            List<Layer> layers;
+            // TODO Workaround for InlineFeature
+            if ( lr.getName() == null && lr.getLayer() != null ) {
+                layers = singletonList( lr.getLayer() );
+            } else {
+                layers = getAllLayers( themeMap.get( lr.getName() ) );
+            }
             assertStyleApplicableForAtLeastOneLayer( layers, query.getStyle(), lr.getName() );
             for ( org.deegree.layer.Layer layer : layers ) {
                 if ( layer.getMetadata().getScaleDenominators().first > scale
                      || layer.getMetadata().getScaleDenominators().second < scale ) {
+                    continue;
+                }
+                if ( !visibilityInspector.isVisible( layerName, layer.getMetadata() ) ) {
                     continue;
                 }
                 if ( layer.isStyleApplicable( query.getStyle() ) ) {
@@ -265,17 +308,22 @@ public class MapService {
 
     private LayerQuery buildQuery( StyleRef style, LayerRef lr, MapOptionsMaps options, List<MapOptions> mapOptions,
                                    OperatorFilter f, org.deegree.protocol.wms.ops.GetMap gm ) {
+        String layerName = lr.getName();
 
-        for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( lr.getName() ) ) ) {
-            insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
-                                  defaultLayerOptions );
-            mapOptions.add( options.get( l.getMetadata().getName() ) );
+        if ( layerName == null && lr.getLayer() != null ) {
+            // TODO Is it required to take the Options from the map options and merge them with defaultLayerOptions ?
+            mapOptions.add( defaultLayerOptions );
+        } else {
+            for ( org.deegree.layer.Layer l : Themes.getAllLayers( themeMap.get( layerName ) ) ) {
+                insertMissingOptions( l.getMetadata().getName(), options, l.getMetadata().getMapOptions(),
+                                      defaultLayerOptions );
+                mapOptions.add( options.get( l.getMetadata().getName() ) );
+            }
         }
 
-        LayerQuery query = new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
-                                           gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
-                                           gm.getQueryBox() );
-        return query;
+        return new LayerQuery( gm.getBoundingBox(), gm.getWidth(), gm.getHeight(), style, f,
+                               gm.getParameterMap(), gm.getDimensions(), gm.getPixelSize(), options,
+                               gm.getQueryBox() );
     }
 
     public FeatureCollection getFeatures( org.deegree.protocol.wms.ops.GetFeatureInfo gfi, List<String> headers )
@@ -284,8 +332,7 @@ public class MapService {
         List<LayerData> list = new ArrayList<LayerData>();
 
         double scale = calcScaleWMS130( gfi.getWidth(), gfi.getHeight(), gfi.getEnvelope(), gfi.getCoordinateSystem(),
-                                        DEFAULT_PIXEL_SIZE );
-
+                                        gfi.getPixelSize() );
         ListIterator<LayerQuery> queryIter = queries.listIterator();
         for ( LayerRef n : gfi.getQueryLayers() ) {
             LayerQuery query = queryIter.next();
@@ -300,7 +347,7 @@ public class MapService {
                                             + l.getMetadata().getName() + ") that is not queryable.",
                                             LAYER_NOT_QUERYABLE );
                 }
-
+                
                 list.add( l.infoQuery( query, headers ) );
             }
         }
@@ -408,6 +455,44 @@ public class MapService {
      */
     public int getCurrentUpdateSequence() {
         return updateSequence;
+    }
+
+    private Copyright parseCopyright( ResourceMetadata<OWS> metadata, CopyrightType copyright ) {
+        if ( copyright != null ) {
+            String copyrightText = copyright.getText();
+            BufferedImage copyrightImage = parseCopyrightImage( metadata, copyright.getImage() );
+            int offsetX = copyright.getOffsetX() != null ? copyright.getOffsetX() : 8;
+            int offsetY = copyright.getOffsetY() != null ? copyright.getOffsetY() : 13;
+            return new Copyright( copyrightText, copyrightImage, offsetX, offsetY );
+        }
+        return null;
+    }
+
+    private BufferedImage parseCopyrightImage( ResourceMetadata<OWS> metadata, String image ) {
+        if ( image != null ) {
+            URL copyrightImageAsUrl = parseCopyrightImageAsUrl( metadata, image );
+            if ( copyrightImageAsUrl != null ) {
+                try {
+                    return ImageIO.read( copyrightImageAsUrl );
+                } catch ( IOException e ) {
+                    LOG.warn( "Could not read copyright as image from {}: {}", copyrightImageAsUrl, e.getMessage() );
+                }
+            }
+        }
+        return null;
+    }
+
+    private URL parseCopyrightImageAsUrl( ResourceMetadata<OWS> metadata, String image ) {
+        URL url = metadata.getLocation().resolveToUrl( image );
+        if ( url != null )
+            return url;
+        try {
+            return new URL( image );
+        } catch ( MalformedURLException e ) {
+            LOG.debug( "Could not resolve copyright {}.", image, e );
+        }
+        LOG.warn( "Could not resolve copyright {}.", image );
+        return null;
     }
 
 }

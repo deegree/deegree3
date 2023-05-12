@@ -49,7 +49,6 @@ import java.util.TimerTask;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.commons.utils.Pair;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
@@ -64,7 +63,6 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-@LoggingNotes(info = "logs when style files cannot be loaded", trace = "logs stack traces", debug = "logs information about loading/reloading of style files")
 public class StyleRegistry extends TimerTask {
 
     private static final Logger LOG = getLogger( StyleRegistry.class );

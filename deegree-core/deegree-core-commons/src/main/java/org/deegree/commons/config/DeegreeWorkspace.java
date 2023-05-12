@@ -80,10 +80,10 @@ public class DeegreeWorkspace {
     private static final String DEFAULT_WORKSPACE = "default";
 
     // environment variable for controlling the workspace directory
-    private static final String VAR_WORKSPACE = "DEEGREE_WORKSPACE";
+    protected static final String VAR_WORKSPACE = "DEEGREE_WORKSPACE";
 
     // environment variable for controlling the root directory of the workspaces
-    private static final String VAR_WORKSPACE_ROOT = "DEEGREE_WORKSPACE_ROOT";
+    protected static final String VAR_WORKSPACE_ROOT = "DEEGREE_WORKSPACE_ROOT";
 
     private static final Map<String, DeegreeWorkspace> nameToWs = new HashMap<String, DeegreeWorkspace>();
 
@@ -365,11 +365,14 @@ public class DeegreeWorkspace {
      */
     public static String getWorkspaceRoot() {
         String workspaceRoot = System.getProperty( VAR_WORKSPACE_ROOT );
+        LOG.trace( VAR_WORKSPACE_ROOT + " retrieved from system property: " + workspaceRoot);
         if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
             workspaceRoot = System.getenv( VAR_WORKSPACE_ROOT );
+            LOG.trace( VAR_WORKSPACE_ROOT + " retrieved from environment variable:" + workspaceRoot);
         }
         if ( workspaceRoot == null || workspaceRoot.isEmpty() ) {
             workspaceRoot = System.getProperty( "user.home" ) + separator + ".deegree";
+            LOG.trace("Using default workspace root directory: " + workspaceRoot);
         }
         return workspaceRoot;
     }

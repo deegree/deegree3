@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2011 by:
@@ -38,6 +37,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle.sdo;
 
+import static org.deegree.commons.tom.primitive.BaseType.DECIMAL;
+import static org.deegree.commons.utils.TunableParameter.get;
 import static org.deegree.geometry.validation.GeometryFixer.forceOrientation;
 
 import java.sql.SQLException;
@@ -49,14 +50,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import javax.xml.namespace.QName;
 import oracle.jdbc.OracleConnection;
 import oracle.sql.ARRAY;
 import oracle.sql.Datum;
 import oracle.sql.STRUCT;
-
+import org.deegree.commons.tom.TypedObjectNode;
+import org.deegree.commons.tom.gml.property.Property;
+import org.deegree.commons.tom.gml.property.PropertyType;
+import org.deegree.commons.tom.primitive.PrimitiveValue;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.cs.coordinatesystems.ICRS;
+import org.deegree.feature.property.ExtraProps;
+import org.deegree.feature.property.GenericProperty;
+import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.Geometry.GeometryType;
@@ -90,17 +97,28 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  * @author <a href="mailto:reijer.copier@idgis.nl">Reijer Copier</a>
- * 
- * @version $Revision$, $Date$
  */
 public class SDOGeometryConverter {
     static final Logger LOG = LoggerFactory.getLogger( SDOGeometryConverter.class );
 
-    public SDOGeometryConverter() {
+    private static final boolean DEFAULT_EXPORT_ORIENTED_POINT = get("deegree.sqldialect.oracle.export_oriented_point", false);
 
-    }
+    private final SDOInspector inspector;
+
+    private boolean exportOrientedPointAsExtra;
 
     private GeometryFactory _gf = new GeometryFactory();
+
+    public SDOGeometryConverter() {
+        this.inspector = null;
+        this.exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
+    }
+
+    public SDOGeometryConverter(SDOInspector inspector)
+    {
+        this.inspector = inspector;
+        this.exportOrientedPointAsExtra = DEFAULT_EXPORT_ORIENTED_POINT;
+    }
 
     enum GeomHolderTyp {
         GEOMETRY, POINT, CURVE, POLYGON
@@ -132,6 +150,10 @@ public class SDOGeometryConverter {
         public int elemoff;
 
         public GeomHolderTyp last;
+
+        public GeomHolder( SDOGeometry sdo, ICRS crs ) {
+            this( sdo.gtype, sdo.srid, sdo.point, sdo.elem_info, sdo.ordinates, crs );
+        }
 
         public GeomHolder( final int gtype, final int srid, final double point[], final int[] elem_info,
                            final double[] ordinates, ICRS crs ) {
@@ -182,6 +204,16 @@ public class SDOGeometryConverter {
                     i++;
                 }
             }
+            return out;
+        }
+        
+        double[] getOrdinates() {
+            int off = elem_info[elemoff];
+            int nxt = (elemoff + 4 < cnt_e) ? elem_info[elemoff + 3] : cnt_o + 1;
+            double[] out = new double[nxt - off];
+
+            System.arraycopy( ordinates, off - 1, out, 0, nxt - off );
+
             return out;
         }
 
@@ -271,61 +303,70 @@ public class SDOGeometryConverter {
         if ( sdoStruct == null ) {
             return null;
         }
-
+        
         Datum data[] = sdoStruct.getOracleAttributes();
+        SDOGeometry sdo = new SDOGeometry();
 
-        int gtype = OracleObjectTools.fromInteger( data[0], 0 );
-        int srid = OracleObjectTools.fromInteger( data[1], -1 );
-        double[] point = OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN );
-        int[] elemInfo = OracleObjectTools.fromIntegerArray( (ARRAY) data[3] );
-        double[] ordinates = OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN );
+        sdo.gtype = OracleObjectTools.fromInteger( data[0], 0 );
+        sdo.srid = OracleObjectTools.fromInteger( data[1], -1 );
+        sdo.point = OracleObjectTools.fromDoubleArray( (STRUCT) data[2], Double.NaN );
+        sdo.elem_info = OracleObjectTools.fromIntegerArray( (ARRAY) data[3] );
+        sdo.ordinates = OracleObjectTools.fromDoubleArray( (ARRAY) data[4], Double.NaN );
 
-        int gtype_d, tdims = gtype / 1000;
+        removeLinearReferencingSystem(sdo);
+
+        if ( inspector != null ) {
+            inspector.toGeometry(sdo);
+        }
+
+        return toGeometry( sdo, crs );
+    }
+
+    protected void removeLinearReferencingSystem( SDOGeometry sdo ) {
+        int gtype_d, tdims = sdo.gtype / 1000;
         if ( tdims < 2 || tdims > 4 ) {
             gtype_d = 2;
         } else {
             gtype_d = tdims;
         }
 
-        int gtype_l = ( gtype % 1000 ) / 100;
+        int gtype_l = ( sdo.gtype % 1000 ) / 100;
         if ( gtype_l > 0 ) { // contains LRS?
             // create ordinates array without LRS dimension
-            double[] newOrdinates = new double[( ordinates.length / gtype_d ) * ( gtype_d - 1 )];
+            double[] newOrdinates = new double[( sdo.ordinates.length / gtype_d ) * ( gtype_d - 1 )];
 
             int j = 0;
-            for ( int i = 0; i < ordinates.length; i++ ) {
+            for ( int i = 0; i < sdo.ordinates.length; i++ ) {
                 if ( i % gtype_d != ( gtype_l - 1 ) ) { // ordinate not in LRS dimension?
-                    newOrdinates[j++] = ordinates[i];
+                    newOrdinates[j++] = sdo.ordinates[i];
                 }
             }
 
-            ordinates = newOrdinates;
+            sdo.ordinates = newOrdinates;
 
             // create elemInfo array without LRS dimension
-            int[] newElemInfo = new int[elemInfo.length];
+            int[] newElemInfo = new int[sdo.elem_info.length];
             for ( int i = 0; i < newElemInfo.length; i++ ) {
                 if ( i % 3 == 0 ) { 
                     // compute new offset in ordinates array
-                    newElemInfo[i] = ( ( elemInfo[i] - 1 ) / gtype_d ) * ( gtype_d - 1 ) + 1;
+                    newElemInfo[i] = ( ( sdo.elem_info[i] - 1 ) / gtype_d ) * ( gtype_d - 1 ) + 1;
                 } else {
-                    newElemInfo[i] = elemInfo[i];
+                    newElemInfo[i] = sdo.elem_info[i];
                 }
             }
 
-            elemInfo = newElemInfo;
+            sdo.elem_info = newElemInfo;
 
             // compute new gtype
-            gtype = gtype - 1000 - gtype_l * 100;
+            sdo.gtype = sdo.gtype - 1000 - gtype_l * 100;
         }
-
-        GeomHolder sdo = new GeomHolder( gtype, srid, point, elemInfo, ordinates, crs );
-
-        return toGeometry( sdo, crs );
     }
 
     @SuppressWarnings("unchecked")
-    protected Geometry toGeometry( GeomHolder sdo, ICRS crs )
+    protected Geometry toGeometry( SDOGeometry geom, ICRS crs )
                             throws SQLException {
+        GeomHolder sdo = new GeomHolder( geom, crs );
+
         if ( sdo.cnt_o < sdo.gtype_d || sdo.cnt_e < 3 || sdo.cnt_o % sdo.gtype_d > 0 || sdo.cnt_e % 3 > 0 )
             throw new SQLException( "Illegal Geometry" );
         else if ( sdo.gtype_tt == SDOGTypeTT.UNKNOWN )
@@ -349,7 +390,7 @@ public class SDOGeometryConverter {
             case SDOEType.POLYGON_RING_INTERIOR: // see above NOTE 1
             case SDOEType.POLYGON_RING_EXTERIOR:
             case SDOEType.POLYGON_RING_UNKNOWN:
-                Ring rng = handleSimpleRing( sdo );
+                Ring rng = handleSimpleRing( sdo, etype );
                 switch ( etype ) {
                 case SDOEType.POLYGON_RING_INTERIOR:
                     ringi.add( rng );
@@ -555,7 +596,7 @@ public class SDOGeometryConverter {
      * Interpretation are handled as follow:
      * <ol>
      * <li>1) normal point (one set of coordinates)</li>
-     * <li>0) oriented point (second set of coordinates is ignored)</li>
+     * <li>0) oriented point (only read as extra props on request)</li>
      * <li>N > 1) point cluster is treated as multiple points (N sets of coordinates)</li>
      * </ol>
      */
@@ -569,26 +610,33 @@ public class SDOGeometryConverter {
                 sdo.add( GeomHolderTyp.POINT,
                          _gf.createPoint( null, sdo.getOrdinatesEntry( off + ( i * sdo.gtype_d ) ), sdo.crs ) );
             }
-        } else if ( intpr == 0 || intpr == 1 ) {
+        } else if ( intpr == 1 ) {
             sdo.add( GeomHolderTyp.POINT, _gf.createPoint( null, sdo.getOrdinatesEntry( off ), sdo.crs ) );
+        } else if ( intpr == 0 ) {
+            if ( !exportOrientedPointAsExtra ) {
+                // Ignore the orientation defined as separate ordinates
+                return;
+            }
+
+            double[] orients = sdo.getOrdinates();
+            if ( sdo.geoms.size() > 0 ) {
+                Geometry lastGeom = sdo.geoms.get( sdo.geoms.size() - 1 );
+                final org.deegree.commons.tom.primitive.PrimitiveType pt;
+                pt = new org.deegree.commons.tom.primitive.PrimitiveType( DECIMAL );
+                final List<Property> props = new ArrayList<>();
+                for ( int i = 0, j = orients.length; i < j; i++ ) {
+                    final PropertyType decimalPt = new SimplePropertyType( new QName( ExtraProps.EXTRA_PROP_NS,
+                                                                                      "orientation" + i ),
+                                                                           1, 1, DECIMAL, null, null );
+                    final TypedObjectNode value = new PrimitiveValue( Double.valueOf( orients[i] ), pt );
+                    props.add( new GenericProperty( decimalPt, value ) );
+                }
+                lastGeom.setProperties( props );
+            }
         } else {
             createGeometryException( sdo );
         }
     }
-
-    // private List<Point> getPoints( GeomHolder sdo, int offset, int cnt ) {
-    // // double[] buf = new double[sdo.dims];
-    // List<Point> members = new LinkedList<Point>();
-    //
-    // // from 1 based to 0 based array
-    // int off = offset - 1;
-    // for ( int i = 0; i < cnt; i++ ) {
-    // members.add( _gf.createPoint( null, sdo.getOrdinatesEntry( off ), sdo.crs ) );
-    // off += sdo.gtype_d;
-    // }
-    //
-    // return members;
-    // }
 
     private PackedPoints getPackedPoints( GeomHolder sdo, int offset, int cnt ) {
         double[] pnts = new double[sdo.gtype_d * cnt];
@@ -642,7 +690,7 @@ public class SDOGeometryConverter {
      * <li>4) circle; three distinct points on the circle</li>
      * </ol>
      */
-    private Ring handleSimpleRing( GeomHolder sdo )
+    private Ring handleSimpleRing( GeomHolder sdo, int etype )
                             throws SQLException {
         int intpr = sdo.elem_info[sdo.elemoff + 2];
         int off = sdo.elem_info[sdo.elemoff];
@@ -672,13 +720,14 @@ public class SDOGeometryConverter {
             Point b = _gf.createPoint( null, ll.get0(), ur.get1(), sdo.crs );
             Point c = _gf.createPoint( null, ur.get0(), ur.get1(), sdo.crs );
             Point d = _gf.createPoint( null, ur.get0(), ll.get1(), sdo.crs );
-            Points rngp = null;
-            if ( ll.get0() < ur.get0() || ll.get1() < ur.get1() ) {
-                rngp = new PointsArray( a, b, c, d, a );
-            } else {
-                rngp = new PointsArray( a, d, c, b, a );
+            rng = _gf.createLinearRing( null, sdo.crs, new PointsArray( a, b, c, d, a ) );
+            
+            // enforce orientations if type of ring is known
+            if ( etype == SDOEType.POLYGON_RING_INTERIOR ) {
+                rng = forceOrientation( rng, false );
+            } else if ( etype == SDOEType.POLYGON_RING_EXTERIOR ) {
+                rng = forceOrientation( rng, true );
             }
-            rng = _gf.createLinearRing( null, sdo.crs, rngp );
         }
 
         if ( rng == null ) {
@@ -729,9 +778,7 @@ public class SDOGeometryConverter {
     }
 
     @SuppressWarnings("unchecked")
-    public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback )
-                            throws SQLException {
-
+    protected SDOGeometry fromGeometry( int srid, Geometry geometry, boolean allowJTSfallback ) {
         List<Triplet> info = new LinkedList<Triplet>();
         List<Point> pnts = new LinkedList<Point>();
         int gtypett = SDOGTypeTT.UNKNOWN;
@@ -780,7 +827,24 @@ public class SDOGeometryConverter {
             int[] elemInfo = buildResultElemeInfo( dim, info );
 
             int gtyp = ( 1000 * dim ) + gtypett;
-            return OracleObjectTools.toSDOGeometry( gtyp, srid, elemInfo, ordinates, conn );
+            LOG.trace( "fromGeometry: MDSYS.SDO_GEOMETRY( {}, {}, NULL, MDSYS.SDO_ELEM_INFO_ARRAY{}, MDSYS.SDO_ORDINATE_ARRAY{} )",
+                       gtyp, srid, elemInfo, ordinates );
+            return new SDOGeometry( gtyp, srid, null, elemInfo, ordinates );
+        }
+
+        // no parse able geometry found
+        return null;
+    }
+
+    public Object fromGeometry( OracleConnection conn, int srid, Geometry geometry, boolean allowJTSfallback )
+                            throws SQLException {
+        
+        SDOGeometry geom = fromGeometry( srid, geometry, allowJTSfallback );
+        if ( inspector != null ) {
+            inspector.fromGeometry(geom); 
+        }
+        if ( geom != null ) {
+            return OracleObjectTools.toSDOGeometry( geom, conn );
         } else {
             // create error message
         }
@@ -1040,7 +1104,7 @@ public class SDOGeometryConverter {
                 if ( isSimple ) {
                     buildCurveSegmentSimple( info, pnts, iseg.get( 0 ), false );
                 } else {
-                    info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_POLYGON_RING_INTERIOR, eseg.size() ) );
+                    info.add( new Triplet( pnts.size(), SDOEType.COMPOUND_POLYGON_RING_INTERIOR, iseg.size() ) );
                     for ( int i = 0, j = iseg.size(); i < j; i++ ) {
                         buildCurveSegment( info, pnts, iseg.get( i ), i > 0 );
                     }
@@ -1049,6 +1113,21 @@ public class SDOGeometryConverter {
         }
     }
 
+    /**
+     * Add points to internal point list
+     * 
+     * <p>
+     * <strong>Note:</strong>if the first points equals the lasts point and the geometry should be continued the first
+     * point will be skipped. This is reduces duplicate points for example with AAA / ALKIS geometries.
+     * </p>
+     * 
+     * @param pnts
+     *            current list of points
+     * @param add
+     *            points to add
+     * @param continueGeom
+     *            skipp first point if it equals last point in list
+     */
     private void addPnts( List<Point> pnts, Points add, boolean continueGeom ) {
         int off = 0;
 
@@ -1114,5 +1193,9 @@ public class SDOGeometryConverter {
             // unmappable
             throw new InvalidParameterValueException();
         }
+    }
+    
+    public void setExportOrientedPointAsExtra( boolean exportOrientedPointAsExtra ) {
+        this.exportOrientedPointAsExtra = exportOrientedPointAsExtra;
     }
 }

@@ -1,9 +1,11 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2014 by:
+ Copyright (C) 2001-2022 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
+ and
+ - grit graphische Informationstechnik Beratungsgesellschaft mbH -
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -30,6 +32,11 @@
  Germany
  http://www.geographie.uni-bonn.de/deegree/
 
+ grit graphische Informationstechnik Beratungsgesellschaft mbH
+ Landwehrstr. 143, 59368 Werne
+ Germany
+ http://www.grit.de/
+
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 package org.deegree.sqldialect.oracle;
@@ -40,16 +47,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import oracle.jdbc.OracleConnection;
-import oracle.sql.STRUCT;
-
 import org.deegree.cs.coordinatesystems.ICRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.utils.GeometryParticleConverter;
 import org.deegree.sqldialect.oracle.sdo.SDOGeometryConverter;
+import org.deegree.sqldialect.oracle.sdo.SDOInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import oracle.jdbc.OracleConnection;
+import oracle.sql.STRUCT;
 
 /**
  * {@link GeometryParticleConverter} for Oracle Spatial.
@@ -70,6 +78,8 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
     private final String srid;
 
     private int isrid;
+
+    private SDOInspector sdoInspector;
 
     /**
      * Creates a new {@link OracleGeometryConverter} instance.
@@ -115,7 +125,7 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
             return null;
         }
         try {
-            return new SDOGeometryConverter().toGeometry( (STRUCT) sqlValue, crs );
+            return new SDOGeometryConverter( sdoInspector ).toGeometry( (STRUCT) sqlValue, crs );
         } catch ( Throwable t ) {
             throw new IllegalArgumentException(t);
         }
@@ -137,7 +147,7 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
                 // compatible = compatible.getConvexHull();
                 // }
                 OracleConnection ocon = getOracleConnection( stmt.getConnection() );
-                Object struct = new SDOGeometryConverter().fromGeometry( ocon, isrid, compatible, true );
+                Object struct = new SDOGeometryConverter(sdoInspector).fromGeometry( ocon, isrid, compatible, true );
                 stmt.setObject( paramIndex, struct );
             }
         } catch ( Throwable t ) {
@@ -187,5 +197,9 @@ public class OracleGeometryConverter implements GeometryParticleConverter {
     @Override
     public ICRS getCrs() {
         return crs;
+    }
+
+    public void setSdoInsepctor( SDOInspector sdoInspector ) {
+        this.sdoInspector = sdoInspector;
     }
 }

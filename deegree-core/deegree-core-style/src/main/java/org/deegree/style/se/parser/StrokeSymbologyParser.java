@@ -186,6 +186,22 @@ class StrokeSymbologyParser {
                     obj.dashoffset = Double.parseDouble( val );
                 }
             }, contn ).second;
+        } else if ( name.equals( "deegree-graphicstroke-position-percentage" ) ) {
+            // Note: this is a deegree specific parameter and replaces the Element PositionPercentage
+            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
+                @Override
+                public void update( Stroke obj, String val ) {
+                    obj.positionPercentage = Double.parseDouble( val );
+                }
+            }, contn ).second;
+        } else if ( name.equals( "deegree-graphicstroke-rotation" ) ) {
+            // Note: this is a deegree specific parameter
+            contn = context.parser.updateOrContinue( in, "Parameter", base, new Updater<Stroke>() {
+                @Override
+                public void update( Stroke obj, String val ) {
+                    obj.positionRotation = Double.parseDouble( val ) > 0;
+                }
+            }, contn ).second;
         } else {
             Location loc = in.getLocation();
             LOG.error( "Found unknown parameter '{}' at line {}, column {}, skipping.",
@@ -256,6 +272,10 @@ class StrokeSymbologyParser {
                 }, contn ).second;
                 in.require( END_ELEMENT, null, "Gap" );
             } else if ( in.getLocalName().equals( "PositionPercentage" ) ) {
+                Location loc = in.getLocation();
+                LOG.warn( "The use of {} at line {}, column {} is deprecated and will be removed in the future. {}",
+                          in.getLocalName(), loc.getLineNumber(), loc.getColumnNumber(),
+                          "Use a Svg/CssParameter with the name 'deegree-graphicstroke-position-percentage' instead." );
                 contn = context.parser.updateOrContinue( in, "PositionPercentage", base, new Updater<Stroke>() {
                     @Override
                     public void update( Stroke obj, String val ) {

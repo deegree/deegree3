@@ -1,4 +1,3 @@
-//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -49,9 +48,13 @@ import static org.deegree.cs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.style.utils.ShapeHelper.getShapeFromMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import org.deegree.commons.tom.ReferenceResolvingException;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.MapUtils;
@@ -63,15 +66,14 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.deegree.style.styling.components.Mark;
 import org.deegree.style.styling.components.UOM;
+import org.deegree.style.utils.ShapeHelper;
 import org.slf4j.Logger;
 
 /**
  * <code>RenderHelper</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author <a href="mailto:reichhelm@grit.de">Stephan Reichhelm</a>
  */
 public class RenderHelper {
 
@@ -109,6 +111,60 @@ public class RenderHelper {
     }
 
     /**
+     * Render <code>Mark</code> to be usable for texture filling of areas
+     *
+     * @param mark the mark to render
+     * @param size size
+     * @param uom unit of measure
+     * @param rotation angle measured in degrees
+     * @param hints rendering hints, if available
+     * @return rendered image
+     */
+    public static BufferedImage renderMarkForFill( Mark mark, int size, UOM uom, double rotation, RenderingHints hints ) {
+        if ( size == 0 ) {
+            LOG.debug( "Not rendering a symbol because the size is zero." );
+            return new BufferedImage( size, size, BufferedImage.TYPE_INT_ARGB );
+        }
+        if ( mark.fill == null && mark.stroke == null ) {
+            LOG.debug( "Not rendering a symbol because no fill/stroke is available/configured." );
+            return new BufferedImage( size, size, BufferedImage.TYPE_INT_ARGB );
+        }
+
+        Shape shape = ShapeHelper.getShapeFromMarkForFill( mark, size - 1, rotation );
+        Rectangle2D box = shape.getBounds2D();
+
+        // TRICKY fall back to size if width or height is less than 1 (ex. a line)
+        int w = (int)Math.round(box.getWidth() < 1 ? size : box.getWidth());
+        int h = (int)Math.round(box.getHeight() < 1 ? size : box.getHeight());
+
+        BufferedImage img = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB );
+        Graphics2D g = img.createGraphics();
+        if ( hints != null ) {
+            // reuse current rendering hints (ex. anti-aliasing)
+            g.setRenderingHints( hints );
+        }
+        Java2DRenderer renderer = new Java2DRenderer( g );
+
+        GeneralPath union = new GeneralPath( shape );
+        double[] pos = { -w, -h, 0, -h, +w, -h, -w, 0, w, 0, -w, h, 0, h, w, h };
+        for ( int i = 0, j = pos.length - 2; i < j; i += 2 ) {
+            AffineTransform at =  AffineTransform.getTranslateInstance( pos[i], pos[i + 1] );
+            union.append( shape.getPathIterator( at ), false );
+        }
+
+        if ( mark.fill != null ) {
+            renderer.rendererContext.fillRenderer.applyFill( mark.fill, uom );
+            g.fill( union );
+        }
+        if ( mark.stroke != null ) {
+            renderer.rendererContext.strokeRenderer.applyStroke( mark.stroke, uom, union, 0, null );
+        }
+
+        g.dispose();
+        return img;
+    }
+
+    /**
      * @param mapWidth
      * @param mapHeight
      * @param bbox
@@ -125,7 +181,7 @@ public class RenderHelper {
             throw new RuntimeException( "Invalid null crs." );
         }
 
-        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
+        if ( isMetric( crs ) ) {
             /*
              * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
              * maps having a projected reference system. Direct calculation of scale avoids uncertainties
@@ -180,7 +236,7 @@ public class RenderHelper {
             throw new IllegalArgumentException( "Null crs when trying to calculate scale." );
         }
 
-        if ( "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() ) ) {
+        if ( isMetric( crs ) ) {
             /*
              * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
              * maps having a projected reference system. Direct calculation of scale avoids uncertainties
@@ -253,14 +309,11 @@ public class RenderHelper {
         return new Pair<Envelope, DoublePair>( bbox, new DoublePair( scalex, scaley ) );
     }
 
-    private static boolean isXyOrdered( final ICRS crs ) {
-        return crs == null || crs.getAlias().equals( "CRS:1" ) || crs.getAxis()[0].getOrientation() == AO_EAST;
-    }
-
     static double calculateResolution( final Envelope bbox, int width ) {
         double res;
         try {
-            if ( isXyOrdered( bbox.getCoordinateSystem() ) ) {
+            ICRS crs = bbox.getCoordinateSystem();
+            if ( crs == null || ( isMetric( crs ) && isXyOrdered( crs ) ) ) {
                 res = bbox.getSpan0() / width; // use x for resolution
             } else {
                 // heuristics more or less copied from d2, TODO is use the proper UTM conversion
@@ -287,6 +340,14 @@ public class RenderHelper {
             res = bbox.getSpan0() / width; // use x for resolution
         }
         return res;
+    }
+
+    private static boolean isXyOrdered( final ICRS crs ) {
+        return crs == null || crs.getAlias().equals( "CRS:1" ) || crs.getAxis()[0].getOrientation() == AO_EAST;
+    }
+
+    private static boolean isMetric( ICRS crs ) {
+        return "m".equalsIgnoreCase( crs.getAxis()[0].getUnits().toString() );
     }
 
 }

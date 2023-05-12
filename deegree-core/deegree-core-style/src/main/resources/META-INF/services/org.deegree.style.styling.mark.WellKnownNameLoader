@@ -1,0 +1,7 @@
+org.deegree.style.styling.wkn.ShapeLoader
+org.deegree.style.styling.wkn.ExtShapeLoader
+org.deegree.style.styling.wkn.TrueTypeFontLoader
+org.deegree.style.styling.wkn.QGisShapeLoader
+org.deegree.style.styling.wkn.SvgPathLoader
+org.deegree.style.styling.wkn.WKTLoader
+org.deegree.style.styling.wkn.WKTLinearizeLoader

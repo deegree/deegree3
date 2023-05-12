@@ -45,7 +45,6 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.annotations.LoggingNotes;
 import org.deegree.style.se.parser.SymbologyParser;
 import org.deegree.style.se.unevaluated.Style;
 
@@ -57,7 +56,6 @@ import org.deegree.style.se.unevaluated.Style;
  * 
  * @version $Revision: 31400 $, $Date: 2011-08-02 10:11:48 +0200 (Tue, 02 Aug 2011) $
  */
-@LoggingNotes(debug = "logs which named layers were extracted from SLD")
 public class SLDParser {
 
     /**

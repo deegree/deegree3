@@ -1,4 +1,4 @@
 name=Oracle GeoRaster Coverage
 example1_name=example
 example1_description=GeoRaster coverage stored in Oracle database.
-example1_location=/META-INF/schemas/datasource/coverage/oraclegeoraster/3.4.0/example.xml
+example1_location=/META-INF/schemas/datasource/coverage/oraclegeoraster/example.xml

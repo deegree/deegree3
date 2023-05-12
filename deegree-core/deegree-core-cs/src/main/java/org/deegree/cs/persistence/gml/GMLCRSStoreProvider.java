@@ -74,7 +74,7 @@ public class GMLCRSStoreProvider implements CRSStoreProvider {
 
     private static final String CONFIG_JAXB_PACKAGE = "org.deegree.cs.persistence.gml.jaxb";
 
-    private static final URL CONFIG_SCHEMA = GMLCRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/gml/3.4.0/gml.xsd" );
+    private static final URL CONFIG_SCHEMA = GMLCRSStoreProvider.class.getResource( "/META-INF/schemas/crs/stores/gml/gml.xsd" );
 
     @Override
     public String getConfigNamespace() {

@@ -108,7 +108,7 @@ public class Pair<T, U> {
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
      * 
-     * @return (int) ( result >>> 32 ) ^ (int) result;
+     * @return (int) ( result &gt;&gt;&gt; 32 ) ^ (int) result;
      * 
      * @see java.lang.Object#hashCode()
      */

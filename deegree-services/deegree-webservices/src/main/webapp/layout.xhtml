@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
 <h:head>
   <title>deegree 3 console</title>
   <h:outputStylesheet name="pagelayout.css" />
@@ -27,44 +27,42 @@
 
   <h:panelGroup id="container" layout="block">
     <h:panelGroup id="top" layout="block">
-      <h:panelGroup id="status" layout="block">
-        <h:panelGroup styleClass="submenu" layout="block" rendered="#{logBean.loggedIn}">
-          <h:form>
-            <h:outputText styleClass="menutopic" value="Active workspace: " />
-            <h:outputText value="#{workspace.activeWorkspace.name}" />
-						&nbsp;
-						<h:commandButton value="#{labels.apply_changes}" styleClass="buttongray" action="#{workspace.applyChanges}"
-              onclick="show();" rendered="#{!workspace.pendingChanges}" />
-            <h:commandButton value="#{labels.apply_changes}" styleClass="buttonError" action="#{workspace.applyChanges}"
-              onclick="show();" rendered="#{workspace.pendingChanges}" />
-          </h:form>
-        </h:panelGroup>
-      </h:panelGroup>
-      <h:panelGroup id="logo" layout="block">
-        <h:graphicImage name="images/logo.png" alt="deegree logo"/>
+      <h:panelGroup id="logo" layout="block" styleClass="logo">
+        <p:graphicImage name="images/logo.png" alt="deegree logo" />
       </h:panelGroup>
       <h:panelGroup id="login">
         <ui:include src="/console/security/login.xhtml" />
       </h:panelGroup>
+      <h:panelGroup id="status" layout="block" rendered="#{logBean.loggedIn}">
+          <h:form>
+            <h:outputText styleClass="title" value="Active workspace: " />
+            <h:outputText value="#{workspace.activeWorkspace.name}" />
+            <h:commandButton value="#{labels.apply_changes}" styleClass="buttongray" action="#{workspace.applyChanges}"
+                             onclick="show();" rendered="#{!workspace.pendingChanges}" />
+            <h:commandButton value="#{labels.apply_changes}" styleClass="buttonError" action="#{workspace.applyChanges}"
+                             onclick="show();" rendered="#{workspace.pendingChanges}" />
+            <h:commandButton value="#{labels.validate_changes}" styleClass="buttongray" action="#{workspace.validate}"
+                             onclick="show();" />
+          </h:form>
+      </h:panelGroup>
     </h:panelGroup>
+
     <h:panelGroup id="left">
       <h:form prependId="false">
         <ui:include src="menu.xhtml" />
       </h:form>
     </h:panelGroup>
+
     <h:panelGroup id="main" layout="block" styleClass="main">
       <h:panelGroup rendered="#{logBean.loggedIn}">
         <p:messages id="messages" escape="false" showSummary="true" autoUpdate="true" closable="true" />
-        <!-- Workaround for JSF bug -->
-        <h:form rendered="false">
-          <p:editor />
-        </h:form>
         <ui:insert name="center" />
       </h:panelGroup>
       <h:panelGroup rendered="#{!logBean.loggedIn}">
-        <h:outputText value="#{labels.access_forbidden}" xmlns:h="http://java.sun.com/jsf/html" />
+        <h:outputText value="#{labels.access_forbidden}" />
       </h:panelGroup>
     </h:panelGroup>
+
   </h:panelGroup>
 </h:body>
 </html>

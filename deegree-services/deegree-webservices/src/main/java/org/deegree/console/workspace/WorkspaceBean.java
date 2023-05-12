@@ -62,7 +62,6 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
-import org.deegree.client.core.model.UploadedFile;
 import org.deegree.commons.config.DeegreeWorkspace;
 import org.deegree.workspace.standard.ModuleInfo;
 import org.deegree.commons.utils.Pair;
@@ -70,6 +69,8 @@ import org.deegree.commons.utils.io.Zip;
 import org.deegree.commons.utils.net.HttpUtils;
 import org.deegree.console.client.RequestBean;
 import org.deegree.services.controller.OGCFrontController;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,7 @@ public class WorkspaceBean implements Serializable {
     public static final String WS_UPLOAD_VIEW = "/console/workspace/upload";
 
     // only used when no build (Maven) module version information is available
-    private static final String DEFAULT_VERSION = "3.4-pre7";
+    private static final String DEFAULT_VERSION = "UNKNOWN";
 
     private static final String[] WS_LIST = { "deegree-workspace-csw", "deegree-workspace-inspire",
                                              "deegree-workspace-utah", "deegree-workspace-wps" };
@@ -277,7 +278,7 @@ public class WorkspaceBean implements Serializable {
     }
 
     public String uploadWorkspace() {
-        if ( upload == null || upload.getFileItem() == null ) {
+        if ( upload == null || upload.getFileName() == null ) {
             FacesMessage fm = new FacesMessage( SEVERITY_INFO, "Please select a workspace file first.", null );
             FacesContext.getCurrentInstance().addMessage( null, fm );
             return null;
@@ -300,22 +301,20 @@ public class WorkspaceBean implements Serializable {
         InputStream in = null;
         try {
             File wsRoot = new File( getWorkspaceRoot() );
-            in = new FileInputStream( new File( upload.getAbsolutePath() ) );
+            in = upload.getInputStream();
             File target = new File( wsRoot, workspaceImportName );
-            
-            if ( !FileUtils.directoryContains( wsRoot, target ) ) {
-                throw new Exception( "Invalid workspace name: '" + workspaceImportName + "'." );
-            }
-            
+
             if ( target.exists() ) {
                 throw new Exception( "Workspace '" + workspaceImportName + "' already exists." );
             } else {
                 Zip.unzip( in, target );
+                LOG.debug( "Workspace unzipped into: '" + target.getAbsolutePath() + "'" );
             }
         } catch ( Throwable t ) {
             FacesMessage fm = new FacesMessage( SEVERITY_ERROR, "Workspace could not be imported: " + t.getMessage(),
-                                                null );
+                                                t.getLocalizedMessage() );
             FacesContext.getCurrentInstance().addMessage( null, fm );
+            LOG.error("Workspace could not be imported: " + t.getMessage(), t);
             return null;
         } finally {
             closeQuietly( in );
@@ -382,7 +381,7 @@ public class WorkspaceBean implements Serializable {
         list.add( wsArtifactName );
     }
 
-    private String getVersion() {
+    public String getVersion() {
         String version = null;
         Collection<ModuleInfo> modules = getModulesInfo();
         for ( ModuleInfo module : modules ) {
@@ -408,5 +407,20 @@ public class WorkspaceBean implements Serializable {
             lastMessage = "Workspace has been changed.";
         }
         return modified;
+    }
+
+    public void validate() {
+        DeegreeWorkspace activeWorkspace = getActiveWorkspace();
+        LOG.debug("Starting validation of workspace {} ", activeWorkspace );
+        new WorkspaceValidator().validateWorkspace(activeWorkspace);
+        LOG.debug("Completed validation of workspace {} ", activeWorkspace );
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        LOG.debug("New workspace file {} uploaded", event.getFile().getFileName() );
+        this.upload = event.getFile();
+        this.uploadWorkspace();
+        this.unzipWorkspace();
+        LOG.debug("Workspace {} unzipped into workspace root directory", workspaceImportName );
     }
 }
