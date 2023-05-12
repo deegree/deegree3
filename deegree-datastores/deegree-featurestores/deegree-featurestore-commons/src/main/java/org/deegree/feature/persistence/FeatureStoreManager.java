@@ -66,9 +66,13 @@ public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
 
     private static Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
 
-    private static final String BBOX_CACHE_FILE = "bbox_cache_%s.properties";
+    private static final String BBOX_CACHE_FILE = "bbox_cache.properties";
 
-    private final Map<String, BBoxPropertiesCache> bboxCaches = new HashMap<>();
+    private static final String BBOX_CACHE_FEATURESTOE_FILE = "bbox_cache_%s.properties";
+
+    private BBoxPropertiesCache bboxCache;
+
+    private final Map<String, BBoxPropertiesCache> customBboxCaches = new HashMap<>();
 
     private Workspace workspace;
 
@@ -77,25 +81,62 @@ public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
                                                      "datasources/feature" ) );
     }
 
-    @Override public void startup( Workspace workspace ) {
+    @Override
+    public void startup( Workspace workspace ) {
         this.workspace = workspace;
         super.startup( workspace );
     }
 
-    public BBoxCache getBBoxCache( String featureStoreId ) {
-        if ( !bboxCaches.containsValue( featureStoreId ) ) {
-            BBoxPropertiesCache bBoxCache = getOrCreateBBoxCache( featureStoreId );
-            bboxCaches.put( featureStoreId, bBoxCache );
-        }
-        return bboxCaches.get( featureStoreId );
+    /**
+     * Returns the bbox_cache.properties file (which is created if not existing).
+     * As there may be feature store specific bbox_cache_FEATURESTOE_ID.properties
+     * file the method getBBoxCache( String featureStoreId ) should be used.
+     */
+    public BBoxCache getBBoxCache() {
+        return getOrCreateBBoxCache();
     }
 
-    private BBoxPropertiesCache getOrCreateBBoxCache( String featureStoreId ) {
+    /**
+     * Returns the feature store specific bbox_cache_FEATURESTOE_ID.properties if existing,
+     * if not the bbox_cache.properties file is returned (which is created if not existing).
+     *
+     * @param featureStoreId
+     * @return
+     */
+    public BBoxCache getBBoxCache( String featureStoreId ) {
+        if ( customBboxCaches.containsValue( featureStoreId ) ) {
+            return customBboxCaches.get( featureStoreId );
+        }
+        BBoxPropertiesCache customBBoxCache = getCustomBBoxCache( featureStoreId );
+        if ( customBBoxCache != null ) {
+            customBboxCaches.put( featureStoreId, customBBoxCache );
+            return customBBoxCache;
+        }
+        return getOrCreateBBoxCache();
+    }
+
+    private BBoxPropertiesCache getOrCreateBBoxCache() {
+        try {
+            if ( bboxCache == null ) {
+                File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
+                File propsFile = new File( dir, BBOX_CACHE_FILE );
+                bboxCache = new BBoxPropertiesCache( propsFile );
+            }
+        } catch ( IOException e ) {
+            LOG.error( "Unable to initialize envelope cache " + BBOX_CACHE_FILE + ": "
+                       + e.getMessage(), e );
+        }
+        return bboxCache;
+    }
+
+    private BBoxPropertiesCache getCustomBBoxCache( String featureStoreId ) {
         try {
             if ( workspace instanceof DefaultWorkspace ) {
                 File dir = new File( ( (DefaultWorkspace) workspace ).getLocation(), getMetadata().getWorkspacePath() );
-                File propsFile = new File( dir, String.format( BBOX_CACHE_FILE, featureStoreId ) );
-                return new BBoxPropertiesCache( propsFile );
+                File propsFile = new File( dir, String.format( BBOX_CACHE_FEATURESTOE_FILE, featureStoreId ) );
+                if ( propsFile.exists() ) {
+                    return new BBoxPropertiesCache( propsFile );
+                }
             }
         } catch ( IOException e ) {
             LOG.error( "Unable to initialize envelope cache for feature store with id " + featureStoreId + ": "
