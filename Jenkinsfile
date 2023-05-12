@@ -65,7 +65,7 @@ pipeline {
         stage ('Release') {
             when {
                 allOf{
-                    branch '3.4-main'
+                    triggeredBy cause: "UserIdCause", detail: "tmc"
                     expression { return params.PERFORM_RELEASE }
                 }
             }
