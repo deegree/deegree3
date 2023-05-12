@@ -2011,7 +2011,7 @@ image::console_featurestore_mapping20.jpg[Imported INSPIRE datasets via the Load
 
 ==== Spatial extent of FeatureTypes
 
-The spatial extent of all feature types defined in all SQLFeatureStore configurations are cached in a file named bbox_cache.properties. The file is created when the workspace is initialised.
+The spatial extent of all feature types defined in all SQLFeatureStore configurations are cached in a file named _bbox_cache.properties_. The file is created when the workspace is initialised.
 The file contains the bounding box with its coordinate system assigned to the qualified name of each feature type, e.g.:
 
 ----
@@ -2019,8 +2019,8 @@ The file contains the bounding box with its coordinate system assigned to the qu
 {http\://www.deegree.org/app}Railroads=epsg\:4326,11.16,51.29,14.83,53.59
 ----
 
-Inserting new features via WFS-T results in an increased bounding box in the bbox_cache.properties file, if the extent did not include the features.
+Inserting new features via WFS-T results in an increased bounding box in the _bbox_cache.properties_ file, if the extent did not include the features.
 The file can also be used to configure the bounding box to a larger extent than the data, e.g. if the extent is already known but not all data imported.
 The extent of a FeatureType is written in the capabilities as WGS84BoundingBox (WFS 2.0) of the FeatureType.
 
-It is possible to configure a bbox_cache_<FeatureStoreId>.properties per SQLFeatureStore, this FeatureStore specific configuration is preferred over the bbox_cache.properties.
+TIP: It is possible to configure a _bbox_cache_<FeatureStoreId>.properties_ per SQLFeatureStore, this FeatureStore specific configuration is preferred over the bbox_cache.properties.
