@@ -123,8 +123,8 @@ public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
                 bboxCache = new BBoxPropertiesCache( propsFile );
             }
         } catch ( IOException e ) {
-            LOG.error( "Unable to initialize envelope cache " + BBOX_CACHE_FILE + ": "
-                       + e.getMessage(), e );
+            LOG.error( "Unable to initialize envelope cache {}: {}", BBOX_CACHE_FILE, e.getMessage() );
+            LOG.trace( e.getMessage(), e );
         }
         return bboxCache;
     }
@@ -139,8 +139,9 @@ public class FeatureStoreManager extends DefaultResourceManager<FeatureStore> {
                 }
             }
         } catch ( IOException e ) {
-            LOG.error( "Unable to initialize envelope cache for feature store with id " + featureStoreId + ": "
-                       + e.getMessage(), e );
+            LOG.error( "Unable to initialize envelope cache for feature store with id {}: {}", featureStoreId,
+                       e.getMessage() );
+            LOG.trace( e.getMessage(), e );
         }
         return null;
     }
