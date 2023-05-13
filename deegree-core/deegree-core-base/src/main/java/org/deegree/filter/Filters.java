@@ -35,7 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import static java.util.Arrays.asList;
 import static org.deegree.filter.Filter.Type.OPERATOR_FILTER;
+import static org.deegree.filter.Operator.Type.LOGICAL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -116,6 +118,26 @@ import org.slf4j.LoggerFactory;
 public class Filters {
 
     private static Logger LOG = LoggerFactory.getLogger( Filters.class );
+
+    /**
+     * Extract all operators from an And-filter (which can all be filtered individually, as each operator can only
+     * narrow the result).
+     *
+     * @return list of operators, can be <code>null</code> (not an And-filter)
+     */
+    public static List<Operator> extractAndOperands( final Filter filter ) {
+        if ( filter != null && filter.getType() == OPERATOR_FILTER ) {
+            final OperatorFilter operatorFilter = (OperatorFilter) filter;
+            final Operator operator = operatorFilter.getOperator();
+            if ( operator.getType() == LOGICAL ) {
+                final LogicalOperator logicalOperator = (LogicalOperator) operator;
+                if ( logicalOperator.getSubType() == LogicalOperator.SubType.AND ) {
+                    return asList( logicalOperator.getParams() );
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Tries to extract a {@link BBOX} constraint from the given {@link Filter} that can be used as a pre-filtering step
