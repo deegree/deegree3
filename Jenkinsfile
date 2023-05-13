@@ -13,8 +13,8 @@ pipeline {
         MAVEN_OPTS='-Djava.awt.headless=true -Xmx4096m'
     }
     parameters {
-          string name: 'REL_VERSION', defaultValue: "3.4.x", description: 'Next release version'
-          string name: 'DEV_VERSION', defaultValue: "3.4.x-SNAPSHOT", description: 'Next snapshot version'
+          string name: 'REL_VERSION', defaultValue: "3.5.x", description: 'Next release version'
+          string name: 'DEV_VERSION', defaultValue: "3.5.x-SNAPSHOT", description: 'Next snapshot version'
           booleanParam name: 'PERFORM_RELEASE', defaultValue: false, description: 'Perform release build (on main branch only)'
     }
     stages {
@@ -71,7 +71,7 @@ pipeline {
             }
             steps {
                 echo 'Prepare release version ${REL_VERSION}'
-                sh 'mvn -Dresume=false -DdryRun=true -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -Dgoals=deploy release:prepare -P integration-tests,oracle,handbook'
+                sh 'mvn -Dresume=false -DdryRun=true -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -DdeployAtEnd=true -Dgoals=deploy release:prepare -P integration-tests,oracle,handbook'
             }
             post {
                 success {
