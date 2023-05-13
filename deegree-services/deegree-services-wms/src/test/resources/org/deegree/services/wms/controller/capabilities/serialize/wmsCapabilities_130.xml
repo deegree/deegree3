@@ -4,26 +4,26 @@
   xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd">
   <Service>
     <Name>WMS</Name>
-    <Title>deegree 3 Utah Demo WMS</Title>
-    <Abstract>WMS demonstration with Utah data</Abstract>
-    <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org" />
+    <Title>deegree WMS capabilities</Title>
+    <Abstract>An example template for the deegree WMS</Abstract>
+    <OnlineResource xlink:type="simple" xlink:href="http://www.deegree.org"/>
     <ContactInformation>
       <ContactPersonPrimary>
-        <ContactPerson>Andreas Schmitz</ContactPerson>
-        <ContactOrganization>lat/lon GmbH</ContactOrganization>
+        <ContactPerson>Gerhard Mercator</ContactPerson>
+        <ContactOrganization>deegree</ContactOrganization>
       </ContactPersonPrimary>
-      <ContactPosition>Software developer</ContactPosition>
+      <ContactPosition>Geographer</ContactPosition>
       <ContactAddress>
         <AddressType>postal</AddressType>
-        <Address>Aennchenstr. 19</Address>
-        <City>Bonn</City>
-        <StateOrProvince>NRW</StateOrProvince>
-        <PostCode>53177</PostCode>
-        <Country>Germany</Country>
+        <Address>9450 SW Gemini Dr #42523</Address>
+        <City>Beaverton</City>
+        <StateOrProvince>OR</StateOrProvince>
+        <PostCode>97008</PostCode>
+        <Country>USA</Country>
       </ContactAddress>
-      <ContactVoiceTelephone>0228/18496-0</ContactVoiceTelephone>
-      <ContactFacsimileTelephone>0228/18496-29</ContactFacsimileTelephone>
-      <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+      <ContactVoiceTelephone>0000/000000</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>0000/000000</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>info@example.com</ContactElectronicMailAddress>
     </ContactInformation>
   </Service>
   <Capability>

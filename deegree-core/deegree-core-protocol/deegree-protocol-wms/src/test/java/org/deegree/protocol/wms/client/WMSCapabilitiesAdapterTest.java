@@ -179,11 +179,11 @@ public abstract class WMSCapabilitiesAdapterTest {
         ServiceIdentification serviceIdentification = capabilities.parseServiceIdentification();
 
         assertEquals( "WMS", serviceIdentification.getName() );
-        assertEquals( "wms reference implementation", serviceIdentification.getAbstract( null ).getString() );
+        assertEquals( "An example template for the deegree WMS", serviceIdentification.getAbstract( null ).getString() );
         assertEquals( "WMS", serviceIdentification.getServiceType().getCode() );
         Pair<List<LanguageString>, CodeType> keywords = serviceIdentification.getKeywords().get( 0 );
         assertEquals( 2, keywords.first.size() );
-        assertEquals( "deegree wms", serviceIdentification.getTitle( null ).getString() );
+        assertEquals( "deegree WMS capabilities", serviceIdentification.getTitle( null ).getString() );
         assertEquals( "none", serviceIdentification.getFees() );
         assertEquals( 1, serviceIdentification.getAccessConstraints().size() );
         assertEquals( "none", serviceIdentification.getAccessConstraints().get( 0 ) );

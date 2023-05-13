@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dgws:deegreeServicesMetadata xsi:schemaLocation="http://www.deegree.org/schemas/webservices ../../services_metadata.xsd" xmlns:dgws="http://www.deegree.org/schemas/webservices" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  <dgws:ServiceProvider>
-  <dgws:ProviderName>lat-lon GmbH</dgws:ProviderName>
-  <dgws:ProviderSite>http://www.lat-lon.de</dgws:ProviderSite>
+  <dgws:ProviderName>deegree</dgws:ProviderName>
+  <dgws:ProviderSite>http://www.deegree.org</dgws:ProviderSite>
   <dgws:ServiceContact>
-   <dgws:IndividualName>Andreas Poth</dgws:IndividualName>
-   <dgws:PositionName>Chef</dgws:PositionName>
-   <dgws:Phone>0228/184-96-0</dgws:Phone>
-   <dgws:Facsimile>0228/184-96-29</dgws:Facsimile>
-   <dgws:ElectronicMailAddress>info@lat-lon.de</dgws:ElectronicMailAddress>
+   <dgws:IndividualName>Gerhard Mercator</dgws:IndividualName>
+   <dgws:PositionName>Geographer</dgws:PositionName>
+   <dgws:Phone>0000/000000</dgws:Phone>
+   <dgws:Facsimile>0000/000000</dgws:Facsimile>
+   <dgws:ElectronicMailAddress>info@example.com</dgws:ElectronicMailAddress>
    <dgws:Address>
-    <dgws:DeliveryPoint>Aenchenstr. 19</dgws:DeliveryPoint>
-    <dgws:City>Bonn</dgws:City>
-    <dgws:AdministrativeArea>NRW</dgws:AdministrativeArea>
-    <dgws:PostalCode>53117</dgws:PostalCode>
-    <dgws:Country>Bonn</dgws:Country>
+    <dgws:DeliveryPoint>9450 SW Gemini Dr #42523</dgws:DeliveryPoint>
+    <dgws:City>Beaverton</dgws:City>
+    <dgws:AdministrativeArea>OR</dgws:AdministrativeArea>
+    <dgws:PostalCode>97008</dgws:PostalCode>
+    <dgws:Country>USA</dgws:Country>
    </dgws:Address>
    <dgws:OnlineResource>http://www.deegree.org</dgws:OnlineResource>
    <dgws:HoursOfService>24-7</dgws:HoursOfService>
-   <dgws:ContactInstructions>Don't hesitate to call</dgws:ContactInstructions>
+   <dgws:ContactInstructions>Don't hesitate to email</dgws:ContactInstructions>
    <dgws:Role>model</dgws:Role>
   </dgws:ServiceContact>
  </dgws:ServiceProvider>

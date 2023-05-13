@@ -64,7 +64,7 @@ public class XsltCapabilitiesSerializerTest {
         String html = responseStream.toString();
 
         assertThat( html, containsString( "WMS" ) );
-        assertThat( html, containsString( "deegree 3 Utah Demo WMS" ) );
+        assertThat( html, containsString( "deegree WMS capabilities" ) );
     }
 
     private InputStream capabilitiesXmlStream() {

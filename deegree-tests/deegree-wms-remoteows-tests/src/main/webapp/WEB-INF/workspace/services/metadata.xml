@@ -7,29 +7,35 @@
   -->
 
   <ServiceIdentification>
-    <Title>deegree 3 Utah Demo</Title>
-    <Abstract>WMS and WFS demonstration with Utah data</Abstract>
+    <Title>deegree services metadata</Title>
+    <Abstract>This is the default deegree service configuration</Abstract>
+    <Keywords>
+      <Keyword lang="en">OGC services</Keyword>
+      <Keyword lang="en">deegree</Keyword>
+    </Keywords>
+    <Fees>None</Fees>
+    <AccessConstraints>None</AccessConstraints>
+    <AccessConstraints>24x7</AccessConstraints>
   </ServiceIdentification>
-
   <ServiceProvider>
-    <ProviderName>lat-lon GmbH</ProviderName>
-    <ProviderSite>http://www.lat-lon.de</ProviderSite>
+    <ProviderName>deegree</ProviderName>
+    <ProviderSite>http://www.deegree.org</ProviderSite>
     <ServiceContact>
-      <IndividualName>Andreas Schmitz</IndividualName>
-      <PositionName>Software developer</PositionName>
-      <Phone>0228/18496-0</Phone>
-      <Facsimile>0228/18496-29</Facsimile>
-      <ElectronicMailAddress>info@lat-lon.de</ElectronicMailAddress>
+      <IndividualName>Gerhard Mercator</IndividualName>
+      <PositionName>Geographer</PositionName>
+      <Phone>0000/000000</Phone>
+      <Facsimile>0000/000000</Facsimile>
+      <ElectronicMailAddress>info@example.com</ElectronicMailAddress>
       <Address>
-        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
-        <City>Bonn</City>
-        <AdministrativeArea>NRW</AdministrativeArea>
-        <PostalCode>53177</PostalCode>
-        <Country>Germany</Country>
+        <DeliveryPoint>9450 SW Gemini Dr #42523</DeliveryPoint>
+        <City>Beaverton</City>
+        <AdministrativeArea>OR</AdministrativeArea>
+        <PostalCode>97008</PostalCode>
+        <Country>USA</Country>
       </Address>
       <OnlineResource>http://www.deegree.org</OnlineResource>
       <HoursOfService>24x7</HoursOfService>
-      <ContactInstructions>Don't hesitate to call</ContactInstructions>
+      <ContactInstructions>Don't hesitate to email</ContactInstructions>
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>

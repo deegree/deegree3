@@ -6,30 +6,30 @@
     General service information for all services. Used in the GetCapabilities
     responses.
   -->
+  
   <ServiceIdentification>
-    <Title>deegree 3 GeoSciML Service</Title>
+    <Title>deegree GeoSciML service metadata</Title>
     <Abstract>Demonstrates the deployment of the GeoSciML application schema</Abstract>
   </ServiceIdentification>
   <ServiceProvider>
-    <ProviderName>lat-lon GmbH</ProviderName>
-    <ProviderSite>http://www.lat-lon.de</ProviderSite>
+    <ProviderName>deegree</ProviderName>
+    <ProviderSite>http://www.deegree.org</ProviderSite>
     <ServiceContact>
-      <IndividualName>Markus Schneider</IndividualName>
-      <PositionName>deegree TMC</PositionName>
-      <Phone>0228/18496-0</Phone>
-      <Facsimile>0228/18496-29</Facsimile>
-      <ElectronicMailAddress>info@lat-lon.de
-      </ElectronicMailAddress>
+      <IndividualName>Gerhard Mercator</IndividualName>
+      <PositionName>Geographer</PositionName>
+      <Phone>0000/000000</Phone>
+      <Facsimile>0000/000000</Facsimile>
+      <ElectronicMailAddress>info@example.com</ElectronicMailAddress>
       <Address>
-        <DeliveryPoint>Aennchenstr. 19</DeliveryPoint>
-        <City>Bonn</City>
-        <AdministrativeArea>NRW</AdministrativeArea>
-        <PostalCode>53177</PostalCode>
-        <Country>Germany</Country>
+        <DeliveryPoint>9450 SW Gemini Dr #42523</DeliveryPoint>
+        <City>Beaverton</City>
+        <AdministrativeArea>OR</AdministrativeArea>
+        <PostalCode>97008</PostalCode>
+        <Country>USA</Country>
       </Address>
       <OnlineResource>http://www.deegree.org</OnlineResource>
       <HoursOfService>24x7</HoursOfService>
-      <ContactInstructions>Don't hesitate to call</ContactInstructions>
+      <ContactInstructions>Don't hesitate to email</ContactInstructions>
       <Role>PointOfContact</Role>
     </ServiceContact>
   </ServiceProvider>
