@@ -71,7 +71,7 @@ pipeline {
             }
             steps {
                 echo 'Prepare release version ${REL_VERSION}'
-                sh 'mvn -Dresume=false -DdryRun=true -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -Dgoals=deploy release:prepare -P integration-tests,oracle,mssql,handbook'
+                sh 'mvn -Dresume=false -DreleaseVersion=${REL_VERSION} -DdevelopmentVersion=${DEV_VERSION} -Dgoals=deploy release:prepare release:perform -P integration-tests,oracle,mssql,handbook'
             }
             post {
                 success {
